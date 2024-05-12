@@ -1,17 +1,18 @@
-import { Box, Card, CardActions, CardHeader, IconButton, Tooltip } from '@mui/material';
 import { Delete } from '@mui/icons-material';
+import { Box, Card, CardActions, CardHeader, IconButton, Tooltip } from '@mui/material';
+import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import moment from 'moment';
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
-import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import CustomEventDialog from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import ColorPicker from '../../ColorPicker';
+
 import { deleteCustomEvent } from '$actions/AppStoreActions';
 import analyticsEnum from '$lib/analytics';
+import buildingCatalogue from '$lib/buildingCatalogue';
 import AppStore from '$stores/AppStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
-import buildingCatalogue from '$lib/buildingCatalogue';
 import { useTabStore } from '$stores/TabStore';
 
 interface CustomEventDetailViewProps {
@@ -74,7 +75,7 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
             />
             <Box sx={{ margin: '0.75rem', color: '#bbbbbb', fontSize: '1rem' }}>
                 <Link to={`/map?location=${customEvent.building ?? 0}`} onClick={focusMap}>
-                    {customEvent.building ? buildingCatalogue[+customEvent.building].name : ''}
+                    {(customEvent.building && buildingCatalogue[+customEvent.building]?.name) || ''}
                 </Link>
             </Box>
 

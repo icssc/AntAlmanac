@@ -1,13 +1,16 @@
+import { Box } from '@mui/material';
 import { useCallback, useEffect } from 'react';
 
 import RightPaneStore from '../RightPaneStore';
+
 import CoursePaneButtonRow from './CoursePaneButtonRow';
 import CourseRenderPane from './CourseRenderPane';
 import SearchForm from './SearchForm/SearchForm';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+
 import { openSnackbar } from '$actions/AppStoreActions';
-import WebSOC from '$lib/websoc';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import Grades from '$lib/grades';
+import WebSOC from '$lib/websoc';
 import useCoursePaneStore from '$stores/CoursePaneStore';
 
 function RightPane() {
@@ -51,14 +54,14 @@ function RightPane() {
     }, [handleKeydown]);
 
     return (
-        <div style={{ height: '100%' }}>
+        <Box height={'100%'} marginX={0.5}>
             <CoursePaneButtonRow
                 showSearch={!searchIsDisplayed}
                 onDismissSearchResults={displaySearch}
                 onRefreshSearch={refreshSearch}
             />
             {searchIsDisplayed ? <SearchForm toggleSearch={handleSearch} /> : <CourseRenderPane key={key} id={key} />}
-        </div>
+        </Box>
     );
 }
 

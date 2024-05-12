@@ -1,4 +1,4 @@
-import {
+import type {
     Schedule,
     ScheduleCourse,
     ScheduleSaveState,
@@ -6,26 +6,43 @@ import {
     ShortCourseSchedule,
     RepeatingCustomEvent,
 } from '@packages/antalmanac-types';
-import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
-import type { CourseInfo } from '$lib/course_data.types';
-import { getColorForNewSection } from '$stores/scheduleHelpers';
-import WebSOC from '$lib/websoc';
 
+import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
+
+import type { CourseInfo } from '$lib/course_data.types';
+import { termData } from '$lib/termData';
+import WebSOC from '$lib/websoc';
+import { getColorForNewSection } from '$stores/scheduleHelpers';
+
+/**
+ * Manages state of schedules. Only one instance is really needed for the app.
+ */
 export class Schedules {
     private schedules: Schedule[];
+
     private currentScheduleIndex: number;
+
     private previousStates: ScheduleUndoState[];
+
     private skeletonSchedules: ShortCourseSchedule[];
 
-    // We do not want schedule notes to be undone; to avoid this,
-    // we keep track of every schedule note in an object where each key
-    // is a unique ID and each value is the most recent schedule note.
-    private scheduleNoteMap: { [key: number]: string };
+    /**
+     * We do not want schedule notes to be undone; to avoid this,
+     * we keep track of every schedule note in an object where each key
+     * is a unique ID and each value is the most recent schedule note.
+     */
+    private scheduleNoteMap: Record<number, string>;
 
     constructor() {
         const scheduleNoteId = Math.random();
+
         this.schedules = [
-            { scheduleName: 'Schedule 1', courses: [], customEvents: [], scheduleNoteId: scheduleNoteId },
+            {
+                scheduleName: `${termData[0].shortName.replaceAll(' ', '-')}`,
+                courses: [],
+                customEvents: [],
+                scheduleNoteId: scheduleNoteId,
+            },
         ];
         this.currentScheduleIndex = 0;
         this.previousStates = [];
@@ -33,12 +50,16 @@ export class Schedules {
         this.skeletonSchedules = [];
     }
 
-    // --- Schedule index methods ---
+    getDefaultScheduleName() {
+        const termName = termData[0].shortName.replaceAll(' ', '-');
+        const countSameScheduleNames = this.getScheduleNames().filter((name) => name.includes(termName)).length;
+        return `${termName + (countSameScheduleNames == 0 ? '' : '(' + countSameScheduleNames + ')')}`;
+    }
+
     getCurrentScheduleIndex() {
         return this.currentScheduleIndex;
     }
 
-    // --- Schedule related methods ---
     getNumberOfSchedules() {
         return this.schedules.length;
     }
@@ -48,21 +69,21 @@ export class Schedules {
     }
 
     /**
-     * @return a specific schedule name
+     * Get the name of schedule.
      */
     getScheduleName(scheduleIndex: number) {
         return this.schedules[scheduleIndex]?.scheduleName;
     }
 
     /**
-     * @return a list of all schedule names
+     * Get all schedule names.
      */
     getScheduleNames() {
         return this.schedules.map((schedule) => schedule.scheduleName);
     }
 
     /**
-     * Changes schedule to one at new index
+     * Change current schedule to the schedule at the specified index.
      */
     setCurrentScheduleIndex(newScheduleIndex: number) {
         this.addUndoState();
@@ -70,7 +91,7 @@ export class Schedules {
     }
 
     /**
-     * Creates an empty schedule
+     * Create an empty schedule.
      */
     addNewSchedule(newScheduleName: string) {
         this.addUndoState();
@@ -87,7 +108,7 @@ export class Schedules {
     }
 
     /**
-     * Renames schedule at index
+     * Rename schedule with the specified index.
      */
     renameSchedule(newScheduleName: string, scheduleIndex: number) {
         this.addUndoState();
@@ -95,7 +116,7 @@ export class Schedules {
     }
 
     /**
-     * Deletes all courses and custom events from current schedule
+     * Delete all courses and custom events from current schedule.
      */
     clearCurrentSchedule() {
         this.addUndoState();
@@ -104,7 +125,7 @@ export class Schedules {
     }
 
     /**
-     * Deletes specific schedule and adjusts schedule index to current
+     * Delete specific schedule and adjusts schedule index to current.
      */
     deleteSchedule(scheduleIndex: number) {
         this.addUndoState();
@@ -113,9 +134,8 @@ export class Schedules {
     }
 
     /**
-     * Adds all courses from current schedule to another (doesn't wipe schedules that are being copied into)
-     * More like append than copy
-     * @param to If equal to number of schedules will copy to all schedules
+     * Append all courses from current schedule to the schedule with the target index.
+     * @param to Index of the schedule to append courses to. If equal to number of schedules, will append courses to all schedules.
      */
     copySchedule(to: number) {
         this.addUndoState();
@@ -136,27 +156,26 @@ export class Schedules {
         }
     }
 
-    // --- Course related methods ---
     getCurrentCourses() {
         return this.schedules[this.currentScheduleIndex]?.courses || [];
     }
 
     /**
-     * @return Set of "{sectionCode} {term} in current schedule"
+     * Get a set of "{sectionCode} {term}" section codes in current schedule.
      */
     getAddedSectionCodes() {
         return new Set(this.getCurrentCourses().map((course) => `${course.section.sectionCode} ${course.term}`));
     }
 
     /**
-     * @return Combined list of courses from all schedules with duplicates
+     * Get combined list of courses from all schedules with duplicates.
      */
     getAllCourses() {
         return this.schedules.map((schedule) => schedule.courses).flat(1);
     }
 
     /**
-     * @return A course that matches the params across all schedules
+     * Get course that matches the params across **all** schedules.
      */
     getExistingCourse(sectionCode: string, term: string) {
         for (const course of this.getAllCourses()) {
@@ -168,7 +187,7 @@ export class Schedules {
     }
 
     /**
-     * @return A course that matches the params in the current schedule
+     * Get a course that matches the params in the **current** schedule.
      */
     getExistingCourseInSchedule(sectionCode: string, term: string) {
         for (const course of this.getCurrentCourses()) {
@@ -180,8 +199,9 @@ export class Schedules {
     }
 
     /**
-     * Adds a course to a given schedule index
+     * Adds a course to a given schedule index.
      * Sets color to an unused color in set, also will not add class if already exists
+     *
      * @param newCourse The course to add
      * @param scheduleIndex Defaults to current schedule
      * @param addUndoState Defaults to true
@@ -200,23 +220,25 @@ export class Schedules {
             scheduleIndex
         );
 
+        // If it's already present in a schedule, then no need to push it.
         if (existsInSchedule && existingSection) {
-            return existingSection; // If it's already present in a schedule, then no need to push it
-        }
-
-        if (existingSection) {
-            this.schedules[scheduleIndex].courses.push(existingSection); // existingSection is pushed so methods (e.g. @changeCourseColor) have the appropriate (i.e. same) course reference across all schedules
             return existingSection;
         }
 
+        // existingSection is pushed so methods (e.g. @changeCourseColor) have the same course reference across all schedules.
+        if (existingSection) {
+            this.schedules[scheduleIndex].courses.push(existingSection);
+            return existingSection;
+        }
         const sectionToAdd = {
             ...newCourse,
             section: {
                 ...newCourse.section,
+                // New colors are drawn from a Set of unused colors across the newCourse's term
                 color: getColorForNewSection(
                     newCourse,
                     this.getAllCourses().filter((course) => course.term === newCourse.term)
-                ), // New colors are drawn from a Set of unused colors across the newCourse's term
+                ),
             },
         };
 
@@ -226,8 +248,8 @@ export class Schedules {
     }
 
     /**
-     * Adds a course to every schedule
-     * @returns the course object that was added
+     * Add a course to every schedule.
+     * @returns the course object that was added.
      */
     addCourseToAllSchedules(newCourse: ScheduleCourse) {
         this.addUndoState();
@@ -238,19 +260,20 @@ export class Schedules {
     }
 
     /**
-     * Changes courses that match the code and term in all schedules to new color
+     * Change courses that match the code and term in all schedules to new color.
      */
     changeCourseColor(sectionCode: string, term: string, newColor: string) {
         this.addUndoState();
 
         const course = this.getExistingCourseInSchedule(sectionCode, term);
+
         if (course) {
             course.section.color = newColor;
         }
     }
 
     /**
-     * Deletes a course in current schedule
+     * Delete a course in current schedule.
      */
     deleteCourse(sectionCode: string, term: string) {
         this.addUndoState();
@@ -260,7 +283,7 @@ export class Schedules {
     }
 
     /**
-     * Checks if a course has already been added to a schedule
+     * Check if a course has already been added to a schedule.
      */
     doesCourseExistInSchedule(sectionCode: string, term: string, scheduleIndex: number) {
         for (const course of this.schedules[scheduleIndex].courses) {
@@ -271,13 +294,12 @@ export class Schedules {
         return false;
     }
 
-    // --- Custom Event related methods ---
     getCurrentCustomEvents() {
         return this.schedules[this.currentScheduleIndex]?.customEvents || [];
     }
 
     /**
-     * @return Reference of the custom event that matches the ID
+     * Get a reference ito the custom event that matches the ID.
      */
     getExistingCustomEvent(customEventId: number) {
         for (const customEvent of this.getAllCustomEvents()) {
@@ -289,8 +311,7 @@ export class Schedules {
     }
 
     /**
-     * @return Schedule indices of schedules that contain the custom event
-     * @param customEventId
+     * Get indices of schedules that contain the custom event.
      */
     getIndexesOfCustomEvent(customEventId: number) {
         const indices: number[] = [];
@@ -303,7 +324,7 @@ export class Schedules {
     }
 
     /**
-     * @return List of all custom events in all schedules(with duplicates)
+     * Get custom events in all schedules (with duplicates).
      */
     getAllCustomEvents() {
         return this.schedules.map((schedule) => schedule.customEvents).flat(1);
@@ -323,9 +344,9 @@ export class Schedules {
 
     /**
      * Deletes custom event from the given indices.
-     * @param scheduleIndices Defaults to current schedule.
+     * @param scheduleIndices The schedule indices to delete the custom event from.
      */
-    deleteCustomEvent(customEventId: number, scheduleIndices: number[] = [this.getCurrentScheduleIndex()]) {
+    deleteCustomEvent(customEventId: number, scheduleIndices = [this.getCurrentScheduleIndex()]) {
         this.addUndoState();
         for (const scheduleIndex of scheduleIndices) {
             const customEvents = this.schedules[scheduleIndex].customEvents;
@@ -353,7 +374,9 @@ export class Schedules {
      */
     editCustomEvent(editedCustomEvent: RepeatingCustomEvent, newIndices: number[]) {
         this.addUndoState();
+
         const customEvent = this.getExistingCustomEvent(editedCustomEvent.customEventID);
+
         if (customEvent === undefined) {
             this.addCustomEvent(editedCustomEvent, newIndices);
             return;
@@ -384,9 +407,8 @@ export class Schedules {
         return false;
     }
 
-    // --- Calender related methods ---
     /**
-     * Convert courses and custom events into calendar friendly format
+     * Convert courses and custom events into calendar friendly format.
      */
     getCalendarizedEvents() {
         return [
@@ -403,13 +425,19 @@ export class Schedules {
     }
 
     /**
+     * Convert just custom events into calendar compatible format.
+     */
+    getCalendarizedCustomEvents() {
+        return calendarizeCustomEvents(this.getCurrentCustomEvents());
+    }
+
+    /**
      * Convert finals into calendar friendly format
      */
     getCalendarizedFinals() {
         return calendarizeFinals(this.getCurrentCourses());
     }
 
-    // --- Other methods ---
     /**
      * Appends a copy of the current schedule to previous states to revert to
      * Previous states are capped to 50
@@ -460,10 +488,10 @@ export class Schedules {
 
     /**
      * Overwrites the current schedule with the input save state.
-     * @param saveState
      */
     async fromScheduleSaveState(saveState: ScheduleSaveState) {
         this.addUndoState();
+
         try {
             this.schedules.length = 0;
             this.currentScheduleIndex = saveState.scheduleIndex;
@@ -538,9 +566,11 @@ export class Schedules {
 
     getCurrentScheduleNote() {
         const scheduleNoteId = this.schedules[this.currentScheduleIndex]?.scheduleNoteId;
-        if (scheduleNoteId === undefined) {
+
+        if (scheduleNoteId == null) {
             return '';
         }
+
         return this.scheduleNoteMap[scheduleNoteId];
     }
 

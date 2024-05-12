@@ -1,73 +1,92 @@
 import { type } from 'arktype';
-import {
-    LegacyUserSchema,
-    LegacyUserData,
-    UserSchema,
-    ScheduleSaveState,
-    RepeatingCustomEventSchema,
-    ShortCourseSchema,
-} from '@packages/antalmanac-types';
+import { UserSchema } from '@packages/antalmanac-types';
 import { router, procedure } from '../trpc';
-import { getById, insertById } from '../db/ddb';
-import LegacyUserModel from '../models/User';
+import { ddbClient, VISIBILITY } from '../db/ddb';
+import { TRPCError } from '@trpc/server';
 
-import connectToMongoDB from '../db/mongodb';
+const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
 
-export function convertLegacySchedule(legacyUserData: LegacyUserData) {
-    const scheduleSaveState: ScheduleSaveState = { schedules: [], scheduleIndex: 0 };
-    for (const scheduleName of legacyUserData.scheduleNames) {
-        scheduleSaveState.schedules.push({
-            scheduleName: scheduleName,
-            courses: [],
-            customEvents: [],
-            scheduleNote: '',
-        });
-    }
-    for (const course of legacyUserData.addedCourses) {
-        const { data, problems } = ShortCourseSchema(course);
-        if (data === undefined) {
-            console.log(problems);
-            continue;
-        }
-        for (const scheduleIndex of course.scheduleIndices) {
-            scheduleSaveState.schedules[scheduleIndex].courses.push(data);
-        }
-    }
-    for (const customEvent of legacyUserData.customEvents) {
-        for (const scheduleIndex of customEvent.scheduleIndices) {
-            const { data } = RepeatingCustomEventSchema(customEvent);
-            if (data !== undefined) {
-                scheduleSaveState.schedules[scheduleIndex].customEvents.push(data);
-            }
-        }
-    }
-    return scheduleSaveState;
-}
+const viewInputSchema = type({
+    /**
+     * ID of the user who's requesting to view another user's schedule.
+     */
+    requesterId: 'string',
 
-async function getLegacyUserData(userId: string) {
-    await connectToMongoDB();
-    const { data, problems } = LegacyUserSchema(await LegacyUserModel.findById(userId));
-    if (problems !== undefined) {
-        return undefined;
-    }
-    const legacyUserData = data?.userData;
-    return legacyUserData ? { id: userId, userData: convertLegacySchedule(legacyUserData) } : undefined;
-}
+    /**
+     * ID of the user whose schedule is being requested.
+     */
+    requesteeId: 'string',
+});
 
-async function getUserData(userId: string) {
-    const { data: userData, problems } = UserSchema(await getById(userId));
-    if (problems !== undefined) {
-        return undefined;
-    }
-    return userData;
-}
+const saveInputSchema = type({
+    /**
+     * ID of the requester.
+     */
+    id: 'string',
+
+    /**
+     * Schedule data being saved.
+     *
+     * The ID of the requester and user ID in the schedule data may differ,
+     * i.e. if the user is editing and saving another user's schedule.
+     */
+    data: UserSchema,
+});
 
 const usersRouter = router({
-    getUserData: procedure.input(type({ userId: 'string' }).assert).query(async ({ input }) => {
-        return (await getUserData(input.userId)) ?? (await getLegacyUserData(input.userId));
+    /**
+     * Loads schedule data for a user that's logged in.
+     */
+    getUserData: procedure.input(userInputSchema.assert).query(async ({ input }) => {
+        if ('googleId' in input) {
+            return await ddbClient.getGoogleUserData(input.googleId);
+        }
+        return (await ddbClient.getUserData(input.userId)) ?? (await ddbClient.getLegacyUserData(input.userId));
     }),
-    saveUserData: procedure.input(UserSchema.assert).mutation(async ({ input }) => {
-        await insertById(input.id, input.userData);
+
+    /**
+     * Loads schedule data for a user that's logged in.
+     */
+    saveUserData: procedure.input(saveInputSchema.assert).mutation(async ({ input }) => {
+        /**
+         * Assign default visility value.
+         */
+        input.data.visibility ??= VISIBILITY.PRIVATE;
+
+        // Requester and requestee IDs must match if schedule is private.
+
+        if (input.data.visibility === VISIBILITY.PRIVATE && input.id !== input.data.id) {
+            throw new TRPCError({
+                code: 'UNAUTHORIZED',
+                message: 'Schedule is private and user ID does not match.',
+            });
+        }
+
+        // Requester and requestee IDs must match if schedule is public (read-only).
+
+        if (input.data.visibility === VISIBILITY.PUBLIC && input.id !== input.data.id) {
+            throw new TRPCError({
+                code: 'UNAUTHORIZED',
+                message: 'Schedule is public and user ID does not match.',
+            });
+        }
+
+        // Schedule is open, or requester user ID and schedule's user ID match.
+
+        await ddbClient.insertItem(input.data);
+    }),
+
+    /**
+     * Users can view other users' schedules, even anonymously.
+     * Visibility permissions are used to determine if a user can view another user's schedule.
+     *
+     * Visibility values:
+     * - (default) private: Only the owner can view and edit.
+     * - public: Other users can view, but can't edit, i.e. "read-only".
+     * - open: Anybody can view and edit.
+     */
+    viewUserData: procedure.input(viewInputSchema.assert).query(async ({ input }) => {
+        return await ddbClient.viewUserData(input.requesterId, input.requesteeId);
     }),
 });
 

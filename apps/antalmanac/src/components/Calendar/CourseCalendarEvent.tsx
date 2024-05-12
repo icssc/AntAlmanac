@@ -1,22 +1,23 @@
-import { Link } from 'react-router-dom';
 import { Chip, IconButton, Paper, Tooltip } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
-import { Event } from 'react-big-calendar';
 import { useEffect, useRef, useCallback } from 'react';
+import { Event } from 'react-big-calendar';
+import { Link } from 'react-router-dom';
 
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
+
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import buildingCatalogue from '$lib/buildingCatalogue';
 import { clickToCopy } from '$lib/helpers';
-import AppStore from '$stores/AppStore';
 import locationIds from '$lib/location_ids';
+import AppStore from '$stores/AppStore';
+import { useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
-import { useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
-import buildingCatalogue from '$lib/buildingCatalogue';
 
 const styles: Styles<Theme, object> = {
     courseContainer: {
@@ -213,6 +214,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         <IconButton
                             size="small"
                             onClick={() => {
+                                props.closePopover();
                                 deleteCourse(sectionCode, term);
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
@@ -303,7 +305,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             to={`/map?location=${building ?? 0}`}
                             onClick={focusMap}
                         >
-                            {buildingCatalogue[+building].name}
+                            {buildingCatalogue[+building]?.name ?? ''}
                         </Link>
                     </div>
                 )}

@@ -5,11 +5,13 @@ import { Tune } from '@material-ui/icons';
 import { FormEvent, useState } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
+
 import FuzzySearch from './FuzzySearch';
 import HelpBox from './HelpBox';
 import LegacySearch from './LegacySearch';
 import PrivacyPolicyBanner from './PrivacyPolicyBanner';
 import TermSelector from './TermSelector';
+
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import useCoursePaneStore from '$stores/CoursePaneStore';
 
@@ -50,6 +52,7 @@ const styles: Styles<Theme, object> = {
 const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) => {
     const { classes, toggleSearch } = props;
     const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
+    const [helpBoxVisibility, setHelpBoxVisibility] = useState(true);
 
     const onFormSubmit = (event: FormEvent) => {
         event.preventDefault();
@@ -57,7 +60,21 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
     };
 
     const currentMonthIndex = new Date().getMonth(); // 0=Jan
-    const activeMonthIndices = [false, false, false, false, false, false, false, false, true, true, false, false];
+    // Active months: February/March for Spring planning, May/June for Fall planning, July/August for Summer planning,
+    // and November/December for Winter planning
+    const activeMonthIndices = [false, true, true, false, true, true, true, true, false, false, true, true];
+
+    // Display the help box only if more than 30 days has passed since the last dismissal and
+    // the current month is an active month
+    const helpBoxDismissalTime = window.localStorage.getItem('helpBoxDismissalTime');
+    const dismissedRecently =
+        helpBoxDismissalTime !== null && Date.now() - parseInt(helpBoxDismissalTime) < 30 * 24 * 3600 * 1000;
+    const displayHelpBox = helpBoxVisibility && !dismissedRecently && activeMonthIndices[currentMonthIndex];
+
+    const onHelpBoxDismiss = () => {
+        window.localStorage.setItem('helpBoxDismissalTime', Date.now().toString());
+        setHelpBoxVisibility(false);
+    };
 
     return (
         <div className={classes.rightPane}>
@@ -95,7 +112,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                 </div>
             </form>
 
-            {activeMonthIndices[currentMonthIndex] && <HelpBox />}
+            {displayHelpBox && <HelpBox onDismiss={onHelpBoxDismiss} />}
             <PrivacyPolicyBanner />
         </div>
     );

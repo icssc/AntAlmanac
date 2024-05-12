@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import useColumnStore from './ColumnStore';
 
 interface TabStore {
     activeTab: number;
@@ -16,13 +15,6 @@ export const useTabStore = create<TabStore>((set) => {
             set(() => ({
                 activeTab: newTab,
             }));
-            // Disable GPA column on the Added tab because we'd have to query them individually
-            // A column needs to be enabled and selected to be displayed
-            if (newTab == 1) {
-                useColumnStore.getState().setColumnEnabled('gpa', false);
-            } else {
-                useColumnStore.getState().setColumnEnabled('gpa', true);
-            }
         },
     };
 });

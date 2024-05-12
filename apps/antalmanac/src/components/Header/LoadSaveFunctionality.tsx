@@ -6,17 +6,19 @@ import {
     DialogContentText,
     DialogTitle,
     TextField,
+    CircularProgress,
+    Checkbox,
+    FormControlLabel,
 } from '@material-ui/core';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { CloudDownload, Save } from '@material-ui/icons';
+import { LoadingButton } from '@mui/lab';
 import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
 
-import { LoadingButton } from '@mui/lab';
+import actionTypesStore from '$actions/ActionTypesStore';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
-import { useThemeStore } from '$stores/SettingsStore';
-import AppStore from '$stores/AppStore';
 import { getLocalStorageUserId } from '$lib/localStorage';
+import AppStore from '$stores/AppStore';
+import { useThemeStore } from '$stores/SettingsStore';
 
 interface LoadSaveButtonBaseProps {
     action: typeof saveSchedule;
@@ -31,6 +33,21 @@ interface LoadSaveButtonBaseState {
     isOpen: boolean;
     userID: string;
     rememberMe: boolean;
+}
+
+interface SaveLoadIconProps {
+    loading: boolean;
+    actionName: 'Save' | 'Load';
+}
+
+function SaveLoadIcon(props: SaveLoadIconProps) {
+    return props.loading ? (
+        <CircularProgress size={20} color="inherit" />
+    ) : props.actionName === 'Save' ? (
+        <Save />
+    ) : (
+        <CloudDownload />
+    );
 }
 
 class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSaveButtonBaseState> {
@@ -93,9 +110,9 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                     id={this.props.id}
                     onClick={this.handleOpen}
                     color="inherit"
-                    startIcon={this.props.actionName === 'Save' ? <Save /> : <CloudDownload />}
+                    startIcon={<SaveLoadIcon loading={this.props.loading} actionName={this.props.actionName} />}
                     disabled={this.props.disabled}
-                    loading={this.props.loading}
+                    loading={false}
                 >
                     {this.props.actionName}
                 </LoadingButton>
@@ -148,12 +165,19 @@ const LoadSaveScheduleFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
 
     const [loading, setLoading] = useState(false);
+    const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const loadScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
         setLoading(true);
         await loadSchedule(userID, rememberMe);
         setLoading(false);
+    };
+
+    const saveScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
+        setSaving(true);
+        await saveSchedule(userID, rememberMe);
+        setSaving(false);
     };
 
     useEffect(() => {
@@ -179,14 +203,27 @@ const LoadSaveScheduleFunctionality = () => {
         }
     }, []);
 
+    useEffect(() => {
+        const handleAutoSaveStart = () => setSaving(true);
+        const handleAutoSaveEnd = () => setSaving(false);
+
+        actionTypesStore.on('autoSaveStart', handleAutoSaveStart);
+        actionTypesStore.on('autoSaveEnd', handleAutoSaveEnd);
+
+        return () => {
+            actionTypesStore.off('autoSaveStart', handleAutoSaveStart);
+            actionTypesStore.off('autoSaveEnd', handleAutoSaveEnd);
+        };
+    }, []);
+
     return (
-        <div id="load-save-container">
+        <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
             <LoadSaveButtonBase
                 id="save-button"
                 actionName={'Save'}
-                action={saveSchedule}
+                action={saveScheduleAndSetLoading}
                 disabled={loading}
-                loading={false}
+                loading={saving}
                 colorType={isDark ? 'secondary' : 'primary'}
             />
             <LoadSaveButtonBase

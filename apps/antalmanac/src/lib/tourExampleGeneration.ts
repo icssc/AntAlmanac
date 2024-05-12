@@ -6,6 +6,7 @@ import {
     WebsocSectionMeeting,
     daysOfWeek,
 } from 'peterportal-api-next-types';
+
 import AppStore from '$stores/AppStore';
 
 const CURRENT_TERM = '2024 Winter'; // TODO: Check the current term when that PR's in
@@ -98,7 +99,7 @@ export function addSampleClasses() {
 }
 
 export function removeSampleClasses() {
-    AppStore.deleteCourses(sampleClassesSectionCodes, CURRENT_TERM);
+    AppStore.deleteCourses(sampleClassesSectionCodes, CURRENT_TERM, false);
     sampleClassesSectionCodes = [];
 }
 

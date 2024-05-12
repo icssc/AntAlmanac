@@ -1,11 +1,20 @@
-import { useCallback, useState } from 'react';
-import { Box, Button, ButtonGroup, Drawer, IconButton, Switch, Typography, useMediaQuery } from '@material-ui/core';
-import { Divider, Stack, Tooltip } from '@mui/material';
+import { Box, Button, ButtonGroup, Drawer, Switch, Typography, useMediaQuery } from '@material-ui/core';
 import { CSSProperties } from '@material-ui/core/styles/withStyles';
-import { Close, DarkMode, Help, LightMode, Settings, SettingsBrightness } from '@mui/icons-material';
+import { Close, DarkMode, Help, LightMode, SettingsBrightness } from '@mui/icons-material';
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
+import { Divider, Stack, Tooltip } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import { useCallback, useState } from 'react';
 
-import { usePreviewStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
-import useCoursePaneStore from '$stores/CoursePaneStore';
+import { AboutButtonGroup } from './AboutButtonGoup';
+import Export from './Export';
+import Import from './Import';
+
+import actionTypesStore from '$actions/ActionTypesStore';
+import { autoSaveSchedule } from '$actions/AppStoreActions';
+import appStore from '$stores/AppStore';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',
@@ -38,7 +47,7 @@ function ThemeMenu() {
 
     return (
         <Box sx={{ padding: '0 1rem', width: '100%' }}>
-            <Typography variant="h6" style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
+            <Typography variant="h6" style={{ marginBottom: '1rem' }}>
                 Theme
             </Typography>
 
@@ -141,15 +150,30 @@ function TimeMenu() {
 
 function ExperimentalMenu() {
     const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
+    const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
 
     const handlePreviewChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPreviewMode(event.target.checked);
     };
 
+    const handleAutoSaveChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        setAutoSave(event.target.checked);
+
+        if (!event.target.checked) return;
+
+        const savedUserID = window.localStorage.getItem('userID');
+
+        if (!savedUserID) return;
+        actionTypesStore.emit('autoSaveStart');
+        await autoSaveSchedule(savedUserID);
+        appStore.unsavedChanges = false;
+        actionTypesStore.emit('autoSaveEnd');
+    };
+
     return (
-        <Stack sx={{ padding: '1rem 1rem 0 1rem', width: '100%', display: 'flex' }} alignItems="middle">
-            <Box display="flex" justifyContent="space-between" width={1}>
-                <Box display="flex" alignItems="center" style={{ gap: 4 }}>
+        <Stack sx={{ padding: '1rem 1rem 0 1rem', width: '100%', display: 'flex', alignItems: 'middle' }}>
+            <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
+                <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
                         Hover to Preview
                     </Typography>
@@ -157,13 +181,58 @@ function ExperimentalMenu() {
                         <Help />
                     </Tooltip>
                 </Box>
-                <Switch color="primary" value={previewMode} checked={previewMode} onChange={handlePreviewChange} />
+                <Switch color={'primary'} value={previewMode} checked={previewMode} onChange={handlePreviewChange} />
+            </Box>
+
+            <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
+                <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
+                        Auto Save
+                    </Typography>
+                    <Tooltip title={<Typography>Auto Save your schedule!</Typography>}>
+                        <Help />
+                    </Tooltip>
+                </Box>
+                <Switch color={'primary'} value={autoSave} checked={autoSave} onChange={handleAutoSaveChange} />
             </Box>
         </Stack>
     );
 }
 
 function SettingsMenu() {
+    return (
+        <Box>
+            <ThemeMenu />
+            <TimeMenu />
+
+            <Divider style={{ marginTop: '16px' }}>
+                <Typography variant="subtitle2">Experimental Features</Typography>
+            </Divider>
+
+            <ExperimentalMenu />
+        </Box>
+    );
+}
+
+function MobileImportExportButtonGroup() {
+    return (
+        <ButtonGroup
+            size="large"
+            style={{
+                display: 'flex',
+                justifyContent: 'space-evenly',
+                alignItems: 'center',
+                width: '100%',
+                borderColor: 'unset',
+            }}
+        >
+            <Import />
+            <Export />
+        </ButtonGroup>
+    );
+}
+
+function AppDrawer() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const isMobileScreen = useMediaQuery('(max-width:750px)');
 
@@ -177,9 +246,9 @@ function SettingsMenu() {
 
     return (
         <>
-            <Button onClick={handleDrawerOpen} color="inherit" startIcon={<Settings />}>
-                Settings
-            </Button>
+            <IconButton onClick={handleDrawerOpen} color="inherit" size="large" style={{ padding: '4px' }}>
+                <MenuRoundedIcon fontSize="inherit" />
+            </IconButton>
             <Drawer
                 anchor="right"
                 open={drawerOpen}
@@ -187,36 +256,40 @@ function SettingsMenu() {
                 PaperProps={{ style: { borderRadius: '10px 0 0 10px' } }}
                 variant="temporary"
             >
-                <Box style={{ width: isMobileScreen ? '300px' : '360px' }}>
+                <Box style={{ width: isMobileScreen ? '300px' : '360px', height: '100%' }}>
                     <Box
                         sx={{
                             display: 'flex',
                             flexDirection: 'row',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            padding: '12px',
+                            alignItems: 'end',
+                            paddingTop: '8px',
+                            paddingRight: '12px',
                         }}
                     >
-                        <Typography variant="h6">Settings</Typography>
-                        <IconButton size="medium" onClick={handleDrawerClose}>
+                        <IconButton size="large" onClick={handleDrawerClose} style={{ marginLeft: 'auto' }}>
                             <Close fontSize="inherit" />
                         </IconButton>
                     </Box>
 
-                    <Divider />
+                    {isMobileScreen ? (
+                        <>
+                            <Divider style={{ marginBottom: '16px' }} />
+                            <MobileImportExportButtonGroup />
+                            <Divider style={{ marginTop: '12px', marginBottom: '16px' }}>
+                                <Typography variant="subtitle2">Settings</Typography>
+                            </Divider>
+                        </>
+                    ) : null}
 
-                    <ThemeMenu />
-                    <TimeMenu />
+                    <SettingsMenu />
 
-                    <Divider style={{ marginTop: '16px' }}>
-                        <Typography variant="subtitle2">Experimental Features</Typography>
-                    </Divider>
-
-                    <ExperimentalMenu />
+                    <Box sx={{ padding: '1.5rem', width: '100%', bottom: 0, position: 'absolute' }}>
+                        <AboutButtonGroup />
+                    </Box>
                 </Box>
             </Drawer>
         </>
     );
 }
 
-export default SettingsMenu;
+export default AppDrawer;

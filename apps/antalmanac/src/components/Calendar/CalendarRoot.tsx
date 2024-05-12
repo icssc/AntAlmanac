@@ -8,11 +8,12 @@ import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calen
 
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
+
+import locationIds from '$lib/location_ids';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
-import locationIds from '$lib/location_ids';
-import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useHoveredStore } from '$stores/HoveredStore';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 
 const localizer = momentLocalizer(moment);
 
@@ -80,14 +81,18 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
     const { isMilitaryTime } = useTimeFormatStore();
-    const { hoveredCourseEvents } = useHoveredStore();
+    const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore((store) => [
+        store.hoveredCalendarizedCourses,
+        store.hoveredCalendarizedFinal,
+    ]);
 
     const getEventsForCalendar = (): CalendarEvent[] => {
-        return showFinalsSchedule
-            ? finalsEventsInCalendar
-            : hoveredCourseEvents
-              ? [...eventsInCalendar, ...hoveredCourseEvents]
-              : eventsInCalendar;
+        if (showFinalsSchedule)
+            return hoveredCalendarizedFinal
+                ? [...finalsEventsInCalendar, hoveredCalendarizedFinal]
+                : finalsEventsInCalendar;
+        else
+            return hoveredCalendarizedCourses ? [...eventsInCalendar, ...hoveredCalendarizedCourses] : eventsInCalendar;
     };
 
     const handleClosePopover = () => {
@@ -165,8 +170,11 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
 
     const onlyCourseEvents = eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[];
 
-    const finalsDate =
-        onlyCourseEvents.length > 0 ? getFinalsStartDateForTerm(onlyCourseEvents[0].term) : getDefaultFinalsStartDate();
+    const finalsDate = hoveredCalendarizedFinal
+        ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
+        : onlyCourseEvents.length > 0
+          ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
+          : getDefaultFinalsStartDate();
 
     const finalsDateFormat = finalsDate ? 'ddd MM/DD' : 'ddd';
     const date = showFinalsSchedule && finalsDate ? finalsDate : new Date(2018, 0, 1);
@@ -278,6 +286,7 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
                     step={15}
                     timeslots={2}
                     date={date}
+                    onNavigate={() => undefined}
                     min={getStartTime()}
                     max={new Date(2018, 0, 1, 23)}
                     events={events}
