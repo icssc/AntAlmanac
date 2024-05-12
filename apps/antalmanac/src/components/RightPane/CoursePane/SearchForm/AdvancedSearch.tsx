@@ -18,6 +18,7 @@ import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
+
 import { getLocalStorageAdvanced, setLocalStorageAdvanced } from '$lib/localStorage';
 
 const styles: Styles<Theme, object> = {

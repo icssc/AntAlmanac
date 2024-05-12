@@ -1,12 +1,13 @@
-import { describe, expect, test } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
+import { describe, expect, test } from 'vitest';
+
 import PatchNotes, {
     latestPatchNotesUpdate,
     closeButtonTestId,
     dialogTestId,
     backdropTestId,
 } from '$components/PatchNotes';
-import { LocalStorageKeys, getLocalStorageItem, setLocalStorageItem } from '$lib/localStorage';
+import { getLocalStoragePatchNotesKey, setLocalStoragePatchNotesKey } from '$lib/localStorage';
 
 describe('patch notes', () => {
     /**
@@ -16,7 +17,7 @@ describe('patch notes', () => {
 
     describe('patch notes displays appropriately', () => {
         test('displays when latest patch notes is outdated ', () => {
-            setLocalStorageItem(LocalStorageKeys.patchNotesKey, outdatedPatchNotes);
+            setLocalStoragePatchNotesKey(outdatedPatchNotes);
 
             render(<PatchNotes />);
 
@@ -24,7 +25,7 @@ describe('patch notes', () => {
         });
 
         test('no display when latest patch notes is up to date', () => {
-            setLocalStorageItem(LocalStorageKeys.patchNotesKey, latestPatchNotesUpdate);
+            setLocalStoragePatchNotesKey(latestPatchNotesUpdate);
 
             render(<PatchNotes />);
 
@@ -34,7 +35,7 @@ describe('patch notes', () => {
 
     describe('close patch notes with button', () => {
         test('clicking the button closes the dialog', () => {
-            setLocalStorageItem(LocalStorageKeys.patchNotesKey, outdatedPatchNotes);
+            setLocalStoragePatchNotesKey(outdatedPatchNotes);
 
             render(<PatchNotes />);
 
@@ -46,7 +47,7 @@ describe('patch notes', () => {
         });
 
         test('the latest patch notes is saved to local storage', () => {
-            setLocalStorageItem(LocalStorageKeys.patchNotesKey, outdatedPatchNotes);
+            setLocalStoragePatchNotesKey(outdatedPatchNotes);
 
             render(<PatchNotes />);
 
@@ -54,13 +55,13 @@ describe('patch notes', () => {
                 screen.getByTestId(closeButtonTestId).click();
             });
 
-            expect(getLocalStorageItem(LocalStorageKeys.patchNotesKey)).toEqual(latestPatchNotesUpdate);
+            expect(getLocalStoragePatchNotesKey()).toEqual(latestPatchNotesUpdate);
         });
     });
 
     describe('closing the dialog by clicking the backdrop ', () => {
         test('clicking the backdrop closes the dialog', () => {
-            setLocalStorageItem(LocalStorageKeys.patchNotesKey, outdatedPatchNotes);
+            setLocalStoragePatchNotesKey(outdatedPatchNotes);
 
             render(<PatchNotes />);
 
@@ -74,7 +75,7 @@ describe('patch notes', () => {
         });
 
         test('the latest patch notes is saved to local storage', () => {
-            setLocalStorageItem(LocalStorageKeys.patchNotesKey, outdatedPatchNotes);
+            setLocalStoragePatchNotesKey(outdatedPatchNotes);
 
             render(<PatchNotes />);
 
@@ -82,7 +83,7 @@ describe('patch notes', () => {
                 screen.getByTestId(backdropTestId).click();
             });
 
-            expect(getLocalStorageItem(LocalStorageKeys.patchNotesKey)).toEqual(latestPatchNotesUpdate);
+            expect(getLocalStoragePatchNotesKey()).toEqual(latestPatchNotesUpdate);
         });
     });
 });

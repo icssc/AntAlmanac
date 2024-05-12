@@ -2,9 +2,11 @@ import { create } from 'zustand';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import {
+    getLocalStorageAutoSave,
     getLocalStoragePreviewMode,
     getLocalStorageShow24HourTime,
     getLocalStorageTheme,
+    setLocalStorageAutoSave,
     setLocalStoragePreviewMode,
     setLocalStorageShow24HourTime,
     setLocalStorageTheme,
@@ -101,13 +103,13 @@ export interface AutoSaveStore {
 }
 
 export const useAutoSaveStore = create<AutoSaveStore>((set) => {
-    const autoSave = typeof Storage !== 'undefined' && window.localStorage.getItem('autoSave') == 'true';
+    const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() == 'true';
 
     return {
         autoSave,
         setAutoSave: (autoSave) => {
             if (typeof Storage !== 'undefined') {
-                window.localStorage.setItem('autoSave', autoSave.toString());
+                setLocalStorageAutoSave(autoSave.toString());
             }
             set({ autoSave });
         },

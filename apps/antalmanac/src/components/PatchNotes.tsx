@@ -1,4 +1,3 @@
-import { useCallback, useState } from 'react';
 import {
     Backdrop,
     type BackdropProps,
@@ -9,6 +8,8 @@ import {
     DialogTitle,
     Typography,
 } from '@mui/material';
+import { useCallback, useState } from 'react';
+
 import { getLocalStoragePatchNotesKey, setLocalStoragePatchNotesKey } from '$lib/localStorage';
 
 /**

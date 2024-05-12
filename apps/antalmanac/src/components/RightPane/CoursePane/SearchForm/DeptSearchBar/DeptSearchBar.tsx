@@ -5,7 +5,9 @@ import { Autocomplete } from '@material-ui/lab';
 import { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../../RightPaneStore';
+
 import depts from './depts';
+
 import { getLocalStorageFavorites, setLocalStorageFavorites } from '$lib/localStorage';
 
 const style = {

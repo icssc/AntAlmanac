@@ -3,6 +3,13 @@ import { EventEmitter } from 'events';
 import { RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
 
 import { autoSaveSchedule } from '$actions/AppStoreActions';
+import {
+    getLocalStorageAutoSave,
+    getLocalStorageUnsavedActions,
+    getLocalStorageUserId,
+    removeLocalStorageUnsavedActions,
+    setLocalStorageUnsavedActions,
+} from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 
 const MAX_UNSAVED_ACTIONS = 1000;
@@ -88,9 +95,9 @@ class ActionTypesStore extends EventEmitter {
     }
 
     async autoSaveSchedule(action: ActionType) {
-        const autoSave = typeof Storage !== 'undefined' && window.localStorage.getItem('autoSave') == 'true';
+        const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() == 'true';
         if (autoSave) {
-            const savedUserID = window.localStorage.getItem('userID');
+            const savedUserID = getLocalStorageUserId();
 
             if (savedUserID) {
                 this.emit('autoSaveStart');
@@ -99,27 +106,27 @@ class ActionTypesStore extends EventEmitter {
                 this.emit('autoSaveEnd');
             }
         } else {
-            const unsavedActionsString = window.localStorage.getItem('unsavedActions');
+            const unsavedActionsString = getLocalStorageUnsavedActions();
             if (unsavedActionsString == null) {
                 const unsavedActions = [action];
-                localStorage.setItem('unsavedActions', JSON.stringify(unsavedActions));
+                setLocalStorageUnsavedActions(JSON.stringify(unsavedActions));
             } else {
                 let unsavedActions = parseUnsavedActionsString(unsavedActionsString);
                 if (unsavedActions.length > MAX_UNSAVED_ACTIONS) {
                     unsavedActions = unsavedActions.slice(100);
                 }
                 unsavedActions.push(action);
-                localStorage.setItem('unsavedActions', JSON.stringify(unsavedActions));
+                setLocalStorageUnsavedActions(JSON.stringify(unsavedActions));
             }
         }
     }
 
     async loadScheduleFromLocalSave() {
-        const unsavedActionsString = window.localStorage.getItem('unsavedActions');
+        const unsavedActionsString = getLocalStorageUnsavedActions();
 
         if (unsavedActionsString == null) return;
         if (!confirm('You have unsaved changes. Would you like to load them?')) {
-            window.localStorage.removeItem('unsavedActions');
+            removeLocalStorageUnsavedActions();
             return;
         }
 

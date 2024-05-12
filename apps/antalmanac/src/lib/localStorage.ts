@@ -10,6 +10,9 @@ enum LocalStorageKeys {
     theme = 'theme',
     show24HourTime = 'show24HourTime',
     previewMode = 'previewMode',
+    autoSave = 'autoSave',
+    unsavedActions = 'unsavedActions',
+    helpBoxDismissalTime = 'helpBoxDismissalTime',
 }
 
 const LSK = LocalStorageKeys;
@@ -142,4 +145,43 @@ export function getLocalStoragePreviewMode() {
 
 export function removeLocalStoragePreviewMode() {
     window.localStorage.removeItem(LSK.previewMode);
+}
+
+// Helper functions for autoSave
+export function setLocalStorageAutoSave(value: string) {
+    window.localStorage.setItem(LSK.autoSave, value);
+}
+
+export function getLocalStorageAutoSave() {
+    return window.localStorage.getItem(LSK.autoSave);
+}
+
+export function removeLocalStorageAutoSave() {
+    window.localStorage.removeItem(LSK.autoSave);
+}
+
+// Helper functions for autoSave
+export function setLocalStorageUnsavedActions(value: string) {
+    window.localStorage.setItem(LSK.unsavedActions, value);
+}
+
+export function getLocalStorageUnsavedActions() {
+    return window.localStorage.getItem(LSK.unsavedActions);
+}
+
+export function removeLocalStorageUnsavedActions() {
+    window.localStorage.removeItem(LSK.unsavedActions);
+}
+
+// Helper functions for helpBoxDismissalTime
+export function setLocalStorageHelpBoxDismissalTime(value: string) {
+    window.localStorage.setItem(LSK.helpBoxDismissalTime, value);
+}
+
+export function getLocalStorageHelpBoxDismissalTime() {
+    return window.localStorage.getItem(LSK.helpBoxDismissalTime);
+}
+
+export function removeLocalStorageHelpBoxDismissalTime() {
+    window.localStorage.removeItem(LSK.helpBoxDismissalTime);
 }
