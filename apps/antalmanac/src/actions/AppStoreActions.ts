@@ -11,7 +11,7 @@ import { CourseDetails } from '$lib/course_data.types';
 import AppStore from '$stores/AppStore';
 import trpc from '$lib/api/trpc';
 import { courseNumAsDecimal } from '$lib/analytics';
-import { LocalStorageKeys, removeLocalStorageItem, setLocalStorageItem } from '$lib/localStorage';
+import { removeLocalStorageUserId, setLocalStorageUserId } from '$lib/localStorage';
 
 export interface CopyScheduleOptions {
     onSuccess: (index: number) => unknown;
@@ -77,9 +77,9 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
 
         if (userID.length > 0) {
             if (rememberMe) {
-                setLocalStorageItem(LocalStorageKeys.userId, userID);
+                setLocalStorageUserId(userID);
             } else {
-                removeLocalStorageItem(LocalStorageKeys.userId);
+                removeLocalStorageUserId();
             }
 
             const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
@@ -118,9 +118,9 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
         userId = userId.replace(/\s+/g, '');
         if (userId.length > 0) {
             if (rememberMe) {
-                setLocalStorageItem(LocalStorageKeys.userId, userId);
+                setLocalStorageUserId(userId);
             } else {
-                removeLocalStorageItem(LocalStorageKeys.userId);
+                removeLocalStorageUserId();
             }
 
             try {

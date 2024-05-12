@@ -20,7 +20,7 @@ import analyticsEnum from '$lib/analytics';
 import { openSnackbar } from '$actions/AppStoreActions';
 import WebSOC from '$lib/websoc';
 import { useHoveredStore } from '$stores/HoveredStore';
-import { LocalStorageKeys, getLocalStorageItem, setLocalStorageItem } from '$lib/localStorage';
+import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 
 function getColors() {
     const courseColors = AppStore.schedule.getCurrentCourses().reduce(
@@ -60,7 +60,7 @@ const RecruitmentBanner = () => {
     const isDark = useThemeStore((store) => store.isDark);
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
-    const recruitmentDismissalTime = getLocalStorageItem(LocalStorageKeys.recruitmentDismissalTime);
+    const recruitmentDismissalTime = getLocalStorageRecruitmentDismissalTime();
     const dismissedRecently =
         recruitmentDismissalTime !== null &&
         Date.now() - parseInt(recruitmentDismissalTime) < 11 * 7 * 24 * 3600 * 1000;
@@ -83,7 +83,7 @@ const RecruitmentBanner = () => {
                             size="small"
                             color="inherit"
                             onClick={() => {
-                                setLocalStorageItem(LocalStorageKeys.recruitmentDismissalTime, Date.now().toString());
+                                setLocalStorageRecruitmentDismissalTime(Date.now().toString());
                                 setBannerVisibility(false);
                             }}
                         >

@@ -1,5 +1,5 @@
 import { StepType } from '@reactour/tour';
-import { LocalStorageKeys, getLocalStorageItem, setLocalStorageItem } from './localStorage';
+import { getLocalStorageTourHasRun, getLocalStorageUserId, setLocalStorageTourHasRun } from './localStorage';
 import useTabStore from '$stores/TabStore';
 import { addSampleClasses } from '$lib/tourExampleGeneration';
 
@@ -21,15 +21,15 @@ export enum TourStepName {
 export const tourStepNames = Object.values(TourStepName);
 
 function markTourHasRun() {
-    setLocalStorageItem(LocalStorageKeys.tourHasRun, 'true');
+    setLocalStorageTourHasRun('true');
 }
 
 /** Only run tour if it hasn't run before, we're on desktop, and there isn't a user ID saved */
 export function tourShouldRun(): boolean {
     return !(
-        getLocalStorageItem(LocalStorageKeys.tourHasRun) == 'true' ||
+        getLocalStorageTourHasRun() == 'true' ||
         window.matchMedia('(max-width: 768px)').matches ||
-        getLocalStorageItem(LocalStorageKeys.userId) != null
+        getLocalStorageUserId() != null
     );
 }
 

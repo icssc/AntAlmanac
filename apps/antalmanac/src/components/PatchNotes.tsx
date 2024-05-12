@@ -9,7 +9,7 @@ import {
     DialogTitle,
     Typography,
 } from '@mui/material';
-import { LocalStorageKeys, getLocalStorageItem, setLocalStorageItem } from '$lib/localStorage';
+import { getLocalStoragePatchNotesKey, setLocalStoragePatchNotesKey } from '$lib/localStorage';
 
 /**
  * Show modal only if the current patch notes haven't been shown.
@@ -23,7 +23,7 @@ export const latestPatchNotesUpdate = '20230819';
  * Whether the user's last visited patch notes is outdated.
  */
 function isOutdated() {
-    return getLocalStorageItem(LocalStorageKeys.patchNotesKey) != latestPatchNotesUpdate;
+    return getLocalStoragePatchNotesKey() != latestPatchNotesUpdate;
 }
 
 /**
@@ -40,7 +40,7 @@ function PatchNotes() {
     const [open, setOpen] = useState(isOutdated());
 
     const handleClose = useCallback(() => {
-        setLocalStorageItem(LocalStorageKeys.patchNotesKey, latestPatchNotesUpdate);
+        setLocalStoragePatchNotesKey(latestPatchNotesUpdate);
         setOpen(false);
     }, []);
 
