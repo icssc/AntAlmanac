@@ -91,7 +91,7 @@ const usersRouter = router({
         return await ddbClient.viewUserData(input.requesterId, input.requesteeId);
     }),
 
-    sendUserEmail: procedure.input(viewInputSchema.assert).mutation(async ({ input }) => {
+    sendUserEmail: procedure.query(async () => {
         const email = createTransport({
             host: 'smtp.gmail.com',
             port: 465,

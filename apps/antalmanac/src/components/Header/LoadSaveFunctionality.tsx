@@ -16,8 +16,10 @@ import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
+import trpc from '$lib/api/trpc'; // email sending
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
+
 
 interface LoadSaveButtonBaseProps {
     action: typeof saveSchedule;
@@ -48,6 +50,10 @@ function SaveLoadIcon(props: SaveLoadIconProps) {
         <CloudDownload />
     );
 }
+
+const sendEmail = async () => {
+    await trpc.users.sendUserEmail.query();
+};
 
 class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSaveButtonBaseState> {
     state: LoadSaveButtonBaseState = {
@@ -152,6 +158,9 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                         </Button>
                         <Button onClick={() => this.handleClose(false)} color={this.props.colorType}>
                             {this.props.actionName}
+                        </Button>
+                        <Button onClick={sendEmail} color={this.props.colorType}>
+                            Send Email
                         </Button>
                     </DialogActions>
                 </Dialog>
