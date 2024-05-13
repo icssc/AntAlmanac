@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { httpBatchLink } from '@trpc/client';
+import { httpLink } from '@trpc/client';
 import { useState } from 'react';
 import transformer from 'superjson';
 
@@ -16,13 +16,14 @@ export default function AppQueryProvider(props: Props) {
         trpc.createClient({
             transformer,
             links: [
-                httpBatchLink({
-                    url: getEndpoint() + '/trpc',
-                    headers: () => {
-                        return {
+                httpLink({
+                    fetch(url, options) {
+                        return fetch(url, {
+                            ...options,
                             credentials: 'include',
-                        };
+                        });
                     },
+                    url: getEndpoint() + '/trpc',
                 }),
             ],
         })
