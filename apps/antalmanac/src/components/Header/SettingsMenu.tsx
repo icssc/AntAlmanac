@@ -251,16 +251,6 @@ function AppDrawer() {
                         </IconButton>
                     </Box>
 
-                    {/* {isMobileScreen ? (
-                        <>
-                            <Divider style={{ marginBottom: '16px' }} />
-                            <MobileImportExportButtonGroup />
-                            <Divider style={{ marginTop: '12px', marginBottom: '16px' }}>
-                                <Typography variant="subtitle2">Settings</Typography>
-                            </Divider>
-                        </>
-                    ) : null} */}
-
                     <SettingsMenu />
 
                     <Box sx={{ padding: '1.5rem', width: '100%', bottom: 0, position: 'absolute' }}>
