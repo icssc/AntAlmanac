@@ -13,7 +13,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 
 import { changeCurrentSchedule, clearSchedules, undoDelete } from '$actions/AppStoreActions';
-import ExportCalendarButton from '$components/buttons/ExportCalendar';
+import DownloadButton from '$components/buttons/Download';
 import ScreenshotButton from '$components/buttons/Screenshot';
 import AddScheduleDialog from '$components/dialogs/AddSchedule';
 import CopyScheduleDialog from '$components/dialogs/CopySchedule';
@@ -350,7 +350,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
             <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
                 <ScreenshotButton />
 
-                <ExportCalendarButton />
+                <DownloadButton />
 
                 <Tooltip title="Undo last action">
                     <IconButton onClick={handleUndo} size="medium" disabled={skeletonMode}>
