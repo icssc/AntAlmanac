@@ -2,7 +2,6 @@ import { AppBar, Toolbar, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
-import Export from './Export';
 import Import from './Import';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import AppDrawer from './SettingsMenu';
@@ -52,14 +51,7 @@ const Header = ({ classes }: CustomAppBarProps) => {
 
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
                     <LoadSaveScheduleFunctionality />
-
-                    {isMobileScreen ? null : (
-                        <>
-                            <Import key="studylist" />
-                            <Export key="export" />
-                        </>
-                    )}
-
+                    <Import key="studylist" />
                     <AppDrawer key="settings" />
                 </div>
             </Toolbar>

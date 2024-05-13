@@ -1,3 +1,4 @@
+import { Add, Edit } from '@mui/icons-material';
 import {
     Button,
     Dialog,
@@ -9,8 +10,7 @@ import {
     InputLabel,
     TextField,
     Tooltip,
-} from '@material-ui/core';
-import { Add, Edit } from '@mui/icons-material';
+} from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -162,7 +162,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                 </Tooltip>
             ) : (
                 <Tooltip title="Add custom events">
-                    <IconButton disableRipple={true} onClick={handleOpen} size="medium" disabled={skeletonMode}>
+                    <IconButton onClick={handleOpen} size="medium" disabled={skeletonMode}>
                         <Add fontSize="small" />
                     </IconButton>
                 </Tooltip>

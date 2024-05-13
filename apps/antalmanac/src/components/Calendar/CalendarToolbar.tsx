@@ -13,6 +13,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 
 import { changeCurrentSchedule, clearSchedules, undoDelete } from '$actions/AppStoreActions';
+import ExportCalendarButton from '$components/buttons/ExportCalendar';
 import ScreenshotButton from '$components/buttons/Screenshot';
 import AddScheduleDialog from '$components/dialogs/AddSchedule';
 import CopyScheduleDialog from '$components/dialogs/CopySchedule';
@@ -346,28 +347,24 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
 
             <Box flexGrow={1} />
 
-            <Box display="flex" flexWrap="wrap" gap={0.5}>
-                <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
-                    <ScreenshotButton />
-                </Box>
+            <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
+                <ScreenshotButton />
 
-                <Box display="flex" alignItems="center" gap={0.5}>
-                    <Tooltip title="Undo last action">
-                        <IconButton onClick={handleUndo} size="medium" disabled={skeletonMode}>
-                            <UndoIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
+                <ExportCalendarButton />
 
-                    <Tooltip title="Clear schedule">
-                        <IconButton onClick={handleClearSchedule} size="medium" disabled={skeletonMode}>
-                            <DeleteIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
-                </Box>
+                <Tooltip title="Undo last action">
+                    <IconButton onClick={handleUndo} size="medium" disabled={skeletonMode}>
+                        <UndoIcon fontSize="small" />
+                    </IconButton>
+                </Tooltip>
 
-                <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
-                    <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
-                </Box>
+                <Tooltip title="Clear schedule">
+                    <IconButton onClick={handleClearSchedule} size="medium" disabled={skeletonMode}>
+                        <DeleteIcon fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+
+                <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
             </Box>
         </Paper>
     );
