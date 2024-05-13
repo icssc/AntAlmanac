@@ -7,18 +7,23 @@ import createContext from './context';
 import env from './env';
 // import connectToMongoDB from '$db/mongodb';
 
-const corsOptions: CorsOptions = {
-    origin: ['https://antalmanac.com', 'https://www.antalmanac.com', 'https://icssc-projects.github.io/AntAlmanac'],
-};
-
 const MAPBOX_API_URL = 'https://api.mapbox.com';
 
 const PORT = 3000;
 
+const origins = ['https://antalmanac.com', 'https://www.antalmanac.com', 'https://icssc-projects.github.io/AntAlmanac'];
+
 export async function start(corsEnabled = false) {
+    const corsOptions: CorsOptions = {
+        credentials: true,
+        origin: corsEnabled ? origins : true,
+    };
+
     // await connectToMongoDB();
     const app = express();
-    app.use(cors(corsEnabled ? corsOptions : undefined));
+
+    app.use(cors(corsOptions));
+
     app.use(express.json());
 
     app.use('/mapbox/directions/*', async (req, res) => {
@@ -38,10 +43,6 @@ export async function start(corsEnabled = false) {
         const buffer = await fetch(url).then((res) => res.arrayBuffer());
         res.type('image/png');
         res.send(Buffer.from(buffer));
-        // // res.header('Content-Security-Policy', "img-src 'self'"); // https://stackoverflow.com/questions/56386307/loading-of-a-resource-blocked-by-content-security-policy
-        // // res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
-        // res.type('image/png')
-        // res.send(result)
     });
 
     app.use(
