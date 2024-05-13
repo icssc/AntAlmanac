@@ -1,6 +1,6 @@
 import type { Type } from 'arktype';
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
-import { DynamoDB } from '@aws-sdk/client-dynamodb';
+import { DynamoDB, DescribeTableCommand } from '@aws-sdk/client-dynamodb';
 
 import {
     UserSchema,
@@ -137,6 +137,7 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
     }
 
     async getUserData(id: string) {
+        this.migrate();
         return (await ddbClient.get('id', id))?.userData;
     }
 
@@ -172,6 +173,29 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
             return parsedUserData.data;
         }
 
+    }
+
+    async migrate () {
+        const params = {
+            TableName: this.tableName,
+        }
+
+        const scanResults: string[] = [];
+        let items;
+
+        do {
+            items = await this.documentClient.scan(params);
+            if (items.Items) {
+                for (const item of items.Items) {
+                    const parsedItem = UserSchema(item);
+                    if (parsedItem.problems !== null && parsedItem.data) {
+                        scanResults.push(parsedItem.data.id);
+                    }
+                }
+            }
+        } while (typeof items.LastEvaluatedKey !== 'undefined');
+
+        console.log(scanResults);
     }
 }
 
