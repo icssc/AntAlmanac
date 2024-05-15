@@ -13,6 +13,7 @@ import {
     TextField,
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
+
 import { loadSchedule } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -34,6 +35,35 @@ export function LoadButton() {
         setLoading(false);
     };
 
+    const loadSavedSchedule = async () => {
+        if (typeof Storage !== 'undefined') {
+            const savedUserID = window.localStorage.getItem('userID');
+
+            if (savedUserID != null) {
+                void loadScheduleAndSetLoading(savedUserID, true);
+            }
+        }
+    };
+
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleSubmit = () => {
+        console.log('Submitting');
+    };
+
+    /**
+     * TODO: actually generate options.
+     */
+    const options = useMemo(() => {
+        return ['a', 'b', 'c'];
+    }, []);
+
     useEffect(() => {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
@@ -47,31 +77,7 @@ export function LoadButton() {
     }, []);
 
     useEffect(() => {
-        if (typeof Storage !== 'undefined') {
-            const savedUserID = window.localStorage.getItem('userID');
-
-            if (savedUserID != null) {
-                // this `void` is for eslint "no floating promises"
-                void loadScheduleAndSetLoading(savedUserID, true);
-            }
-        }
-    }, []);
-
-    const handleOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    const handleSubmit = () => {};
-
-    /**
-     * TODO: actually generate options.
-     */
-    const options = useMemo(() => {
-        return ['a', 'b', 'c'];
+        loadSavedSchedule();
     }, []);
 
     return (
@@ -92,7 +98,7 @@ export function LoadButton() {
                 <DialogContent>
                     <Stack gap={2}>
                         <DialogContentText>Enter a unique user ID here to view a schedule.</DialogContentText>
-                        
+
                         <Autocomplete
                             freeSolo
                             onInputChange={(_event, newValue) => {
