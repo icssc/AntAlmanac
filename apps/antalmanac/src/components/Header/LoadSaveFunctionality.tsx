@@ -225,14 +225,6 @@ const LoadSaveScheduleFunctionality = () => {
                 loading={saving}
                 colorType={isDark ? 'secondary' : 'primary'}
             />
-            <LoadSaveButtonBase
-                id="load-button"
-                actionName={'Load'}
-                action={loadScheduleAndSetLoading}
-                disabled={skeletonMode}
-                loading={loading}
-                colorType={isDark ? 'secondary' : 'primary'}
-            />
         </div>
     );
 };

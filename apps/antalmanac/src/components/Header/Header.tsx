@@ -7,6 +7,7 @@ import Import from './Import';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import LoginButton from './LoginButton';
 import AppDrawer from './SettingsMenu';
+import LoadButton from './LoadButton'
 
 import Logo from '$assets/logo.svg';
 import MobileLogo from '$assets/mobile-logo.svg';
@@ -53,6 +54,8 @@ const Header = ({ classes }: CustomAppBarProps) => {
 
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
                     <LoadSaveScheduleFunctionality />
+
+                    <LoadButton />
 
                     {isMobileScreen ? null : (
                         <>
