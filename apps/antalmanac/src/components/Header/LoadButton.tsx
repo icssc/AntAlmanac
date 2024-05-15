@@ -36,13 +36,13 @@ export function LoadButton() {
     };
 
     const loadSavedSchedule = async () => {
-        if (typeof Storage !== 'undefined') {
-            const savedUserID = window.localStorage.getItem('userID');
+        if (typeof Storage === 'undefined') return;
 
-            if (savedUserID != null) {
-                void loadScheduleAndSetLoading(savedUserID, true);
-            }
-        }
+        const savedUserID = window.localStorage.getItem('userID');
+
+        if (savedUserID == null) return;
+
+        await loadScheduleAndSetLoading(savedUserID, true);
     };
 
     const handleOpen = () => {
