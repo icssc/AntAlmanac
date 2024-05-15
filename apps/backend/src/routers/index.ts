@@ -47,6 +47,7 @@ const authRouter = router({
 
             // Set the auth cookie so the client can be recognized on future requests.
             const authCookie = jwt.sign({ googleId: context.input }, privateKey);
+
             context.ctx.res.cookie('auth', authCookie);
 
             return await ddbClient.getGoogleUserData(idToken.sub);
@@ -55,13 +56,12 @@ const authRouter = router({
         }
     }),
     loginUsername: procedure.input(type('string').assert).mutation(async (context) => {
-        // Set the auth cookie so the client can be recognized on future requests.
         const authCookie = jwt.sign({ username: context.input }, privateKey);
+
+        // Set the auth cookie so the client can be recognized on future requests.
         context.ctx.res.cookie('auth', authCookie, { maxAge: 1000 * 60 * 60, path: '/' });
 
-        console.log({ authCookie });
-
-        return await ddbClient.getUserData(context.input); // ?? (await ddbClient.getLegacyUserData(context.input));
+        return (await ddbClient.getUserData(context.input)) ?? (await ddbClient.getLegacyUserData(context.input));
     }),
 });
 

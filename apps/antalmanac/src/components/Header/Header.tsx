@@ -52,8 +52,6 @@ const Header = ({ classes }: CustomAppBarProps) => {
                 />
 
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    <LoginButton />
-
                     <LoadSaveScheduleFunctionality />
 
                     {isMobileScreen ? null : (
@@ -62,6 +60,8 @@ const Header = ({ classes }: CustomAppBarProps) => {
                             <Export key="export" />
                         </>
                     )}
+
+                    <LoginButton />
 
                     <AppDrawer key="settings" />
                 </div>

@@ -1,3 +1,4 @@
+import LoginIcon from '@mui/icons-material/Login';
 import {
     Box,
     Button,
@@ -109,8 +110,6 @@ export function LoginButton() {
             return;
         }
 
-        return;
-
         const response = await googleLoginMutation.mutateAsync(credential.credential);
 
         console.log('response: ', response);
@@ -122,7 +121,7 @@ export function LoginButton() {
 
     return (
         <>
-            <Button onClick={handleOpen} color="inherit">
+            <Button onClick={handleOpen} color="inherit" startIcon={<LoginIcon />}>
                 Login
             </Button>
             <Dialog onClose={handleClose} open={open}>
