@@ -8,6 +8,19 @@ import { createTransport } from 'nodemailer';
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
 
+const email = createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+    type: 'OAuth2',
+    user: env.GOOGLE_EMAIL,
+    clientId: env.GOOGLE_ID,
+    clientSecret: env.GOOGLE_SECRET,
+    refreshToken: env.GOOGLE_REFRESH_TOKEN,
+    },
+})
+
 const viewInputSchema = type({
     /**
      * ID of the user who's requesting to view another user's schedule.
@@ -92,23 +105,13 @@ const usersRouter = router({
     }),
 
     sendUserEmail: procedure.query(async () => {
-        const email = createTransport({
-            host: 'smtp.gmail.com',
-            port: 465,
-            secure: true,
-            auth: {
-            type: 'OAuth2',
-            user: env.GOOGLE_EMAIL,
-            clientId: env.GOOGLE_ID,
-            clientSecret: env.GOOGLE_SECRET,
-            refreshToken: env.GOOGLE_REFRESH_TOKEN,
-            },
-        })
-        email.sendMail({
-            to: 'rayantighiouartca@gmail.com', // which user? presumably input.userEmail or something
+        console.log("SENDING EMAIL")
+        const res = await email.sendMail({
+            to: 'rayantighiouartca@gmail.com', // presumably input.userEmail or something
             subject: 'Reset Password',
             text: `Reset your password`,
         })
+        console.log('rez', res);
     }),
 });
 
