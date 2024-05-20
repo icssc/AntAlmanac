@@ -1,8 +1,8 @@
 import { type } from 'arktype';
 import { UserSchema } from '@packages/antalmanac-types';
+import { TRPCError } from '@trpc/server';
 import { router, procedure } from '../trpc';
 import { ddbClient, VISIBILITY } from '../db/ddb';
-import { TRPCError } from '@trpc/server';
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
 
@@ -39,9 +39,18 @@ const usersRouter = router({
      */
     getUserData: procedure.input(userInputSchema.assert).query(async ({ input }) => {
         if ('googleId' in input) {
-            return await ddbClient.getGoogleUserData(input.googleId);
+            const user = await ddbClient.get('googleId', input.googleId);
+            if (user == null) return null;
+            return { id: user.id, visibility: user.visibility, userData: user.userData };
         }
-        return (await ddbClient.getUserData(input.userId)) ?? (await ddbClient.getLegacyUserData(input.userId));
+
+        const user = (await ddbClient.get('id', input.userId)) ?? (await ddbClient.getLegacyUserData(input.userId));
+
+        if (user == null) return null;
+
+        const visibility = 'visibility' in user ? user.visibility : undefined;
+
+        return { id: user.id, visibility, userData: user.userData };
     }),
 
     /**

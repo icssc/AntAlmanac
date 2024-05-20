@@ -9,8 +9,14 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
+    FormControl,
+    FormLabel,
+    FormControlLabel,
+    Radio,
+    RadioGroup,
     Stack,
     TextField,
+    Tooltip,
 } from '@mui/material';
 import { TRPCError } from '@trpc/server';
 import { useSnackbar } from 'notistack';
@@ -25,6 +31,8 @@ export function SaveButton() {
     const [open, setOpen] = useState(false);
 
     const [loading, setLoading] = useState(false);
+
+    const [visibility, setVisibility] = useState('public');
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
@@ -44,6 +52,10 @@ export function SaveButton() {
 
     const handleClose = () => {
         setOpen(false);
+    };
+
+    const handlevisibilityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setVisibility(e.target.value);
     };
 
     const handleSubmit = async () => {
@@ -83,6 +95,7 @@ export function SaveButton() {
                  */
                 data: {
                     id: normalizedUserId,
+                    visibility,
                     userData: scheduleSaveState,
                 },
             });
@@ -160,6 +173,27 @@ export function SaveButton() {
                                 return <TextField {...params} />;
                             }}
                         />
+
+                        <FormControl>
+                            <FormLabel>Visibility</FormLabel>
+                            <RadioGroup value={visibility} onChange={handlevisibilityChange}>
+                                <Tooltip title="Anybody can view and edit the schedule." placement="left">
+                                    <FormControlLabel value="public" control={<Radio />} label="Public" />
+                                </Tooltip>
+                                <Tooltip
+                                    title="Anybody can view the schedule. But only the owner can save edits (after logging in)."
+                                    placement="left"
+                                >
+                                    <FormControlLabel value="open" control={<Radio />} label="Open" />
+                                </Tooltip>
+                                <Tooltip
+                                    title="Only the owner can view and edit the schedule (after logging in)."
+                                    placement="left"
+                                >
+                                    <FormControlLabel value="Private" control={<Radio />} label="Private" />
+                                </Tooltip>
+                            </RadioGroup>
+                        </FormControl>
                     </Stack>
                 </DialogContent>
 
@@ -168,7 +202,7 @@ export function SaveButton() {
                         Cancel
                     </Button>
                     <Button onClick={handleSubmit} color={isDark ? 'secondary' : 'primary'}>
-                        Load
+                        Save
                     </Button>
                 </DialogActions>
             </Dialog>
