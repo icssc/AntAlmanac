@@ -12,9 +12,11 @@ import {
     Stack,
     TextField,
 } from '@mui/material';
+import { TRPCError } from '@trpc/server';
+import { useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
 
-import { loadSchedule } from '$actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { trpc } from '$lib/trpc';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -26,27 +28,15 @@ export function SaveButton() {
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    const authStatus = trpc.auth.status.useQuery();
-
     const [userId, setUserId] = useState('');
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const isDark = useThemeStore((store) => store.isDark);
 
-    const loadScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
-        setLoading(true);
-        await loadSchedule(userID, rememberMe);
-        setLoading(false);
-    };
+    const authStatus = trpc.auth.status.useQuery();
 
-    const loadSavedSchedule = async () => {
-        if (typeof Storage === 'undefined') return;
-
-        const savedUserID = window.localStorage.getItem('userID');
-
-        if (savedUserID == null) return;
-
-        await loadScheduleAndSetLoading(savedUserID, true);
-    };
+    const saveMutation = trpc.users.saveUserData.useMutation();
 
     const handleOpen = () => {
         setOpen(true);
@@ -56,8 +46,63 @@ export function SaveButton() {
         setOpen(false);
     };
 
-    const handleSubmit = () => {
-        console.log('Submitting');
+    const handleSubmit = async () => {
+        setLoading(true);
+
+        logAnalytics({
+            category: analyticsEnum.nav.title,
+            action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
+            label: userId,
+            value: 1,
+        });
+
+        const normalizedUserId = userId.replace(/\s+/g, '');
+
+        if (!normalizedUserId) {
+            enqueueSnackbar('Invalid user ID.', { variant: 'error' });
+            setLoading(false);
+            return;
+        }
+
+        const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+
+        try {
+            await saveMutation.mutateAsync({
+                /**
+                 * Requester ID.
+                 *
+                 * The user may be logged in, and save the schedule under a different account.
+                 * Based on the schedule's visibility settings, this may or may not be permitted.
+                 *
+                 * If the user is not logged in, assume that the requester and requestee are the same.
+                 */
+                id: authStatus.data?.id ?? normalizedUserId,
+
+                /**
+                 * Assume that the schedule belongs to whatever the specified userId is.
+                 */
+                data: {
+                    id: normalizedUserId,
+                    userData: scheduleSaveState,
+                },
+            });
+
+            enqueueSnackbar(
+                `Schedule saved under username "${normalizedUserId}". Don't forget to sign up for classes on WebReg!`,
+                { variant: 'success' }
+            );
+            AppStore.saveSchedule();
+        } catch (e) {
+            if (e instanceof TRPCError) {
+                enqueueSnackbar(`Schedule could not be saved under username "${normalizedUserId}`, {
+                    variant: 'error',
+                });
+            } else {
+                enqueueSnackbar('Network error or server is down.', { variant: 'error' });
+            }
+        }
+
+        setLoading(false);
     };
 
     const options: string[] = [];
@@ -80,10 +125,6 @@ export function SaveButton() {
         return () => {
             AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
-    }, []);
-
-    useEffect(() => {
-        loadSavedSchedule();
     }, []);
 
     return (

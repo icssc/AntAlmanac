@@ -148,16 +148,16 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
         const existingUserData = await ddbClient.get('id', requesteeId);
 
         if (existingUserData == null) {
-            return undefined;
+            return null;
         }
 
         const parsedUserData = UserSchema(existingUserData);
 
         if (parsedUserData.problems != null) {
-            return undefined;
+            return null;
         }
 
-        parsedUserData.data.visibility ??= VISIBILITY.PRIVATE;
+        const visibility = parsedUserData.data.visibility ?? VISIBILITY.PRIVATE;
 
         // Requester and requestee IDs must match if schedule is private.
         // Otherwise, return the schedule without any additional processing.
@@ -166,8 +166,8 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
         // check the schedule's user ID with the user ID making the request
         // to fully define the visibility system.
 
-        if (parsedUserData.data.visibility === VISIBILITY.PRIVATE) {
-            return requesterId === requesteeId ? parsedUserData.data : undefined;
+        if (visibility === VISIBILITY.PRIVATE) {
+            return requesterId === requesteeId ? parsedUserData.data : null;
         } else {
             return parsedUserData.data;
         }
