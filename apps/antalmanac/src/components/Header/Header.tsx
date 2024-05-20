@@ -1,7 +1,8 @@
-import { AppBar, Button, Toolbar, useMediaQuery } from '@material-ui/core';
+import { AppBar, Toolbar, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
+import AccountButton from './AccountButton';
 import Export from './Export';
 import Import from './Import';
 import LoadButton from './LoadButton';
@@ -45,15 +46,6 @@ const Header = ({ classes }: CustomAppBarProps) => {
 
     const authStatus = trpc.auth.status.useQuery();
 
-    const logoutMutation = trpc.auth.logout.useMutation();
-
-    const utils = trpc.useUtils();
-
-    const logout = async () => {
-        await logoutMutation.mutateAsync();
-        await utils.auth.status.invalidate();
-    };
-
     return (
         <AppBar position="static" className={classes.appBar}>
             <Toolbar variant="dense" style={{ padding: '5px', display: 'flex', justifyContent: 'space-between' }}>
@@ -76,7 +68,7 @@ const Header = ({ classes }: CustomAppBarProps) => {
                         </>
                     )}
 
-                    {authStatus.data ? <Button onClick={logout}>Logout</Button> : <LoginButton />}
+                    {authStatus.data ? <AccountButton /> : <LoginButton />}
 
                     <AppDrawer key="settings" />
                 </div>
