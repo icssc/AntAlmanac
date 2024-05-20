@@ -144,7 +144,7 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
         return (await ddbClient.get('googleId', googleId))?.userData;
     }
 
-    async viewUserData(requesterId: string, requesteeId: string) {
+    async viewUserData(requesteeId: string, requesterId?: string) {
         const existingUserData = await ddbClient.get('id', requesteeId);
 
         if (existingUserData == null) {
@@ -157,7 +157,7 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
             return null;
         }
 
-        const visibility = parsedUserData.data.visibility ?? VISIBILITY.PRIVATE;
+        const visibility = parsedUserData.data.visibility ?? VISIBILITY.PUBLIC;
 
         // Requester and requestee IDs must match if schedule is private.
         // Otherwise, return the schedule without any additional processing.

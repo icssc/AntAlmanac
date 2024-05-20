@@ -12,9 +12,11 @@ import {
     Stack,
     TextField,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { useEffect, useState } from 'react';
 
 import { loadSchedule } from '$actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { trpc } from '$lib/trpc';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -27,6 +29,10 @@ export function LoadButton() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const authStatus = trpc.auth.status.useQuery();
+
+    const utils = trpc.useUtils();
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const [userId, setUserId] = useState('');
 
@@ -56,8 +62,61 @@ export function LoadButton() {
         setOpen(false);
     };
 
-    const handleSubmit = () => {
-        console.log('Submitting');
+    const handleSubmit = async () => {
+        logAnalytics({
+            category: analyticsEnum.nav.title,
+            action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
+            label: userId,
+            value: 1, // rememberMe ? 1 : 0,
+        });
+
+        const normalizedUserId = userId.replace(/\s+/g, '');
+
+        if (!normalizedUserId) {
+            enqueueSnackbar('Invalid user ID.', { variant: 'error' });
+            setLoading(false);
+            return;
+        }
+
+        if (
+            AppStore.hasUnsavedChanges() &&
+            !window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`)
+        ) {
+            return;
+        }
+
+        try {
+            const res = await utils.users.viewUserData.fetch({
+                requesterId: authStatus.data?.id,
+                requesteeId: userId,
+            });
+
+            const scheduleSaveState = res && 'userData' in res ? res.userData : res;
+
+            if (scheduleSaveState == null) {
+                enqueueSnackbar(`Couldn't find schedules for username "${userId}".`, { variant: 'error' });
+                return;
+            }
+
+            if (await AppStore.loadSchedule(scheduleSaveState)) {
+                enqueueSnackbar(`Schedule for username "${userId}" loaded.`, { variant: 'success' });
+                return;
+            }
+
+            AppStore.loadSkeletonSchedule(scheduleSaveState);
+            enqueueSnackbar(
+                `Network error loading course information for "${userId}". 	              
+                        If this continues to happen, please submit a feedback form.`,
+                { variant: 'error' }
+            );
+        } catch (e) {
+            console.error(e);
+            enqueueSnackbar(`Failed to load schedules. If this continues to happen, please submit a feedback form.`, {
+                variant: 'error',
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     const options: string[] = [];

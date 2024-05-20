@@ -190,7 +190,7 @@ export function SaveButton() {
                                     title="Only the owner can view and edit the schedule (after logging in)."
                                     placement="left"
                                 >
-                                    <FormControlLabel value="Private" control={<Radio />} label="Private" />
+                                    <FormControlLabel value="private" control={<Radio />} label="Private" />
                                 </Tooltip>
                             </RadioGroup>
                         </FormControl>

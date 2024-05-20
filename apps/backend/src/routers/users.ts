@@ -9,8 +9,10 @@ const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]
 const viewInputSchema = type({
     /**
      * ID of the user who's requesting to view another user's schedule.
+     *
+     * Maybe undefined if user is viewing anonymously.
      */
-    requesterId: 'string',
+    'requesterId?': 'string | undefined',
 
     /**
      * ID of the user whose schedule is being requested.
@@ -60,7 +62,7 @@ const usersRouter = router({
         /**
          * Assign default visility value.
          */
-        input.data.visibility ??= VISIBILITY.PRIVATE;
+        input.data.visibility ??= VISIBILITY.PUBLIC;
 
         // Requester and requestee IDs must match if schedule is private.
 
@@ -95,7 +97,7 @@ const usersRouter = router({
      * - open: Anybody can view and edit.
      */
     viewUserData: procedure.input(viewInputSchema.assert).query(async ({ input }) => {
-        return await ddbClient.viewUserData(input.requesterId, input.requesteeId);
+        return await ddbClient.viewUserData(input.requesteeId, input.requesterId);
     }),
 });
 
