@@ -72,16 +72,18 @@ export function LoginButton() {
         try {
             const response = await usernameLoginMutation.mutateAsync(userId);
 
-            if (response == null) {
+            await utils.auth.status.invalidate();
+
+            if (response?.userData == null) {
                 snackbar.enqueueSnackbar(`Logged in as "${userId}", no schedules found.`);
                 setOpen(false);
                 return;
             }
 
-            const loadedSchedule = await AppStore.loadSchedule(response);
+            const loadedSchedule = await AppStore.loadSchedule(response.userData);
 
             if (loadedSchedule == null) {
-                AppStore.loadSkeletonSchedule(response);
+                AppStore.loadSkeletonSchedule(response.userData);
                 snackbar.enqueueSnackbar(
                     `Network error loading course information for "${userId}". 	              
                         If this continues to happen, please submit a feedback form.`,
@@ -94,8 +96,6 @@ export function LoginButton() {
             snackbar.enqueueSnackbar(`Schedule for username "${userId}" loaded.`, { variant: 'success' });
 
             setOpen(false);
-
-            await utils.auth.status.invalidate();
         } catch (e) {
             console.error('Error occurred while loading schedules: ', e);
             snackbar.enqueueSnackbar(
@@ -112,9 +112,41 @@ export function LoginButton() {
             return;
         }
 
-        const response = await googleLoginMutation.mutateAsync(credential.credential);
+        try {
+            const response = await googleLoginMutation.mutateAsync(credential.credential);
 
-        console.log('response: ', response);
+            await utils.auth.status.invalidate();
+
+            if (response?.userData == null) {
+                snackbar.enqueueSnackbar(`Logged in as "${response?.id}", no schedules found.`);
+                setOpen(false);
+                return;
+            }
+
+            const loadedSchedule = await AppStore.loadSchedule(response.userData);
+
+            if (loadedSchedule == null) {
+                AppStore.loadSkeletonSchedule(response.userData);
+                snackbar.enqueueSnackbar(
+                    `Network error loading course information for "${userId}". 	              
+                        If this continues to happen, please submit a feedback form.`,
+                    { variant: 'error' }
+                );
+                setOpen(false);
+                return;
+            }
+
+            snackbar.enqueueSnackbar(`Schedule for username "${userId}" loaded.`, { variant: 'success' });
+
+            setOpen(false);
+        } catch (e) {
+            console.error('Error occurred while loading schedules: ', e);
+            snackbar.enqueueSnackbar(
+                `Failed to load schedules. If this continues to happen, please submit a feedback form.`,
+                { variant: 'error' }
+            );
+            setOpen(false);
+        }
     };
 
     const handleGoogleError = async () => {

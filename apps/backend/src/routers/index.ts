@@ -27,7 +27,7 @@ export interface GoogleProfile extends Record<string, any> {
 
 export const AccessTokenSchema = type({
     id: 'string',
-    googleId: 'string',
+    'googleId?': 'string',
 });
 
 const privateKey = 'secret';
@@ -62,7 +62,9 @@ const authRouter = router({
 
             const googleId = idToken.sub;
 
-            const existingUser = await ddbClient.get('googleId', googleId);
+            const existingUser = await ddbClient.get('googleId', googleId).catch((e) => {
+                console.error('Error while looking up google ID: ', e);
+            });
 
             if (existingUser != null) {
                 const authCookie = jwt.sign(
@@ -76,7 +78,7 @@ const authRouter = router({
                 // Set the auth cookie so the client can be recognized on future requests.
                 context.ctx.res.cookie('auth', authCookie);
 
-                return existingUser.userData;
+                return existingUser;
             }
 
             await ddbClient.documentClient.put({
@@ -101,7 +103,7 @@ const authRouter = router({
 
             context.ctx.res.cookie('auth', authCookie);
 
-            return null;
+            return { id: googleId, userData: null };
         } catch (e) {
             console.error('Error ocurred while logging in with google: ', e);
             return null;
@@ -118,7 +120,7 @@ const authRouter = router({
             // Set the auth cookie so the client can be recognized on future requests.
             context.ctx.res.cookie('auth', authCookie, { maxAge: 1000 * 60 * 60, path: '/' });
 
-            return userData;
+            return { id, userData };
         }
 
         await ddbClient.documentClient.put({
@@ -127,12 +129,13 @@ const authRouter = router({
                 id,
             },
         });
+
         const authCookie = jwt.sign({ id }, privateKey);
 
         // Set the auth cookie so the client can be recognized on future requests.
         context.ctx.res.cookie('auth', authCookie, { maxAge: 1000 * 60 * 60, path: '/' });
 
-        return null;
+        return { id, userData: null };
     }),
     logout: procedure.mutation(async (context) => {
         context.ctx.res.cookie('auth', '', { maxAge: 0 });
