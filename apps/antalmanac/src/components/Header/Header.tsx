@@ -6,8 +6,8 @@ import AccountButton from './AccountButton';
 import Export from './Export';
 import Import from './Import';
 import LoadButton from './LoadButton';
-import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import LoginButton from './LoginButton';
+import SaveButton from './SaveButton';
 import AppDrawer from './SettingsMenu';
 
 import Logo from '$assets/logo.svg';
@@ -57,7 +57,7 @@ const Header = ({ classes }: CustomAppBarProps) => {
                 />
 
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    <LoadSaveScheduleFunctionality />
+                    <SaveButton />
 
                     <LoadButton />
 

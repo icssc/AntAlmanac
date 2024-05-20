@@ -1,4 +1,4 @@
-import { CloudDownload } from '@material-ui/icons';
+import { Save } from '@material-ui/icons';
 import { LoadingButton } from '@mui/lab';
 import {
     Autocomplete,
@@ -19,7 +19,7 @@ import { trpc } from '$lib/trpc';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
-export function LoadButton() {
+export function SaveButton() {
     const [open, setOpen] = useState(false);
 
     const [loading, setLoading] = useState(false);
@@ -91,19 +91,19 @@ export function LoadButton() {
             <LoadingButton
                 onClick={handleOpen}
                 color="inherit"
-                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <CloudDownload />}
+                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Save />}
                 disabled={skeletonMode}
                 loading={false}
             >
-                Load
+                Save
             </LoadingButton>
 
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Load</DialogTitle>
+                <DialogTitle>Save</DialogTitle>
 
                 <DialogContent>
                     <Stack gap={2}>
-                        <DialogContentText>Enter a unique user ID here to view a schedule.</DialogContentText>
+                        <DialogContentText>Enter a unique user ID here to save a schedule.</DialogContentText>
 
                         <Autocomplete
                             freeSolo
@@ -135,4 +135,4 @@ export function LoadButton() {
     );
 }
 
-export default LoadButton;
+export default SaveButton;
