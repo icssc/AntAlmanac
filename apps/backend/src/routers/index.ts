@@ -25,13 +25,10 @@ export interface GoogleProfile extends Record<string, any> {
     sub: string;
 }
 
-export const AccessTokenSchema = type([
-    {
-        googleId: 'string',
-    },
-    '|',
-    { username: 'string' },
-]);
+export const AccessTokenSchema = type({
+    id: 'string',
+    googleId: 'string',
+});
 
 const privateKey = 'secret';
 
@@ -56,27 +53,86 @@ const authRouter = router({
             return null;
         }
     }),
+    /**
+     * Logs in with Google and returns schedule data.
+     */
     loginGoogle: procedure.input(type('string').assert).mutation(async (context) => {
         try {
             const idToken = jwt.decode(context.input) as GoogleProfile;
 
-            // Set the auth cookie so the client can be recognized on future requests.
-            const authCookie = jwt.sign({ googleId: context.input }, privateKey);
+            const googleId = idToken.sub;
+
+            const existingUser = await ddbClient.get('googleId', googleId);
+
+            if (existingUser != null) {
+                const authCookie = jwt.sign(
+                    {
+                        id: existingUser.id,
+                        googleId,
+                    },
+                    privateKey
+                );
+
+                // Set the auth cookie so the client can be recognized on future requests.
+                context.ctx.res.cookie('auth', authCookie);
+
+                return existingUser.userData;
+            }
+
+            await ddbClient.documentClient.put({
+                TableName: ddbClient.tableName,
+                Item: {
+                    id: googleId,
+                    googleId,
+                },
+            });
+
+            /**
+             * By default, a new user logged in with Google will just have their ID set to
+             * their google ID.
+             */
+            const authCookie = jwt.sign(
+                {
+                    id: googleId,
+                    googleId,
+                },
+                privateKey
+            );
 
             context.ctx.res.cookie('auth', authCookie);
 
-            return await ddbClient.getGoogleUserData(idToken.sub);
-        } catch {
-            return;
+            return null;
+        } catch (e) {
+            console.error('Error ocurred while logging in with google: ', e);
+            return null;
         }
     }),
     loginUsername: procedure.input(type('string').assert).mutation(async (context) => {
-        const authCookie = jwt.sign({ username: context.input }, privateKey);
+        const id = context.input;
+
+        const userData = await ddbClient.getUserData(id);
+
+        if (userData != null) {
+            const authCookie = jwt.sign({ id }, privateKey);
+
+            // Set the auth cookie so the client can be recognized on future requests.
+            context.ctx.res.cookie('auth', authCookie, { maxAge: 1000 * 60 * 60, path: '/' });
+
+            return userData;
+        }
+
+        await ddbClient.documentClient.put({
+            TableName: ddbClient.tableName,
+            Item: {
+                id,
+            },
+        });
+        const authCookie = jwt.sign({ id }, privateKey);
 
         // Set the auth cookie so the client can be recognized on future requests.
         context.ctx.res.cookie('auth', authCookie, { maxAge: 1000 * 60 * 60, path: '/' });
 
-        return await ddbClient.getUserData(context.input); // ?? (await ddbClient.getLegacyUserData(context.input));
+        return null;
     }),
     logout: procedure.mutation(async (context) => {
         context.ctx.res.cookie('auth', '', { maxAge: 0 });

@@ -25,9 +25,9 @@ export const VISIBILITY = {
 };
 
 class DDBClient<T extends Type<Record<string, unknown>>> {
-    private tableName: string;
+    tableName: string;
 
-    private schema: T;
+    schema: T;
 
     client: DynamoDB;
 
@@ -171,7 +171,6 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
         } else {
             return parsedUserData.data;
         }
-
     }
 }
 
