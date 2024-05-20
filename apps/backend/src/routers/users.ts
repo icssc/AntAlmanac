@@ -3,8 +3,23 @@ import { UserSchema } from '@packages/antalmanac-types';
 import { router, procedure } from '../trpc';
 import { ddbClient, VISIBILITY } from '../db/ddb';
 import { TRPCError } from '@trpc/server';
+import env from '../env';
+import { createTransport } from 'nodemailer';
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
+
+const email = createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+    type: 'OAuth2',
+    user: env.GOOGLE_EMAIL,
+    clientId: env.GOOGLE_ID,
+    clientSecret: env.GOOGLE_SECRET,
+    refreshToken: env.GOOGLE_REFRESH_TOKEN,
+    },
+})
 
 const viewInputSchema = type({
     /**
@@ -87,6 +102,16 @@ const usersRouter = router({
      */
     viewUserData: procedure.input(viewInputSchema.assert).query(async ({ input }) => {
         return await ddbClient.viewUserData(input.requesterId, input.requesteeId);
+    }),
+
+    sendUserEmail: procedure.query(async () => {
+        console.log("SENDING EMAIL")
+        const res = await email.sendMail({
+            to: 'rayantighiouartca@gmail.com', // presumably input.userEmail or something
+            subject: 'Reset Password',
+            text: `Reset your password`,
+        })
+        console.log('rez', res);
     }),
 });
 
