@@ -25,20 +25,35 @@ export interface GoogleProfile extends Record<string, any> {
     sub: string;
 }
 
+export const AccessTokenSchema = type([
+    {
+        googleId: 'string',
+    },
+    '|',
+    { username: 'string' },
+]);
+
 const privateKey = 'secret';
 
 const authRouter = router({
     status: procedure.query(async (context) => {
         const authCookie = context.ctx.req.cookies['auth'];
 
-        if (authCookie == null) return;
+        if (authCookie == null) return null;
 
         try {
-            const authUser = jwt.decode(authCookie);
-            return authUser;
+            const decodedToken = jwt.decode(authCookie);
+
+            const parsedToken = AccessTokenSchema(decodedToken);
+
+            if (parsedToken.problems) {
+                return null;
+            }
+
+            return parsedToken.data;
         } catch (e) {
             console.error('Failed to decode auth cookie: ', e);
-            return;
+            return null;
         }
     }),
     loginGoogle: procedure.input(type('string').assert).mutation(async (context) => {
@@ -61,7 +76,10 @@ const authRouter = router({
         // Set the auth cookie so the client can be recognized on future requests.
         context.ctx.res.cookie('auth', authCookie, { maxAge: 1000 * 60 * 60, path: '/' });
 
-        return (await ddbClient.getUserData(context.input)) ?? (await ddbClient.getLegacyUserData(context.input));
+        return await ddbClient.getUserData(context.input); // ?? (await ddbClient.getLegacyUserData(context.input));
+    }),
+    logout: procedure.mutation(async (context) => {
+        context.ctx.res.cookie('auth', '', { maxAge: 0 });
     }),
 });
 

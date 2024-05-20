@@ -1,16 +1,17 @@
-import { AppBar, Toolbar, useMediaQuery } from '@material-ui/core';
+import { AppBar, Button, Toolbar, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
 import Export from './Export';
 import Import from './Import';
+import LoadButton from './LoadButton';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import LoginButton from './LoginButton';
 import AppDrawer from './SettingsMenu';
-import LoadButton from './LoadButton'
 
 import Logo from '$assets/logo.svg';
 import MobileLogo from '$assets/mobile-logo.svg';
+import { trpc } from '$lib/trpc';
 
 const styles = {
     appBar: {
@@ -42,6 +43,17 @@ interface CustomAppBarProps {
 const Header = ({ classes }: CustomAppBarProps) => {
     const isMobileScreen = useMediaQuery('(max-width:750px)');
 
+    const authStatus = trpc.auth.status.useQuery();
+
+    const logoutMutation = trpc.auth.logout.useMutation();
+
+    const utils = trpc.useUtils();
+
+    const logout = async () => {
+        await logoutMutation.mutateAsync();
+        await utils.auth.status.invalidate();
+    };
+
     return (
         <AppBar position="static" className={classes.appBar}>
             <Toolbar variant="dense" style={{ padding: '5px', display: 'flex', justifyContent: 'space-between' }}>
@@ -64,7 +76,7 @@ const Header = ({ classes }: CustomAppBarProps) => {
                         </>
                     )}
 
-                    <LoginButton />
+                    {authStatus.data ? <Button onClick={logout}>Logout</Button> : <LoginButton />}
 
                     <AppDrawer key="settings" />
                 </div>

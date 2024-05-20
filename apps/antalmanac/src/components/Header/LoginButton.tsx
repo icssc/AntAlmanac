@@ -25,6 +25,7 @@ import AppStore from '$stores/AppStore';
  */
 export function LoginButton() {
     const [userId, setUserId] = useState('');
+
     const [open, setOpen] = useState(false);
 
     const snackbar = useSnackbar();
@@ -32,6 +33,8 @@ export function LoginButton() {
     const usernameLoginMutation = trpc.auth.loginUsername.useMutation();
 
     const googleLoginMutation = trpc.auth.loginGoogle.useMutation();
+
+    const utils = trpc.useUtils();
 
     const handleOpen = () => {
         setOpen(true);
@@ -66,12 +69,8 @@ export function LoginButton() {
             return;
         }
 
-        console.log('Submitting user ID: ', userId);
-
         try {
             const response = await usernameLoginMutation.mutateAsync(userId);
-
-            console.log('response: ', response);
 
             if (response == null) {
                 snackbar.enqueueSnackbar(`Logged in as "${userId}", no schedules found.`);
@@ -93,7 +92,10 @@ export function LoginButton() {
             }
 
             snackbar.enqueueSnackbar(`Schedule for username "${userId}" loaded.`, { variant: 'success' });
+
             setOpen(false);
+
+            await utils.auth.status.invalidate();
         } catch (e) {
             console.error('Error occurred while loading schedules: ', e);
             snackbar.enqueueSnackbar(

@@ -2,10 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import type { CorsOptions } from 'cors';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
+import cookieParser from 'cookie-parser';
 import AppRouter from './routers';
 import createContext from './context';
 import env from './env';
-// import connectToMongoDB from '$db/mongodb';
 
 const MAPBOX_API_URL = 'https://api.mapbox.com';
 
@@ -19,12 +19,13 @@ export async function start(corsEnabled = false) {
         origin: corsEnabled ? origins : true,
     };
 
-    // await connectToMongoDB();
     const app = express();
 
     app.use(cors(corsOptions));
 
     app.use(express.json());
+
+    app.use(cookieParser());
 
     app.use('/mapbox/directions/*', async (req, res) => {
         const searchParams = new URLSearchParams(req.query as any);
