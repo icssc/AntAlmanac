@@ -7,8 +7,6 @@ import IconButton from '@mui/material/IconButton';
 import { useCallback, useState } from 'react';
 
 import { AboutButtonGroup } from './AboutButtonGoup';
-import Export from './Export';
-import Import from './Import';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
@@ -214,24 +212,6 @@ function SettingsMenu() {
     );
 }
 
-function MobileImportExportButtonGroup() {
-    return (
-        <ButtonGroup
-            size="large"
-            style={{
-                display: 'flex',
-                justifyContent: 'space-evenly',
-                alignItems: 'center',
-                width: '100%',
-                borderColor: 'unset',
-            }}
-        >
-            <Import />
-            <Export />
-        </ButtonGroup>
-    );
-}
-
 function AppDrawer() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const isMobileScreen = useMediaQuery('(max-width:750px)');
@@ -270,16 +250,6 @@ function AppDrawer() {
                             <Close fontSize="inherit" />
                         </IconButton>
                     </Box>
-
-                    {isMobileScreen ? (
-                        <>
-                            <Divider style={{ marginBottom: '16px' }} />
-                            <MobileImportExportButtonGroup />
-                            <Divider style={{ marginTop: '12px', marginBottom: '16px' }}>
-                                <Typography variant="subtitle2">Settings</Typography>
-                            </Divider>
-                        </>
-                    ) : null}
 
                     <SettingsMenu />
 

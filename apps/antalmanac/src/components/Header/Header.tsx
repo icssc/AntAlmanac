@@ -3,7 +3,6 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
 import AccountButton from './AccountButton';
-import Export from './Export';
 import Import from './Import';
 import LoadButton from './LoadButton';
 import LoginButton from './LoginButton';
@@ -61,12 +60,7 @@ const Header = ({ classes }: CustomAppBarProps) => {
 
                     <LoadButton />
 
-                    {isMobileScreen ? null : (
-                        <>
-                            <Import key="studylist" />
-                            <Export key="export" />
-                        </>
-                    )}
+                    <Import key="studylist" />
 
                     {authStatus.data ? <AccountButton /> : <LoginButton />}
 
