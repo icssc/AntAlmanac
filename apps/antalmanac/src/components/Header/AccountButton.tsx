@@ -1,11 +1,34 @@
-import { Logout, PersonAdd, Settings } from '@mui/icons-material';
-import { Avatar, IconButton, ListItemIcon, Menu, MenuItem, Tooltip } from '@mui/material';
+import { Logout, Settings } from '@mui/icons-material';
+import {
+    Avatar,
+    Box,
+    Button,
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    Divider,
+    IconButton,
+    ListItemIcon,
+    Menu,
+    MenuItem,
+    Stack,
+    TextField,
+    Tooltip,
+    Typography,
+} from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 
 import { trpc } from '$lib/trpc';
 
 export function AccountButton() {
     const [anchorEl, setAnchorEl] = useState<HTMLElement>();
+
+    const [username, setUsername] = useState('');
+
+    const [settingsOpen, setSettingsOpen] = useState(false);
+
+    const { enqueueSnackbar } = useSnackbar();
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -25,6 +48,28 @@ export function AccountButton() {
         await logoutMutation.mutateAsync();
         await utils.auth.status.invalidate();
         handleClose();
+    };
+
+    const handleOpenSettings = () => {
+        setSettingsOpen(true);
+        handleClose();
+    };
+
+    const handleCloseSettings = () => {
+        setSettingsOpen(false);
+    };
+
+    const handleUsernameChange = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+        setUsername(e.target.value);
+    };
+
+    const handleSubmit = async () => {
+        if (!username) {
+            enqueueSnackbar('Username must not be empty', { variant: 'error' });
+            return;
+        }
+        console.log('new username: ', username);
+        enqueueSnackbar('New username set', { variant: 'success' });
     };
 
     return (
@@ -49,13 +94,7 @@ export function AccountButton() {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-                <MenuItem onClick={handleClose}>
-                    <ListItemIcon>
-                        <PersonAdd fontSize="small" />
-                    </ListItemIcon>
-                    Add another account
-                </MenuItem>
-                <MenuItem onClick={handleClose}>
+                <MenuItem onClick={handleOpenSettings}>
                     <ListItemIcon>
                         <Settings fontSize="small" />
                     </ListItemIcon>
@@ -68,6 +107,35 @@ export function AccountButton() {
                     Logout
                 </MenuItem>
             </Menu>
+
+            <Dialog onClose={handleCloseSettings} open={settingsOpen}>
+                <DialogTitle>Account Settings</DialogTitle>
+
+                <Divider />
+
+                <DialogContent>
+                    <Stack gap={2}>
+                        <Typography variant="h6">Change Username</Typography>
+
+                        <Box>
+                            <Typography>Enter a unique username.</Typography>
+                            <Typography>If the username exists, you will need to claim it.</Typography>
+                        </Box>
+
+                        <Stack gap={1}>
+                            <TextField onChange={handleUsernameChange} label="Username">
+                                Username
+                            </TextField>
+
+                            <Box>
+                                <Button color="inherit" onClick={handleSubmit}>
+                                    Submit
+                                </Button>
+                            </Box>
+                        </Stack>
+                    </Stack>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }
