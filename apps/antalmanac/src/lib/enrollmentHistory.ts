@@ -106,8 +106,9 @@ export class DepartmentEnrollmentHistory {
             const enrollmentDays: EnrollmentHistoryDay[] = [];
 
             for (const [i, date] of enrollmentHistory.dates.entries()) {
-                const d = new Date(date);
-                const formattedDate = `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
+                const dateParts = date.split('-');
+                const d = new Date(Number(dateParts[0]), Number(dateParts[1]), Number(dateParts[2]));
+                const formattedDate = `${d.getMonth()}/${d.getDate() - 1}/${d.getFullYear()}`;
 
                 enrollmentDays.push({
                     date: formattedDate,
