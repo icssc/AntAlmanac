@@ -214,12 +214,7 @@ async function getGpaData(deptCode: string, courseNumber: string, instructors: s
 
     // Get the GPA of the first instructor of this section where data exists
     for (const instructor of namedInstructors) {
-        const grades = await Grades.queryGrades(
-            deptCode,
-            courseNumber,
-            instructor,
-            useTabStore.getState().activeTab != 1
-        );
+        const grades = await Grades.queryGrades(deptCode, courseNumber, instructor, false);
         if (grades?.averageGPA) {
             return {
                 gpa: grades.averageGPA.toFixed(2).toString(),
