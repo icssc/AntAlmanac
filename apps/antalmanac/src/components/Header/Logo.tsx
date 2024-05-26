@@ -29,7 +29,6 @@ const defaultLogo: Logo = {
     startMonthIndex: 0,
     endDay: 31,
     endMonthIndex: 12,
-    attribution: 'Thanks Aejin for designing this seasonal logo!',
 };
 
 const logos: Logo[] = [
