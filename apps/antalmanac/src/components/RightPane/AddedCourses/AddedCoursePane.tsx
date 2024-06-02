@@ -1,5 +1,4 @@
-import { ContentCopy, DeleteOutline } from '@mui/icons-material';
-import { Box, Chip, IconButton, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
+import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -8,8 +7,9 @@ import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 
 import CustomEventDetailView from './CustomEventDetailView';
 
-import { clearSchedules, updateScheduleNote } from '$actions/AppStoreActions';
-import CopyScheduleDialog from '$components/dialogs/CopySchedule';
+import { updateScheduleNote } from '$actions/AppStoreActions';
+import { ClearScheduleButton } from '$components/buttons/Clear';
+import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
@@ -31,10 +31,6 @@ const buttonSx: SxProps = {
 
 interface CourseWithTerm extends AACourse {
     term: string;
-}
-
-interface CopyScheduleButtonProps {
-    index: number;
 }
 
 const NOTE_MAX_LEN = 5000;
@@ -81,49 +77,6 @@ function getCourses() {
     });
 
     return formattedCourses;
-}
-
-function handleClear() {
-    if (window.confirm('Are you sure you want to clear this schedule?')) {
-        clearSchedules();
-        logAnalytics({
-            category: analyticsEnum.addedClasses.title,
-            action: analyticsEnum.addedClasses.actions.CLEAR_SCHEDULE,
-        });
-    }
-}
-
-function ClearScheduleButton() {
-    return (
-        <Tooltip title="Clear Schedule">
-            <IconButton sx={buttonSx} onClick={handleClear}>
-                <DeleteOutline />
-            </IconButton>
-        </Tooltip>
-    );
-}
-
-function CopyScheduleButton({ index }: CopyScheduleButtonProps) {
-    const [open, setOpen] = useState(false);
-
-    const handleOpen = useCallback(() => {
-        setOpen(true);
-    }, []);
-
-    const handleClose = useCallback(() => {
-        setOpen(false);
-    }, []);
-
-    return (
-        <>
-            <Tooltip title="Copy Schedule">
-                <IconButton sx={buttonSx} onClick={handleOpen} size="small">
-                    <ContentCopy />
-                </IconButton>
-            </Tooltip>
-            <CopyScheduleDialog fullWidth open={open} index={index} onClose={handleClose} />
-        </>
-    );
 }
 
 function CustomEventsBox() {
@@ -376,8 +329,8 @@ function AddedSectionsGrid() {
     return (
         <Box display="flex" flexDirection="column" gap={1} marginX={0.5}>
             <Box display="flex" width={1} position="absolute" zIndex="2">
-                <CopyScheduleButton index={scheduleIndex} />
-                <ClearScheduleButton />
+                <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
+                <ClearScheduleButton buttonSx={buttonSx} />
                 <ColumnToggleDropdown />
             </Box>
             <Box style={{ marginTop: 50 }}>
