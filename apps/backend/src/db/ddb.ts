@@ -137,7 +137,6 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
     }
 
     async getUserData(id: string) {
-        this.migrate();
         return (await ddbClient.get('id', id))?.userData;
     }
 
@@ -175,7 +174,7 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
 
     }
 
-    async migrate () {
+    async getUserIds () {
         const params = {
             TableName: this.tableName,
         }
@@ -195,7 +194,7 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
             }
         } while (typeof items.LastEvaluatedKey !== 'undefined');
 
-        console.log(scanResults);
+        return scanResults;
     }
 }
 

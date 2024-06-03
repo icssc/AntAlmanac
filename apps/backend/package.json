@@ -7,7 +7,9 @@
         "build": "node scripts/build.mjs",
         "start": "npm run dev",
         "format": "prettier --write src",
-        "lint": "eslint --fix src"
+        "lint": "eslint --fix src",
+        "generate": "drizzle-kit generate",
+        "migrate": "tsx scripts/migrate.ts"
     },
     "dependencies": {
         "@packages/antalmanac-types": "workspace:**",
