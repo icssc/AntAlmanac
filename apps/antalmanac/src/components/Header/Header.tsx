@@ -41,7 +41,7 @@ const Header = ({ classes }: CustomAppBarProps) => {
     return (
         <AppBar position="static" className={classes.appBar}>
             <Toolbar variant="dense" style={{ padding: '5px', display: 'flex', justifyContent: 'space-between' }}>
-                <Logo isMobileScreen={isMobileScreen} />
+                <Logo />
 
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
                     <LoadSaveScheduleFunctionality />
