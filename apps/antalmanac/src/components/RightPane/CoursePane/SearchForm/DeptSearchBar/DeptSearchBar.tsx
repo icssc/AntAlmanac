@@ -5,7 +5,10 @@ import { Autocomplete } from '@material-ui/lab';
 import { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../../RightPaneStore';
+
 import depts from './depts';
+
+import { getLocalStorageFavorites, setLocalStorageFavorites } from '$lib/localStorage';
 
 const style = {
     formControl: {
@@ -66,7 +69,7 @@ class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState
 
         let favorites: Department[] = [];
         if (typeof Storage !== 'undefined') {
-            const locallyStoredFavorites = window.localStorage.getItem('favorites');
+            const locallyStoredFavorites = getLocalStorageFavorites();
             favorites = locallyStoredFavorites != null ? JSON.parse(locallyStoredFavorites) : [];
         }
         this.state = {
@@ -140,7 +143,7 @@ class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState
             if (updatedFavorites.length > 5) updatedFavorites.pop();
         }
         this.setState({ favorites: updatedFavorites });
-        window.localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+        setLocalStorageFavorites(JSON.stringify(updatedFavorites));
     };
 
     render() {

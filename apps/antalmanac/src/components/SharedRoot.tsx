@@ -10,6 +10,7 @@ import CoursePane from './RightPane/CoursePane/CoursePaneRoot';
 import darkModeLoadingGif from './RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 
+import { getLocalStorageUserId } from '$lib/localStorage';
 import { useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 
@@ -97,7 +98,7 @@ const SharedTabs = ({ style, mobile }: SharedTabsProps) => {
     };
 
     useEffect(() => {
-        localStorage.getItem('userID') ? setActiveTab(2) : setActiveTab(1);
+        getLocalStorageUserId() ? setActiveTab(2) : setActiveTab(1);
     }, [setActiveTab]);
 
     useEffect(() => {

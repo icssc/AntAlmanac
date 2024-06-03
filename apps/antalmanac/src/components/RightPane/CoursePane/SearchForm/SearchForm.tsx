@@ -13,7 +13,8 @@ import PrivacyPolicyBanner from './PrivacyPolicyBanner';
 import TermSelector from './TermSelector';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import useCoursePaneStore from '$stores/CoursePaneStore';
+import { getLocalStorageHelpBoxDismissalTime, setLocalStorageHelpBoxDismissalTime } from '$lib/localStorage';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
 const styles: Styles<Theme, object> = {
     rightPane: {
@@ -66,13 +67,13 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
 
     // Display the help box only if more than 30 days has passed since the last dismissal and
     // the current month is an active month
-    const helpBoxDismissalTime = window.localStorage.getItem('helpBoxDismissalTime');
+    const helpBoxDismissalTime = getLocalStorageHelpBoxDismissalTime();
     const dismissedRecently =
         helpBoxDismissalTime !== null && Date.now() - parseInt(helpBoxDismissalTime) < 30 * 24 * 3600 * 1000;
     const displayHelpBox = helpBoxVisibility && !dismissedRecently && activeMonthIndices[currentMonthIndex];
 
     const onHelpBoxDismiss = () => {
-        window.localStorage.setItem('helpBoxDismissalTime', Date.now().toString());
+        setLocalStorageHelpBoxDismissalTime(Date.now().toString());
         setHelpBoxVisibility(false);
     };
 

@@ -10,6 +10,7 @@ import { AboutButtonGroup } from './AboutButtonGoup';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
+import { getLocalStorageUserId } from '$lib/localStorage';
 import appStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
@@ -159,7 +160,7 @@ function ExperimentalMenu() {
 
         if (!event.target.checked) return;
 
-        const savedUserID = window.localStorage.getItem('userID');
+        const savedUserID = getLocalStorageUserId();
 
         if (!savedUserID) return;
         actionTypesStore.emit('autoSaveStart');

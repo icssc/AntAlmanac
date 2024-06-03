@@ -12,6 +12,7 @@ import { PureComponent } from 'react';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '$lib/api/endpoints';
+import { getLocalStoragePhoneNumber } from '$lib/localStorage';
 
 interface NotificationItem {
     courseTitle: string;
@@ -40,7 +41,7 @@ class NotificationHub extends PureComponent {
 
         if (typeof Storage !== 'undefined') {
             // grep the project for `window\.localStorage\.setItem\('phoneNumber'` to find the source of this
-            storedPhoneNumber = window.localStorage.getItem('phoneNumber');
+            storedPhoneNumber = getLocalStoragePhoneNumber();
         }
         if (storedPhoneNumber) {
             const response = await fetch(LOOKUP_NOTIFICATIONS_ENDPOINT, {

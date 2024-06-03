@@ -8,6 +8,7 @@ import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics'
 import trpc from '$lib/api/trpc';
 import { CourseDetails } from '$lib/course_data.types';
 import { warnMultipleTerms } from '$lib/helpers';
+import { removeLocalStorageUserId, setLocalStorageUserId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 
 export interface CopyScheduleOptions {
@@ -93,9 +94,9 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
 
         if (userID.length > 0) {
             if (rememberMe) {
-                window.localStorage.setItem('userID', userID);
+                setLocalStorageUserId(userID);
             } else {
-                window.localStorage.removeItem('userID');
+                removeLocalStorageUserId();
             }
 
             const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
@@ -180,9 +181,9 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
         userId = userId.replace(/\s+/g, '');
         if (userId.length > 0) {
             if (rememberMe) {
-                window.localStorage.setItem('userID', userId);
+                setLocalStorageUserId(userId);
             } else {
-                window.localStorage.removeItem('userID');
+                removeLocalStorageUserId();
             }
 
             try {

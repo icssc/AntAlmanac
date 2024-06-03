@@ -1,4 +1,3 @@
-import { useCallback, useState } from 'react';
 import {
     Backdrop,
     type BackdropProps,
@@ -9,6 +8,9 @@ import {
     DialogTitle,
     Typography,
 } from '@mui/material';
+import { useCallback, useState } from 'react';
+
+import { getLocalStoragePatchNotesKey, setLocalStoragePatchNotesKey } from '$lib/localStorage';
 
 /**
  * Show modal only if the current patch notes haven't been shown.
@@ -22,7 +24,7 @@ export const latestPatchNotesUpdate = '20230819';
  * Whether the user's last visited patch notes is outdated.
  */
 function isOutdated() {
-    return localStorage.getItem(patchNotesKey) != latestPatchNotesUpdate;
+    return getLocalStoragePatchNotesKey() != latestPatchNotesUpdate;
 }
 
 /**
@@ -39,7 +41,7 @@ function PatchNotes() {
     const [open, setOpen] = useState(isOutdated());
 
     const handleClose = useCallback(() => {
-        localStorage.setItem(patchNotesKey, latestPatchNotesUpdate);
+        setLocalStoragePatchNotesKey(latestPatchNotesUpdate);
         setOpen(false);
     }, []);
 
@@ -88,10 +90,7 @@ function PatchNotes() {
 
 export default PatchNotes;
 
-// Test
-
-export const patchNotesKey = 'latestPatchSeen';
-
+/* Used for Tests */
 export const dialogTestId = 'patch-notes-dialog';
 
 export const backdropTestId = 'patch-notes-backdrop';

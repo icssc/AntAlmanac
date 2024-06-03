@@ -1,12 +1,14 @@
 import { Button, Popover, TextField, Typography } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import React, { PureComponent } from 'react';
+import { PureComponent } from 'react';
 import InputMask from 'react-input-mask';
 
 import { openSnackbar } from '../../../actions/AppStoreActions';
 import RightPaneStore from '../RightPaneStore';
+
 import { REGISTER_NOTIFICATIONS_ENDPOINT } from '$lib/api/endpoints';
+import { getLocalStoragePhoneNumber, setLocalStoragePhoneNumber } from '$lib/localStorage';
 
 const phoneNumberRegex = RegExp(/\d{10}/);
 
@@ -39,7 +41,7 @@ interface OpenSpotAlertPopoverState {
 class OpenSpotAlertPopover extends PureComponent<OpenSpotAlertPopoverProps, OpenSpotAlertPopoverState> {
     state = {
         anchorElement: null,
-        phoneNumber: window.localStorage.getItem('phoneNumber') || '',
+        phoneNumber: getLocalStoragePhoneNumber() || '',
         invalidInput: false,
         invalidInputMessage: '',
     };
@@ -74,7 +76,7 @@ class OpenSpotAlertPopover extends PureComponent<OpenSpotAlertPopoverProps, Open
             });
 
             if (response.status === 200) {
-                window.localStorage.setItem('phoneNumber', this.state.phoneNumber);
+                setLocalStoragePhoneNumber(this.state.phoneNumber);
                 this.setState({ anchorElement: null, invalidInput: false });
                 openSnackbar('success', `Added to watch list for ${params.sectionCode}`);
                 //TODO: Dialog with the message about txt messages paywall etc etc
