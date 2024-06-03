@@ -1,11 +1,10 @@
-import { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { RepeatingCustomEvent, ScheduleCourse, ShortCourseSchedule } from '@packages/antalmanac-types';
 import { TRPCError } from '@trpc/server';
 import { VariantType } from 'notistack';
 import { WebsocSection } from 'peterportal-api-next-types';
 
 import { SnackbarPosition } from '$components/NotificationSnackbar';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { courseNumAsDecimal } from '$lib/analytics';
+import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics';
 import trpc from '$lib/api/trpc';
 import { CourseDetails } from '$lib/course_data.types';
 import { warnMultipleTerms } from '$lib/helpers';
@@ -64,6 +63,24 @@ export const openSnackbar = (
     AppStore.openSnackbar(variant, message, duration, position, style);
 };
 
+function isEmptySchedule(schedules: ShortCourseSchedule[]) {
+    for (const schedule of schedules) {
+        if (schedule.courses.length > 0) {
+            return false;
+        }
+
+        if (schedule.customEvents.length > 0) {
+            return false;
+        }
+
+        if (schedule.scheduleNote !== '') {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 export const saveSchedule = async (userID: string, rememberMe: boolean) => {
     logAnalytics({
         category: analyticsEnum.nav.title,
@@ -71,6 +88,7 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
         label: userID,
         value: rememberMe ? 1 : 0,
     });
+
     if (userID != null) {
         userID = userID.replace(/\s+/g, '');
 
@@ -82,6 +100,15 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
             }
 
             const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+
+            if (
+                isEmptySchedule(scheduleSaveState.schedules) &&
+                !confirm(
+                    "You are attempting to save empty schedule(s). If this is unintentional, this may overwrite your existing schedules that haven't loaded yet!"
+                )
+            ) {
+                return;
+            }
 
             try {
                 await trpc.users.saveUserData.mutate({
