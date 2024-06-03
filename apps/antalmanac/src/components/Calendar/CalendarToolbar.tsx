@@ -46,7 +46,12 @@ function handleUndo() {
     undoDelete(null);
 }
 
-function EditScheduleButton(props: { index: number }) {
+interface RenameScheduleButtonProps {
+    index: number;
+    disabled?: boolean;
+}
+
+function RenameScheduleButton({ index, disabled }: RenameScheduleButtonProps) {
     const [open, setOpen] = useState(false);
 
     const handleOpen = useCallback(() => {
@@ -59,15 +64,24 @@ function EditScheduleButton(props: { index: number }) {
 
     return (
         <Box>
-            <IconButton onClick={handleOpen} size="small">
-                <EditIcon />
-            </IconButton>
-            <RenameScheduleDialog fullWidth open={open} index={props.index} onClose={handleClose} />
+            <Tooltip title="Rename Schedule">
+                <span>
+                    <IconButton onClick={handleOpen} size="small" disabled={disabled}>
+                        <EditIcon />
+                    </IconButton>
+                </span>
+            </Tooltip>
+            <RenameScheduleDialog fullWidth open={open} index={index} onClose={handleClose} />
         </Box>
     );
 }
 
-function DeleteScheduleButton(props: { index: number }) {
+interface DeleteScheduleButtonProps {
+    index: number;
+    disabled?: boolean;
+}
+
+function DeleteScheduleButton({ index, disabled }: DeleteScheduleButtonProps) {
     const [open, setOpen] = useState(false);
 
     const handleOpen = useCallback(() => {
@@ -80,10 +94,18 @@ function DeleteScheduleButton(props: { index: number }) {
 
     return (
         <Box>
-            <IconButton onClick={handleOpen} size="small" disabled={AppStore.schedule.getNumberOfSchedules() === 1}>
-                <ClearIcon />
-            </IconButton>
-            <DeleteScheduleDialog fullWidth open={open} index={props.index} onClose={handleClose} />
+            <Tooltip title="Delete Schedule">
+                <span>
+                    <IconButton
+                        onClick={handleOpen}
+                        size="small"
+                        disabled={AppStore.schedule.getNumberOfSchedules() === 1 || disabled}
+                    >
+                        <ClearIcon />
+                    </IconButton>
+                </span>
+            </Tooltip>
+            <DeleteScheduleDialog fullWidth open={open} index={index} onClose={handleClose} />
         </Box>
     );
 }
@@ -179,7 +201,6 @@ function SelectSchedulePopover(props: { scheduleNames: string[] }) {
                 variant="outlined"
                 onClick={handleClick}
                 sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
-                disabled={skeletonMode}
             >
                 <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
                     {currentScheduleName}
@@ -221,9 +242,9 @@ function SelectSchedulePopover(props: { scheduleNames: string[] }) {
                                 </Button>
                             </Box>
                             <Box display="flex" alignItems="center" gap={0.5}>
-                                <CopyScheduleButton index={index} />
-                                <EditScheduleButton index={index} />
-                                <DeleteScheduleButton index={index} />
+                                <CopyScheduleButton index={index} disabled={skeletonMode} />
+                                <RenameScheduleButton index={index} disabled={skeletonMode} />
+                                <DeleteScheduleButton index={index} disabled={skeletonMode} />
                             </Box>
                         </Box>
                     ))}
