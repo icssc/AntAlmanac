@@ -1,6 +1,16 @@
 import { create } from 'zustand';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import {
+    getLocalStorageAutoSave,
+    getLocalStoragePreviewMode,
+    getLocalStorageShow24HourTime,
+    getLocalStorageTheme,
+    setLocalStorageAutoSave,
+    setLocalStoragePreviewMode,
+    setLocalStorageShow24HourTime,
+    setLocalStorageTheme,
+} from '$lib/localStorage';
 
 export type ThemeSetting = 'light' | 'dark' | 'system';
 
@@ -24,7 +34,7 @@ function themeShouldBeDark(themeSetting: ThemeSetting) {
 }
 
 export const useThemeStore = create<ThemeStore>((set) => {
-    const storedThemeSetting: ThemeSetting = (window.localStorage?.getItem('theme') ?? 'system') as ThemeSetting;
+    const storedThemeSetting: ThemeSetting = (getLocalStorageTheme() ?? 'system') as ThemeSetting;
     const isDark = themeShouldBeDark(storedThemeSetting);
 
     return {
@@ -33,7 +43,7 @@ export const useThemeStore = create<ThemeStore>((set) => {
         isDark: isDark,
 
         setAppTheme: (themeSetting) => {
-            window.localStorage?.setItem('theme', themeSetting);
+            setLocalStorageTheme(themeSetting);
 
             const isDark = themeShouldBeDark(themeSetting);
             const appTheme = isDark ? 'dark' : 'light';
@@ -55,13 +65,13 @@ export interface TimeFormatStore {
 }
 
 export const useTimeFormatStore = create<TimeFormatStore>((set) => {
-    const isMilitaryTime = typeof Storage !== 'undefined' && window.localStorage.getItem('show24HourTime') == 'true';
+    const isMilitaryTime = typeof Storage !== 'undefined' && getLocalStorageShow24HourTime() == 'true';
 
     return {
         isMilitaryTime,
         setTimeFormat: (isMilitaryTime) => {
             if (typeof Storage !== 'undefined') {
-                window.localStorage.setItem('show24HourTime', isMilitaryTime.toString());
+                setLocalStorageShow24HourTime(isMilitaryTime.toString());
             }
             set({ isMilitaryTime });
         },
@@ -73,13 +83,13 @@ export interface PreviewStore {
 }
 
 export const usePreviewStore = create<PreviewStore>((set) => {
-    const previewMode = typeof Storage !== 'undefined' && window.localStorage.getItem('previewMode') == 'true';
+    const previewMode = typeof Storage !== 'undefined' && getLocalStoragePreviewMode() == 'true';
 
     return {
         previewMode: previewMode,
         setPreviewMode: (previewMode) => {
             if (typeof Storage !== 'undefined') {
-                window.localStorage.setItem('previewMode', previewMode.toString());
+                setLocalStoragePreviewMode(previewMode.toString());
             }
 
             set({ previewMode: previewMode });
@@ -93,13 +103,13 @@ export interface AutoSaveStore {
 }
 
 export const useAutoSaveStore = create<AutoSaveStore>((set) => {
-    const autoSave = typeof Storage !== 'undefined' && window.localStorage.getItem('autoSave') == 'true';
+    const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() == 'true';
 
     return {
         autoSave,
         setAutoSave: (autoSave) => {
             if (typeof Storage !== 'undefined') {
-                window.localStorage.setItem('autoSave', autoSave.toString());
+                setLocalStorageAutoSave(autoSave.toString());
             }
             set({ autoSave });
         },

@@ -1,6 +1,8 @@
 import { EventEmitter } from 'events';
+
 import type { ScheduleCourse, ScheduleSaveState, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { VariantType } from 'notistack';
+
 import actionTypesStore from '$actions/ActionTypesStore';
 import type {
     AddCourseAction,

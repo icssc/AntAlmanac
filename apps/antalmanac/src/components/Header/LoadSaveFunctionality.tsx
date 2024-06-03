@@ -16,6 +16,7 @@ import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
+import { getLocalStorageUserId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
@@ -59,7 +60,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
     handleOpen = () => {
         this.setState({ isOpen: true });
         if (typeof Storage !== 'undefined') {
-            const userID = window.localStorage.getItem('userID');
+            const userID = getLocalStorageUserId();
             if (userID !== null) {
                 this.setState({ userID: userID });
             }
@@ -193,7 +194,7 @@ const LoadSaveScheduleFunctionality = () => {
 
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
-            const savedUserID = window.localStorage.getItem('userID');
+            const savedUserID = getLocalStorageUserId();
 
             if (savedUserID != null) {
                 // this `void` is for eslint "no floating promises"

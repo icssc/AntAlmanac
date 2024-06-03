@@ -18,6 +18,7 @@ import noNothing from './static/no_results.png';
 import { openSnackbar } from '$actions/AppStoreActions';
 import analyticsEnum from '$lib/analytics';
 import Grades from '$lib/grades';
+import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import WebSOC from '$lib/websoc';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
@@ -61,7 +62,7 @@ const RecruitmentBanner = () => {
     const isDark = useThemeStore((store) => store.isDark);
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
-    const recruitmentDismissalTime = window.localStorage.getItem('recruitmentDismissalTime');
+    const recruitmentDismissalTime = getLocalStorageRecruitmentDismissalTime();
     const dismissedRecently =
         recruitmentDismissalTime !== null &&
         Date.now() - parseInt(recruitmentDismissalTime) < 11 * 7 * 24 * 3600 * 1000;
@@ -88,7 +89,7 @@ const RecruitmentBanner = () => {
                             size="small"
                             color="inherit"
                             onClick={() => {
-                                window.localStorage.setItem('recruitmentDismissalTime', Date.now().toString());
+                                setLocalStorageRecruitmentDismissalTime(Date.now().toString());
                                 setBannerVisibility(false);
                             }}
                         >

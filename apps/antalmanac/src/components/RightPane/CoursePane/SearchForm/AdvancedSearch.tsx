@@ -19,6 +19,8 @@ import { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
 
+import { getLocalStorageAdvanced, setLocalStorageAdvanced } from '$lib/localStorage';
+
 const styles: Styles<Theme, object> = {
     fieldContainer: {
         display: 'flex',
@@ -293,7 +295,7 @@ class AdvancedSearch extends PureComponent<AdvancedSearchProps, AdvancedSearchSt
 
         let advanced = false;
         if (typeof Storage !== 'undefined') {
-            advanced = window.localStorage.getItem('advanced') === 'expanded';
+            advanced = getLocalStorageAdvanced() === 'expanded';
         }
 
         this.state = {
@@ -303,7 +305,7 @@ class AdvancedSearch extends PureComponent<AdvancedSearchProps, AdvancedSearchSt
 
     handleExpand = () => {
         const nextExpansionState = !this.state.expandAdvanced;
-        window.localStorage.setItem('advanced', nextExpansionState ? 'expanded' : 'notexpanded');
+        setLocalStorageAdvanced(nextExpansionState ? 'expanded' : 'notexpanded');
         this.setState({ expandAdvanced: nextExpansionState });
     };
 
