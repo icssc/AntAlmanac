@@ -1,8 +1,8 @@
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
+import type { AppRouter } from 'antalmanac-backend/src/routers';
 import superjson from 'superjson';
-import type { AppRouter } from '../../../../backend/src/routers';
 
-function getEndpoint() {
+export function getEndpoint() {
     if (import.meta.env.VITE_ENDPOINT) {
         return `https://${import.meta.env.VITE_ENDPOINT}.api.antalmanac.com`;
     }

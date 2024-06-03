@@ -2,12 +2,16 @@ import { AppBar, Toolbar, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
+import AccountButton from './AccountButton';
 import Import from './Import';
-import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
+import LoadButton from './LoadButton';
+import LoginButton from './LoginButton';
+import SaveButton from './SaveButton';
 import AppDrawer from './SettingsMenu';
 
 import Logo from '$assets/logo.svg';
 import MobileLogo from '$assets/mobile-logo.svg';
+import { trpc } from '$lib/trpc';
 
 const styles = {
     appBar: {
@@ -39,6 +43,8 @@ interface CustomAppBarProps {
 const Header = ({ classes }: CustomAppBarProps) => {
     const isMobileScreen = useMediaQuery('(max-width:750px)');
 
+    const authStatus = trpc.auth.status.useQuery();
+
     return (
         <AppBar position="static" className={classes.appBar}>
             <Toolbar variant="dense" style={{ padding: '5px', display: 'flex', justifyContent: 'space-between' }}>
@@ -50,8 +56,14 @@ const Header = ({ classes }: CustomAppBarProps) => {
                 />
 
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    <LoadSaveScheduleFunctionality />
+                    <SaveButton />
+
+                    <LoadButton />
+
                     <Import key="studylist" />
+
+                    {authStatus.data ? <AccountButton /> : <LoginButton />}
+
                     <AppDrawer key="settings" />
                 </div>
             </Toolbar>
