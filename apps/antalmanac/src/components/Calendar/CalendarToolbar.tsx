@@ -110,10 +110,14 @@ function DeleteScheduleButton({ index, disabled }: DeleteScheduleButtonProps) {
     );
 }
 
+interface AddScheduleButtonProps {
+    disabled: boolean;
+}
+
 /**
  * MenuItem nested in the select menu to add a new schedule through a dialog.
  */
-function AddScheduleButton() {
+function AddScheduleButton({ disabled }: AddScheduleButtonProps) {
     const [open, setOpen] = useState(false);
 
     const handleOpen = useCallback(() => {
@@ -126,7 +130,7 @@ function AddScheduleButton() {
 
     return (
         <>
-            <Button color="inherit" onClick={handleOpen} sx={{ display: 'flex', gap: 1 }}>
+            <Button color="inherit" onClick={handleOpen} sx={{ display: 'flex', gap: 1 }} disabled={disabled}>
                 <AddIcon />
                 <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
                     Add Schedule
@@ -251,7 +255,7 @@ function SelectSchedulePopover(props: { scheduleNames: string[] }) {
 
                     <Box marginY={1} />
 
-                    <AddScheduleButton />
+                    <AddScheduleButton disabled={skeletonMode} />
                 </Box>
             </Popover>
         </Box>
@@ -272,6 +276,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
     const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const [skeletonScheduleNames, setSkeletonScheduleNames] = useState(AppStore.getSkeletonScheduleNames());
 
     const handleToggleFinals = useCallback(() => {
         logAnalytics({
@@ -288,6 +293,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
     useEffect(() => {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
+            setSkeletonScheduleNames(AppStore.getSkeletonScheduleNames());
         };
 
         AppStore.on('skeletonModeChange', handleSkeletonModeChange);
@@ -319,7 +325,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
             }}
         >
             <Box gap={1} display="flex" alignItems="center">
-                <SelectSchedulePopover scheduleNames={scheduleNames} />
+                <SelectSchedulePopover scheduleNames={skeletonMode ? skeletonScheduleNames : scheduleNames} />
                 <Tooltip title="Toggle showing finals schedule">
                     <Button
                         color={showFinalsSchedule ? 'primary' : 'inherit'}

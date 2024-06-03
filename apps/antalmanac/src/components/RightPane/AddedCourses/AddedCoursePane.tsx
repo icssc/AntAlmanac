@@ -83,7 +83,7 @@ function CustomEventsBox() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const [customEvents, setCustomEvents] = useState(
-        skeletonMode ? AppStore.getSkeletonSchedule().customEvents : AppStore.schedule.getCurrentCustomEvents()
+        skeletonMode ? AppStore.getCurrentSkeletonSchedule().customEvents : AppStore.schedule.getCurrentCustomEvents()
     );
 
     useEffect(() => {
@@ -138,7 +138,7 @@ function CustomEventsBox() {
 function ScheduleNoteBox() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const [scheduleNote, setScheduleNote] = useState(
-        skeletonMode ? AppStore.getSkeletonSchedule().scheduleNote : AppStore.getCurrentScheduleNote()
+        skeletonMode ? AppStore.getCurrentSkeletonSchedule().scheduleNote : AppStore.getCurrentScheduleNote()
     );
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
 
@@ -201,17 +201,19 @@ function ScheduleNoteBox() {
 }
 
 function SkeletonSchedule() {
-    const [skeletonSchedule, setSkeletonSchedule] = useState(AppStore.getSkeletonSchedule());
+    const [skeletonSchedule, setSkeletonSchedule] = useState(AppStore.getCurrentSkeletonSchedule());
 
     useEffect(() => {
         const updateSkeletonSchedule = () => {
-            setSkeletonSchedule(AppStore.getSkeletonSchedule());
+            setSkeletonSchedule(AppStore.getCurrentSkeletonSchedule());
         };
 
         AppStore.on('skeletonScheduleChange', updateSkeletonSchedule);
+        AppStore.on('currentScheduleIndexChange', updateSkeletonSchedule);
 
         return () => {
             AppStore.off('skeletonScheduleChange', updateSkeletonSchedule);
+            AppStore.off('currentScheduleIndexChange', updateSkeletonSchedule);
         };
     }, []);
 

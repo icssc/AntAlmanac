@@ -91,8 +91,12 @@ class AppStore extends EventEmitter {
         return this.schedule.getAllCustomEvents();
     }
 
-    getSkeletonSchedule() {
-        return this.schedule.getSkeletonSchedule();
+    getCurrentSkeletonSchedule() {
+        return this.schedule.getCurrentSkeletonSchedule();
+    }
+
+    getSkeletonScheduleNames() {
+        return this.schedule.getSkeletonScheduleNames();
     }
 
     addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
@@ -331,7 +335,7 @@ class AppStore extends EventEmitter {
         this.emit('skeletonModeChange');
 
         // Switch to added courses tab since PeterPortal can't be reached anyway
-        useTabStore.getState().setActiveTab(1);
+        useTabStore.getState().setActiveTab(2);
     }
 
     changeCurrentSchedule(newScheduleIndex: number) {
