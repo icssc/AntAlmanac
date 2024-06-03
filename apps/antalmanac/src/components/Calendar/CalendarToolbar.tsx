@@ -1,22 +1,21 @@
 import {
     Add as AddIcon,
     ArrowDropDown as ArrowDropDownIcon,
-    Delete as DeleteIcon,
     Edit as EditIcon,
     Undo as UndoIcon,
     Clear as ClearIcon,
-    ContentCopy as ContentCopyIcon,
 } from '@mui/icons-material';
 import { Box, Button, IconButton, Paper, Popover, Tooltip, Typography, useTheme } from '@mui/material';
 import { useState, useMemo, useCallback, useEffect } from 'react';
 
 import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
 
-import { changeCurrentSchedule, clearSchedules, undoDelete } from '$actions/AppStoreActions';
+import { changeCurrentSchedule, undoDelete } from '$actions/AppStoreActions';
+import { ClearScheduleButton } from '$components/buttons/Clear';
+import { CopyScheduleButton } from '$components/buttons/Copy';
 import DownloadButton from '$components/buttons/Download';
 import ScreenshotButton from '$components/buttons/Screenshot';
 import AddScheduleDialog from '$components/dialogs/AddSchedule';
-import CopyScheduleDialog from '$components/dialogs/CopySchedule';
 import DeleteScheduleDialog from '$components/dialogs/DeleteSchedule';
 import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
@@ -45,37 +44,6 @@ function handleUndo() {
         action: analyticsEnum.calendar.actions.UNDO,
     });
     undoDelete(null);
-}
-
-function handleClearSchedule() {
-    if (window.confirm('Are you sure you want to clear this schedule?')) {
-        clearSchedules();
-        logAnalytics({
-            category: analyticsEnum.calendar.title,
-            action: analyticsEnum.calendar.actions.CLEAR_SCHEDULE,
-        });
-    }
-}
-
-function CopyScheduleButton(props: { index: number }) {
-    const [open, setOpen] = useState(false);
-
-    const handleOpen = useCallback(() => {
-        setOpen(true);
-    }, []);
-
-    const handleClose = useCallback(() => {
-        setOpen(false);
-    }, []);
-
-    return (
-        <Box>
-            <IconButton onClick={handleOpen} size="small">
-                <ContentCopyIcon />
-            </IconButton>
-            <CopyScheduleDialog fullWidth open={open} index={props.index} onClose={handleClose} />
-        </Box>
-    );
 }
 
 function EditScheduleButton(props: { index: number }) {
@@ -358,11 +326,7 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
                     </IconButton>
                 </Tooltip>
 
-                <Tooltip title="Clear schedule">
-                    <IconButton onClick={handleClearSchedule} size="medium" disabled={skeletonMode}>
-                        <DeleteIcon fontSize="small" />
-                    </IconButton>
-                </Tooltip>
+                <ClearScheduleButton size="medium" fontSize="small" skeletonMode={skeletonMode} />
 
                 <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
             </Box>
