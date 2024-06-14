@@ -579,8 +579,12 @@ export class Schedules {
         this.scheduleNoteMap[scheduleNoteId] = newScheduleNote;
     }
 
-    getSkeletonSchedule(): ShortCourseSchedule {
+    getCurrentSkeletonSchedule(): ShortCourseSchedule {
         return this.skeletonSchedules[this.currentScheduleIndex];
+    }
+
+    getSkeletonScheduleNames(): string[] {
+        return this.skeletonSchedules.map((schedule) => schedule.scheduleName);
     }
 
     setSkeletonSchedules(skeletonSchedules: ShortCourseSchedule[]) {
