@@ -6,7 +6,7 @@ import { Divider, Stack, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { useCallback, useState } from 'react';
 
-import { AboutButtonGroup } from './AboutButtonGoup';
+import { AboutButtonGroup } from './AboutButtonGroup';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
