@@ -19,14 +19,15 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '../RightPane/RightPaneStore';
+
 import { addCustomEvent, openSnackbar } from '$actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { warnMultipleTerms } from '$lib/helpers';
-import AppStore from '$stores/AppStore';
-import WebSOC from '$lib/websoc';
-import { CourseInfo } from '$lib/course_data.types';
 import { addCourse } from '$actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { CourseInfo } from '$lib/course_data.types';
+import { warnMultipleTerms } from '$lib/helpers';
+import WebSOC from '$lib/websoc';
 import { ZotCourseResponse, queryZotCourse } from '$lib/zotcourse';
+import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 function Import() {
@@ -56,8 +57,10 @@ function Import() {
             try {
                 zotcourseImport = await queryZotCourse(zotcourseScheduleName);
             } catch (e) {
-                openSnackbar('error', 'Could not import from Zotcourse.');
-                console.error(e);
+                if (e instanceof Error) {
+                    openSnackbar('error', e.message);
+                    console.error(e);
+                }
                 handleClose();
                 return;
             }
@@ -66,7 +69,7 @@ function Import() {
         const sectionCodes = zotcourseImport ? zotcourseImport.codes : studyListText.match(/\d{5}/g);
 
         if (!sectionCodes) {
-            openSnackbar('error', 'Cannot import an empty/invalid Study List/Zotcourse.');
+            openSnackbar('error', `Cannot import an ${studyListText ? 'invalid' : 'empty'} Study List.`);
             handleClose();
             return;
         }
