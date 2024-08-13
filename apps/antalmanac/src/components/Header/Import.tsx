@@ -24,6 +24,7 @@ import { addCustomEvent, openSnackbar } from '$actions/AppStoreActions';
 import { addCourse } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { CourseInfo } from '$lib/course_data.types';
+import { QueryZotCourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import WebSOC from '$lib/websoc';
 import { ZotCourseResponse, queryZotCourse } from '$lib/zotcourse';
@@ -57,10 +58,12 @@ function Import() {
             try {
                 zotcourseImport = await queryZotCourse(zotcourseScheduleName);
             } catch (e) {
-                if (e instanceof Error) {
+                if (e instanceof QueryZotCourseError) {
                     openSnackbar('error', e.message);
-                    console.error(e);
+                } else {
+                    openSnackbar('error', 'Could not import from Zotcourse.');
                 }
+                console.error(e);
                 handleClose();
                 return;
             }
