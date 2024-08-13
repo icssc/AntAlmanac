@@ -24,7 +24,7 @@ import { addCustomEvent, openSnackbar } from '$actions/AppStoreActions';
 import { addCourse } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { CourseInfo } from '$lib/course_data.types';
-import { QueryZotCourseError } from '$lib/customErrors';
+import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import WebSOC from '$lib/websoc';
 import { ZotCourseResponse, queryZotCourse } from '$lib/zotcourse';
@@ -53,12 +53,18 @@ function Import() {
     const handleSubmit = async () => {
         const currentSchedule = AppStore.getCurrentScheduleIndex();
 
-        let zotcourseImport: ZotCourseResponse | null = null;
-        if (importSource === 'zotcourse') {
+        const isZotcourseImport = importSource === 'zotcourse';
+        let sectionCodes: string[] | null = null;
+
+        if (isZotcourseImport) {
             try {
-                zotcourseImport = await queryZotCourse(zotcourseScheduleName);
+                const zotcourseImport: ZotCourseResponse = await queryZotCourse(zotcourseScheduleName);
+                sectionCodes = zotcourseImport.codes;
+                for (const event of zotcourseImport.customEvents) {
+                    addCustomEvent(event, [currentSchedule]);
+                }
             } catch (e) {
-                if (e instanceof QueryZotCourseError) {
+                if (e instanceof QueryZotcourseError) {
                     openSnackbar('error', e.message);
                 } else {
                     openSnackbar('error', 'Could not import from Zotcourse.');
@@ -67,22 +73,15 @@ function Import() {
                 handleClose();
                 return;
             }
+        } else {
+            // Is importing from Study List
+            sectionCodes = studyListText.match(/\d{5}/g);
         }
-
-        const sectionCodes = zotcourseImport ? zotcourseImport.codes : studyListText.match(/\d{5}/g);
 
         if (!sectionCodes) {
-            openSnackbar('error', `Cannot import an ${studyListText ? 'invalid' : 'empty'} Study List.`);
+            openSnackbar('error', `Cannot import an empty ${isZotcourseImport ? 'Zotcourse' : 'Study List'}.`);
             handleClose();
             return;
-        }
-
-        // Import Custom Events from Zotcourse
-        if (zotcourseImport) {
-            const events = zotcourseImport.customEvents;
-            for (const event of events) {
-                addCustomEvent(event, [currentSchedule]);
-            }
         }
 
         try {
