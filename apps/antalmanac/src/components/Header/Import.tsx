@@ -27,7 +27,7 @@ import { CourseInfo } from '$lib/course_data.types';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import WebSOC from '$lib/websoc';
-import { ZotCourseResponse, queryZotCourse } from '$lib/zotcourse';
+import { zotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
@@ -58,7 +58,7 @@ function Import() {
 
         if (isZotcourseImport) {
             try {
-                const zotcourseImport: ZotCourseResponse = await queryZotCourse(zotcourseScheduleName);
+                const zotcourseImport: zotcourseResponse = await queryZotcourse(zotcourseScheduleName);
                 sectionCodes = zotcourseImport.codes;
                 for (const event of zotcourseImport.customEvents) {
                     addCustomEvent(event, [currentSchedule]);
