@@ -5,7 +5,7 @@ import { QueryZotcourseError } from './customErrors';
 
 import AppStore from '$stores/AppStore';
 
-export interface zotcourseResponse {
+export interface ZotcourseResponse {
     codes: string[];
     customEvents: RepeatingCustomEvent[];
 }
