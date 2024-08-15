@@ -3,11 +3,13 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { Skeleton } from '@material-ui/lab';
+import { RawResponse, Course, isErrorResponse, PrerequisiteTree } from 'peterportal-api-next-types';
 import { useState } from 'react';
 
-import { RawResponse, Course, isErrorResponse, PrerequisiteTree } from 'peterportal-api-next-types';
 import { MOBILE_BREAKPOINT } from '../../../globals';
+
 import PrereqTree from './PrereqTree';
+
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { PETERPORTAL_REST_ENDPOINT } from '$lib/api/endpoints';
 
@@ -190,8 +192,11 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
                     const currentTarget = event.currentTarget;
                     void togglePopover(currentTarget);
                 }}
+                style={{ minWidth: 200 }}
             >
-                {`${deptCode} ${courseNumber} | ${courseTitle}`}
+                <span
+                    style={{ whiteSpace: 'nowrap', overflow: 'hidden', textAlign: 'left' }}
+                >{`${deptCode} ${courseNumber} | ${courseTitle}`}</span>
             </Button>
             <Popover
                 anchorEl={anchorEl}

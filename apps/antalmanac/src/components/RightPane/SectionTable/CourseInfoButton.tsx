@@ -1,9 +1,10 @@
 import { Button, Paper, Popper, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { MOBILE_BREAKPOINT } from '../../../globals';
+
 import { logAnalytics } from '$lib/analytics';
 
 const styles = {
@@ -86,7 +87,7 @@ function CourseInfoButton({
                     }
                 }}
             >
-                {text}
+                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>{text}</span>
             </Button>
 
             {popupContent && (
