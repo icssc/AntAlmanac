@@ -1,7 +1,7 @@
 import { Box, Paper, Tab, Tabs, Typography } from '@material-ui/core';
 import { Event, FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
 import { GlobalStyles } from '@mui/material';
-import { Suspense, lazy, useEffect } from 'react';
+import { Suspense, lazy, useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import Calendar from './Calendar/CalendarRoot';
@@ -28,12 +28,35 @@ const styles = {
 
 const Views = ({ activeTab, mobile }: { activeTab: number; mobile: boolean }) => {
     const isDark = useThemeStore((store) => store.isDark);
+    const paneBox = useRef<HTMLDivElement | null>(null);
+    const currentScrollPosition = useRef(0);
+    const lastActiveTab = useRef<number | null>(null);
+    const savedScrollPositions = useRef<Map<number, number>>(new Map());
+
+    if (lastActiveTab.current !== activeTab) {
+        const newScrollPosition = savedScrollPositions.current.get(activeTab) ?? 0;
+        if (lastActiveTab.current == 1) {
+            savedScrollPositions.current.set(lastActiveTab.current, currentScrollPosition.current);
+        }
+        lastActiveTab.current = activeTab;
+        currentScrollPosition.current = newScrollPosition;
+        requestAnimationFrame(() => {
+            if (paneBox.current) paneBox.current.scrollTop = newScrollPosition;
+        });
+    }
 
     return activeTab === 0 ? (
         <Calendar isMobile={mobile} />
     ) : (
         <Box height="100%" style={{ margin: '0 4px' }}>
-            <Box height="calc(100% - 54px)" overflow="auto" style={{ margin: '8px 0px' }} id="course-pane-box">
+            <Box
+                ref={paneBox}
+                height="calc(100% - 54px)"
+                overflow="auto"
+                style={{ margin: '8px 0px' }}
+                id="course-pane-box"
+                onScroll={() => (currentScrollPosition.current = paneBox.current?.scrollTop ?? 0)}
+            >
                 {activeTab === 1 && <CoursePane />}
                 {activeTab === 2 && <AddedCoursePane />}
                 {activeTab === 3 && (
