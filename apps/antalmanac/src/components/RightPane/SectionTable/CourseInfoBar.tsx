@@ -194,9 +194,9 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
                 }}
                 style={{ minWidth: 200 }}
             >
-                <span
-                    style={{ whiteSpace: 'nowrap', overflow: 'hidden', textAlign: 'left' }}
-                >{`${deptCode} ${courseNumber} | ${courseTitle}`}</span>
+                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textAlign: 'left' }}>
+                    {`${deptCode} ${courseNumber} | ${courseTitle}`}
+                </span>
             </Button>
             <Popover
                 anchorEl={anchorEl}
