@@ -4,7 +4,6 @@ import { Suspense, lazy, useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { create } from 'zustand';
 
-
 import Calendar from './Calendar/CalendarRoot';
 import AddedCoursePane from './RightPane/AddedCourses/AddedCoursePane';
 import CoursePane from './RightPane/CoursePane/CoursePaneRoot';
@@ -14,7 +13,6 @@ import loadingGif from './RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import { useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
-
 
 const UCIMap = lazy(() => import('./Map/Map'));
 
@@ -63,9 +61,11 @@ function TabsContent(props: TabsContentProps) {
         };
     }, []);
 
-    return activeTab === 0 ? (
-        <Calendar isMobile={isMobile} />
-    ) : (
+    if (activeTab === 0) {
+        return <Calendar isMobile={isMobile} />;
+    }
+
+    return (
         <Box height="100%" style={{ margin: '0 4px' }}>
             <Box
                 ref={ref}
