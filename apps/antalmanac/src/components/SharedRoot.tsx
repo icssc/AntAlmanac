@@ -1,7 +1,7 @@
-import { Box, Paper, Tab, Tabs, Typography } from '@material-ui/core';
+import { Box, BoxProps, Paper, Tab, Tabs, Typography } from '@material-ui/core';
 import { Event, FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
 import { GlobalStyles } from '@mui/material';
-import { Suspense, lazy, useEffect, useRef } from 'react';
+import { Suspense, forwardRef, lazy, useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import Calendar from './Calendar/CalendarRoot';
@@ -26,6 +26,16 @@ const styles = {
     },
 };
 
+type BoxWithRefProps = BoxProps & {
+    ref?: React.Ref<HTMLDivElement>;
+};
+
+const BoxWithRef = forwardRef<HTMLDivElement, BoxWithRefProps>((props, ref) => {
+    return <Box ref={ref} {...props} />;
+});
+
+BoxWithRef.displayName = 'BoxWithRef';
+
 const Views = ({ activeTab, mobile }: { activeTab: number; mobile: boolean }) => {
     const isDark = useThemeStore((store) => store.isDark);
     const paneBox = useRef<HTMLDivElement | null>(null);
@@ -49,7 +59,7 @@ const Views = ({ activeTab, mobile }: { activeTab: number; mobile: boolean }) =>
         <Calendar isMobile={mobile} />
     ) : (
         <Box height="100%" style={{ margin: '0 4px' }}>
-            <Box
+            <BoxWithRef
                 ref={paneBox}
                 height="calc(100% - 54px)"
                 overflow="auto"
@@ -70,7 +80,7 @@ const Views = ({ activeTab, mobile }: { activeTab: number; mobile: boolean }) =>
                         <UCIMap />
                     </Suspense>
                 )}
-            </Box>
+            </BoxWithRef>
         </Box>
     );
 };
