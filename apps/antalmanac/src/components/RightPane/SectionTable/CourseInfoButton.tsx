@@ -87,7 +87,7 @@ function CourseInfoButton({
                     }
                 }}
             >
-                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden' }}>{text}</span>
+                <span style={{ whiteSpace: 'nowrap' }}>{text}</span>
             </Button>
 
             {popupContent && (
