@@ -277,7 +277,7 @@ export default function ScheduleManagement() {
     }
 
     return (
-        <Stack direction="column" flexGrow={1}>
+        <Stack direction="column" flexGrow={1} height="0">
             <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
 
             {!isMobile && (
@@ -286,7 +286,7 @@ export default function ScheduleManagement() {
                 </Paper>
             )}
 
-            <Box width="100%" flexGrow={1} padding={1}>
+            <Box width="100%" flexGrow={1} padding={1} height="0">
                 <Stack
                     id="course-pane-box"
                     direction="column"
