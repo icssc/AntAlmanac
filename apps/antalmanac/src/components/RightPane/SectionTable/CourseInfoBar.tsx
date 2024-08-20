@@ -192,7 +192,7 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
                     const currentTarget = event.currentTarget;
                     void togglePopover(currentTarget);
                 }}
-                style={{ minWidth: 200 }}
+                style={{ maxWidth: 200 }}
             >
                 <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textAlign: 'left' }}>
                     {`${deptCode} ${courseNumber} | ${courseTitle}`}
