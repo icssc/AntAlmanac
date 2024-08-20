@@ -102,19 +102,13 @@ function ScheduleManagementMobileTabs(props: ScheduleManagementTabsProps) {
                 <Tab
                     key={tab.label}
                     label={
-                        <Box
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'center',
-                                gap: 2,
-                            }}
-                        >
-                            <tab.icon style={{ width: '100%', fontSize: '22px' }} />
-                            <Typography style={{ fontSize: '10px' }}>{tab.label}</Typography>
-                        </Box>
+                        <Stack direction="row" justifyContent="center" alignItems="center" gap={1}>
+                            <tab.icon sx={{ fontSize: 14 }} />
+                            <Typography textTransform="none" style={{ fontSize: 12 }}>
+                                {tab.label}
+                            </Typography>
+                        </Stack>
                     }
-                    style={{ minWidth: '25%' }}
                 />
             ))}
         </Tabs>

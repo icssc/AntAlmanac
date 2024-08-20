@@ -39,31 +39,29 @@ function DesktopHome() {
 
             <Header />
 
-            <Stack component="main" height="100dvh">
-                <Split
-                    sizes={[45, 55]}
-                    minSize={100}
-                    expandToMin={false}
-                    gutterSize={10}
-                    gutterAlign="center"
-                    snapOffset={30}
-                    dragInterval={1}
-                    direction="horizontal"
-                    cursor="col-resize"
-                    style={{ display: 'flex', flexGrow: 1 }}
-                    gutterStyle={() => ({
-                        backgroundColor: theme.palette.primary.main,
-                        width: '10px',
-                    })}
-                >
-                    <Stack direction="column">
-                        <Calendar isMobile={false} />
-                    </Stack>
-                    <Stack direction="column">
-                        <ScheduleManagement />
-                    </Stack>
-                </Split>
-            </Stack>
+            <Split
+                sizes={[45, 55]}
+                minSize={100}
+                expandToMin={false}
+                gutterSize={10}
+                gutterAlign="center"
+                snapOffset={30}
+                dragInterval={1}
+                direction="horizontal"
+                cursor="col-resize"
+                style={{ display: 'flex', flexGrow: 1, height: '100dvh' }}
+                gutterStyle={() => ({
+                    backgroundColor: theme.palette.primary.main,
+                    width: '10px',
+                })}
+            >
+                <Stack direction="column">
+                    <Calendar isMobile={false} />
+                </Stack>
+                <Stack direction="column">
+                    <ScheduleManagement />
+                </Stack>
+            </Split>
 
             <Tutorial />
 
