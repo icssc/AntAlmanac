@@ -12,6 +12,7 @@ import { Tutorial } from '$components/Tutorial';
 
 export default function Home() {
     const isMobileScreen = useMediaQuery('(max-width: 750px)');
+
     const theme = useTheme();
 
     return (
@@ -21,7 +22,7 @@ export default function Home() {
             <Header />
 
             {isMobileScreen ? (
-                <SharedTabs mobile={true} />
+                <SharedTabs />
             ) : (
                 <>
                     <Split
@@ -44,7 +45,7 @@ export default function Home() {
                             <Calendar isMobile={false} />
                         </Box>
 
-                        <SharedTabs mobile={false} />
+                        <SharedTabs />
                     </Split>
                     <Tutorial />
                 </>

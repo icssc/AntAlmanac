@@ -1,8 +1,9 @@
-import { Box, BoxProps, Paper, Tab, Tabs, Typography } from '@material-ui/core';
-import { Event, FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
-import { GlobalStyles } from '@mui/material';
-import { Suspense, forwardRef, lazy, useEffect, useRef } from 'react';
+import { Event, FormatListBulleted, MyLocation, Search } from '@mui/icons-material';
+import { Box, GlobalStyles, Paper, Tab, Tabs, Typography, useMediaQuery } from '@mui/material';
+import { Suspense, lazy, useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { create } from 'zustand';
+
 
 import Calendar from './Calendar/CalendarRoot';
 import AddedCoursePane from './RightPane/AddedCourses/AddedCoursePane';
@@ -14,65 +15,79 @@ import { getLocalStorageUserId } from '$lib/localStorage';
 import { useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 
+
 const UCIMap = lazy(() => import('./Map/Map'));
 
-const styles = {
-    fallback: {
-        height: '100%',
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
+type ScrollPositionStore = {
+    positions: Record<number, number>;
+    setPosition: (index: number, value: number) => void;
 };
 
-type BoxWithRefProps = BoxProps & {
-    ref?: React.Ref<HTMLDivElement>;
-};
-
-const BoxWithRef = forwardRef<HTMLDivElement, BoxWithRefProps>((props, ref) => {
-    return <Box ref={ref} {...props} />;
+const useScrollPositionStore = create<ScrollPositionStore>((set) => {
+    return {
+        positions: {},
+        setPosition: (index, value) => {
+            set((current) => {
+                current.positions[index] = value;
+                return current;
+            });
+        },
+    };
 });
 
-BoxWithRef.displayName = 'BoxWithRef';
+type TabsContentProps = {
+    activeTab: number;
+    isMobile: boolean;
+};
 
-const Views = ({ activeTab, mobile }: { activeTab: number; mobile: boolean }) => {
+function TabsContent(props: TabsContentProps) {
+    const { activeTab, isMobile } = props;
+
     const isDark = useThemeStore((store) => store.isDark);
-    const paneBox = useRef<HTMLDivElement | null>(null);
-    const currentScrollPosition = useRef(0);
-    const lastActiveTab = useRef<number | null>(null);
-    const savedScrollPositions = useRef<Map<number, number>>(new Map());
 
-    if (lastActiveTab.current !== activeTab) {
-        const newScrollPosition = savedScrollPositions.current.get(activeTab) ?? 0;
-        if (lastActiveTab.current == 1) {
-            savedScrollPositions.current.set(lastActiveTab.current, currentScrollPosition.current);
+    const scrollPosition = useScrollPositionStore();
+
+    const ref = useRef<HTMLDivElement>();
+
+    useEffect(() => {
+        const savedPosition = scrollPosition.positions[activeTab];
+        if (savedPosition != null) {
+            ref.current?.scrollTo(0, savedPosition);
         }
-        lastActiveTab.current = activeTab;
-        currentScrollPosition.current = newScrollPosition;
-        requestAnimationFrame(() => {
-            if (paneBox.current) paneBox.current.scrollTop = newScrollPosition;
-        });
-    }
+
+        return () => {
+            const positionToSave = ref.current?.scrollTop;
+            if (positionToSave != null) {
+                scrollPosition.setPosition(activeTab, positionToSave);
+            }
+        };
+    }, []);
 
     return activeTab === 0 ? (
-        <Calendar isMobile={mobile} />
+        <Calendar isMobile={isMobile} />
     ) : (
         <Box height="100%" style={{ margin: '0 4px' }}>
-            <BoxWithRef
-                ref={paneBox}
+            <Box
+                ref={ref}
                 height="calc(100% - 54px)"
                 overflow="auto"
                 style={{ margin: '8px 0px' }}
                 id="course-pane-box"
-                onScroll={() => (currentScrollPosition.current = paneBox.current?.scrollTop ?? 0)}
             >
                 {activeTab === 1 && <CoursePane />}
                 {activeTab === 2 && <AddedCoursePane />}
                 {activeTab === 3 && (
                     <Suspense
                         fallback={
-                            <div style={styles.fallback}>
+                            <div
+                                style={{
+                                    height: '100%',
+                                    width: '100%',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
+                            >
                                 <img src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading map" />
                             </div>
                         }
@@ -80,22 +95,24 @@ const Views = ({ activeTab, mobile }: { activeTab: number; mobile: boolean }) =>
                         <UCIMap />
                     </Suspense>
                 )}
-            </BoxWithRef>
+            </Box>
         </Box>
     );
-};
+}
 
 interface TabInfo {
     label: string;
     href?: string;
     icon: React.ElementType;
     id?: string;
+    mobile?: true;
 }
 
 const tabs: Array<TabInfo> = [
     {
         label: 'Calendar',
         icon: Event,
+        mobile: true,
     },
     {
         label: 'Search',
@@ -116,40 +133,104 @@ const tabs: Array<TabInfo> = [
     },
 ];
 
-interface SharedTabsProps {
-    style?: Record<string, unknown>;
-    mobile: boolean;
+type ResponsiveTabProps = {
+    value: any;
+    setActiveTab: (value: any) => void;
+};
+
+function MobileTabs(props: ResponsiveTabProps) {
+    const { value, setActiveTab } = props;
+
+    const onChange = (_event: React.SyntheticEvent, value: any) => {
+        setActiveTab(value);
+    };
+
+    return (
+        <Tabs value={value} onChange={onChange} indicatorColor="primary" variant="fullWidth" centered>
+            {tabs.map((tab) => (
+                <Tab
+                    key={tab.label}
+                    label={
+                        <Box
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                gap: 2,
+                            }}
+                        >
+                            <tab.icon style={{ width: '100%', fontSize: '22px' }} />
+                            <Typography style={{ fontSize: '10px' }}>{tab.label}</Typography>
+                        </Box>
+                    }
+                    style={{ minWidth: '25%' }}
+                />
+            ))}
+        </Tabs>
+    );
 }
 
-const SharedTabs = ({ style, mobile }: SharedTabsProps) => {
+function DesktopTabs(props: ResponsiveTabProps) {
+    const { value, setActiveTab } = props;
+
+    const onChange = (_event: React.SyntheticEvent, value: any) => {
+        setActiveTab(value + 1);
+    };
+
+    return (
+        <Tabs value={value} onChange={onChange} indicatorColor="primary" variant="fullWidth" centered>
+            {tabs.map((tab) => {
+                if (tab.mobile) return;
+
+                return (
+                    <Tab
+                        key={tab.label}
+                        component={Link}
+                        label={
+                            <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+                                <tab.icon style={{ height: 16 }} />
+                                <Typography variant="body2">{tab.label}</Typography>
+                            </div>
+                        }
+                        to={tab.href ?? ''}
+                        style={{ minHeight: 'auto', height: '44px', padding: 3, minWidth: '33%' }}
+                        id={tab.id}
+                    />
+                );
+            })}
+        </Tabs>
+    );
+}
+
+function SharedTabs() {
+    const isMobile = useMediaQuery('(max-width: 750px)');
+
     const { activeTab, setActiveTab } = useTabStore();
 
-    const params = useParams();
-
-    const getActiveTab = () => {
-        return mobile ? activeTab : activeTab - 1 >= 0 ? activeTab - 1 : 0;
-    };
+    const { tab } = useParams();
 
     useEffect(() => {
         getLocalStorageUserId() ? setActiveTab(2) : setActiveTab(1);
-    }, [setActiveTab]);
+    }, []);
 
     useEffect(() => {
-        if (mobile) {
+        if (isMobile) {
             return;
         }
 
-        if (params.tab === 'map') {
+        if (tab === 'map') {
             setActiveTab(3);
         }
 
         if (activeTab == 0) {
             setActiveTab(1);
         }
-    }, [activeTab, mobile, params.tab, setActiveTab]);
+    }, [activeTab, isMobile, tab]);
+
+    const value = isMobile ? activeTab : activeTab - 1 >= 0 ? activeTab - 1 : 0;
 
     return (
-        <Box style={{ ...style, height: 'calc(100vh - 58px)' }}>
+        <Box style={{ height: 'calc(100vh - 58px)' }}>
             <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
             <Paper
                 elevation={0}
@@ -157,56 +238,16 @@ const SharedTabs = ({ style, mobile }: SharedTabsProps) => {
                 square
                 style={{ margin: '0px 4px 4px', borderRadius: '4px 4px 0 0' }}
             >
-                <Tabs
-                    value={getActiveTab()}
-                    onChange={(_event, value) => {
-                        setActiveTab(mobile ? value : value + 1);
-                    }}
-                    indicatorColor="primary"
-                    variant="fullWidth"
-                    centered
-                >
-                    {!mobile
-                        ? tabs.slice(1).map((tab) => (
-                              <Tab
-                                  key={tab.label}
-                                  component={Link}
-                                  label={
-                                      <div style={{ display: 'inline-flex', alignItems: 'center' }}>
-                                          <tab.icon style={{ height: 16 }} />
-                                          <Typography variant="body2">{tab.label}</Typography>
-                                      </div>
-                                  }
-                                  to={tab.href ?? ''}
-                                  style={{ minHeight: 'auto', height: '44px', padding: 3, minWidth: '33%' }}
-                                  id={tab.id}
-                              />
-                          ))
-                        : tabs.map((tab) => (
-                              <Tab
-                                  key={tab.label}
-                                  label={
-                                      <Box
-                                          style={{
-                                              display: 'flex',
-                                              flexDirection: 'column',
-                                              justifyContent: 'center',
-                                              gap: 2,
-                                          }}
-                                      >
-                                          <tab.icon style={{ width: '100%', fontSize: '22px' }} />
-                                          <Typography style={{ fontSize: '10px' }}>{tab.label}</Typography>
-                                      </Box>
-                                  }
-                                  style={{ minWidth: '25%' }}
-                              />
-                          ))}
-                </Tabs>
+                {isMobile ? (
+                    <MobileTabs value={value} setActiveTab={setActiveTab} />
+                ) : (
+                    <DesktopTabs value={value} setActiveTab={setActiveTab} />
+                )}
             </Paper>
 
-            <Views activeTab={activeTab} mobile={mobile} />
+            <TabsContent activeTab={activeTab} isMobile={isMobile} />
         </Box>
     );
-};
+}
 
 export default SharedTabs;
