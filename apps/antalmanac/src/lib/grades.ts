@@ -1,4 +1,5 @@
 import { GE } from 'peterportal-api-next-types';
+
 import { queryGraphQL } from './helpers';
 
 export interface Grades {

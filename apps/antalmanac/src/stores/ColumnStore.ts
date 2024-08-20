@@ -65,5 +65,3 @@ export const useColumnStore = create<ColumnStore>((set, _) => {
         },
     };
 });
-
-export default useColumnStore;

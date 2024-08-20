@@ -1,12 +1,11 @@
 import ReplayIcon from '@mui/icons-material/Replay';
 import { Fab, Tooltip } from '@mui/material';
-
 import { useTour } from '@reactour/tour';
-
 import { useEffect, useMemo } from 'react';
+
 import { stepsFactory, tourShouldRun } from '$lib/TutorialHelpers';
-import useCoursePaneStore from '$stores/CoursePaneStore';
 import { removeSampleClasses } from '$lib/tourExampleGeneration';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
 export function Tutorial() {
     const { setCurrentStep, setIsOpen, setSteps, isOpen } = useTour();

@@ -1,9 +1,8 @@
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
-import React, { PureComponent } from 'react';
-
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { ChangeEvent, PureComponent } from 'react';
 
 interface ScheduleSelectorProps {
     customEvent?: RepeatingCustomEvent;
@@ -21,7 +20,7 @@ class ScheduleSelector extends PureComponent<ScheduleSelectorProps, ScheduleSele
         scheduleIndices: this.props.scheduleIndices,
     };
 
-    handleChange = (dayIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleChange = (dayIndex: number) => (event: ChangeEvent<HTMLInputElement>) => {
         const checked = event.target.checked;
 
         this.setState(

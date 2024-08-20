@@ -1,8 +1,8 @@
-import { forwardRef, type Ref } from 'react';
-import Leaflet from 'leaflet';
-import { Marker, Popup } from 'react-leaflet';
-import { Box, Button, IconButton, Typography } from '@mui/material';
 import { DirectionsWalk as DirectionsWalkIcon, Info } from '@mui/icons-material';
+import { Box, Button, IconButton, Typography } from '@mui/material';
+import { type Marker, divIcon } from 'leaflet';
+import { forwardRef, type Ref } from 'react';
+import { Marker as ReactLeafletMarker, Popup } from 'react-leaflet';
 
 const GOOGLE_MAPS_URL = 'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=';
 const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId=463&image=';
@@ -11,7 +11,7 @@ const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId
  * returns a leaflet DivIcon that can replace the marker's default blue icon
  */
 function getMarkerIcon(color = '', stackIndex = 1, label = '') {
-    return Leaflet.divIcon({
+    return divIcon({
         /**
          * Adds offset to __marker__ for stacking markers.
          */
@@ -71,9 +71,9 @@ interface Props {
  * Custom map marker + popup with course info.
  */
 const LocationMarker = forwardRef(
-    ({ lat, lng, color, image, location, acronym, stackIndex, label, children }: Props, ref?: Ref<Leaflet.Marker>) => {
+    ({ lat, lng, color, image, location, acronym, stackIndex, label, children }: Props, ref?: Ref<Marker>) => {
         return (
-            <Marker
+            <ReactLeafletMarker
                 ref={ref}
                 position={[lat, lng]}
                 icon={getMarkerIcon(color, stackIndex, label)}
@@ -142,7 +142,7 @@ const LocationMarker = forwardRef(
                         </Box>
                     </Box>
                 </Popup>
-            </Marker>
+            </ReactLeafletMarker>
         );
     }
 );

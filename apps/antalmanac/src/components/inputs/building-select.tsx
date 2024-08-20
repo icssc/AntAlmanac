@@ -1,5 +1,6 @@
-import { useCallback, useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
+import { useCallback, useMemo } from 'react';
+
 import buildingCatalogue, { Building } from '$lib/buildingCatalogue';
 
 export interface ExtendedBuilding extends Building {

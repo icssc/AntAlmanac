@@ -1,8 +1,10 @@
 import { PureComponent } from 'react';
 
 import RightPaneStore from '../RightPaneStore';
+
 import { SectionTableProps } from './SectionTable.types';
 import SectionTableLazyWrapper from './SectionTableLazyWrapper';
+
 import WebSOC from '$lib/websoc';
 
 /**

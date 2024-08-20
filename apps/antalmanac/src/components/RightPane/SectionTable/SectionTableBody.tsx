@@ -31,7 +31,7 @@ import Grades from '$lib/grades';
 import { clickToCopy } from '$lib/helpers';
 import locationIds from '$lib/location_ids';
 import AppStore from '$stores/AppStore';
-import useColumnStore, { type SectionTableColumn } from '$stores/ColumnStore';
+import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { usePreviewStore, useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';

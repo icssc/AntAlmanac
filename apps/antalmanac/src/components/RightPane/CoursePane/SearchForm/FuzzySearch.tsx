@@ -1,12 +1,13 @@
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { AutocompleteInputChangeReason } from '@material-ui/lab/Autocomplete';
 import { PureComponent } from 'react';
-import search from 'websoc-fuzzy-search';
 import UAParser from 'ua-parser-js';
+import search from 'websoc-fuzzy-search';
 
 type SearchResult = ReturnType<typeof search>;
 
 import RightPaneStore from '../../RightPaneStore';
+
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 const emojiMap: Record<string, string> = {

@@ -20,8 +20,7 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '../RightPane/RightPaneStore';
 
-import { addCustomEvent, openSnackbar } from '$actions/AppStoreActions';
-import { addCourse } from '$actions/AppStoreActions';
+import { addCustomEvent, openSnackbar, addCourse } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { CourseInfo } from '$lib/course_data.types';
 import { QueryZotcourseError } from '$lib/customErrors';

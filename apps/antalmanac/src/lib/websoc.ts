@@ -1,4 +1,5 @@
 import type { WebsocAPIResponse, WebsocSectionMeeting } from 'peterportal-api-next-types';
+
 import { PETERPORTAL_WEBSOC_ENDPOINT } from './api/endpoints';
 import type { CourseInfo } from './course_data.types';
 

@@ -11,7 +11,7 @@ import { openSnackbar } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import Grades from '$lib/grades';
 import WebSOC from '$lib/websoc';
-import useCoursePaneStore from '$stores/CoursePaneStore';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
 function RightPane() {
     const { key, forceUpdate, searchIsDisplayed, displaySearch, displaySections } = useCoursePaneStore();

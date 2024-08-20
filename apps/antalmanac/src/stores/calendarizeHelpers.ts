@@ -1,9 +1,9 @@
-import { ScheduleCourse } from '@packages/antalmanac-types';
+import { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { HourMinute } from 'peterportal-api-next-types';
-import { RepeatingCustomEvent } from '@packages/antalmanac-types';
+
 import { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
-import { notNull, getReferencesOccurring } from '$lib/utils';
 import { getFinalsStartForTerm } from '$lib/termData';
+import { notNull, getReferencesOccurring } from '$lib/utils';
 
 export const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 

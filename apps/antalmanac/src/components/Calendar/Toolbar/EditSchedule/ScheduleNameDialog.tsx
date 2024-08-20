@@ -1,4 +1,3 @@
-import { forwardRef, useCallback, useState, useMemo } from 'react';
 import {
     Button,
     Dialog,
@@ -13,6 +12,7 @@ import {
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Add, Edit } from '@material-ui/icons';
+import { forwardRef, useCallback, useState, useMemo, MouseEvent, ChangeEvent, KeyboardEvent } from 'react';
 
 import { addSchedule, renameSchedule } from '$actions/AppStoreActions';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -49,7 +49,7 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
 
     // We need to stop propagation so that the select menu won't close
     const handleOpen = useCallback(
-        (event: React.MouseEvent) => {
+        (event: MouseEvent<HTMLLIElement>) => {
             event.stopPropagation();
             setIsOpen(true);
             onOpen?.();
@@ -69,7 +69,7 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
         }
     }, [rename, scheduleNames, scheduleRenameIndex]);
 
-    const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleNameChange = useCallback((event: ChangeEvent<HTMLTextAreaElement>) => {
         setScheduleName(event.target.value);
     }, []);
 
@@ -86,7 +86,7 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
     }, [onClose, rename, scheduleName, scheduleRenameIndex]);
 
     const handleKeyDown = useCallback(
-        (event: React.KeyboardEvent<HTMLDivElement>) => {
+        (event: KeyboardEvent<HTMLDivElement>) => {
             event.stopPropagation();
 
             if (event.key === 'Enter') {
@@ -125,7 +125,7 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
                 fullWidth
                 open={isOpen}
                 onKeyDown={handleKeyDown}
-                onClick={(event: React.MouseEvent<Element, MouseEvent>) => event.stopPropagation()}
+                onClick={(event: MouseEvent<HTMLDivElement>) => event.stopPropagation()}
                 onClose={() => setIsOpen(false)}
             >
                 <DialogTitle>{rename ? 'Rename Schedule' : 'Add a New Schedule'}</DialogTitle>

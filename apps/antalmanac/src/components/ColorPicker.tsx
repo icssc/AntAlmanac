@@ -1,6 +1,6 @@
 import { IconButton, Popover, Tooltip } from '@material-ui/core';
 import { ColorLens } from '@material-ui/icons';
-import React, { PureComponent } from 'react';
+import { MouseEventHandler, PureComponent } from 'react';
 import { SketchPicker } from 'react-color';
 
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
@@ -26,7 +26,7 @@ class ColorPicker extends PureComponent<ColorPickerProps> {
         color: this.props.color,
     };
 
-    handleClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
+    handleClick: MouseEventHandler<HTMLButtonElement> = (event) => {
         event.stopPropagation();
 
         this.setState({
