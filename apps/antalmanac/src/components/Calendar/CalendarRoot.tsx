@@ -218,6 +218,7 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
                 height: isMobile ? 'calc(100% - 50px)' : undefined,
                 margin: '0px 4px',
                 borderRadius: '1px',
+                flexGrow: 1,
             }}
             id={'calendar-root'}
         >
