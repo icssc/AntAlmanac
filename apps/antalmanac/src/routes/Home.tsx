@@ -18,7 +18,7 @@ function MobileHome() {
 
             <PatchNotes />
 
-            <Stack component="main" height="100%">
+            <Stack component="main" height="100dvh">
                 <Header />
                 <ScheduleManagement />
             </Stack>
@@ -39,29 +39,31 @@ function DesktopHome() {
 
             <Header />
 
-            <Split
-                sizes={[45, 55]}
-                minSize={100}
-                expandToMin={false}
-                gutterSize={10}
-                gutterAlign="center"
-                snapOffset={30}
-                dragInterval={1}
-                direction="horizontal"
-                cursor="col-resize"
-                style={{ display: 'flex' }}
-                gutterStyle={() => ({
-                    backgroundColor: theme.palette.primary.main,
-                    width: '10px',
-                })}
-            >
-                <Box>
-                    <Calendar isMobile={false} />
-                </Box>
-                <Stack width="100%" height="calc(100vh - 58px)">
-                    <ScheduleManagement />
-                </Stack>
-            </Split>
+            <Stack component="main" height="100dvh">
+                <Split
+                    sizes={[45, 55]}
+                    minSize={100}
+                    expandToMin={false}
+                    gutterSize={10}
+                    gutterAlign="center"
+                    snapOffset={30}
+                    dragInterval={1}
+                    direction="horizontal"
+                    cursor="col-resize"
+                    style={{ display: 'flex' }}
+                    gutterStyle={() => ({
+                        backgroundColor: theme.palette.primary.main,
+                        width: '10px',
+                    })}
+                >
+                    <Box>
+                        <Calendar isMobile={false} />
+                    </Box>
+                    <Stack width="100%" height="calc(100vh - 58px)">
+                        <ScheduleManagement />
+                    </Stack>
+                </Split>
+            </Stack>
 
             <Tutorial />
 
