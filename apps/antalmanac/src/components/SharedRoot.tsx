@@ -47,32 +47,51 @@ function TabsContent(props: TabsContentProps) {
 
     const ref = useRef<HTMLDivElement>();
 
+    const onScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
+        const positionToSave = e.currentTarget.scrollTop;
+        scrollPosition.setPosition(activeTab, positionToSave);
+    };
+
     useEffect(() => {
         const savedPosition = scrollPosition.positions[activeTab];
+
+        let animationFrame: number;
+
         if (savedPosition != null) {
-            ref.current?.scrollTo(0, savedPosition);
+            animationFrame = requestAnimationFrame(() => {
+                if (ref.current) {
+                    ref.current.scrollTop = savedPosition;
+                }
+            });
         }
 
         return () => {
-            const positionToSave = ref.current?.scrollTop;
-            if (positionToSave != null) {
-                scrollPosition.setPosition(activeTab, positionToSave);
+            if (animationFrame != null) {
+                cancelAnimationFrame(animationFrame);
             }
         };
-    }, []);
+    }, [activeTab, scrollPosition.positions]);
+
+    useEffect(() => {
+        const positionToSave = ref.current?.scrollTop;
+        if (positionToSave != null) {
+            scrollPosition.setPosition(activeTab, positionToSave);
+        }
+    }, [activeTab]);
 
     if (activeTab === 0) {
         return <Calendar isMobile={isMobile} />;
     }
 
     return (
-        <Box height="100%" style={{ margin: '0 4px' }}>
+        <Box width="100%" height="100%" style={{ margin: '0 4px' }}>
             <Box
                 ref={ref}
                 height="calc(100% - 54px)"
                 overflow="auto"
                 style={{ margin: '8px 0px' }}
                 id="course-pane-box"
+                onScroll={onScroll}
             >
                 {activeTab === 1 && <CoursePane />}
                 {activeTab === 2 && <AddedCoursePane />}
