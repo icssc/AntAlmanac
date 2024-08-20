@@ -17,15 +17,16 @@ import noNothing from './static/no_results.png';
 
 import { openSnackbar } from '$actions/AppStoreActions';
 import analyticsEnum from '$lib/analytics';
-import Grades from '$lib/grades';
+import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
-import WebSOC from '$lib/websoc';
+import { WebSOC } from '$lib/websoc';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 function getColors() {
-    const courseColors = AppStore.schedule.getCurrentCourses().reduce(
+    const currentCourses = AppStore.schedule.getCurrentCourses();
+    const courseColors = currentCourses.reduce(
         (accumulator, { section }) => {
             accumulator[section.sectionCode] = section.color;
             return accumulator;
@@ -275,7 +276,7 @@ export default function CourseRenderPane(props: { id?: number }) {
         return () => {
             setHoveredEvents(undefined);
         };
-    }, []);
+    }, [setHoveredEvents]);
 
     return (
         <>

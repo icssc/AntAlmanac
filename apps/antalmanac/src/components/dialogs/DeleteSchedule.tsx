@@ -42,12 +42,12 @@ function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
 
     const handleCancel = useCallback(() => {
         onClose?.({}, 'escapeKeyDown');
-    }, [onClose, index]);
+    }, [onClose]);
 
     const handleDelete = useCallback(() => {
         deleteSchedule(index);
         onClose?.({}, 'escapeKeyDown');
-    }, [index]);
+    }, [index, onClose]);
 
     return (
         <Dialog {...dialogProps}>

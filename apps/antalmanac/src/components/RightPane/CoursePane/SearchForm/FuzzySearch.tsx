@@ -124,9 +124,8 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
             case 'DEPARTMENT':
                 return `${emojiMap.DEPARTMENT} ${option}: ${object.name}`;
             case 'COURSE':
-                return `${emojiMap.COURSE} ${object.metadata.department} ${(object.metadata as any).number}: ${
-                    object.name
-                }`;
+                // @ts-expect-error type SearchResult.metadata can only be of type CourseMetaData in this case, but the type is not exposed so we can't cast directly
+                return `${emojiMap.COURSE} ${object.metadata.department} ${object.metadata.number}: ${object.name}`;
             case 'INSTRUCTOR':
                 return `${emojiMap.INSTRUCTOR} ${object.name}`;
             default:

@@ -25,7 +25,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { CourseInfo } from '$lib/course_data.types';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
-import WebSOC from '$lib/websoc';
+import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';

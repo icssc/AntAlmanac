@@ -212,5 +212,3 @@ class _WebSOC {
 }
 
 export const WebSOC = new _WebSOC();
-
-export default WebSOC;
