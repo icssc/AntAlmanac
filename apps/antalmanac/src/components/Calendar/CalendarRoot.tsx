@@ -213,15 +213,7 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
     }, []);
 
     return (
-        <Box
-            style={{
-                height: isMobile ? 'calc(100% - 50px)' : undefined,
-                margin: '0px 4px',
-                borderRadius: '1px',
-                flexGrow: 1,
-            }}
-            id={'calendar-root'}
-        >
+        <Box id="calendar-root" marginY={1} borderRadius={1} flexGrow={1}>
             <CalendarToolbar
                 currentScheduleIndex={currentScheduleIndex}
                 toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}

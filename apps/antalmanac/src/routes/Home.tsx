@@ -1,5 +1,5 @@
 import DateFnsUtils from '@date-io/date-fns';
-import { Box, CssBaseline, useMediaQuery, useTheme } from '@material-ui/core';
+import { CssBaseline, useMediaQuery, useTheme } from '@material-ui/core';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { Stack } from '@mui/material';
 import Split from 'react-split';
@@ -50,16 +50,16 @@ function DesktopHome() {
                     dragInterval={1}
                     direction="horizontal"
                     cursor="col-resize"
-                    style={{ display: 'flex' }}
+                    style={{ display: 'flex', flexGrow: 1 }}
                     gutterStyle={() => ({
                         backgroundColor: theme.palette.primary.main,
                         width: '10px',
                     })}
                 >
-                    <Box>
+                    <Stack direction="column">
                         <Calendar isMobile={false} />
-                    </Box>
-                    <Stack width="100%" height="calc(100vh - 58px)">
+                    </Stack>
+                    <Stack direction="column">
                         <ScheduleManagement />
                     </Stack>
                 </Split>
