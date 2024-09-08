@@ -6,6 +6,7 @@ import Import from './Import';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import Logo from './Logo';
 import AppDrawer from './SettingsMenu';
+import { BrandIntegration } from './BrandIntegration';
 
 const styles = {
     appBar: {
@@ -40,12 +41,16 @@ const Header = ({ classes }: CustomAppBarProps) => {
     return (
         <AppBar position="static" className={classes.appBar}>
             <Toolbar variant="dense" style={{ padding: '5px', display: 'flex', justifyContent: 'space-between' }}>
-                <Logo />
+                <div style={{ width: !isMobileScreen ? "14%" : "30%", height: "100%" }}>
+                    <BrandIntegration isMobile={isMobileScreen}/>
+                </div>
+                
+                {!isMobileScreen ? <Logo /> : null}
 
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    <LoadSaveScheduleFunctionality />
-                    <Import key="studylist" />
+                <div style={{ display: 'flex', flexDirection: 'row-reverse', width: !isMobileScreen ? "14%" : "65%"}}>
                     <AppDrawer key="settings" />
+                    <Import key="studylist" />
+                    <LoadSaveScheduleFunctionality />
                 </div>
             </Toolbar>
         </AppBar>
