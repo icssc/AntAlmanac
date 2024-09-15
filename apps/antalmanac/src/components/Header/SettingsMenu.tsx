@@ -10,11 +10,11 @@ import { AboutButtonGroup } from './AboutButtonGroup';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
+import { BrandIntegration } from '$components/brandIntegrations/BrandIntegration';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import appStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
-import { BrandIntegration } from './BrandIntegration';
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',
@@ -249,19 +249,22 @@ function AppDrawer() {
                             height: '4rem',
                         }}
                     >
-                        <div style={{ height: "90%", width: "90%", display: "flex", justifyContent: "space-around"}}>
-                            <BrandIntegration isMobile={ isMobileScreen } />
+                        <div style={{ height: '90%', width: '90%', display: 'flex', justifyContent: 'space-around' }}>
+                            <BrandIntegration isMobile={isMobileScreen} />
                         </div>
-                        <IconButton size="large" onClick={handleDrawerClose} >
+                        <IconButton size="large" onClick={handleDrawerClose}>
                             <Close fontSize="inherit" />
                         </IconButton>
                     </Box>
 
                     <SettingsMenu />
 
-                    <Box sx={{ padding: '1.5rem', width: '100%', bottom: 0, position: 'absolute' }} id="drawer-bottom-box">
-                        <div style={{ height: "3rem", paddingRight: "1rem", paddingLeft: "1rem"}}>
-                            <BrandIntegration isMobile={ isMobileScreen } />
+                    <Box
+                        sx={{ padding: '1.5rem', width: '100%', bottom: 0, position: 'absolute' }}
+                        id="drawer-bottom-box"
+                    >
+                        <div style={{ height: '3rem', paddingRight: '1rem', paddingLeft: '1rem' }}>
+                            <BrandIntegration isMobile={isMobileScreen} />
                         </div>
                         <AboutButtonGroup />
                     </Box>
