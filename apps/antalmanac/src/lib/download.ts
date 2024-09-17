@@ -279,6 +279,7 @@ export function getEventsFromCourses(
                 // location: `${location.building} ${location.room}`,
                 start: firstClassStart,
                 end: firstClassEnd,
+                classification: 'PRIVATE',
                 recurrenceRule: rrule,
             };
             return customEvent;
@@ -302,6 +303,7 @@ export function getEventsFromCourses(
                             description: `Final Exam for ${courseTitle}`,
                             start: finalStart,
                             end: finalEnd,
+                            classification: 'PRIVATE',
                         };
                     } else {
                         const classStartDate = getClassStartDate(term, days);
@@ -324,6 +326,7 @@ export function getEventsFromCourses(
                             location: `${location.building} ${location.room}`,
                             start: firstClassStart,
                             end: firstClassEnd,
+                            classification: 'PRIVATE',
                             recurrenceRule: rrule,
                         };
                     }
