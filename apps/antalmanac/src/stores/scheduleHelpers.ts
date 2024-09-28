@@ -181,6 +181,6 @@ export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSche
     // If there are no existing sections with the same course title, generate a new color. If we run out of unique colors, return the next color up after the last default color in use, looping after reaching the end.
     return (
         defaultColors.find((materialColor) => !usedColors.includes(materialColor)) ||
-        defaultColors[(defaultColors.indexOf(lastDefaultColor) + 1) % 7]
+        defaultColors[(defaultColors.indexOf(lastDefaultColor) + 1) % defaultColors.length]
     );
 }
