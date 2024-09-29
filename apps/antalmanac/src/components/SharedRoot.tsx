@@ -101,10 +101,13 @@ function ScheduleManagementMobileTabs(props: ScheduleManagementTabsProps) {
             {scheduleManagementTabs.map((tab) => (
                 <Tab
                     key={tab.label}
+                    sx={{
+                        '&.Mui-selected': { color: 'white' },
+                    }}
                     label={
                         <Stack direction="column" alignItems="center" paddingBottom={1} gap={0.25}>
                             <tab.icon sx={{ fontSize: 20 }} />
-                            <Typography textTransform="none" style={{ fontSize: 9 }}>
+                            <Typography textTransform="none" sx={{ fontSize: 9 }}>
                                 {tab.label}
                             </Typography>
                         </Stack>

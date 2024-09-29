@@ -1,6 +1,6 @@
 import DateFnsUtils from '@date-io/date-fns';
-import { CssBaseline, useMediaQuery, useTheme } from '@material-ui/core';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { CssBaseline, useMediaQuery, useTheme } from '@mui/material';
 import { Stack } from '@mui/material';
 import Split from 'react-split';
 
