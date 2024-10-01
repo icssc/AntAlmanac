@@ -69,8 +69,6 @@ interface ScheduleCalendarProps {
 }
 
 export default function ScheduleCalendar(_props?: ScheduleCalendarProps) {
-    // const { isMobile } = props;
-
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
     const [courseInMoreInfo, setCourseInMoreInfo] = useState<CalendarEvent | null>(null);
@@ -162,8 +160,6 @@ export default function ScheduleCalendar(_props?: ScheduleCalendarProps) {
 
     const events = getEventsForCalendar();
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
-
-    // const calendarStyling = isMobile ? { height: `calc(100% - 55px)` } : { height: `calc(100vh - 104px)` };
 
     const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
     const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
