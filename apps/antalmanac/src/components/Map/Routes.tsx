@@ -67,7 +67,7 @@ function createRouter(props: ClassRoutesProps, context: LeafletContextInterface)
                 extendToWaypoints: true,
                 missingRouteTolerance: 0,
                 styles: [
-                    { opacity: 0, weight: 30 }, // invisble line extends the range of click/hover events
+                    { opacity: 0, weight: 30 }, // invisible line extends the range of click/hover events
                     { color: props.color, weight: 3 },
                 ],
             });

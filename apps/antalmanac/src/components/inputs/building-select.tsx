@@ -24,11 +24,13 @@ export type BuildingSelectProps = {
 };
 
 export function BuildingSelect(props: BuildingSelectProps) {
+    const { onChange } = props;
+
     const handleChange = useCallback(
         async (_event: React.SyntheticEvent, value: ExtendedBuilding | null) => {
-            await props.onChange?.(value);
+            await onChange?.(value);
         },
-        [props]
+        [onChange]
     );
 
     const value = useMemo(() => {
