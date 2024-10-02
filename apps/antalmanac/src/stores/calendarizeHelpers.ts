@@ -1,4 +1,4 @@
-import { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import type { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { HourMinute } from 'peterportal-api-next-types';
 
 import { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
@@ -101,7 +101,9 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
              *
              * @example [false, false, false, true, false, true, false] -> [3, 5]
              */
-            const dayIndicesOcurring = weekdaysOccurring.map((day, index) => (day ? index : undefined)).filter(notNull);
+            const dayIndicesOccurring = weekdaysOccurring
+                .map((day, index) => (day ? index : undefined))
+                .filter(notNull);
 
             const locationsWithNoDays = bldg ? bldg.map(getLocation) : course.section.meetings[0].bldg.map(getLocation);
 
@@ -111,7 +113,7 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
              */
             const [finalsYear, finalsMonth, finalsDay] = [...(getFinalsStartForTerm(course.term) ?? [2018, 0])];
 
-            return dayIndicesOcurring.map((dayIndex) => ({
+            return dayIndicesOccurring.map((dayIndex) => ({
                 color: course.section.color,
                 term: course.term,
                 title: `${course.deptCode} ${course.courseNumber}`,
@@ -151,14 +153,14 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
 
 export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[] = []): CustomEvent[] {
     return currentCustomEvents.flatMap((customEvent) => {
-        const dayIndiciesOcurring = customEvent.days.map((day, index) => (day ? index : undefined)).filter(notNull);
+        const dayIndicesOccurring = customEvent.days.map((day, index) => (day ? index : undefined)).filter(notNull);
         /**
          * Only include the day strings that the custom event occurs.
          *
          * @example [1, 3, 5] -> ['M', 'W', 'F']
          */
-        const days = dayIndiciesOcurring.map((dayIndex) => COURSE_WEEK_DAYS[dayIndex]);
-        return dayIndiciesOcurring.map((dayIndex) => {
+        const days = dayIndicesOccurring.map((dayIndex) => COURSE_WEEK_DAYS[dayIndex]);
+        return dayIndicesOccurring.map((dayIndex) => {
             const startHour = parseInt(customEvent.start.slice(0, 2), 10);
             const startMin = parseInt(customEvent.start.slice(3, 5), 10);
             const endHour = parseInt(customEvent.end.slice(0, 2), 10);

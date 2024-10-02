@@ -1,7 +1,7 @@
 import { Button, Paper, Popper, useMediaQuery } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { ReactElement, useEffect, useState, MouseEvent } from 'react';
+import { useEffect, useState } from 'react';
 
 import { MOBILE_BREAKPOINT } from '../../../globals';
 
@@ -17,9 +17,9 @@ const styles = {
 interface CourseInfoButtonProps {
     classes: ClassNameMap;
     text: string;
-    icon: ReactElement;
+    icon: React.ReactElement;
     redirectLink?: string;
-    popupContent?: ReactElement;
+    popupContent?: React.ReactElement;
     analyticsAction: string;
     analyticsCategory: string;
 }
@@ -49,7 +49,7 @@ function CourseInfoButton({
         }
     }, [popupAnchor, analyticsCategory, analyticsAction]);
 
-    const handleMouseEnter = (event: MouseEvent<HTMLElement>) => {
+    const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
         // If there is popup content, allow the content to be shown when the button is hovered
         // Note that on mobile devices, hovering is not possible, so the popup still needs to be able
         // to appear when the button is clicked
@@ -72,7 +72,7 @@ function CourseInfoButton({
                 startIcon={!isMobileScreen && icon}
                 variant="contained"
                 size="small"
-                onClick={(event: MouseEvent<HTMLElement>) => {
+                onClick={(event: React.MouseEvent<HTMLElement>) => {
                     if (redirectLink) {
                         window.open(redirectLink);
                     }

@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { Skeleton } from '@material-ui/lab';
-import { RawResponse, Course, isErrorResponse, PrerequisiteTree } from 'peterportal-api-next-types';
+import { type RawResponse, type Course, isErrorResponse, type PrerequisiteTree } from 'peterportal-api-next-types';
 import { useState } from 'react';
 
 import { MOBILE_BREAKPOINT } from '../../../globals';
