@@ -2,6 +2,7 @@ import { saveAs } from 'file-saver';
 import { createEvents, type EventAttributes } from 'ics';
 import type { HourMinute } from 'peterportal-api-next-types';
 
+import buildingCatalogue from './buildingCatalogue';
 import { notNull } from './utils';
 
 import { openSnackbar } from '$actions/AppStoreActions';
@@ -276,7 +277,7 @@ export function getEventsFromCourses(
                 startOutputType: 'local' as const,
                 endOutputType: 'local' as const,
                 title: title,
-                location: buildingCatalogue[Number(building)].name,
+                location: buildingCatalogue[Number(building)]?.name,
                 start: firstClassStart,
                 end: firstClassEnd,
                 recurrenceRule: rrule,

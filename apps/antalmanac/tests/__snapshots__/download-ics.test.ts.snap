@@ -56,6 +56,7 @@ Taught by placeholderInstructor1/placeholderInstructor2",
       4,
     ],
     "endOutputType": "local",
+    "location": undefined,
     "productId": "antalmanac/ics",
     "recurrenceRule": "FREQ=WEEKLY;BYDAY=MO,WE,FR;INTERVAL=1;COUNT=30",
     "start": [

@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
 import { createTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
+import { useEffect } from 'react';
 
 import { useThemeStore } from '$stores/SettingsStore';
 
@@ -36,6 +36,19 @@ export default function AppThemeProvider(props: Props) {
                         color: appTheme == 'dark' ? 'dodgerBlue' : 'blue',
                     },
                 },
+            },
+        },
+        breakpoints: {
+            /**
+             * Based on Tailwind's breakpoints.
+             * @see https://tailwindcss.com/docs/screens
+             */
+            values: {
+                xs: 640,
+                sm: 768,
+                md: 1024,
+                lg: 1280,
+                xl: 1536,
             },
         },
         typography: {
