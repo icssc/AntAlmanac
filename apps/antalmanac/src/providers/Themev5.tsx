@@ -1,5 +1,5 @@
-import { useEffect, useMemo } from 'react';
 import { createTheme, CssBaseline, ThemeProvider, type PaletteOptions } from '@mui/material';
+import { useEffect, useMemo } from 'react';
 
 import { useThemeStore } from '$stores/SettingsStore';
 

@@ -2,6 +2,7 @@ import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { ChangeEvent, useEffect, useState } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
+
 import { termData } from '$lib/termData';
 
 interface TermSelectorProps {

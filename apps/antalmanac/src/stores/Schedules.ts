@@ -11,7 +11,7 @@ import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } f
 
 import type { CourseInfo } from '$lib/course_data.types';
 import { termData } from '$lib/termData';
-import WebSOC from '$lib/websoc';
+import { WebSOC } from '$lib/websoc';
 import { getColorForNewSection } from '$stores/scheduleHelpers';
 
 /**

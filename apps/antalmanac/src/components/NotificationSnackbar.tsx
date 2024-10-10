@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-import { amber, green } from '@material-ui/core/colors';
 import IconButton from '@material-ui/core/IconButton';
+import { amber, green } from '@material-ui/core/colors';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import CloseIcon from '@material-ui/icons/Close';
@@ -52,9 +51,7 @@ class NotificationSnackbar extends PureComponent<NotificationSnackbarProps> {
     openSnackbar = () => {
         this.props.enqueueSnackbar(AppStore.getSnackbarMessage(), {
             variant: AppStore.getSnackbarVariant(),
-            // shitty hack because notistack says it doesn't support `duration`, but this still runs without errors 🤷‍♂️
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
+            // @ts-expect-error notistack type claims it doesn't support `duration`, but this still runs without errors 🤷‍♂️
             duration: AppStore.getSnackbarDuration(),
             position: AppStore.getSnackbarPosition(),
             action: this.snackbarAction,

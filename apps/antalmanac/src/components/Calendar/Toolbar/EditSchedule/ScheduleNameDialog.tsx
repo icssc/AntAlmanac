@@ -1,4 +1,3 @@
-import { forwardRef, useCallback, useState, useMemo } from 'react';
 import {
     Button,
     Dialog,
@@ -13,6 +12,7 @@ import {
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { Add, Edit } from '@material-ui/icons';
+import { forwardRef, useCallback, useState, useMemo } from 'react';
 
 import { addSchedule, renameSchedule } from '$actions/AppStoreActions';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -86,7 +86,7 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
     }, [onClose, rename, scheduleName, scheduleRenameIndex]);
 
     const handleKeyDown = useCallback(
-        (event: React.KeyboardEvent<HTMLDivElement>) => {
+        (event: React.KeyboardEvent) => {
             event.stopPropagation();
 
             if (event.key === 'Enter') {
@@ -125,7 +125,7 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
                 fullWidth
                 open={isOpen}
                 onKeyDown={handleKeyDown}
-                onClick={(event: React.MouseEvent<Element, MouseEvent>) => event.stopPropagation()}
+                onClick={(event: React.MouseEvent) => event.stopPropagation()}
                 onClose={() => setIsOpen(false)}
             >
                 <DialogTitle>{rename ? 'Rename Schedule' : 'Add a New Schedule'}</DialogTitle>

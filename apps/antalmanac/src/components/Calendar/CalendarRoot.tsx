@@ -179,7 +179,10 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
     const finalsDateFormat = finalsDate ? 'ddd MM/DD' : 'ddd';
     const date = showFinalsSchedule && finalsDate ? finalsDate : new Date(2018, 0, 1);
 
-    // If a final is on a Saturday or Sunday, let the calendar start on Saturday
+    /**
+     * If a final is on a Saturday or Sunday, let the calendar start on Saturday
+     */
+    // eslint-disable-next-line import/no-named-as-default-member -- moment doesn't expose named exports: https://github.com/vitejs/vite-plugin-react/issues/202
     moment.updateLocale('es-us', {
         week: {
             dow: hasWeekendCourse && showFinalsSchedule ? 6 : 0,

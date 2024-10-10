@@ -1,5 +1,6 @@
-import { useCallback, useMemo } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
+import { useCallback, useMemo } from 'react';
+
 import buildingCatalogue, { Building } from '$lib/buildingCatalogue';
 
 export interface ExtendedBuilding extends Building {
@@ -23,9 +24,14 @@ export type BuildingSelectProps = {
 };
 
 export function BuildingSelect(props: BuildingSelectProps) {
-    const handleChange = useCallback(async (_event: React.SyntheticEvent, value: ExtendedBuilding | null) => {
-        await props.onChange?.(value);
-    }, []);
+    const { onChange } = props;
+
+    const handleChange = useCallback(
+        async (_event: React.SyntheticEvent, value: ExtendedBuilding | null) => {
+            await onChange?.(value);
+        },
+        [onChange]
+    );
 
     const value = useMemo(() => {
         if (props.value == null) {

@@ -1,10 +1,10 @@
-import { AppBar, Toolbar, useMediaQuery } from '@material-ui/core';
+import { AppBar, Toolbar } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
 import Import from './Import';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
-import Logo from './Logo';
+import { Logo } from './Logo';
 import AppDrawer from './SettingsMenu';
 
 const styles = {
@@ -35,8 +35,6 @@ interface CustomAppBarProps {
 }
 
 const Header = ({ classes }: CustomAppBarProps) => {
-    const isMobileScreen = useMediaQuery('(max-width:750px)');
-
     return (
         <AppBar position="static" className={classes.appBar}>
             <Toolbar variant="dense" style={{ padding: '5px', display: 'flex', justifyContent: 'space-between' }}>

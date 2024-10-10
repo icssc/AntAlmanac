@@ -27,11 +27,11 @@ import restrictionsMapping from './static/restrictionsMapping.json';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { CourseDetails } from '$lib/course_data.types';
-import Grades from '$lib/grades';
+import { Grades } from '$lib/grades';
 import { clickToCopy } from '$lib/helpers';
 import locationIds from '$lib/location_ids';
 import AppStore from '$stores/AppStore';
-import useColumnStore, { type SectionTableColumn } from '$stores/ColumnStore';
+import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { usePreviewStore, useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
@@ -480,6 +480,8 @@ interface SectionTableBodyProps {
     scheduleNames: string[];
 }
 
+// These components have too varied of types, any is fine here
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     action: SectionActionCell,
     sectionCode: CourseCodeCell,
@@ -539,7 +541,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         } else {
             setHoveredEvents(section, courseDetails, term);
         }
-    }, [alreadyHovered, section, courseDetails, term]);
+    }, [previewMode, alreadyHovered, addedCourse, setHoveredEvents, section, courseDetails, term]);
 
     // Attach event listeners to the store.
     useEffect(() => {

@@ -1,12 +1,12 @@
-import L from 'leaflet';
-import 'leaflet.locatecontrol';
-import { useEffect } from 'react';
 import { createElementHook, createElementObject, useLeafletContext } from '@react-leaflet/core';
 import type { LeafletContextInterface } from '@react-leaflet/core';
+import { control } from 'leaflet';
+import 'leaflet.locatecontrol';
+import { useEffect } from 'react';
 
-function createUserLocator(_props: any, context: LeafletContextInterface) {
+function createUserLocator(_props: unknown, context: LeafletContextInterface) {
     const userLocator = createElementObject(
-        L.control.locate({
+        control.locate({
             position: 'topleft',
             flyTo: true,
             strings: {

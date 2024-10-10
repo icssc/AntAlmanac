@@ -20,13 +20,12 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '../RightPane/RightPaneStore';
 
-import { addCustomEvent, openSnackbar } from '$actions/AppStoreActions';
-import { addCourse } from '$actions/AppStoreActions';
+import { addCustomEvent, openSnackbar, addCourse } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { CourseInfo } from '$lib/course_data.types';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
-import WebSOC from '$lib/websoc';
+import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';

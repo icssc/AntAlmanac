@@ -1,6 +1,7 @@
-import React from 'react';
+import { MouseEvent } from 'react';
 
 import { PETERPORTAL_GRAPHQL_ENDPOINT } from './api/endpoints';
+
 import { openSnackbar } from '$actions/AppStoreActions';
 
 export async function queryGraphQL<PromiseReturnType>(queryString: string): Promise<PromiseReturnType | null> {
@@ -34,7 +35,7 @@ export const warnMultipleTerms = (terms: Set<string>) => {
     );
 };
 
-export async function clickToCopy(event: React.MouseEvent<HTMLElement, MouseEvent>, sectionCode: string) {
+export async function clickToCopy(event: MouseEvent<HTMLElement>, sectionCode: string) {
     event.stopPropagation();
     await navigator.clipboard.writeText(sectionCode);
     openSnackbar('success', 'WebsocSection code copied to clipboard');

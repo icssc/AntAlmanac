@@ -10,12 +10,12 @@ import {
     Box,
     Tooltip,
 } from '@material-ui/core';
-import { useState } from 'react';
 import { Clear } from '@material-ui/icons';
+import { useState } from 'react';
 
 import { deleteSchedule } from '$actions/AppStoreActions';
-import { useThemeStore } from '$stores/SettingsStore';
 import AppStore from '$stores/AppStore';
+import { useThemeStore } from '$stores/SettingsStore';
 
 interface DeleteScheduleDialogProps {
     onClose?: () => void;
