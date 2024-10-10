@@ -2,6 +2,7 @@ import { saveAs } from 'file-saver';
 import { createEvents, type EventAttributes } from 'ics';
 import type { HourMinute } from 'peterportal-api-next-types';
 
+import buildingCatalogue from './buildingCatalogue';
 import { notNull } from './utils';
 
 import { openSnackbar } from '$actions/AppStoreActions';
@@ -261,7 +262,7 @@ export function getEventsFromCourses(
         if (event.isCustomEvent) {
             // FIXME: We don't have a way to get the term for custom events,
             // so we just use the default term.
-            const { title, start, end } = event as CustomEvent;
+            const { title, start, end, building } = event as CustomEvent;
             const days = getByDays(event.days.join(''));
             const rrule = getRRule(days, getQuarter(term));
             const eventStartDate = getClassStartDate(term, days);
@@ -275,8 +276,7 @@ export function getEventsFromCourses(
                 startOutputType: 'local' as const,
                 endOutputType: 'local' as const,
                 title: title,
-                // TODO: Add location to custom events, waiting for https://github.com/icssc/AntAlmanac/issues/249
-                // location: `${location.building} ${location.room}`,
+                location: buildingCatalogue[Number(building)]?.name,
                 start: firstClassStart,
                 end: firstClassEnd,
                 recurrenceRule: rrule,
