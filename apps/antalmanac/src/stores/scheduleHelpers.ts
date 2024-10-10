@@ -167,17 +167,20 @@ export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSche
         (course) => course.section.sectionType === newSection.section.sectionType
     );
 
-    const usedColors = new Set(sectionsInSchedule.map((course) => course.section.color));
+    const usedColors = sectionsInSchedule.map((course) => course.section.color);
+    const lastDefaultColor = usedColors.findLast((materialColor) =>
+        (defaultColors as string[]).includes(materialColor)
+    ) as unknown as (typeof defaultColors)[number];
 
     // If the same sectionType exists, return that color
     if (existingSectionsType.length > 0) return existingSectionsType[0].section.color;
 
     // If the same courseTitle exists, but not the same sectionType, return a close color
-    if (existingSections.length > 0) return generateCloseColor(existingSections[0].section.color, usedColors);
+    if (existingSections.length > 0) return generateCloseColor(existingSections[0].section.color, new Set(usedColors));
 
-    // If there are no existing sections with the same course title, generate a new color. If we run out of unique colors, return a random one that's been used already.
+    // If there are no existing sections with the same course title, generate a new color. If we run out of unique colors, return the next color up after the last default color in use, looping after reaching the end.
     return (
-        defaultColors.find((materialColor) => !usedColors.has(materialColor)) ||
-        defaultColors[Math.floor(Math.random() * defaultColors.length)]
+        defaultColors.find((materialColor) => !usedColors.includes(materialColor)) ||
+        defaultColors[(defaultColors.indexOf(lastDefaultColor) + 1) % defaultColors.length]
     );
 }
