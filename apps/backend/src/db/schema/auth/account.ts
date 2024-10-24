@@ -1,7 +1,15 @@
-import { primaryKey, pgTable, text } from 'drizzle-orm/pg-core';
+import { primaryKey, pgTable, text, pgEnum } from 'drizzle-orm/pg-core';
 
 import { user } from './user';
 
+
+export const oAuthProvider = pgEnum(
+    'account_provider',
+    ['GOOGLE']
+);
+
+// Each user can have multiple accounts, each account is associated with a provider.
+// A user without an account is a username-only user.
 export const account = pgTable(
     'account',
     {
@@ -9,18 +17,14 @@ export const account = pgTable(
             .references(() => user.id, { onDelete: 'cascade' })
             .notNull(),
 
-        providerId: text('provider').notNull(),
+        provider: oAuthProvider('provider').notNull(),
 
         providerAccountId: text('provider_account_id').notNull(),
-
-        providerAccountCredential: text('provider_account_credential'),
-
-        providerType: text('provider_type'),
     },
     (table) => {
         return {
             primaryKey: primaryKey({
-                columns: [table.userId, table.providerId, table.providerAccountId],
+                columns: [table.userId, table.provider, table.providerAccountId],
             }),
         };
     }

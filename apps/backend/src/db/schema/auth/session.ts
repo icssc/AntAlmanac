@@ -1,5 +1,5 @@
 import { createId } from '@paralleldrive/cuid2';
-import { integer, pgTable, text } from 'drizzle-orm/pg-core';
+import { timestamp, pgTable, text } from 'drizzle-orm/pg-core';
 
 import { user } from './user';
 
@@ -10,9 +10,7 @@ export const session = pgTable('session', {
         .references(() => user.id, { onDelete: 'cascade' })
         .notNull(),
 
-    expires: integer('expires').notNull(),
-
-    status: text('status').default('ACTIVE'),
+    expires: timestamp('expires').notNull(),
 
     refreshToken: text('refresh_token').$defaultFn(createId),
 });
