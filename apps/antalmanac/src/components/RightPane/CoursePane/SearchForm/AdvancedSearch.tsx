@@ -127,7 +127,11 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
             const value = event.target.value;
             this.setState({ [name]: event.target.value } as unknown as AdvancedSearchTextFieldsState);
 
-            urlParam.set(name, String(value));
+            if (value !== '') {
+                urlParam.set(name, String(value));
+            } else {
+                urlParam.delete(name);
+            }
 
             RightPaneStore.updateFormValue(name, event.target.value as string);
         }
