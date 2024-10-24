@@ -140,13 +140,19 @@ function ScheduleManagementDesktopTabs(props: ScheduleManagementTabsProps) {
                         id={tab.id}
                         to={tab.href}
                         component={Link}
+                        sx={{
+                            minHeight: 'auto',
+                            height: '44px',
+                            padding: 3,
+                            minWidth: '33%',
+                            '&.Mui-selected': { color: 'white' },
+                        }}
                         label={
                             <div style={{ display: 'inline-flex', alignItems: 'center' }}>
                                 <tab.icon style={{ height: 16 }} />
                                 <Typography variant="body2">{tab.label}</Typography>
                             </div>
                         }
-                        sx={{ minHeight: 'auto', height: '44px', padding: 3, minWidth: '33%' }}
                     />
                 );
             })}
