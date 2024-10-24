@@ -1,5 +1,5 @@
 import { Event, FormatListBulleted, MyLocation, Search } from '@mui/icons-material';
-import { Box, GlobalStyles, Paper, Stack, Tab, Tabs, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { GlobalStyles, Paper, Stack, Tab, Tabs, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
@@ -283,18 +283,19 @@ export default function ScheduleManagement() {
                 </Paper>
             )}
 
-            <Box width="100%" flexGrow={1} padding={1} height="0">
+            <Stack width="100%" height="0" flexGrow={1} padding={1}>
                 <Stack
                     id="course-pane-box"
                     direction="column"
                     overflow="auto"
-                    height="100%"
+                    height="0px"
+                    flexGrow={1}
                     ref={ref}
                     onScroll={onScroll}
                 >
                     <ScheduleManagementTabsContent activeTab={activeTab} isMobile={isMobile} />
                 </Stack>
-            </Box>
+            </Stack>
 
             {isMobile && (
                 <Paper elevation={0} variant="outlined" square sx={{ borderRadius: '4px 4px 0 0' }}>
