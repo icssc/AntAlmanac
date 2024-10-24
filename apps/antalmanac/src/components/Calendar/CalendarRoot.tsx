@@ -65,12 +65,10 @@ const AntAlmanacEvent = ({ event }: { event: CalendarEvent }) => {
 };
 
 interface ScheduleCalendarProps {
-    isMobile: boolean;
+    isMobile?: boolean;
 }
 
-export default function ScheduleCalendar(props: ScheduleCalendarProps) {
-    const { isMobile } = props;
-
+export default function ScheduleCalendar(_props?: ScheduleCalendarProps) {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
     const [courseInMoreInfo, setCourseInMoreInfo] = useState<CalendarEvent | null>(null);
@@ -163,8 +161,6 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
     const events = getEventsForCalendar();
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
 
-    const calendarStyling = isMobile ? { height: `calc(100% - 55px)` } : { height: `calc(100vh - 104px)` };
-
     const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
     const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
 
@@ -216,21 +212,14 @@ export default function ScheduleCalendar(props: ScheduleCalendarProps) {
     }, []);
 
     return (
-        <Box
-            style={{
-                height: isMobile ? 'calc(100% - 50px)' : undefined,
-                margin: '0px 4px',
-                borderRadius: '1px',
-            }}
-            id={'calendar-root'}
-        >
+        <Box id="calendar-root" borderRadius={1} flexGrow={1} height={0} display="flex" flexDirection="column">
             <CalendarToolbar
                 currentScheduleIndex={currentScheduleIndex}
                 toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
                 showFinalsSchedule={showFinalsSchedule}
                 scheduleNames={scheduleNames}
             />
-            <Box id="screenshot" style={calendarStyling}>
+            <Box id="screenshot" height="0" flexGrow={1}>
                 <Popper
                     anchorEl={anchorEl}
                     placement="right"
