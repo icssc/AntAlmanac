@@ -18,7 +18,7 @@ const styles: Styles<Theme, object> = {
         display: 'inline-flex',
         cursor: 'pointer',
         marginTop: 20,
-        marginBotton: 10,
+        marginBottom: 10,
     },
     search: {
         display: 'flex',
