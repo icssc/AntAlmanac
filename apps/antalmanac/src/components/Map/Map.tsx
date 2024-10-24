@@ -1,3 +1,5 @@
+import 'leaflet/dist/leaflet.css';
+import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import './Map.css';
 
 import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
