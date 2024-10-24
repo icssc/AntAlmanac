@@ -339,6 +339,29 @@ class AdvancedSearch extends PureComponent<AdvancedSearchProps, AdvancedSearchSt
         };
     }
 
+    componentDidMount() {
+        RightPaneStore.on('formReset', this.resetParams);
+    }
+
+    resetParams() {
+        const stateObj = { url: 'url' };
+        const url = new URL(window.location.href);
+        const urlParam = new URLSearchParams(url.search);
+
+        const formData = RightPaneStore.getFormData();
+        for (const key of Object.keys(formData)) {
+            if (key === 'deptLabel' || key === 'deptValue') {
+                continue;
+            }
+
+            urlParam.delete(key);
+        }
+
+        const param = urlParam.toString();
+        const new_url = `${param.trim() ? '?' : ''}${param}`;
+        history.replaceState(stateObj, 'url', '/' + new_url);
+    }
+
     handleExpand = () => {
         const nextExpansionState = !this.state.expandAdvanced;
         setLocalStorageAdvanced(nextExpansionState ? 'expanded' : 'notexpanded');
