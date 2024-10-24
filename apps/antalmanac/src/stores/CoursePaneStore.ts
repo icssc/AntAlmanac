@@ -21,7 +21,23 @@ function paramsAreInURL() {
     const search = new URLSearchParams(window.location.search);
 
     // TODO: This should be standardized
-    const searchParams = ['courseCode', 'courseNumber', 'deptLabel', 'GE', 'deptValue', 'term'];
+    const searchParams = [
+        'courseCode',
+        'courseNumber',
+        'deptLabel',
+        'GE',
+        'deptValue',
+        'term',
+        'sectionCode',
+        'instructor',
+        'units',
+        'endTime',
+        'startTime',
+        'coursesFull',
+        'building',
+        'room',
+        'division',
+    ];
 
     return searchParams.some((param) => search.get(param) !== null);
 }
