@@ -7,7 +7,7 @@ import { migrate } from 'drizzle-orm/postgres-js/migrator';
 
 import { ddbClient } from '../src/db/ddb.ts';
 import { db, client } from '../src/db/index.ts'; 
-import { user } from '../src/db/schema/index.ts';
+import { users } from '../src/db/schema/index.ts';
 
 /**
  * Migrates the current drizzle schema to the PostgreSQL database associated
@@ -27,8 +27,8 @@ async function migrateToPostgres() {
 async function insertUsersToPostgres() {
     const userIds = await ddbClient.getUserIds();
     const usersToInsert = userIds.map((userId) => ({ id: userId }));
-    await db.insert(user).values(usersToInsert);
-    console.log(await db.query.user.findMany());
+    await db.insert(users).values(usersToInsert);
+    console.log(await db.query.users.findMany());
 }
 
 async function main() {

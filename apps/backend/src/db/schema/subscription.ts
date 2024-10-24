@@ -1,5 +1,5 @@
 import { integer, pgEnum, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
-import { user } from './auth/user';
+import { users } from './auth/user';
 
 
 export const subscriptionTargetStatus = pgEnum(
@@ -7,13 +7,13 @@ export const subscriptionTargetStatus = pgEnum(
     ['OPEN', 'WAITLISTED']
 )
 
-export const subscription = pgTable(
-    'subscription',
+export const subscriptions = pgTable(
+    'subscriptions',
     {
         /**
          * The user that is subscribing to course updates for the specified section.
          */
-        userId: text('userId').references(() => user.id, { onDelete: 'cascade' }),
+        userId: text('userId').references(() => users.id, { onDelete: 'cascade' }),
 
         /**
          * Section code.

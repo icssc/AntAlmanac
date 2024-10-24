@@ -1,15 +1,15 @@
 import { createId } from '@paralleldrive/cuid2';
 import { boolean, pgTable, text } from 'drizzle-orm/pg-core';
-import { user } from './auth/user';
+import { users } from './auth/user';
 
-export const schedule = pgTable('schedule', {
+export const schedules = pgTable('schedules', {
     id: text('id').primaryKey().$defaultFn(createId),
 
     /**
      * A schedule is owned by a user.
      */
     userId: text('user_id')
-        .references(() => user.id, { onDelete: 'cascade' })
+        .references(() => users.id, { onDelete: 'cascade' })
         .notNull(),
 
     /**

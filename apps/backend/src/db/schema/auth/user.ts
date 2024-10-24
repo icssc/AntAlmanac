@@ -4,7 +4,7 @@ import { integer, pgTable, text } from 'drizzle-orm/pg-core';
 /**
  * User entity is analogous to a person.
  */
-export const user = pgTable('user', {
+export const users = pgTable('users', {
     /**
      * Unique ID (CUID) to represent the entity.
      */
@@ -31,4 +31,4 @@ export const user = pgTable('user', {
     verified: integer('verified'),
 });
 
-export type User = typeof user.$inferSelect;
+export type User = typeof users.$inferSelect;

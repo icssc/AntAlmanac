@@ -1,5 +1,5 @@
 import { integer, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
-import { schedule } from './schedule';
+import { schedules } from './schedule';
 
 /**
  * Courses have a N:1 relation with schedules.
@@ -9,10 +9,10 @@ import { schedule } from './schedule';
  * Once a schedule and its courses have been loaded, additional context can be retrieved
  * for the courses by querying PPA with the section code and term.
  */
-export const course = pgTable(
-    'course',
+export const courses = pgTable(
+    'courses',
     {
-        scheduleId: text('scheduleId').references(() => schedule.id, { onDelete: 'cascade' }),
+        scheduleId: text('scheduleId').references(() => schedules.id, { onDelete: 'cascade' }),
 
         /**
          * The course's section code.
