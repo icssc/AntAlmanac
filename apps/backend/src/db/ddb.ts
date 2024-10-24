@@ -173,6 +173,29 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
         }
 
     }
+
+    async getUserIds () {
+        const params = {
+            TableName: this.tableName,
+        }
+
+        const scanResults: string[] = [];
+        let items;
+
+        do {
+            items = await this.documentClient.scan(params);
+            if (items.Items) {
+                for (const item of items.Items) {
+                    const parsedItem = UserSchema(item);
+                    if (parsedItem.problems !== null && parsedItem.data) {
+                        scanResults.push(parsedItem.data.id);
+                    }
+                }
+            }
+        } while (typeof items.LastEvaluatedKey !== 'undefined');
+
+        return scanResults;
+    }
 }
 
 export const ddbClient = new DDBClient(env.USERDATA_TABLE_NAME, UserSchema);
