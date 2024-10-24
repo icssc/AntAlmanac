@@ -1,5 +1,11 @@
-import { integer, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
+import { integer, pgEnum, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
 import { user } from './auth/user';
+
+
+export const subscriptionTargetStatus = pgEnum(
+    'subscription_target_status',
+    ['OPEN', 'WAITLISTED']
+)
 
 export const subscription = pgTable(
     'subscription',
@@ -18,7 +24,7 @@ export const subscription = pgTable(
          * @example "OPEN" could indicate that the user wants to be notified when this
          * section changes from "WAITLISTED" to "OPEN".
          */
-        status: text('status'),
+        status: subscriptionTargetStatus('status'),
     },
     (table) => {
         return {
