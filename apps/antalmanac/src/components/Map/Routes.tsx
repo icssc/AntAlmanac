@@ -1,14 +1,15 @@
-import { useEffect } from 'react';
-import L from 'leaflet';
-import type { LatLngTuple } from 'leaflet';
-import 'leaflet-routing-machine';
 import { createElementHook, createElementObject, useLeafletContext } from '@react-leaflet/core';
 import type { LeafletContextInterface } from '@react-leaflet/core';
+import { latLng, Routing, popup } from 'leaflet';
+import type { LatLngTuple } from 'leaflet';
+import 'leaflet-routing-machine';
+import { useEffect } from 'react';
+
 import { MAPBOX_PROXY_DIRECTIONS_ENDPOINT } from '$lib/api/endpoints';
 
 interface ClassRoutesProps {
     /**
-     * Waypoints needs to be `L.Routing.Waypoint[]` or `LatLng[]` when creating an `L.Routing.plan`.
+     * Waypoints needs to be `Routing.Waypoint[]` or `LatLng[]` when creating an `Routing.plan`.
      * For ease of use from outside, pass in a valid `LatLngTuple[]`, and convert to LatLng inside.
      * @example [[33.6405, -117.8443], [33.6405, -117.8443]]
      */
@@ -36,10 +37,10 @@ function createRouter(props: ClassRoutesProps, context: LeafletContextInterface)
     /**
      * Convert each tuple to an actual `LatLng` object.
      */
-    const waypoints = latLngTuples.map((latLngTuple) => L.latLng(latLngTuple));
+    const waypoints = latLngTuples.map((latLngTuple) => latLng(latLngTuple));
 
-    const routerControl = L.Routing.control({
-        router: L.Routing.mapbox('', {
+    const routerControl = Routing.control({
+        router: Routing.mapbox('', {
             /**
              * Default is mapbox/driving. More options:
              * @see {@link https://docs.mapbox.com/api/navigation/directions/#routing-profiles}
@@ -55,18 +56,18 @@ function createRouter(props: ClassRoutesProps, context: LeafletContextInterface)
          */
         fitSelectedRoutes: false,
 
-        plan: L.Routing.plan(waypoints, {
+        plan: Routing.plan(waypoints, {
             addWaypoints: false,
             createMarker: dontCreateMarker,
         }),
 
         routeLine(route) {
-            const line = L.Routing.line(route, {
+            const line = Routing.line(route, {
                 addWaypoints: false,
                 extendToWaypoints: true,
                 missingRouteTolerance: 0,
                 styles: [
-                    { opacity: 0, weight: 30 }, // invisble line extends the range of click/hover events
+                    { opacity: 0, weight: 30 }, // invisible line extends the range of click/hover events
                     { color: props.color, weight: 3 },
                 ],
             });
@@ -96,26 +97,26 @@ function createRouter(props: ClassRoutesProps, context: LeafletContextInterface)
        <br>
        <span style="color:#888888">${miles}</span>
       `;
-            const popup = L.popup({ content, closeButton: false });
+            const leafletPopup = popup({ content, closeButton: false });
 
             /**
              * @see {@link https://github.com/perliedman/leaflet-routing-machine/issues/117}
              */
             line.eachLayer((lineLayer) => {
                 lineLayer.on('click', (leafletMouseEvent) => {
-                    popup.setLatLng(leafletMouseEvent.latlng).addTo(context.map);
+                    leafletPopup.setLatLng(leafletMouseEvent.latlng).addTo(context.map);
                 });
                 lineLayer.on('mouseover', (leafletMouseEvent) => {
-                    popup.setLatLng(leafletMouseEvent.latlng).addTo(context.map);
+                    leafletPopup.setLatLng(leafletMouseEvent.latlng).addTo(context.map);
                 });
                 lineLayer.on('mousemove', (leafletMouseEvent) => {
-                    popup.setLatLng(leafletMouseEvent.latlng).addTo(context.map);
+                    leafletPopup.setLatLng(leafletMouseEvent.latlng).addTo(context.map);
                 });
             });
 
             context.map.on('mousemove', (leafletMouseEvent) => {
                 if (!line.getBounds().contains(leafletMouseEvent.latlng)) {
-                    popup.remove();
+                    leafletPopup.remove();
                 }
             });
 

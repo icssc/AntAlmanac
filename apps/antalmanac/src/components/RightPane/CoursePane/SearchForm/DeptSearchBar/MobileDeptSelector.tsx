@@ -7,6 +7,7 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../../RightPaneStore';
+
 import depts from './depts';
 
 const style = {

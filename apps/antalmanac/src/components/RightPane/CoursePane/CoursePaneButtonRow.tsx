@@ -173,5 +173,3 @@ export function CoursePaneButtonRow(props: CoursePaneButtonRowProps) {
         </Box>
     );
 }
-
-export default CoursePaneButtonRow;

@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import {
     Box,
     Paper,
@@ -13,15 +12,19 @@ import {
     useMediaQuery,
 } from '@material-ui/core';
 import { Assessment, Help, RateReview, ShowChart as ShowChartIcon } from '@material-ui/icons';
+import { useMemo } from 'react';
+
 import { MOBILE_BREAKPOINT } from '../../../globals';
+
 import CourseInfoBar from './CourseInfoBar';
 import CourseInfoButton from './CourseInfoButton';
 import { EnrollmentHistoryPopup } from './EnrollmentHistoryPopup';
 import GradesPopup from './GradesPopup';
 import { SectionTableProps } from './SectionTable.types';
 import SectionTableBody from './SectionTableBody';
-import useColumnStore, { SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
+
 import analyticsEnum from '$lib/analytics';
+import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -33,7 +36,7 @@ interface TableHeaderColumnDetails {
     width?: string;
 }
 
-const tableHeaderColumns: Record<SectionTableColumn, TableHeaderColumnDetails> = {
+const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHeaderColumnDetails> = {
     sectionCode: {
         label: 'Code',
         width: '8%',
@@ -112,10 +115,6 @@ function SectionTable(props: SectionTableProps) {
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
     }, [courseDetails.deptCode, courseDetails.courseNumber]);
-
-    const encodedDept = useMemo(() => {
-        return encodeURIComponent(courseDetails.deptCode);
-    }, [courseDetails.deptCode]);
 
     /**
      * Limit table width to force side scrolling.

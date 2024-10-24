@@ -1,9 +1,8 @@
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
-import React, { PureComponent } from 'react';
-
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { PureComponent } from 'react';
 
 interface ScheduleSelectorProps {
     customEvent?: RepeatingCustomEvent;

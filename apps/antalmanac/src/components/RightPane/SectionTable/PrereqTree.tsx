@@ -1,9 +1,10 @@
 /* eslint-disable prefer-const */
+import { Button, Popover } from '@material-ui/core';
 import { Prerequisite, PrerequisiteTree } from 'peterportal-api-next-types';
 import { FC, useState } from 'react';
-import { Button, Popover } from '@material-ui/core';
 
 import { CourseInfo } from './CourseInfoBar';
+
 import { useThemeStore } from '$stores/SettingsStore';
 
 import './PrereqTree.css';
