@@ -13,11 +13,6 @@ export const schedules = pgTable('schedules', {
         .notNull(),
 
     /**
-     * Whether this schedule was the most recently focused.
-     */
-    active: boolean('active'),
-
-    /**
      * Name of the schedule.
      */
     name: text('name'),

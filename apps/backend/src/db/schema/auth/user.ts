@@ -1,5 +1,7 @@
 import { createId } from '@paralleldrive/cuid2';
-import { integer, pgTable, text } from 'drizzle-orm/pg-core';
+import { AnyPgColumn, foreignKey, integer, pgTable, text } from 'drizzle-orm/pg-core';
+
+import { schedules } from '../schedule';
 
 /**
  * User entity is analogous to a person.
@@ -26,9 +28,13 @@ export const users = pgTable('users', {
     avatar: text('avatar'),
 
     /**
-     * Whether the email has been verified.
+     * Most recently viewed schedule.
      */
-    verified: integer('verified'),
+    currentScheduleId: text('current_schedule_id')
+        .references(
+            // Necessary because this is a circular dependency.
+            (): AnyPgColumn => schedules.id
+        ),
 });
 
 export type User = typeof users.$inferSelect;
