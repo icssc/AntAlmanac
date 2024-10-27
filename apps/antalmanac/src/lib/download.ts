@@ -257,6 +257,7 @@ export function getEventsFromCourses(
     events = AppStore.getEventsWithFinalsInCalendar(),
     term = getDefaultTerm(events).shortName
 ): EventAttributes[] {
+    const customEventIDs = new Set();
     const calendarEvents = events.flatMap((event) => {
         if (event.isCustomEvent) {
             // FIXME: We don't have a way to get the term for custom events,
@@ -270,6 +271,11 @@ export function getEventsFromCourses(
                 { hour: start.getHours(), minute: start.getMinutes() },
                 { hour: end.getHours(), minute: end.getMinutes() }
             );
+            const customEventID = event.customEventID;
+            if (customEventIDs.has(customEventID)) {
+                return [];
+            }
+            customEventIDs.add(customEventID);
             const customEvent: EventAttributes = {
                 productId: 'antalmanac/ics',
                 startOutputType: 'local' as const,
