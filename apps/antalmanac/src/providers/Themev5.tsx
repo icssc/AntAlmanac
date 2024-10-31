@@ -56,6 +56,15 @@ export default function AppThemev5Provider(props: Props) {
     const AppTheme = useMemo(
         () =>
             createTheme({
+                components: {
+                    MuiCssBaseline: {
+                        styleOverrides: {
+                            a: {
+                                color: appTheme === 'dark' ? 'dodgerblue' : 'blue',
+                            },
+                        },
+                    },
+                },
                 breakpoints: {
                     /**
                      * Based on Tailwind's breakpoints.
