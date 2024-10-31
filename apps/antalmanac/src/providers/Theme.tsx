@@ -38,6 +38,19 @@ export default function AppThemeProvider(props: Props) {
                 },
             },
         },
+        breakpoints: {
+            /**
+             * Based on Tailwind's breakpoints.
+             * @see https://tailwindcss.com/docs/screens
+             */
+            values: {
+                xs: 640,
+                sm: 768,
+                md: 1024,
+                lg: 1280,
+                xl: 1536,
+            },
+        },
         typography: {
             htmlFontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10),
             fontSize:
