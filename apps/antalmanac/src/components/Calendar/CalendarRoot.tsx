@@ -212,7 +212,7 @@ export default function ScheduleCalendar(_props?: ScheduleCalendarProps) {
     }, []);
 
     return (
-        <Box id="calendar-root" borderRadius={1} flexGrow={1} height={0} display="flex" flexDirection="column">
+        <Box id="calendar-root" borderRadius={1} flexGrow={1} height={'0px'} display="flex" flexDirection="column">
             <CalendarToolbar
                 currentScheduleIndex={currentScheduleIndex}
                 toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
