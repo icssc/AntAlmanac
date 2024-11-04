@@ -54,7 +54,7 @@ function RightPane() {
     }, [handleKeydown]);
 
     return (
-        <Box height={0} flexGrow={1} marginX={0.5}>
+        <Box height={'0px'} flexGrow={1} marginX={0.5}>
             <CoursePaneButtonRow
                 showSearch={!searchIsDisplayed}
                 onDismissSearchResults={displaySearch}
