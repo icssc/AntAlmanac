@@ -34,3 +34,5 @@ export const subscriptions = pgTable(
         };
     }
 );
+
+export type Subscription = typeof subscriptions.$inferSelect;

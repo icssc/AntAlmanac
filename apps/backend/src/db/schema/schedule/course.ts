@@ -9,8 +9,8 @@ import { schedules } from '.';
  * Once a schedule and its courses have been loaded, additional context can be retrieved
  * for the courses by querying PPA with the section code and term.
  */
-export const courses = pgTable(
-    'courses',
+export const coursesInSchedule = pgTable(
+    'coursesInSchedule',
     {
         scheduleId: text('scheduleId').references(() => schedules.id, { onDelete: 'cascade' }),
 
@@ -37,3 +37,5 @@ export const courses = pgTable(
         };
     }
 );
+
+export type CourseInSchedule = typeof coursesInSchedule.$inferSelect;
