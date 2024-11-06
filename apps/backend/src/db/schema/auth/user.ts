@@ -1,5 +1,5 @@
 import { createId } from '@paralleldrive/cuid2';
-import { AnyPgColumn, foreignKey, integer, pgTable, text } from 'drizzle-orm/pg-core';
+import { AnyPgColumn, pgTable, text } from 'drizzle-orm/pg-core';
 
 import { schedules } from '../schedule/schedule';
 
@@ -16,11 +16,6 @@ export const users = pgTable('users', {
      * Phone number for subscribing to notifications.
      */
     phone: text('phone'),
-
-    /**
-     * Display name.
-     */
-    name: text('name'),
 
     /**
      * Profile picture..
