@@ -1,7 +1,7 @@
 import { createId } from '@paralleldrive/cuid2';
 import { AnyPgColumn, foreignKey, integer, pgTable, text } from 'drizzle-orm/pg-core';
 
-import { schedules } from '../schedule';
+import { schedules } from '../schedule/schedule';
 
 /**
  * User entity is analogous to a person.

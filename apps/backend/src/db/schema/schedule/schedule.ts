@@ -1,6 +1,6 @@
 import { createId } from '@paralleldrive/cuid2';
 import { boolean, pgTable, text } from 'drizzle-orm/pg-core';
-import { users } from './auth/user';
+import { users } from '../auth/user';
 
 export const schedules = pgTable('schedules', {
     id: text('id').primaryKey().$defaultFn(createId),

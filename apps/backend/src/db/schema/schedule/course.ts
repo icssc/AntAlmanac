@@ -1,5 +1,5 @@
 import { integer, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
-import { schedules } from './schedule';
+import { schedules } from '.';
 
 /**
  * Courses have a N:1 relation with schedules.
