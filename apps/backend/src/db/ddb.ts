@@ -1,6 +1,6 @@
 import type { Type } from 'arktype';
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
-import { DynamoDB } from '@aws-sdk/client-dynamodb';
+import { DynamoDB, ScanCommandInput } from '@aws-sdk/client-dynamodb';
 
 import {
     UserSchema,
@@ -174,27 +174,34 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
 
     }
 
-    async getUserIds () {
-        const params = {
+    async* getAllUserDataBatches(){
+        const params: ScanCommandInput = {
             TableName: this.tableName,
         }
+    
+        while(true) {
+            const result = await this.documentClient.scan(params);
+            
+            if (result.Items) {
+                const users = result.Items
+                    .map((item) => this.schema(item))
+                    .filter(
+                        (result) => (
+                            result.problems == null 
+                            && result.data != null
+                        )
+                    )
+                    .map((result) => result.data) as unknown[] as T[];
 
-        const scanResults: string[] = [];
-        let items;
-
-        do {
-            items = await this.documentClient.scan(params);
-            if (items.Items) {
-                for (const item of items.Items) {
-                    const parsedItem = UserSchema(item);
-                    if (parsedItem.problems !== null && parsedItem.data) {
-                        scanResults.push(parsedItem.data.id);
-                    }
-                }
+                yield users.filter(
+                    (user) => user.name !== undefined
+                );
             }
-        } while (typeof items.LastEvaluatedKey !== 'undefined');
 
-        return scanResults;
+            if (typeof result.LastEvaluatedKey === 'undefined') return;
+
+            params.ExclusiveStartKey = result.LastEvaluatedKey;
+        }
     }
 }
 
