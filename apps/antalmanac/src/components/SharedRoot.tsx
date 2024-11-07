@@ -124,6 +124,7 @@ function ScheduleManagementMobileTabs(props: ScheduleManagementTabsProps) {
  */
 function ScheduleManagementDesktopTabs(props: ScheduleManagementTabsProps) {
     const { value, setActiveTab } = props;
+    const isDark = useThemeStore((store) => store.isDark);
 
     const onChange = (_event: React.SyntheticEvent, value: number) => {
         setActiveTab(value + 1);
@@ -145,7 +146,7 @@ function ScheduleManagementDesktopTabs(props: ScheduleManagementTabsProps) {
                             height: '44px',
                             padding: 3,
                             minWidth: '33%',
-                            '&.Mui-selected': { color: 'white' },
+                            ...(isDark ? { '&.Mui-selected': { color: 'white' } } : {}),
                         }}
                         label={
                             <div style={{ display: 'inline-flex', alignItems: 'center' }}>
