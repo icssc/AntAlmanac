@@ -56,7 +56,7 @@ class RightPaneStore extends EventEmitter {
         const formFields = Object.keys(defaultFormValues);
 
         formFields.forEach((field) => {
-            const paramValue = search.get(field);
+            const paramValue = search.get(field) || search.get(field.toUpperCase());
             if (paramValue !== null) {
                 this.formData[field] = paramValue;
             }
