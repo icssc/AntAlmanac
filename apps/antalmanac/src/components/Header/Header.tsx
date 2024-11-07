@@ -7,6 +7,8 @@ import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import { Logo } from './Logo';
 import AppDrawer from './SettingsMenu';
 
+import { AccountMenu } from '$components/Header/account/AccountMenu';
+
 const styles = {
     appBar: {
         marginBottom: '4px',
@@ -40,9 +42,12 @@ const Header = ({ classes }: CustomAppBarProps) => {
             <Toolbar variant="dense" style={{ padding: '5px', display: 'flex', justifyContent: 'space-between' }}>
                 <Logo />
 
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                     <LoadSaveScheduleFunctionality />
                     <Import key="studylist" />
+
+                    <AccountMenu />
+
                     <AppDrawer key="settings" />
                 </div>
             </Toolbar>
