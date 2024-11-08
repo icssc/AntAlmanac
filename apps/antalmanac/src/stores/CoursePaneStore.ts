@@ -45,5 +45,3 @@ export const useCoursePaneStore = create<CoursePaneStore>((set) => {
         forceUpdate: () => set((state) => ({ key: (state.key += 1) })),
     };
 });
-
-export default useCoursePaneStore;

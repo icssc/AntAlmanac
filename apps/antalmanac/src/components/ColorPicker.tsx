@@ -1,6 +1,6 @@
 import { IconButton, Popover, Tooltip } from '@material-ui/core';
 import { ColorLens } from '@material-ui/icons';
-import React, { PureComponent } from 'react';
+import { PureComponent } from 'react';
 import { SketchPicker } from 'react-color';
 
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';

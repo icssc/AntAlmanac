@@ -1,4 +1,3 @@
-import { useCallback, useState, useEffect, useMemo } from 'react';
 import {
     Box,
     Button,
@@ -9,6 +8,8 @@ import {
     TextField,
     type DialogProps,
 } from '@mui/material';
+import { useCallback, useState, useEffect, useMemo } from 'react';
+
 import { renameSchedule } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
 

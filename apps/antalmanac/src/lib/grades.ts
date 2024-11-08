@@ -1,7 +1,8 @@
 import { GE } from 'peterportal-api-next-types';
+
 import { queryGraphQL } from './helpers';
 
-export interface Grades {
+export interface GradesProps {
     averageGPA: number;
     gradeACount: number;
     gradeBCount: number;
@@ -12,7 +13,7 @@ export interface Grades {
     gradeNPCount: number;
 }
 
-export interface CourseInstructorGrades extends Grades {
+export interface CourseInstructorGrades extends GradesProps {
     department: string;
     courseNumber: string;
     instructor: string;
@@ -21,7 +22,7 @@ export interface CourseInstructorGrades extends Grades {
 export interface GradesGraphQLResponse {
     data: {
         aggregateGrades: {
-            gradeDistribution: Grades;
+            gradeDistribution: GradesProps;
         };
     };
 }
@@ -39,7 +40,7 @@ export interface GroupedGradesGraphQLResponse {
  * Note: Be careful with sending too many queries to the GraphQL API. It's not very fast and can be DoS'd easily.
  */
 class _Grades {
-    gradesCache: Record<string, Grades>;
+    gradesCache: Record<string, GradesProps>;
 
     // Grades queries that have been cached
     // We need this because gradesCache destructures the data and doesn't retain whether we looked at one course or a whole department/GE
@@ -132,7 +133,7 @@ class _Grades {
         courseNumber: string,
         instructor = '',
         cacheOnly = true
-    ): Promise<Grades | null> => {
+    ): Promise<GradesProps | null> => {
         instructor = instructor.replace('STAFF', '').trim(); // Ignore STAFF
         const instructorFilter = instructor ? `instructor: "${instructor}"` : '';
 
@@ -166,5 +167,4 @@ class _Grades {
     };
 }
 
-const grades = new _Grades();
-export default grades;
+export const Grades = new _Grades();

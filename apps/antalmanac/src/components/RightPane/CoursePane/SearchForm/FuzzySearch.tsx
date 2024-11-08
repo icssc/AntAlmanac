@@ -1,12 +1,13 @@
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { AutocompleteInputChangeReason } from '@material-ui/lab/Autocomplete';
 import { PureComponent } from 'react';
-import search from 'websoc-fuzzy-search';
 import UAParser from 'ua-parser-js';
+import search from 'websoc-fuzzy-search';
 
 type SearchResult = ReturnType<typeof search>;
 
 import RightPaneStore from '../../RightPaneStore';
+
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 
 const emojiMap: Record<string, string> = {
@@ -123,9 +124,8 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
             case 'DEPARTMENT':
                 return `${emojiMap.DEPARTMENT} ${option}: ${object.name}`;
             case 'COURSE':
-                return `${emojiMap.COURSE} ${object.metadata.department} ${(object.metadata as any).number}: ${
-                    object.name
-                }`;
+                // @ts-expect-error type SearchResult.metadata can only be of type CourseMetaData in this case, but the type is not exposed so we can't cast directly
+                return `${emojiMap.COURSE} ${object.metadata.department} ${object.metadata.number}: ${object.name}`;
             case 'INSTRUCTOR':
                 return `${emojiMap.INSTRUCTOR} ${object.name}`;
             default:

@@ -1,9 +1,11 @@
 import { PureComponent } from 'react';
 
 import RightPaneStore from '../RightPaneStore';
+
 import { SectionTableProps } from './SectionTable.types';
 import SectionTableLazyWrapper from './SectionTableLazyWrapper';
-import WebSOC from '$lib/websoc';
+
+import { WebSOC } from '$lib/websoc';
 
 /**
  * If we remove this class, when you search a department+GE combo, only the lectures show up, not the discussions.

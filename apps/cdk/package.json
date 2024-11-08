@@ -34,7 +34,6 @@
     },
     "packageManager": "pnpm@8.6.12",
     "engines": {
-        "pnpm": "^8.0.0",
         "node": ">=18"
     }
 }

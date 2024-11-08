@@ -1,18 +1,17 @@
 import './App.css';
 
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { TourProvider } from '@reactour/tour';
 import { SnackbarProvider } from 'notistack';
 import { useEffect } from 'react';
 import ReactGA4 from 'react-ga4';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-import { TourProvider } from '@reactour/tour';
 import { undoDelete } from './actions/AppStoreActions';
 import AppQueryProvider from './providers/Query';
 import AppThemeProvider from './providers/Theme';
 import AppThemev5Provider from './providers/Themev5';
-
-import Home from './routes/Home';
 import Feedback from './routes/Feedback';
+import Home from './routes/Home';
 
 const BrowserRouter = createBrowserRouter([
     {
