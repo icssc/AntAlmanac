@@ -12,22 +12,24 @@ import { schedules } from '.';
 export const coursesInSchedule = pgTable(
     'coursesInSchedule',
     {
-        scheduleId: text('scheduleId').references(() => schedules.id, { onDelete: 'cascade' }),
+        scheduleId: text('scheduleId')
+            .references(() => schedules.id, { onDelete: 'cascade' })
+            .notNull(),
 
         /**
          * The course's section code.
          */
-        sectionCode: integer('sectionCode'),
+        sectionCode: integer('sectionCode').notNull(),
 
         /**
          * @example Winter 2024.
          */
-        term: text('term'),
+        term: text('term').notNull(),
 
         /**
          * Color that the course has when displayed on calendar.
          */
-        color: text('color'),
+        color: text('color').notNull(),
     },
     (table) => {
         return {
