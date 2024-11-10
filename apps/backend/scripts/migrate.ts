@@ -2,12 +2,15 @@
  * To run this script, run "pnpm run migrate".
  */
 
+import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 
+import { ShortCourseSchedule } from '@packages/antalmanac-types';
+
 import { ddbClient } from '../src/db/ddb.ts';
 import { db, client } from '../src/db/index.ts'; 
-import { accounts, users } from '../src/db/schema/index.ts';
+import { accounts, users, schedules, coursesInSchedule } from '../src/db/schema/index.ts';
 
 /**
  * Migrates the current drizzle schema to the PostgreSQL database associated
@@ -20,36 +23,105 @@ async function migratePostgresDb() {
     });
 }
 
+function ddbToPostgresSchedules(
+    userId: string,
+    ddbSchedules: ShortCourseSchedule[]
+): typeof schedules.$inferInsert[] {
+    return ddbSchedules.map(
+        (ddbSchedule) => ({
+            userId,
+            name: ddbSchedule.scheduleName,
+            notes: ddbSchedule.scheduleNote,
+        })
+    );
+}
+
+function ddbToPostgresCourse(
+    ddbSchedules: ShortCourseSchedule[],
+    scheduleIds: string[],
+): typeof coursesInSchedule.$inferInsert[] {
+    return ddbSchedules.map(
+        (ddbSchedule, index) => (
+            ddbSchedule.courses.map(
+                (ddbCourse) => ({
+                    scheduleId: scheduleIds[index],
+                    term: ddbCourse.term,
+                    sectionCode: parseInt(ddbCourse.sectionCode),
+                    color: ddbCourse.color,
+                })
+            )
+        )
+    ).flat();
+}
+
 /**
  * Migrates user data from DynamoDB to the PostgreSQL database associated
  * with the drizzle client.
  */
 async function copyUsersToPostgres() {
     for await (const ddbBatch of ddbClient.getAllUserDataBatches()) {
-        // To insert 
-        const numUsers = ddbBatch.length;
-        const emptyArray = new Array(numUsers).fill({});
+        const transactions = ddbBatch.map( // One transaction per user
+            (ddbUser) => db.transaction(
+                async (tx) => {
+                    // Create user with name. 
+                    // This overwrites the user, but that doesn't matter because
+                    // the only thing that's changed is the current schedule index. 
+                    const userId = (await (
+                        tx
+                        .insert(users)
+                        .values({ name: ddbUser.name, })
+                        .returning({ id: users.id })
+                    )).map((user) => user.id)[0];
+                    
+                    // Add as guest account
+                    await (
+                        tx
+                        .insert(accounts)
+                        .values({ userId, providerAccountId: ddbUser.id })
+                    );
 
-        const newUsersIds = (
-            await db
-            .insert(users)
-            .values(emptyArray)
-            .returning({ userId: users.id})
-        ).map((user) => user.userId);
-        
-        // Make guest accounts for every user
-        db
-            .insert(accounts)
-            .values(newUsersIds.map(
-                (userId, index) => (
-                    { userId, providerAccountId: ddbBatch[index].name }
-                )
-            ))
-            // If someone changed their account information during the migration,
-            // don't overwrite it.
-            .onConflictDoNothing({ target: accounts.providerAccountId});
+                    // Add schedules/courses
 
-        return newUsersIds;
+                    // Add schedules
+                    const scheduleIds = (
+                        await (
+                            tx
+                            .insert(schedules)
+                            .values(
+                                ddbToPostgresSchedules(
+                                    ddbUser.id,
+                                    ddbUser.userData.schedules
+                                )
+                            )
+                            .returning({ id: schedules.id })
+                        )
+                    ).map((schedule) => schedule.id);
+
+                    // Update user's current schedule
+                    const currentScheduleId = scheduleIds[ddbUser.userData.scheduleIndex];
+                    await (
+                        tx
+                        .update(users)
+                        .set({ currentScheduleId: currentScheduleId })
+                        .where(eq(users.id, userId))
+                    )
+
+                    // Add courses
+                    await (
+                        tx
+                        .insert(coursesInSchedule)
+                        .values(
+                            ddbToPostgresCourse(
+                                ddbUser.userData.schedules,
+                                scheduleIds
+                            )
+                        )
+                    )
+                }
+            )
+        );
+
+        return Promise.all(transactions);
     }
 }
 
@@ -57,7 +129,7 @@ async function main() {
     try {
         await migratePostgresDb();
         await copyUsersToPostgres();
-        // TODO: copy other tables
+        
     } catch (error) {
         console.log(error);
     } finally {
