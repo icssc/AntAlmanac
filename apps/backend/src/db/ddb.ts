@@ -174,6 +174,10 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
 
     }
 
+    /**
+     * Reference: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.Pagination.html
+     * @returns An async generator that yields batches of user data from DynamoDB pages.
+     */
     async* getAllUserDataBatches(){
         const params: ScanCommandInput = {
             TableName: this.tableName,
@@ -184,14 +188,14 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
             
             if (result.Items) {
                 const users = result.Items
-                    .map((item) => this.schema(item))
+                    .map((item) => UserSchema(item))
                     .filter(
                         (result) => (
                             result.problems == null 
                             && result.data != null
                         )
                     )
-                    .map((result) => result.data) as unknown[] as T[];
+                    .map((result) => result.data);
 
                 yield users.filter(
                     (user) => user.name !== undefined
