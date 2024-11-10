@@ -23,6 +23,11 @@ export const users = pgTable('users', {
     avatar: text('avatar'),
 
     /**
+     * User's name.
+     */
+    name: text('name'),
+
+    /**
      * Most recently viewed schedule.
      */
     currentScheduleId: text('current_schedule_id')
