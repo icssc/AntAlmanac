@@ -60,6 +60,7 @@ function ddbToPostgresCourse(
  */
 async function copyUsersToPostgres() {
     const transactionBatches: Promise<void[]>[] = [];
+    const failedUsers: string[] = [];
 
     for await (const ddbBatch of ddbClient.getAllUserDataBatches()) {
         const transactions = ddbBatch.map( // One transaction per user
@@ -120,7 +121,10 @@ async function copyUsersToPostgres() {
                         )
                     )
                 }
-            )
+            ).catch((error) => {
+                failedUsers.push(ddbUser.id);
+                console.log(error);
+            })
         );
 
         transactionBatches.push(Promise.all(transactions));
