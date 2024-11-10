@@ -59,6 +59,8 @@ function ddbToPostgresCourse(
  * with the drizzle client.
  */
 async function copyUsersToPostgres() {
+    const transactionBatches: Promise<void[]>[] = [];
+
     for await (const ddbBatch of ddbClient.getAllUserDataBatches()) {
         const transactions = ddbBatch.map( // One transaction per user
             (ddbUser) => db.transaction(
@@ -121,8 +123,10 @@ async function copyUsersToPostgres() {
             )
         );
 
-        return Promise.all(transactions);
+        transactionBatches.push(Promise.all(transactions));
     }
+    
+    return Promise.all(transactionBatches);
 }
 
 async function main() {
