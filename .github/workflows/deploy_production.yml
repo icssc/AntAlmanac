@@ -28,6 +28,7 @@ env:
     VITE_TILES_ENDPOINT: ${{ secrets.VITE_TILES_ENDPOINT}}
     GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
     GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+    DB_URL: ${{ secrets.PROD_DB_URL }}
 
     # Turborepo credentials.
     TURBO_API: ${{ vars.TURBO_API }}
@@ -109,6 +110,9 @@ jobs:
 
             - name: Install dependencies
               run: pnpm install --frozen-lockfile --prod false
+
+            - name: Run database migrations
+              run: pnpm --filter "antalmanac-backend" migrate
 
             - name: Build backend
               run: pnpm --filter "antalmanac-backend" build

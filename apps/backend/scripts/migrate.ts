@@ -15,8 +15,7 @@ import {notNull} from "$aa/src/lib/utils";
 
 /**
  * Migrates the current drizzle schema to the PostgreSQL database associated
- * with the drizzle client. Before migrating, run "pnpm run generate" to generate
- * the migration files, and make sure the PostgreSQL database exists beforehand.
+ * with the drizzle client.
  */
 async function migratePostgresDb() {
     await migrate(drizzle(client), {
