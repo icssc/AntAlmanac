@@ -297,9 +297,6 @@ importers:
       '@packages/antalmanac-types':
         specifier: workspace:*
         version: link:../../packages/types
-      '@packages/anteater-api-schemas':
-        specifier: workspace:*
-        version: link:../../packages/anteater-api-schemas
       '@trpc/server':
         specifier: ^10.30.0
         version: 10.30.0

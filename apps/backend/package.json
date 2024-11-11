@@ -10,7 +10,6 @@
         "lint": "eslint --fix src"
     },
     "dependencies": {
-        "@packages/anteater-api-schemas": "workspace:*",
         "@packages/antalmanac-types": "workspace:*",
         "@trpc/server": "^10.30.0",
         "@vendia/serverless-express": "^4.10.1",
