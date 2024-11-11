@@ -2,7 +2,7 @@ import { arrayOf, type } from 'arktype';
 import {
     WebsocSection as WebsocSectionSchema,
     WebsocCourse as WebsocCourseSchema,
-} from '@packages/peterportal-schemas';
+} from '@packages/anteater-api-schemas';
 
 const AASectionExtendedProperties = type({
     color: 'string',

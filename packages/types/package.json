@@ -9,9 +9,9 @@
   },
   "dependencies": {
     "arktype": "1.0.14-alpha",
-    "@packages/peterportal-schemas": "workspace:*"
+    "@packages/anteater-api-schemas": "workspace:*"
   },
   "devDependencies": {
-    "typescript": "^4.9"
+    "typescript": "5.6.3"
   }
 }
