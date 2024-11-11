@@ -1,4 +1,4 @@
-import { integer, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
+import { integer, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core';
 import { schedules } from '.';
 
 /**
@@ -30,6 +30,8 @@ export const coursesInSchedule = pgTable(
          * Color that the course has when displayed on calendar.
          */
         color: text('color').notNull(),
+
+        lastUpdated: timestamp('last_updated').defaultNow(),
     },
     (table) => {
         return {
