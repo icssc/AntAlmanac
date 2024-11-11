@@ -9,7 +9,8 @@
         "format": "prettier --write src",
         "lint": "eslint --fix src",
         "generate": "drizzle-kit generate",
-        "migrate": "tsx scripts/migrate.ts"
+        "migrate": "tsx scripts/migrate.ts",
+        "migrate-and-copy-data": "COPY_TO_POSTGRES=true tsx scripts/migrate.ts"
     },
     "dependencies": {
         "@packages/antalmanac-types": "workspace:**",

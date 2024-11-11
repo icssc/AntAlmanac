@@ -8,9 +8,10 @@ import { migrate } from 'drizzle-orm/postgres-js/migrator';
 
 import { ShortCourseSchedule } from '@packages/antalmanac-types';
 
-import { ddbClient } from '../src/db/ddb.ts';
-import { db, client } from '../src/db/index.ts'; 
-import { accounts, users, schedules, coursesInSchedule } from '../src/db/schema/index.ts';
+import { ddbClient } from '$db/ddb';
+import { db, client } from '$db/index';
+import { accounts, users, schedules, coursesInSchedule } from '$db/schema';
+import {notNull} from "$aa/src/lib/utils";
 
 /**
  * Migrates the current drizzle schema to the PostgreSQL database associated
@@ -63,7 +64,7 @@ async function copyUsersToPostgres() {
     const failedUsers: string[] = [];
 
     for await (const ddbBatch of ddbClient.getAllUserDataBatches()) {
-        const transactions = ddbBatch.map( // One transaction per user
+        const transactions = ddbBatch.filter(notNull).map( // One transaction per user
             (ddbUser) => db.transaction(
                 async (tx) => {
                     // Create user with name. 
@@ -136,8 +137,7 @@ async function copyUsersToPostgres() {
 async function main() {
     try {
         await migratePostgresDb();
-        await copyUsersToPostgres();
-        
+        if (process.env.COPY_TO_POSTGRES) await copyUsersToPostgres();
     } catch (error) {
         console.log(error);
     } finally {
