@@ -1,0 +1,301 @@
+{
+    "id": "4a95fb4b-e13f-4215-9166-bc18cda8dc7a",
+    "prevId": "00000000-0000-0000-0000-000000000000",
+    "version": "6",
+    "dialect": "postgresql",
+    "tables": {
+        "public.accounts": {
+            "name": "accounts",
+            "schema": "",
+            "columns": {
+                "user_id": {
+                    "name": "user_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "account_type": {
+                    "name": "account_type",
+                    "type": "account_type",
+                    "typeSchema": "public",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "provider_account_id": {
+                    "name": "provider_account_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "accounts_user_id_users_id_fk": {
+                    "name": "accounts_user_id_users_id_fk",
+                    "tableFrom": "accounts",
+                    "tableTo": "users",
+                    "columnsFrom": ["user_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {
+                "accounts_user_id_account_type_pk": {
+                    "name": "accounts_user_id_account_type_pk",
+                    "columns": ["user_id", "account_type"]
+                }
+            },
+            "uniqueConstraints": {}
+        },
+        "public.sessions": {
+            "name": "sessions",
+            "schema": "",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "user_id": {
+                    "name": "user_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "expires": {
+                    "name": "expires",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "refresh_token": {
+                    "name": "refresh_token",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "sessions_user_id_users_id_fk": {
+                    "name": "sessions_user_id_users_id_fk",
+                    "tableFrom": "sessions",
+                    "tableTo": "users",
+                    "columnsFrom": ["user_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {}
+        },
+        "public.users": {
+            "name": "users",
+            "schema": "",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "phone": {
+                    "name": "phone",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "avatar": {
+                    "name": "avatar",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "name": {
+                    "name": "name",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "current_schedule_id": {
+                    "name": "current_schedule_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "users_current_schedule_id_schedules_id_fk": {
+                    "name": "users_current_schedule_id_schedules_id_fk",
+                    "tableFrom": "users",
+                    "tableTo": "schedules",
+                    "columnsFrom": ["current_schedule_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "no action",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {}
+        },
+        "public.coursesInSchedule": {
+            "name": "coursesInSchedule",
+            "schema": "",
+            "columns": {
+                "scheduleId": {
+                    "name": "scheduleId",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "sectionCode": {
+                    "name": "sectionCode",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "term": {
+                    "name": "term",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "color": {
+                    "name": "color",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "coursesInSchedule_scheduleId_schedules_id_fk": {
+                    "name": "coursesInSchedule_scheduleId_schedules_id_fk",
+                    "tableFrom": "coursesInSchedule",
+                    "tableTo": "schedules",
+                    "columnsFrom": ["scheduleId"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {
+                "coursesInSchedule_scheduleId_sectionCode_term_pk": {
+                    "name": "coursesInSchedule_scheduleId_sectionCode_term_pk",
+                    "columns": ["scheduleId", "sectionCode", "term"]
+                }
+            },
+            "uniqueConstraints": {}
+        },
+        "public.schedules": {
+            "name": "schedules",
+            "schema": "",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "user_id": {
+                    "name": "user_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "name": {
+                    "name": "name",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "notes": {
+                    "name": "notes",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "schedules_user_id_users_id_fk": {
+                    "name": "schedules_user_id_users_id_fk",
+                    "tableFrom": "schedules",
+                    "tableTo": "users",
+                    "columnsFrom": ["user_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {}
+        },
+        "public.subscriptions": {
+            "name": "subscriptions",
+            "schema": "",
+            "columns": {
+                "userId": {
+                    "name": "userId",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "sectionCode": {
+                    "name": "sectionCode",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "status": {
+                    "name": "status",
+                    "type": "subscription_target_status",
+                    "typeSchema": "public",
+                    "primaryKey": false,
+                    "notNull": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "subscriptions_userId_users_id_fk": {
+                    "name": "subscriptions_userId_users_id_fk",
+                    "tableFrom": "subscriptions",
+                    "tableTo": "users",
+                    "columnsFrom": ["userId"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {
+                "subscriptions_userId_sectionCode_pk": {
+                    "name": "subscriptions_userId_sectionCode_pk",
+                    "columns": ["userId", "sectionCode"]
+                }
+            },
+            "uniqueConstraints": {}
+        }
+    },
+    "enums": {
+        "public.account_type": {
+            "name": "account_type",
+            "schema": "public",
+            "values": ["GOOGLE", "GUEST"]
+        },
+        "public.subscription_target_status": {
+            "name": "subscription_target_status",
+            "schema": "public",
+            "values": ["OPEN", "WAITLISTED"]
+        }
+    },
+    "schemas": {},
+    "_meta": {
+        "columns": {},
+        "schemas": {},
+        "tables": {}
+    }
+}
