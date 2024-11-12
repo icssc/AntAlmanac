@@ -4,7 +4,7 @@ This is the dedicated backend for [AntAlmanac](https://antalmanac.com),
 which is primarily responsible for managing user data and internal information.
 
 This is **_NOT_** for retrieving enrollment data from UCI;
-[PeterPortal API](https://api.peterportal.org) is a separate ICSSC project dedicated
+[Anteater API](https://docs.icssc.club/developer/anteaterapi) is a separate ICSSC project dedicated
 to providing us this information.
 
 # Development
@@ -54,4 +54,4 @@ The backend provides the following functionality.
 
 -   `/enrollmentData`
     Returns information about course enrollment from previous terms.
-    (Legacy - this information is provided by PeterPortal API)
+    (Legacy - this information is provided by Anteater API)
