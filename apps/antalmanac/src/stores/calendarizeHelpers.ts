@@ -1,5 +1,4 @@
-import type { ScheduleCourse, RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { HourMinute } from 'peterportal-api-next-types';
+import type { ScheduleCourse, RepeatingCustomEvent, HourMinute } from '@packages/antalmanac-types';
 
 import { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { getFinalsStartForTerm } from '$lib/termData';

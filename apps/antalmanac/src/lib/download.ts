@@ -1,8 +1,7 @@
+import type { HourMinute } from '@packages/antalmanac-types';
 import { saveAs } from 'file-saver';
 import { createEvents, type EventAttributes } from 'ics';
-import type { HourMinute } from 'peterportal-api-next-types';
 
-import buildingCatalogue from './buildingCatalogue';
 import { notNull } from './utils';
 
 import { openSnackbar } from '$actions/AppStoreActions';

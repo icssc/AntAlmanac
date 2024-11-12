@@ -1,19 +1,13 @@
-import { arrayOf, type } from 'arktype';
-import {
-    WebsocSection as WebsocSectionSchema,
-    WebsocCourse as WebsocCourseSchema,
-} from '@packages/anteater-api-schemas';
+import { WebsocSection, WebsocCourse } from '@packages/anteater-api-types';
 
-const AASectionExtendedProperties = type({
-    color: 'string',
-});
+type AASectionExtendedProperties = {
+    color: 'string';
+};
 
-export const AASectionSchema = type([WebsocSectionSchema, '&', AASectionExtendedProperties]);
-export type AASection = typeof AASectionSchema.infer;
+export type AASection = WebsocSection & AASectionExtendedProperties;
 
-const AACourseExtendedProperties = type({
-    sections: arrayOf(AASectionSchema),
-});
+type AACourseExtendedProperties = {
+    sections: AASection[];
+};
 
-export const AACourseSchema = type([WebsocCourseSchema, '&', AACourseExtendedProperties]);
-export type AACourse = typeof AACourseSchema.infer;
+export type AACourse = WebsocCourse & AACourseExtendedProperties;

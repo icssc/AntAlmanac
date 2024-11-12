@@ -1,16 +1,12 @@
-import { ScheduleCourse } from '@packages/antalmanac-types';
-import {
-    DayOfWeek,
-    HourMinute,
-    WebsocSectionFinalExam,
-    WebsocSectionMeeting,
-    daysOfWeek,
-} from 'peterportal-api-next-types';
+import { ScheduleCourse, HourMinute, WebsocSectionFinalExam, WebsocSectionMeeting } from '@packages/antalmanac-types';
 
+import { daysOfWeek } from '$lib/download';
 import AppStore from '$stores/AppStore';
 
 const CURRENT_TERM = '2024 Winter'; // TODO: Check the current term when that PR's in
 let sampleClassesSectionCodes: Array<string> = [];
+
+type DayOfWeek = (typeof daysOfWeek)[number];
 
 export function addSampleClasses() {
     if (AppStore.getAddedCourses().length > 0) return;

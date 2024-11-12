@@ -1,7 +1,7 @@
 {
-  "name": "@packages/anteater-api-schemas",
+  "name": "@packages/anteater-api-types",
   "version": "0.0.1",
-  "description": "Internal Anteater API ArkType schemas for AntAlmanac",
+  "description": "Anteater API types for AntAlmanac",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "type": "module",
@@ -9,8 +9,7 @@
       "postinstall": "openapi-typescript https://anteaterapi.com/openapi.json -o src/generated/anteater-api-types.ts"
   },
   "dependencies": {
-    "arktype": "1.0.14-alpha",
-    "peterportal-api-next-types": "1.0.0-alpha.6"
+    "arktype": "1.0.14-alpha"
   },
   "devDependencies": {
     "typescript": "5.6.3",

@@ -12,9 +12,8 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { AASection } from '@packages/antalmanac-types';
+import { AASection, WebsocSectionEnrollment, WebsocSectionMeeting } from '@packages/antalmanac-types';
 import classNames from 'classnames';
-import { WebsocSectionEnrollment, WebsocSectionMeeting } from 'peterportal-api-next-types';
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
