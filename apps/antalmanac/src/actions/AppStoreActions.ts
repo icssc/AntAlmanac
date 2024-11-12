@@ -1,7 +1,6 @@
-import { RepeatingCustomEvent, ScheduleCourse, ShortCourseSchedule } from '@packages/antalmanac-types';
+import { RepeatingCustomEvent, ScheduleCourse, ShortCourseSchedule, WebsocSection } from '@packages/antalmanac-types';
 import { TRPCError } from '@trpc/server';
 import { VariantType } from 'notistack';
-import { WebsocSection } from 'peterportal-api-next-types';
 
 import { SnackbarPosition } from '$components/NotificationSnackbar';
 import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics';

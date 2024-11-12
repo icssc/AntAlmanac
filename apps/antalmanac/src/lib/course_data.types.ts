@@ -1,4 +1,4 @@
-import { WebsocSection } from 'peterportal-api-next-types';
+import { WebsocSection } from '@packages/antalmanac-types';
 
 export interface CourseDetails {
     deptCode: string;
