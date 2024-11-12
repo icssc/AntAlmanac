@@ -1,15 +1,15 @@
-import { build } from 'esbuild';
+import { build } from 'esbuild'
 
 async function main() {
-    await build({
-        bundle: true,
-        minify: true,
-        platform: 'node',
-        outdir: 'dist',
-        entryPoints: {
-            lambda: 'src/lambda.ts',
-        },
-    });
+  await build({
+    bundle: true,
+    minify: true,
+    platform: 'node',
+    outdir: 'dist',
+    entryPoints: {
+      lambda: 'src/lambda.ts',
+    }
+  })
 }
 
-main();
+main()

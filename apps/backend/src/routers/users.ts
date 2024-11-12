@@ -1,8 +1,8 @@
 import { type } from 'arktype';
 import { UserSchema } from '@packages/antalmanac-types';
-import { TRPCError } from '@trpc/server';
 import { router, procedure } from '../trpc';
 import { ddbClient, VISIBILITY } from '../db/ddb';
+import { TRPCError } from '@trpc/server';
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
 
