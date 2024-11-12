@@ -8,6 +8,7 @@ import { migrate } from 'drizzle-orm/postgres-js/migrator';
 import { ddbClient } from '../src/db/ddb.ts';
 import { db, client } from '../src/db/index.ts';
 import { RDS } from '../src/lib/rds.ts';
+import { mangleDupliateScheduleNames } from '../src/lib/formatting.ts';
 
 /**
  * Migrates the current drizzle schema to the PostgreSQL database associated
@@ -35,20 +36,26 @@ async function copyUsersToPostgres() {
 
     for await (const ddbBatch of ddbClient.getAllUserDataBatches()) {
         const transactions = ddbBatch.map( // One transaction per user
-            (ddbUser) => RDS
-                .upsertGuestUserData(db, ddbUser)
-                .catch((error) => {
-                    failedUsers.push(ddbUser.id);
-                    console.error(
-                        `Failed to upsert user data for ${ddbUser.id}:`, error
-                    );
-                })
-                .then((data) => { 
-                    if (data) 
-                        console.log(
-                        `Successfully copied user ${data}. (${++success})`
-                    );   
-                })
+            async (ddbUser) => {
+                // Mangle duplicate schedule names
+                ddbUser.userData.schedules = mangleDupliateScheduleNames(ddbUser.userData.schedules);
+
+                return RDS
+                    .upsertGuestUserData(db, ddbUser)
+                    .catch((error) => {
+                        failedUsers.push(ddbUser.id);
+                        console.error(
+                            `Failed to upsert user data for ${ddbUser.id}:`, error
+                        );
+                    })
+                    .then((data) => { 
+                        if (data) 
+                            console.log(
+                            `Successfully copied user ${data}. (${++success})`
+                        );   
+                    }
+                );
+            }
         );
 
         transactionBatches.push(Promise.all(transactions));

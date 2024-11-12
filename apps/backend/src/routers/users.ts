@@ -3,10 +3,11 @@ import { type } from 'arktype';
 import { UserSchema } from '@packages/antalmanac-types';
 
 import { RDS } from 'src/lib/rds';
+import { mangleDupliateScheduleNames } from 'src/lib/formatting';
 import { router, procedure } from '../trpc';
-import { ddbClient } from '../db/ddb';
 
-import { db } from '../db';
+import { ddbClient } from '$db/ddb';
+import { db } from '$db/index';
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
 
@@ -55,11 +56,16 @@ const usersRouter = router({
         .input(saveInputSchema.assert)
         .mutation(
             async ({ input }) => {
+                const data = input.data;
+
+                // Mangle duplicate schedule names
+                data.userData.schedules = mangleDupliateScheduleNames(data.userData.schedules);
+
                 // Don't await because the show must go on without RDS.
-                RDS.upsertGuestUserData(db, input.data)
+                RDS.upsertGuestUserData(db, data)
                     .catch((error) => console.error('Failed to upsert user data:', error));
                 
-                return ddbClient.insertItem(input.data);
+                return ddbClient.insertItem(data);
             }
         ),
 
