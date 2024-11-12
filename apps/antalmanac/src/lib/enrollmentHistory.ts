@@ -1,5 +1,6 @@
-import { queryGraphQL } from './helpers';
 import { termData } from './termData';
+
+import trpc from '$lib/api/trpc';
 
 // This represents the enrollment history of a course section during one quarter
 export interface EnrollmentHistoryGraphQL {
@@ -46,26 +47,11 @@ export class DepartmentEnrollmentHistory {
     // Each key in the cache will be the department and courseNumber concatenated
     static enrollmentHistoryCache: Record<string, EnrollmentHistory[] | null> = {};
     static termShortNames: string[] = termData.map((term) => term.shortName);
-    static QUERY_TEMPLATE = `{
-        enrollmentHistory(department: "$$DEPARTMENT$$", courseNumber: "$$COURSE_NUMBER$$", sectionType: Lec) {
-            year
-            quarter
-            department
-            courseNumber
-            dates
-            totalEnrolledHistory
-            maxCapacityHistory
-            waitlistHistory
-            instructors
-        }
-    }`;
 
     department: string;
-    partialQueryString: string;
 
     constructor(department: string) {
         this.department = department;
-        this.partialQueryString = DepartmentEnrollmentHistory.QUERY_TEMPLATE.replace('$$DEPARTMENT$$', department);
     }
 
     async find(courseNumber: string): Promise<EnrollmentHistory[] | null> {
@@ -75,10 +61,7 @@ export class DepartmentEnrollmentHistory {
     }
 
     async queryEnrollmentHistory(courseNumber: string): Promise<EnrollmentHistory[] | null> {
-        // Query for the enrollment history of all lecture sections that were offered
-        const queryString = this.partialQueryString.replace('$$COURSE_NUMBER$$', courseNumber);
-
-        const res = (await queryGraphQL<EnrollmentHistoryGraphQLResponse>(queryString))?.data?.enrollmentHistory;
+        const res = await trpc.enrollHist.get.query({ department: this.department, courseNumber, sectionType: 'Lec' });
 
         if (!res?.length) {
             return null;
