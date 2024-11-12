@@ -1,6 +1,6 @@
 import {z} from "zod";
-import {procedure, router} from "../trpc";
 import type { WebsocAPIResponse } from '@packages/antalmanac-types';
+import {procedure, router} from "../trpc";
 import type {CourseInfo} from "$aa/src/lib/course_data.types";
 
 function cleanSearchParams(record: Record<string, string>) {
@@ -89,7 +89,7 @@ const websocRouter = router({
                 responses.push(await queryWebSoc({ input: req }));
             }
             return combineSOCObjects(responses);
-        })
+        }),
     getCourseInfo: procedure
         .input(z.record(z.string(), z.string()))
         .query(async ({ input }) => {
