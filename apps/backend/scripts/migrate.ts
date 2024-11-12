@@ -2,11 +2,8 @@
  * To run this script, run "pnpm run migrate".
  */
 
-import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
-
-import { ShortCourseSchedule } from '@packages/antalmanac-types';
 
 import { ddbClient } from '../src/db/ddb.ts';
 import { db, client } from '../src/db/index.ts';

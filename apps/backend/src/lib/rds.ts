@@ -1,6 +1,6 @@
 import { ShortCourseSchedule, User } from '@packages/antalmanac-types';
 
-import { and, asc, eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import type { Database } from "$db/index";
 import { schedules, users, accounts, coursesInSchedule } from '$db/schema';
 
