@@ -36,7 +36,7 @@ export const users = pgTable('users', {
             (): AnyPgColumn => schedules.id
         ),
 
-    lastUpdated: timestamp('last_updated').defaultNow(),
+    lastUpdated: timestamp('last_updated', { withTimezone: true }).defaultNow(),
 });
 
 export type User = typeof users.$inferSelect;

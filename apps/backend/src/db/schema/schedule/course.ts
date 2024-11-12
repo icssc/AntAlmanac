@@ -2,7 +2,7 @@ import { integer, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-co
 import { schedules } from '.';
 
 /**
- * Courses have a N:1 relation with schedules.
+ * coursesInSchedule have a N:1 relation with schedules.
  *
  * Schedules can't have duplicate courses. i.e. courses with the same section code and term.
  *
@@ -31,7 +31,7 @@ export const coursesInSchedule = pgTable(
          */
         color: text('color').notNull(),
 
-        lastUpdated: timestamp('last_updated').defaultNow(),
+        lastUpdated: timestamp('last_updated', { withTimezone: true }).defaultNow(),
     },
     (table) => {
         return {

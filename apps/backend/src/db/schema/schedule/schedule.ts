@@ -22,7 +22,8 @@ export const schedules = pgTable('schedules', {
      */
     notes: text('notes'),
 
-    lastUpdated: timestamp('last_updated').defaultNow(),
+    lastUpdated: timestamp('last_updated', { withTimezone: true }).notNull(),
+
 });
 
 export type Schedule = typeof schedules.$inferSelect;
