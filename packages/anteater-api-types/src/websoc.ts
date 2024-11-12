@@ -7,6 +7,8 @@ export type WebsocCourse = WebsocAPIResponse['schools'][number]['departments'][n
 
 export type WebsocSection = WebsocCourse['sections'][number];
 
+export type WebsocSectionEnrollment = WebsocSection['numCurrentlyEnrolled'];
+
 export type WebsocSectionMeeting = WebsocSection['meetings'][number];
 
 export type WebsocSectionFinalExam = WebsocSection['finalExam'];

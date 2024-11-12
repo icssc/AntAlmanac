@@ -55,7 +55,7 @@ class _Grades {
         // If the whole query has already been cached, return
         if (this.cachedQueries.has(queryKey)) return;
 
-        const groupedGrades = await trpc.grades.aggregateByOffering.query({ department, ge });
+        const groupedGrades = await trpc.grades.aggregateByOffering.mutate({ department, ge });
 
         console.log(groupedGrades);
 

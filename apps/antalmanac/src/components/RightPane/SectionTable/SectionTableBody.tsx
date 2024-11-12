@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { AASection, EnrollmentHistory, WebsocSectionMeeting } from '@packages/antalmanac-types';
+import { AASection, WebsocSectionEnrollment, WebsocSectionMeeting } from '@packages/antalmanac-types';
 import classNames from 'classnames';
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -343,7 +343,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
 
 interface SectionEnrollmentCellProps {
     classes: ClassNameMap;
-    numCurrentlyEnrolled: EnrollmentHistory;
+    numCurrentlyEnrolled: WebsocSectionEnrollment;
     maxCapacity: number;
 
     /**
