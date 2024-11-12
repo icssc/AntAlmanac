@@ -1,8 +1,14 @@
 import trpc from '$lib/api/trpc';
 
 class _WebSOC {
+    private aaCacheKey = Date.now().toString(10);
+
+    clearCache() {
+        this.aaCacheKey = Date.now().toString(10);
+    }
+
     async query(params: Record<string, string>) {
-        return await trpc.websoc.getOne.query(params);
+        return await trpc.websoc.getOne.query({ ...params, aaCacheKey: this.aaCacheKey });
     }
 
     async queryMultiple(params: { [key: string]: string }, fieldName: string) {
