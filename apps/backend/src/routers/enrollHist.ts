@@ -12,6 +12,7 @@ const enrollHistRouter = router({
             })
                 .then((x) => x.json())
                 .then((x) => x.data as EnrollmentHistory)
+                .then((xs) => xs.filter(x => x.dates.length)) // FIXME remove this shim once this is fixed on the API end
     ),
 });
 

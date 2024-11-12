@@ -57,8 +57,6 @@ class _Grades {
 
         const groupedGrades = await trpc.grades.aggregateByOffering.mutate({ department, ge });
 
-        console.log(groupedGrades);
-
         if (!groupedGrades) throw new Error('populateGradesCache: Failed to query grades');
 
         // Populate cache
