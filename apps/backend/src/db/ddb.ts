@@ -171,7 +171,6 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
         } else {
             return parsedUserData.data;
         }
-
     }
 }
 

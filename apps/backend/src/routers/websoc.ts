@@ -1,7 +1,7 @@
-import {z} from "zod";
+import { z } from 'zod';
 import type { WebsocAPIResponse } from '@packages/antalmanac-types';
-import {procedure, router} from "../trpc";
-import type {CourseInfo} from "$aa/src/lib/course_data.types";
+import { procedure, router } from '../trpc';
+import type { CourseInfo } from '$aa/src/lib/course_data.types';
 
 function cleanSearchParams(record: Record<string, string>) {
     if ('term' in record) {
@@ -14,19 +14,12 @@ function cleanSearchParams(record: Record<string, string>) {
             record['year'] = year;
         }
     }
-    if ('startTime' in record) {
-        if (record['startTime'] === '') {
-            delete record['startTime'];
-        }
+    if ('department' in record) {
+        record['department'] = record['department'].toUpperCase();
     }
-    if ('endTime' in record) {
-        if (record['endTime'] === '') {
-            delete record['endTime'];
-        }
-    }
-    if ('division' in record) {
-        if (record['division'] === '') {
-            delete record['division'];
+    for (const [key, value] of Object.entries(record)) {
+        if (value === '') {
+            delete record[key];
         }
     }
     return record;
@@ -76,9 +69,7 @@ function combineSOCObjects(SOCObjects: WebsocAPIResponse[]) {
 }
 
 const websocRouter = router({
-    getOne: procedure
-        .input(z.record(z.string(), z.string()))
-        .query(queryWebSoc),
+    getOne: procedure.input(z.record(z.string(), z.string())).query(queryWebSoc),
     getMany: procedure
         .input(z.object({ params: z.record(z.string(), z.string()), fieldName: z.string() }))
         .query(async ({ input }) => {
@@ -90,31 +81,29 @@ const websocRouter = router({
             }
             return combineSOCObjects(responses);
         }),
-    getCourseInfo: procedure
-        .input(z.record(z.string(), z.string()))
-        .query(async ({ input }) => {
-            const res = await queryWebSoc({ input });
-            const courseInfo: { [sectionCode: string]: CourseInfo } = {};
-            for (const school of res.schools) {
-                for (const department of school.departments) {
-                    for (const course of department.courses) {
-                        for (const section of course.sections) {
-                            courseInfo[section.sectionCode] = {
-                                courseDetails: {
-                                    deptCode: department.deptCode,
-                                    courseNumber: course.courseNumber,
-                                    courseTitle: course.courseTitle,
-                                    courseComment: course.courseComment,
-                                    prerequisiteLink: course.prerequisiteLink,
-                                },
-                                section: section,
-                            };
-                        }
+    getCourseInfo: procedure.input(z.record(z.string(), z.string())).query(async ({ input }) => {
+        const res = await queryWebSoc({ input });
+        const courseInfo: { [sectionCode: string]: CourseInfo } = {};
+        for (const school of res.schools) {
+            for (const department of school.departments) {
+                for (const course of department.courses) {
+                    for (const section of course.sections) {
+                        courseInfo[section.sectionCode] = {
+                            courseDetails: {
+                                deptCode: department.deptCode,
+                                courseNumber: course.courseNumber,
+                                courseTitle: course.courseTitle,
+                                courseComment: course.courseComment,
+                                prerequisiteLink: course.prerequisiteLink,
+                            },
+                            section: section,
+                        };
                     }
                 }
             }
-            return courseInfo;
-        })
-})
+        }
+        return courseInfo;
+    }),
+});
 
 export default websocRouter;

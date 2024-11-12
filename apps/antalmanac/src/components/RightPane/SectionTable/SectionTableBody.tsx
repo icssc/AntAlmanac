@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { AASection, WebsocSectionEnrollment, WebsocSectionMeeting } from '@packages/antalmanac-types';
+import { AASection, EnrollmentHistory, WebsocSectionMeeting } from '@packages/antalmanac-types';
 import classNames from 'classnames';
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -315,7 +315,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
-                return meeting.bldg[0] !== 'TBA' ? (
+                return !meeting.timeIsTBA ? (
                     meeting.bldg.map((bldg) => {
                         const [buildingName = ''] = bldg.split(' ');
                         const buildingId = locationIds[buildingName];
@@ -334,7 +334,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
                         );
                     })
                 ) : (
-                    <Box>{meeting.bldg}</Box>
+                    <Box>{'TBA'}</Box>
                 );
             })}
         </NoPaddingTableCell>
@@ -343,7 +343,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
 
 interface SectionEnrollmentCellProps {
     classes: ClassNameMap;
-    numCurrentlyEnrolled: WebsocSectionEnrollment;
+    numCurrentlyEnrolled: EnrollmentHistory;
     maxCapacity: number;
 
     /**
@@ -430,7 +430,7 @@ const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
                 if (meeting.timeIsTBA) {
-                    return <Box key={meeting.timeIsTBA + meeting.bldg[0]}>TBA</Box>;
+                    return <Box key={meeting.timeIsTBA.toString()}>TBA</Box>;
                 }
 
                 if (meeting.startTime && meeting.endTime) {
@@ -513,7 +513,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
      */
     const sectionDetails = useMemo(() => {
         return {
-            daysOccurring: parseDaysString(section.meetings[0].days),
+            daysOccurring: parseDaysString(section.meetings[0].timeIsTBA ? null : section.meetings[0].days),
             ...normalizeTime(section.meetings[0]),
         };
     }, [section.meetings]);
