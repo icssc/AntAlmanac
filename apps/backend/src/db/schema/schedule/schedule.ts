@@ -1,5 +1,5 @@
 import { createId } from '@paralleldrive/cuid2';
-import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, unique, text, timestamp } from 'drizzle-orm/pg-core';
 import { users } from '../auth/user';
 
 export const schedules = pgTable('schedules', {
@@ -24,6 +24,8 @@ export const schedules = pgTable('schedules', {
 
     lastUpdated: timestamp('last_updated', { withTimezone: true }).notNull(),
 
-});
+}, (table) => ({
+    unq: unique().on(table.userId, table.name)
+}));
 
 export type Schedule = typeof schedules.$inferSelect;
