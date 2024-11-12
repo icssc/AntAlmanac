@@ -1,7 +1,6 @@
 import { z } from 'zod';
-import type { WebsocAPIResponse } from '@packages/antalmanac-types';
+import type { WebsocAPIResponse, CourseInfo } from '@packages/antalmanac-types';
 import { procedure, router } from '../trpc';
-import type { CourseInfo } from '$aa/src/lib/course_data.types';
 
 function cleanSearchParams(record: Record<string, string>) {
     if ('term' in record) {

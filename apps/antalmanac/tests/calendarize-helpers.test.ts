@@ -1,7 +1,8 @@
-import { describe, test, expect } from 'vitest';
 import type { Schedule, RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
+import { describe, test, expect } from 'vitest';
+
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
+import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
 
 describe('calendarize-helpers', () => {
     const courses: Schedule['courses'] = [
@@ -14,7 +15,7 @@ describe('calendarize-helpers', () => {
             section: {
                 color: 'placeholderColor',
                 sectionCode: 'placeholderSectionCode',
-                sectionType: 'placeholderSectionType',
+                sectionType: 'Lec',
                 sectionNum: 'placeholderSectionNum',
                 units: 'placeholderUnits',
                 instructors: [],
@@ -60,6 +61,7 @@ describe('calendarize-helpers', () => {
                 restrictions: 'placeholderRestrictions',
                 status: 'OPEN',
                 sectionComment: 'placeholderSectionComment',
+                updatedAt: 'placeholderUpdatedAt',
             },
             term: '2024 Winter',
         },

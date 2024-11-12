@@ -162,7 +162,7 @@ export function getFirstClass(
  * ```
  */
 export function getExamTime(exam: FinalExam, year: number): [DateTimeArray, DateTimeArray] | [] {
-    if (exam.month && exam.day && exam.startTime && exam.endTime) {
+    if (exam.examStatus === 'SCHEDULED_FINAL') {
         const month = exam.month;
         const day = exam.day;
         const [examStartTime, examEndTime] = parseTimes(exam.startTime, exam.endTime);

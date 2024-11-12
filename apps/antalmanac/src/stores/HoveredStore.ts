@@ -1,10 +1,10 @@
 import { AASection, ScheduleCourse } from '@packages/antalmanac-types';
+import { CourseDetails } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
 import { calendarizeCourseEvents, calendarizeFinals } from './calendarizeHelpers';
 
 import { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { CourseDetails } from '$lib/course_data.types';
 
 const HOVERED_SECTION_COLOR = '#80808080';
 export interface HoveredStore {

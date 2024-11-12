@@ -123,6 +123,10 @@ function randomStartEndTime(duration: number): [HourMinute, HourMinute] {
     return [start, end];
 }
 
+type NonStrictPartialWebsocSectionMeeting = Partial<Extract<WebsocSectionMeeting, { timeIsTBA: false }>> & {
+    timeIsTBA?: boolean;
+};
+
 export function sampleMeetingsFactory({
     bldg = ['DBH 1200'],
     days = 'MWF',
@@ -135,7 +139,7 @@ export function sampleMeetingsFactory({
         minute: 50,
     },
     timeIsTBA = false,
-}: Partial<WebsocSectionMeeting>): WebsocSectionMeeting[] {
+}: NonStrictPartialWebsocSectionMeeting): WebsocSectionMeeting[] {
     return [
         {
             bldg,
@@ -147,6 +151,10 @@ export function sampleMeetingsFactory({
     ];
 }
 
+type NonStrictPartialWebsocSectionFinalExam = Partial<
+    Omit<Extract<WebsocSectionFinalExam, { examStatus: 'SCHEDULED_FINAL' }>, 'examStatus'>
+> & { examStatus?: WebsocSectionFinalExam['examStatus'] };
+
 export function sampleFinalExamFactory({
     examStatus = 'SCHEDULED_FINAL',
     dayOfWeek,
@@ -155,23 +163,8 @@ export function sampleFinalExamFactory({
     startTime,
     endTime,
     bldg = ['DBH'],
-}: Partial<WebsocSectionFinalExam>): WebsocSectionFinalExam {
-    if (examStatus == 'NO_FINAL')
-        return {
-            examStatus,
-            dayOfWeek: 'Mon',
-            month: 0,
-            day: 0,
-            startTime: {
-                hour: 0,
-                minute: 0,
-            },
-            endTime: {
-                hour: 0,
-                minute: 0,
-            },
-            bldg,
-        };
+}: NonStrictPartialWebsocSectionFinalExam): WebsocSectionFinalExam {
+    if (examStatus === 'NO_FINAL') return { examStatus };
 
     const [randomStartTime, randomEndTime] = randomStartEndTime(120);
     startTime = startTime ?? randomStartTime;
@@ -232,9 +225,10 @@ export function sampleClassFactory({
             sectionCode: randint(10000, 99999).toString(),
             sectionComment: '',
             sectionNum: '1',
-            sectionType: 'LEC',
+            sectionType: 'Lec',
             status: 'Waitl',
             units: '4',
+            updatedAt: null,
         },
     };
 }

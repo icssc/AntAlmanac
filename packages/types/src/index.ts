@@ -1,5 +1,6 @@
 export * from './schedule';
 export * from './customevent';
+export * from './courseData';
 export * from './user';
 export * from './legacy';
 export * from './websoc';

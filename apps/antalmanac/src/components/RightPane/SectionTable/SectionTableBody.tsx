@@ -12,7 +12,7 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { AASection, WebsocSectionEnrollment, WebsocSectionMeeting } from '@packages/antalmanac-types';
+import { AASection, WebsocSectionEnrollment, WebsocSectionMeeting, CourseDetails } from '@packages/antalmanac-types';
 import classNames from 'classnames';
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -25,7 +25,6 @@ import { SectionActionCell } from './cells/action';
 import restrictionsMapping from './static/restrictionsMapping.json';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { CourseDetails } from '$lib/course_data.types';
 import { Grades } from '$lib/grades';
 import { clickToCopy } from '$lib/helpers';
 import locationIds from '$lib/location_ids';

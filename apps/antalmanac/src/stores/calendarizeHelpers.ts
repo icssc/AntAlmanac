@@ -1,4 +1,9 @@
-import type { ScheduleCourse, RepeatingCustomEvent, HourMinute } from '@packages/antalmanac-types';
+import type {
+    ScheduleCourse,
+    RepeatingCustomEvent,
+    HourMinute,
+    WebsocSectionFinalExam,
+} from '@packages/antalmanac-types';
 
 import { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { getFinalsStartForTerm } from '$lib/termData';
@@ -16,12 +21,12 @@ export function getLocation(location: string): Location {
 export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
     return currentCourses.flatMap((course) => {
         return course.section.meetings
-            .filter((meeting) => !meeting.timeIsTBA && meeting.startTime && meeting.endTime && meeting.days)
+            .filter((meeting) => !meeting.timeIsTBA)
             .flatMap((meeting) => {
-                const startHour = meeting.startTime?.hour;
-                const startMin = meeting.startTime?.minute;
-                const endHour = meeting.endTime?.hour;
-                const endMin = meeting.endTime?.minute;
+                const startHour = meeting.startTime.hour;
+                const startMin = meeting.startTime.minute;
+                const endHour = meeting.endTime.hour;
+                const endMin = meeting.endTime.minute;
 
                 /**
                  * An array of booleans indicating whether a course meeting occurs on that day.
@@ -40,7 +45,10 @@ export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): 
                     .filter(notNull);
 
                 // Intermediate formatting to subtract `bldg` attribute in favor of `locations`
-                const { bldg: _, ...finalExam } = course.section.finalExam;
+                const { bldg: _, ...finalExam } =
+                    course.section.finalExam.examStatus === 'SCHEDULED_FINAL'
+                        ? course.section.finalExam
+                        : { bldg: '', examStatus: course.section.finalExam.examStatus };
 
                 return dayIndicesOccurring.map((dayIndex) => {
                     return {
@@ -62,7 +70,10 @@ export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): 
                         end: new Date(2018, 0, dayIndex, endHour, endMin),
                         finalExam: {
                             ...finalExam,
-                            locations: course.section.finalExam.bldg?.map(getLocation) ?? [],
+                            locations:
+                                course.section.finalExam.examStatus === 'SCHEDULED_FINAL'
+                                    ? course.section.finalExam.bldg.map(getLocation)
+                                    : [],
                         },
                         isCustomEvent: false,
                     };
@@ -73,27 +84,27 @@ export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): 
 
 export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
     return currentCourses
-        .filter(
-            (course) =>
-                course.section.finalExam.examStatus === 'SCHEDULED_FINAL' &&
-                course.section.finalExam.startTime &&
-                course.section.finalExam.endTime &&
-                course.section.finalExam.dayOfWeek
-        )
+        .filter((course) => course.section.finalExam.examStatus === 'SCHEDULED_FINAL')
         .flatMap((course) => {
-            const { bldg, ...finalExam } = course.section.finalExam;
+            // This assertion is only necessary because the filter above is not actually a type guard for the finalExam object.
+            // I guess because it's an attribute of another attribute? TypeScript pls
+            const finalExamObject = course.section.finalExam as Extract<
+                WebsocSectionFinalExam,
+                { examStatus: 'SCHEDULED_FINAL' }
+            >;
+            const { bldg, ...finalExam } = finalExamObject;
 
-            const startHour = finalExam.startTime?.hour;
-            const startMin = finalExam.startTime?.minute;
-            const endHour = finalExam.endTime?.hour;
-            const endMin = finalExam.endTime?.minute;
+            const startHour = finalExam.startTime.hour;
+            const startMin = finalExam.startTime.minute;
+            const endHour = finalExam.endTime.hour;
+            const endMin = finalExam.endTime.minute;
 
             /**
              * An array of booleans indicating whether the day at that index is a day that the final.
              *
              * @example [false, false, false, true, false, true, false], i.e. [T, Th]
              */
-            const weekdaysOccurring = getReferencesOccurring(FINALS_WEEK_DAYS, course.section.finalExam.dayOfWeek);
+            const weekdaysOccurring = getReferencesOccurring(FINALS_WEEK_DAYS, finalExam.dayOfWeek);
 
             /**
              * Only include the day indices that the final is occurring.
@@ -104,7 +115,11 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                 .map((day, index) => (day ? index : undefined))
                 .filter(notNull);
 
-            const locationsWithNoDays = bldg ? bldg.map(getLocation) : course.section.meetings[0].bldg.map(getLocation);
+            const locationsWithNoDays = bldg
+                ? bldg.map(getLocation)
+                : !course.section.meetings[0].timeIsTBA
+                  ? course.section.meetings[0].bldg.map(getLocation)
+                  : [];
 
             /**
              * Fallback to January 2018 if no finals start date is available.

@@ -1,11 +1,11 @@
 import { RepeatingCustomEvent, ScheduleCourse, ShortCourseSchedule, WebsocSection } from '@packages/antalmanac-types';
+import { CourseDetails } from '@packages/antalmanac-types';
 import { TRPCError } from '@trpc/server';
 import { VariantType } from 'notistack';
 
 import { SnackbarPosition } from '$components/NotificationSnackbar';
 import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics';
 import trpc from '$lib/api/trpc';
-import { CourseDetails } from '$lib/course_data.types';
 import { warnMultipleTerms } from '$lib/helpers';
 import { removeLocalStorageUserId, setLocalStorageUserId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';

@@ -57,9 +57,13 @@ const PrereqTreeNode: FC<TreeProps> = (props) => {
         return (
             <li key={props.index} className={'prerequisite-node'}>
                 <Node
-                    label={`${prereq.courseId ?? prereq.examName ?? ''}${
-                        prereq?.minGrade ? ` (min grade = ${prereq?.minGrade})` : ''
-                    }${prereq?.coreq ? ' (coreq)' : ''}`}
+                    label={
+                        prereq.prereqType === 'course'
+                            ? `${prereq.courseId} ${
+                                  prereq.coreq ? '(coreq)' : prereq.minGrade ? `(min grade = ${prereq.minGrade})` : ''
+                              }`
+                            : `${prereq.examName} ${prereq.minGrade ? `(min grade = ${prereq.minGrade})` : ''}`
+                    }
                     node={'prerequisite-node'}
                 />
             </li>

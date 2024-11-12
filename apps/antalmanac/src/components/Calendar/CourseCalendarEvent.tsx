@@ -2,6 +2,7 @@ import { Chip, IconButton, Paper, Tooltip } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete } from '@material-ui/icons';
+import { WebsocSectionFinalExam } from '@packages/antalmanac-types';
 import { useEffect, useRef, useCallback } from 'react';
 import { Event } from 'react-big-calendar';
 import { Link } from 'react-router-dom';
@@ -107,21 +108,9 @@ export interface Location {
     days?: string;
 }
 
-export interface FinalExam {
-    examStatus: 'NO_FINAL' | 'TBA_FINAL' | 'SCHEDULED_FINAL';
-    dayOfWeek: 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat' | null;
-    month: number | null;
-    day: number | null;
-    startTime: {
-        hour: number;
-        minute: number;
-    } | null;
-    endTime: {
-        hour: number;
-        minute: number;
-    } | null;
-    locations: Location[] | null;
-}
+export type FinalExam =
+    | (Omit<Extract<WebsocSectionFinalExam, { examStatus: 'SCHEDULED_FINAL' }>, 'bldg'> & { locations: Location[] })
+    | Extract<WebsocSectionFinalExam, { examStatus: 'NO_FINAL' | 'TBA_FINAL' }>;
 
 export interface CourseEvent extends CommonCalendarEvent {
     locations: Location[];
@@ -195,7 +184,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
         } else if (finalExam.examStatus == 'TBA_FINAL') {
             finalExamString = 'Final TBA';
         } else {
-            if (finalExam.startTime && finalExam.endTime && finalExam.month && finalExam.locations) {
+            if (finalExam.examStatus === 'SCHEDULED_FINAL') {
                 const timeString = formatTimes(finalExam.startTime, finalExam.endTime, isMilitaryTime);
                 const locationString = `at ${finalExam.locations
                     .map((location) => `${location.building} ${location.room}`)

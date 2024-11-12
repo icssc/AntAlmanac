@@ -65,6 +65,7 @@ function getCourses() {
                         ...course.section,
                     },
                 ],
+                updatedAt: null,
             };
             formattedCourses.push(formattedCourse);
         }
