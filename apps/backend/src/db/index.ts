@@ -5,3 +5,5 @@ import * as schema from './schema/index.js';
 export const client = postgres('postgres://postgres:postgres@localhost:5432/antalmanac');
 
 export const db = drizzle(client, { schema });
+
+export type Database = typeof db;
