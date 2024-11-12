@@ -77,7 +77,7 @@ describe('calendarize-helpers', () => {
             courseTitle: 'placeholderCourseTitle',
             instructors: [],
             sectionCode: 'placeholderSectionCode',
-            sectionType: 'placeholderSectionType',
+            sectionType: 'Lec',
             start: new Date(2018, 0, 1, 1, 2),
             end: new Date(2018, 0, 1, 3, 4),
             finalExam: {
@@ -106,7 +106,7 @@ describe('calendarize-helpers', () => {
             courseTitle: 'placeholderCourseTitle',
             instructors: [],
             sectionCode: 'placeholderSectionCode',
-            sectionType: 'placeholderSectionType',
+            sectionType: 'Lec',
             start: new Date(2018, 0, 3, 1, 2),
             end: new Date(2018, 0, 3, 3, 4),
             finalExam: {
@@ -135,7 +135,7 @@ describe('calendarize-helpers', () => {
             courseTitle: 'placeholderCourseTitle',
             instructors: [],
             sectionCode: 'placeholderSectionCode',
-            sectionType: 'placeholderSectionType',
+            sectionType: 'Lec',
             start: new Date(2018, 0, 5, 1, 2),
             end: new Date(2018, 0, 5, 3, 4),
             finalExam: {
