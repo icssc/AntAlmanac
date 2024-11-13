@@ -8,6 +8,7 @@ const Environment = type({
     AWS_REGION: 'string',
     MAPBOX_ACCESS_TOKEN: 'string',
     'PR_NUM?': 'number',
+    STAGE: "'prod' | 'dev' | 'local'",
 });
 
 const env = Environment.assert({ ...process.env });
