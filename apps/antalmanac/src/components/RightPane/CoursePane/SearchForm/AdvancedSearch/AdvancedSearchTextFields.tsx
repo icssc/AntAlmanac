@@ -1,4 +1,5 @@
-import { TextField, Box, FormControl, InputLabel, Select, MenuItem, Switch, FormControlLabel } from '@material-ui/core';
+import { TextField, Box, FormControl, InputLabel, Select, Switch, FormControlLabel } from '@material-ui/core';
+import { MenuItem } from '@mui/material';
 import { useState, useEffect, useCallback } from 'react';
 
 import { EXCLUDE_RESTRICTION_CODES_OPTIONS } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
