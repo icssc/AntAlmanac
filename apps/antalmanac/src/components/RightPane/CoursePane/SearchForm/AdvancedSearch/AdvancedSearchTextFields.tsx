@@ -1,7 +1,5 @@
 import {
     Box,
-    Button,
-    Collapse,
     FormControl,
     FormControlLabel,
     InputLabel,
@@ -10,16 +8,11 @@ import {
     Switch,
     TextField,
     Theme,
-    Typography,
 } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { ExpandLess, ExpandMore } from '@material-ui/icons';
-import { ChangeEvent, PureComponent } from 'react';
+import withStyles, { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { PureComponent } from 'react';
 
-import RightPaneStore from '../../RightPaneStore';
-
-import { getLocalStorageAdvanced, setLocalStorageAdvanced } from '$lib/localStorage';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 const styles: Styles<Theme, object> = {
     fieldContainer: {
@@ -58,14 +51,6 @@ interface AdvancedSearchTextFieldsState {
     division: string;
 }
 
-interface AdvancedSearchProps {
-    classes: ClassNameMap;
-}
-
-interface AdvancedSearchState {
-    expandAdvanced: boolean;
-}
-
 class UnstyledAdvancedSearchTextFields extends PureComponent<
     AdvancedSearchTextFieldsProps,
     AdvancedSearchTextFieldsState
@@ -102,44 +87,45 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
         });
     };
 
-    handleChange = (name: string) => (event: ChangeEvent<{ checked?: boolean; name?: string; value: unknown }>) => {
-        const stateObj = { url: 'url' };
-        const url = new URL(window.location.href);
-        const urlParam = new URLSearchParams(url.search);
+    handleChange =
+        (name: string) => (event: React.ChangeEvent<{ checked?: boolean; name?: string; value: unknown }>) => {
+            const stateObj = { url: 'url' };
+            const url = new URL(window.location.href);
+            const urlParam = new URLSearchParams(url.search);
 
-        if (name === 'online') {
-            if (event.target.checked) {
-                this.setState({ building: 'ON', room: 'LINE' });
-                RightPaneStore.updateFormValue('building', 'ON');
-                RightPaneStore.updateFormValue('room', 'LINE');
+            if (name === 'online') {
+                if (event.target.checked) {
+                    this.setState({ building: 'ON', room: 'LINE' });
+                    RightPaneStore.updateFormValue('building', 'ON');
+                    RightPaneStore.updateFormValue('room', 'LINE');
 
-                urlParam.set('building', 'ON');
-                urlParam.set('room', 'LINE');
+                    urlParam.set('building', 'ON');
+                    urlParam.set('room', 'LINE');
+                } else {
+                    this.setState({ building: '', room: '' });
+                    RightPaneStore.updateFormValue('building', '');
+                    RightPaneStore.updateFormValue('room', '');
+
+                    urlParam.delete('building');
+                    urlParam.delete('room');
+                }
             } else {
-                this.setState({ building: '', room: '' });
-                RightPaneStore.updateFormValue('building', '');
-                RightPaneStore.updateFormValue('room', '');
+                const value = event.target.value;
+                this.setState({ [name]: event.target.value } as unknown as AdvancedSearchTextFieldsState);
 
-                urlParam.delete('building');
-                urlParam.delete('room');
-            }
-        } else {
-            const value = event.target.value;
-            this.setState({ [name]: event.target.value } as unknown as AdvancedSearchTextFieldsState);
+                if (value !== '') {
+                    urlParam.set(name, String(value));
+                } else {
+                    urlParam.delete(name);
+                }
 
-            if (value !== '') {
-                urlParam.set(name, String(value));
-            } else {
-                urlParam.delete(name);
+                RightPaneStore.updateFormValue(name, event.target.value as string);
             }
 
-            RightPaneStore.updateFormValue(name, event.target.value as string);
-        }
-
-        const param = urlParam.toString();
-        const new_url = `${param.trim() ? '?' : ''}${param}`;
-        history.replaceState(stateObj, 'url', '/' + new_url);
-    };
+            const param = urlParam.toString();
+            const new_url = `${param.trim() ? '?' : ''}${param}`;
+            history.replaceState(stateObj, 'url', '/' + new_url);
+        };
 
     /**
      * UPDATE (6-28-19): Transferred course code and course number search boxes to
@@ -296,98 +282,4 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
     }
 }
 
-const AdvancedSearchTextFields = withStyles(styles)(UnstyledAdvancedSearchTextFields);
-
-const parentStyles = {
-    container: {
-        display: 'inline-flex',
-        marginTop: 10,
-        marginBottom: 10,
-        cursor: 'pointer',
-
-        '& > div': {
-            marginRight: 5,
-        },
-    },
-};
-
-class AdvancedSearch extends PureComponent<AdvancedSearchProps, AdvancedSearchState> {
-    constructor(props: AdvancedSearchProps) {
-        super(props);
-
-        let advanced = false;
-
-        if (typeof Storage !== 'undefined') {
-            advanced = getLocalStorageAdvanced() === 'expanded';
-        }
-
-        const formData = RightPaneStore.getFormData();
-        const defaultFormData = RightPaneStore.getDefaultFormData();
-        for (const [key, value] of Object.entries(formData)) {
-            if (key === 'deptLabel' || key === 'deptValue') {
-                continue;
-            }
-
-            if (defaultFormData[key] != value) {
-                advanced = true;
-                break;
-            }
-        }
-
-        this.state = {
-            expandAdvanced: advanced,
-        };
-    }
-
-    componentDidMount() {
-        RightPaneStore.on('formReset', this.resetParams);
-    }
-
-    resetParams() {
-        const stateObj = { url: 'url' };
-        const url = new URL(window.location.href);
-        const urlParam = new URLSearchParams(url.search);
-
-        const formData = RightPaneStore.getFormData();
-        for (const key of Object.keys(formData)) {
-            if (key === 'deptLabel' || key === 'deptValue') {
-                continue;
-            }
-
-            urlParam.delete(key);
-        }
-
-        const param = urlParam.toString();
-        const new_url = `${param.trim() ? '?' : ''}${param}`;
-        history.replaceState(stateObj, 'url', '/' + new_url);
-    }
-
-    handleExpand = () => {
-        const nextExpansionState = !this.state.expandAdvanced;
-        setLocalStorageAdvanced(nextExpansionState ? 'expanded' : 'notexpanded');
-        this.setState({ expandAdvanced: nextExpansionState });
-    };
-
-    render() {
-        return (
-            <>
-                <Button
-                    onClick={this.handleExpand}
-                    style={{ textTransform: 'none', width: 'auto', display: 'flex', justifyContent: 'start' }}
-                >
-                    <div>
-                        <Typography noWrap variant="body1">
-                            Advanced Search Options
-                        </Typography>
-                    </div>
-                    {this.state.expandAdvanced ? <ExpandLess /> : <ExpandMore />}
-                </Button>
-                <Collapse in={this.state.expandAdvanced}>
-                    <AdvancedSearchTextFields />
-                </Collapse>
-            </>
-        );
-    }
-}
-
-export default withStyles(parentStyles)(AdvancedSearch);
+export const AdvancedSearchTextFields = withStyles(styles)(UnstyledAdvancedSearchTextFields);
