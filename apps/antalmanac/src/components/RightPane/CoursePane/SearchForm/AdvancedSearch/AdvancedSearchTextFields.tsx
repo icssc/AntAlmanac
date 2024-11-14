@@ -1,6 +1,7 @@
 import { TextField, Box, FormControl, InputLabel, Select, MenuItem, Switch, FormControlLabel } from '@material-ui/core';
 import { useState, useEffect, useCallback } from 'react';
 
+import { EXCLUDE_RESTRICTION_CODES_OPTIONS } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 export function AdvancedSearchTextFields() {
@@ -266,26 +267,25 @@ export function AdvancedSearchTextFields() {
                     onChange={handleChange('excludeRestrictionCodes')}
                     renderValue={(selected) => (selected as string[]).join(', ')}
                 >
-                    <MenuItem value={'A'}>A: Prerequisite required</MenuItem>
-                    <MenuItem value={'B'}>B: Authorization code required</MenuItem>
-                    <MenuItem value={'C'}>C: Fee required</MenuItem>
-                    <MenuItem value={'D'}>D: Pass/Not Pass option only</MenuItem>
-                    <MenuItem value={'E'}>E: Freshmen only</MenuItem>
-                    <MenuItem value={'F'}>F: Sophomores only</MenuItem>
-                    <MenuItem value={'G'}>G: Lower-division only</MenuItem>
-                    <MenuItem value={'H'}>H: Juniors only</MenuItem>
-                    <MenuItem value={'I'}>I: Seniors only</MenuItem>
-                    <MenuItem value={'J'}>J: Upper-division only</MenuItem>
-                    <MenuItem value={'K'}>K: Graduate only</MenuItem>
-                    <MenuItem value={'L'}>L: Major only</MenuItem>
-                    <MenuItem value={'M'}>M: Non-major only</MenuItem>
-                    <MenuItem value={'N'}>N: School major only</MenuItem>
-                    <MenuItem value={'O'}>O: Non-school major only</MenuItem>
-                    <MenuItem value={'R'}>R: Biomedical Pass/Fail course (School of Medicine only)</MenuItem>
-                    <MenuItem value={'S'}>S: Satisfactory/Unsatisfactory only</MenuItem>
-                    <MenuItem value={'X'}>
-                        X: Separate authorization codes required to add, drop, or change enrollment
-                    </MenuItem>
+                    {EXCLUDE_RESTRICTION_CODES_OPTIONS.map((option) => (
+                        <MenuItem
+                            key={option.value}
+                            value={option.value}
+                            style={{
+                                maxWidth: 240,
+                            }}
+                        >
+                            <span
+                                style={{
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                }}
+                            >
+                                {option.label}
+                            </span>
+                        </MenuItem>
+                    ))}
                 </Select>
             </FormControl>
         </Box>
