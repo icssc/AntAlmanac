@@ -1,5 +1,5 @@
 /**
- * To run this script, run "pnpm run migrate".
+ * To run this script, run "pnpm run ddb-rds".
  */
 
 import { ddbClient } from '../src/db/ddb';
