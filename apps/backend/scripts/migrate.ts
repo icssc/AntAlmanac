@@ -11,7 +11,7 @@ import { client } from '$db/index';
  * Migrates the current drizzle schema to the PostgreSQL database associated
  * with the drizzle client.
  */
-async function migratePostgresDb() {
+export async function migratePostgresDb() {
     await migrate(drizzle(client), {
         migrationsFolder: './drizzle'
     });

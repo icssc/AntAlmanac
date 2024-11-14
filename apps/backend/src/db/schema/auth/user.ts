@@ -1,5 +1,5 @@
 import { createId } from '@paralleldrive/cuid2';
-import { AnyPgColumn, pgTable, text } from 'drizzle-orm/pg-core';
+import { AnyPgColumn, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 
 import { schedules } from '../schedule/schedule';
 
@@ -35,6 +35,8 @@ export const users = pgTable('users', {
             // Necessary because this is a circular dependency.
             (): AnyPgColumn => schedules.id
         ),
+
+    lastUpdated: timestamp('last_updated', { withTimezone: true }).defaultNow(),
 });
 
 export type User = typeof users.$inferSelect;

@@ -9,3 +9,5 @@ if (!url) throw new Error("DB_URL not defined")
 export const client = postgres(url);
 
 export const db = drizzle(client, { schema });
+
+export type Database = typeof db;

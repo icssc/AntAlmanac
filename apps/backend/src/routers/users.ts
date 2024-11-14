@@ -1,8 +1,13 @@
 import { type } from 'arktype';
+
 import { UserSchema } from '@packages/antalmanac-types';
+
+import { RDS } from 'src/lib/rds';
+import { mangleDupliateScheduleNames } from 'src/lib/formatting';
 import { router, procedure } from '../trpc';
-import { ddbClient, VISIBILITY } from '../db/ddb';
-import { TRPCError } from '@trpc/server';
+
+import { ddbClient } from '$db/ddb';
+import { db } from '$db/index';
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
 
@@ -47,34 +52,22 @@ const usersRouter = router({
     /**
      * Loads schedule data for a user that's logged in.
      */
-    saveUserData: procedure.input(saveInputSchema.assert).mutation(async ({ input }) => {
-        /**
-         * Assign default visility value.
-         */
-        input.data.visibility ??= VISIBILITY.PRIVATE;
+    saveUserData: procedure
+        .input(saveInputSchema.assert)
+        .mutation(
+            async ({ input }) => {
+                const data = input.data;
 
-        // Requester and requestee IDs must match if schedule is private.
+                // Mangle duplicate schedule names
+                data.userData.schedules = mangleDupliateScheduleNames(data.userData.schedules);
 
-        if (input.data.visibility === VISIBILITY.PRIVATE && input.id !== input.data.id) {
-            throw new TRPCError({
-                code: 'UNAUTHORIZED',
-                message: 'Schedule is private and user ID does not match.',
-            });
-        }
-
-        // Requester and requestee IDs must match if schedule is public (read-only).
-
-        if (input.data.visibility === VISIBILITY.PUBLIC && input.id !== input.data.id) {
-            throw new TRPCError({
-                code: 'UNAUTHORIZED',
-                message: 'Schedule is public and user ID does not match.',
-            });
-        }
-
-        // Schedule is open, or requester user ID and schedule's user ID match.
-
-        await ddbClient.insertItem(input.data);
-    }),
+                // Don't await because the show must go on without RDS.
+                RDS.upsertGuestUserData(db, data)
+                    .catch((error) => console.error('Failed to upsert user data:', error));
+                
+                return ddbClient.insertItem(data);
+            }
+        ),
 
     /**
      * Users can view other users' schedules, even anonymously.
