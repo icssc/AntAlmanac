@@ -103,24 +103,46 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
     };
 
     handleChange = (name: string) => (event: ChangeEvent<{ checked?: boolean; name?: string; value: unknown }>) => {
+        const stateObj = { url: 'url' };
+        const url = new URL(window.location.href);
+        const urlParam = new URLSearchParams(url.search);
+
         if (name === 'online') {
             if (event.target.checked) {
                 this.setState({ building: 'ON', room: 'LINE' });
                 RightPaneStore.updateFormValue('building', 'ON');
                 RightPaneStore.updateFormValue('room', 'LINE');
+
+                urlParam.set('building', 'ON');
+                urlParam.set('room', 'LINE');
             } else {
                 this.setState({ building: '', room: '' });
                 RightPaneStore.updateFormValue('building', '');
                 RightPaneStore.updateFormValue('room', '');
+
+                urlParam.delete('building');
+                urlParam.delete('room');
             }
         } else {
+            const value = event.target.value;
             this.setState({ [name]: event.target.value } as unknown as AdvancedSearchTextFieldsState);
+
+            if (value !== '') {
+                urlParam.set(name, String(value));
+            } else {
+                urlParam.delete(name);
+            }
+
             RightPaneStore.updateFormValue(name, event.target.value as string);
         }
+
+        const param = urlParam.toString();
+        const new_url = `${param.trim() ? '?' : ''}${param}`;
+        history.replaceState(stateObj, 'url', '/' + new_url);
     };
 
     /**
-     * UPDATE (6-28-19): Transfered course code and course number search boxes to
+     * UPDATE (6-28-19): Transferred course code and course number search boxes to
      * separate classes.
      */
     render() {
@@ -294,13 +316,50 @@ class AdvancedSearch extends PureComponent<AdvancedSearchProps, AdvancedSearchSt
         super(props);
 
         let advanced = false;
+
         if (typeof Storage !== 'undefined') {
             advanced = getLocalStorageAdvanced() === 'expanded';
+        }
+
+        const formData = RightPaneStore.getFormData();
+        const defaultFormData = RightPaneStore.getDefaultFormData();
+        for (const [key, value] of Object.entries(formData)) {
+            if (key === 'deptLabel' || key === 'deptValue') {
+                continue;
+            }
+
+            if (defaultFormData[key] != value) {
+                advanced = true;
+                break;
+            }
         }
 
         this.state = {
             expandAdvanced: advanced,
         };
+    }
+
+    componentDidMount() {
+        RightPaneStore.on('formReset', this.resetParams);
+    }
+
+    resetParams() {
+        const stateObj = { url: 'url' };
+        const url = new URL(window.location.href);
+        const urlParam = new URLSearchParams(url.search);
+
+        const formData = RightPaneStore.getFormData();
+        for (const key of Object.keys(formData)) {
+            if (key === 'deptLabel' || key === 'deptValue') {
+                continue;
+            }
+
+            urlParam.delete(key);
+        }
+
+        const param = urlParam.toString();
+        const new_url = `${param.trim() ? '?' : ''}${param}`;
+        history.replaceState(stateObj, 'url', '/' + new_url);
     }
 
     handleExpand = () => {

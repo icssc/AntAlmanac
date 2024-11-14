@@ -48,10 +48,29 @@ class RightPaneStore extends EventEmitter {
         this.urlCourseNumValue = search.get('courseNumber') || '';
         this.urlDeptLabel = search.get('deptLabel') || '';
         this.urlDeptValue = search.get('deptValue') || '';
+
+        this.updateFormDataFromURL(search);
     }
+
+    updateFormDataFromURL = (search: URLSearchParams) => {
+        const formFields = Object.keys(defaultFormValues);
+
+        formFields.forEach((field) => {
+            const paramValue = search.get(field) || search.get(field.toUpperCase());
+            if (paramValue !== null) {
+                this.formData[field] = paramValue;
+            }
+        });
+
+        this.emit('formDataChange');
+    };
 
     getFormData = () => {
         return this.formData;
+    };
+
+    getDefaultFormData = () => {
+        return defaultFormValues;
     };
 
     getOpenSpotAlertPopoverActive = () => {
