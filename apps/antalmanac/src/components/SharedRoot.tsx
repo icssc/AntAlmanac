@@ -91,6 +91,7 @@ type ScheduleManagementTabsProps = {
  */
 function ScheduleManagementMobileTabs(props: ScheduleManagementTabsProps) {
     const { value, setActiveTab } = props;
+    const isDark = useThemeStore((store) => store.isDark);
 
     const onChange = (_event: React.SyntheticEvent, value: number) => {
         setActiveTab(value);
@@ -102,7 +103,7 @@ function ScheduleManagementMobileTabs(props: ScheduleManagementTabsProps) {
                 <Tab
                     key={tab.label}
                     sx={{
-                        '&.Mui-selected': { color: 'white' },
+                        ...(isDark ? { '&.Mui-selected': { color: 'white' } } : {}),
                     }}
                     label={
                         <Stack direction="column" alignItems="center" paddingBottom={1} gap={0.25}>
