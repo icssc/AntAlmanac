@@ -13,18 +13,10 @@ import { Tutorial } from '$components/Tutorial';
 
 function MobileHome() {
     return (
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <CssBaseline />
-
-            <PatchNotes />
-
-            <Stack component="main" height="100dvh">
-                <Header />
-                <ScheduleManagement />
-            </Stack>
-
-            <NotificationSnackbar />
-        </MuiPickersUtilsProvider>
+        <Stack component="main" height="100dvh">
+            <Header />
+            <ScheduleManagement />
+        </Stack>
     );
 }
 
@@ -32,11 +24,7 @@ function DesktopHome() {
     const theme = useTheme();
 
     return (
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <CssBaseline />
-
-            <PatchNotes />
-
+        <>
             <Stack height="100dvh">
                 <Header />
 
@@ -66,9 +54,7 @@ function DesktopHome() {
             </Stack>
 
             <Tutorial />
-
-            <NotificationSnackbar />
-        </MuiPickersUtilsProvider>
+        </>
     );
 }
 
@@ -77,5 +63,15 @@ export default function Home() {
 
     const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
-    return isMobileScreen ? <MobileHome /> : <DesktopHome />;
+    return (
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            <CssBaseline />
+
+            <PatchNotes />
+
+            {isMobileScreen ? <MobileHome /> : <DesktopHome />}
+
+            <NotificationSnackbar />
+        </MuiPickersUtilsProvider>
+    );
 }
