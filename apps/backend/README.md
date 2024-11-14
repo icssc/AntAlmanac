@@ -4,7 +4,7 @@ This is the dedicated backend for [AntAlmanac](https://antalmanac.com),
 which is primarily responsible for managing user data and internal information.
 
 This is ___NOT___ for retrieving enrollment data from UCI; 
-[PeterPortal API](https://api.peterportal.org) is a separate ICSSC project dedicated
+[Anteater API](https://docs.icssc.club/docs/developer/anteaterapi) is a separate ICSSC project dedicated
 to providing us this information.
 
 

@@ -28,6 +28,7 @@ env:
     VITE_TILES_ENDPOINT: ${{ secrets.VITE_TILES_ENDPOINT}}
     GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
     GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+    DB_URL: ${{ secrets.STAGING_DB_URL }}
 
     # Turborepo credentials.
     TURBO_API: ${{ vars.TURBO_API }}
