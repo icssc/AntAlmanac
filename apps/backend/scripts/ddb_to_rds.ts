@@ -2,11 +2,11 @@
  * To run this script, run "pnpm run migrate".
  */
 
-import { ddbClient } from '../src/db/ddb.ts';
-import { db, client } from '../src/db/index.ts';
-import { RDS } from '../src/lib/rds.ts';
-import { mangleDupliateScheduleNames } from '../src/lib/formatting.ts';
-import { migratePostgresDb } from './migrate.ts';
+import { ddbClient } from '../src/db/ddb';
+import { db, client } from '../src/db/index';
+import { RDS } from '../src/lib/rds';
+import { mangleDupliateScheduleNames } from '../src/lib/formatting';
+import { migratePostgresDb } from './migrate';
 
 
 /**
