@@ -9,6 +9,7 @@
         "format": "prettier --write src",
         "lint": "eslint --fix src",
         "generate": "drizzle-kit generate",
+        "studio": "drizzle-kit studio",
         "migrate": "tsx scripts/migrate.ts",
         "ddb-rds": "tsx scripts/ddb_to_rds.ts",
         "copy-to-pg": "tsx scripts/copy-to-pg.ts"
@@ -21,7 +22,6 @@
         "arktype": "1.0.14-alpha",
         "aws-lambda": "^1.0.7",
         "cors": "^2.8.5",
-        "dotenv": "^16.0.3",
         "drizzle-orm": "^0.30.10",
         "envalid": "^7.3.1",
         "express": "^4.18.2",
@@ -40,6 +40,7 @@
         "@typescript-eslint/eslint-plugin": "^5.52.0",
         "@typescript-eslint/parser": "^5.52.0",
         "concurrently": "^8.0.1",
+        "dotenv": "^16.0.3",
         "drizzle-kit": "^0.21.2",
         "esbuild": "^0.17.19",
         "eslint": "^8.34.0",
