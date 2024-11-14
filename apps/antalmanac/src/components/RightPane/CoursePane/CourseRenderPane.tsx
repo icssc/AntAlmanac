@@ -207,6 +207,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             building: formData.building,
             room: formData.room,
             division: formData.division,
+            excludeRestrictionCodes: formData.excludeRestrictionCodes.split('').join(','),
         };
 
         const gradesQueryParams = {

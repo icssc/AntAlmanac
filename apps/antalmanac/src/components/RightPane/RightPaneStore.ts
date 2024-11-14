@@ -17,7 +17,7 @@ const defaultFormValues: Record<string, string> = {
     building: '',
     room: '',
     division: '',
-    excludedRestrictions: '',
+    excludeRestrictionCodes: '',
 };
 
 export interface BuildingFocusInfo {

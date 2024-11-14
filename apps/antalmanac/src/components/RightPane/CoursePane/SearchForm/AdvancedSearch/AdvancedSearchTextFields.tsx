@@ -12,7 +12,9 @@ export function AdvancedSearchTextFields() {
     const [building, setBuilding] = useState(RightPaneStore.getFormData().building);
     const [room, setRoom] = useState(RightPaneStore.getFormData().room);
     const [division, setDivision] = useState(RightPaneStore.getFormData().division);
-    const [excludedRestrictions, setExcludedRestrictions] = useState(RightPaneStore.getFormData().excludedRestrictions);
+    const [excludeRestrictionCodes, setExcludeRestrictionCodes] = useState(
+        RightPaneStore.getFormData().excludeRestrictionCodes
+    );
 
     const resetField = useCallback(() => {
         const formData = RightPaneStore.getFormData();
@@ -24,6 +26,7 @@ export function AdvancedSearchTextFields() {
         setBuilding(formData.building);
         setRoom(formData.room);
         setDivision(formData.division);
+        setExcludeRestrictionCodes(formData.excludeRestrictionCodes);
     }, []);
 
     useEffect(() => {
@@ -89,8 +92,8 @@ export function AdvancedSearchTextFields() {
                     case 'division':
                         setDivision(stringValue);
                         break;
-                    case 'excludedRestrictions':
-                        setExcludedRestrictions(stringValue);
+                    case 'excludeRestrictionCodes':
+                        setExcludeRestrictionCodes(stringValue);
                         break;
                     default:
                         break;
@@ -255,12 +258,12 @@ export function AdvancedSearchTextFields() {
             <TextField id="room" label="Room" type="search" value={room} onChange={handleChange('room')} />
 
             <FormControl style={{ minWidth: 150 }}>
-                <InputLabel id="excluded-restrictions-label">Excluded Restrictions</InputLabel>
+                <InputLabel id="exclude-restriction-codes-label">Exclude Restrictions</InputLabel>
                 <Select
                     multiple
-                    labelId="excluded-restrictions-label"
-                    value={excludedRestrictions.split('')}
-                    onChange={handleChange('excludedRestrictions')}
+                    labelId="exclude-restriction-codes-label"
+                    value={excludeRestrictionCodes.split('')}
+                    onChange={handleChange('excludeRestrictionCodes')}
                     renderValue={(selected) => (selected as string[]).join(', ')}
                 >
                     <MenuItem value={'A'}>A: Prerequisite required</MenuItem>
