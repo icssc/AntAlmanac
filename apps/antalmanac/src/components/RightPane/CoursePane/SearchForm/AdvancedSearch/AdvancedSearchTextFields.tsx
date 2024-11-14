@@ -12,6 +12,7 @@ export function AdvancedSearchTextFields() {
     const [building, setBuilding] = useState(RightPaneStore.getFormData().building);
     const [room, setRoom] = useState(RightPaneStore.getFormData().room);
     const [division, setDivision] = useState(RightPaneStore.getFormData().division);
+    const [excludedRestrictions, setExcludedRestrictions] = useState(RightPaneStore.getFormData().excludedRestrictions);
 
     const resetField = useCallback(() => {
         const formData = RightPaneStore.getFormData();
@@ -42,7 +43,7 @@ export function AdvancedSearchTextFields() {
             const stateObj = { url: 'url' };
             const url = new URL(window.location.href);
             const urlParam = new URLSearchParams(url.search);
-            const value = event.target.value as string;
+            const value = event.target.value as string | string[];
 
             if (name === 'online') {
                 if (event.target instanceof HTMLInputElement && event.target.checked) {
@@ -61,42 +62,47 @@ export function AdvancedSearchTextFields() {
                     urlParam.delete('room');
                 }
             } else {
+                const stringValue = Array.isArray(value) ? value.join('') : value;
+
                 switch (name) {
                     case 'instructor':
-                        setInstructor(value);
+                        setInstructor(stringValue);
                         break;
                     case 'units':
-                        setUnits(value);
+                        setUnits(stringValue);
                         break;
                     case 'endTime':
-                        setEndTime(value);
+                        setEndTime(stringValue);
                         break;
                     case 'startTime':
-                        setStartTime(value);
+                        setStartTime(stringValue);
                         break;
                     case 'coursesFull':
-                        setCoursesFull(value);
+                        setCoursesFull(stringValue);
                         break;
                     case 'building':
-                        setBuilding(value);
+                        setBuilding(stringValue);
                         break;
                     case 'room':
-                        setRoom(value);
+                        setRoom(stringValue);
                         break;
                     case 'division':
-                        setDivision(value);
+                        setDivision(stringValue);
+                        break;
+                    case 'excludedRestrictions':
+                        setExcludedRestrictions(stringValue);
                         break;
                     default:
                         break;
                 }
 
-                if (value !== '') {
-                    urlParam.set(name, String(value));
+                if (stringValue !== '') {
+                    urlParam.set(name, String(stringValue));
                 } else {
                     urlParam.delete(name);
                 }
 
-                RightPaneStore.updateFormValue(name, value);
+                RightPaneStore.updateFormValue(name, stringValue);
             }
 
             const param = urlParam.toString();
@@ -247,6 +253,38 @@ export function AdvancedSearchTextFields() {
             />
 
             <TextField id="room" label="Room" type="search" value={room} onChange={handleChange('room')} />
+
+            <FormControl style={{ minWidth: 150 }}>
+                <InputLabel id="excluded-restrictions-label">Excluded Restrictions</InputLabel>
+                <Select
+                    multiple
+                    labelId="excluded-restrictions-label"
+                    value={excludedRestrictions.split('')}
+                    onChange={handleChange('excludedRestrictions')}
+                    renderValue={(selected) => (selected as string[]).join(', ')}
+                >
+                    <MenuItem value={'A'}>A: Prerequisite required</MenuItem>
+                    <MenuItem value={'B'}>B: Authorization code required</MenuItem>
+                    <MenuItem value={'C'}>C: Fee required</MenuItem>
+                    <MenuItem value={'D'}>D: Pass/Not Pass option only</MenuItem>
+                    <MenuItem value={'E'}>E: Freshmen only</MenuItem>
+                    <MenuItem value={'F'}>F: Sophomores only</MenuItem>
+                    <MenuItem value={'G'}>G: Lower-division only</MenuItem>
+                    <MenuItem value={'H'}>H: Juniors only</MenuItem>
+                    <MenuItem value={'I'}>I: Seniors only</MenuItem>
+                    <MenuItem value={'J'}>J: Upper-division only</MenuItem>
+                    <MenuItem value={'K'}>K: Graduate only</MenuItem>
+                    <MenuItem value={'L'}>L: Major only</MenuItem>
+                    <MenuItem value={'M'}>M: Non-major only</MenuItem>
+                    <MenuItem value={'N'}>N: School major only</MenuItem>
+                    <MenuItem value={'O'}>O: Non-school major only</MenuItem>
+                    <MenuItem value={'R'}>R: Biomedical Pass/Fail course (School of Medicine only)</MenuItem>
+                    <MenuItem value={'S'}>S: Satisfactory/Unsatisfactory only</MenuItem>
+                    <MenuItem value={'X'}>
+                        X: Separate authorization codes required to add, drop, or change enrollment
+                    </MenuItem>
+                </Select>
+            </FormControl>
         </Box>
     );
 }
