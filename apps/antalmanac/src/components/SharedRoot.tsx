@@ -5,10 +5,10 @@ import { Link, useParams } from 'react-router-dom';
 
 import Calendar from './Calendar/CalendarRoot';
 import AddedCoursePane from './RightPane/AddedCourses/AddedCoursePane';
-import CoursePane from './RightPane/CoursePane/CoursePaneRoot';
 import darkModeLoadingGif from './RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 
+import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import { useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
@@ -171,7 +171,7 @@ function ScheduleManagementTabsContent(props: { activeTab: number; isMobile: boo
         case 0:
             return <Calendar isMobile={isMobile} />;
         case 1:
-            return <CoursePane />;
+            return <CoursePaneRoot />;
         case 2:
             return <AddedCoursePane />;
         case 3:

@@ -13,7 +13,7 @@ import { Grades } from '$lib/grades';
 import { WebSOC } from '$lib/websoc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
-function RightPane() {
+export function CoursePaneRoot() {
     const { key, forceUpdate, searchIsDisplayed, displaySearch, displaySections } = useCoursePaneStore();
 
     const handleSearch = useCallback(() => {
@@ -64,5 +64,3 @@ function RightPane() {
         </Box>
     );
 }
-
-export default RightPane;
