@@ -1,117 +1,94 @@
-import {
-    Box,
-    FormControl,
-    FormControlLabel,
-    InputLabel,
-    MenuItem,
-    Select,
-    Switch,
-    TextField,
-    Theme,
-} from '@material-ui/core';
-import withStyles, { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { PureComponent } from 'react';
+import { TextField, Box, FormControl, InputLabel, Select, MenuItem, Switch, FormControlLabel } from '@material-ui/core';
+import { useState, useEffect, useCallback } from 'react';
 
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
-const styles: Styles<Theme, object> = {
-    fieldContainer: {
-        display: 'flex',
-        gap: '1.5rem',
-        flexWrap: 'wrap',
-        paddingLeft: '8px',
-        paddingRight: '8px',
-        marginBottom: '1rem',
-    },
-    units: {
-        width: '80px',
-    },
-    timePicker: {
-        width: '130px',
-    },
-    onlineSwitch: {
-        margin: 0,
-        justifyContent: 'flex-end',
-        left: 0,
-    },
-};
+export function AdvancedSearchTextFields() {
+    const [instructor, setInstructor] = useState(RightPaneStore.getFormData().instructor);
+    const [units, setUnits] = useState(RightPaneStore.getFormData().units);
+    const [endTime, setEndTime] = useState(RightPaneStore.getFormData().endTime);
+    const [startTime, setStartTime] = useState(RightPaneStore.getFormData().startTime);
+    const [coursesFull, setCoursesFull] = useState(RightPaneStore.getFormData().coursesFull);
+    const [building, setBuilding] = useState(RightPaneStore.getFormData().building);
+    const [room, setRoom] = useState(RightPaneStore.getFormData().room);
+    const [division, setDivision] = useState(RightPaneStore.getFormData().division);
 
-interface AdvancedSearchTextFieldsProps {
-    classes?: ClassNameMap;
-}
+    const resetField = useCallback(() => {
+        const formData = RightPaneStore.getFormData();
+        setInstructor(formData.instructor);
+        setUnits(formData.units);
+        setEndTime(formData.endTime);
+        setStartTime(formData.startTime);
+        setCoursesFull(formData.coursesFull);
+        setBuilding(formData.building);
+        setRoom(formData.room);
+        setDivision(formData.division);
+    }, []);
 
-interface AdvancedSearchTextFieldsState {
-    instructor: string;
-    units: string;
-    endTime: string;
-    startTime: string;
-    coursesFull: string;
-    building: string;
-    room: string;
-    division: string;
-}
+    useEffect(() => {
+        RightPaneStore.on('formReset', resetField);
+        return () => {
+            RightPaneStore.removeListener('formReset', resetField);
+        };
+    }, [resetField]);
 
-class UnstyledAdvancedSearchTextFields extends PureComponent<
-    AdvancedSearchTextFieldsProps,
-    AdvancedSearchTextFieldsState
-> {
-    state = {
-        instructor: RightPaneStore.getFormData().instructor,
-        units: RightPaneStore.getFormData().units,
-        endTime: RightPaneStore.getFormData().endTime,
-        startTime: RightPaneStore.getFormData().startTime,
-        coursesFull: RightPaneStore.getFormData().coursesFull,
-        building: RightPaneStore.getFormData().building,
-        room: RightPaneStore.getFormData().room,
-        division: RightPaneStore.getFormData().division,
-    };
-
-    componentDidMount() {
-        RightPaneStore.on('formReset', this.resetField);
-    }
-
-    componentWillUnmount() {
-        RightPaneStore.removeListener('formReset', this.resetField);
-    }
-
-    resetField = () => {
-        this.setState({
-            instructor: RightPaneStore.getFormData().instructor,
-            units: RightPaneStore.getFormData().units,
-            endTime: RightPaneStore.getFormData().endTime,
-            startTime: RightPaneStore.getFormData().startTime,
-            coursesFull: RightPaneStore.getFormData().coursesFull,
-            building: RightPaneStore.getFormData().building,
-            room: RightPaneStore.getFormData().room,
-            division: RightPaneStore.getFormData().division,
-        });
-    };
-
-    handleChange =
-        (name: string) => (event: React.ChangeEvent<{ checked?: boolean; name?: string; value: unknown }>) => {
+    const handleChange =
+        (name: string) =>
+        (
+            event: React.ChangeEvent<
+                HTMLInputElement | HTMLTextAreaElement | { name?: string | undefined; value: unknown }
+            >
+        ) => {
             const stateObj = { url: 'url' };
             const url = new URL(window.location.href);
             const urlParam = new URLSearchParams(url.search);
+            const value = event.target.value as string;
 
             if (name === 'online') {
-                if (event.target.checked) {
-                    this.setState({ building: 'ON', room: 'LINE' });
+                if (event.target instanceof HTMLInputElement && event.target.checked) {
+                    setBuilding('ON');
+                    setRoom('LINE');
                     RightPaneStore.updateFormValue('building', 'ON');
                     RightPaneStore.updateFormValue('room', 'LINE');
-
                     urlParam.set('building', 'ON');
                     urlParam.set('room', 'LINE');
                 } else {
-                    this.setState({ building: '', room: '' });
+                    setBuilding('');
+                    setRoom('');
                     RightPaneStore.updateFormValue('building', '');
                     RightPaneStore.updateFormValue('room', '');
-
                     urlParam.delete('building');
                     urlParam.delete('room');
                 }
             } else {
-                const value = event.target.value;
-                this.setState({ [name]: event.target.value } as unknown as AdvancedSearchTextFieldsState);
+                switch (name) {
+                    case 'instructor':
+                        setInstructor(value);
+                        break;
+                    case 'units':
+                        setUnits(value);
+                        break;
+                    case 'endTime':
+                        setEndTime(value);
+                        break;
+                    case 'startTime':
+                        setStartTime(value);
+                        break;
+                    case 'coursesFull':
+                        setCoursesFull(value);
+                        break;
+                    case 'building':
+                        setBuilding(value);
+                        break;
+                    case 'room':
+                        setRoom(value);
+                        break;
+                    case 'division':
+                        setDivision(value);
+                        break;
+                    default:
+                        break;
+                }
 
                 if (value !== '') {
                     urlParam.set(name, String(value));
@@ -119,167 +96,157 @@ class UnstyledAdvancedSearchTextFields extends PureComponent<
                     urlParam.delete(name);
                 }
 
-                RightPaneStore.updateFormValue(name, event.target.value as string);
+                RightPaneStore.updateFormValue(name, value);
             }
 
             const param = urlParam.toString();
-            const new_url = `${param.trim() ? '?' : ''}${param}`;
-            history.replaceState(stateObj, 'url', '/' + new_url);
+            const newUrl = `${param.trim() ? '?' : ''}${param}`;
+            history.replaceState(stateObj, 'url', '/' + newUrl);
         };
 
-    /**
-     * UPDATE (6-28-19): Transferred course code and course number search boxes to
-     * separate classes.
-     */
-    render() {
-        const { classes } = this.props;
+    // List of times from 2:00am-11:00pm
+    const menuItemTimes = [
+        ...[...Array(10).keys()].map((v) => `${v + 2}:00am`),
+        '12:00pm',
+        ...[...Array(11).keys()].map((v) => `${v + 1}:00pm`),
+    ];
 
-        // List of times from 2:00am-11:00pm
-        const menuItemTimes = [
-            ...[...Array(10).keys()].map((v) => `${v + 2}:00am`),
-            '12:00pm',
-            ...[...Array(11).keys()].map((v) => `${v + 1}:00pm`),
-        ];
-        // Creates a MenuItem for time selection
-        const createdMenuItemTime = (time: string) => (
-            <MenuItem key={time} value={`${time}`}>
-                {time ? time : <em>None</em>}
-            </MenuItem>
-        );
-        // Build arrays of MenuItem elements for time selection
-        const startsAfterMenuItems = ['', '1:00am', ...menuItemTimes].map((time) => createdMenuItemTime(time));
-        const endsBeforeMenuItems = ['', ...menuItemTimes].map((time) => createdMenuItemTime(time));
+    const createdMenuItemTime = (time: string) => (
+        <MenuItem key={time} value={`${time}`}>
+            {time ? time : <em>None</em>}
+        </MenuItem>
+    );
 
-        return (
-            <Box className={classes?.fieldContainer}>
-                <TextField
-                    label="Instructor"
-                    type="search"
-                    value={this.state.instructor}
-                    onChange={this.handleChange('instructor')}
-                    helperText="Last name only"
-                />
+    const startsAfterMenuItems = ['', '1:00am', ...menuItemTimes].map((time) => createdMenuItemTime(time));
+    const endsBeforeMenuItems = ['', ...menuItemTimes].map((time) => createdMenuItemTime(time));
 
-                <TextField
-                    id="units"
-                    label="Units"
-                    value={this.state.units}
-                    onChange={this.handleChange('units')}
-                    type="search"
-                    helperText="ex. 3, 4, or VAR"
-                    className={classes?.units}
-                />
+    return (
+        <Box
+            style={{
+                display: 'flex',
+                gap: '1.5rem',
+                flexWrap: 'wrap',
+                paddingLeft: '8px',
+                paddingRight: '8px',
+                marginBottom: '1rem',
+            }}
+        >
+            <TextField
+                label="Instructor"
+                type="search"
+                value={instructor}
+                onChange={handleChange('instructor')}
+                helperText="Last name only"
+            />
 
-                <FormControl>
-                    <InputLabel>Class Full Option</InputLabel>
-                    <Select
-                        value={this.state.coursesFull}
-                        onChange={this.handleChange('coursesFull')}
-                        MenuProps={{
-                            anchorOrigin: {
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            },
-                            transformOrigin: {
-                                vertical: 'top',
-                                horizontal: 'left',
-                            },
-                            getContentAnchorEl: null,
-                        }}
-                    >
-                        <MenuItem value={'ANY'}>Include all classes</MenuItem>
-                        <MenuItem value={'SkipFullWaitlist'}>Include full courses if space on waitlist</MenuItem>
-                        <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
-                        <MenuItem value={'FullOnly'}>Show only full or waitlisted courses</MenuItem>
-                        <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
-                    </Select>
-                </FormControl>
+            <TextField
+                id="units"
+                label="Units"
+                value={units}
+                onChange={handleChange('units')}
+                type="search"
+                helperText="ex. 3, 4, or VAR"
+                style={{ width: 80 }}
+            />
 
-                <FormControl>
-                    <InputLabel id="division-label" shrink>
-                        Course Level
-                    </InputLabel>
-                    <Select
-                        labelId="division-label"
-                        value={this.state.division}
-                        onChange={this.handleChange('division')}
-                        className={classes?.courseLevel}
-                        displayEmpty
-                        MenuProps={{
-                            anchorOrigin: {
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            },
-                            transformOrigin: {
-                                vertical: 'top',
-                                horizontal: 'left',
-                            },
-                            getContentAnchorEl: null,
-                        }}
-                    >
-                        <MenuItem value={''}>Any Division</MenuItem>
-                        <MenuItem value={'LowerDiv'}>Lower Division</MenuItem>
-                        <MenuItem value={'UpperDiv'}>Upper Division</MenuItem>
-                        <MenuItem value={'Graduate'}>Graduate/Professional</MenuItem>
-                    </Select>
-                </FormControl>
+            <FormControl>
+                <InputLabel>Class Full Option</InputLabel>
+                <Select
+                    value={coursesFull}
+                    onChange={handleChange('coursesFull')}
+                    MenuProps={{
+                        anchorOrigin: {
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        },
+                        transformOrigin: {
+                            vertical: 'top',
+                            horizontal: 'left',
+                        },
+                    }}
+                >
+                    <MenuItem value={'ANY'}>Include all classes</MenuItem>
+                    <MenuItem value={'SkipFullWaitlist'}>Include full courses if space on waitlist</MenuItem>
+                    <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
+                    <MenuItem value={'FullOnly'}>Show only full or waitlisted courses</MenuItem>
+                    <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
+                </Select>
+            </FormControl>
 
-                <FormControl>
-                    <InputLabel id="starts-after-dropdown-label">Starts After</InputLabel>
-                    <Select
-                        labelId="starts-after-dropdown-label"
-                        value={this.state.startTime}
-                        onChange={this.handleChange('startTime')}
-                        className={classes?.timePicker}
-                    >
-                        {startsAfterMenuItems}
-                    </Select>
-                </FormControl>
+            <FormControl>
+                <InputLabel id="division-label" shrink>
+                    Course Level
+                </InputLabel>
+                <Select
+                    labelId="division-label"
+                    value={division}
+                    onChange={handleChange('division')}
+                    displayEmpty
+                    MenuProps={{
+                        anchorOrigin: {
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        },
+                        transformOrigin: {
+                            vertical: 'top',
+                            horizontal: 'left',
+                        },
+                    }}
+                >
+                    <MenuItem value={''}>Any Division</MenuItem>
+                    <MenuItem value={'LowerDiv'}>Lower Division</MenuItem>
+                    <MenuItem value={'UpperDiv'}>Upper Division</MenuItem>
+                    <MenuItem value={'Graduate'}>Graduate/Professional</MenuItem>
+                </Select>
+            </FormControl>
 
-                <FormControl>
-                    <InputLabel id="ends-before-dropdown-label">Ends Before</InputLabel>
-                    <Select
-                        labelId="ends-before-dropdown-label"
-                        value={this.state.endTime}
-                        onChange={this.handleChange('endTime')}
-                        className={classes?.timePicker}
-                    >
-                        {endsBeforeMenuItems}
-                    </Select>
-                </FormControl>
+            <FormControl>
+                <InputLabel id="starts-after-dropdown-label">Starts After</InputLabel>
+                <Select
+                    labelId="starts-after-dropdown-label"
+                    value={startTime}
+                    onChange={handleChange('startTime')}
+                    style={{ width: 130 }}
+                >
+                    {startsAfterMenuItems}
+                </Select>
+            </FormControl>
 
-                <FormControlLabel
-                    control={
-                        <Switch
-                            onChange={this.handleChange('online')}
-                            value="online"
-                            color="primary"
-                            checked={this.state.building === 'ON'}
-                        />
-                    }
-                    label="Online Only"
-                    labelPlacement="top"
-                    className={classes?.onlineSwitch}
-                />
+            <FormControl>
+                <InputLabel id="ends-before-dropdown-label">Ends Before</InputLabel>
+                <Select
+                    labelId="ends-before-dropdown-label"
+                    value={endTime}
+                    onChange={handleChange('endTime')}
+                    style={{ width: 130 }}
+                >
+                    {endsBeforeMenuItems}
+                </Select>
+            </FormControl>
 
-                <TextField
-                    id="building"
-                    label="Building"
-                    type="search"
-                    value={this.state.building}
-                    onChange={this.handleChange('building')}
-                />
+            <FormControlLabel
+                control={
+                    <Switch
+                        onChange={handleChange('online')}
+                        value="online"
+                        color="primary"
+                        checked={building === 'ON'}
+                    />
+                }
+                label="Online Only"
+                labelPlacement="top"
+                style={{ margin: 0, justifyContent: 'flex-end' }}
+            />
 
-                <TextField
-                    id="room"
-                    label="Room"
-                    type="search"
-                    value={this.state.room}
-                    onChange={this.handleChange('room')}
-                />
-            </Box>
-        );
-    }
+            <TextField
+                id="building"
+                label="Building"
+                type="search"
+                value={building}
+                onChange={handleChange('building')}
+            />
+
+            <TextField id="room" label="Room" type="search" value={room} onChange={handleChange('room')} />
+        </Box>
+    );
 }
-
-export const AdvancedSearchTextFields = withStyles(styles)(UnstyledAdvancedSearchTextFields);
