@@ -5,7 +5,6 @@ import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import AppRouter from './routers';
 import createContext from './context';
 import env from './env';
-import connectToMongoDB from '$db/mongodb';
 
 const corsOptions: CorsOptions = {
     origin: ['https://antalmanac.com', 'https://www.antalmanac.com', 'https://icssc-projects.github.io/AntAlmanac'],
@@ -16,8 +15,6 @@ const MAPBOX_API_URL = 'https://api.mapbox.com';
 const PORT = 3000;
 
 export async function start(corsEnabled = false) {
-    await connectToMongoDB();
-
     const app = express();
     app.use(cors(corsEnabled ? corsOptions : undefined));
     app.use(express.json());

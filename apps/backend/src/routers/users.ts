@@ -46,7 +46,7 @@ const usersRouter = router({
         if ('googleId' in input) {
             return await ddbClient.getGoogleUserData(input.googleId);
         }
-        return (await ddbClient.getUserData(input.userId)) ?? (await ddbClient.getLegacyUserData(input.userId));
+        return await ddbClient.getUserData(input.userId);
     }),
 
     /**
