@@ -8,6 +8,7 @@ const Environment = type({
     AWS_REGION: 'string',
     MAPBOX_ACCESS_TOKEN: 'string',
     'PR_NUM?': 'number',
+    DB_URL: 'string',
 });
 
 const env = Environment.assert({ ...process.env });
