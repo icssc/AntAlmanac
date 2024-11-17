@@ -1,7 +1,7 @@
 {
-    "id": "4a95fb4b-e13f-4215-9166-bc18cda8dc7a",
+    "id": "63321c86-a3e3-42b6-a632-fe818c3e2911",
     "prevId": "00000000-0000-0000-0000-000000000000",
-    "version": "6",
+    "version": "7",
     "dialect": "postgresql",
     "tables": {
         "public.accounts": {
@@ -46,7 +46,10 @@
                     "columns": ["user_id", "account_type"]
                 }
             },
-            "uniqueConstraints": {}
+            "uniqueConstraints": {},
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
         "public.sessions": {
             "name": "sessions",
@@ -90,7 +93,10 @@
                 }
             },
             "compositePrimaryKeys": {},
-            "uniqueConstraints": {}
+            "uniqueConstraints": {},
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
         "public.users": {
             "name": "users",
@@ -125,6 +131,13 @@
                     "type": "text",
                     "primaryKey": false,
                     "notNull": false
+                },
+                "last_updated": {
+                    "name": "last_updated",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "default": "now()"
                 }
             },
             "indexes": {},
@@ -140,7 +153,10 @@
                 }
             },
             "compositePrimaryKeys": {},
-            "uniqueConstraints": {}
+            "uniqueConstraints": {},
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
         "public.coursesInSchedule": {
             "name": "coursesInSchedule",
@@ -169,6 +185,13 @@
                     "type": "text",
                     "primaryKey": false,
                     "notNull": true
+                },
+                "last_updated": {
+                    "name": "last_updated",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "default": "now()"
                 }
             },
             "indexes": {},
@@ -189,7 +212,10 @@
                     "columns": ["scheduleId", "sectionCode", "term"]
                 }
             },
-            "uniqueConstraints": {}
+            "uniqueConstraints": {},
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
         "public.schedules": {
             "name": "schedules",
@@ -218,6 +244,12 @@
                     "type": "text",
                     "primaryKey": false,
                     "notNull": false
+                },
+                "last_updated": {
+                    "name": "last_updated",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": true
                 }
             },
             "indexes": {},
@@ -233,7 +265,16 @@
                 }
             },
             "compositePrimaryKeys": {},
-            "uniqueConstraints": {}
+            "uniqueConstraints": {
+                "schedules_user_id_name_unique": {
+                    "name": "schedules_user_id_name_unique",
+                    "nullsNotDistinct": false,
+                    "columns": ["user_id", "name"]
+                }
+            },
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         },
         "public.subscriptions": {
             "name": "subscriptions",
@@ -277,7 +318,10 @@
                     "columns": ["userId", "sectionCode"]
                 }
             },
-            "uniqueConstraints": {}
+            "uniqueConstraints": {},
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
         }
     },
     "enums": {
@@ -293,6 +337,10 @@
         }
     },
     "schemas": {},
+    "sequences": {},
+    "roles": {},
+    "policies": {},
+    "views": {},
     "_meta": {
         "columns": {},
         "schemas": {},

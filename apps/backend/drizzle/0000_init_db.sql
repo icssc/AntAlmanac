@@ -1,15 +1,5 @@
-DO $$ BEGIN
- CREATE TYPE "public"."account_type" AS ENUM('GOOGLE', 'GUEST');
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- CREATE TYPE "public"."subscription_target_status" AS ENUM('OPEN', 'WAITLISTED');
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
+CREATE TYPE "public"."account_type" AS ENUM('GOOGLE', 'GUEST');--> statement-breakpoint
+CREATE TYPE "public"."subscription_target_status" AS ENUM('OPEN', 'WAITLISTED');--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "accounts" (
 	"user_id" text NOT NULL,
 	"account_type" "account_type" NOT NULL,
@@ -29,7 +19,8 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"phone" text,
 	"avatar" text,
 	"name" text,
-	"current_schedule_id" text
+	"current_schedule_id" text,
+	"last_updated" timestamp with time zone DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "coursesInSchedule" (
@@ -37,6 +28,7 @@ CREATE TABLE IF NOT EXISTS "coursesInSchedule" (
 	"sectionCode" integer NOT NULL,
 	"term" text NOT NULL,
 	"color" text NOT NULL,
+	"last_updated" timestamp with time zone DEFAULT now(),
 	CONSTRAINT "coursesInSchedule_scheduleId_sectionCode_term_pk" PRIMARY KEY("scheduleId","sectionCode","term")
 );
 --> statement-breakpoint
@@ -44,7 +36,9 @@ CREATE TABLE IF NOT EXISTS "schedules" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
 	"name" text,
-	"notes" text
+	"notes" text,
+	"last_updated" timestamp with time zone NOT NULL,
+	CONSTRAINT "schedules_user_id_name_unique" UNIQUE("user_id","name")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "subscriptions" (
