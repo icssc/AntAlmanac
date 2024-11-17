@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { WebsocAPIResponse, CourseInfo } from '@packages/antalmanac-types';
+import type {WebsocAPIResponse, CourseInfo, WebsocCourse} from '@packages/antalmanac-types';
 import { procedure, router } from '../trpc';
 
 function cleanSearchParams(record: Record<string, string>) {
@@ -24,6 +24,29 @@ function cleanSearchParams(record: Record<string, string>) {
     return record;
 }
 
+function compareCourses(a: WebsocCourse, b: WebsocCourse) {
+    const aNum = Number.parseInt(a.courseNumber.replaceAll(/\D/g, ''), 10);
+    const bNum = Number.parseInt(b.courseNumber.replaceAll(/\D/g, ''), 10);
+    const diffSign = Math.sign(aNum - bNum);
+    return diffSign === 0 ? a.courseNumber.localeCompare(b.courseNumber) : diffSign;
+}
+
+function sortWebsocResponse(response: WebsocAPIResponse) {
+    response.schools.sort((a, b) => a.schoolName.localeCompare(b.schoolName));
+    for (const school of response.schools) {
+        school.departments.sort((a, b) => a.deptCode.localeCompare(b.deptCode));
+        for (const department of school.departments) {
+            department.courses.sort(compareCourses);
+            for (const course of department.courses) {
+                course.sections.sort((a, b) =>
+                    Math.sign(Number.parseInt(a.sectionCode, 10) - Number.parseInt(b.sectionCode, 10))
+                );
+            }
+        }
+    }
+    return response;
+}
+
 const queryWebSoc = async ({ input }: { input: Record<string, string> }) =>
     await fetch(`https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(cleanSearchParams(input))}`, {
         headers: {
@@ -31,11 +54,11 @@ const queryWebSoc = async ({ input }: { input: Record<string, string> }) =>
         },
     })
         .then((data) => data.json())
-        .then((data) => data.data as WebsocAPIResponse);
+        .then((data) => sortWebsocResponse(data.data as WebsocAPIResponse));
 
-function combineSOCObjects(SOCObjects: WebsocAPIResponse[]) {
-    const combined = SOCObjects.shift() as WebsocAPIResponse;
-    for (const res of SOCObjects) {
+function combineWebsocResponses(responses: WebsocAPIResponse[]) {
+    const combined: WebsocAPIResponse = { schools: [] };
+    for (const res of responses) {
         for (const school of res.schools) {
             const schoolIndex = combined.schools.findIndex((s) => s.schoolName === school.schoolName);
             if (schoolIndex !== -1) {
@@ -49,11 +72,7 @@ function combineSOCObjects(SOCObjects: WebsocAPIResponse[]) {
                             courses.add(course);
                         }
                         const coursesArray = Array.from(courses);
-                        coursesArray.sort(
-                            (left, right) =>
-                                parseInt(left.courseNumber.replace(/\D/g, '')) -
-                                parseInt(right.courseNumber.replace(/\D/g, ''))
-                        );
+                        coursesArray.sort(compareCourses);
                         combined.schools[schoolIndex].departments[deptIndex].courses = coursesArray;
                     } else {
                         combined.schools[schoolIndex].departments.push(dept);
@@ -78,7 +97,7 @@ const websocRouter = router({
                 req[input.fieldName] = field;
                 responses.push(await queryWebSoc({ input: req }));
             }
-            return combineSOCObjects(responses);
+            return combineWebsocResponses(responses);
         }),
     getCourseInfo: procedure.input(z.record(z.string(), z.string())).query(async ({ input }) => {
         const res = await queryWebSoc({ input });
