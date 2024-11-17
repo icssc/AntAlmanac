@@ -10,6 +10,7 @@
         "lint": "eslint --fix src"
     },
     "dependencies": {
+        "@leeoniya/ufuzzy": "1.0.14",
         "@packages/antalmanac-types": "workspace:*",
         "@trpc/server": "^10.30.0",
         "@vendia/serverless-express": "^4.10.1",

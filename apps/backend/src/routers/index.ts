@@ -6,12 +6,14 @@ import courseRouter from './course';
 import websocRouter from './websoc';
 import gradesRouter from './grades';
 import enrollHistRouter from './enrollHist';
+import searchRouter from "./search";
 
 const appRouter = router({
     course: courseRouter,
     enrollHist: enrollHistRouter,
     grades: gradesRouter,
     news: newsRouter,
+    search: searchRouter,
     users: usersRouter,
     websoc: websocRouter,
     zotcourse: zotcourseRouter,

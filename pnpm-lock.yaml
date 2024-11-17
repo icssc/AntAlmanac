@@ -291,6 +291,9 @@ importers:
 
   apps/backend:
     dependencies:
+      '@leeoniya/ufuzzy':
+        specifier: 1.0.14
+        version: 1.0.14
       '@packages/antalmanac-types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -1481,6 +1484,9 @@ packages:
 
   '@kurkle/color@0.3.2':
     resolution: {integrity: sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==}
+
+  '@leeoniya/ufuzzy@1.0.14':
+    resolution: {integrity: sha512-/xF4baYuCQMo+L/fMSUrZnibcu0BquEGnbxfVPiZhs/NbJeKj4c/UmFpQzW9Us0w45ui/yYW3vyaqawhNYsTzA==}
 
   '@mapbox/corslite@0.0.7':
     resolution: {integrity: sha512-w/uS474VFjmqQ7fFWIMZINQM1BAQxDLuoJaZZIPES1BmeYpCtlh9MtbFxKGGDAsfvut8/HircIsVvEYRjQ+iMg==}
@@ -6661,6 +6667,8 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.4.14
 
   '@kurkle/color@0.3.2': {}
+
+  '@leeoniya/ufuzzy@1.0.14': {}
 
   '@mapbox/corslite@0.0.7': {}
 
