@@ -130,7 +130,9 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
         while(true) {
             const result = await this.documentClient.scan(params);
             
+            
             if (result.Items) {
+                console.log(`Scanned ${result.Items.length} items`);
                 const users = result.Items
                     .map((item) => UserSchema(item))
                     .filter(
@@ -142,7 +144,7 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
                     .map((result) => result.data);
 
                 yield users.filter(
-                    (user) => user.name !== undefined
+                    (user) => user.id !== undefined
                 );
             }
 
