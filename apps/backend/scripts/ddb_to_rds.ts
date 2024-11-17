@@ -17,17 +17,18 @@ import { migratePostgresDb } from './migrate';
  * if DynamoDB returns a lot faster than we can push to Postgres.
  */
 async function copyUsersToPostgres() {
-    const transactionBatches: Promise<void[]>[] = [];
     const failedUsers: string[] = [];
 
     let success = 0;
 
     for await (const ddbBatch of ddbClient.getAllUserDataBatches()) {
+        console.log(`Copying ${ddbBatch.length} users...`);
         const transactions = ddbBatch.map( // One transaction per user
             async (ddbUser) => {
                 // Mangle duplicate schedule names
                 ddbUser.userData.schedules = mangleDupliateScheduleNames(ddbUser.userData.schedules);
 
+                console.log(`Copying user ${ddbUser.id}...`);
                 return RDS
                     .upsertGuestUserData(db, ddbUser)
                     .catch((error) => {
@@ -46,10 +47,8 @@ async function copyUsersToPostgres() {
             }
         );
 
-        transactionBatches.push(Promise.all(transactions));
+        await Promise.all(transactions);
     }
-
-    await Promise.all(transactionBatches);
 
     if (failedUsers.length > 0) {
         console.log(`Successfully copied ${success} users out of ${success + failedUsers.length}.`);
