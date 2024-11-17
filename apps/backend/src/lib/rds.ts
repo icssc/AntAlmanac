@@ -5,6 +5,8 @@ import type { Database } from "$db/index";
 import { schedules, users, accounts, coursesInSchedule } from '$db/schema';
 
 
+type DatabaseOrTransaction = Omit<Database, "$client">;
+
 export class RDS {
     /**
      * Creates a guest user if they don't already exist. 
@@ -13,7 +15,7 @@ export class RDS {
      * @param name Guest user's name, to be used as providerAccountID and username
      * @returns The new/existing user's ID
      */
-    static async createGuestUserOptional(db: Database, name: string) {
+    static async createGuestUserOptional(db: DatabaseOrTransaction, name: string) {
         return db.transaction(async (tx) => {
             const guestAccountsWithSameName = await tx
                 .select()
@@ -36,7 +38,7 @@ export class RDS {
         });
     }
 
-    static async upsertScheduleAndCourses(db: Database, userId: string, schedule: ShortCourseSchedule) {
+    static async upsertScheduleAndCourses(db: DatabaseOrTransaction, userId: string, schedule: ShortCourseSchedule) {
         // Add schedule
         const dbSchedule = {
             userId, 
@@ -98,7 +100,7 @@ export class RDS {
      * @returns The user's ID
      */
     static async upsertGuestUserData(
-        db: Database, userData: User
+        db: DatabaseOrTransaction, userData: User
     ): Promise<string> {
         return db.transaction(async (tx) => {
             const userId = await this.createGuestUserOptional(tx, userData.id);
