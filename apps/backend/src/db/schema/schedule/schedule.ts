@@ -24,8 +24,10 @@ export const schedules = pgTable('schedules', {
 
     lastUpdated: timestamp('last_updated', { withTimezone: true }).notNull(),
 
-}, (table) => ({
-    unq: unique().on(table.userId, table.name)
-}));
+}, (table) => ([
+    {
+        unq: unique().on(table.userId, table.name)
+    }
+]));
 
 export type Schedule = typeof schedules.$inferSelect;

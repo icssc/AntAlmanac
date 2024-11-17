@@ -34,11 +34,13 @@ export const coursesInSchedule = pgTable(
         lastUpdated: timestamp('last_updated', { withTimezone: true }).defaultNow(),
     },
     (table) => {
-        return {
-            primaryKey: primaryKey({
-                columns: [table.scheduleId, table.sectionCode, table.term],
-            }),
-        };
+        return [
+            {
+                primaryKey: primaryKey({
+                    columns: [table.scheduleId, table.sectionCode, table.term],
+                }),
+            }
+        ];
     }
 );
 
