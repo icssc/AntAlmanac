@@ -1,5 +1,7 @@
 import { type } from 'arktype';
-import 'dotenv/config';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 const Environment = type({
     'NODE_ENV?': "'development' | 'production' | 'staging'",
