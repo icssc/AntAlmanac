@@ -39,7 +39,7 @@ async function copyUsersToPostgres() {
                     .then((data) => { 
                         if (data) 
                             console.log(
-                            `Successfully copied user ${data}. (${++success})`
+                            `Successfully copied user ${ddbUser.id}. (${++success})`
                         );   
                     }
                 );
