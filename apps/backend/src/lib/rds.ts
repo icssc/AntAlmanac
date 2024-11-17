@@ -1,8 +1,8 @@
-import { ShortCourse, ShortCourseSchedule, User } from '@packages/antalmanac-types';
+import { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent } from '@packages/antalmanac-types';
 
 import { and, eq } from 'drizzle-orm';
 import type { Database } from "$db/index";
-import { schedules, users, accounts, coursesInSchedule } from '$db/schema';
+import { schedules, users, accounts, coursesInSchedule, customEvents } from '$db/schema';
 
 
 type DatabaseOrTransaction = Omit<Database, "$client">;
@@ -38,7 +38,13 @@ export class RDS {
         });
     }
 
-    static async upsertScheduleAndCourses(db: DatabaseOrTransaction, userId: string, schedule: ShortCourseSchedule) {
+    /**
+     * Creates a new schedule if one with its name doesn't already exist
+     * and replaces its courses and custom events with the ones provided.
+     */
+    static async upsertScheduleAndContents(
+        db: DatabaseOrTransaction, userId: string, schedule: ShortCourseSchedule
+    ) {
         // Add schedule
         const dbSchedule = {
             userId, 
@@ -64,8 +70,12 @@ export class RDS {
             throw new Error(`Failed to insert schedule for ${userId}`);
         }
 
-        // Add courses
-        await this.upsertCourses(db, scheduleId, schedule.courses);
+        // Add courses and custom events
+        await Promise.all([
+            this.upsertCourses(db, scheduleId, schedule.courses),
+            this.upsertCustomEvents(db, scheduleId, schedule.customEvents)
+        ]);
+        
 
         return scheduleId;
     }
@@ -111,6 +121,36 @@ export class RDS {
         );
     }
 
+    private static async upsertCustomEvents(
+        db: DatabaseOrTransaction, scheduleId: string, repeatingCustomEvents: RepeatingCustomEvent[]
+    ) {
+        await db.transaction(async (tx) => await tx
+            .delete(customEvents)
+            .where(eq(customEvents.scheduleId, scheduleId))
+        );
+
+        if (repeatingCustomEvents.length === 0) {
+            return;
+        }
+
+        const dbCustomEvents = repeatingCustomEvents.map((event) => ({
+            scheduleId,
+            title: event.title,
+            start: event.start,
+            end: event.end,
+            days: event.days.map((day) => day ? '1' : '0').join(''),
+            color: event.color,
+            building: event.building,
+            lastUpdated: new Date()
+        }));
+
+        await db.transaction(async (tx) => await tx
+            .insert(customEvents)
+            .values(dbCustomEvents)
+        );
+    }
+    
+
     /**
      * Creates a guest user with the username in the userData object if one
      * with the same name doesn't already exist.
@@ -133,7 +173,7 @@ export class RDS {
 
             // Add schedules and courses
             const schedulesPromises = userData.userData.schedules.map(
-                (schedule) => this.upsertScheduleAndCourses(tx, userId, schedule)
+                (schedule) => this.upsertScheduleAndContents(tx, userId, schedule)
             )
 
             const scheduleIds = await Promise.all(schedulesPromises);
