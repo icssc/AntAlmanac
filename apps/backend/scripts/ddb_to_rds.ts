@@ -6,7 +6,6 @@ import { ddbClient } from '../src/db/ddb';
 import { db, client } from '../src/db/index';
 import { RDS } from '../src/lib/rds';
 import { mangleDupliateScheduleNames } from '../src/lib/formatting';
-import { migratePostgresDb } from './migrate';
 
 
 /**
@@ -59,7 +58,6 @@ async function copyUsersToPostgres() {
 
 async function main() {
     try {
-        await migratePostgresDb();
         await copyUsersToPostgres();
     } catch (error) {
         console.log(error);
