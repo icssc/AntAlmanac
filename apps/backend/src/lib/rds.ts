@@ -77,10 +77,12 @@ export class RDS {
             lastUpdated: new Date()
         }));
 
-        await db.transaction(async (tx) => await tx
-            .insert(coursesInSchedule)
-            .values(dbCourses)
-        );
+        if (dbCourses.length !== 0) {
+            await db.transaction(async (tx) => await tx
+                .insert(coursesInSchedule)
+                .values(dbCourses)
+            );
+        } 
 
         return scheduleId;
     }
