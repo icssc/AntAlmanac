@@ -33,8 +33,9 @@ async function copyUsersToPostgres() {
                     .catch((error) => {
                         failedUsers.push(ddbUser.id);
                         console.error(
-                            `Failed to upsert user data for ${ddbUser.id}:`, error
+                            `Failed to upsert user data for user=${ddbUser}:`
                         );
+                        console.error(error);
                     })
                     .then((data) => { 
                         if (data) 
