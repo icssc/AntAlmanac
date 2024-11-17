@@ -1,4 +1,4 @@
-import { ShortCourseSchedule, User } from '@packages/antalmanac-types';
+import { ShortCourse, ShortCourseSchedule, User } from '@packages/antalmanac-types';
 
 import { and, eq } from 'drizzle-orm';
 import type { Database } from "$db/index";
@@ -64,14 +64,31 @@ export class RDS {
             throw new Error(`Failed to insert schedule for ${userId}`);
         }
 
-        // Drop all courses in the schedule and re-add them
+        // Add courses
+        await this.upsertCourses(db, scheduleId, schedule.courses);
 
+        return scheduleId;
+    }
+
+    /** 
+     * Drops all courses in the schedule and re-add them,
+     * deduplicating by section code and term.
+     * */
+    private static async upsertCourses(
+        db: DatabaseOrTransaction, scheduleId: string, courses: ShortCourse[]
+    ) {
         await db.transaction(async (tx) => await tx
             .delete(coursesInSchedule)
             .where(eq(coursesInSchedule.scheduleId, scheduleId))
         );
+        
+        if (courses.length === 0) {
+            return;
+        }
 
-        const dbCourses = schedule.courses.map((course) => ({
+        const coursesUnique: Set<string> = new Set();
+
+        const dbCourses = courses.map((course) => ({
             scheduleId,
             sectionCode: parseInt(course.sectionCode),
             term: course.term,
@@ -79,14 +96,19 @@ export class RDS {
             lastUpdated: new Date()
         }));
 
-        if (dbCourses.length !== 0) {
-            await db.transaction(async (tx) => await tx
-                .insert(coursesInSchedule)
-                .values(dbCourses)
-            );
-        } 
+        const dbCoursesUnique = dbCourses.filter((course) => {
+            const key = `${course.sectionCode}-${course.term}`;
+            if (coursesUnique.has(key)) {
+                return false;
+            }
+            coursesUnique.add(key);
+            return true;
+        });
 
-        return scheduleId;
+        await db.transaction(async (tx) => await tx
+            .insert(coursesInSchedule)
+            .values(dbCoursesUnique)
+        );
     }
 
     /**
@@ -117,11 +139,20 @@ export class RDS {
             const scheduleIds = await Promise.all(schedulesPromises);
             
             // Update user's current schedule index
-            const currentScheduleId = scheduleIds[userData.userData.scheduleIndex];
-            await tx
-                .update(users)
-                .set({ currentScheduleId: currentScheduleId })
-                .where(eq(users.id, userId));
+            const scheduleIndex = userData.userData.scheduleIndex;
+            
+            const currentScheduleId = (
+                scheduleIndex === undefined || scheduleIndex >= scheduleIds.length
+                ? null
+                : scheduleIds[scheduleIndex]
+            );
+
+            if (currentScheduleId !== null) {
+                await tx
+                    .update(users)
+                    .set({ currentScheduleId: currentScheduleId })
+                    .where(eq(users.id, userId));
+            }
 
             return userId;
         })
