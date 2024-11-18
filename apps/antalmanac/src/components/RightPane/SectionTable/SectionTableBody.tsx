@@ -450,7 +450,7 @@ const StatusCell = withStyles(styles)((props: StatusCellProps) => {
     // const { term, sectionCode, courseTitle, courseNumber, status, classes } = props;
     const { status, classes } = props;
 
-    // TODO: Implement course notification when PeterPortal has the functionality, according to #473
+    // TODO: Implement course notification when Anteater API has the functionality, according to #473
     // if (term === getDefaultTerm().shortName && (status === 'NewOnly' || status === 'FULL')) {
     //     return (
     //         <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>

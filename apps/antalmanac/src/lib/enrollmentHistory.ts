@@ -73,13 +73,13 @@ export class DepartmentEnrollmentHistory {
     }
 
     /**
-     * Parses enrollment history data from PeterPortal so that
+     * Parses enrollment history data from Anteater API so that
      * we can pass the data into a recharts graph. For each element in the given
      * array, merge the dates, totalEnrolledHistory, maxCapacityHistory,
      * and waitlistHistory arrays into one array that contains the enrollment data
      * for each day.
      *
-     * @param res Array of enrollment histories from PeterPortal
+     * @param res Array of enrollment histories from Anteater API
      * @returns Array of enrollment histories that we can use for the graph
      */
     static parseEnrollmentHistoryResponse(res: EnrollmentHistoryGraphQL[]): EnrollmentHistory[] {
