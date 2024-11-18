@@ -113,6 +113,35 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
     getOptionSelected = () => true;
 
+    requestIsCurrent = (requestTimestamp: number) => this.state.requestTimestamp === requestTimestamp;
+
+    // Returns a function for use with setTimeout that exhibits the following behavior:
+    // If the request is current, make the request. Then, if it is still current, update the component's
+    // state to reflect the results of the query.
+    maybeDoSearchFactory = (requestTimestamp: number) => () => {
+        if (!this.requestIsCurrent(requestTimestamp)) return;
+        trpc.search.doSearch
+            .query({ query: this.state.value })
+            .then((result) => {
+                if (!this.requestIsCurrent(requestTimestamp)) return;
+                this.setState({
+                    cache: {
+                        ...this.state.cache,
+                        [this.state.value]: result,
+                    },
+                    results: result,
+                    loading: false,
+                    pendingRequest: undefined,
+                    requestTimestamp: undefined,
+                });
+            })
+            .catch((e) => {
+                if (!this.requestIsCurrent(requestTimestamp)) return;
+                this.setState({ results: {}, loading: false });
+                console.error(e);
+            });
+    };
+
     onInputChange = (_event: unknown, value: string, reason: AutocompleteInputChangeReason) => {
         const lowerCaseValue = value.toLowerCase();
         if (reason === 'input') {
@@ -129,27 +158,10 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                         const requestTimestamp = Date.now();
                         this.setState({ results: {}, loading: true, requestTimestamp }, () => {
                             window.clearTimeout(this.state.pendingRequest);
-                            const pendingRequest = window.setTimeout(() => {
-                                if (this.state.requestTimestamp != requestTimestamp) return;
-                                trpc.search.doSearch
-                                    .query({ query: this.state.value })
-                                    .then((result) =>
-                                        this.setState({
-                                            cache: {
-                                                ...this.state.cache,
-                                                [this.state.value]: result,
-                                            },
-                                            results: result,
-                                            loading: false,
-                                            pendingRequest: undefined,
-                                            requestTimestamp: undefined,
-                                        })
-                                    )
-                                    .catch((e) => {
-                                        this.setState({ results: {}, loading: false });
-                                        console.error(e);
-                                    });
-                            }, SEARCH_TIMEOUT_MS);
+                            const pendingRequest = window.setTimeout(
+                                this.maybeDoSearchFactory(requestTimestamp),
+                                SEARCH_TIMEOUT_MS
+                            );
                             this.setState({ pendingRequest });
                         });
                     }
