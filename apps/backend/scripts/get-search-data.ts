@@ -16,8 +16,6 @@ const ALIASES: Record<string, string | undefined> = {
     "IN4MATX": "INF",
 }
 
-// blah
-
 async function main() {
     const apiKey = process.env.ANTEATER_API_KEY;
     if (!apiKey) throw new Error("ANTEATER_API_KEY is required");
