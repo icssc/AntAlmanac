@@ -4,13 +4,13 @@ import { procedure, router } from '../trpc';
 
 function sanitizeSearchParams(params: Record<string, string>) {
     if ('term' in params) {
-        const termValue = params.quarter;
+        const termValue = params.term;
         const termParts = termValue.split(' ');
         if (termParts.length === 2) {
             const [year, quarter] = termParts;
             delete params.term;
             params.quarter = quarter;
-            params.quarter = year;
+            params.year = year;
         }
     }
     if ('department' in params) {
