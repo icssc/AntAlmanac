@@ -1,12 +1,13 @@
 import { ScheduleCourse, HourMinute, WebsocSectionFinalExam, WebsocSectionMeeting } from '@packages/antalmanac-types';
 
-import { daysOfWeek } from '$lib/download';
 import AppStore from '$stores/AppStore';
 
 const CURRENT_TERM = '2024 Winter'; // TODO: Check the current term when that PR's in
 let sampleClassesSectionCodes: Array<string> = [];
 
-type DayOfWeek = (typeof daysOfWeek)[number];
+const finalsDaysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
+
+type FinalsDaysOfWeek = (typeof finalsDaysOfWeek)[number];
 
 export function addSampleClasses() {
     if (AppStore.getAddedCourses().length > 0) return;
@@ -103,8 +104,8 @@ export function randint(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function randomWeekday(): DayOfWeek {
-    return daysOfWeek[randint(0, 6)];
+function randomWeekdayForFinals(): FinalsDaysOfWeek {
+    return finalsDaysOfWeek[randint(0, 6)];
 }
 
 function randomClasstime(): HourMinute {
@@ -172,7 +173,7 @@ export function sampleFinalExamFactory({
 
     return {
         examStatus,
-        dayOfWeek: dayOfWeek ?? randomWeekday(),
+        dayOfWeek: dayOfWeek ?? randomWeekdayForFinals(),
         month,
         day,
         startTime: startTime,
