@@ -24,7 +24,7 @@ A summary of the libraries we use are listed below.
 
 ### Backend
 - [tRPC](https://trpc.io) - type-safe API access layer for the AntAlmanac API.
-- [PeterPortal API](https://api.peterportal.org) - API maintained by ICSSC for retrieving UCI data.
+- [Anteater API](https://docs.icssc.club/developer/anteaterapi) - API maintained by ICSSC for retrieving UCI data.
 
 ### Tooling
 - [Vite](https://vitejs.dev) - Blazingly fast, modern bundler.

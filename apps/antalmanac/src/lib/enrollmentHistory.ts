@@ -1,5 +1,6 @@
-import { queryGraphQL } from './helpers';
 import { termData } from './termData';
+
+import trpc from '$lib/api/trpc';
 
 // This represents the enrollment history of a course section during one quarter
 export interface EnrollmentHistoryGraphQL {
@@ -46,26 +47,11 @@ export class DepartmentEnrollmentHistory {
     // Each key in the cache will be the department and courseNumber concatenated
     static enrollmentHistoryCache: Record<string, EnrollmentHistory[] | null> = {};
     static termShortNames: string[] = termData.map((term) => term.shortName);
-    static QUERY_TEMPLATE = `{
-        enrollmentHistory(department: "$$DEPARTMENT$$", courseNumber: "$$COURSE_NUMBER$$", sectionType: Lec) {
-            year
-            quarter
-            department
-            courseNumber
-            dates
-            totalEnrolledHistory
-            maxCapacityHistory
-            waitlistHistory
-            instructors
-        }
-    }`;
 
     department: string;
-    partialQueryString: string;
 
     constructor(department: string) {
         this.department = department;
-        this.partialQueryString = DepartmentEnrollmentHistory.QUERY_TEMPLATE.replace('$$DEPARTMENT$$', department);
     }
 
     async find(courseNumber: string): Promise<EnrollmentHistory[] | null> {
@@ -75,10 +61,7 @@ export class DepartmentEnrollmentHistory {
     }
 
     async queryEnrollmentHistory(courseNumber: string): Promise<EnrollmentHistory[] | null> {
-        // Query for the enrollment history of all lecture sections that were offered
-        const queryString = this.partialQueryString.replace('$$COURSE_NUMBER$$', courseNumber);
-
-        const res = (await queryGraphQL<EnrollmentHistoryGraphQLResponse>(queryString))?.data?.enrollmentHistory;
+        const res = await trpc.enrollHist.get.query({ department: this.department, courseNumber, sectionType: 'Lec' });
 
         if (!res?.length) {
             return null;
@@ -90,13 +73,13 @@ export class DepartmentEnrollmentHistory {
     }
 
     /**
-     * Parses enrollment history data from PeterPortal so that
+     * Parses enrollment history data from Anteater API so that
      * we can pass the data into a recharts graph. For each element in the given
      * array, merge the dates, totalEnrolledHistory, maxCapacityHistory,
      * and waitlistHistory arrays into one array that contains the enrollment data
      * for each day.
      *
-     * @param res Array of enrollment histories from PeterPortal
+     * @param res Array of enrollment histories from Anteater API
      * @returns Array of enrollment histories that we can use for the graph
      */
     static parseEnrollmentHistoryResponse(res: EnrollmentHistoryGraphQL[]): EnrollmentHistory[] {

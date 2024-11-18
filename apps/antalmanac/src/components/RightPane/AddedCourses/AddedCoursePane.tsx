@@ -65,6 +65,7 @@ function getCourses() {
                         ...course.section,
                     },
                 ],
+                updatedAt: null,
             };
             formattedCourses.push(formattedCourse);
         }
@@ -266,7 +267,7 @@ function SkeletonSchedule() {
             <ScheduleNoteBox />
 
             <Typography variant="body1">
-                PeterPortal or WebSoc is currently unreachable. This is the information that we can currently retrieve.
+                Anteater API is currently unreachable. This is the information that we can currently retrieve.
             </Typography>
         </Box>
     );

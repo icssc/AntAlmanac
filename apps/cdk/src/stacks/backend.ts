@@ -26,6 +26,7 @@ export class BackendStack extends Stack {
             'MAPBOX_ACCESS_TOKEN?': 'string',
             'NODE_ENV?': 'string',
             'PR_NUM?': 'string',
+            ANTEATER_API_KEY: 'string',
         }).assert({ ...process.env });
 
         /**
@@ -55,6 +56,7 @@ export class BackendStack extends Stack {
             timeout: Duration.seconds(5),
             memorySize: 256,
             environment: {
+                ANTEATER_API_KEY: env.ANTEATER_API_KEY,
                 AA_MONGODB_URI: env.MONGODB_URI_PROD,
                 MAPBOX_ACCESS_TOKEN: env.MAPBOX_ACCESS_TOKEN ?? '',
                 STAGE: env.NODE_ENV ?? 'development',

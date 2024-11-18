@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { Skeleton } from '@material-ui/lab';
-import { type RawResponse, type Course, isErrorResponse, type PrerequisiteTree } from 'peterportal-api-next-types';
+import type { PrerequisiteTree } from '@packages/antalmanac-types';
 import { useState } from 'react';
 
 import { MOBILE_BREAKPOINT } from '../../../globals';
@@ -11,7 +11,7 @@ import { MOBILE_BREAKPOINT } from '../../../globals';
 import PrereqTree from './PrereqTree';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { PETERPORTAL_REST_ENDPOINT } from '$lib/api/endpoints';
+import trpc from '$lib/api/trpc';
 
 const styles = () => ({
     rightSpace: {
@@ -81,27 +81,21 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
 
             if (courseInfo === null) {
                 try {
-                    const courseId = encodeURIComponent(
-                        `${deptCode.replace(/\s/g, '')}${courseNumber.replace(/\s/g, '')}`
-                    );
-                    const res: RawResponse<Course> = await fetch(
-                        `${PETERPORTAL_REST_ENDPOINT}/courses/${courseId}`
-                    ).then((r) => r.json());
-
-                    if (!isErrorResponse(res)) {
-                        const data = res.payload;
-
+                    const res = await trpc.course.get.query({
+                        id: `${deptCode.replace(/\s/g, '')}${courseNumber.replace(/\s/g, '')}`,
+                    });
+                    if (res) {
                         setCourseInfo({
-                            id: data.id,
-                            department: data.department,
-                            courseNumber: data.courseNumber,
-                            title: data.title,
-                            prerequisite_tree: data.prerequisiteTree,
-                            prerequisite_list: data.prerequisiteList,
-                            prerequisite_text: data.prerequisiteText,
-                            prerequisite_for: data.prerequisiteFor,
-                            description: data.description,
-                            ge_list: data.geList.join(', '),
+                            id: res.id,
+                            department: res.department,
+                            courseNumber: res.courseNumber,
+                            title: res.title,
+                            prerequisite_tree: res.prerequisiteTree,
+                            prerequisite_list: res.prerequisites.map((x) => x.id),
+                            prerequisite_text: res.prerequisiteText,
+                            prerequisite_for: res.dependencies.map((x) => x.id),
+                            description: res.description,
+                            ge_list: res.geList.join(', '),
                         });
                     } else {
                         setCourseInfo(noCourseInfo);

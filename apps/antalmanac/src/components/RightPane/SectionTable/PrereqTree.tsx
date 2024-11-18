@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 import { Button, Popover } from '@material-ui/core';
-import { Prerequisite, PrerequisiteTree } from 'peterportal-api-next-types';
+import { Prerequisite, PrerequisiteTree } from '@packages/antalmanac-types';
 import { FC, useState } from 'react';
 
 import { CourseInfo } from './CourseInfoBar';
@@ -57,9 +57,13 @@ const PrereqTreeNode: FC<TreeProps> = (props) => {
         return (
             <li key={props.index} className={'prerequisite-node'}>
                 <Node
-                    label={`${prereq.courseId ?? prereq.examName ?? ''}${
-                        prereq?.minGrade ? ` (min grade = ${prereq?.minGrade})` : ''
-                    }${prereq?.coreq ? ' (coreq)' : ''}`}
+                    label={
+                        prereq.prereqType === 'course'
+                            ? `${prereq.courseId} ${
+                                  prereq.coreq ? '(coreq)' : prereq.minGrade ? `(min grade = ${prereq.minGrade})` : ''
+                              }`
+                            : `${prereq.examName} ${prereq.minGrade ? `(min grade = ${prereq.minGrade})` : ''}`
+                    }
                     node={'prerequisite-node'}
                 />
             </li>
