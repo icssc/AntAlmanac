@@ -9,7 +9,7 @@ import RightPaneStore from '../../RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import trpc from '$lib/api/trpc';
 
-const SEARCH_TIMEOUT_MS = 300;
+const SEARCH_TIMEOUT_MS = 150;
 
 const emojiMap: Record<string, string> = {
     GE_CATEGORY: '🏫', // U+1F3EB :school:
