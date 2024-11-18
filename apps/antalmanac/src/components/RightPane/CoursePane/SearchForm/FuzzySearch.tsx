@@ -39,6 +39,7 @@ interface FuzzySearchState {
     results: Record<string, SearchResult> | undefined;
     value: string;
     loading: boolean;
+    requestTimestamp?: number;
     pendingRequest?: number;
 }
 
@@ -49,6 +50,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         results: {},
         value: '',
         loading: false,
+        requestTimestamp: undefined,
         pendingRequest: undefined,
     };
 
@@ -124,26 +126,30 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                     if (this.state.cache[this.state.value]) {
                         this.setState({ results: this.state.cache[this.state.value] });
                     } else {
-                        this.setState({ results: {}, loading: true }, () => {
+                        const requestTimestamp = Date.now();
+                        this.setState({ results: {}, loading: true, requestTimestamp }, () => {
                             window.clearTimeout(this.state.pendingRequest);
-                            const pendingRequest = window.setTimeout(
-                                () =>
-                                    trpc.search.doSearch
-                                        .query({ query: this.state.value })
-                                        .then((result) =>
-                                            this.setState({
-                                                cache: { ...this.state.cache, [this.state.value]: result },
-                                                results: result,
-                                                loading: false,
-                                                pendingRequest: undefined,
-                                            })
-                                        )
-                                        .catch((e) => {
-                                            this.setState({ results: {}, loading: false });
-                                            console.error(e);
-                                        }),
-                                SEARCH_TIMEOUT_MS
-                            );
+                            const pendingRequest = window.setTimeout(() => {
+                                if (this.state.requestTimestamp != requestTimestamp) return;
+                                trpc.search.doSearch
+                                    .query({ query: this.state.value })
+                                    .then((result) =>
+                                        this.setState({
+                                            cache: {
+                                                ...this.state.cache,
+                                                [this.state.value]: result,
+                                            },
+                                            results: result,
+                                            loading: false,
+                                            pendingRequest: undefined,
+                                            requestTimestamp: undefined,
+                                        })
+                                    )
+                                    .catch((e) => {
+                                        this.setState({ results: {}, loading: false });
+                                        console.error(e);
+                                    });
+                            }, SEARCH_TIMEOUT_MS);
                             this.setState({ pendingRequest });
                         });
                     }
