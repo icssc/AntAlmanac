@@ -169,6 +169,8 @@ jobs:
 
             - name: Build backend
               run: pnpm --filter "antalmanac-backend" build
+              env:
+                  ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
 
             - name: Deploy backend staging CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" backend-staging deploy
