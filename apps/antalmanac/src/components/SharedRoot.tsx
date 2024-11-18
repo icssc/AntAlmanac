@@ -5,10 +5,10 @@ import { Link, useParams } from 'react-router-dom';
 
 import Calendar from './Calendar/CalendarRoot';
 import AddedCoursePane from './RightPane/AddedCourses/AddedCoursePane';
-import CoursePane from './RightPane/CoursePane/CoursePaneRoot';
 import darkModeLoadingGif from './RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 
+import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import { useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
@@ -91,6 +91,7 @@ type ScheduleManagementTabsProps = {
  */
 function ScheduleManagementMobileTabs(props: ScheduleManagementTabsProps) {
     const { value, setActiveTab } = props;
+    const isDark = useThemeStore((store) => store.isDark);
 
     const onChange = (_event: React.SyntheticEvent, value: number) => {
         setActiveTab(value);
@@ -102,7 +103,7 @@ function ScheduleManagementMobileTabs(props: ScheduleManagementTabsProps) {
                 <Tab
                     key={tab.label}
                     sx={{
-                        '&.Mui-selected': { color: 'white' },
+                        ...(isDark ? { '&.Mui-selected': { color: 'white' } } : {}),
                     }}
                     label={
                         <Stack direction="column" alignItems="center" paddingBottom={1} gap={0.25}>
@@ -170,7 +171,7 @@ function ScheduleManagementTabsContent(props: { activeTab: number; isMobile: boo
         case 0:
             return <Calendar isMobile={isMobile} />;
         case 1:
-            return <CoursePane />;
+            return <CoursePaneRoot />;
         case 2:
             return <AddedCoursePane />;
         case 3:
