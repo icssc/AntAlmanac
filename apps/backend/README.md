@@ -18,8 +18,8 @@ The backend should still work, but with limited functionality.
 Please request credentials from a project lead if you need them.
 
 1. Ensure that you're in the backend project. i.e. `cd apps/backend` from the project root.
-1. Change the `.env.sample` to `.env`.
-1. Start the server with `pnpm start`.
+2. Rename `.env.sample` to `.env` and follow any necessary instructions in there.
+3. Start the server with `pnpm start`.
 
 ## Privileged
 
