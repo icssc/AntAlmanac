@@ -1,8 +1,9 @@
 import { z } from 'zod';
-import type { GESearchResult, SearchResponse, SearchResult } from '@packages/antalmanac-types';
-import { procedure, router } from '../trpc';
-import { DepartmentAliasKey, departmentAliasKeys, DepartmentKey, departmentKeys, toDepartment } from '../searchData';
+import type { GESearchResult, SearchResult } from '@packages/antalmanac-types';
 import uFuzzy from '@leeoniya/ufuzzy';
+import * as fuzzysort from "fuzzysort";
+import { procedure, router } from '../trpc';
+import {courses, departments} from "../generated/searchData";
 
 const geCategoryKeys = ['ge1a', 'ge1b', 'ge2', 'ge3', 'ge4', 'ge5a', 'ge5b', 'ge6', 'ge7', 'ge8'] as const;
 
@@ -26,36 +27,6 @@ const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
     geCategories[key],
 ];
 
-const queryFuzzySaas = async (query: string, take: number): Promise<[string, SearchResult][]> =>
-    take < 1
-        ? []
-        : await fetch(
-              `https://anteaterapi.com/v2/rest/search?query=${encodeURIComponent(
-                  query
-              )}&resultType=course&take=${take}`,
-              {
-                  headers: {
-                      ...(process.env.ANTEATER_API_KEY && {
-                          Authorization: `Bearer ${process.env.ANTEATER_API_KEY}`,
-                      }),
-                  },
-              }
-          )
-              .then((r) => r.json())
-              .then((r: SearchResponse) =>
-                  r.data.results
-                      .filter((x) => x.type === 'course')
-                      .map((x) => x.result)
-                      .map((x) => [
-                          x.id,
-                          {
-                              type: 'COURSE' as const,
-                              name: x.title,
-                              metadata: { department: x.department, number: x.courseNumber },
-                          },
-                      ])
-              );
-
 const toMutable = <T>(arr: readonly T[]): T[] => arr as T[];
 
 const searchRouter = router({
@@ -66,22 +37,17 @@ const searchRouter = router({
             const u = new uFuzzy();
             const matchedGEs = u.search(toMutable(geCategoryKeys), query)[0]?.map((i) => geCategoryKeys[i]) ?? [];
             if (matchedGEs.length) return Object.fromEntries(matchedGEs.map(toGESearchResult));
-            // TODO implement department searching
-            const matchedDeptAliases = (
-                u.search(toMutable(departmentAliasKeys), query)[0]?.map((i) => departmentAliasKeys[i]) ?? []
-            ).slice(0, 10);
-            const matchedDepts =
-                matchedDeptAliases.length === 10
-                    ? []
-                    : (u.search(toMutable(departmentKeys), query)[0]?.map((i) => departmentKeys[i]) ?? []).slice(
-                          0,
-                          10 - matchedDeptAliases.length
-                      );
+            const matchedDepts = fuzzysort.go(query, departments, {
+                keys: ['id', 'alias'],
+                limit: 10
+            })
+            const matchedCourses = matchedDepts.length === 10 ? [] : fuzzysort.go(query, courses, {
+                keys: ['id', 'name', 'alias', 'metadata.department', 'metadata.number'],
+                limit: 10 - matchedDepts.length
+            })
             return Object.fromEntries(
-                (matchedDeptAliases as Array<DepartmentKey | DepartmentAliasKey>)
-                    .concat(matchedDepts as Array<DepartmentKey | DepartmentAliasKey>)
-                    .map(toDepartment)
-                    .concat(await queryFuzzySaas(input.query, 10 - matchedDepts.length))
+                [...matchedDepts.map(x => [x.obj.id, x.obj]),
+                ...matchedCourses.map(x => [x.obj.id, x.obj]),]
             );
         }),
 });

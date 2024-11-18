@@ -4,8 +4,11 @@
     "description": "Backend for AntAlmanac",
     "scripts": {
         "dev": "tsx watch src/index.ts",
+        "get-search-data": "tsx scripts/get-search-data.ts",
+        "prebuild": "pnpm get-search-data",
         "build": "node scripts/build.mjs",
-        "start": "npm run dev",
+        "prestart": "pnpm get-search-data",
+        "start": "pnpm dev",
         "format": "prettier --write src",
         "lint": "eslint --fix src"
     },
@@ -18,6 +21,7 @@
         "aws-lambda": "^1.0.7",
         "cors": "^2.8.5",
         "dotenv": "^16.0.3",
+        "fuzzysort": "3.1.0",
         "envalid": "^7.3.1",
         "express": "^4.18.2",
         "mongodb": "^5.0.1",
