@@ -2,28 +2,36 @@ import { z } from 'zod';
 import type {WebsocAPIResponse, CourseInfo, WebsocCourse} from '@packages/antalmanac-types';
 import { procedure, router } from '../trpc';
 
-function cleanSearchParams(record: Record<string, string>) {
-    if ('term' in record) {
-        const termValue = record['term'];
+function sanitizeSearchParams(params: Record<string, string>) {
+    if ('term' in params) {
+        const termValue = params.quarter;
         const termParts = termValue.split(' ');
         if (termParts.length === 2) {
             const [year, quarter] = termParts;
-            delete record['term'];
-            record['quarter'] = quarter;
-            record['year'] = year;
+            delete params.term;
+            params.quarter = quarter;
+            params.quarter = year;
         }
     }
-    if ('department' in record) {
-        record['department'] = record['department'].toUpperCase();
+    if ('department' in params) {
+        params.department = params.department.toUpperCase();
     }
-    for (const [key, value] of Object.entries(record)) {
+    if ('courseNumber' in params) {
+        params.courseNumber = params.courseNumber.toUpperCase();
+    }
+    for (const [key, value] of Object.entries(params)) {
         if (value === '') {
-            delete record[key];
+            delete params[key];
         }
     }
-    return record;
+    return params;
 }
 
+/**
+ * Comparison for two courses based on their course number.
+ * If the numeric part of their course number is the same,
+ * returns the lexicographic ordering of their course number.
+ */
 function compareCourses(a: WebsocCourse, b: WebsocCourse) {
     const aNum = Number.parseInt(a.courseNumber.replaceAll(/\D/g, ''), 10);
     const bNum = Number.parseInt(b.courseNumber.replaceAll(/\D/g, ''), 10);
@@ -48,7 +56,7 @@ function sortWebsocResponse(response: WebsocAPIResponse) {
 }
 
 const queryWebSoc = async ({ input }: { input: Record<string, string> }) =>
-    await fetch(`https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(cleanSearchParams(input))}`, {
+    await fetch(`https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`, {
         headers: {
             ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
         },
