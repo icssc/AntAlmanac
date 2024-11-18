@@ -14,7 +14,11 @@ function sanitizeSearchParams(params: Record<string, string>) {
         }
     }
     if ('department' in params) {
-        params.department = params.department.toUpperCase();
+        if (params.department.toUpperCase() === 'ALL') {
+            delete params.department;
+        } else {
+            params.department = params.department.toUpperCase();
+        }
     }
     if ('courseNumber' in params) {
         params.courseNumber = params.courseNumber.toUpperCase();
