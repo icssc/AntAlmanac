@@ -197,9 +197,6 @@ importers:
       ua-parser-js:
         specifier: ^1.0.37
         version: 1.0.37
-      websoc-fuzzy-search:
-        specifier: ^1.0.1
-        version: 1.0.1
       zustand:
         specifier: ^4.3.2
         version: 4.3.3(react@18.2.0)
@@ -4059,9 +4056,6 @@ packages:
     resolution: {integrity: sha512-/bjOqmgETBYB5BoEeGVea8dmvHb2m9GLy1E9W43yeyfP6QQCZGFNa+XRceJEuDB6zqr+gKpIAmlLebMpykw/MQ==}
     engines: {node: '>=10'}
 
-  pako@2.1.0:
-    resolution: {integrity: sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug==}
-
   parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
     engines: {node: '>=6'}
@@ -4981,9 +4975,6 @@ packages:
   webidl-conversions@7.0.0:
     resolution: {integrity: sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==}
     engines: {node: '>=12'}
-
-  websoc-fuzzy-search@1.0.1:
-    resolution: {integrity: sha512-1UlDdT2OvMxVIczNSQzI+vSoojfagbORdwtMQiLAnG1zVLG9Po6x5+VWNysi8w5xoxE2NootQH72HzoenLygDg==}
 
   whatwg-encoding@2.0.0:
     resolution: {integrity: sha512-p41ogyeMUrw3jWclHWTQg1k05DSVXPLcVxRTYsXUk+ZooOCZLcoYgPZ/HL/D/N+uQPOtcp1me1WhBEaX02mhWg==}
@@ -9756,8 +9747,6 @@ snapshots:
     dependencies:
       aggregate-error: 3.1.0
 
-  pako@2.1.0: {}
-
   parent-module@1.0.1:
     dependencies:
       callsites: 3.1.0
@@ -10685,11 +10674,6 @@ snapshots:
   webidl-conversions@3.0.1: {}
 
   webidl-conversions@7.0.0: {}
-
-  websoc-fuzzy-search@1.0.1:
-    dependencies:
-      base64-arraybuffer: 1.0.2
-      pako: 2.1.0
 
   whatwg-encoding@2.0.0:
     dependencies:
