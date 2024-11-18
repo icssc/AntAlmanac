@@ -1,14 +1,25 @@
-import { Typography, Button, Stack, Box } from '@mui/material';
+import { Typography, Button, Stack } from '@mui/material';
 import { Link } from 'react-router-dom';
 
-const ErrorPage = () => (
-    <Box sx={{ padding: '1rem' }}>
+export const Error = () => (
+    <Stack
+        spacing={3}
+        sx={{
+            padding: '1rem',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            flexDirection: 'column',
+            height: '100vh',
+            textAlign: 'center',
+        }}
+    >
         <Typography variant="h3" component="h1">
-            Oops! Something went wrong 🥺 👉👈
+            Oops! Something went wrong.
         </Typography>
         <Stack spacing={2} sx={{ paddingY: '1rem' }}>
             <Typography variant="h5" component="p">
-                This error may be caused by you having an out of date version of AntAlmanac.
+                This error may be caused by your browser having an out of date version of AntAlmanac.
             </Typography>
             <Typography variant="h5" component="p">
                 Try refreshing the page. If the error persists, please submit a{' '}
@@ -17,9 +28,8 @@ const ErrorPage = () => (
         </Stack>
         <Link to="/">
             <Button variant="contained" size="large">
-                Reload
+                Back to Home
             </Button>
         </Link>
-    </Box>
+    </Stack>
 );
-export default ErrorPage;

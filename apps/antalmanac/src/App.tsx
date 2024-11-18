@@ -10,7 +10,7 @@ import { undoDelete } from './actions/AppStoreActions';
 import AppQueryProvider from './providers/Query';
 import AppThemeProvider from './providers/Theme';
 import AppThemev5Provider from './providers/Themev5';
-import Error from './routes/Error';
+import { Error } from './routes/Error';
 import Feedback from './routes/Feedback';
 import Home from './routes/Home';
 
