@@ -1,11 +1,10 @@
-import { Button, Paper, Popper, useMediaQuery } from '@material-ui/core';
+import { Button, Paper, Popper } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { useEffect, useState } from 'react';
 
-import { MOBILE_BREAKPOINT } from '../../../globals';
-
 import { logAnalytics } from '$lib/analytics';
+import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
 const styles = {
     button: {
@@ -34,7 +33,6 @@ function CourseInfoButton({
     analyticsCategory,
 }: CourseInfoButtonProps) {
     const [popupAnchor, setPopupAnchor] = useState<HTMLElement | null>(null);
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
     const [isClicked, setIsClicked] = useState(false);
 
     useEffect(() => {
@@ -65,11 +63,13 @@ function CourseInfoButton({
         }
     };
 
+    const scheduleManagementWidth = useScheduleManagementStore((state) => state.scheduleManagementWidth);
+    const compact = scheduleManagementWidth && scheduleManagementWidth > 600;
+
     return (
         <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ display: 'flex' }}>
             <Button
                 className={classes.button}
-                startIcon={!isMobileScreen && icon}
                 variant="contained"
                 size="small"
                 onClick={(event: React.MouseEvent<HTMLElement>) => {
@@ -87,7 +87,20 @@ function CourseInfoButton({
                     }
                 }}
             >
-                {text}
+                <span style={{ display: 'flex', gap: 4 }}>
+                    {icon}
+                    {compact && (
+                        <span
+                            style={{
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                            }}
+                        >
+                            {text}
+                        </span>
+                    )}
+                </span>
             </Button>
 
             {popupContent && (

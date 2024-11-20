@@ -10,6 +10,7 @@ import loadingGif from './RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 
 import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
 import { getLocalStorageUserId } from '$lib/localStorage';
+import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 
@@ -220,6 +221,26 @@ export default function ScheduleManagement() {
      * Ref to the scrollable container with all of the tabs-content within it.
      */
     const ref = useRef<HTMLDivElement>();
+
+    const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
+
+    useEffect(() => {
+        const element = ref.current;
+
+        if (!element) return;
+
+        const observer = new ResizeObserver(([entry]) => {
+            if (entry.contentRect) {
+                setScheduleManagementWidth(entry.contentRect.width);
+            }
+        });
+
+        observer.observe(element);
+
+        return () => {
+            observer.disconnect();
+        };
+    }, [setScheduleManagementWidth]);
 
     const value = isMobile ? activeTab : activeTab - 1 >= 0 ? activeTab - 1 : 0;
 
