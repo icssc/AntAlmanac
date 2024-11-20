@@ -10,6 +10,7 @@ import NotificationSnackbar from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import ScheduleManagement from '$components/SharedRoot';
 import { Tutorial } from '$components/Tutorial';
+import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
 function MobileHome() {
     return (
@@ -22,6 +23,23 @@ function MobileHome() {
 
 function DesktopHome() {
     const theme = useTheme();
+    const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
+
+    const handleDrag = (sizes: number[]) => {
+        if (!window.innerWidth) {
+            return;
+        }
+
+        /**
+         * Sizes is a two element array containing the size of each side (in percentages)
+         *
+         * @example [25, 75]
+         */
+        const [_, scheduleManagementPercentage] = sizes;
+        const scheduleManagementWidth = window.innerWidth * scheduleManagementPercentage * 0.01;
+
+        setScheduleManagementWidth(scheduleManagementWidth);
+    };
 
     return (
         <>
@@ -30,7 +48,7 @@ function DesktopHome() {
 
                 <Split
                     sizes={[45, 55]}
-                    minSize={100}
+                    minSize={400}
                     expandToMin={false}
                     gutterSize={10}
                     gutterAlign="center"
@@ -43,6 +61,7 @@ function DesktopHome() {
                         backgroundColor: theme.palette.primary.main,
                         width: '10px',
                     })}
+                    onDrag={handleDrag}
                 >
                     <Stack direction="column">
                         <Calendar isMobile={false} />
