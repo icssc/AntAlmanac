@@ -30,8 +30,11 @@ const DaySelector = ({ days = [false, false, false, false, false, false, false],
             sx={{
                 display: 'flex',
                 flexDirection: 'row',
-                justifyContent: 'center',
-                padding: 5,
+                justifyContent: 'space-evenly',
+                marginTop: 10,
+                marginBottom: 10,
+                marginLeft: -5,
+                marginRight: -5,
             }}
         >
             {normal_days.map((day, index) => (
@@ -45,8 +48,9 @@ const DaySelector = ({ days = [false, false, false, false, false, false, false],
                     color={isDark ? 'default' : 'primary'}
                     style={{
                         margin: 5,
+                        width: 40,
                         maxWidth: 40,
-                        minWidth: 40,
+                        minWidth: 20,
                         aspectRatio: 1,
                     }}
                 >

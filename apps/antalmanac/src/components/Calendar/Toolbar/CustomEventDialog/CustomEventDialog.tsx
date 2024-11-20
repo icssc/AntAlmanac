@@ -4,10 +4,9 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
+    DialogTitle,
     FormControl,
     IconButton,
-    Input,
-    InputLabel,
     TextField,
     Tooltip,
 } from '@mui/material';
@@ -167,38 +166,50 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                     </IconButton>
                 </Tooltip>
             )}
-            <Dialog open={open} onClose={handleClose} maxWidth={'lg'}>
+            <Dialog open={open} onClose={handleClose} maxWidth={'xs'}>
+                <DialogTitle id="form-dialog-title" style={{ marginBottom: -10 }}>
+                    Add a Custom Event
+                </DialogTitle>
                 <DialogContent>
-                    <FormControl>
-                        <InputLabel htmlFor="EventNameInput">Event Name</InputLabel>
-                        <Input required={true} value={title} onChange={handleEventNameChange} />
+                    <FormControl fullWidth>
+                        <TextField
+                            id="outlined-basic"
+                            label="Event Name"
+                            variant="outlined"
+                            required={true}
+                            value={title}
+                            onChange={handleEventNameChange}
+                            style={{ marginTop: 10, width: '100%' }}
+                        />
                     </FormControl>
-                    <form noValidate style={{ display: 'flex', gap: 5, marginTop: 5 }}>
+                    <form noValidate style={{ display: 'flex', gap: 0, marginTop: 10 }}>
                         <TextField
                             onChange={handleStartTimeChange}
                             label="Start Time"
                             type="time"
                             defaultValue={start}
+                            fullWidth
                             InputLabelProps={{
                                 shrink: true,
                             }}
                             inputProps={{
                                 step: 300,
                             }}
-                            style={{ marginRight: 5, marginTop: 5 }}
+                            style={{ marginRight: 5, marginTop: 10 }}
                         />
                         <TextField
                             onChange={handleEndTimeChange}
                             label="End Time"
                             type="time"
                             defaultValue={end}
+                            fullWidth
                             InputLabelProps={{
                                 shrink: true,
                             }}
                             inputProps={{
                                 step: 300,
                             }}
-                            style={{ marginRight: 5, marginTop: 5 }}
+                            style={{ marginTop: 10 }}
                         />
                     </form>
                     <DaySelector onSelectDay={handleDayChange} days={props.customEvent?.days} />
@@ -211,7 +222,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                     />
                 </DialogContent>
 
-                <DialogActions>
+                <DialogActions style={{ padding: '0px 16px 16px' }}>
                     <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>
                         Cancel
                     </Button>

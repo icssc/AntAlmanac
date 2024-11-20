@@ -1,6 +1,8 @@
 import Checkbox from '@material-ui/core/Checkbox';
+import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
+import FormLabel from '@material-ui/core/FormLabel';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { PureComponent } from 'react';
 
@@ -39,24 +41,29 @@ class ScheduleSelector extends PureComponent<ScheduleSelectorProps, ScheduleSele
 
     render() {
         return (
-            <FormGroup row>
-                {this.props.scheduleNames.map((name, index) => {
-                    return (
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={this.state.scheduleIndices.includes(index)}
-                                    onChange={this.handleChange(index)}
-                                    value={index + 1}
-                                    color="primary"
-                                />
-                            }
-                            label={name}
-                            key={name}
-                        />
-                    );
-                })}
-            </FormGroup>
+            <FormControl style={{ marginTop: 10 }}>
+                <FormLabel component="legend" style={{ marginTop: 10 }}>
+                    Select schedules
+                </FormLabel>
+                <FormGroup row>
+                    {this.props.scheduleNames.map((name, index) => {
+                        return (
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={this.state.scheduleIndices.includes(index)}
+                                        onChange={this.handleChange(index)}
+                                        value={index + 1}
+                                        color="primary"
+                                    />
+                                }
+                                label={name}
+                                key={name}
+                            />
+                        );
+                    })}
+                </FormGroup>
+            </FormControl>
         );
     }
 }
