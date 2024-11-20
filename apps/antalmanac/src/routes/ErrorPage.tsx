@@ -1,6 +1,5 @@
 import { Typography, Button, Stack } from '@mui/material';
-import { useRouteError } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { Link, useRouteError } from 'react-router-dom';
 
 export const ErrorPage = () => {
     const error = useRouteError();
@@ -37,11 +36,7 @@ export const ErrorPage = () => {
             </Link>
             <details open>
                 <summary>View Error Message</summary>
-                <p>
-                    {error instanceof Error && (
-                        <pre>{error.stack}</pre> // Display stack trace only in development mode
-                    )}
-                </p>
+                <p>{error instanceof Error && <pre>{error.stack}</pre>}</p>
             </details>
         </Stack>
     );
