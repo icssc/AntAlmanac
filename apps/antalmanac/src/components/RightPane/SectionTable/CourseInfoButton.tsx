@@ -64,7 +64,7 @@ function CourseInfoButton({
     };
 
     const scheduleManagementWidth = useScheduleManagementStore((state) => state.scheduleManagementWidth);
-    const compact = scheduleManagementWidth && scheduleManagementWidth > 600;
+    const compact = scheduleManagementWidth && scheduleManagementWidth < 600;
 
     return (
         <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ display: 'flex' }}>
@@ -89,7 +89,7 @@ function CourseInfoButton({
             >
                 <span style={{ display: 'flex', gap: 4 }}>
                     {icon}
-                    {compact && (
+                    {!compact && (
                         <span
                             style={{
                                 whiteSpace: 'nowrap',
