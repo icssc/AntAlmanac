@@ -26,7 +26,7 @@ export const ErrorPage = () => {
                 </Typography>
                 <Typography variant="h5" component="p">
                     Try refreshing the page. If the error persists, please submit a{' '}
-                    <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</Link> with the provided error
+                    <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</Link> with the provided error.
                 </Typography>
             </Stack>
             <Link to="/">
