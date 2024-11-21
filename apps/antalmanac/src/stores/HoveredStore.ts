@@ -1,5 +1,4 @@
-import { AASection, ScheduleCourse } from '@packages/antalmanac-types';
-import { CourseDetails } from '@packages/antalmanac-types';
+import { AASection, ScheduleCourse, CourseDetails } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
 import { calendarizeCourseEvents, calendarizeFinals } from './calendarizeHelpers';
