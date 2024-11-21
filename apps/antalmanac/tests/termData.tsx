@@ -18,12 +18,6 @@ describe('termData', () => {
             showLocationInfo: false,
             finalExam: {
                 examStatus: 'NO_FINAL',
-                dayOfWeek: 'Sun',
-                month: 0,
-                day: 0,
-                startTime: null,
-                endTime: null,
-                locations: null,
             },
             courseTitle: '',
             instructors: [],

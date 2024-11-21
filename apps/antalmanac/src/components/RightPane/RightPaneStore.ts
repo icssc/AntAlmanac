@@ -17,6 +17,7 @@ const defaultFormValues: Record<string, string> = {
     building: '',
     room: '',
     division: '',
+    excludeRestrictionCodes: '',
 };
 
 export interface BuildingFocusInfo {
@@ -44,7 +45,7 @@ class RightPaneStore extends EventEmitter {
         const search = new URLSearchParams(window.location.search);
         this.urlCourseCodeValue = search.get('courseCode') || '';
         this.urlTermValue = search.get('term') || '';
-        this.urlGEValue = search.get('GE') || '';
+        this.urlGEValue = search.get('ge') || '';
         this.urlCourseNumValue = search.get('courseNumber') || '';
         this.urlDeptLabel = search.get('deptLabel') || '';
         this.urlDeptValue = search.get('deptValue') || '';

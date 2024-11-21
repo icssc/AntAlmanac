@@ -334,7 +334,7 @@ class AppStore extends EventEmitter {
 
         this.emit('skeletonModeChange');
 
-        // Switch to added courses tab since PeterPortal can't be reached anyway
+        // Switch to added courses tab since Anteater API can't be reached anyway
         useTabStore.getState().setActiveTab(2);
     }
 

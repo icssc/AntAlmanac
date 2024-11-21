@@ -12,9 +12,8 @@ import {
 } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { AASection } from '@packages/antalmanac-types';
+import { AASection, WebsocSectionEnrollment, WebsocSectionMeeting, CourseDetails } from '@packages/antalmanac-types';
 import classNames from 'classnames';
-import { WebsocSectionEnrollment, WebsocSectionMeeting } from 'peterportal-api-next-types';
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -26,7 +25,6 @@ import { SectionActionCell } from './cells/action';
 import restrictionsMapping from './static/restrictionsMapping.json';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { CourseDetails } from '$lib/course_data.types';
 import { Grades } from '$lib/grades';
 import { clickToCopy } from '$lib/helpers';
 import locationIds from '$lib/location_ids';
@@ -316,7 +314,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
     return (
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
-                return meeting.bldg[0] !== 'TBA' ? (
+                return !meeting.timeIsTBA ? (
                     meeting.bldg.map((bldg) => {
                         const [buildingName = ''] = bldg.split(' ');
                         const buildingId = locationIds[buildingName];
@@ -335,7 +333,7 @@ const LocationsCell = withStyles(styles)((props: LocationsCellProps) => {
                         );
                     })
                 ) : (
-                    <Box>{meeting.bldg}</Box>
+                    <Box>{'TBA'}</Box>
                 );
             })}
         </NoPaddingTableCell>
@@ -431,7 +429,7 @@ const DayAndTimeCell = withStyles(styles)((props: DayAndTimeCellProps) => {
         <NoPaddingTableCell className={classes.cell}>
             {meetings.map((meeting) => {
                 if (meeting.timeIsTBA) {
-                    return <Box key={meeting.timeIsTBA + meeting.bldg[0]}>TBA</Box>;
+                    return <Box key={meeting.timeIsTBA.toString()}>TBA</Box>;
                 }
 
                 if (meeting.startTime && meeting.endTime) {
@@ -452,7 +450,7 @@ const StatusCell = withStyles(styles)((props: StatusCellProps) => {
     // const { term, sectionCode, courseTitle, courseNumber, status, classes } = props;
     const { status, classes } = props;
 
-    // TODO: Implement course notification when PeterPortal has the functionality, according to #473
+    // TODO: Implement course notification when Anteater API has the functionality, according to #473
     // if (term === getDefaultTerm().shortName && (status === 'NewOnly' || status === 'FULL')) {
     //     return (
     //         <NoPaddingTableCell className={`${classes[status.toLowerCase()]} ${classes.cell}`}>
@@ -514,7 +512,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
      */
     const sectionDetails = useMemo(() => {
         return {
-            daysOccurring: parseDaysString(section.meetings[0].days),
+            daysOccurring: parseDaysString(section.meetings[0].timeIsTBA ? null : section.meetings[0].days),
             ...normalizeTime(section.meetings[0]),
         };
     }, [section.meetings]);
