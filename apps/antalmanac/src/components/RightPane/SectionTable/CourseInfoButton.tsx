@@ -1,6 +1,7 @@
 import { Button, Paper, Popper } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { useMediaQuery, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import { logAnalytics } from '$lib/analytics';
@@ -32,6 +33,9 @@ function CourseInfoButton({
     analyticsAction,
     analyticsCategory,
 }: CourseInfoButtonProps) {
+    const theme = useTheme();
+    const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
     const [popupAnchor, setPopupAnchor] = useState<HTMLElement | null>(null);
     const [isClicked, setIsClicked] = useState(false);
 
@@ -64,7 +68,8 @@ function CourseInfoButton({
     };
 
     const scheduleManagementWidth = useScheduleManagementStore((state) => state.scheduleManagementWidth);
-    const compact = scheduleManagementWidth && scheduleManagementWidth < 600;
+    const compact =
+        isMobileScreen || (scheduleManagementWidth && scheduleManagementWidth < theme.breakpoints.values.xs);
 
     return (
         <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ display: 'flex' }}>

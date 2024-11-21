@@ -1,7 +1,7 @@
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { CssBaseline, useMediaQuery, useTheme } from '@mui/material';
-import { Stack } from '@mui/material';
+import { CssBaseline, useMediaQuery, useTheme, Stack } from '@mui/material';
+import { useRef } from 'react';
 import Split from 'react-split';
 
 import Calendar from '$components/Calendar/CalendarRoot';
@@ -25,20 +25,16 @@ function DesktopHome() {
     const theme = useTheme();
     const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
 
-    const handleDrag = (sizes: number[]) => {
-        if (!window.innerWidth) {
+    const scheduleManagementRef = useRef<HTMLDivElement>();
+
+    const handleDrag = () => {
+        const scheduleManagementElement = scheduleManagementRef.current;
+        if (!scheduleManagementElement) {
             return;
         }
 
-        /**
-         * Sizes is a two element array containing the size of each side (in percentages)
-         *
-         * @example [25, 75]
-         */
-        const [_, scheduleManagementPercentage] = sizes;
-        const scheduleManagementWidth = window.innerWidth * scheduleManagementPercentage * 0.01;
-
-        setScheduleManagementWidth(scheduleManagementWidth);
+        const elementWidth = scheduleManagementElement.getBoundingClientRect().width;
+        setScheduleManagementWidth(elementWidth);
     };
 
     return (
@@ -66,7 +62,7 @@ function DesktopHome() {
                     <Stack direction="column">
                         <Calendar isMobile={false} />
                     </Stack>
-                    <Stack direction="column">
+                    <Stack direction="column" ref={scheduleManagementRef}>
                         <ScheduleManagement />
                     </Stack>
                 </Split>
