@@ -25,7 +25,7 @@ function paramsAreInURL() {
         'courseCode',
         'courseNumber',
         'deptLabel',
-        'GE',
+        'ge',
         'deptValue',
         'term',
         'sectionCode',
@@ -45,7 +45,7 @@ function paramsAreInURL() {
 function requiredParamsAreInURL() {
     const search = new URLSearchParams(window.location.search);
 
-    const searchParams = ['courseCode', 'courseNumber', 'GE', 'deptValue'];
+    const searchParams = ['courseCode', 'courseNumber', 'ge', 'deptValue'];
 
     return searchParams.some((param) => search.get(param) !== null);
 }

@@ -82,7 +82,7 @@ export function ColorAndDelete(props: SectionActionProps) {
  * Copying a specific class's link will only copy its course code.
  * If there is random value let in the url, it will interfere with the generated url.
  */
-const fieldsToReset = ['courseCode', 'courseNumber', 'deptLabel', 'deptValue', 'GE', 'term'];
+const fieldsToReset = ['courseCode', 'courseNumber', 'deptLabel', 'deptValue', 'ge', 'term'];
 
 /**
  * Sections that have not been added to a schedule can be added to a schedule.
