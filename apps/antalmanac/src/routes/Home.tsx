@@ -1,7 +1,7 @@
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { CssBaseline, useMediaQuery, useTheme, Stack } from '@mui/material';
-import { useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import Split from 'react-split';
 
 import Calendar from '$components/Calendar/CalendarRoot';
@@ -27,7 +27,7 @@ function DesktopHome() {
 
     const scheduleManagementRef = useRef<HTMLDivElement>();
 
-    const handleDrag = () => {
+    const handleDrag = useCallback(() => {
         const scheduleManagementElement = scheduleManagementRef.current;
         if (!scheduleManagementElement) {
             return;
@@ -35,7 +35,17 @@ function DesktopHome() {
 
         const elementWidth = scheduleManagementElement.getBoundingClientRect().width;
         setScheduleManagementWidth(elementWidth);
-    };
+    }, [setScheduleManagementWidth]);
+
+    useEffect(() => {
+        handleDrag();
+
+        window.addEventListener('resize', handleDrag);
+
+        return () => {
+            window.removeEventListener('resize', handleDrag);
+        };
+    }, [handleDrag]);
 
     return (
         <>
