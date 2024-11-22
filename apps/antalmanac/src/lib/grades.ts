@@ -47,17 +47,17 @@ class _Grades {
     populateGradesCache = async ({
         department,
         ge,
-        instructorName,
+        instructor,
     }: {
         department?: string;
         ge?: GE;
-        instructorName?: string;
+        instructor?: string;
     }): Promise<void> => {
         department = department != 'ALL' ? department : undefined;
         ge = ge != 'ANY' ? ge : undefined;
-        instructorName = instructorName != '' ? instructorName : undefined;
+        instructor = instructor != '' ? instructor : undefined;
 
-        if (!department && !ge && !instructorName)
+        if (!department && !ge && !instructor)
             throw new Error('populateGradesCache: Must provide either department, ge, or instructor');
 
         const queryKey = `${department ?? ''}${ge ?? ''}`;
