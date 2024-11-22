@@ -39,20 +39,29 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
 
     const [name, setName] = useState(scheduleNames[index]);
 
+    const [errorMessage, setErrorMessage] = useState('');
+
     const disabled = useMemo(() => {
         return name?.trim() === '';
-    }, [name]);
+    }, [name, errorMessage]);
 
     const handleCancel = useCallback(() => {
         onClose?.({}, 'escapeKeyDown');
         setName(scheduleNames[index]);
+        setErrorMessage('');
     }, [onClose, scheduleNames, index]);
 
     const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setName(event.target.value);
+        setErrorMessage('');
     }, []);
 
     const submitName = useCallback(() => {
+        const trimmedName = name.trim();
+        if (scheduleNames.includes(trimmedName) && scheduleNames[index] !== trimmedName) {
+            setErrorMessage('Schedule name already exists');
+            return;
+        }
         renameSchedule(name, index);
         onClose?.({}, 'escapeKeyDown');
     }, [onClose, name, index]);
@@ -92,7 +101,14 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
 
             <DialogContent>
                 <Box padding={1}>
-                    <TextField fullWidth label="Name" onChange={handleNameChange} value={name} />
+                    <TextField
+                        fullWidth
+                        label="Name"
+                        onChange={handleNameChange}
+                        value={name}
+                        error={!!errorMessage}
+                        helperText={errorMessage}
+                    />
                 </Box>
             </DialogContent>
 
