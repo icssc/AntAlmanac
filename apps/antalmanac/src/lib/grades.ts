@@ -44,11 +44,21 @@ class _Grades {
      * @param courseNumber The course number of the course.
      * @param ge The GE filter
      */
-    populateGradesCache = async ({ department, ge }: { department?: string; ge?: GE }): Promise<void> => {
+    populateGradesCache = async ({
+        department,
+        ge,
+        instructor,
+    }: {
+        department?: string;
+        ge?: GE;
+        instructor?: string;
+    }): Promise<void> => {
         department = department != 'ALL' ? department : undefined;
         ge = ge != 'ANY' ? ge : undefined;
+        instructor = instructor != '' ? instructor : undefined;
 
-        if (!department && !ge) throw new Error('populateGradesCache: Must provide either department or ge');
+        if (!department && !ge && !instructor)
+            throw new Error('populateGradesCache: Must provide either department, ge, or instructor');
 
         const queryKey = `${department ?? ''}${ge ?? ''}`;
 

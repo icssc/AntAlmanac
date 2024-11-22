@@ -212,6 +212,7 @@ export default function CourseRenderPane(props: { id?: number }) {
         const gradesQueryParams = {
             department: formData.deptValue,
             ge: formData.ge as GE,
+            instructor: formData.instructor,
         };
 
         try {
