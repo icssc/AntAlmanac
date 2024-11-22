@@ -47,8 +47,8 @@ async function copyUsersToPostgres() {
         success += batchSuccess;
     }
 
+    console.log(`Successfully copied ${success} users out of ${success + failedUsers.length}.`);
     if (failedUsers.length > 0) {
-        console.log(`Successfully copied ${success} users out of ${success + failedUsers.length}.`);
         console.log(`Failed users: ${failedUsers.join(', ')}`);
     }
 
