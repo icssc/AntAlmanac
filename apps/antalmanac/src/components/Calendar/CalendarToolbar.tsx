@@ -320,7 +320,8 @@ function CalendarPaneToolbar(props: CalendarPaneToolbarProps) {
                 flexWrap: 'wrap',
                 gap: 1,
                 alignItems: 'center',
-                padding: 1,
+                paddingX: 1.5,
+                paddingY: 1,
                 borderRadius: '4px 4px 0 0',
             }}
         >

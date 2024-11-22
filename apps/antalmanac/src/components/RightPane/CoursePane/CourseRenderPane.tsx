@@ -1,6 +1,14 @@
 import { Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, useMediaQuery } from '@mui/material';
-import { AACourse, AASection, WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from '@packages/antalmanac-types';
+import {
+    AACourse,
+    AASection,
+    WebsocDepartment,
+    WebsocSchool,
+    WebsocAPIResponse,
+    GE,
+    LarcAPIResponse,
+} from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
@@ -17,6 +25,7 @@ import noNothing from './static/no_results.png';
 import { openSnackbar } from '$actions/AppStoreActions';
 import analyticsEnum from '$lib/analytics';
 import { Grades } from '$lib/grades';
+import { Larc } from '$lib/larc';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
 import AppStore from '$stores/AppStore';
@@ -116,7 +125,11 @@ const RecruitmentBanner = () => {
  */
 const SectionTableWrapped = (
     index: number,
-    data: { scheduleNames: string[]; courseData: (WebsocSchool | WebsocDepartment | AACourse)[] }
+    data: {
+        scheduleNames: string[];
+        courseData: (WebsocSchool | WebsocDepartment | AACourse)[];
+        larcData?: LarcAPIResponse | undefined;
+    }
 ) => {
     const { courseData, scheduleNames } = data;
     const formData = RightPaneStore.getFormData();
@@ -181,6 +194,8 @@ const ErrorMessage = () => {
 export default function CourseRenderPane(props: { id?: number }) {
     const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
     const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
+    const [larcResp, setLarcResp] = useState<LarcAPIResponse>();
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
@@ -214,18 +229,39 @@ export default function CourseRenderPane(props: { id?: number }) {
             ge: formData.ge as GE,
         };
 
+        const larcQueryParams = {
+            department: formData.deptValue,
+            term: formData.term,
+            courseNumber: formData.courseNumber,
+        };
+
         try {
-            // Query websoc for course information and populate gradescache
+            // Query websoc for course information, populate gradescache, and query larc conditionally
             const [websocJsonResp, _] = await Promise.all([
                 websocQueryParams.units.includes(',')
                     ? WebSOC.queryMultiple(websocQueryParams, 'units')
                     : WebSOC.query(websocQueryParams),
-                // Catch the error here so that the course pane still loads even if the grades cache fails to populate
                 Grades.populateGradesCache(gradesQueryParams).catch((error) => {
                     console.error(error);
                     openSnackbar('error', 'Error loading grades information');
                 }),
             ]);
+
+            if (larcQueryParams.department && larcQueryParams.term && larcQueryParams.courseNumber) {
+                const larcJsonResp = await Larc.query(larcQueryParams);
+                const deDuplicatedLarcResp = larcJsonResp.filter(
+                    (item, index, self) =>
+                        index ===
+                        self.findIndex(
+                            (t) =>
+                                t.days === item.days &&
+                                t.time === item.time &&
+                                t.instructor === item.instructor &&
+                                t.bldg === item.bldg
+                        )
+                );
+                setLarcResp(deDuplicatedLarcResp);
+            }
 
             setError(false);
             setWebsocResp(websocJsonResp);
@@ -298,6 +334,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                                     {SectionTableWrapped(index, {
                                         courseData: courseData,
                                         scheduleNames: scheduleNames,
+                                        larcData: larcResp,
                                     })}
                                 </LazyLoad>
                             );

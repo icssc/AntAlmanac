@@ -10,6 +10,7 @@ import SearchForm from './SearchForm/SearchForm';
 import { openSnackbar } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { Grades } from '$lib/grades';
+import { Larc } from '$lib/larc';
 import { WebSOC } from '$lib/websoc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
@@ -35,6 +36,7 @@ export function CoursePaneRoot() {
         });
         WebSOC.clearCache();
         Grades.clearCache();
+        Larc.clearCache();
         forceUpdate();
     }, [forceUpdate]);
 
