@@ -26,13 +26,11 @@ export const subscriptions = pgTable(
          */
         status: subscriptionTargetStatus('status'),
     },
-    (table) => {
-        return {
-            primaryKey: primaryKey({
-                columns: [table.userId, table.sectionCode],
-            }),
-        };
-    }
+    (table) => [
+        primaryKey({
+            columns: [table.userId, table.sectionCode],
+        }),
+    ]
 );
 
 export type Subscription = typeof subscriptions.$inferSelect;

@@ -23,6 +23,15 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"last_updated" timestamp with time zone DEFAULT now()
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "schedules" (
+	"id" text PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL,
+	"name" text,
+	"notes" text,
+	"last_updated" timestamp with time zone NOT NULL,
+	CONSTRAINT "schedules_user_id_name_unique" UNIQUE("user_id","name")
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "coursesInSchedule" (
 	"scheduleId" text NOT NULL,
 	"sectionCode" integer NOT NULL,
@@ -32,13 +41,16 @@ CREATE TABLE IF NOT EXISTS "coursesInSchedule" (
 	CONSTRAINT "coursesInSchedule_scheduleId_sectionCode_term_pk" PRIMARY KEY("scheduleId","sectionCode","term")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "schedules" (
+CREATE TABLE IF NOT EXISTS "customEvents" (
 	"id" text PRIMARY KEY NOT NULL,
-	"user_id" text NOT NULL,
-	"name" text,
-	"notes" text,
-	"last_updated" timestamp with time zone NOT NULL,
-	CONSTRAINT "schedules_user_id_name_unique" UNIQUE("user_id","name")
+	"scheduleId" text NOT NULL,
+	"title" text NOT NULL,
+	"start" text NOT NULL,
+	"end" text NOT NULL,
+	"days" text NOT NULL,
+	"color" text,
+	"building" text,
+	"last_updated" timestamp with time zone DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "subscriptions" (
@@ -67,13 +79,19 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ ALTER TABLE "schedules" ADD CONSTRAINT "schedules_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  ALTER TABLE "coursesInSchedule" ADD CONSTRAINT "coursesInSchedule_scheduleId_schedules_id_fk" FOREIGN KEY ("scheduleId") REFERENCES "public"."schedules"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "schedules" ADD CONSTRAINT "schedules_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+ ALTER TABLE "customEvents" ADD CONSTRAINT "customEvents_scheduleId_schedules_id_fk" FOREIGN KEY ("scheduleId") REFERENCES "public"."schedules"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

@@ -33,15 +33,11 @@ export const coursesInSchedule = pgTable(
 
         lastUpdated: timestamp('last_updated', { withTimezone: true }).defaultNow(),
     },
-    (table) => {
-        return [
-            {
-                primaryKey: primaryKey({
-                    columns: [table.scheduleId, table.sectionCode, table.term],
-                }),
-            }
-        ];
-    }
+    (table) => [
+        primaryKey({
+            columns: [table.scheduleId, table.sectionCode, table.term],
+        }),    
+    ]
 );
 
 export type CourseInSchedule = typeof coursesInSchedule.$inferSelect;

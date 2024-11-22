@@ -25,13 +25,9 @@ export const accounts = pgTable(
 
         providerAccountId: text('provider_account_id').notNull(),
     },
-    (table) => {
-        return {
-            primaryKey: primaryKey({
-                columns: [table.userId, table.accountType],
-            }),
-        };
-    }
+    (table) => ([
+        primaryKey({columns: [table.userId, table.accountType], }),
+    ])
 );
 
 export type Account = typeof accounts.$inferSelect;
