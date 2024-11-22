@@ -2,6 +2,8 @@ import { type } from 'arktype';
 
 import { UserSchema } from '@packages/antalmanac-types';
 
+import { db } from 'src/db';
+import { ddbClient } from 'src/db/ddb';
 import { mangleDupliateScheduleNames } from 'src/lib/formatting';
 import { RDS } from 'src/lib/rds';
 import { procedure, router } from '../trpc';
