@@ -136,7 +136,7 @@ function SectionTable(props: SectionTableProps) {
                     analyticsCategory={analyticsCategory}
                 />
 
-                {/* Temporarily remove "Past Enrollment" until data on PeterPortal API */}
+                {/* Temporarily remove "Past Enrollment" until data on Anteater API */}
                 {/* <AlmanacGraph courseDetails={courseDetails} />  */}
 
                 <CourseInfoButton

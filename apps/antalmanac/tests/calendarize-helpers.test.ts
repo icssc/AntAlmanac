@@ -1,7 +1,8 @@
-import { describe, test, expect } from 'vitest';
 import type { Schedule, RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
+import { describe, test, expect } from 'vitest';
+
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
+import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
 
 describe('calendarize-helpers', () => {
     const courses: Schedule['courses'] = [
@@ -14,7 +15,7 @@ describe('calendarize-helpers', () => {
             section: {
                 color: 'placeholderColor',
                 sectionCode: 'placeholderSectionCode',
-                sectionType: 'placeholderSectionType',
+                sectionType: 'Lec',
                 sectionNum: 'placeholderSectionNum',
                 units: 'placeholderUnits',
                 instructors: [],
@@ -60,6 +61,7 @@ describe('calendarize-helpers', () => {
                 restrictions: 'placeholderRestrictions',
                 status: 'OPEN',
                 sectionComment: 'placeholderSectionComment',
+                updatedAt: 'placeholderUpdatedAt',
             },
             term: '2024 Winter',
         },
@@ -75,7 +77,7 @@ describe('calendarize-helpers', () => {
             courseTitle: 'placeholderCourseTitle',
             instructors: [],
             sectionCode: 'placeholderSectionCode',
-            sectionType: 'placeholderSectionType',
+            sectionType: 'Lec',
             start: new Date(2018, 0, 1, 1, 2),
             end: new Date(2018, 0, 1, 3, 4),
             finalExam: {
@@ -104,7 +106,7 @@ describe('calendarize-helpers', () => {
             courseTitle: 'placeholderCourseTitle',
             instructors: [],
             sectionCode: 'placeholderSectionCode',
-            sectionType: 'placeholderSectionType',
+            sectionType: 'Lec',
             start: new Date(2018, 0, 3, 1, 2),
             end: new Date(2018, 0, 3, 3, 4),
             finalExam: {
@@ -133,7 +135,7 @@ describe('calendarize-helpers', () => {
             courseTitle: 'placeholderCourseTitle',
             instructors: [],
             sectionCode: 'placeholderSectionCode',
-            sectionType: 'placeholderSectionType',
+            sectionType: 'Lec',
             start: new Date(2018, 0, 5, 1, 2),
             end: new Date(2018, 0, 5, 3, 4),
             finalExam: {

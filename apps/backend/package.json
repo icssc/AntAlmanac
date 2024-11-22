@@ -4,8 +4,11 @@
     "description": "Backend for AntAlmanac",
     "scripts": {
         "dev": "tsx watch src/index.ts",
+        "get-search-data": "tsx scripts/get-search-data.ts",
+        "prebuild": "pnpm get-search-data",
         "build": "node scripts/build.mjs",
-        "start": "npm run dev",
+        "prestart": "pnpm get-search-data",
+        "start": "pnpm dev",
         "format": "prettier --write src",
         "lint": "eslint --fix src",
         "studio": "drizzle-kit studio",
@@ -13,7 +16,8 @@
         "ddb-rds": "pnpm migrate && tsx scripts/ddb_to_rds.ts"
     },
     "dependencies": {
-        "@packages/antalmanac-types": "workspace:**",
+        "@leeoniya/ufuzzy": "1.0.14",
+        "@packages/antalmanac-types": "workspace:*",
         "@paralleldrive/cuid2": "^2.2.2",
         "@trpc/server": "^10.30.0",
         "@vendia/serverless-express": "^4.10.1",
@@ -21,11 +25,12 @@
         "aws-lambda": "^1.0.7",
         "cors": "^2.8.5",
         "drizzle-orm": "^0.36.3",
+        "fuzzysort": "3.1.0",
         "envalid": "^7.3.1",
         "express": "^4.18.2",
         "postgres": "^3.4.4",
         "superjson": "^1.12.3",
-        "websoc-api": "^3.0.0"
+        "zod": "3.23.8"
     },
     "devDependencies": {
         "@aws-sdk/client-dynamodb": "^3.332.0",
@@ -47,12 +52,11 @@
         "nodemon": "^2.0.22",
         "prettier": "^2.8.4",
         "tsx": "^3.12.7",
-        "typescript": "^4.9.5"
+        "typescript": "5.6.3"
     },
     "lint-staged": {
         "*.{js,json,css,html}": [
-            "prettier --write",
-            "git add"
+            "prettier --write"
         ]
     }
 }

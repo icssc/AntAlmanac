@@ -10,6 +10,7 @@ const Environment = type({
     MAPBOX_ACCESS_TOKEN: 'string',
     'PR_NUM?': 'number',
     DB_URL: 'string',
+    STAGE: "string",
 });
 
 const env = Environment.assert({ ...process.env });

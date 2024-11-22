@@ -2,12 +2,9 @@ import { type } from 'arktype';
 
 import { UserSchema } from '@packages/antalmanac-types';
 
-import { RDS } from 'src/lib/rds';
 import { mangleDupliateScheduleNames } from 'src/lib/formatting';
-import { router, procedure } from '../trpc';
-
-import { ddbClient } from '$db/ddb';
-import { db } from '$db/index';
+import { RDS } from 'src/lib/rds';
+import { procedure, router } from '../trpc';
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
 

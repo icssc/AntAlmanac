@@ -56,6 +56,28 @@ export default function AppThemev5Provider(props: Props) {
     const AppTheme = useMemo(
         () =>
             createTheme({
+                components: {
+                    MuiCssBaseline: {
+                        styleOverrides: {
+                            a: {
+                                color: appTheme === 'dark' ? 'dodgerblue' : 'blue',
+                            },
+                        },
+                    },
+                },
+                breakpoints: {
+                    /**
+                     * Based on Tailwind's breakpoints.
+                     * @see https://tailwindcss.com/docs/screens
+                     */
+                    values: {
+                        xs: 640,
+                        sm: 768,
+                        md: 1024,
+                        lg: 1280,
+                        xl: 1536,
+                    },
+                },
                 palette: {
                     mode: appTheme == 'dark' ? 'dark' : 'light',
                     ...(appTheme == 'dark' ? darkTheme : lightTheme),

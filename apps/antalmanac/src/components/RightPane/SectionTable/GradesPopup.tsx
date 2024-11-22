@@ -72,7 +72,10 @@ function GradesPopup(props: GradesPopupProps) {
         return gradeData
             ? `${deptCode} ${courseNumber}${
                   instructor ? ` — ${instructor}` : ''
-              } | Average GPA: ${gradeData.courseGrades.averageGPA.toFixed(2)}`
+                  // GPA is `null` if the class is pass/no-pass only.
+                  // This is more correct compared to returning a zero GPA,
+                  // which so far has not happened, but is entirely possible.
+              } | Average GPA: ${gradeData.courseGrades.averageGPA?.toFixed(2) ?? 'n/a'}`
             : 'Grades are not available for this class.';
     }, [gradeData, deptCode, courseNumber, instructor]);
 

@@ -2,7 +2,7 @@ import { Button, Theme } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 
-import AdvancedSearch from './AdvancedSearch';
+import AdvancedSearch from './AdvancedSearch/AdvancedSearch';
 import CourseNumberSearchBar from './CourseNumberSearchBar';
 import DeptSearchBar from './DeptSearchBar/DeptSearchBar';
 import GESelector from './GESelector';
@@ -18,7 +18,7 @@ const styles: Styles<Theme, object> = {
         display: 'inline-flex',
         cursor: 'pointer',
         marginTop: 20,
-        marginBotton: 10,
+        marginBottom: 10,
     },
     search: {
         display: 'flex',
@@ -42,12 +42,14 @@ const styles: Styles<Theme, object> = {
     buttonContainer: {
         width: '100%',
         display: 'flex',
-        justifyContent: 'space-evenly',
+        justifyContent: 'center',
+        gap: 16,
     },
 };
 
 function LegacySearch(props: { classes: ClassNameMap; onSubmit: () => void; onReset: () => void }) {
     const { classes, onSubmit, onReset } = props;
+
     return (
         <>
             <div className={classes.margin}>

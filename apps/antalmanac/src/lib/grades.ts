@@ -1,9 +1,9 @@
-import { GE } from 'peterportal-api-next-types';
+import { GE } from '@packages/antalmanac-types';
 
-import { queryGraphQL } from './helpers';
+import trpc from '$lib/api/trpc';
 
 export interface GradesProps {
-    averageGPA: number;
+    averageGPA: number | null;
     gradeACount: number;
     gradeBCount: number;
     gradeCCount: number;
@@ -13,31 +13,9 @@ export interface GradesProps {
     gradeNPCount: number;
 }
 
-export interface CourseInstructorGrades extends GradesProps {
-    department: string;
-    courseNumber: string;
-    instructor: string;
-}
-
-export interface GradesGraphQLResponse {
-    data: {
-        aggregateGrades: {
-            gradeDistribution: GradesProps;
-        };
-    };
-}
-
-export interface GroupedGradesGraphQLResponse {
-    data: {
-        aggregateByOffering: Array<CourseInstructorGrades>;
-    };
-}
-
 /**
  * Class to handle querying and caching of grades.
- * Retrieves grades from the PeterPortal GraphQL API.
- *
- * Note: Be careful with sending too many queries to the GraphQL API. It's not very fast and can be DoS'd easily.
+ * Retrieves grades from Anteater API.
  */
 class _Grades {
     gradesCache: Record<string, GradesProps>;
@@ -57,7 +35,7 @@ class _Grades {
     }
 
     /*
-     * Query the PeterPortal GraphQL API (aggregrateGroupedGrades) for the grades of all course-instructor if not already cached.
+     * Query the Anteater API for the grades of all course-instructor if not already cached.
      * This should be done before queryGrades to avoid DoS'ing the server
      *
      * Either department or ge must be provided
@@ -70,34 +48,16 @@ class _Grades {
         department = department != 'ALL' ? department : undefined;
         ge = ge != 'ANY' ? ge : undefined;
 
-        if (!department && !ge) throw new Error('populategradesCache: Must provide either department or ge');
+        if (!department && !ge) throw new Error('populateGradesCache: Must provide either department or ge');
 
         const queryKey = `${department ?? ''}${ge ?? ''}`;
 
         // If the whole query has already been cached, return
         if (this.cachedQueries.has(queryKey)) return;
 
-        const filter = `${ge ? `ge: ${ge.replace('-', '_')} ` : ''}${department ? `department: "${department}" ` : ''}`;
+        const groupedGrades = await trpc.grades.aggregateByOffering.mutate({ department, ge });
 
-        const response = await queryGraphQL<GroupedGradesGraphQLResponse>(`{
-            aggregateByOffering(${filter}) {
-                department
-                courseNumber
-                instructor
-                averageGPA
-                gradeACount
-                gradeBCount
-                gradeCCount
-                gradeDCount
-                gradeFCount
-                gradeNPCount
-                gradePCount
-            }
-        }`);
-
-        const groupedGrades = response?.data?.aggregateByOffering;
-
-        if (!groupedGrades) throw new Error('populateGradesCache: Failed to query GraphQL');
+        if (!groupedGrades) throw new Error('populateGradesCache: Failed to query grades');
 
         // Populate cache
         for (const course of groupedGrades) {
@@ -118,8 +78,8 @@ class _Grades {
     };
 
     /*
-     * Query the PeterPortal GraphQL API for a course's grades with caching
-     * This should NOT be done individually and independantly to fetch large amounts of data. Use populateGradesCache first to avoid DoS'ing the server
+     * Query the AnteaterAPI API for a course's grades with caching
+     * This should NOT be done individually and independently to fetch large amounts of data. Use populateGradesCache first to avoid DoS'ing the server
      *
      * @param deptCode The department code of the course.
      * @param courseNumber The course number of the course.
@@ -129,37 +89,22 @@ class _Grades {
      * @returns Grades
      */
     queryGrades = async (
-        deptCode: string,
+        department: string,
         courseNumber: string,
         instructor = '',
         cacheOnly = true
     ): Promise<GradesProps | null> => {
         instructor = instructor.replace('STAFF', '').trim(); // Ignore STAFF
-        const instructorFilter = instructor ? `instructor: "${instructor}"` : '';
 
-        const cacheKey = deptCode + courseNumber + instructor;
+        const cacheKey = department + courseNumber + instructor;
 
         if (cacheKey in this.gradesCache) return this.gradesCache[cacheKey];
 
         if (cacheOnly) return null;
 
-        const queryString = `{ 
-            aggregateGrades(department: "${deptCode}", courseNumber: "${courseNumber}", ${instructorFilter}) {
-                gradeDistribution {
-                    gradeACount
-                    gradeBCount
-                    gradeCCount
-                    gradeDCount
-                    gradeFCount
-                    gradePCount
-                    gradeNPCount
-                    averageGPA
-                }
-            },
-        }`;
-
-        const resp =
-            (await queryGraphQL<GradesGraphQLResponse>(queryString))?.data?.aggregateGrades?.gradeDistribution ?? null;
+        const resp = await trpc.grades.aggregateGrades
+            .query({ department, courseNumber, instructor })
+            .then((x) => x?.gradeDistribution ?? null);
 
         if (resp) this.gradesCache[cacheKey] = resp;
 

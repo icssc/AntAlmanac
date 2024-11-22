@@ -23,6 +23,7 @@ export default defineConfig({
     server: {
         host: 'localhost',
     },
+    // @ts-expect-error
     test: {
         environment: 'jsdom',
         setupFiles: [resolve(__dirname, 'tests/setup/setup.ts')],

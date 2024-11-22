@@ -1,25 +1,23 @@
 import { type, arrayOf } from 'arktype';
-import { RepeatingCustomEventSchema } from './customevent';
-import { AASectionSchema } from './websoc';
+import { RepeatingCustomEvent, RepeatingCustomEventSchema } from './customevent';
+import { AASection } from './websoc';
 
-export const ScheduleCourseSchema = type({
-    courseComment: 'string',
-    courseNumber: 'string',
-    courseTitle: 'string',
-    deptCode: 'string',
-    prerequisiteLink: 'string',
-    section: AASectionSchema,
-    term: 'string',
-});
-export type ScheduleCourse = typeof ScheduleCourseSchema.infer;
+export type ScheduleCourse = {
+    courseComment: string;
+    courseNumber: string;
+    courseTitle: string;
+    deptCode: string;
+    prerequisiteLink: string;
+    section: AASection;
+    term: string;
+};
 
-export const ScheduleSchema = type({
-    scheduleName: 'string',
-    courses: arrayOf(ScheduleCourseSchema),
-    customEvents: arrayOf(RepeatingCustomEventSchema),
-    scheduleNoteId: 'number',
-});
-export type Schedule = typeof ScheduleSchema.infer;
+export type Schedule = {
+    scheduleName: string;
+    courses: ScheduleCourse[];
+    customEvents: RepeatingCustomEvent[];
+    scheduleNoteId: number;
+};
 
 export const ShortCourseSchema = type({
     color: 'string',
@@ -46,8 +44,7 @@ export const ScheduleSaveStateSchema = type({
 });
 export type ScheduleSaveState = typeof ScheduleSaveStateSchema.infer;
 
-export const ScheduleUndoStateSchema = type({
-    schedules: arrayOf(ScheduleSchema),
-    scheduleIndex: 'number',
-});
-export type ScheduleUndoState = typeof ScheduleUndoStateSchema.infer;
+export type ScheduleUndoState = {
+    schedules: Schedule[];
+    scheduleIndex: number;
+};

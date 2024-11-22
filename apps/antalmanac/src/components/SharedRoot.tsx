@@ -1,68 +1,60 @@
-import { Box, Paper, Tab, Tabs, Typography } from '@material-ui/core';
-import { Event, FormatListBulleted, MyLocation, Search } from '@material-ui/icons';
-import { GlobalStyles } from '@mui/material';
-import { Suspense, lazy, useEffect } from 'react';
+import { Event, FormatListBulleted, MyLocation, Search } from '@mui/icons-material';
+import { GlobalStyles, Paper, Stack, Tab, Tabs, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import Calendar from './Calendar/CalendarRoot';
 import AddedCoursePane from './RightPane/AddedCourses/AddedCoursePane';
-import CoursePane from './RightPane/CoursePane/CoursePaneRoot';
 import darkModeLoadingGif from './RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 
+import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import { useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 
 const UCIMap = lazy(() => import('./Map/Map'));
 
-const styles = {
-    fallback: {
-        height: '100%',
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-};
-
-const Views = ({ activeTab, mobile }: { activeTab: number; mobile: boolean }) => {
-    const isDark = useThemeStore((store) => store.isDark);
-
-    return activeTab === 0 ? (
-        <Calendar isMobile={mobile} />
-    ) : (
-        <Box height="100%" style={{ margin: '0 4px' }}>
-            <Box height="calc(100% - 54px)" overflow="auto" style={{ margin: '8px 0px' }} id="course-pane-box">
-                {activeTab === 1 && <CoursePane />}
-                {activeTab === 2 && <AddedCoursePane />}
-                {activeTab === 3 && (
-                    <Suspense
-                        fallback={
-                            <div style={styles.fallback}>
-                                <img src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading map" />
-                            </div>
-                        }
-                    >
-                        <UCIMap />
-                    </Suspense>
-                )}
-            </Box>
-        </Box>
-    );
-};
-
-interface TabInfo {
+/**
+ * Information about the tab navigation buttons.
+ *
+ * Each button should be associated with a different aspect of schedule management.
+ */
+type ScheduleManagementTabInfo = {
+    /**
+     * Label to display on the tab button.
+     */
     label: string;
-    href?: string;
-    icon: React.ElementType;
-    id?: string;
-}
 
-const tabs: Array<TabInfo> = [
+    /**
+     * The path to navigate to in the URL.
+     */
+    href: string;
+
+    /**
+     * Icon to display.
+     */
+    icon: React.ElementType;
+
+    /**
+     * ID for the tab?
+     */
+    id?: string;
+
+    /**
+     * Whether or not this is mobile-only.
+     */
+    mobile?: true;
+};
+
+/**
+ */
+const scheduleManagementTabs: Array<ScheduleManagementTabInfo> = [
     {
         label: 'Calendar',
         icon: Event,
+        mobile: true,
+        href: '',
     },
     {
         label: 'Search',
@@ -83,97 +75,241 @@ const tabs: Array<TabInfo> = [
     },
 ];
 
-interface SharedTabsProps {
-    style?: Record<string, unknown>;
-    mobile: boolean;
-}
+/**
+ * A different set of tab buttons will be listed depending on whether the screen is mobile or
+ * desktop.
+ *
+ * Provide the current state of the tab navigation from the parent.
+ */
+type ScheduleManagementTabsProps = {
+    value: number;
+    setActiveTab: (value: number) => void;
+};
 
-const SharedTabs = ({ style, mobile }: SharedTabsProps) => {
-    const { activeTab, setActiveTab } = useTabStore();
+/**
+ * For mobile devices, all tabs will be displayed.
+ */
+function ScheduleManagementMobileTabs(props: ScheduleManagementTabsProps) {
+    const { value, setActiveTab } = props;
+    const isDark = useThemeStore((store) => store.isDark);
 
-    const params = useParams();
-
-    const getActiveTab = () => {
-        return mobile ? activeTab : activeTab - 1 >= 0 ? activeTab - 1 : 0;
+    const onChange = (_event: React.SyntheticEvent, value: number) => {
+        setActiveTab(value);
     };
 
-    useEffect(() => {
-        getLocalStorageUserId() ? setActiveTab(2) : setActiveTab(1);
-    }, [setActiveTab]);
+    return (
+        <Tabs value={value} onChange={onChange} indicatorColor="primary" variant="fullWidth" centered>
+            {scheduleManagementTabs.map((tab) => (
+                <Tab
+                    key={tab.label}
+                    sx={{
+                        ...(isDark ? { '&.Mui-selected': { color: 'white' } } : {}),
+                    }}
+                    label={
+                        <Stack direction="column" alignItems="center" paddingBottom={1} gap={0.25}>
+                            <tab.icon sx={{ fontSize: 20 }} />
+                            <Typography textTransform="none" sx={{ fontSize: 9 }}>
+                                {tab.label}
+                            </Typography>
+                        </Stack>
+                    }
+                />
+            ))}
+        </Tabs>
+    );
+}
 
+/**
+ * For desktop, some of the tabs will be displayed on the other side.
+ * i.e. the calendar takes up the left side of the screen.
+ */
+function ScheduleManagementDesktopTabs(props: ScheduleManagementTabsProps) {
+    const { value, setActiveTab } = props;
+    const isDark = useThemeStore((store) => store.isDark);
+
+    const onChange = (_event: React.SyntheticEvent, value: number) => {
+        setActiveTab(value + 1);
+    };
+
+    return (
+        <Tabs value={value} onChange={onChange} indicatorColor="primary" variant="fullWidth" centered>
+            {scheduleManagementTabs.map((tab) => {
+                if (tab.mobile) return;
+
+                return (
+                    <Tab
+                        key={tab.label}
+                        id={tab.id}
+                        to={tab.href}
+                        component={Link}
+                        sx={{
+                            minHeight: 'auto',
+                            height: '44px',
+                            padding: 3,
+                            minWidth: '33%',
+                            ...(isDark ? { '&.Mui-selected': { color: 'white' } } : {}),
+                        }}
+                        label={
+                            <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+                                <tab.icon style={{ height: 16 }} />
+                                <Typography variant="body2">{tab.label}</Typography>
+                            </div>
+                        }
+                    />
+                );
+            })}
+        </Tabs>
+    );
+}
+
+function ScheduleManagementTabsContent(props: { activeTab: number; isMobile: boolean }) {
+    const { activeTab, isMobile } = props;
+
+    const isDark = useThemeStore((store) => store.isDark);
+
+    switch (activeTab) {
+        case 0:
+            return <Calendar isMobile={isMobile} />;
+        case 1:
+            return <CoursePaneRoot />;
+        case 2:
+            return <AddedCoursePane />;
+        case 3:
+            return (
+                <Suspense
+                    fallback={
+                        <div
+                            style={{
+                                height: '100%',
+                                width: '100%',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <img src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading map" />
+                        </div>
+                    }
+                >
+                    <UCIMap />
+                </Suspense>
+            );
+
+        default:
+            return null;
+    }
+}
+
+/**
+ * List of interactive tab buttons with their accompanying content.
+ * Each tab's content has functionality for managing the user's schedule.
+ */
+export default function ScheduleManagement() {
+    const theme = useTheme();
+
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+    const { activeTab, setActiveTab } = useTabStore();
+
+    const { tab } = useParams();
+
+    // Tab index mapped to the last known scrollTop.
+    const [positions, setPositions] = useState<Record<number, number>>({});
+
+    /**
+     * Ref to the scrollable container with all of the tabs-content within it.
+     */
+    const ref = useRef<HTMLDivElement>();
+
+    const value = isMobile ? activeTab : activeTab - 1 >= 0 ? activeTab - 1 : 0;
+
+    // Save the current scroll position to the store.
+    const onScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
+        const positionToSave = e.currentTarget.scrollTop;
+        setPositions((current) => {
+            current[activeTab] = positionToSave;
+            return current;
+        });
+    };
+
+    // Change the tab to the "added classes" tab if the user was previously logged in.
     useEffect(() => {
-        if (mobile) {
-            return;
+        const userId = getLocalStorageUserId();
+
+        if (userId != null) {
+            setActiveTab(2);
+        } else {
+            setActiveTab(1);
         }
+    }, []);
 
-        if (params.tab === 'map') {
+    // Handle tab index for mobile screens.
+    useEffect(() => {
+        if (isMobile) return;
+
+        if (tab === 'map') {
             setActiveTab(3);
         }
 
         if (activeTab == 0) {
             setActiveTab(1);
         }
-    }, [activeTab, mobile, params.tab, setActiveTab]);
+    }, [activeTab, isMobile, tab]);
+
+    // Restore scroll position if it has been previously saved.
+    useEffect(() => {
+        const savedPosition = positions[activeTab];
+
+        let animationFrame: number;
+
+        if (savedPosition != null) {
+            animationFrame = requestAnimationFrame(() => {
+                if (ref.current) {
+                    ref.current.scrollTop = savedPosition;
+                }
+            });
+        }
+
+        return () => {
+            if (animationFrame != null) {
+                cancelAnimationFrame(animationFrame);
+            }
+        };
+    }, [activeTab, positions]);
+
+    if (activeTab === 0 && !isMobile) {
+        return <Calendar isMobile={isMobile} />;
+    }
 
     return (
-        <Box style={{ ...style, height: 'calc(100vh - 58px)' }}>
+        <Stack direction="column" flexGrow={1} height="0">
             <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
-            <Paper
-                elevation={0}
-                variant="outlined"
-                square
-                style={{ margin: '0px 4px 4px', borderRadius: '4px 4px 0 0' }}
-            >
-                <Tabs
-                    value={getActiveTab()}
-                    onChange={(_event, value) => {
-                        setActiveTab(mobile ? value : value + 1);
-                    }}
-                    indicatorColor="primary"
-                    variant="fullWidth"
-                    centered
+
+            {!isMobile && (
+                <Paper elevation={0} variant="outlined" square sx={{ borderRadius: '4px 4px 0 0' }}>
+                    <ScheduleManagementDesktopTabs value={value} setActiveTab={setActiveTab} />
+                </Paper>
+            )}
+
+            <Stack width="100%" height="0" flexGrow={1} padding={1}>
+                <Stack
+                    id="course-pane-box"
+                    direction="column"
+                    overflow="auto"
+                    height="0px"
+                    flexGrow={1}
+                    ref={ref}
+                    onScroll={onScroll}
                 >
-                    {!mobile
-                        ? tabs.slice(1).map((tab) => (
-                              <Tab
-                                  key={tab.label}
-                                  component={Link}
-                                  label={
-                                      <div style={{ display: 'inline-flex', alignItems: 'center' }}>
-                                          <tab.icon style={{ height: 16 }} />
-                                          <Typography variant="body2">{tab.label}</Typography>
-                                      </div>
-                                  }
-                                  to={tab.href ?? ''}
-                                  style={{ minHeight: 'auto', height: '44px', padding: 3, minWidth: '33%' }}
-                                  id={tab.id}
-                              />
-                          ))
-                        : tabs.map((tab) => (
-                              <Tab
-                                  key={tab.label}
-                                  label={
-                                      <Box
-                                          style={{
-                                              display: 'flex',
-                                              flexDirection: 'column',
-                                              justifyContent: 'center',
-                                              gap: 2,
-                                          }}
-                                      >
-                                          <tab.icon style={{ width: '100%', fontSize: '22px' }} />
-                                          <Typography style={{ fontSize: '10px' }}>{tab.label}</Typography>
-                                      </Box>
-                                  }
-                                  style={{ minWidth: '25%' }}
-                              />
-                          ))}
-                </Tabs>
-            </Paper>
+                    <ScheduleManagementTabsContent activeTab={activeTab} isMobile={isMobile} />
+                </Stack>
+            </Stack>
 
-            <Views activeTab={activeTab} mobile={mobile} />
-        </Box>
+            {isMobile && (
+                <Paper elevation={0} variant="outlined" square sx={{ borderRadius: '4px 4px 0 0' }}>
+                    <ScheduleManagementMobileTabs value={value} setActiveTab={setActiveTab} />
+                </Paper>
+            )}
+        </Stack>
     );
-};
-
-export default SharedTabs;
+}
