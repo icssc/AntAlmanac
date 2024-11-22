@@ -54,7 +54,7 @@ export class RDS {
         }
         
         const scheduleResult = await db.transaction(
-            async (tx) => (
+            (tx) => (
                 tx.insert(schedules)
                     .values(dbSchedule)
                     .onConflictDoUpdate({ 
@@ -63,7 +63,9 @@ export class RDS {
                     })
                     .returning({id: schedules.id})
             )
-        );
+        ).catch((error) => {
+            throw new Error(`Failed to insert schedule for ${userId} (${schedule.scheduleName}): ${error}`)
+        });
 
         const scheduleId = scheduleResult[0].id;
         if (scheduleId === undefined) {
@@ -72,8 +74,11 @@ export class RDS {
 
         // Add courses and custom events
         await Promise.all([
-            this.upsertCourses(db, scheduleId, schedule.courses),
+            this.upsertCourses(db, scheduleId, schedule.courses)
+                .catch((error) => {throw new Error(`Failed to insert courses for ${scheduleId}: ${error}`)}),
+
             this.upsertCustomEvents(db, scheduleId, schedule.customEvents)
+                .catch((error) => {throw new Error(`Failed to insert custom events for ${scheduleId}: ${error}`)})
         ]);
         
 
@@ -87,7 +92,7 @@ export class RDS {
     private static async upsertCourses(
         db: DatabaseOrTransaction, scheduleId: string, courses: ShortCourse[]
     ) {
-        await db.transaction(async (tx) => await tx
+        await db.transaction((tx) => tx
             .delete(coursesInSchedule)
             .where(eq(coursesInSchedule.scheduleId, scheduleId))
         );
@@ -115,7 +120,7 @@ export class RDS {
             return true;
         });
 
-        await db.transaction(async (tx) => await tx
+        await db.transaction((tx) => tx
             .insert(coursesInSchedule)
             .values(dbCoursesUnique)
         );
