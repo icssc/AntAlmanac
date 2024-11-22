@@ -12,7 +12,7 @@ import {
 import { SelectChangeEvent } from '@mui/material';
 import { useState, useEffect, useCallback } from 'react';
 
-import { copySchedule } from '$actions/AppStoreActions';
+import { copySchedule, addSchedule } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
 
 interface CopyScheduleDialogProps extends DialogProps {
@@ -35,6 +35,10 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
 
     const handleCopy = useCallback(() => {
         if (selectedSchedule !== scheduleNames.length) {
+            if (selectedSchedule === scheduleNames.length + 1) {
+                addSchedule('Copy of ' + scheduleNames[index]);
+                AppStore.changeCurrentSchedule(index);
+            }
             copySchedule(selectedSchedule);
         } else {
             scheduleNames.forEach((_, scheduleIndex) => {
@@ -70,6 +74,7 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
                                 {name}
                             </MenuItem>
                         ))}
+                        <MenuItem value={scheduleNames.length + 1}>Copy to New Schedule</MenuItem>
                         <MenuItem value={scheduleNames.length}>Copy to All Schedules</MenuItem>
                     </Select>
                 </Box>
