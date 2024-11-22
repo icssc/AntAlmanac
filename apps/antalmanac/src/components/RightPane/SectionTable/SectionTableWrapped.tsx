@@ -6,19 +6,18 @@ import { SchoolDeptCard } from '$components/RightPane/SectionTable/SchoolDeptCar
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import analyticsEnum from '$lib/analytics';
 
+interface SectionTableWrappedProps {
+    index: number;
+    scheduleNames: string[];
+    courseData: (WebsocSchool | WebsocDepartment | AACourse)[];
+    larcData: LarcAPIResponse | undefined;
+}
+
 /* TODO: all this typecasting in the conditionals is pretty messy, but type guards don't really work in this context
  *  for reasons that are currently beyond me (probably something in the transpiling process that JS doesn't like).
  *  If you can find a way to make this cleaner, do it.
  */
-export function SectionTableWrapped(
-    index: number,
-    data: {
-        scheduleNames: string[];
-        courseData: (WebsocSchool | WebsocDepartment | AACourse)[];
-        larcData: LarcAPIResponse | undefined;
-    }
-) {
-    const { courseData, scheduleNames } = data;
+export function SectionTableWrapped({ index, scheduleNames, courseData, larcData }: SectionTableWrappedProps) {
     const formData = RightPaneStore.getFormData();
 
     if ((courseData[index] as WebsocSchool).departments !== undefined) {
@@ -52,6 +51,7 @@ export function SectionTableWrapped(
             allowHighlight={true}
             scheduleNames={scheduleNames}
             analyticsCategory={analyticsEnum.classSearch.title}
+            larcData={larcData}
         />
     );
 }

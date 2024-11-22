@@ -40,6 +40,7 @@ export class Schedules {
             {
                 scheduleName: `${termData[0].shortName.replaceAll(' ', '-')}`,
                 courses: [],
+                larcSections: [],
                 customEvents: [],
                 scheduleNoteId: scheduleNoteId,
             },
@@ -98,6 +99,7 @@ export class Schedules {
         const scheduleNoteId = Math.random();
         this.schedules.push({
             scheduleName: newScheduleName,
+            larcSections: [],
             courses: [],
             customEvents: [],
             scheduleNoteId: scheduleNoteId,
@@ -160,11 +162,26 @@ export class Schedules {
         return this.schedules[this.currentScheduleIndex]?.courses || [];
     }
 
+    getCurrentLarcSections() {
+        return this.schedules[this.currentScheduleIndex]?.larcSections || [];
+    }
+
     /**
      * Get a set of "{sectionCode} {term}" section codes in current schedule.
      */
     getAddedSectionCodes() {
         return new Set(this.getCurrentCourses().map((course) => `${course.section.sectionCode} ${course.term}`));
+    }
+
+    /**
+     * Get a set of "${section.bldg}+${section.days}+${section.instructor}+${section.time}" section keys in current schedule.
+     */
+    getAddedLarcSections() {
+        return new Set(
+            this.getCurrentLarcSections().map(
+                (section) => `${section.bldg}+${section.days}+${section.instructor}+${section.time}`
+            )
+        );
     }
 
     /**
@@ -553,6 +570,7 @@ export class Schedules {
                 this.schedules.push({
                     scheduleName: shortCourseSchedule.scheduleName,
                     courses: courses,
+                    larcSections: [], // ! FIX ME
                     customEvents: shortCourseSchedule.customEvents,
                     scheduleNoteId: scheduleNoteId,
                 });

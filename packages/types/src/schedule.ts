@@ -1,6 +1,7 @@
 import { type, arrayOf } from 'arktype';
 import { RepeatingCustomEvent, RepeatingCustomEventSchema } from './customevent';
 import { AASection } from './websoc';
+import { LarcAPIResponse } from '@packages/anteater-api-types';
 
 export type ScheduleCourse = {
     courseComment: string;
@@ -15,6 +16,7 @@ export type ScheduleCourse = {
 export type Schedule = {
     scheduleName: string;
     courses: ScheduleCourse[];
+    larcSections: LarcAPIResponse;
     customEvents: RepeatingCustomEvent[];
     scheduleNoteId: number;
 };

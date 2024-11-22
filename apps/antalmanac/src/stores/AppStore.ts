@@ -161,6 +161,10 @@ class AppStore extends EventEmitter {
         return this.schedule.getAddedSectionCodes();
     }
 
+    getAddedLarcSections() {
+        return this.schedule.getAddedLarcSections();
+    }
+
     getCurrentScheduleNote() {
         return this.schedule.getCurrentScheduleNote();
     }

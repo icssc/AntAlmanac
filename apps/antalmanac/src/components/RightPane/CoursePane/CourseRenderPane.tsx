@@ -26,13 +26,10 @@ import { useHoveredStore } from '$stores/HoveredStore';
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
-    const courseColors = currentCourses.reduce(
-        (accumulator, { section }) => {
-            accumulator[section.sectionCode] = section.color;
-            return accumulator;
-        },
-        {} as Record<string, string>
-    );
+    const courseColors = currentCourses.reduce((accumulator, { section }) => {
+        accumulator[section.sectionCode] = section.color;
+        return accumulator;
+    }, {} as Record<string, string>);
 
     return courseColors;
 }
@@ -200,11 +197,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                         heightEstimate = (courseData[index] as AACourse).sections.length * 60 + 20 + 40;
                     return (
                         <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>
-                            {SectionTableWrapped(index, {
-                                courseData: courseData,
-                                scheduleNames: scheduleNames,
-                                larcData: larcResp,
-                            })}
+                            {SectionTableWrapped({ index, courseData, scheduleNames, larcData: larcResp })}
                         </LazyLoad>
                     );
                 })}

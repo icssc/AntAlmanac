@@ -1,5 +1,5 @@
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import type { AACourse } from '@packages/antalmanac-types';
+import type { AACourse, LarcAPIResponse } from '@packages/antalmanac-types';
 
 /**
  * This is in its own file so we can import it in SectionTableLazyWrapper without messing up the lazy-load.
@@ -12,4 +12,5 @@ export interface SectionTableProps {
     allowHighlight: boolean;
     scheduleNames: string[];
     analyticsCategory: string;
+    larcData?: LarcAPIResponse | undefined;
 }
