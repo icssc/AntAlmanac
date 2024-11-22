@@ -22,12 +22,12 @@ async function copyUsersToPostgres() {
 
     for await (const ddbBatch of ddbClient.getAllUserDataBatches()) {
         console.log(`Copying ${ddbBatch.length} users...`);
+        let batchSuccess = 0;
         const transactions = ddbBatch.map( // One transaction per user
             async (ddbUser) => {
                 // Mangle duplicate schedule names
                 ddbUser.userData.schedules = mangleDupliateScheduleNames(ddbUser.userData.schedules);
 
-                console.log(`Copying user ${ddbUser.id}...`);
                 return RDS
                     .upsertGuestUserData(db, ddbUser)
                     .catch((error) => {
@@ -37,16 +37,14 @@ async function copyUsersToPostgres() {
                         );
                         console.error(error);
                     })
-                    .then((data) => { 
-                        if (data) 
-                            console.log(
-                            `Successfully copied user ${ddbUser.id}. (${++success})`
-                        );   
-                    });
+                    .then(() => batchSuccess++);
             }
         );
 
         await Promise.all(transactions);
+
+        console.log(`Successfully copied ${batchSuccess} users out of ${ddbBatch.length} in batch.`);
+        success += batchSuccess;
     }
 
     if (failedUsers.length > 0) {

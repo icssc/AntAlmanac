@@ -75,10 +75,10 @@ export class RDS {
         // Add courses and custom events
         await Promise.all([
             this.upsertCourses(db, scheduleId, schedule.courses)
-                .catch((error) => {throw new Error(`Failed to insert courses for ${scheduleId}: ${error}`)}),
+                .catch((error) => {throw new Error(`Failed to insert courses for ${schedule.scheduleName}: ${error}`)}),
 
             this.upsertCustomEvents(db, scheduleId, schedule.customEvents)
-                .catch((error) => {throw new Error(`Failed to insert custom events for ${scheduleId}: ${error}`)})
+                .catch((error) => {throw new Error(`Failed to insert custom events for ${schedule.scheduleName}: ${error}`)})
         ]);
         
 
