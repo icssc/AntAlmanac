@@ -71,6 +71,10 @@ class AppStore extends EventEmitter {
         }
     }
 
+    getNextScheduleName(newScheduleName: string) {
+        return this.schedule.getNextScheduleName(newScheduleName);
+    }
+
     getDefaultScheduleName() {
         return this.schedule.getDefaultScheduleName();
     }

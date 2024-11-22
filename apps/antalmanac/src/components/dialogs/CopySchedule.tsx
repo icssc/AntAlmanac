@@ -36,7 +36,7 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
     const handleCopy = useCallback(() => {
         if (selectedSchedule !== scheduleNames.length) {
             if (selectedSchedule === scheduleNames.length + 1) {
-                addSchedule('Copy of ' + scheduleNames[index]);
+                addSchedule(AppStore.getNextScheduleName('Copy of ' + scheduleNames[index]));
                 AppStore.changeCurrentSchedule(index);
             }
             copySchedule(selectedSchedule);

@@ -50,6 +50,11 @@ export class Schedules {
         this.skeletonSchedules = [];
     }
 
+    getNextScheduleName(newScheduleName: string) {
+        const countSameScheduleNames = this.getScheduleNames().filter((name) => name.includes(newScheduleName)).length;
+        return `${newScheduleName + (countSameScheduleNames == 0 ? '' : '(' + countSameScheduleNames + ')')}`;
+    }
+
     getDefaultScheduleName() {
         const termName = termData[0].shortName.replaceAll(' ', '-');
         const countSameScheduleNames = this.getScheduleNames().filter((name) => name.includes(termName)).length;
