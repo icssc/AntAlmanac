@@ -2,10 +2,9 @@ import { AACourse, LarcAPIResponse, WebsocDepartment, WebsocSchool } from '@pack
 
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
-import SchoolDeptCard from '$components/RightPane/SectionTable/SchoolDeptCard';
+import { SchoolDeptCard } from '$components/RightPane/SectionTable/SchoolDeptCard';
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import analyticsEnum from '$lib/analytics';
-
 
 /* TODO: all this typecasting in the conditionals is pretty messy, but type guards don't really work in this context
  *  for reasons that are currently beyond me (probably something in the transpiling process that JS doesn't like).
@@ -24,7 +23,7 @@ export function SectionTableWrapped(
 
     if ((courseData[index] as WebsocSchool).departments !== undefined) {
         const school = courseData[index] as WebsocSchool;
-        return <SchoolDeptCard comment={school.schoolComment} type={'school'} name={school.schoolName} />;
+        return <SchoolDeptCard name={school.schoolName} comment={school.schoolComment} type={'school'} />;
     }
 
     if ((courseData[index] as WebsocDepartment).courses !== undefined) {
