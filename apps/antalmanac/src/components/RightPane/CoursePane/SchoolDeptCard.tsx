@@ -39,7 +39,6 @@ export function SchoolDeptCard({ name, type, comment }: SchoolDeptCardProps) {
                     </AccordionSummary>
                     <AccordionDetails sx={{ paddingX: 1, paddingY: 0 }}>
                         <Box sx={{ fontSize: 12 }}>
-                            {/*The default component for the body2 typography seems to be <p> which is giving warnings with DOMnesting */}
                             <Typography>{comment === '' ? 'No comments found' : 'Comments:'}</Typography>
                             <Box dangerouslySetInnerHTML={html} component="p" />
                         </Box>
