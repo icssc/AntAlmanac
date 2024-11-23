@@ -213,6 +213,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             department: formData.deptValue,
             ge: formData.ge as GE,
             instructor: formData.instructor,
+            sectionCode: formData.sectionCode,
         };
 
         try {
