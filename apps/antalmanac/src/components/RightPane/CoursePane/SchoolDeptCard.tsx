@@ -1,98 +1,51 @@
-import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Box,
-    Grid,
-    Paper,
-    Theme,
-    Typography,
-    withStyles,
-} from '@material-ui/core';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { ExpandMore } from '@material-ui/icons';
-import { PureComponent } from 'react';
-
-const styles: Styles<Theme, object> = (theme) => ({
-    school: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2),
-        [theme.breakpoints.up('sm')]: {
-            paddingLeft: theme.spacing(3),
-            paddingRight: theme.spacing(3),
-        },
-        paddingTop: theme.spacing(),
-        paddingBottom: theme.spacing(),
-    },
-    dept: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2),
-        [theme.breakpoints.up('sm')]: {
-            paddingLeft: theme.spacing(3),
-            paddingRight: theme.spacing(3),
-        },
-        paddingTop: theme.spacing(),
-        paddingBottom: theme.spacing(),
-    },
-    text: {
-        flexBasis: '50%',
-        flexGrow: 1,
-        display: 'inline',
-        cursor: 'pointer',
-    },
-    icon: {
-        cursor: 'pointer',
-    },
-    collapse: {
-        flexBasis: '100%',
-    },
-    comments: {
-        fontFamily: 'Roboto',
-        fontSize: 12,
-    },
-});
+import { ExpandMore } from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Grid, Paper, Typography } from '@mui/material';
 
 interface SchoolDeptCardProps {
-    classes: ClassNameMap;
     comment: string;
     name: string;
     type: string;
 }
 
-class SchoolDeptCard extends PureComponent<SchoolDeptCardProps> {
-    state = { commentsOpen: false };
+export function SchoolDeptCard({ name, type, comment }: SchoolDeptCardProps) {
+    const html = { __html: comment };
 
-    render() {
-        const html = { __html: this.props.comment };
-        return (
-            <Grid item xs={12}>
-                <Paper elevation={1} square style={{ overflow: 'hidden' }}>
-                    <Accordion>
-                        <AccordionSummary expandIcon={<ExpandMore />}>
-                            <Typography variant={this.props.type === 'school' ? 'h6' : 'subtitle1'}>
-                                {this.props.name}
-                            </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Typography variant="body2" component={'span'}>
-                                {/*The default component for the body2 typography seems to be <p> which is giving warnings with DOMnesting */}
-                                <Typography>{this.props.comment === '' ? 'No comments found' : 'Comments:'}</Typography>
-                                <Box
-                                    dangerouslySetInnerHTML={html}
-                                    className={this.props.classes.comments}
-                                    component="p"
-                                />
-                            </Typography>
-                        </AccordionDetails>
-                    </Accordion>
-                </Paper>
-            </Grid>
-        );
-    }
+    return (
+        <Grid item xs={12}>
+            <Paper elevation={1} square style={{ overflow: 'hidden' }}>
+                <Accordion disableGutters>
+                    <AccordionSummary
+                        expandIcon={<ExpandMore />}
+                        sx={{
+                            paddingX: 1,
+                            paddingY: 0,
+
+                            /**
+                             * AccordionSummary contains a child "content" which is the actual parent of the Typography below
+                             * Styling to prevent wrap must be applied to the aforementioned parent
+                             */
+                            '& .MuiAccordionSummary-content': {
+                                overflow: 'hidden',
+                                whiteSpace: 'nowrap',
+                            },
+                        }}
+                    >
+                        <Typography
+                            variant={type === 'school' ? 'h6' : 'subtitle1'}
+                            sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
+                        >
+                            {name}
+                        </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails sx={{ paddingX: 1, paddingY: 0 }}>
+                        <Box sx={{ fontSize: 12 }}>
+                            {/*The default component for the body2 typography seems to be <p> which is giving warnings with DOMnesting */}
+                            <Typography>{comment === '' ? 'No comments found' : 'Comments:'}</Typography>
+                            <Box dangerouslySetInnerHTML={html} component="p" />
+                        </Box>
+                    </AccordionDetails>
+                </Accordion>
+            </Paper>
+        </Grid>
+    );
 }
-
-export default withStyles(styles)(SchoolDeptCard);
