@@ -187,7 +187,9 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
                     void togglePopover(currentTarget);
                 }}
             >
-                {`${deptCode} ${courseNumber} | ${courseTitle}`}
+                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {`${deptCode} ${courseNumber} | ${courseTitle}`}
+                </span>
             </Button>
             <Popover
                 anchorEl={anchorEl}

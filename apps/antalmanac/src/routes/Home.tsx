@@ -1,7 +1,7 @@
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { CssBaseline, useMediaQuery, useTheme } from '@mui/material';
-import { Stack } from '@mui/material';
+import { CssBaseline, useMediaQuery, useTheme, Stack } from '@mui/material';
+import { useCallback, useEffect, useRef } from 'react';
 import Split from 'react-split';
 
 import Calendar from '$components/Calendar/CalendarRoot';
@@ -10,6 +10,7 @@ import NotificationSnackbar from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import ScheduleManagement from '$components/SharedRoot';
 import { Tutorial } from '$components/Tutorial';
+import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
 function MobileHome() {
     return (
@@ -22,6 +23,29 @@ function MobileHome() {
 
 function DesktopHome() {
     const theme = useTheme();
+    const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
+
+    const scheduleManagementRef = useRef<HTMLDivElement>();
+
+    const handleDrag = useCallback(() => {
+        const scheduleManagementElement = scheduleManagementRef.current;
+        if (!scheduleManagementElement) {
+            return;
+        }
+
+        const elementWidth = scheduleManagementElement.getBoundingClientRect().width;
+        setScheduleManagementWidth(elementWidth);
+    }, [setScheduleManagementWidth]);
+
+    useEffect(() => {
+        handleDrag();
+
+        window.addEventListener('resize', handleDrag);
+
+        return () => {
+            window.removeEventListener('resize', handleDrag);
+        };
+    }, [handleDrag]);
 
     return (
         <>
@@ -30,7 +54,7 @@ function DesktopHome() {
 
                 <Split
                     sizes={[45, 55]}
-                    minSize={100}
+                    minSize={400}
                     expandToMin={false}
                     gutterSize={10}
                     gutterAlign="center"
@@ -43,11 +67,12 @@ function DesktopHome() {
                         backgroundColor: theme.palette.primary.main,
                         width: '10px',
                     })}
+                    onDrag={handleDrag}
                 >
                     <Stack direction="column">
                         <Calendar isMobile={false} />
                     </Stack>
-                    <Stack direction="column">
+                    <Stack direction="column" ref={scheduleManagementRef}>
                         <ScheduleManagement />
                     </Stack>
                 </Split>
