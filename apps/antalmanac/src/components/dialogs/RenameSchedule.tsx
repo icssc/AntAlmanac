@@ -34,10 +34,7 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
      * This is destructured separately for memoization.
      */
     const { onClose } = props;
-
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
-
-    const [name, setName] = useState(scheduleNames[index]);
+    const [name, setName] = useState(AppStore.getScheduleNames()[index]);
 
     const disabled = useMemo(() => {
         return name?.trim() === '';
@@ -45,8 +42,7 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
 
     const handleCancel = useCallback(() => {
         onClose?.({}, 'escapeKeyDown');
-        setName(scheduleNames[index]);
-    }, [onClose, scheduleNames, index]);
+    }, [onClose, index]);
 
     const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setName(event.target.value);
@@ -75,8 +71,8 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
     );
 
     const handleScheduleNamesChange = useCallback(() => {
-        setScheduleNames(AppStore.getScheduleNames());
-    }, []);
+        setName(AppStore.getScheduleNames()[index]);
+    }, [index]);
 
     useEffect(() => {
         AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
