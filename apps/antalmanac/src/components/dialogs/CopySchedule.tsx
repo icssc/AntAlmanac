@@ -58,7 +58,7 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
                 <Button onClick={handleCancel} color="inherit">
                     Cancel
                 </Button>
-                <Button onClick={handleCopy} variant="contained" color="primary" disabled={name.trim() === ''}>
+                <Button onClick={handleCopy} variant="contained" color="primary" disabled={name?.trim() === ''}>
                     Make a Copy
                 </Button>
             </DialogActions>

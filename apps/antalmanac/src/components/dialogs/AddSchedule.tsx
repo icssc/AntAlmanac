@@ -72,7 +72,7 @@ function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
                 <Button onClick={handleCancel} color={isDark ? 'secondary' : 'primary'}>
                     Cancel
                 </Button>
-                <Button onClick={submitName} variant="contained" color="primary" disabled={name.trim() === ''}>
+                <Button onClick={submitName} variant="contained" color="primary" disabled={name?.trim() === ''}>
                     Add Schedule
                 </Button>
             </DialogActions>
