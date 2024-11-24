@@ -51,7 +51,7 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
             <DialogTitle>Copy Schedule</DialogTitle>
             <DialogContent>
                 <Box padding={1}>
-                    <TextField fullWidth label="Name *" onChange={handleNameChange} value={name} />
+                    <TextField fullWidth label="Name" onChange={handleNameChange} value={name} />
                 </Box>
             </DialogContent>
             <DialogActions>
