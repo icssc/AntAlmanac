@@ -146,10 +146,11 @@ export class Schedules {
     }
 
     /**
+     * @deprecated This method is no longer used by any features
      * Append all courses from current schedule to the schedule with the target index.
      * @param to Index of the schedule to append courses to. If equal to number of schedules, will append courses to all schedules.
      */
-    copySchedule(to: number) {
+    copyToSchedule(to: number) {
         this.addUndoState();
         for (const course of this.getCurrentCourses()) {
             if (to === this.getNumberOfSchedules()) {
@@ -165,6 +166,24 @@ export class Schedules {
             } else {
                 this.addCustomEvent(customEvent, [to]);
             }
+        }
+    }
+
+    /**
+     * Copy the current schedule to a newly created schedule with the specified name.
+     * @param newScheduleName The name of the new schedule. If a schedule with the same name already exists, a number will be appended to the name.
+     */
+    copySchedule(newScheduleName: string) {
+        this.addNewSchedule(this.getNextScheduleName(newScheduleName));
+        this.currentScheduleIndex = this.previousStates[this.previousStates.length - 1].scheduleIndex; // return to previous schedule index for copying
+        const to = this.getNumberOfSchedules() - 1;
+
+        for (const course of this.getCurrentCourses()) {
+            this.addCourse(course, to, false);
+        }
+
+        for (const customEvent of this.getCurrentCustomEvents()) {
+            this.addCustomEvent(customEvent, [to]);
         }
     }
 

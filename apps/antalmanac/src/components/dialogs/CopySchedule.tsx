@@ -8,9 +8,9 @@ import {
     TextField,
     type DialogProps,
 } from '@mui/material';
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-import { copySchedule, addSchedule } from '$actions/AppStoreActions';
+import { copySchedule } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
 
 interface CopyScheduleDialogProps extends DialogProps {
@@ -20,8 +20,7 @@ interface CopyScheduleDialogProps extends DialogProps {
 function CopyScheduleDialog(props: CopyScheduleDialogProps) {
     const { index } = props;
     const { onClose } = props; // destructured separately for memoization.
-    const scheduleNames = AppStore.getScheduleNames();
-    const [name, setName] = useState<string>(`Copy of ${scheduleNames[index]}`);
+    const [name, setName] = useState<string>(`Copy of ${AppStore.getScheduleNames()[index]}`);
 
     const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setName(event.target.value);
@@ -32,21 +31,29 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
     }, [onClose]);
 
     const handleCopy = useCallback(() => {
-        addSchedule(AppStore.getNextScheduleName(name));
-        AppStore.changeCurrentSchedule(index);
-        copySchedule(AppStore.getScheduleNames().length - 1);
+        copySchedule(name);
         onClose?.({}, 'escapeKeyDown');
-    }, [index, onClose]);
+    }, [onClose, name]);
+
+    const handleScheduleNamesChange = useCallback(() => {
+        setName(`Copy of ${AppStore.getScheduleNames()[index]}`);
+    }, [index]);
+
+    useEffect(() => {
+        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
+        return () => {
+            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
+        };
+    }, [handleScheduleNamesChange]);
 
     return (
         <Dialog onClose={onClose} {...props}>
             <DialogTitle>Copy Schedule</DialogTitle>
             <DialogContent>
                 <Box padding={1}>
-                    <TextField fullWidth label="Name" onChange={handleNameChange} value={name} />
+                    <TextField fullWidth label="Name *" onChange={handleNameChange} value={name} />
                 </Box>
             </DialogContent>
-
             <DialogActions>
                 <Button onClick={handleCancel} color="inherit">
                     Cancel
