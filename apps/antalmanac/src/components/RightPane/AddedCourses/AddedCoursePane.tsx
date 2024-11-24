@@ -329,8 +329,6 @@ function AddedSectionsGrid() {
         </Box>
     );
 
-    throw Error('foo');
-
     return (
         <Box display="flex" flexDirection="column" gap={1} marginX={0.5}>
             <Box display="flex" width={1} position="absolute" zIndex="2">
