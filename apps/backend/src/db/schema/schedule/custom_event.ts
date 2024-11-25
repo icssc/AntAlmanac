@@ -32,3 +32,5 @@ export const customEvents = pgTable(
         lastUpdated: timestamp('last_updated', { withTimezone: true }).defaultNow(),
     }
 );
+
+export type CustomEvent = typeof customEvents.$inferSelect;
