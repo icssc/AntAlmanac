@@ -43,13 +43,18 @@ export class RDS {
     /**
      * Creates a new schedule if one with its name doesn't already exist
      * and replaces its courses and custom events with the ones provided.
+     * 
+     * @returns The ID of the new/existing schedule
      */
-    static async upsertScheduleAndContents(db: DatabaseOrTransaction, userId: string, schedule: ShortCourseSchedule) {
+    static async upsertScheduleAndContents(
+        db: DatabaseOrTransaction, userId: string, schedule: ShortCourseSchedule, index: number
+    ) {
         // Add schedule
         const dbSchedule = {
             userId,
             name: schedule.scheduleName,
             notes: schedule.scheduleNote,
+            index,
             lastUpdated: new Date(),
         };
 
@@ -115,8 +120,8 @@ export class RDS {
             }
 
             // Add schedules and courses
-            const schedulesPromises = userData.userData.schedules.map((schedule) =>
-                this.upsertScheduleAndContents(tx, userId, schedule)
+            const schedulesPromises = userData.userData.schedules.map((schedule, index) =>
+                this.upsertScheduleAndContents(tx, userId, schedule, index)
             );
 
             const scheduleIds = await Promise.all(schedulesPromises);

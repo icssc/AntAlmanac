@@ -1,5 +1,5 @@
 import { createId } from '@paralleldrive/cuid2';
-import { pgTable, unique, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, unique, text, timestamp, integer } from 'drizzle-orm/pg-core';
 import { users } from '../auth/user';
 
 export const schedules = pgTable('schedules', {
@@ -22,10 +22,16 @@ export const schedules = pgTable('schedules', {
      */
     notes: text('notes'),
 
+    /**
+     * Index of the schedule in the user's list of schedules.
+     */
+    index: integer('index').notNull(),
+
     lastUpdated: timestamp('last_updated', { withTimezone: true }).notNull(),
 
 }, (table) => ([
-        unique().on(table.userId, table.name)
+        unique().on(table.userId, table.name),
+        unique().on(table.userId, table.index),
     ])
 );
 
