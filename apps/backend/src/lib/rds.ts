@@ -75,10 +75,6 @@ export class RDS {
                 tx
                     .insert(schedules)
                     .values(dbSchedule)
-                    .onConflictDoUpdate({
-                        target: [schedules.userId, schedules.name],
-                        set: dbSchedule,
-                    })
                     .returning({ id: schedules.id })
             )
             .catch((error) => {
@@ -132,11 +128,7 @@ export class RDS {
             }
 
             // Add schedules and courses
-            const schedulesPromises = userData.userData.schedules.map((schedule, index) =>
-                this.upsertScheduleAndContents(tx, userId, schedule, index)
-            );
-
-            const scheduleIds = await Promise.all(schedulesPromises);
+            const scheduleIds = await this.upsertSchedulesAndContents(tx, userId, userData.userData.schedules);
 
             // Update user's current schedule index
             const scheduleIndex = userData.userData.scheduleIndex;
@@ -150,6 +142,20 @@ export class RDS {
 
             return userId;
         });
+    }
+
+    /** Deletes and recreates all of the user's schedules and contents */
+    private static async upsertSchedulesAndContents(
+        db: DatabaseOrTransaction, userId: string, scheduleArray: ShortCourseSchedule[]
+    ): Promise<string[]> {
+        // Drop all schedules, which will cascade to courses and custom events
+        await db.delete(schedules).where(eq(schedules.userId, userId));
+
+        return Promise.all(
+            scheduleArray.map(
+                (schedule, index) => this.upsertScheduleAndContents(db, userId, schedule, index)
+            )
+        );
     }
 
     /**
