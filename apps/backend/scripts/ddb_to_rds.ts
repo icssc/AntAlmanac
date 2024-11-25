@@ -17,41 +17,52 @@ import { mangleDupliateScheduleNames } from '../src/lib/formatting';
  */
 async function copyUsersToPostgres() {
     const failedUsers: string[] = [];
+    const skippedUsers: string[] = [];
 
     let success = 0;
 
     for await (const ddbBatch of ddbClient.getAllUserDataBatches()) {
         console.log(`Copying ${ddbBatch.length} users...`);
         let batchSuccess = 0;
+        let batchSkipped = 0;
         const transactions = ddbBatch.map( // One transaction per user
             async (ddbUser) => {
                 // Mangle duplicate schedule names
                 ddbUser.userData.schedules = mangleDupliateScheduleNames(ddbUser.userData.schedules);
 
                 return RDS
-                    .upsertGuestUserData(db, ddbUser)
+                    .insertGuestUserData(db, ddbUser)
+                    .then((res) => {
+                        if (res === null) {
+                            skippedUsers.push(ddbUser.id);
+                            ++batchSkipped;
+                        } else {
+                            ++batchSuccess;
+                        }
+                    })
                     .catch((error) => {
                         failedUsers.push(ddbUser.id);
                         console.error(
-                            `Failed to upsert user data for "${ddbUser.id}":`
+                            `Failed to insert user data for "${ddbUser.id}":`
                         );
                         console.error(error);
                     })
-                    .then(() => batchSuccess++);
             }
         );
 
         await Promise.all(transactions);
 
-        console.log(`Successfully copied ${batchSuccess} users out of ${ddbBatch.length} in batch.`);
+        console.log(`Successfully copied ${batchSuccess} users out of ${ddbBatch.length} in batch (${batchSkipped} skipped).`);
         success += batchSuccess;
     }
 
-    console.log(`Successfully copied ${success} users out of ${success + failedUsers.length}.`);
+    console.log(`Successfully copied ${success} users out of ${success + skippedUsers.length + failedUsers.length} (${skippedUsers.length} skipped).`);
     if (failedUsers.length > 0) {
         console.log(`Failed users: ${failedUsers.join(', ')}`);
     }
-
+    if (skippedUsers.length > 0) {
+        console.log(`Skipped users: ${skippedUsers.join(', ')}`);
+    }
 }
 
 async function main() {
