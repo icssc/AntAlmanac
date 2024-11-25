@@ -30,13 +30,25 @@ export class RDS {
         return db.transaction(async (tx) => {
             const maybeUserId = await RDS.guestUserIdWithNameOrNull(tx, name);
 
-            return maybeUserId
+            const userId = maybeUserId
                 ? maybeUserId
-                : tx
+                : await tx
                       .insert(users)
                       .values({ name })
                       .returning({ id: users.id })
                       .then((users) => users[0].id);
+
+            if (userId === undefined) {
+                throw new Error(`Failed to create guest user for ${name}`);
+            }
+
+            await tx
+                .insert(accounts)
+                .values({ userId, accountType: 'GUEST', providerAccountId: name })
+                .onConflictDoNothing()
+                .execute();
+
+            return userId;
         });
     }
 
