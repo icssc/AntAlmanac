@@ -67,19 +67,6 @@ const usersRouter = router({
                 return ddbClient.insertItem(data);
             }
         ),
-
-    /**
-     * Users can view other users' schedules, even anonymously.
-     * Visibility permissions are used to determine if a user can view another user's schedule.
-     *
-     * Visibility values:
-     * - (default) private: Only the owner can view and edit.
-     * - public: Other users can view, but can't edit, i.e. "read-only".
-     * - open: Anybody can view and edit.
-     */
-    viewUserData: procedure.input(viewInputSchema.assert).query(async ({ input }) => {
-        return await ddbClient.viewUserData(input.requesterId, input.requesteeId);
-    }),
 });
 
 export default usersRouter;
