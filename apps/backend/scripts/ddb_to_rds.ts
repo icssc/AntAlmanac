@@ -25,6 +25,7 @@ async function copyUsersToPostgres() {
         console.log(`Copying ${ddbBatch.length} users...`);
         let batchSuccess = 0;
         let batchSkipped = 0;
+        const start = Date.now();
         const transactions = ddbBatch.map( // One transaction per user
             async (ddbUser) => {
                 // Mangle duplicate schedule names
@@ -51,8 +52,11 @@ async function copyUsersToPostgres() {
         );
 
         await Promise.all(transactions);
+        
+        const timeTaken = Date.now() - start;
+        const msPerUser = timeTaken / ddbBatch.length;
 
-        console.log(`Successfully copied ${batchSuccess} users out of ${ddbBatch.length} in batch (${batchSkipped} skipped).`);
+        console.log(`Successfully copied ${batchSuccess} users out of ${ddbBatch.length} in batch (${batchSkipped} skipped) in ${timeTaken} seconds (${msPerUser}ms/user).`);
         success += batchSuccess;
     }
 
