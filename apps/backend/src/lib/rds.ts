@@ -100,7 +100,7 @@ export class RDS {
         return db.transaction(async (tx) => {
             const userId = await RDS.guestUserIdWithNameOrNull(tx, userData.id);
             if (userId) return null;
-            return RDS.upsertGuestUserData(db, userData);
+            return RDS.upsertGuestUserData(tx, userData);
         });
     }
 
