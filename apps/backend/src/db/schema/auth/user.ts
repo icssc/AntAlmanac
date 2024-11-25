@@ -33,7 +33,8 @@ export const users = pgTable('users', {
     currentScheduleId: text('current_schedule_id')
         .references(
             // Necessary because this is a circular dependency.
-            (): AnyPgColumn => schedules.id
+            (): AnyPgColumn => schedules.id,
+            { onDelete: 'set null'}
         ),
 
     lastUpdated: timestamp('last_updated', { withTimezone: true }).defaultNow(),

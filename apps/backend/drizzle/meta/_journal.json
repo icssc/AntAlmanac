@@ -15,6 +15,13 @@
             "when": 1732515819685,
             "tag": "0001_powerful_tiger_shark",
             "breakpoints": true
+        },
+        {
+            "idx": 2,
+            "version": "7",
+            "when": 1732578460427,
+            "tag": "0002_fat_ted_forrester",
+            "breakpoints": true
         }
     ]
 }
