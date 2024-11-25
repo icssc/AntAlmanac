@@ -3,9 +3,9 @@ import { type } from 'arktype';
 import { UserSchema } from '@packages/antalmanac-types';
 
 import { db } from 'src/db';
-import { ddbClient } from 'src/db/ddb';
 import { mangleDupliateScheduleNames } from 'src/lib/formatting';
 import { RDS } from 'src/lib/rds';
+import { TRPCError } from '@trpc/server';
 import { procedure, router } from '../trpc';
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
@@ -43,9 +43,12 @@ const usersRouter = router({
      */
     getUserData: procedure.input(userInputSchema.assert).query(async ({ input }) => {
         if ('googleId' in input) {
-            return await ddbClient.getGoogleUserData(input.googleId);
+            throw new TRPCError({
+                code: 'NOT_IMPLEMENTED',
+                message: 'Google login not implemented',
+            })
         }
-        return await ddbClient.getUserData(input.userId);
+        return await RDS.getGuestUserData(db, input.userId);
     }),
 
     /**
