@@ -13,6 +13,7 @@ function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
     const isDark = useThemeStore((store) => store.isDark);
 
     const [name, setName] = useState(AppStore.getDefaultScheduleName());
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleCancel = () => {
         onClose?.({}, 'escapeKeyDown');
@@ -20,11 +21,18 @@ function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
 
     const handleNameChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setName(event.target.value);
+        setErrorMessage('');
     };
 
     const submitName = () => {
+        const existingNames = AppStore.schedule.getScheduleNames();
+        if (existingNames.includes(name.trim())) {
+            setErrorMessage('Schedule name already exists');
+            return;
+        }
         addSchedule(name);
         setName(AppStore.schedule.getDefaultScheduleName());
+        setErrorMessage('');
         onClose?.({}, 'escapeKeyDown');
     };
 
@@ -52,7 +60,14 @@ function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
 
             <DialogContent>
                 <Box padding={1}>
-                    <TextField fullWidth label="Name" onChange={handleNameChange} value={name} />
+                    <TextField
+                        fullWidth
+                        label="Name"
+                        onChange={handleNameChange}
+                        value={name}
+                        error={!!errorMessage}
+                        helperText={errorMessage}
+                    />
                 </Box>
             </DialogContent>
 
