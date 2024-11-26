@@ -51,7 +51,8 @@ export class Schedules {
     }
 
     getNextScheduleName(newScheduleName: string, scheduleIndex: number) {
-        const scheduleNames = this.getScheduleNames().filter((_, index) => index !== scheduleIndex);
+        const scheduleNames = this.getScheduleNames();
+        scheduleNames.splice(scheduleIndex, 1);
         let nextScheduleName = newScheduleName;
         let counter = 1;
 
@@ -142,30 +143,6 @@ export class Schedules {
         this.addUndoState();
         this.schedules.splice(scheduleIndex, 1);
         this.currentScheduleIndex = Math.min(scheduleIndex, this.getNumberOfSchedules() - 1);
-    }
-
-    /**
-     * @deprecated This method is no longer used by any features
-     * Append all courses from current schedule to the schedule with the target index.
-     * @param to Index of the schedule to append courses to. If equal to number of schedules, will append courses to all schedules.
-     */
-    copyToSchedule(to: number) {
-        this.addUndoState();
-        for (const course of this.getCurrentCourses()) {
-            if (to === this.getNumberOfSchedules()) {
-                this.addCourseToAllSchedules(course);
-            } else {
-                this.addCourse(course, to, false);
-            }
-        }
-
-        for (const customEvent of this.getCurrentCustomEvents()) {
-            if (to === this.getNumberOfSchedules()) {
-                this.addCustomEvent(customEvent, [...Array(to).keys()]);
-            } else {
-                this.addCustomEvent(customEvent, [to]);
-            }
-        }
     }
 
     /**
