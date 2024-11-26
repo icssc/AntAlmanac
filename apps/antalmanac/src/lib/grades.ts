@@ -48,17 +48,20 @@ class _Grades {
         department,
         ge,
         instructor,
+        sectionCode,
     }: {
         department?: string;
         ge?: GE;
         instructor?: string;
+        sectionCode?: string;
     }): Promise<void> => {
         department = department != 'ALL' ? department : undefined;
         ge = ge != 'ANY' ? ge : undefined;
         instructor = instructor != '' ? instructor : undefined;
+        sectionCode = sectionCode != '' ? sectionCode : undefined;
 
-        if (!department && !ge && !instructor)
-            throw new Error('populateGradesCache: Must provide either department, ge, or instructor');
+        if (!department && !ge && !instructor && !sectionCode)
+            throw new Error('populateGradesCache: Must provide either department, ge, instructor, or section code');
 
         const queryKey = `${department ?? ''}${ge ?? ''}`;
 
