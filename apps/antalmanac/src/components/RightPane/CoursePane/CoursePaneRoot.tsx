@@ -12,6 +12,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { Grades } from '$lib/grades';
 import { WebSOC } from '$lib/websoc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { useQuickClassStore } from '$stores/QuickClassStore';
 
 export function CoursePaneRoot() {
     const { key, forceUpdate, searchIsDisplayed, displaySearch, displaySections } = useCoursePaneStore();
@@ -27,6 +28,11 @@ export function CoursePaneRoot() {
             );
         }
     }, [displaySections, forceUpdate]);
+
+    useQuickClassStore.subscribe((state) => {
+        RightPaneStore.updateFormValue('sectionCode', state.value);
+        handleSearch();
+    });
 
     const refreshSearch = useCallback(() => {
         logAnalytics({

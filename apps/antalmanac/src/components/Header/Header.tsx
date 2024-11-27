@@ -2,10 +2,13 @@ import { AppBar, Toolbar } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
+
 import Import from './Import';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import { Logo } from './Logo';
 import AppDrawer from './SettingsMenu';
+
+import { useQuickClassStore } from '$stores/QuickClassStore';
 
 const styles = {
     appBar: {
@@ -35,11 +38,14 @@ interface CustomAppBarProps {
 }
 
 const Header = ({ classes }: CustomAppBarProps) => {
+    function dosomething() {
+        useQuickClassStore.getState().setValue('34270');
+    }
     return (
         <AppBar position="static" className={classes.appBar}>
             <Toolbar variant="dense" style={{ padding: '5px', display: 'flex', justifyContent: 'space-between' }}>
                 <Logo />
-
+                <button onClick={dosomething}>test</button>
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
                     <LoadSaveScheduleFunctionality />
                     <Import key="studylist" />
