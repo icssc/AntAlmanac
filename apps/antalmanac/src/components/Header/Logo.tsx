@@ -86,7 +86,12 @@ export function Logo() {
 
     return (
         <img
-            height={32}
+            style={{
+                height: '32px',
+                display: 'absolute',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+            }}
             src={isMobileScreen ? currentLogo?.mobileLogo : currentLogo?.desktopLogo}
             title={currentLogo?.attribution}
             alt="logo"

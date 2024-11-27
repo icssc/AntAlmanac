@@ -2,6 +2,8 @@ import { AppBar, Toolbar } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
+import { BrandIntegration } from '../brandIntegrations/BrandIntegration';
+
 import Import from './Import';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import { Logo } from './Logo';
@@ -38,12 +40,16 @@ const Header = ({ classes }: CustomAppBarProps) => {
     return (
         <AppBar position="static" className={classes.appBar}>
             <Toolbar variant="dense" style={{ padding: '5px', display: 'flex', justifyContent: 'space-between' }}>
-                <Logo />
+                <div style={{ width: !isMobileScreen ? '14%' : '30%', height: '100%' }}>
+                    <BrandIntegration isMobile={isMobileScreen} />
+                </div>
 
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    <LoadSaveScheduleFunctionality />
-                    <Import key="studylist" />
+                {!isMobileScreen ? <Logo /> : null}
+
+                <div style={{ display: 'flex', flexDirection: 'row-reverse', width: !isMobileScreen ? '14%' : '65%' }}>
                     <AppDrawer key="settings" />
+                    <Import key="studylist" />
+                    <LoadSaveScheduleFunctionality />
                 </div>
             </Toolbar>
         </AppBar>
