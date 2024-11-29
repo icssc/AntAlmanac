@@ -50,7 +50,9 @@ export default function App() {
                     <TourProvider
                         steps={[] /** Will be populated by Tutorial component */}
                         padding={5}
-                        components={{ Close: (props) => <CloseButton {...props} styles={undefined} /> }}
+                        // React Tour allows adding custom components to the tour to which we can pass props
+                        // Or you can add styling to the existing components
+                        components={{ Close: (props) => <CloseButton {...props} /> }}
                         styles={{
                             maskArea: (base, _) => ({
                                 // The highlighted area

@@ -1,14 +1,12 @@
 import { Close as CloseIcon } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { MouseEventHandler } from 'react';
-
+// Making a Custom MUI Close Button for the Tour Component
 export const CloseButton = ({
-    styles,
     onClick,
     disabled,
     ...props
 }: {
-    styles?: React.CSSProperties;
     onClick?: MouseEventHandler<HTMLButtonElement>;
     disabled?: boolean;
 }) => {
@@ -35,7 +33,6 @@ export const CloseButton = ({
                 '&:hover': {
                     backgroundColor: '#0056b3',
                 },
-                ...styles,
             }}
         >
             <CloseIcon
