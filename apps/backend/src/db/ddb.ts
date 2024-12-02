@@ -6,8 +6,7 @@ import {
     UserSchema,
     type ScheduleSaveState,
 } from '@packages/antalmanac-types';
-
-import env from '../env';
+import {backendEnvSchema} from "../env";
 
 /**
  * TODO: enforce this in the schema too, or just leave it as an arbitrary string?
@@ -17,6 +16,8 @@ export const VISIBILITY = {
     PUBLIC: 'public',
     OPEN: 'open',
 };
+
+const env = backendEnvSchema.parse(process.env);
 
 class DDBClient<T extends Type<Record<string, unknown>>> {
     private tableName: string;

@@ -1,10 +1,10 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
-import env from '../env';
+import {backendEnvSchema} from "../env";
 import * as schema from './schema/index.js';
 
-const { DB_URL } = env;
+const { DB_URL } = backendEnvSchema.parse(process.env)
 
 if (!DB_URL) throw new Error("DB_URL not defined")
 

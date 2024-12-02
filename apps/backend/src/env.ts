@@ -16,4 +16,5 @@ export const backendEnvSchema = z.intersection(deployEnvSchema, z.object({
     USERDATA_TABLE_NAME: z.string(),
     AWS_REGION: z.string(),
     MAPBOX_ACCESS_TOKEN: z.string(),
+    NODE_ENV: z.string().optional(),
 }))
