@@ -1,9 +1,12 @@
-import Checkbox from '@material-ui/core/Checkbox';
 import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormLabel from '@material-ui/core/FormLabel';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { int } from 'aws-sdk/clients/datapipeline';
 import { PureComponent } from 'react';
 
 interface ScheduleSelectorProps {
@@ -22,47 +25,44 @@ class ScheduleSelector extends PureComponent<ScheduleSelectorProps, ScheduleSele
         scheduleIndices: this.props.scheduleIndices,
     };
 
-    handleChange = (dayIndex: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        const checked = event.target.checked;
+    handleChange = (event: SelectChangeEvent<typeof this.state.scheduleIndices>) => {
+        const value = event.target.value as number[];
 
-        this.setState(
-            (prevState) => {
-                const newScheduleIndices = checked
-                    ? [...prevState.scheduleIndices, dayIndex]
-                    : prevState.scheduleIndices.filter((scheduleIndex) => {
-                          return scheduleIndex !== dayIndex;
-                      });
-
-                return { scheduleIndices: newScheduleIndices };
-            },
-            () => this.props.onSelectScheduleIndices(this.state.scheduleIndices)
-        );
+        this.setState({ scheduleIndices: value }, () => this.props.onSelectScheduleIndices(this.state.scheduleIndices));
     };
 
     render() {
         return (
-            <FormControl style={{ marginTop: 10 }}>
-                <FormLabel component="legend" style={{ marginTop: 10 }}>
+            <FormControl style={{ marginTop: 10, maxWidth: 400 }} fullWidth variant="outlined">
+                <InputLabel id="schedule-select-label" htmlFor="select-multiple-chip">
                     Select schedules
-                </FormLabel>
-                <FormGroup row>
-                    {this.props.scheduleNames.map((name, index) => {
+                </InputLabel>
+                <Select
+                    labelId="schedule-select-label"
+                    id="schedule-select"
+                    size="small"
+                    style={{ marginTop: 2 }}
+                    multiple
+                    value={this.state.scheduleIndices}
+                    defaultValue={this.state.scheduleIndices}
+                    onChange={this.handleChange}
+                    input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+                    renderValue={(selected) => (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                            {selected.map((value: int) => {
+                                return <Chip key={value} label={this.props.scheduleNames[value]} />;
+                            })}
+                        </Box>
+                    )}
+                >
+                    {this.props.scheduleNames.map((name: string, index: int) => {
                         return (
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        checked={this.state.scheduleIndices.includes(index)}
-                                        onChange={this.handleChange(index)}
-                                        value={index + 1}
-                                        color="primary"
-                                    />
-                                }
-                                label={name}
-                                key={name}
-                            />
+                            <MenuItem key={index} value={index}>
+                                {name}
+                            </MenuItem>
                         );
                     })}
-                </FormGroup>
+                </Select>
             </FormControl>
         );
     }

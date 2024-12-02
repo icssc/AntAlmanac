@@ -213,7 +213,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                         />
                     </form>
                     <DaySelector onSelectDay={handleDayChange} days={props.customEvent?.days} />
-                    <BuildingSelect value={building} onChange={handleBuildingChange} />
+                    <BuildingSelect value={building} onChange={handleBuildingChange} variant="outlined" />
                     <ScheduleSelector
                         scheduleIndices={scheduleIndices}
                         onSelectScheduleIndices={handleSelectScheduleIndices}
