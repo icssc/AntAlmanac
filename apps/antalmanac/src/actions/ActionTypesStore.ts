@@ -59,7 +59,7 @@ export interface ClearScheduleAction {
 
 export interface CopyScheduleAction {
     type: 'copySchedule';
-    to: number;
+    newScheduleName: string;
 }
 
 export interface ChangeCourseColorAction {
@@ -159,7 +159,7 @@ class ActionTypesStore extends EventEmitter {
                     AppStore.schedule.clearCurrentSchedule();
                     break;
                 case 'copySchedule':
-                    AppStore.schedule.copySchedule(action.to);
+                    AppStore.schedule.copySchedule(action.newScheduleName);
                     break;
                 default:
                     break;
