@@ -45,6 +45,7 @@ env:
     HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
     CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
     PR_NUM: ${{ github.event.pull_request.number }}
+    STAGE: prod
 
 jobs:
     # Build production version of the frontend and upload the artifacts.
