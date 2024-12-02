@@ -55,7 +55,10 @@ export class BackendStack extends Stack {
             handler: 'lambda.handler',
             timeout: Duration.seconds(5),
             memorySize: 256,
-            environment: deployEnvSchema.parse(process.env),
+            environment: {
+                ...env,
+                USERDATA_TABLE_NAME: userDataDDB.tableName,
+            },
         });
 
         userDataDDB.grantReadWriteData(handler);

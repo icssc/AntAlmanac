@@ -6,7 +6,8 @@ import {z} from "zod";
  */
 export const deployEnvSchema = z.object({
     DB_URL: z.string(),
-    STAGE: z.string()
+    STAGE: z.string(),
+    MAPBOX_ACCESS_TOKEN: z.string(),
 })
 
 /**
@@ -15,6 +16,5 @@ export const deployEnvSchema = z.object({
 export const backendEnvSchema = z.intersection(deployEnvSchema, z.object({
     USERDATA_TABLE_NAME: z.string(),
     AWS_REGION: z.string(),
-    MAPBOX_ACCESS_TOKEN: z.string(),
     NODE_ENV: z.string().optional(),
 }))
