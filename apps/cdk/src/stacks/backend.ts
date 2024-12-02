@@ -8,26 +8,29 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import type { Construct } from 'constructs';
 
+import backendEnv from '../../../backend/src/env';
 import { zoneName } from '../lib/constants';
 
 export class BackendStack extends Stack {
+    static readonly CDKEnvironment = type({
+        CERTIFICATE_ARN: 'string',
+        HOSTED_ZONE_ID: 'string',
+        ANTEATER_API_KEY: 'string',
+        'NODE_ENV?': 'string',
+        'PR_NUM?': 'string',
+    });
+
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
 
         /**
+         * Env vars specifically for the CDK stack/deployment.
+         *
          * If {@link env.PR_NUM} is defined, then {@link env.NODE_ENV} should be 'staging'.
          */
-        const env = type({
-            CERTIFICATE_ARN: 'string',
-            HOSTED_ZONE_ID: 'string',
-            MONGODB_URI_PROD: 'string',
-            GOOGLE_CLIENT_ID: 'string',
-            GOOGLE_CLIENT_SECRET: 'string',
-            'MAPBOX_ACCESS_TOKEN?': 'string',
-            'NODE_ENV?': 'string',
-            'PR_NUM?': 'string',
-            ANTEATER_API_KEY: 'string',
-        }).assert({ ...process.env });
+        const cdkEnv = BackendStack.CDKEnvironment.assert({ ...process.env });
+
+        const env = { ...backendEnv, ...cdkEnv };
 
         /**
          * The domain that the backend API will be hosted on.
@@ -55,13 +58,7 @@ export class BackendStack extends Stack {
             handler: 'lambda.handler',
             timeout: Duration.seconds(5),
             memorySize: 256,
-            environment: {
-                ANTEATER_API_KEY: env.ANTEATER_API_KEY,
-                AA_MONGODB_URI: env.MONGODB_URI_PROD,
-                MAPBOX_ACCESS_TOKEN: env.MAPBOX_ACCESS_TOKEN ?? '',
-                STAGE: env.NODE_ENV ?? 'development',
-                USERDATA_TABLE_NAME: userDataDDB.tableName,
-            },
+            environment: backendEnv,
         });
 
         userDataDDB.grantReadWriteData(handler);
