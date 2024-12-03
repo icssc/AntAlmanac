@@ -1,5 +1,8 @@
-
 import {z} from "zod";
+import * as dotenv from "dotenv";
+
+dotenv.config();
+
 
 /**
  * Environment variables required by the backend during deploy time.
