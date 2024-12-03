@@ -4,7 +4,7 @@ import { UserSchema } from '@packages/antalmanac-types';
 
 import { db } from 'src/db';
 import { ddbClient } from 'src/db/ddb';
-import { mangleDupliateScheduleNames } from 'src/lib/formatting';
+import { mangleDupliateScheduleNames as mangleDuplicateScheduleNames } from 'src/lib/formatting';
 import { RDS } from 'src/lib/rds';
 import { procedure, router } from '../trpc';
 
@@ -58,7 +58,7 @@ const usersRouter = router({
                 const data = input.data;
 
                 // Mangle duplicate schedule names
-                data.userData.schedules = mangleDupliateScheduleNames(data.userData.schedules);
+                data.userData.schedules = mangleDuplicateScheduleNames(data.userData.schedules);
 
                 // Don't await because the show must go on without RDS.
                 RDS.upsertGuestUserData(db, data)
