@@ -59,12 +59,9 @@ const usersRouter = router({
 
                 // Mangle duplicate schedule names
                 data.userData.schedules = mangleDuplicateScheduleNames(data.userData.schedules);
-
-                // Don't await because the show must go on without RDS.
-                RDS.upsertGuestUserData(db, data)
-                    .catch((error) => console.error('Failed to upsert user data:', error));
                 
-                return ddbClient.insertItem(data);
+                return Promise.all([ddbClient.insertItem(data), RDS.upsertGuestUserData(db, data)
+                    .catch((error) => console.error('Failed to upsert user data:', error))]);
             }
         ),
 
