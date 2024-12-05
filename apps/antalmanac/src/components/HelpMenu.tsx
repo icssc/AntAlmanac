@@ -131,20 +131,6 @@ export function HelpMenu() {
             {showHelpBox && (
                 <Box
                     onMouseEnter={handleMouseLeave}
-                    sx={{
-                        position: 'fixed',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        zIndex: 1000,
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                        padding: 2,
-                        width: '80%',
-                        maxHeight: '80%',
-                        overflow: 'auto',
-                    }}
                 >
                     <HelpBox onDismiss={closeHelpBox} />
                 </Box>
