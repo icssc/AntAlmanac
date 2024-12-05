@@ -1,4 +1,4 @@
 export default function Feedback() {
-    window.location.replace('https://forms.gle/k81f2aNdpdQYeKK8A');
+    window.open('https://forms.gle/k81f2aNdpdQYeKK8A', '_blank');
     return null;
 }
