@@ -8,9 +8,9 @@ import type { AACourse, LarcAPIResponse } from '@packages/antalmanac-types';
 export interface SectionTableProps {
     classes?: ClassNameMap;
     courseDetails: AACourse;
+    larcDetails?: LarcAPIResponse['courses'][number] | undefined;
     term: string;
     allowHighlight: boolean;
     scheduleNames: string[];
     analyticsCategory: string;
-    larcDetails?: LarcAPIResponse['courses'][number] | undefined;
 }

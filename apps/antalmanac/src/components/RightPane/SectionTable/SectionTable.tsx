@@ -20,10 +20,10 @@ import CourseInfoBar from './CourseInfoBar';
 import CourseInfoButton from './CourseInfoButton';
 import { EnrollmentHistoryPopup } from './EnrollmentHistoryPopup';
 import GradesPopup from './GradesPopup';
-import { SectionTableProps } from './SectionTable.types';
-import SectionTableBody from './SectionTableBody';
 
-// import { LarcTable } from '$components/RightPane/SectionTable/larc/LarcTable';
+import type { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
+import SectionTableBody from '$components/RightPane/SectionTable/SectionTableBody';
+import LarcSectionTableBody from '$components/RightPane/SectionTable/larc/larc-section-table-body';
 import analyticsEnum from '$lib/analytics';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 
@@ -108,12 +108,12 @@ function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
 
 export default function SectionTable({
     courseDetails,
+    larcDetails,
     term,
     allowHighlight,
     scheduleNames,
     analyticsCategory,
-}: // larcDetails,
-SectionTableProps) {
+}: SectionTableProps) {
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
 
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
@@ -212,13 +212,19 @@ SectionTableProps) {
                                 />
                             );
                         })}
-                        {/* <SectionTableBody
-                            section={section}
-                            courseDetails={courseDetails}
-                            term={term}
-                            allowHighlight={allowHighlight}
-                            scheduleNames={scheduleNames}
-                        /> */}
+
+                        {larcDetails?.sections.map((section, index) => {
+                            return (
+                                <LarcSectionTableBody
+                                    key={index}
+                                    section={section}
+                                    courseDetails={courseDetails}
+                                    term={term}
+                                    allowHighlight={allowHighlight}
+                                    scheduleNames={scheduleNames}
+                                />
+                            );
+                        })}
                     </TableBody>
                 </Table>
             </TableContainer>

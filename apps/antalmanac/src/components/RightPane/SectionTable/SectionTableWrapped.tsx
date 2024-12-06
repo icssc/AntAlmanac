@@ -51,10 +51,10 @@ export function SectionTableWrapped({ index, scheduleNames, courseData, larcData
         <SectionTableLazyWrapper
             term={formData.term}
             courseDetails={course}
+            larcDetails={larc}
             allowHighlight={true}
             scheduleNames={scheduleNames}
             analyticsCategory={analyticsEnum.classSearch.title}
-            larcDetails={larc}
         />
     );
 }
