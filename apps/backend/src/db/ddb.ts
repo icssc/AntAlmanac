@@ -29,6 +29,10 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
     documentClient: DynamoDBDocument;
 
     constructor(tableName: string, schema: T) {
+        if (!tableName) {
+            throw new Error('DDBClient(): tableName must be defined');
+        }
+
         this.tableName = tableName;
         this.schema = schema;
         this.client = new DynamoDB({
