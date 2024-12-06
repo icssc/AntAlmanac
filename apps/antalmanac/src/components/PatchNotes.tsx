@@ -8,7 +8,7 @@ import {
     DialogTitle,
     Typography,
 } from '@mui/material';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 
 import { getLocalStoragePatchNotesKey, setLocalStoragePatchNotesKey } from '$lib/localStorage';
 
@@ -39,12 +39,38 @@ function PatchNotesBackdrop(props: BackdropProps) {
  */
 function PatchNotes() {
     const [open, setOpen] = useState(isOutdated());
+    const [loading, setLoading] = useState(true);
 
     const handleClose = useCallback(() => {
         setLocalStoragePatchNotesKey(latestPatchNotesUpdate);
         setOpen(false);
     }, []);
 
+    const cacheImages = async (imgArr: string[]) => {
+        const promises = await imgArr.map((src) => {
+            return new Promise<void>(() => {
+                const img = new Image();
+                img.onload = () => {
+                    setLoading(false);
+                };
+                img.src = src;
+            });
+        });
+
+        await Promise.all(promises);
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        const imgs = [
+            'https://user-images.githubusercontent.com/78244965/277567417-f9816b9d-ddda-4c0f-80f4-eeac92428612.gif',
+        ];
+        cacheImages(imgs);
+    });
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
     return (
         <Dialog
             fullWidth={true}

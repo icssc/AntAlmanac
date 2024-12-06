@@ -11,18 +11,19 @@ import {
     Box,
     IconButton,
 } from '@mui/material';
+import { useState, useEffect } from 'react';
 
 const images = [
     {
-        src: '/helpbox1.png',
+        src: '/helpbox1.webp',
         alt: 'UCI General Catalogue with "Explore Undergraduate Programs" button highlighted',
     },
     {
-        src: '/helpbox2.png',
+        src: '/helpbox2.webp',
         alt: 'Undergraduate Majors and Minors page with catalogue highlighted',
     },
     {
-        src: '/helpbox3.png',
+        src: '/helpbox3.webp',
         alt: 'Electrical Engineering page with "REQUIREMENTS" and "SAMPLE PROGRAM" tabs highlighted',
     },
 ];
@@ -32,6 +33,31 @@ interface HelpBoxProps {
 }
 
 function HelpBox({ onDismiss }: HelpBoxProps) {
+    const [loading, setLoading] = useState(true);
+
+    const cacheImages = async (images: { src: string; alt: string }[]) => {
+        const promises = await images.map((image) => {
+            return new Promise<void>(function (resolve) {
+                const img = new Image();
+                img.src = image.src;
+                img.alt = image.alt;
+                img.onload = () => {
+                    resolve();
+                };
+            });
+        });
+
+        await Promise.all(promises);
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        cacheImages(images);
+    });
+
+    if (loading) {
+        return <div>Loading..</div>;
+    }
     return (
         <Paper variant="outlined" sx={{ padding: 2, marginBottom: '10px', marginRight: '5px' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
