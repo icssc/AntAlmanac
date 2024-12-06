@@ -26,10 +26,13 @@ import { useHoveredStore } from '$stores/HoveredStore';
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
-    const courseColors = currentCourses.reduce((accumulator, { section }) => {
-        accumulator[section.sectionCode] = section.color;
-        return accumulator;
-    }, {} as Record<string, string>);
+    const courseColors = currentCourses.reduce(
+        (accumulator, { section }) => {
+            accumulator[section.sectionCode] = section.color;
+            return accumulator;
+        },
+        {} as Record<string, string>
+    );
 
     return courseColors;
 }
@@ -91,6 +94,7 @@ export default function CourseRenderPane(props: { id?: number }) {
         const gradesQueryParams = {
             department: formData.deptValue,
             ge: formData.ge as GE,
+            instructor: formData.instructor,
         };
 
         const larcQueryParams = {

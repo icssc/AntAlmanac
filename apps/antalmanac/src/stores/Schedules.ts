@@ -5,8 +5,8 @@ import type {
     ScheduleUndoState,
     ShortCourseSchedule,
     RepeatingCustomEvent,
+    CourseInfo,
 } from '@packages/antalmanac-types';
-import type { CourseInfo } from '@packages/antalmanac-types';
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 
@@ -51,10 +51,20 @@ export class Schedules {
         this.skeletonSchedules = [];
     }
 
+    getNextScheduleName(newScheduleName: string, scheduleIndex: number) {
+        const scheduleNames = this.getScheduleNames();
+        scheduleNames.splice(scheduleIndex, 1);
+        let nextScheduleName = newScheduleName;
+        let counter = 1;
+
+        while (scheduleNames.includes(nextScheduleName)) {
+            nextScheduleName = `${newScheduleName}(${counter++})`;
+        }
+        return nextScheduleName;
+    }
+
     getDefaultScheduleName() {
-        const termName = termData[0].shortName.replaceAll(' ', '-');
-        const countSameScheduleNames = this.getScheduleNames().filter((name) => name.includes(termName)).length;
-        return `${termName + (countSameScheduleNames == 0 ? '' : '(' + countSameScheduleNames + ')')}`;
+        return termData[0].shortName.replaceAll(' ', '-');
     }
 
     getCurrentScheduleIndex() {
@@ -93,13 +103,14 @@ export class Schedules {
 
     /**
      * Create an empty schedule.
+     * @param newScheduleName The name of the new schedule. If a schedule with the same name already exists, a number will be appended to the name.
      */
     addNewSchedule(newScheduleName: string) {
         this.addUndoState();
         const scheduleNoteId = Math.random();
         this.schedules.push({
-            scheduleName: newScheduleName,
             larcSections: [],
+            scheduleName: this.getNextScheduleName(newScheduleName, this.getNumberOfSchedules()),
             courses: [],
             customEvents: [],
             scheduleNoteId: scheduleNoteId,
@@ -111,10 +122,11 @@ export class Schedules {
 
     /**
      * Rename schedule with the specified index.
+     * @param newScheduleName The name of the new schedule. If a schedule with the same name already exists, a number will be appended to the name.
      */
     renameSchedule(newScheduleName: string, scheduleIndex: number) {
         this.addUndoState();
-        this.schedules[scheduleIndex].scheduleName = newScheduleName;
+        this.schedules[scheduleIndex].scheduleName = this.getNextScheduleName(newScheduleName, scheduleIndex);
     }
 
     /**
@@ -136,25 +148,19 @@ export class Schedules {
     }
 
     /**
-     * Append all courses from current schedule to the schedule with the target index.
-     * @param to Index of the schedule to append courses to. If equal to number of schedules, will append courses to all schedules.
+     * Copy the current schedule to a newly created schedule with the specified name.
      */
-    copySchedule(to: number) {
-        this.addUndoState();
+    copySchedule(newScheduleName: string) {
+        this.addNewSchedule(newScheduleName);
+        this.currentScheduleIndex = this.previousStates[this.previousStates.length - 1].scheduleIndex; // return to previous schedule index for copying
+        const to = this.getNumberOfSchedules() - 1;
+
         for (const course of this.getCurrentCourses()) {
-            if (to === this.getNumberOfSchedules()) {
-                this.addCourseToAllSchedules(course);
-            } else {
-                this.addCourse(course, to, false);
-            }
+            this.addCourse(course, to, false);
         }
 
         for (const customEvent of this.getCurrentCustomEvents()) {
-            if (to === this.getNumberOfSchedules()) {
-                this.addCustomEvent(customEvent, [...Array(to).keys()]);
-            } else {
-                this.addCustomEvent(customEvent, [to]);
-            }
+            this.addCustomEvent(customEvent, [to]);
         }
     }
 
@@ -171,17 +177,6 @@ export class Schedules {
      */
     getAddedSectionCodes() {
         return new Set(this.getCurrentCourses().map((course) => `${course.section.sectionCode} ${course.term}`));
-    }
-
-    /**
-     * Get a set of "${section.bldg}+${section.days}+${section.instructor}+${section.time}" section keys in current schedule.
-     */
-    getAddedLarcSections() {
-        return new Set(
-            this.getCurrentLarcSections().map(
-                (section) => `${section.bldg}+${section.days}+${section.instructor}+${section.time}`
-            )
-        );
     }
 
     /**

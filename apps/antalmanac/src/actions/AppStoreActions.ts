@@ -11,8 +11,8 @@ import { removeLocalStorageUserId, setLocalStorageUserId } from '$lib/localStora
 import AppStore from '$stores/AppStore';
 
 export interface CopyScheduleOptions {
-    onSuccess: (index: number) => unknown;
-    onError: (index: number) => unknown;
+    onSuccess: (scheduleName: string) => unknown;
+    onError: (scheduleName: string) => unknown;
 }
 
 export const addCourse = (
@@ -250,17 +250,17 @@ export const changeCourseColor = (sectionCode: string, term: string, newColor: s
     AppStore.changeCourseColor(sectionCode, term, newColor);
 };
 
-export const copySchedule = (to: number, options?: CopyScheduleOptions) => {
+export const copySchedule = (newScheduleName: string, options?: CopyScheduleOptions) => {
     logAnalytics({
         category: analyticsEnum.addedClasses.title,
         action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
     });
 
     try {
-        AppStore.copySchedule(to);
-        options?.onSuccess(to);
+        AppStore.copySchedule(newScheduleName);
+        options?.onSuccess(newScheduleName);
     } catch (error) {
-        options?.onError(to);
+        options?.onError(newScheduleName);
     }
 };
 

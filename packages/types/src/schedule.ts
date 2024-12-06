@@ -16,7 +16,7 @@ export type ScheduleCourse = {
 export type Schedule = {
     scheduleName: string;
     courses: ScheduleCourse[];
-    larcSections: LarcAPIResponse;
+    larcSections: LarcAPIResponse[];
     customEvents: RepeatingCustomEvent[];
     scheduleNoteId: number;
 };
