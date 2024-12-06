@@ -14,10 +14,27 @@ export const deployEnvSchema = z.object({
 })
 
 /**
- * Environment variables required by the backend during runtime.
+ * Environment variables required by the backend to connect to the RDS instance.
  */
-export const backendEnvSchema = z.intersection(deployEnvSchema, z.object({
+export const rdsEnvSchema = z.object({
+    DB_URL: z.string(),
+    NODE_ENV: z.string().optional(),
+})
+
+/**
+ * Environment variables required by the backend to connect to the DynamoDB table.
+ * 
+ * This will be removed once we complete migration to RDS.
+ */
+export const ddbEnvSchema = z.object({
     USERDATA_TABLE_NAME: z.string(),
     AWS_REGION: z.string(),
     NODE_ENV: z.string().optional(),
-}))
+})
+
+/**
+ * Environment variables required by the backend during runtime.
+ */
+export const backendEnvSchema = z.intersection(
+    deployEnvSchema, rdsEnvSchema, ddbEnvSchema
+)
