@@ -60,8 +60,16 @@ const usersRouter = router({
                 // Mangle duplicate schedule names
                 data.userData.schedules = mangleDuplicateScheduleNames(data.userData.schedules);
                 
-                return Promise.all([ddbClient.insertItem(data), RDS.upsertGuestUserData(db, data)
-                    .catch((error) => console.error('Failed to upsert user data:', error))]);
+                // Await both, but only throw if DDB save fails.
+                const results = await Promise.allSettled([
+                    ddbClient.insertItem(data), 
+                    RDS.upsertGuestUserData(db, data)
+                        .catch((error) => console.error('Failed to upsert user data:', error))
+                ]);
+
+                if (results[0].status === 'rejected') {
+                    throw results[0].reason;
+                }
             }
         ),
 
