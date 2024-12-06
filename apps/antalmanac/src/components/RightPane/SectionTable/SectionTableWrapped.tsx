@@ -44,6 +44,9 @@ export function SectionTableWrapped({ index, scheduleNames, courseData, larcData
     }
 
     const course = courseData[index] as AACourse;
+    const larc = larcData?.courses.find(
+        (larcCourse) => larcCourse.deptCode === course.deptCode && larcCourse.courseNumber === course.courseNumber
+    );
     return (
         <SectionTableLazyWrapper
             term={formData.term}
@@ -51,7 +54,7 @@ export function SectionTableWrapped({ index, scheduleNames, courseData, larcData
             allowHighlight={true}
             scheduleNames={scheduleNames}
             analyticsCategory={analyticsEnum.classSearch.title}
-            larcData={larcData}
+            larcDetails={larc}
         />
     );
 }

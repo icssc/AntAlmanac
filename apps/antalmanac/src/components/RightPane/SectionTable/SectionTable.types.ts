@@ -12,5 +12,5 @@ export interface SectionTableProps {
     allowHighlight: boolean;
     scheduleNames: string[];
     analyticsCategory: string;
-    larcData?: LarcAPIResponse | undefined;
+    larcDetails?: LarcAPIResponse['courses'][number] | undefined;
 }

@@ -94,8 +94,8 @@ export default function CourseRenderPane(props: { id?: number }) {
         };
 
         const larcQueryParams = {
-            department: formData.deptValue,
-            term: formData.term,
+            department: formData.deptValue.toUpperCase(),
+            term: '2024 Fall',
             courseNumber: formData.courseNumber,
         };
 
@@ -113,18 +113,7 @@ export default function CourseRenderPane(props: { id?: number }) {
 
             if (larcQueryParams.department && larcQueryParams.term && larcQueryParams.courseNumber) {
                 const larcJsonResp = await Larc.query(larcQueryParams);
-                const deDuplicatedLarcResp = larcJsonResp.filter(
-                    (item, index, self) =>
-                        index ===
-                        self.findIndex(
-                            (t) =>
-                                t.days === item.days &&
-                                t.time === item.time &&
-                                t.instructor === item.instructor &&
-                                t.bldg === item.bldg
-                        )
-                );
-                setLarcResp(deDuplicatedLarcResp);
+                setLarcResp(larcJsonResp);
             }
 
             setError(false);
