@@ -1,7 +1,6 @@
 import { Add, ArrowDropDown, Delete } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, TableCell, Tooltip, useMediaQuery } from '@mui/material';
-import { AASection } from '@packages/antalmanac-types';
-import { CourseDetails } from '@packages/antalmanac-types';
+import type { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 
 import { MOBILE_BREAKPOINT } from '../../../../globals';
@@ -139,20 +138,26 @@ export function ScheduleAddCell(props: SectionActionProps) {
     };
 
     return (
-        <Box flexDirection={flexDirection} display="flex" justifyContent="space-evenly">
+        <Box flexDirection={flexDirection} display="flex" justifyContent="space-evenly" alignItems={'center'}>
             {scheduleConflict ? (
                 <Tooltip title="This course overlaps with another event in your calendar!" arrow>
-                    <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
+                    <IconButton
+                        onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}
+                        sx={{ width: 'fit-content' }}
+                    >
                         <Add fontSize="small" />
                     </IconButton>
                 </Tooltip>
             ) : (
-                <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
+                <IconButton
+                    onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}
+                    sx={{ width: 'fit-content' }}
+                >
                     <Add fontSize="small" />
                 </IconButton>
             )}
 
-            <IconButton {...bindTrigger(popupState)}>
+            <IconButton {...bindTrigger(popupState)} sx={{ width: 'fit-content' }}>
                 <ArrowDropDown fontSize="small" />
             </IconButton>
 

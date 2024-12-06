@@ -23,7 +23,7 @@ import GradesPopup from './GradesPopup';
 import { SectionTableProps } from './SectionTable.types';
 import SectionTableBody from './SectionTableBody';
 
-import { LarcTable } from '$components/RightPane/SectionTable/larc/LarcTable';
+// import { LarcTable } from '$components/RightPane/SectionTable/larc/LarcTable';
 import analyticsEnum from '$lib/analytics';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 
@@ -106,9 +106,14 @@ function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
     );
 }
 
-function SectionTable(props: SectionTableProps) {
-    const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory, larcDetails } = props;
-
+export default function SectionTable({
+    courseDetails,
+    term,
+    allowHighlight,
+    scheduleNames,
+    analyticsCategory,
+}: // larcDetails,
+SectionTableProps) {
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
 
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
@@ -136,9 +141,6 @@ function SectionTable(props: SectionTableProps) {
                     prerequisiteLink={courseDetails.prerequisiteLink}
                     analyticsCategory={analyticsCategory}
                 />
-
-                {/* Temporarily remove "Past Enrollment" until data on Anteater API */}
-                {/* <AlmanacGraph courseDetails={courseDetails} />  */}
 
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}
@@ -223,5 +225,3 @@ function SectionTable(props: SectionTableProps) {
         </>
     );
 }
-
-export default SectionTable;
