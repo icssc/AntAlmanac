@@ -169,9 +169,6 @@ jobs:
                   url: ${{ needs.get_staging_configuration.outputs.backend_environment_url }}
                   status: in_progress
 
-            - name: Run database migrations
-              run: pnpm --filter "antalmanac-backend" migrate
-
             - name: Build backend
               run: pnpm --filter "antalmanac-backend" build
               env:
