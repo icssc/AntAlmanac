@@ -36,5 +36,6 @@ export const ddbEnvSchema = z.object({
  * Environment variables required by the backend during runtime.
  */
 export const backendEnvSchema = z.intersection(
-    deployEnvSchema, rdsEnvSchema, ddbEnvSchema
+    deployEnvSchema, 
+    z.intersection(rdsEnvSchema, ddbEnvSchema)
 )
