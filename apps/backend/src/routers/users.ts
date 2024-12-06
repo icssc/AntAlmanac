@@ -1,8 +1,12 @@
 import { type } from 'arktype';
+
 import { UserSchema } from '@packages/antalmanac-types';
-import { TRPCError } from '@trpc/server';
-import { router, procedure } from '../trpc';
-import { ddbClient, VISIBILITY } from '../db/ddb';
+
+import { db } from 'src/db';
+import { ddbClient } from 'src/db/ddb';
+import { mangleDupliateScheduleNames as mangleDuplicateScheduleNames } from 'src/lib/formatting';
+import { RDS } from 'src/lib/rds';
+import { procedure, router } from '../trpc';
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
 
@@ -41,40 +45,33 @@ const usersRouter = router({
         if ('googleId' in input) {
             return await ddbClient.getGoogleUserData(input.googleId);
         }
-        return (await ddbClient.getUserData(input.userId)) ?? (await ddbClient.getLegacyUserData(input.userId));
+        return await ddbClient.getUserData(input.userId);
     }),
 
     /**
      * Loads schedule data for a user that's logged in.
      */
-    saveUserData: procedure.input(saveInputSchema.assert).mutation(async ({ input }) => {
-        /**
-         * Assign default visility value.
-         */
-        input.data.visibility ??= VISIBILITY.PRIVATE;
+    saveUserData: procedure
+        .input(saveInputSchema.assert)
+        .mutation(
+            async ({ input }) => {
+                const data = input.data;
 
-        // Requester and requestee IDs must match if schedule is private.
+                // Mangle duplicate schedule names
+                data.userData.schedules = mangleDuplicateScheduleNames(data.userData.schedules);
+                
+                // Await both, but only throw if DDB save fails.
+                const results = await Promise.allSettled([
+                    ddbClient.insertItem(data), 
+                    RDS.upsertGuestUserData(db, data)
+                        .catch((error) => console.error('Failed to upsert user data:', error))
+                ]);
 
-        if (input.data.visibility === VISIBILITY.PRIVATE && input.id !== input.data.id) {
-            throw new TRPCError({
-                code: 'UNAUTHORIZED',
-                message: 'Schedule is private and user ID does not match.',
-            });
-        }
-
-        // Requester and requestee IDs must match if schedule is public (read-only).
-
-        if (input.data.visibility === VISIBILITY.PUBLIC && input.id !== input.data.id) {
-            throw new TRPCError({
-                code: 'UNAUTHORIZED',
-                message: 'Schedule is public and user ID does not match.',
-            });
-        }
-
-        // Schedule is open, or requester user ID and schedule's user ID match.
-
-        await ddbClient.insertItem(input.data);
-    }),
+                if (results[0].status === 'rejected') {
+                    throw results[0].reason;
+                }
+            }
+        ),
 
     /**
      * Users can view other users' schedules, even anonymously.

@@ -18,7 +18,7 @@ import { getLocalStoragePatchNotesKey, setLocalStoragePatchNotesKey } from '$lib
  *
  * @example '20230819'
  */
-export const latestPatchNotesUpdate = '20230819';
+export const latestPatchNotesUpdate = '20241124';
 
 /**
  * Whether the user's last visited patch notes is outdated.
@@ -53,30 +53,27 @@ function PatchNotes() {
             data-testid={dialogTestId}
             slots={{ backdrop: PatchNotesBackdrop }}
         >
-            <DialogTitle>{"What's New - October 2023"}</DialogTitle>
+            <DialogTitle>{"What's New - November 2024"}</DialogTitle>
 
             <DialogContent>
-                <Typography>Features</Typography>
+                <Typography>Migration</Typography>
                 <ul>
+                    <li>We are migrating our database to support exciting features coming this year!</li>
                     <li>
-                        You can now hover over the Zotistics button to see the Zotistics graph! On mobile, you can still
-                        click the Zotistics button to toggle the graph.
+                        If you experience issues with saving and retrieving schedules, please let us know by filling out
+                        the{' '}
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSe0emRHqog-Ctl8tjZfJvewY_CSGXys8ykBkFBy1EEUUUHbUw/viewform">
+                            feedback form
+                        </a>
+                        .
                     </li>
                 </ul>
-                <img
-                    src="https://user-images.githubusercontent.com/78244965/277567417-f9816b9d-ddda-4c0f-80f4-eeac92428612.gif"
-                    alt="(gif of the new feature)"
-                    style={{
-                        maxWidth: '100%',
-                        boxShadow: '4px 4px 4px rgba(0, 0, 0, 0.4)',
-                    }}
-                />
-                <br />
-                Remember to use the{' '}
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSe0emRHqog-Ctl8tjZfJvewY_CSGXys8ykBkFBy1EEUUUHbUw/viewform">
-                    feedback form
-                </a>{' '}
-                to let us know what you think!
+
+                <Typography>Features</Typography>
+                <ul>
+                    <li>Search now contains all new classes and will update automatically!</li>
+                    <li>Many bug fixes and quality-of-life improvements</li>
+                </ul>
             </DialogContent>
 
             <DialogActions>
