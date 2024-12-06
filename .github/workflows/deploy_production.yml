@@ -99,6 +99,10 @@ jobs:
 
         runs-on: ubuntu-latest
 
+        environment:
+            name: backend-production
+            url: https://api.antalmanac.com
+
         steps:
             - name: Checkout repository
               uses: actions/checkout@v3
