@@ -10,6 +10,8 @@ export const accountTypeEnum = pgEnum(
     accountTypes
 );
 
+export type AccountType = typeof accountTypes[number];
+
 // Each user can have multiple accounts, each account is associated with a provider.
 // A user without an account is a username-only user.
 export const accounts = pgTable(
