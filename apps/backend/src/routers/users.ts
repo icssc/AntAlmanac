@@ -1,6 +1,5 @@
 import { type } from 'arktype';
 
-
 import { UserSchema } from '@packages/antalmanac-types';
 
 import { db } from 'src/db';
