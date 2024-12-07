@@ -53,7 +53,7 @@ export class BackendStack extends Stack {
             runtime: lambda.Runtime.NODEJS_18_X,
             code: lambda.Code.fromAsset('../backend/dist'),
             handler: 'lambda.handler',
-            timeout: Duration.seconds(5),
+            timeout: Duration.seconds(10),
             memorySize: 256,
             environment: {
                 ...env,
