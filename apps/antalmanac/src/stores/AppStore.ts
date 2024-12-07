@@ -71,6 +71,10 @@ class AppStore extends EventEmitter {
         }
     }
 
+    getNextScheduleName(newScheduleName: string, scheduleIndex: number) {
+        return this.schedule.getNextScheduleName(newScheduleName, scheduleIndex);
+    }
+
     getDefaultScheduleName() {
         return this.schedule.getDefaultScheduleName();
     }
@@ -291,14 +295,17 @@ class AppStore extends EventEmitter {
         window.localStorage.removeItem('unsavedActions');
     }
 
-    copySchedule(to: number) {
-        this.schedule.copySchedule(to);
+    copySchedule(newScheduleName: string) {
+        this.schedule.copySchedule(newScheduleName);
         this.unsavedChanges = true;
         const action: CopyScheduleAction = {
             type: 'copySchedule',
-            to: to,
+            newScheduleName: newScheduleName,
         };
         actionTypesStore.autoSaveSchedule(action);
+        this.emit('scheduleNamesChange');
+        this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNotesChange');
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
     }

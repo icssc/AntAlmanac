@@ -4,8 +4,7 @@ import { and, eq } from 'drizzle-orm';
 import type { Database } from '$db/index';
 import { 
     schedules, users, accounts, coursesInSchedule, customEvents, 
-    Schedule, CourseInSchedule, CustomEvent, 
-    AccountType
+    AccountType, Schedule, CourseInSchedule, CustomEvent
 } from '$db/schema';
 
 type DatabaseOrTransaction = Omit<Database, '$client'>;
@@ -162,6 +161,66 @@ export class RDS {
         );
     }
 
+    /**
+     * Drops all courses in the schedule and re-add them,
+     * deduplicating by section code and term.
+     * */
+    private static async upsertCourses(db: DatabaseOrTransaction, scheduleId: string, courses: ShortCourse[]) {
+        await db.transaction((tx) => tx.delete(coursesInSchedule).where(eq(coursesInSchedule.scheduleId, scheduleId)));
+
+        if (courses.length === 0) {
+            return;
+        }
+
+        const coursesUnique: Set<string> = new Set();
+
+        const dbCourses = courses.map((course) => ({
+            scheduleId,
+            sectionCode: parseInt(course.sectionCode),
+            term: course.term,
+            color: course.color,
+            lastUpdated: new Date(),
+        }));
+
+        const dbCoursesUnique = dbCourses.filter((course) => {
+            const key = `${course.sectionCode}-${course.term}`;
+            if (coursesUnique.has(key)) {
+                return false;
+            }
+            coursesUnique.add(key);
+            return true;
+        });
+
+        await db.transaction((tx) => tx.insert(coursesInSchedule).values(dbCoursesUnique));
+    }
+
+    private static async upsertCustomEvents(
+        db: DatabaseOrTransaction,
+        scheduleId: string,
+        repeatingCustomEvents: RepeatingCustomEvent[]
+    ) {
+        await db.transaction(
+            async (tx) => await tx.delete(customEvents).where(eq(customEvents.scheduleId, scheduleId))
+        );
+
+        if (repeatingCustomEvents.length === 0) {
+            return;
+        }
+
+        const dbCustomEvents = repeatingCustomEvents.map((event) => ({
+            scheduleId,
+            title: event.title,
+            start: event.start,
+            end: event.end,
+            days: event.days.map((day) => (day ? '1' : '0')).join(''),
+            color: event.color,
+            building: event.building,
+            lastUpdated: new Date(),
+        }));
+
+        await db.transaction(async (tx) => await tx.insert(customEvents).values(dbCustomEvents));
+    }
+
     static async getGuestUserData(
         db: DatabaseOrTransaction, guestId: string
     ): Promise<User | null> {
@@ -277,65 +336,5 @@ export class RDS {
 
         // Sort schedules by index
         return Object.values(schedulesMapping).sort((a, b) => a.index - b.index);
-    }
-
-    /**
-     * Drops all courses in the schedule and re-add them,
-     * deduplicating by section code and term.
-     * */
-    private static async upsertCourses(db: DatabaseOrTransaction, scheduleId: string, courses: ShortCourse[]) {
-        await db.transaction((tx) => tx.delete(coursesInSchedule).where(eq(coursesInSchedule.scheduleId, scheduleId)));
-
-        if (courses.length === 0) {
-            return;
-        }
-
-        const coursesUnique: Set<string> = new Set();
-
-        const dbCourses = courses.map((course) => ({
-            scheduleId,
-            sectionCode: parseInt(course.sectionCode),
-            term: course.term,
-            color: course.color,
-            lastUpdated: new Date(),
-        }));
-
-        const dbCoursesUnique = dbCourses.filter((course) => {
-            const key = `${course.sectionCode}-${course.term}`;
-            if (coursesUnique.has(key)) {
-                return false;
-            }
-            coursesUnique.add(key);
-            return true;
-        });
-
-        await db.transaction((tx) => tx.insert(coursesInSchedule).values(dbCoursesUnique));
-    }
-
-    private static async upsertCustomEvents(
-        db: DatabaseOrTransaction,
-        scheduleId: string,
-        repeatingCustomEvents: RepeatingCustomEvent[]
-    ) {
-        await db.transaction(
-            async (tx) => await tx.delete(customEvents).where(eq(customEvents.scheduleId, scheduleId))
-        );
-
-        if (repeatingCustomEvents.length === 0) {
-            return;
-        }
-
-        const dbCustomEvents = repeatingCustomEvents.map((event) => ({
-            scheduleId,
-            title: event.title,
-            start: event.start,
-            end: event.end,
-            days: event.days.map((day) => (day ? '1' : '0')).join(''),
-            color: event.color,
-            building: event.building,
-            lastUpdated: new Date(),
-        }));
-
-        await db.transaction(async (tx) => await tx.insert(customEvents).values(dbCustomEvents));
     }
 }

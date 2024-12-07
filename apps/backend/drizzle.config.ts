@@ -1,8 +1,8 @@
 import { defineConfig } from "drizzle-kit";
 
-import env from "./src/env";
+import { rdsEnvSchema } from "./src/env";
 
-const { DB_URL } = env;
+const { DB_URL } = rdsEnvSchema.parse(process.env);
 
 export default defineConfig({
   dialect: "postgresql",

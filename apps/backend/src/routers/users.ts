@@ -1,5 +1,6 @@
 import { type } from 'arktype';
 
+
 import { UserSchema } from '@packages/antalmanac-types';
 
 import { db } from 'src/db';
@@ -9,18 +10,6 @@ import { TRPCError } from '@trpc/server';
 import { procedure, router } from '../trpc';
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
-
-const viewInputSchema = type({
-    /**
-     * ID of the user who's requesting to view another user's schedule.
-     */
-    requesterId: 'string',
-
-    /**
-     * ID of the user whose schedule is being requested.
-     */
-    requesteeId: 'string',
-});
 
 const saveInputSchema = type({
     /**

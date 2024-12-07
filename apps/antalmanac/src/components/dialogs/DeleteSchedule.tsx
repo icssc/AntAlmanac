@@ -7,7 +7,7 @@ import {
     DialogTitle,
     type DialogProps,
 } from '@mui/material';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { deleteSchedule } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
@@ -35,10 +35,7 @@ function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
      * This is destructured separately for memoization.
      */
     const { onClose } = props;
-
-    const scheduleName = useMemo(() => {
-        return AppStore.schedule.getScheduleName(index);
-    }, [index]);
+    const [name, setName] = useState<string>(AppStore.getScheduleNames()[index]);
 
     const handleCancel = useCallback(() => {
         onClose?.({}, 'escapeKeyDown');
@@ -49,12 +46,24 @@ function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
         onClose?.({}, 'escapeKeyDown');
     }, [index, onClose]);
 
+    const handleScheduleNamesChange = useCallback(() => {
+        setName(AppStore.getScheduleNames()[index]);
+    }, [index]);
+
+    useEffect(() => {
+        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
+
+        return () => {
+            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
+        };
+    }, [handleScheduleNamesChange]);
+
     return (
         <Dialog {...dialogProps}>
             <DialogTitle>Delete Schedule</DialogTitle>
 
             <DialogContent>
-                <DialogContentText>Are you sure you want to delete &#34;{scheduleName}&#34;?</DialogContentText>
+                <DialogContentText>Are you sure you want to delete &#34;{name}&#34;?</DialogContentText>
             </DialogContent>
 
             <DialogActions>
