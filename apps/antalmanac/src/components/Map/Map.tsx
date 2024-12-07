@@ -313,7 +313,7 @@ export default function CourseMap() {
                             <Tab key={day} label={day} sx={{ padding: 1, minHeight: 'auto', minWidth: '10%' }} />
                         ))}
                     </Tabs>
-                    <BuildingSelect onChange={onBuildingChange} />
+                    <BuildingSelect onChange={onBuildingChange} variant="filled" />
                 </Paper>
 
                 <TileLayer
