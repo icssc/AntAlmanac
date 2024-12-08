@@ -7,9 +7,8 @@ import { useEffect, useRef, useCallback } from 'react';
 import { Event } from 'react-big-calendar';
 import { Link } from 'react-router-dom';
 
-import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
-
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
+import CustomEventDialog from '$components/Calendar/toolbar/CustomEventDialog/CustomEventDialog';
 import ColorPicker from '$components/ColorPicker';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';

@@ -8,7 +8,7 @@ import { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 const HOVERED_SECTION_COLOR = '#80808080';
 export interface HoveredStore {
     hoveredEvent: ScheduleCourse | undefined;
-    setHoveredEvents: (section?: AASection, courseDetails?: CourseDetails, term?: string) => void;
+    setHoveredEvent: (section?: AASection, courseDetails?: CourseDetails, term?: string) => void;
     hoveredCalendarizedCourses: CourseEvent[] | undefined;
     hoveredCalendarizedFinal: CourseEvent | undefined;
 }
@@ -22,7 +22,7 @@ const DEFAULT_HOVERED_STORE = {
 export const useHoveredStore = create<HoveredStore>((set) => {
     return {
         ...DEFAULT_HOVERED_STORE,
-        setHoveredEvents: (section, courseDetails, term) => {
+        setHoveredEvent: (section, courseDetails, term) => {
             if (section == null || courseDetails == null || term == null) {
                 set({ ...DEFAULT_HOVERED_STORE });
                 return;

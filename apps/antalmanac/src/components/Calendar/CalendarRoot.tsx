@@ -7,24 +7,24 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
 import { shallow } from 'zustand/shallow';
 
-import { CalendarToolbar } from './CalendarToolbar';
 import { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
 
 import { CalendarCourseEvent } from '$components/Calendar/calendar-course-event';
 import { CalendarCourseEventWrapper } from '$components/Calendar/calendar-course-event-wrapper';
 import { CalendarEventPopover } from '$components/Calendar/calendar-event-popover';
+import { CalendarToolbar } from '$components/Calendar/toolbar/calendar-toolbar';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 
-const localizer = momentLocalizer(moment);
-const views = [Views.WEEK, Views.WORK_WEEK];
-const components = {
+const LOCALIZER = momentLocalizer(moment);
+const VIEWS = [Views.WEEK, Views.WORK_WEEK];
+const COMPONENTS = {
     event: CalendarCourseEvent,
     eventWrapper: CalendarCourseEventWrapper,
 };
-const max = new Date(2018, 0, 1, 23);
+const MAX = new Date(2018, 0, 1, 23);
 
 export const ScheduleCalendar = memo(() => {
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
@@ -54,10 +54,9 @@ export const ScheduleCalendar = memo(() => {
         showFinalsSchedule,
     ]);
 
-    const events = useMemo(() => getEventsForCalendar(), [getEventsForCalendar]);
+    const events = getEventsForCalendar();
 
     const toggleDisplayFinalsSchedule = useCallback(() => {
-        // handleClosePopover();
         setShowFinalsSchedule((prevState) => !prevState);
     }, []);
 
@@ -135,7 +134,7 @@ export const ScheduleCalendar = memo(() => {
                       )}`
                     : '',
         }),
-        [showFinalsSchedule, finalsDateFormat, calendarGutterTimeFormat, calendarTimeFormat]
+        [calendarGutterTimeFormat, calendarTimeFormat, finalsDateFormat, showFinalsSchedule]
     );
 
     useEffect(() => {
@@ -189,10 +188,10 @@ export const ScheduleCalendar = memo(() => {
                 <CalendarEventPopover />
 
                 <Calendar<CalendarEvent, object>
-                    localizer={localizer}
+                    localizer={LOCALIZER}
                     toolbar={false}
                     formats={formats}
-                    views={views}
+                    views={VIEWS}
                     defaultView={Views.WORK_WEEK}
                     view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
                     onView={() => {
@@ -205,11 +204,11 @@ export const ScheduleCalendar = memo(() => {
                         return;
                     }}
                     min={getStartTime()}
-                    max={max}
+                    max={MAX}
                     events={events}
                     eventPropGetter={eventStyleGetter}
                     showMultiDayTimes={false}
-                    components={components}
+                    components={COMPONENTS}
                 />
             </Box>
         </Box>

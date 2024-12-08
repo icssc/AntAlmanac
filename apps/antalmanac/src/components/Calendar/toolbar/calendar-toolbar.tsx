@@ -2,10 +2,10 @@ import { Undo as UndoIcon } from '@mui/icons-material';
 import { Box, Button, IconButton, Paper, Tooltip } from '@mui/material';
 import { useState, useCallback, useEffect, memo } from 'react';
 
-import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
+import CustomEventDialog from './CustomEventDialog/CustomEventDialog';
 
 import { undoDelete } from '$actions/AppStoreActions';
-import { SelectSchedulePopover } from '$components/Calendar/Toolbar/schedule-select/schedule-select';
+import { SelectSchedulePopover } from '$components/Calendar/toolbar/schedule-select/schedule-select';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import DownloadButton from '$components/buttons/Download';
 import ScreenshotButton from '$components/buttons/Screenshot';

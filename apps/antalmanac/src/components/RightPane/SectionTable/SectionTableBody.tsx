@@ -499,7 +499,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const isDark = useThemeStore((store) => store.isDark);
     const activeColumns = useColumnStore((store) => store.activeColumns);
     const previewMode = usePreviewStore((store) => store.previewMode);
-    const setHoveredEvents = useHoveredStore((store) => store.setHoveredEvents);
+    const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
     const [addedCourse, setAddedCourse] = useState(
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
@@ -530,15 +530,15 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
 
     const handleMouseEnter = useCallback(() => {
         if (!previewMode || addedCourse) {
-            setHoveredEvents(undefined);
+            setHoveredEvent(undefined);
         } else {
-            setHoveredEvents(section, courseDetails, term);
+            setHoveredEvent(section, courseDetails, term);
         }
-    }, [previewMode, addedCourse, setHoveredEvents, section, courseDetails, term]);
+    }, [previewMode, addedCourse, setHoveredEvent, section, courseDetails, term]);
 
     const handleMouseLeave = useCallback(() => {
-        setHoveredEvents(undefined);
-    }, [setHoveredEvents]);
+        setHoveredEvent(undefined);
+    }, [setHoveredEvent]);
 
     // Attach event listeners to the store.
     useEffect(() => {
