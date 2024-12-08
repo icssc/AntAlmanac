@@ -5,6 +5,7 @@ import { Box, ClickAwayListener, Popper } from '@material-ui/core';
 import moment from 'moment';
 import { memo, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
+import { shallow } from 'zustand/shallow';
 
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
@@ -29,10 +30,10 @@ export const ScheduleCalendar = memo(() => {
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
 
     const { isMilitaryTime } = useTimeFormatStore();
-    const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore((store) => [
-        store.hoveredCalendarizedCourses,
-        store.hoveredCalendarizedFinal,
-    ]);
+    const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
+        (state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal],
+        shallow
+    );
 
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
         if (showFinalsSchedule)
@@ -48,6 +49,8 @@ export const ScheduleCalendar = memo(() => {
         hoveredCalendarizedFinal,
         showFinalsSchedule,
     ]);
+
+    const events = useMemo(() => getEventsForCalendar(), [getEventsForCalendar]);
 
     const handleClosePopover = useCallback(() => {
         setAnchorEl(null);
@@ -74,9 +77,9 @@ export const ScheduleCalendar = memo(() => {
      * @returns A date with the earliest time or 7AM
      */
     const getStartTime = useCallback(() => {
-        const eventStartHours = getEventsForCalendar().map((event) => event.start.getHours());
+        const eventStartHours = events.map((event) => event.start.getHours());
         return new Date(2018, 0, 1, Math.min(7, Math.min(...eventStartHours)));
-    }, [getEventsForCalendar]);
+    }, [events]);
 
     const eventStyleGetter = useCallback((event: CalendarEvent) => {
         const style = {
@@ -113,7 +116,6 @@ export const ScheduleCalendar = memo(() => {
         return Math.abs(bgBrightness - textBrightness) > minBrightnessDiff;
     };
 
-    const events = useMemo(() => getEventsForCalendar(), [getEventsForCalendar]);
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
 
     const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
@@ -124,8 +126,8 @@ export const ScheduleCalendar = memo(() => {
     const finalsDate = hoveredCalendarizedFinal
         ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
         : onlyCourseEvents.length > 0
-        ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
-        : getDefaultFinalsStartDate();
+          ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
+          : getDefaultFinalsStartDate();
 
     const finalsDateFormat = finalsDate ? 'ddd MM/DD' : 'ddd';
     const date = showFinalsSchedule && finalsDate ? finalsDate : new Date(2018, 0, 1);
