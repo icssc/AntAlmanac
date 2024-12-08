@@ -7,7 +7,7 @@ import { memo, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 
 import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
 import { shallow } from 'zustand/shallow';
 
-import CalendarToolbar from './CalendarToolbar';
+import { CalendarToolbar } from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
 
 import { CalendarCourseEvent } from '$components/Calendar/calendar-course-event';
@@ -17,6 +17,7 @@ import { useHoveredStore } from '$stores/HoveredStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 
 const localizer = momentLocalizer(moment);
+const views = [Views.WEEK, Views.WORK_WEEK];
 const components = { event: CalendarCourseEvent };
 
 export const ScheduleCalendar = memo(() => {
@@ -148,8 +149,6 @@ export const ScheduleCalendar = memo(() => {
         }),
         [showFinalsSchedule, finalsDateFormat, calendarGutterTimeFormat, calendarTimeFormat]
     );
-
-    const views = useMemo(() => [Views.WEEK, Views.WORK_WEEK], []);
 
     useEffect(() => {
         /**
