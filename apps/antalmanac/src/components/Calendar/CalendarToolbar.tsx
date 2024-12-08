@@ -147,8 +147,8 @@ function AddScheduleButton({ disabled }: AddScheduleButtonProps) {
  * Can select a schedule, and also control schedule settings with buttons.
  */
 function SelectSchedulePopover(props: { scheduleNames: string[] }) {
-    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
+    const [skeletonMode, setSkeletonMode] = useState(() => AppStore.getSkeletonMode());
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement>();
 

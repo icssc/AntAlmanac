@@ -18,8 +18,10 @@ export function getLocation(location: string): Location {
     return { building, room };
 }
 
-export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
-    return currentCourses.flatMap((course) => {
+export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): CourseEvent[] => {
+    console.log('hit', Date.now());
+
+    const foo = currentCourses.flatMap((course) => {
         return course.section.meetings
             .filter((meeting) => !meeting.timeIsTBA)
             .flatMap((meeting) => {
@@ -80,7 +82,11 @@ export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): 
                 });
             });
     });
-}
+
+    console.log(foo);
+
+    return foo;
+};
 
 export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
     return currentCourses
@@ -118,8 +124,8 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
             const locationsWithNoDays = bldg
                 ? bldg.map(getLocation)
                 : !course.section.meetings[0].timeIsTBA
-                  ? course.section.meetings[0].bldg.map(getLocation)
-                  : [];
+                ? course.section.meetings[0].bldg.map(getLocation)
+                : [];
 
             /**
              * Fallback to January 2018 if no finals start date is available.

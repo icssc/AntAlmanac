@@ -7,14 +7,14 @@ import { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 
 const HOVERED_SECTION_COLOR = '#80808080';
 export interface HoveredStore {
-    hoveredEvents: ScheduleCourse[] | undefined;
+    hoveredEvent: ScheduleCourse | undefined;
     setHoveredEvents: (section?: AASection, courseDetails?: CourseDetails, term?: string) => void;
     hoveredCalendarizedCourses: CourseEvent[] | undefined;
     hoveredCalendarizedFinal: CourseEvent | undefined;
 }
 
 const DEFAULT_HOVERED_STORE = {
-    hoveredEvents: undefined,
+    hoveredEvent: undefined,
     hoveredCalendarizedCourses: undefined,
     hoveredCalendarizedFinal: undefined,
 };
@@ -27,37 +27,20 @@ export const useHoveredStore = create<HoveredStore>((set) => {
                 set({ ...DEFAULT_HOVERED_STORE });
                 return;
             }
+
+            const event = {
+                ...courseDetails,
+                section: {
+                    ...section,
+                    color: HOVERED_SECTION_COLOR,
+                },
+                term,
+            };
+
             set({
-                hoveredEvents: [
-                    {
-                        ...courseDetails,
-                        section: {
-                            ...section,
-                            color: HOVERED_SECTION_COLOR,
-                        },
-                        term,
-                    },
-                ],
-                hoveredCalendarizedCourses: calendarizeCourseEvents([
-                    {
-                        ...courseDetails,
-                        section: {
-                            ...section,
-                            color: HOVERED_SECTION_COLOR,
-                        },
-                        term,
-                    },
-                ]),
-                hoveredCalendarizedFinal: calendarizeFinals([
-                    {
-                        ...courseDetails,
-                        section: {
-                            ...section,
-                            color: HOVERED_SECTION_COLOR,
-                        },
-                        term,
-                    },
-                ])[0],
+                hoveredEvent: event,
+                hoveredCalendarizedCourses: calendarizeCourseEvents([event]),
+                hoveredCalendarizedFinal: calendarizeFinals([event])[0],
             });
         },
     };

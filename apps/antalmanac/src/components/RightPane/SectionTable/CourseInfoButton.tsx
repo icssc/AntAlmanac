@@ -72,7 +72,11 @@ function CourseInfoButton({
         isMobileScreen || (scheduleManagementWidth && scheduleManagementWidth < theme.breakpoints.values.xs);
 
     return (
-        <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ display: 'flex' }}>
+        <div
+            // onMouseEnter={handleMouseEnter}
+            // onMouseLeave={handleMouseLeave}
+            style={{ display: 'flex' }}
+        >
             <Button
                 className={classes.button}
                 variant="contained"

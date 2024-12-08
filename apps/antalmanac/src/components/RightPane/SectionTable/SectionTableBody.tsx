@@ -499,6 +499,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const isDark = useThemeStore((store) => store.isDark);
     const activeColumns = useColumnStore((store) => store.activeColumns);
     const previewMode = usePreviewStore((store) => store.previewMode);
+    const [hoveredEvent, setHoveredEvents] = useHoveredStore((store) => [store.hoveredEvent, store.setHoveredEvents]);
 
     const [addedCourse, setAddedCourse] = useState(
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
@@ -527,11 +528,9 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         setCalendarEvents(AppStore.getCourseEventsInCalendar());
     }, [setCalendarEvents]);
 
-    const [hoveredEvents, setHoveredEvents] = useHoveredStore((store) => [store.hoveredEvents, store.setHoveredEvents]);
-
     const alreadyHovered = useMemo(() => {
-        return hoveredEvents?.some((scheduleCourse) => scheduleCourse.section.sectionCode == section.sectionCode);
-    }, [hoveredEvents, section.sectionCode]);
+        return hoveredEvent?.section.sectionCode === section.sectionCode;
+    }, [hoveredEvent, section.sectionCode]);
 
     const handleHover = useCallback(() => {
         if (!previewMode || alreadyHovered || addedCourse) {
