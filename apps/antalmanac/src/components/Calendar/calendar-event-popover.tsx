@@ -40,8 +40,8 @@ export function CalendarEventPopover() {
             open={Boolean(anchorEl) && !!selectedEvent}
             onClose={handleClosePopover}
             anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
+                vertical: 'top',
+                horizontal: 'right',
             }}
             transformOrigin={{
                 vertical: 'top',

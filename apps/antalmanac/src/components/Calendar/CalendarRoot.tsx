@@ -11,6 +11,7 @@ import { CalendarToolbar } from './CalendarToolbar';
 import { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
 
 import { CalendarCourseEvent } from '$components/Calendar/calendar-course-event';
+import { CalendarCourseEventWrapper } from '$components/Calendar/calendar-course-event-wrapper';
 import { CalendarEventPopover } from '$components/Calendar/calendar-event-popover';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
@@ -19,7 +20,10 @@ import { useTimeFormatStore } from '$stores/SettingsStore';
 
 const localizer = momentLocalizer(moment);
 const views = [Views.WEEK, Views.WORK_WEEK];
-const components = { event: CalendarCourseEvent };
+const components = {
+    event: CalendarCourseEvent,
+    eventWrapper: CalendarCourseEventWrapper,
+};
 const max = new Date(2018, 0, 1, 23);
 
 export const ScheduleCalendar = memo(() => {
