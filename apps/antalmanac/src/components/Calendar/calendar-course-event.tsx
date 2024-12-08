@@ -1,13 +1,25 @@
 import { Box } from '@material-ui/core';
 import { memo } from 'react';
+import { shallow } from 'zustand/shallow';
 
 import { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
 import locationIds from '$lib/location_ids';
+import { useSelectedEventStore } from '$stores/SelectedEventStore';
 
 export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) => {
+    const setSelectedEvent = useSelectedEventStore((state) => state.setSelectedEvent, shallow);
+
+    const handleClick = (e: React.MouseEvent) => {
+        console.log('what');
+        e.preventDefault();
+        e.stopPropagation();
+
+        setSelectedEvent(e, event);
+    };
+
     if (event.isCustomEvent) {
         return (
-            <Box>
+            <Box onClick={handleClick}>
                 <Box
                     style={{
                         display: 'flex',
@@ -28,7 +40,7 @@ export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) =>
     }
 
     return (
-        <Box>
+        <Box onClick={handleClick}>
             <Box
                 style={{
                     display: 'flex',
@@ -46,8 +58,8 @@ export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) =>
                     {event.showLocationInfo
                         ? event.locations.map((location) => `${location.building} ${location.room}`).join(', ')
                         : event.locations.length > 1
-                        ? `${event.locations.length} Locations`
-                        : `${event.locations[0].building} ${event.locations[0].room}`}
+                          ? `${event.locations.length} Locations`
+                          : `${event.locations[0].building} ${event.locations[0].room}`}
                 </Box>
                 <Box>{event.sectionCode}</Box>
             </Box>

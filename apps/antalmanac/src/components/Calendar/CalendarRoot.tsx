@@ -1,9 +1,9 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
 
-import { Box, ClickAwayListener, Popper } from '@material-ui/core';
+import { Box, Popover } from '@material-ui/core';
 import moment from 'moment';
-import { memo, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
 import { shallow } from 'zustand/shallow';
 
@@ -14,17 +14,16 @@ import { CalendarCourseEvent } from '$components/Calendar/calendar-course-event'
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
+import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 
 const localizer = momentLocalizer(moment);
 const views = [Views.WEEK, Views.WORK_WEEK];
 const components = { event: CalendarCourseEvent };
+const max = new Date(2018, 0, 1, 23);
 
 export const ScheduleCalendar = memo(() => {
-    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
-    const [courseInMoreInfo, setCourseInMoreInfo] = useState<CalendarEvent | null>(null);
-    const [calendarEventKey, setCalendarEventKey] = useState<number | null>(null);
     const [eventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
     const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
@@ -33,6 +32,10 @@ export const ScheduleCalendar = memo(() => {
     const { isMilitaryTime } = useTimeFormatStore();
     const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
         (state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal],
+        shallow
+    );
+    const [anchorEl, selectedEvent, setSelectedEvent] = useSelectedEventStore(
+        (state) => [state.selectedEventAnchorEl, state.selectedEvent, state.setSelectedEvent],
         shallow
     );
 
@@ -54,24 +57,13 @@ export const ScheduleCalendar = memo(() => {
     const events = useMemo(() => getEventsForCalendar(), [getEventsForCalendar]);
 
     const handleClosePopover = useCallback(() => {
-        setAnchorEl(null);
-    }, []);
+        setSelectedEvent(null, null);
+    }, [setSelectedEvent]);
 
     const toggleDisplayFinalsSchedule = useCallback(() => {
         handleClosePopover();
         setShowFinalsSchedule((prevState) => !prevState);
     }, [handleClosePopover]);
-
-    const handleEventClick = useCallback((event: CalendarEvent, e: SyntheticEvent<HTMLElement, Event>) => {
-        const { currentTarget } = e;
-        e.stopPropagation();
-
-        if (event.isCustomEvent || event.sectionType !== 'Fin') {
-            setAnchorEl((prevAnchorEl) => (prevAnchorEl === currentTarget ? null : currentTarget));
-            setCourseInMoreInfo(event);
-            setCalendarEventKey(Math.random());
-        }
-    }, []);
 
     /**
      * Finds the earliest start time and returns that or 7AM, whichever is earlier
@@ -198,35 +190,27 @@ export const ScheduleCalendar = memo(() => {
             />
 
             <Box id="screenshot" height="0" flexGrow={1}>
-                <Popper
-                    anchorEl={anchorEl}
-                    placement="right"
-                    modifiers={{
-                        offset: {
-                            enabled: true,
-                            offset: '0, 10',
-                        },
-                        flip: {
-                            enabled: true,
-                        },
-                        preventOverflow: {
-                            enabled: true,
-                            boundariesElement: 'scrollParent',
-                        },
-                    }}
-                    open={Boolean(anchorEl)}
-                >
-                    <ClickAwayListener onClickAway={handleClosePopover}>
-                        <Box>
-                            <CourseCalendarEvent
-                                key={calendarEventKey}
-                                closePopover={handleClosePopover}
-                                courseInMoreInfo={courseInMoreInfo as CalendarEvent}
-                                scheduleNames={scheduleNames}
-                            />
-                        </Box>
-                    </ClickAwayListener>
-                </Popper>
+                {selectedEvent ? (
+                    <Popover
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl) && !!selectedEvent}
+                        onClose={handleClosePopover}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'left',
+                        }}
+                    >
+                        <CourseCalendarEvent
+                            closePopover={handleClosePopover}
+                            selectedEvent={selectedEvent}
+                            scheduleNames={scheduleNames}
+                        />
+                    </Popover>
+                ) : null}
 
                 <Calendar<CalendarEvent, object>
                     localizer={localizer}
@@ -235,18 +219,23 @@ export const ScheduleCalendar = memo(() => {
                     views={views}
                     defaultView={Views.WORK_WEEK}
                     view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
-                    onView={undefined}
+                    onView={() => {
+                        return;
+                    }}
                     step={15}
                     timeslots={2}
                     date={date}
-                    onNavigate={undefined}
+                    onNavigate={() => {
+                        return;
+                    }}
                     min={getStartTime()}
-                    max={new Date(2018, 0, 1, 23)}
+                    max={max}
                     events={events}
                     eventPropGetter={eventStyleGetter}
                     showMultiDayTimes={false}
                     components={components}
-                    onSelectEvent={handleEventClick}
+                    onSelectEvent={undefined}
+                    onSelectSlot={undefined}
                 />
             </Box>
         </Box>
