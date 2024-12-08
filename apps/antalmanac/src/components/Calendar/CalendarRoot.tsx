@@ -177,13 +177,13 @@ export const ScheduleCalendar = memo(() => {
 
     return (
         <Box id="calendar-root" borderRadius={1} flexGrow={1} height={'0px'} display="flex" flexDirection="column">
+            {String(import.meta.env.DEV)}
             <CalendarToolbar
                 currentScheduleIndex={currentScheduleIndex}
                 toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
                 showFinalsSchedule={showFinalsSchedule}
                 scheduleNames={scheduleNames}
             />
-
             <Box id="screenshot" height="0" flexGrow={1}>
                 <CalendarEventPopover />
 
