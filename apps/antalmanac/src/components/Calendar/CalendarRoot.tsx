@@ -1,20 +1,20 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
 
-import { Box, Popover } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import moment from 'moment';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
 import { shallow } from 'zustand/shallow';
 
 import { CalendarToolbar } from './CalendarToolbar';
-import CourseCalendarEvent, { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
+import { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
 
 import { CalendarCourseEvent } from '$components/Calendar/calendar-course-event';
+import { CalendarEventPopover } from '$components/Calendar/calendar-event-popover';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
-import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 
 const localizer = momentLocalizer(moment);
@@ -32,10 +32,6 @@ export const ScheduleCalendar = memo(() => {
     const { isMilitaryTime } = useTimeFormatStore();
     const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
         (state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal],
-        shallow
-    );
-    const [anchorEl, selectedEvent, setSelectedEvent] = useSelectedEventStore(
-        (state) => [state.selectedEventAnchorEl, state.selectedEvent, state.setSelectedEvent],
         shallow
     );
 
@@ -56,14 +52,10 @@ export const ScheduleCalendar = memo(() => {
 
     const events = useMemo(() => getEventsForCalendar(), [getEventsForCalendar]);
 
-    const handleClosePopover = useCallback(() => {
-        setSelectedEvent(null, null);
-    }, [setSelectedEvent]);
-
     const toggleDisplayFinalsSchedule = useCallback(() => {
-        handleClosePopover();
+        // handleClosePopover();
         setShowFinalsSchedule((prevState) => !prevState);
-    }, [handleClosePopover]);
+    }, []);
 
     /**
      * Finds the earliest start time and returns that or 7AM, whichever is earlier
@@ -190,27 +182,7 @@ export const ScheduleCalendar = memo(() => {
             />
 
             <Box id="screenshot" height="0" flexGrow={1}>
-                {selectedEvent ? (
-                    <Popover
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl) && !!selectedEvent}
-                        onClose={handleClosePopover}
-                        anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'left',
-                        }}
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'left',
-                        }}
-                    >
-                        <CourseCalendarEvent
-                            closePopover={handleClosePopover}
-                            selectedEvent={selectedEvent}
-                            scheduleNames={scheduleNames}
-                        />
-                    </Popover>
-                ) : null}
+                <CalendarEventPopover />
 
                 <Calendar<CalendarEvent, object>
                     localizer={localizer}
@@ -234,8 +206,6 @@ export const ScheduleCalendar = memo(() => {
                     eventPropGetter={eventStyleGetter}
                     showMultiDayTimes={false}
                     components={components}
-                    onSelectEvent={undefined}
-                    onSelectSlot={undefined}
                 />
             </Box>
         </Box>

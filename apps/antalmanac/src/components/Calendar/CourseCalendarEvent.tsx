@@ -23,7 +23,6 @@ import { formatTimes } from '$stores/calendarizeHelpers';
 const styles: Styles<Theme, object> = {
     courseContainer: {
         padding: '0.5rem',
-        margin: '0 0.5rem',
         minWidth: '15rem',
     },
     customEventContainer: {

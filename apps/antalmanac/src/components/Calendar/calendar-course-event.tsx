@@ -10,7 +10,6 @@ export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) =>
     const setSelectedEvent = useSelectedEventStore((state) => state.setSelectedEvent, shallow);
 
     const handleClick = (e: React.MouseEvent) => {
-        console.log('what');
         e.preventDefault();
         e.stopPropagation();
 
