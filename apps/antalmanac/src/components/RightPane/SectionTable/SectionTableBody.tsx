@@ -499,6 +499,7 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     const isDark = useThemeStore((store) => store.isDark);
     const activeColumns = useColumnStore((store) => store.activeColumns);
     const previewMode = usePreviewStore((store) => store.previewMode);
+    const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
     const [addedCourse, setAddedCourse] = useState(
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
@@ -527,19 +528,17 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         setCalendarEvents(AppStore.getCourseEventsInCalendar());
     }, [setCalendarEvents]);
 
-    const [hoveredEvents, setHoveredEvents] = useHoveredStore((store) => [store.hoveredEvents, store.setHoveredEvents]);
-
-    const alreadyHovered = useMemo(() => {
-        return hoveredEvents?.some((scheduleCourse) => scheduleCourse.section.sectionCode == section.sectionCode);
-    }, [hoveredEvents, section.sectionCode]);
-
-    const handleHover = useCallback(() => {
-        if (!previewMode || alreadyHovered || addedCourse) {
-            setHoveredEvents(undefined);
+    const handleMouseEnter = useCallback(() => {
+        if (!previewMode || addedCourse) {
+            setHoveredEvent(undefined);
         } else {
-            setHoveredEvents(section, courseDetails, term);
+            setHoveredEvent(section, courseDetails, term);
         }
-    }, [previewMode, alreadyHovered, addedCourse, setHoveredEvents, section, courseDetails, term]);
+    }, [previewMode, addedCourse, setHoveredEvent, section, courseDetails, term]);
+
+    const handleMouseLeave = useCallback(() => {
+        setHoveredEvent(undefined);
+    }, [setHoveredEvent]);
 
     // Attach event listeners to the store.
     useEffect(() => {
@@ -606,27 +605,37 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         return Boolean(conflictingEvent);
     }, [calendarEvents, sectionDetails]);
 
-    /* allowHighlight is always false on CourseRenderPane and always true on AddedCoursePane */
-    const computedAddedCourseStyle = allowHighlight
-        ? isDark
-            ? { background: '#b0b04f' }
-            : { background: '#fcfc97' }
-        : {};
-    const computedScheduleConflictStyle = scheduleConflict
-        ? isDark
-            ? { background: '#121212', opacity: '0.6' }
-            : { background: '#a0a0a0', opacity: '1' }
-        : {};
+    const computedRowStyle = useMemo(() => {
+        /* allowHighlight is always false on CourseRenderPane and always true on AddedCoursePane */
+        const computedAddedCourseStyle = allowHighlight
+            ? isDark
+                ? { background: '#b0b04f' }
+                : { background: '#fcfc97' }
+            : {};
+        const computedScheduleConflictStyle = scheduleConflict
+            ? isDark
+                ? { background: '#121212', opacity: '0.6' }
+                : { background: '#a0a0a0', opacity: '1' }
+            : {};
 
-    const computedRowStyle = addedCourse ? computedAddedCourseStyle : computedScheduleConflictStyle;
+        if (addedCourse) {
+            return computedAddedCourseStyle;
+        }
+
+        if (scheduleConflict) {
+            return computedScheduleConflictStyle;
+        }
+
+        return {};
+    }, [allowHighlight, isDark, scheduleConflict, addedCourse]);
 
     return (
         <TableRow
             classes={{ root: classes.row }}
             className={classNames(classes.tr)}
             style={computedRowStyle}
-            onMouseEnter={handleHover}
-            onMouseLeave={handleHover}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
         >
             {Object.entries(tableBodyCells)
                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))

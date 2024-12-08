@@ -18,7 +18,7 @@ export function getLocation(location: string): Location {
     return { building, room };
 }
 
-export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
+export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): CourseEvent[] => {
     return currentCourses.flatMap((course) => {
         return course.section.meetings
             .filter((meeting) => !meeting.timeIsTBA)
@@ -80,7 +80,7 @@ export function calendarizeCourseEvents(currentCourses: ScheduleCourse[] = []): 
                 });
             });
     });
-}
+};
 
 export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
     return currentCourses
