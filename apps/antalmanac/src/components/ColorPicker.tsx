@@ -81,7 +81,7 @@ class ColorPicker extends PureComponent<ColorPickerProps> {
             <>
                 <Tooltip title="Change Color">
                     <IconButton
-                        style={{ color: this.state.color }}
+                        style={{ color: this.state.color, padding: 8 }}
                         onClick={(e) => {
                             this.handleClick(e);
                         }}
