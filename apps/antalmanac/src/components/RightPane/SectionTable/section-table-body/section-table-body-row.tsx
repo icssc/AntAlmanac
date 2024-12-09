@@ -14,15 +14,14 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { AASection, WebsocSectionEnrollment, WebsocSectionMeeting, CourseDetails } from '@packages/antalmanac-types';
 import classNames from 'classnames';
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
+import { Fragment, memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { MOBILE_BREAKPOINT } from '../../../globals';
-
-import GradesPopup from './GradesPopup';
-import { OpenSpotAlertPopoverProps } from './OpenSpotAlertPopover';
-import { SectionActionCell } from './cells/action';
-import restrictionsMapping from './static/restrictionsMapping.json';
+import { MOBILE_BREAKPOINT } from '../../../../globals';
+import GradesPopup from '../GradesPopup';
+import { OpenSpotAlertPopoverProps } from '../OpenSpotAlertPopover';
+import { SectionActionCell } from '../cells/action';
+import restrictionsMapping from '../static/restrictionsMapping.json';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { Grades } from '$lib/grades';
@@ -33,7 +32,7 @@ import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { usePreviewStore, useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
-import { normalizeTime, parseDaysString, formatTimes } from '$stores/calendarizeHelpers';
+import { formatTimes } from '$stores/calendarizeHelpers';
 
 const styles: Styles<Theme, object> = (theme) => ({
     sectionCode: {
@@ -476,6 +475,7 @@ interface SectionTableBodyProps {
     term: string;
     allowHighlight: boolean;
     scheduleNames: string[];
+    scheduleConflict: boolean;
 }
 
 // These components have too varied of types, any is fine here
@@ -493,8 +493,8 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     status: StatusCell,
 };
 
-const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
-    const { classes, section, courseDetails, term, allowHighlight, scheduleNames } = props;
+const SectionTableBodyRow = memo((props: SectionTableBodyProps) => {
+    const { classes, section, courseDetails, term, allowHighlight, scheduleNames, scheduleConflict } = props;
 
     const isDark = useThemeStore((store) => store.isDark);
     const activeColumns = useColumnStore((store) => store.activeColumns);
@@ -505,28 +505,11 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
     );
 
-    const [calendarEvents, setCalendarEvents] = useState(AppStore.getCourseEventsInCalendar());
-
-    /**
-     * Additional information about the current section being rendered.
-     * i.e. time information, which is compared with the calendar events to find conflicts.
-     */
-    const sectionDetails = useMemo(() => {
-        return {
-            daysOccurring: parseDaysString(section.meetings[0].timeIsTBA ? null : section.meetings[0].days),
-            ...normalizeTime(section.meetings[0]),
-        };
-    }, [section.meetings]);
-
     // Stable references to event listeners will synchronize React state with the store.
 
     const updateHighlight = useCallback(() => {
         setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
     }, [section.sectionCode, term]);
-
-    const updateCalendarEvents = useCallback(() => {
-        setCalendarEvents(AppStore.getCourseEventsInCalendar());
-    }, [setCalendarEvents]);
 
     const handleMouseEnter = useCallback(() => {
         if (!previewMode || addedCourse) {
@@ -550,60 +533,6 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
             AppStore.removeListener('currentScheduleIndexChange', updateHighlight);
         };
     }, [updateHighlight]);
-
-    useEffect(() => {
-        AppStore.on('addedCoursesChange', updateCalendarEvents);
-        AppStore.on('currentScheduleIndexChange', updateCalendarEvents);
-
-        return () => {
-            AppStore.removeListener('addedCoursesChange', updateCalendarEvents);
-            AppStore.removeListener('currentScheduleIndexChange', updateCalendarEvents);
-        };
-    }, [updateCalendarEvents]);
-
-    /**
-     * Whether the current section conflicts with any of the calendar events.
-     */
-    const scheduleConflict = useMemo(() => {
-        // If there are currently no calendar events, there can't be any conflicts.
-        if (calendarEvents.length === 0) {
-            return false;
-        }
-
-        // If the section's time wasn't parseable, then don't consider conflicts.
-        if (sectionDetails.startTime == null || sectionDetails.endTime == null) {
-            return false;
-        }
-
-        const { startTime, endTime } = sectionDetails;
-
-        const conflictingEvent = calendarEvents.find((event) => {
-            // If it occurs on a different day, no conflict.
-            if (!sectionDetails?.daysOccurring?.includes(event.start.getDay())) {
-                return false;
-            }
-
-            /**
-             * A time normalized to ##:##
-             * @example '10:00'
-             */
-            const eventStartTime = event.start.toString().split(' ')[4].slice(0, -3);
-
-            /**
-             * Normalized to ##:##
-             * @example '10:00'
-             */
-            const eventEndTime = event.end.toString().split(' ')[4].slice(0, -3);
-
-            const happensBefore = startTime <= eventStartTime && endTime <= eventStartTime;
-
-            const happensAfter = startTime >= eventEndTime && endTime >= eventEndTime;
-
-            return !(happensBefore || happensAfter);
-        });
-
-        return Boolean(conflictingEvent);
-    }, [calendarEvents, sectionDetails]);
 
     const computedRowStyle = useMemo(() => {
         /* allowHighlight is always false on CourseRenderPane and always true on AddedCoursePane */
@@ -662,4 +591,6 @@ const SectionTableBody = withStyles(styles)((props: SectionTableBodyProps) => {
     );
 });
 
-export default withStyles(styles)(SectionTableBody);
+SectionTableBodyRow.displayName = 'SectionTableBodyRow';
+
+export default withStyles(styles)(SectionTableBodyRow);
