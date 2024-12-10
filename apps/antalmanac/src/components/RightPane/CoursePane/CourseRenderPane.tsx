@@ -8,7 +8,7 @@ import RightPaneStore from '../RightPaneStore';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 
-import SchoolDeptCard from './SchoolDeptCard';
+import { SchoolDeptCard } from './SchoolDeptCard';
 import darkModeLoadingGif from './SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './SearchForm/Gifs/loading.gif';
 import darkNoNothing from './static/dark-no_results.png';
