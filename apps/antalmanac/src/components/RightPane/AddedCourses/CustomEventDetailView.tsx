@@ -5,10 +5,10 @@ import moment from 'moment';
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
-import CustomEventDialog from '../../Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import ColorPicker from '../../ColorPicker';
 
 import { deleteCustomEvent } from '$actions/AppStoreActions';
+import CustomEventDialog from '$components/Calendar/toolbar/CustomEventDialog/';
 import analyticsEnum from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';
 import AppStore from '$stores/AppStore';

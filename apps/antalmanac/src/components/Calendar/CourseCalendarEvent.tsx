@@ -7,9 +7,8 @@ import { useEffect, useRef, useCallback } from 'react';
 import { Event } from 'react-big-calendar';
 import { Link } from 'react-router-dom';
 
-import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
-
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
+import CustomEventDialog from '$components/Calendar/toolbar/CustomEventDialog/';
 import ColorPicker from '$components/ColorPicker';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';
@@ -23,7 +22,6 @@ import { formatTimes } from '$stores/calendarizeHelpers';
 const styles: Styles<Theme, object> = {
     courseContainer: {
         padding: '0.5rem',
-        margin: '0 1rem',
         minWidth: '15rem',
     },
     customEventContainer: {
@@ -125,7 +123,7 @@ export interface CourseEvent extends CommonCalendarEvent {
 }
 
 /**
- * There is another CustomEvent interface in CourseCalendarEvent and they are slightly different.  The this one represents only one day, like the event on Monday, and needs to be duplicated to be repeated across multiple days. The other one, `CustomEventDialog`'s `RepeatingCustomEvent`, encapsulates the occurences of an event on multiple days, like Monday Tuesday Wednesday all in the same object as specified by the `days` array.
+ * There is another CustomEvent interface in CourseCalendarEvent and they are slightly different.  The this one represents only one day, like the event on Monday, and needs to be duplicated to be repeated across multiple days. The other one, `CustomEventDialog`'s `RepeatingCustomEvent`, encapsulates the occurrences of an event on multiple days, like Monday Tuesday Wednesday all in the same object as specified by the `days` array.
  * https://github.com/icssc/AntAlmanac/wiki/The-Great-AntAlmanac-TypeScript-Rewritening%E2%84%A2#duplicate-interface-names-%EF%B8%8F
  */
 export interface CustomEvent extends CommonCalendarEvent {
@@ -139,7 +137,7 @@ export type CalendarEvent = CourseEvent | CustomEvent;
 
 interface CourseCalendarEventProps {
     classes: ClassNameMap;
-    courseInMoreInfo: CalendarEvent;
+    selectedEvent: CalendarEvent;
     scheduleNames: string[];
     closePopover: () => void;
 }
@@ -172,10 +170,10 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
         setActiveTab(2);
     }, [setActiveTab]);
 
-    const { classes, courseInMoreInfo } = props;
+    const { classes, selectedEvent } = props;
 
-    if (!courseInMoreInfo.isCustomEvent) {
-        const { term, instructors, sectionCode, title, finalExam, locations, sectionType } = courseInMoreInfo;
+    if (!selectedEvent.isCustomEvent) {
+        const { term, instructors, sectionCode, title, finalExam, locations, sectionType } = selectedEvent;
 
         let finalExamString = '';
 
@@ -269,10 +267,10 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             <td>Color</td>
                             <td className={`${classes.colorPicker} ${classes.stickToRight}`}>
                                 <ColorPicker
-                                    color={courseInMoreInfo.color}
-                                    isCustomEvent={courseInMoreInfo.isCustomEvent}
-                                    sectionCode={courseInMoreInfo.sectionCode}
-                                    term={courseInMoreInfo.term}
+                                    color={selectedEvent.color}
+                                    isCustomEvent={selectedEvent.isCustomEvent}
+                                    sectionCode={selectedEvent.sectionCode}
+                                    term={selectedEvent.term}
                                     analyticsCategory={analyticsEnum.calendar.title}
                                 />
                             </td>
@@ -282,7 +280,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             </Paper>
         );
     } else {
-        const { title, customEventID, building } = courseInMoreInfo;
+        const { title, customEventID, building } = selectedEvent;
         return (
             <Paper className={classes.customEventContainer} ref={paperRef}>
                 <div className={classes.title}>{title}</div>
@@ -301,9 +299,9 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                 <div className={classes.buttonBar}>
                     <div className={`${classes.colorPicker}`}>
                         <ColorPicker
-                            color={courseInMoreInfo.color}
+                            color={selectedEvent.color}
                             isCustomEvent={true}
-                            customEventID={courseInMoreInfo.customEventID}
+                            customEventID={selectedEvent.customEventID}
                             analyticsCategory={analyticsEnum.calendar.title}
                         />
                     </div>

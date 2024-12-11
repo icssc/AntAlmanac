@@ -2,7 +2,6 @@ import {
     Box,
     Paper,
     Table,
-    TableBody,
     TableCell,
     TableContainer,
     TableHead,
@@ -21,8 +20,8 @@ import CourseInfoButton from './CourseInfoButton';
 import { EnrollmentHistoryPopup } from './EnrollmentHistoryPopup';
 import GradesPopup from './GradesPopup';
 import { SectionTableProps } from './SectionTable.types';
-import SectionTableBody from './SectionTableBody';
 
+import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import analyticsEnum from '$lib/analytics';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 
@@ -196,20 +195,12 @@ function SectionTable(props: SectionTableProps) {
                         </TableRow>
                     </TableHead>
 
-                    <TableBody>
-                        {courseDetails.sections.map((section) => {
-                            return (
-                                <SectionTableBody
-                                    key={section.sectionCode}
-                                    section={section}
-                                    courseDetails={courseDetails}
-                                    term={term}
-                                    allowHighlight={allowHighlight}
-                                    scheduleNames={scheduleNames}
-                                />
-                            );
-                        })}
-                    </TableBody>
+                    <SectionTableBody
+                        courseDetails={courseDetails}
+                        term={term}
+                        allowHighlight={allowHighlight}
+                        scheduleNames={scheduleNames}
+                    />
                 </Table>
             </TableContainer>
         </>

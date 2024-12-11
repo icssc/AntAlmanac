@@ -1,139 +1,85 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
 
-import { Box, ClickAwayListener, Popper } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import moment from 'moment';
-import { SyntheticEvent, useEffect, useState } from 'react';
-import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
+import { shallow } from 'zustand/shallow';
 
-import CalendarToolbar from './CalendarToolbar';
-import CourseCalendarEvent, { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
+import { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
 
-import locationIds from '$lib/location_ids';
+import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
+import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
+import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
+import { CalendarToolbar } from '$components/Calendar/toolbar/CalendarToolbar';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 
-const localizer = momentLocalizer(moment);
-
-const AntAlmanacEvent = ({ event }: { event: CalendarEvent }) => {
-    return event.isCustomEvent ? (
-        <Box>
-            <Box
-                style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    justifyContent: 'space-between',
-                    fontWeight: 500,
-                    fontSize: '0.8rem',
-                }}
-            >
-                <Box>{event.title}</Box>
-            </Box>
-
-            <Box style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontSize: '0.7rem' }}>
-                <Box>{Object.keys(locationIds).find((key) => locationIds[key] === parseInt(event.building))}</Box>
-            </Box>
-        </Box>
-    ) : (
-        <Box>
-            <Box
-                style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    justifyContent: 'space-between',
-                    fontWeight: 500,
-                    fontSize: '0.8rem',
-                }}
-            >
-                <Box>{event.title}</Box>
-                <Box style={{ fontSize: '0.8rem' }}> {event.sectionType}</Box>
-            </Box>
-            <Box style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontSize: '0.7rem' }}>
-                <Box>
-                    {event.showLocationInfo
-                        ? event.locations.map((location) => `${location.building} ${location.room}`).join(', ')
-                        : event.locations.length > 1
-                          ? `${event.locations.length} Locations`
-                          : `${event.locations[0].building} ${event.locations[0].room}`}
-                </Box>
-                <Box>{event.sectionCode}</Box>
-            </Box>
-        </Box>
-    );
+const CALENDAR_LOCALIZER: DateLocalizer = momentLocalizer(moment);
+const CALENDAR_VIEWS: ViewsProps<CalendarEvent, object> = [Views.WEEK, Views.WORK_WEEK];
+const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
+    event: CalendarCourseEvent,
+    eventWrapper: CalendarCourseEventWrapper,
 };
+const CALENDAR_MAX_DATE = new Date(2018, 0, 1, 23);
 
-interface ScheduleCalendarProps {
-    isMobile?: boolean;
-}
-
-export default function ScheduleCalendar(_props?: ScheduleCalendarProps) {
-    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+export const ScheduleCalendar = memo(() => {
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
-    const [courseInMoreInfo, setCourseInMoreInfo] = useState<CalendarEvent | null>(null);
-    const [calendarEventKey, setCalendarEventKey] = useState<number | null>(null);
-    const [eventsInCalendar, setEventsInCalendar] = useState(AppStore.getEventsInCalendar());
-    const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(AppStore.getFinalEventsInCalendar());
-    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+    const [eventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
+    const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
+    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
+    const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
 
     const { isMilitaryTime } = useTimeFormatStore();
-    const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore((store) => [
-        store.hoveredCalendarizedCourses,
-        store.hoveredCalendarizedFinal,
-    ]);
+    const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
+        (state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal],
+        shallow
+    );
 
-    const getEventsForCalendar = (): CalendarEvent[] => {
+    const getEventsForCalendar = useCallback((): CalendarEvent[] => {
         if (showFinalsSchedule)
             return hoveredCalendarizedFinal
                 ? [...finalsEventsInCalendar, hoveredCalendarizedFinal]
                 : finalsEventsInCalendar;
         else
             return hoveredCalendarizedCourses ? [...eventsInCalendar, ...hoveredCalendarizedCourses] : eventsInCalendar;
-    };
+    }, [
+        eventsInCalendar,
+        finalsEventsInCalendar,
+        hoveredCalendarizedCourses,
+        hoveredCalendarizedFinal,
+        showFinalsSchedule,
+    ]);
 
-    const handleClosePopover = () => {
-        setAnchorEl(null);
-    };
+    const events = getEventsForCalendar();
 
-    const toggleDisplayFinalsSchedule = () => {
-        handleClosePopover();
-
+    const toggleDisplayFinalsSchedule = useCallback(() => {
         setShowFinalsSchedule((prevState) => !prevState);
-    };
-
-    const handleEventClick = (event: CalendarEvent, e: SyntheticEvent<HTMLElement, Event>) => {
-        const { currentTarget } = e;
-        e.stopPropagation();
-
-        if (event.isCustomEvent || event.sectionType !== 'Fin') {
-            setAnchorEl((prevAnchorEl) => (prevAnchorEl === currentTarget ? null : currentTarget));
-            setCourseInMoreInfo(event);
-            setCalendarEventKey(Math.random());
-        }
-    };
+    }, []);
 
     /**
      * Finds the earliest start time and returns that or 7AM, whichever is earlier
      * @returns A date with the earliest time or 7AM
      */
-    const getStartTime = () => {
-        const eventStartHours = getEventsForCalendar().map((event) => event.start.getHours());
+    const getStartTime = useCallback(() => {
+        const eventStartHours = events.map((event) => event.start.getHours());
         return new Date(2018, 0, 1, Math.min(7, Math.min(...eventStartHours)));
-    };
+    }, [events]);
 
-    const eventStyleGetter = (event: CalendarEvent) => {
-        return {
-            style: {
-                backgroundColor: event.color,
-                cursor: 'pointer',
-                borderStyle: 'none',
-                borderRadius: '4px',
-                color: colorContrastSufficient(event.color) ? 'white' : 'black',
-            },
+    const eventStyleGetter = useCallback((event: CalendarEvent) => {
+        const style = {
+            backgroundColor: event.color,
+            cursor: 'pointer',
+            borderStyle: 'none',
+            borderRadius: '4px',
+            color: colorContrastSufficient(event.color) ? 'white' : 'black',
         };
-    };
+
+        return { style };
+    }, []);
 
     const colorContrastSufficient = (bg: string) => {
         // This equation is taken from w3c, does not use the colour difference part
@@ -158,7 +104,6 @@ export default function ScheduleCalendar(_props?: ScheduleCalendarProps) {
         return Math.abs(bgBrightness - textBrightness) > minBrightnessDiff;
     };
 
-    const events = getEventsForCalendar();
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
 
     const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
@@ -175,15 +120,34 @@ export default function ScheduleCalendar(_props?: ScheduleCalendarProps) {
     const finalsDateFormat = finalsDate ? 'ddd MM/DD' : 'ddd';
     const date = showFinalsSchedule && finalsDate ? finalsDate : new Date(2018, 0, 1);
 
-    /**
-     * If a final is on a Saturday or Sunday, let the calendar start on Saturday
-     */
-    // eslint-disable-next-line import/no-named-as-default-member -- moment doesn't expose named exports: https://github.com/vitejs/vite-plugin-react/issues/202
-    moment.updateLocale('es-us', {
-        week: {
-            dow: hasWeekendCourse && showFinalsSchedule ? 6 : 0,
-        },
-    });
+    const formats = useMemo(
+        () => ({
+            timeGutterFormat: (date: Date, culture?: string, localizer?: DateLocalizer) =>
+                date.getMinutes() > 0 || !localizer ? '' : localizer.format(date, calendarGutterTimeFormat, culture),
+            dayFormat: showFinalsSchedule ? finalsDateFormat : 'ddd',
+            eventTimeRangeFormat: (range: { start: Date; end: Date }, culture?: string, localizer?: DateLocalizer) =>
+                localizer
+                    ? `${localizer.format(range.start, calendarTimeFormat, culture)} - ${localizer.format(
+                          range.end,
+                          calendarTimeFormat,
+                          culture
+                      )}`
+                    : '',
+        }),
+        [calendarGutterTimeFormat, calendarTimeFormat, finalsDateFormat, showFinalsSchedule]
+    );
+
+    useEffect(() => {
+        /**
+         * If a final is on a Saturday or Sunday, let the calendar start on Saturday
+         */
+        // eslint-disable-next-line import/no-named-as-default-member -- moment doesn't expose named exports: https://github.com/vitejs/vite-plugin-react/issues/202
+        moment.updateLocale('es-us', {
+            week: {
+                dow: hasWeekendCourse && showFinalsSchedule ? 6 : 0,
+            },
+        });
+    }, [hasWeekendCourse, showFinalsSchedule]);
 
     useEffect(() => {
         const updateEventsInCalendar = () => {
@@ -219,57 +183,15 @@ export default function ScheduleCalendar(_props?: ScheduleCalendarProps) {
                 showFinalsSchedule={showFinalsSchedule}
                 scheduleNames={scheduleNames}
             />
+
             <Box id="screenshot" height="0" flexGrow={1}>
-                <Popper
-                    anchorEl={anchorEl}
-                    placement="right"
-                    modifiers={{
-                        offset: {
-                            enabled: true,
-                            offset: '0, 10',
-                        },
-                        flip: {
-                            enabled: true,
-                        },
-                        preventOverflow: {
-                            enabled: true,
-                            boundariesElement: 'scrollParent',
-                        },
-                    }}
-                    open={Boolean(anchorEl)}
-                >
-                    <ClickAwayListener onClickAway={handleClosePopover}>
-                        <Box>
-                            <CourseCalendarEvent
-                                key={calendarEventKey}
-                                closePopover={handleClosePopover}
-                                courseInMoreInfo={courseInMoreInfo as CalendarEvent}
-                                scheduleNames={scheduleNames}
-                            />
-                        </Box>
-                    </ClickAwayListener>
-                </Popper>
+                <CalendarEventPopover />
+
                 <Calendar<CalendarEvent, object>
-                    localizer={localizer}
+                    localizer={CALENDAR_LOCALIZER}
                     toolbar={false}
-                    formats={{
-                        timeGutterFormat: (date: Date, culture?: string, localizer?: DateLocalizer) =>
-                            date.getMinutes() > 0 || !localizer
-                                ? ''
-                                : localizer.format(date, calendarGutterTimeFormat, culture),
-                        dayFormat: `${showFinalsSchedule ? finalsDateFormat : 'ddd'}`,
-                        eventTimeRangeFormat: (
-                            range: { start: Date; end: Date },
-                            culture?: string,
-                            localizer?: DateLocalizer
-                        ) =>
-                            !localizer
-                                ? ''
-                                : localizer.format(range.start, calendarTimeFormat, culture) +
-                                  ' - ' +
-                                  localizer.format(range.end, calendarTimeFormat, culture),
-                    }}
-                    views={[Views.WEEK, Views.WORK_WEEK]}
+                    formats={formats}
+                    views={CALENDAR_VIEWS}
                     defaultView={Views.WORK_WEEK}
                     view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
                     onView={() => {
@@ -278,16 +200,19 @@ export default function ScheduleCalendar(_props?: ScheduleCalendarProps) {
                     step={15}
                     timeslots={2}
                     date={date}
-                    onNavigate={() => undefined}
+                    onNavigate={() => {
+                        return;
+                    }}
                     min={getStartTime()}
-                    max={new Date(2018, 0, 1, 23)}
+                    max={CALENDAR_MAX_DATE}
                     events={events}
                     eventPropGetter={eventStyleGetter}
                     showMultiDayTimes={false}
-                    components={{ event: AntAlmanacEvent }}
-                    onSelectEvent={handleEventClick}
+                    components={CALENDAR_COMPONENTS}
                 />
             </Box>
         </Box>
     );
-}
+});
+
+ScheduleCalendar.displayName = 'ScheduleCalendar';
