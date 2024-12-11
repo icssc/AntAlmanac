@@ -2,7 +2,6 @@ import {
     Box,
     Paper,
     Table,
-    TableBody,
     TableCell,
     TableContainer,
     TableHead,
@@ -22,7 +21,7 @@ import { EnrollmentHistoryPopup } from './EnrollmentHistoryPopup';
 import GradesPopup from './GradesPopup';
 
 import type { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
-import SectionTableBody from '$components/RightPane/SectionTable/SectionTableBody';
+import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import LarcSectionTableBody from '$components/RightPane/SectionTable/larc/larc-section-table-body';
 import analyticsEnum from '$lib/analytics';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
@@ -199,33 +198,25 @@ export default function SectionTable({
                         </TableRow>
                     </TableHead>
 
-                    <TableBody>
-                        {courseDetails.sections.map((section) => {
-                            return (
-                                <SectionTableBody
-                                    key={section.sectionCode}
-                                    section={section}
-                                    courseDetails={courseDetails}
-                                    term={term}
-                                    allowHighlight={allowHighlight}
-                                    scheduleNames={scheduleNames}
-                                />
-                            );
-                        })}
+                    <SectionTableBody
+                        courseDetails={courseDetails}
+                        term={term}
+                        allowHighlight={allowHighlight}
+                        scheduleNames={scheduleNames}
+                    />
 
-                        {larcDetails?.sections.map((section, index) => {
-                            return (
-                                <LarcSectionTableBody
-                                    key={index}
-                                    section={section}
-                                    courseDetails={courseDetails}
-                                    term={term}
-                                    allowHighlight={allowHighlight}
-                                    scheduleNames={scheduleNames}
-                                />
-                            );
-                        })}
-                    </TableBody>
+                    {larcDetails?.sections.map((section, index) => {
+                        return (
+                            <LarcSectionTableBody
+                                key={index}
+                                section={section}
+                                courseDetails={courseDetails}
+                                term={term}
+                                allowHighlight={allowHighlight}
+                                scheduleNames={scheduleNames}
+                            />
+                        );
+                    })}
                 </Table>
             </TableContainer>
         </>

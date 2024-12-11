@@ -67,7 +67,7 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
-    const setHoveredEvents = useHoveredStore((store) => store.setHoveredEvents);
+    const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
     const loadCourses = useCallback(async () => {
         setLoading(true);
@@ -95,6 +95,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             department: formData.deptValue,
             ge: formData.ge as GE,
             instructor: formData.instructor,
+            sectionCode: formData.sectionCode,
         };
 
         const larcQueryParams = {
@@ -167,9 +168,9 @@ export default function CourseRenderPane(props: { id?: number }) {
      */
     useEffect(() => {
         return () => {
-            setHoveredEvents(undefined);
+            setHoveredEvent(undefined);
         };
-    }, [setHoveredEvents]);
+    }, [setHoveredEvent]);
 
     if (loading) {
         return <LoadingMessage />;
