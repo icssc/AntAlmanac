@@ -4,7 +4,7 @@ import './calendar.css';
 import { Box } from '@material-ui/core';
 import moment from 'moment';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calendar';
+import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
 import { shallow } from 'zustand/shallow';
 
 import { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
@@ -18,13 +18,13 @@ import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 
-const LOCALIZER = momentLocalizer(moment);
-const VIEWS = [Views.WEEK, Views.WORK_WEEK];
-const COMPONENTS = {
+const CALENDAR_LOCALIZER: DateLocalizer = momentLocalizer(moment);
+const CALENDAR_VIEWS: ViewsProps<CalendarEvent, object> = [Views.WEEK, Views.WORK_WEEK];
+const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
     event: CalendarCourseEvent,
     eventWrapper: CalendarCourseEventWrapper,
 };
-const MAX = new Date(2018, 0, 1, 23);
+const CALENDAR_MAX_DATE = new Date(2018, 0, 1, 23);
 
 export const ScheduleCalendar = memo(() => {
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
@@ -183,14 +183,15 @@ export const ScheduleCalendar = memo(() => {
                 showFinalsSchedule={showFinalsSchedule}
                 scheduleNames={scheduleNames}
             />
+
             <Box id="screenshot" height="0" flexGrow={1}>
                 <CalendarEventPopover />
 
                 <Calendar<CalendarEvent, object>
-                    localizer={LOCALIZER}
+                    localizer={CALENDAR_LOCALIZER}
                     toolbar={false}
                     formats={formats}
-                    views={VIEWS}
+                    views={CALENDAR_VIEWS}
                     defaultView={Views.WORK_WEEK}
                     view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
                     onView={() => {
@@ -203,11 +204,11 @@ export const ScheduleCalendar = memo(() => {
                         return;
                     }}
                     min={getStartTime()}
-                    max={MAX}
+                    max={CALENDAR_MAX_DATE}
                     events={events}
                     eventPropGetter={eventStyleGetter}
                     showMultiDayTimes={false}
-                    components={COMPONENTS}
+                    components={CALENDAR_COMPONENTS}
                 />
             </Box>
         </Box>
