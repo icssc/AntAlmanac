@@ -21,7 +21,7 @@ import { EnrollmentHistoryPopup } from './EnrollmentHistoryPopup';
 import GradesPopup from './GradesPopup';
 import { SectionTableProps } from './SectionTable.types';
 
-import { SectionTableBody } from '$components/RightPane/SectionTable/section-table-body/section-table-body';
+import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import analyticsEnum from '$lib/analytics';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 

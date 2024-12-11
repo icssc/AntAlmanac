@@ -3,9 +3,9 @@ import { Box, Button, Popover, Typography, useTheme } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { changeCurrentSchedule } from '$actions/AppStoreActions';
-import { AddScheduleButton } from '$components/Calendar/toolbar/schedule-select/schedule-select-buttons/add-schedule-button';
-import { DeleteScheduleButton } from '$components/Calendar/toolbar/schedule-select/schedule-select-buttons/delete-schedule-button';
-import { RenameScheduleButton } from '$components/Calendar/toolbar/schedule-select/schedule-select-buttons/rename-schedule-button';
+import { AddScheduleButton } from '$components/Calendar/toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton';
+import { DeleteScheduleButton } from '$components/Calendar/toolbar/ScheduleSelect/schedule-select-buttons/DeleteScheduleButton';
+import { RenameScheduleButton } from '$components/Calendar/toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import AppStore from '$stores/AppStore';

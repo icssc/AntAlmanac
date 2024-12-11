@@ -9,10 +9,10 @@ import { shallow } from 'zustand/shallow';
 
 import { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
 
-import { CalendarCourseEvent } from '$components/Calendar/calendar-course-event';
-import { CalendarCourseEventWrapper } from '$components/Calendar/calendar-course-event-wrapper';
-import { CalendarEventPopover } from '$components/Calendar/calendar-event-popover';
-import { CalendarToolbar } from '$components/Calendar/toolbar/calendar-toolbar';
+import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
+import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
+import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
+import { CalendarToolbar } from '$components/Calendar/toolbar/CalendarToolbar';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';

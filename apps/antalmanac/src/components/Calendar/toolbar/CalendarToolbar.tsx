@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect, memo } from 'react';
 
 import { undoDelete } from '$actions/AppStoreActions';
 import CustomEventDialog from '$components/Calendar/toolbar/CustomEventDialog';
-import { SelectSchedulePopover } from '$components/Calendar/toolbar/schedule-select/schedule-select';
+import { SelectSchedulePopover } from '$components/Calendar/toolbar/ScheduleSelect/ScheduleSelect';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import DownloadButton from '$components/buttons/Download';
 import ScreenshotButton from '$components/buttons/Screenshot';
