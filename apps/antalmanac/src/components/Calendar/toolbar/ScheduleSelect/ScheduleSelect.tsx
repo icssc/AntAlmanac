@@ -1,6 +1,6 @@
 import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
-import { Box, Button, Popover, Typography, useTheme } from '@mui/material';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
+import { useCallback, useEffect, useMemo, useState, useRef, ReactElement } from 'react';
 
 import { changeCurrentSchedule } from '$actions/AppStoreActions';
 import { AddScheduleButton } from '$components/Calendar/toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton';
@@ -25,6 +25,32 @@ function createScheduleSelector(index: number) {
     return () => {
         handleScheduleChange(index);
     };
+}
+
+function TooltipIfTruncated({ children, text }: { children: ReactElement; text: string }) {
+    const textElementRef = useRef<HTMLElement>();
+    const [isTextTruncated, setIsTextTruncated] = useState(false);
+
+    useEffect(() => {
+        const element = textElementRef.current;
+        if (element) {
+            setIsTextTruncated(element.scrollWidth > element.clientWidth);
+        }
+    }, [text]);
+
+    const childrenWithRef = React.cloneElement(children, {
+        ref: textElementRef,
+    });
+
+    if (!isTextTruncated) {
+        return childrenWithRef;
+    }
+
+    return (
+        <Tooltip title={text} enterDelay={200}>
+            {childrenWithRef}
+        </Tooltip>
+    );
 }
 
 /**
@@ -116,17 +142,23 @@ export function SelectSchedulePopover(props: { scheduleNames: string[] }) {
                                         justifyContent: 'flex-start',
                                         background:
                                             index === currentScheduleIndex ? theme.palette.action.selected : undefined,
+                                        '&:hover': {
+                                            backgroundColor: theme.palette.action.hover,
+                                            transition: 'background-color 0.2s',
+                                        },
                                     }}
                                     onClick={createScheduleSelector(index)}
                                 >
-                                    <Typography
-                                        overflow="hidden"
-                                        whiteSpace="nowrap"
-                                        textTransform="none"
-                                        textOverflow="ellipsis"
-                                    >
-                                        {name}
-                                    </Typography>
+                                    <TooltipIfTruncated text={name}>
+                                        <Typography
+                                            overflow="hidden"
+                                            whiteSpace="nowrap"
+                                            textTransform="none"
+                                            textOverflow="ellipsis"
+                                        >
+                                            {name}
+                                        </Typography>
+                                    </TooltipIfTruncated>
                                 </Button>
                             </Box>
                             <Box display="flex" alignItems="center" gap={0.5}>
