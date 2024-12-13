@@ -1,6 +1,6 @@
 import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
 import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
-import { useCallback, useEffect, useMemo, useState, useRef, ReactElement } from 'react';
+import { useCallback, useEffect, useMemo, useState, useRef, ReactElement, cloneElement } from 'react';
 
 import { changeCurrentSchedule } from '$actions/AppStoreActions';
 import { AddScheduleButton } from '$components/Calendar/toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton';
@@ -38,7 +38,7 @@ function TooltipIfTruncated({ children, text }: { children: ReactElement; text: 
         }
     }, [text]);
 
-    const childrenWithRef = React.cloneElement(children, {
+    const childrenWithRef = cloneElement(children, {
         ref: textElementRef,
     });
 
@@ -47,7 +47,7 @@ function TooltipIfTruncated({ children, text }: { children: ReactElement; text: 
     }
 
     return (
-        <Tooltip title={text} enterDelay={200}>
+        <Tooltip title={text} enterDelay={200} disableInteractive>
             {childrenWithRef}
         </Tooltip>
     );
