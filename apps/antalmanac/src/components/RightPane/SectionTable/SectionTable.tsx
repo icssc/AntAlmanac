@@ -1,4 +1,6 @@
+import { Assessment, Help, RateReview, ShowChart as ShowChartIcon } from '@material-ui/icons';
 import {
+    Alert,
     Box,
     Paper,
     Table,
@@ -9,8 +11,7 @@ import {
     Tooltip,
     Typography,
     useMediaQuery,
-} from '@material-ui/core';
-import { Assessment, Help, RateReview, ShowChart as ShowChartIcon } from '@material-ui/icons';
+} from '@mui/material';
 import { useMemo } from 'react';
 
 import { MOBILE_BREAKPOINT } from '../../../globals';
@@ -204,6 +205,31 @@ export default function SectionTable({
                         allowHighlight={allowHighlight}
                         scheduleNames={scheduleNames}
                     />
+                </Table>
+
+                <Alert variant="filled" severity="info">
+                    This is an info Alert.
+                </Alert>
+
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell padding="none" />
+
+                            {tableHeaderColumnEntries
+                                .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
+                                .map(([column, { label, width }]) => (
+                                    <TableCell
+                                        key={column}
+                                        padding="none"
+                                        width={width}
+                                        style={{ paddingRight: 0.5, paddingLeft: 0.5 }}
+                                    >
+                                        {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
+                                    </TableCell>
+                                ))}
+                        </TableRow>
+                    </TableHead>
 
                     {larcDetails?.sections.map((section, index) => {
                         return (

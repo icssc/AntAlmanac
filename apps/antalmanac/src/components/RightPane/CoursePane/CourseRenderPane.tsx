@@ -100,8 +100,8 @@ export default function CourseRenderPane(props: { id?: number }) {
 
         const larcQueryParams = {
             department: formData.deptValue.toUpperCase(),
-            term: '2024 Fall',
             courseNumber: formData.courseNumber,
+            term: '2024 Fall',
         };
 
         try {
@@ -118,6 +118,7 @@ export default function CourseRenderPane(props: { id?: number }) {
 
             if (larcQueryParams.department && larcQueryParams.term && larcQueryParams.courseNumber) {
                 const larcJsonResp = await Larc.query(larcQueryParams);
+                console.log(larcJsonResp);
                 setLarcResp(larcJsonResp);
             }
 
