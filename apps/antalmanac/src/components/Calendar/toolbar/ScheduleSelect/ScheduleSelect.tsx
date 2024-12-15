@@ -1,6 +1,6 @@
 import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
 import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
-import { useCallback, useEffect, useMemo, useState, useRef, ReactElement, cloneElement } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { changeCurrentSchedule } from '$actions/AppStoreActions';
 import { AddScheduleButton } from '$components/Calendar/toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton';
@@ -25,32 +25,6 @@ function createScheduleSelector(index: number) {
     return () => {
         handleScheduleChange(index);
     };
-}
-
-function TooltipIfTruncated({ children, text }: { children: ReactElement; text: string }) {
-    const textElementRef = useRef<HTMLElement>();
-    const [isTextTruncated, setIsTextTruncated] = useState(false);
-
-    useEffect(() => {
-        const element = textElementRef.current;
-        if (element) {
-            setIsTextTruncated(element.scrollWidth > element.clientWidth);
-        }
-    }, [text]);
-
-    const childrenWithRef = cloneElement(children, {
-        ref: textElementRef,
-    });
-
-    if (!isTextTruncated) {
-        return childrenWithRef;
-    }
-
-    return (
-        <Tooltip title={text} enterDelay={200} disableInteractive>
-            {childrenWithRef}
-        </Tooltip>
-    );
 }
 
 /**
@@ -116,9 +90,11 @@ export function SelectSchedulePopover(props: { scheduleNames: string[] }) {
                 onClick={handleClick}
                 sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
             >
-                <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
-                    {currentScheduleName}
-                </Typography>
+                <Tooltip title={currentScheduleName} enterDelay={200} disableInteractive placement="right">
+                    <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
+                        {currentScheduleName}
+                    </Typography>
+                </Tooltip>
                 <ArrowDropDownIcon />
             </Button>
 
@@ -149,7 +125,7 @@ export function SelectSchedulePopover(props: { scheduleNames: string[] }) {
                                     }}
                                     onClick={createScheduleSelector(index)}
                                 >
-                                    <TooltipIfTruncated text={name}>
+                                    <Tooltip title={name} enterDelay={200} disableInteractive placement="right">
                                         <Typography
                                             overflow="hidden"
                                             whiteSpace="nowrap"
@@ -158,7 +134,7 @@ export function SelectSchedulePopover(props: { scheduleNames: string[] }) {
                                         >
                                             {name}
                                         </Typography>
-                                    </TooltipIfTruncated>
+                                    </Tooltip>
                                 </Button>
                             </Box>
                             <Box display="flex" alignItems="center" gap={0.5}>
