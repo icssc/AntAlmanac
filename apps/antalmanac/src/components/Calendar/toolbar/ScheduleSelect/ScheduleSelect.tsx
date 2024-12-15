@@ -83,20 +83,20 @@ export function SelectSchedulePopover(props: { scheduleNames: string[] }) {
 
     return (
         <Box>
-            <Button
-                size="small"
-                color="inherit"
-                variant="outlined"
-                onClick={handleClick}
-                sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
-            >
-                <Tooltip title={currentScheduleName} enterDelay={200} disableInteractive placement="right">
+            <Tooltip title={currentScheduleName} enterDelay={200} disableInteractive>
+                <Button
+                    size="small"
+                    color="inherit"
+                    variant="outlined"
+                    onClick={handleClick}
+                    sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
+                >
                     <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
                         {currentScheduleName}
                     </Typography>
-                </Tooltip>
-                <ArrowDropDownIcon />
-            </Button>
+                    <ArrowDropDownIcon />
+                </Button>
+            </Tooltip>
 
             <Popover
                 open={open}
@@ -108,24 +108,22 @@ export function SelectSchedulePopover(props: { scheduleNames: string[] }) {
                     {props.scheduleNames.map((name, index) => (
                         <Box key={index} display="flex" alignItems="center" gap={1}>
                             <Box flexGrow={1}>
-                                <Button
-                                    color="inherit"
-                                    sx={{
-                                        minWidth,
-                                        maxWidth,
-                                        width: '100%',
-                                        display: 'flex',
-                                        justifyContent: 'flex-start',
-                                        background:
-                                            index === currentScheduleIndex ? theme.palette.action.selected : undefined,
-                                        '&:hover': {
-                                            backgroundColor: theme.palette.action.hover,
-                                            transition: 'background-color 0.2s',
-                                        },
-                                    }}
-                                    onClick={createScheduleSelector(index)}
-                                >
-                                    <Tooltip title={name} enterDelay={200} disableInteractive placement="right">
+                                <Tooltip title={name} enterDelay={200} disableInteractive>
+                                    <Button
+                                        color="inherit"
+                                        sx={{
+                                            minWidth,
+                                            maxWidth,
+                                            width: '100%',
+                                            display: 'flex',
+                                            justifyContent: 'flex-start',
+                                            background:
+                                                index === currentScheduleIndex
+                                                    ? theme.palette.action.selected
+                                                    : undefined,
+                                        }}
+                                        onClick={createScheduleSelector(index)}
+                                    >
                                         <Typography
                                             overflow="hidden"
                                             whiteSpace="nowrap"
@@ -134,8 +132,8 @@ export function SelectSchedulePopover(props: { scheduleNames: string[] }) {
                                         >
                                             {name}
                                         </Typography>
-                                    </Tooltip>
-                                </Button>
+                                    </Button>
+                                </Tooltip>
                             </Box>
                             <Box display="flex" alignItems="center" gap={0.5}>
                                 <CopyScheduleButton index={index} disabled={skeletonMode} />
