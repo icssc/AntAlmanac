@@ -12,7 +12,7 @@ import { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
 import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
 import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
 import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
-import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
+import { CalendarToolbar } from '$components/Calendar/Toolbar/foo';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
