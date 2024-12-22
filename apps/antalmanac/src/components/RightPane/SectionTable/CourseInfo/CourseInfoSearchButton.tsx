@@ -25,6 +25,16 @@ export function CourseInfoSearchButton({ courseDetails, term }: { courseDetails:
         setActiveTab(1);
     }, []);
 
+    const queryParams = {
+        term: term,
+        deptValue: deptCode,
+        courseNumber: courseNumber,
+    };
+
+    const href = `/?${Object.entries(queryParams)
+        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+        .join('&')}`;
+
     return (
         <div>
             <Button
@@ -32,7 +42,7 @@ export function CourseInfoSearchButton({ courseDetails, term }: { courseDetails:
                 size="small"
                 color="primary"
                 style={{ minWidth: 'fit-content' }}
-                to={`/?term=${term}&deptValue=${deptCode}&courseNumber=${courseNumber}`}
+                to={href}
                 component={Link}
                 onClick={handleClick}
             >

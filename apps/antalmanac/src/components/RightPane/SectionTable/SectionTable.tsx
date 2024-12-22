@@ -134,7 +134,7 @@ function SectionTable(props: SectionTableProps) {
                     analyticsCategory={analyticsCategory}
                 />
 
-                {activeTab === 2 ? <CourseInfoSearchButton courseDetails={courseDetails} term={term} /> : null}
+                {activeTab !== 2 ? null : <CourseInfoSearchButton courseDetails={courseDetails} term={term} />}
 
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}
