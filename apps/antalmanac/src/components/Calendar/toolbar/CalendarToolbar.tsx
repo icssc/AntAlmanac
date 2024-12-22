@@ -3,8 +3,8 @@ import { Box, Button, IconButton, Paper, Tooltip } from '@mui/material';
 import { useState, useCallback, useEffect, memo } from 'react';
 
 import { undoDelete } from '$actions/AppStoreActions';
-import CustomEventDialog from '$components/Calendar/toolbar/CustomEventDialog';
-import { SelectSchedulePopover } from '$components/Calendar/toolbar/ScheduleSelect/ScheduleSelect';
+import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog';
+import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import DownloadButton from '$components/buttons/Download';
 import ScreenshotButton from '$components/buttons/Screenshot';

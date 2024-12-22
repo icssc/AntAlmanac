@@ -24,11 +24,10 @@ import analyticsEnum from '$lib/analytics';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
+import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
+import { useTabStore } from '$stores/TabStore';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
-
-// uncomment when we get past enrollment data back and restore the files (https://github.com/icssc/AntAlmanac/tree/5e89e035e66f00608042871d43730ba785f756b0/src/components/RightPane/SectionTable/EnrollmentGraph)
-// import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph';
 
 interface TableHeaderColumnDetails {
     label: string;
@@ -108,7 +107,7 @@ function SectionTable(props: SectionTableProps) {
     const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory } = props;
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
-
+    const [activeTab] = useTabStore((store) => [store.activeTab]);
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
 
     const courseId = useMemo(() => {
@@ -135,7 +134,7 @@ function SectionTable(props: SectionTableProps) {
                     analyticsCategory={analyticsCategory}
                 />
 
-                <CourseInfoButton analyticsCategory="" analyticsAction="" text="" icon={<Search />} />
+                {activeTab === 2 ? <CourseInfoSearchButton courseDetails={courseDetails} term={term} /> : null}
 
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}

@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import ColorPicker from '../../ColorPicker';
 
 import { deleteCustomEvent } from '$actions/AppStoreActions';
-import CustomEventDialog from '$components/Calendar/toolbar/CustomEventDialog/';
+import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
 import analyticsEnum from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';
 import AppStore from '$stores/AppStore';
