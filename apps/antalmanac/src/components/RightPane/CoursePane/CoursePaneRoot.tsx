@@ -30,7 +30,10 @@ export function CoursePaneRoot() {
     }, [displaySections, forceUpdate]);
 
     useQuickClassStore.subscribe((state) => {
-        RightPaneStore.updateFormValue('sectionCode', state.value);
+        const decomp = state.value;
+        RightPaneStore.updateFormValue('deptLabel', decomp.deptLabel);
+        RightPaneStore.updateFormValue('deptValue', decomp.deptValue);
+        RightPaneStore.updateFormValue('courseNumber', decomp.courseNumber);
         handleSearch();
     });
 

@@ -9,11 +9,14 @@ import { Calendar, DateLocalizer, momentLocalizer, Views } from 'react-big-calen
 import CalendarToolbar from './CalendarToolbar';
 import CourseCalendarEvent, { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
 
+import depts from '$components/RightPane/CoursePane/SearchForm/DeptSearchBar/depts';
 import locationIds from '$lib/location_ids';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
+import { useQuickClassStore } from '$stores/QuickClassStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
+import { useTabStore } from '$stores/TabStore';
 
 const localizer = momentLocalizer(moment);
 
@@ -31,7 +34,6 @@ const AntAlmanacEvent = ({ event }: { event: CalendarEvent }) => {
             >
                 <Box>{event.title}</Box>
             </Box>
-
             <Box style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontSize: '0.7rem' }}>
                 <Box>{Object.keys(locationIds).find((key) => locationIds[key] === parseInt(event.building))}</Box>
             </Box>
@@ -111,6 +113,22 @@ export default function ScheduleCalendar(_props?: ScheduleCalendarProps) {
             setAnchorEl((prevAnchorEl) => (prevAnchorEl === currentTarget ? null : currentTarget));
             setCourseInMoreInfo(event);
             setCalendarEventKey(Math.random());
+        }
+    };
+
+    const shortCutClick = () => {
+        const decompCourseInfo: string[] | undefined = courseInMoreInfo?.title.match(/^(.*)\s(\S+)$/)?.slice(1);
+        const tabNum = useTabStore.getState().activeTab;
+
+        // tabNum == 1 locks this feature to only the Search page (even on mobile)
+        if (decompCourseInfo && tabNum == 1) {
+            const deptIdx: number = depts.findIndex((item) => item.deptValue === decompCourseInfo[0]);
+            useQuickClassStore.getState().setValue({
+                term: (courseInMoreInfo as CourseEvent)?.term,
+                deptLabel: depts[deptIdx].deptLabel,
+                deptValue: decompCourseInfo[0],
+                courseNumber: decompCourseInfo[1],
+            });
         }
     };
 
@@ -286,6 +304,7 @@ export default function ScheduleCalendar(_props?: ScheduleCalendarProps) {
                     showMultiDayTimes={false}
                     components={{ event: AntAlmanacEvent }}
                     onSelectEvent={handleEventClick}
+                    onDoubleClickEvent={() => shortCutClick()}
                 />
             </Box>
         </Box>
