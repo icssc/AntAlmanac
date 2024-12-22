@@ -10,13 +10,11 @@ import {
     Typography,
     useMediaQuery,
 } from '@material-ui/core';
-import { Assessment, Help, RateReview, ShowChart as ShowChartIcon } from '@material-ui/icons';
+import { Assessment, Help, RateReview, Search, ShowChart as ShowChartIcon } from '@material-ui/icons';
 import { useMemo } from 'react';
 
 import { MOBILE_BREAKPOINT } from '../../../globals';
 
-import CourseInfoBar from './CourseInfoBar';
-import CourseInfoButton from './CourseInfoButton';
 import { EnrollmentHistoryPopup } from './EnrollmentHistoryPopup';
 import GradesPopup from './GradesPopup';
 import { SectionTableProps } from './SectionTable.types';
@@ -24,6 +22,8 @@ import { SectionTableProps } from './SectionTable.types';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import analyticsEnum from '$lib/analytics';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
+import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
+import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -135,8 +135,7 @@ function SectionTable(props: SectionTableProps) {
                     analyticsCategory={analyticsCategory}
                 />
 
-                {/* Temporarily remove "Past Enrollment" until data on Anteater API */}
-                {/* <AlmanacGraph courseDetails={courseDetails} />  */}
+                <CourseInfoButton analyticsCategory="" analyticsAction="" text="" icon={<Search />} />
 
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}
