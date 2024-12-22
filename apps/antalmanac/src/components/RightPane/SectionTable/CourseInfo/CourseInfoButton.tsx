@@ -1,21 +1,11 @@
 import { Button, Paper, Popper } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import { useMediaQuery, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import { logAnalytics } from '$lib/analytics';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
-const styles = {
-    button: {
-        backgroundColor: '#385EB1',
-        color: '#fff',
-    },
-};
-
 interface CourseInfoButtonProps {
-    classes: ClassNameMap;
     text: string;
     icon: React.ReactElement;
     redirectLink?: string;
@@ -24,15 +14,14 @@ interface CourseInfoButtonProps {
     analyticsCategory: string;
 }
 
-function CourseInfoButton({
-    classes,
+export const CourseInfoButton = ({
     text,
     icon,
     redirectLink,
     popupContent,
     analyticsAction,
     analyticsCategory,
-}: CourseInfoButtonProps) {
+}: CourseInfoButtonProps) => {
     const theme = useTheme();
     const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -74,9 +63,9 @@ function CourseInfoButton({
     return (
         <div onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} style={{ display: 'flex' }}>
             <Button
-                className={classes.button}
                 variant="contained"
                 size="small"
+                color="primary"
                 onClick={(event: React.MouseEvent<HTMLElement>) => {
                     if (redirectLink) {
                         window.open(redirectLink);
@@ -91,6 +80,10 @@ function CourseInfoButton({
                         setIsClicked((prev) => !prev);
                     }
                 }}
+                // style={{
+                //     backgroundColor: '#385EB1',
+                //     color: '#fff',
+                // }}
             >
                 <span style={{ display: 'flex', gap: 4 }}>
                     {icon}
@@ -115,6 +108,4 @@ function CourseInfoButton({
             )}
         </div>
     );
-}
-
-export default withStyles(styles)(CourseInfoButton);
+};
