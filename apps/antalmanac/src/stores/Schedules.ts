@@ -556,13 +556,6 @@ export class Schedules {
                     this.scheduleNoteMap[scheduleNoteId] = '';
                 }
 
-                console.log({
-                    scheduleName: shortCourseSchedule.scheduleName,
-                    courses: courses,
-                    customEvents: shortCourseSchedule.customEvents,
-                    scheduleNoteId: scheduleNoteId,
-                });
-
                 this.schedules.push({
                     scheduleName: shortCourseSchedule.scheduleName,
                     courses: courses,
