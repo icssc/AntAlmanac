@@ -95,17 +95,11 @@ const About = () => {
 const Feedback = () => {
     return (
         <Tooltip title="Give Us Feedback!">
-            <Button
-                onClick={() => {
-                    window.open(FEEDBACK_LINK, '_blank');
-                }}
-                color="inherit"
-                startIcon={<Assignment />}
-                size="large"
-                href={FEEDBACK_LINK}
-            >
-                Feedback
-            </Button>
+            <Link href={FEEDBACK_LINK} target="_blank" color="inherit" underline="none">
+                <Button color="inherit" startIcon={<Assignment />} size="large">
+                    Feedback
+                </Button>
+            </Link>
         </Tooltip>
     );
 };
