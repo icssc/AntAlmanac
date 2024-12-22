@@ -531,7 +531,7 @@ export class Schedules {
                 for (const shortCourse of shortCourseSchedule.courses) {
                     const courseInfoMap = courseInfoDict.get(shortCourse.term);
                     if (courseInfoMap !== undefined) {
-                        const courseInfo = courseInfoMap[shortCourse.sectionCode];
+                        const courseInfo = courseInfoMap[shortCourse.sectionCode.padStart(5, '0')];
                         if (courseInfo === undefined) {
                             // Class doesn't exist/was cancelled
                             continue;
@@ -555,6 +555,13 @@ export class Schedules {
                     // just give each schedule an empty schedule note
                     this.scheduleNoteMap[scheduleNoteId] = '';
                 }
+
+                console.log({
+                    scheduleName: shortCourseSchedule.scheduleName,
+                    courses: courses,
+                    customEvents: shortCourseSchedule.customEvents,
+                    scheduleNoteId: scheduleNoteId,
+                });
 
                 this.schedules.push({
                     scheduleName: shortCourseSchedule.scheduleName,
