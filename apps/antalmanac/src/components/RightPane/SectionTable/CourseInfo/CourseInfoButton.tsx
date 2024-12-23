@@ -80,10 +80,6 @@ export const CourseInfoButton = ({
                         setIsClicked((prev) => !prev);
                     }
                 }}
-                // style={{
-                //     backgroundColor: '#385EB1',
-                //     color: '#fff',
-                // }}
             >
                 <span style={{ display: 'flex', gap: 4 }}>
                     {icon}

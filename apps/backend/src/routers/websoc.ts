@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type {WebsocAPIResponse, CourseInfo, WebsocCourse} from '@packages/antalmanac-types';
+import type { WebsocAPIResponse, CourseInfo, WebsocCourse } from '@packages/antalmanac-types';
 import { procedure, router } from '../trpc';
 
 function sanitizeSearchParams(params: Record<string, string>) {
@@ -59,14 +59,17 @@ function sortWebsocResponse(response: WebsocAPIResponse) {
     return response;
 }
 
-const queryWebSoc = async ({ input }: { input: Record<string, string> }) =>
-    await fetch(`https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`, {
+const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
+    console.log(input);
+
+    return await fetch(`https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`, {
         headers: {
             ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
         },
     })
         .then((data) => data.json())
         .then((data) => sortWebsocResponse(data.data as WebsocAPIResponse));
+};
 
 function combineWebsocResponses(responses: WebsocAPIResponse[]) {
     const combined: WebsocAPIResponse = { schools: [] };
