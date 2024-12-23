@@ -1,5 +1,10 @@
-import { RepeatingCustomEvent, ScheduleCourse, ShortCourseSchedule, WebsocSection } from '@packages/antalmanac-types';
-import { CourseDetails } from '@packages/antalmanac-types';
+import type {
+    CourseDetails,
+    RepeatingCustomEvent,
+    ScheduleCourse,
+    ShortCourseSchedule,
+    WebsocSection,
+} from '@packages/antalmanac-types';
 import { TRPCError } from '@trpc/server';
 import { VariantType } from 'notistack';
 

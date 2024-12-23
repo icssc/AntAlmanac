@@ -1,7 +1,6 @@
 import { Add, ArrowDropDown, Delete } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, TableCell, Tooltip, useMediaQuery } from '@mui/material';
-import { AASection } from '@packages/antalmanac-types';
-import { CourseDetails } from '@packages/antalmanac-types';
+import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 
 import { MOBILE_BREAKPOINT } from '../../../../globals';
