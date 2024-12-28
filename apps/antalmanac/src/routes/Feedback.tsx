@@ -4,4 +4,3 @@ export default function Feedback() {
     window.location.replace(FEEDBACK_LINK);
     return null;
 }
-git add
