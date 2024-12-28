@@ -5,7 +5,7 @@
     "scripts": {
         "dev": "tsx watch src/index.ts",
         "get-search-data": "tsx scripts/get-search-data.ts",
-        "prebuild": "pnpm get-search-data",
+        "prebuild": "printenv && pnpm get-search-data",
         "build": "node scripts/build.mjs",
         "prestart": "pnpm get-search-data",
         "start": "pnpm dev",

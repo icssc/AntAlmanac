@@ -12,7 +12,7 @@
         "start:aa": "turbo start --filter=antalmanac",
         "start": "cross-env VITE_LOCAL_SERVER=true turbo start",
         "build:aa": "turbo build --filter=antalmanac",
-        "build": "turbo build",
+        "build": "printenv && turbo build",
         "deploy:aa": "turbo deploy --filter=antalmanac",
         "deploy:cdk": "turbo deploy --filter=cdk",
         "deploy": "turbo deploy",
