@@ -310,6 +310,13 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
+    reorderSchedules(from: number, to: number) {
+        this.schedule.reorderSchedules(from, to);
+        this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNamesChange', { triggeredBy: 'reorder' });
+        this.emit('reorderSchedule');
+    }
+
     async loadSchedule(savedSchedule: ScheduleSaveState) {
         try {
             await this.schedule.fromScheduleSaveState(savedSchedule);

@@ -162,6 +162,23 @@ export class Schedules {
         }
     }
 
+    /**
+     * Reorder schedules by moving a schedule from one index to another.
+     * This modifies the order of schedules and updates the current schedule index to maintain the correct reference.
+     */
+    reorderSchedules(from: number, to: number) {
+        this.addUndoState();
+        const [removed] = this.schedules.splice(from, 1);
+        this.schedules.splice(to, 0, removed);
+        if (this.currentScheduleIndex === from) {
+            this.currentScheduleIndex = to;
+        } else if (this.currentScheduleIndex > from && this.currentScheduleIndex <= to) {
+            this.currentScheduleIndex -= 1;
+        } else if (this.currentScheduleIndex < from && this.currentScheduleIndex >= to) {
+            this.currentScheduleIndex += 1;
+        }
+    }
+
     getCurrentCourses() {
         return this.schedules[this.currentScheduleIndex]?.courses || [];
     }
