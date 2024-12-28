@@ -15,6 +15,7 @@ import TermSelector from './TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { getLocalStorageHelpBoxDismissalTime, setLocalStorageHelpBoxDismissalTime } from '$lib/localStorage';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { HelpMenu } from '$components/HelpMenu';
 
 const styles: Styles<Theme, object> = {
     rightPane: {
@@ -115,6 +116,8 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
 
             {displayHelpBox && <HelpBox onDismiss={onHelpBoxDismiss} />}
             <PrivacyPolicyBanner />
+
+            <HelpMenu />
         </div>
     );
 };

@@ -1,19 +1,16 @@
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import HelpIcon from '@mui/icons-material/Help';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
-import ReplayIcon from '@mui/icons-material/Replay';
-import { Fab, Tooltip, Box, IconButton } from '@mui/material';
-import { useTour } from '@reactour/tour';
-import React, { useState } from 'react';
-
+import { Fab, Tooltip, Box, IconButton, Paper } from '@mui/material';
+import { useState } from 'react';
 import HelpBox from '$components/RightPane/CoursePane/SearchForm/HelpBox';
+
 import Feedback from '$routes/Feedback';
+import { Tutorial } from '$components/Tutorial';
 
 export function HelpMenu() {
     const [isHovered, setIsHovered] = useState(false);
     const [showHelpBox, setShowHelpBox] = useState(false);
-    const [showTutorial, setShowTutorial] = useState(false);
-    const { setIsOpen } = useTour();
 
     const handleMouseEnter = () => {
         setIsHovered(true);
@@ -35,17 +32,13 @@ export function HelpMenu() {
         setShowHelpBox(false);
     };
 
-    const openTutorial = () => {
-        setIsOpen(true);
-    };
-
     return (
         <Box
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             sx={{
                 position: 'fixed',
-                bottom: '1rem',
+                bottom: '6rem',
                 right: '1rem',
                 zIndex: 999,
             }}
@@ -81,19 +74,7 @@ export function HelpMenu() {
                     }}
                 >
                     {/* Tutorial Button */}
-                    <Tooltip title="Restart Tutorial">
-                        <IconButton
-                            color="primary"
-                            onClick={openTutorial}
-                            size="large"
-                            sx={{
-                                backgroundColor: '#fff',
-                                ':hover': { backgroundColor: '#e0f7fa' },
-                            }}
-                        >
-                            <ReplayIcon />
-                        </IconButton>
-                    </Tooltip>
+                    <Tutorial />
 
                     {/* Feedback Form Button */}
                     <Tooltip title="Feedback Form">
@@ -127,12 +108,21 @@ export function HelpMenu() {
                 </Box>
             )}
 
-            {/* Show HelpBox */}
             {showHelpBox && (
                 <Box
-                    onMouseEnter={handleMouseLeave}
+                    sx={{
+                        position: 'fixed',
+                        right: '1rem',
+                        bottom: '5rem',
+                        width: '50%',
+                        height: 'auto',
+                        zIndex: 1000,
+                        overflow: 'auto',
+                    }}
                 >
-                    <HelpBox onDismiss={closeHelpBox} />
+                    <Paper variant="outlined" sx={{ padding: 2, boxShadow: 3 }}>
+                        <HelpBox onDismiss={closeHelpBox} />
+                    </Paper>
                 </Box>
             )}
         </Box>
