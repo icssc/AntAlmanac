@@ -146,11 +146,11 @@ export class Schedules {
     }
 
     /**
-     * Copy the current schedule to a newly created schedule with the specified name.
+     * Copy the schedule at the provided index to a newly created schedule with the specified name.
      */
-    copySchedule(newScheduleName: string) {
+    copySchedule(index: number, newScheduleName: string) {
         this.addNewSchedule(newScheduleName);
-        this.currentScheduleIndex = this.previousStates[this.previousStates.length - 1].scheduleIndex; // return to previous schedule index for copying
+        this.currentScheduleIndex = index; // temporarily set current schedule to the one being copied
         const to = this.getNumberOfSchedules() - 1;
 
         for (const course of this.getCurrentCourses()) {
@@ -158,8 +158,9 @@ export class Schedules {
         }
 
         for (const customEvent of this.getCurrentCustomEvents()) {
-            this.addCustomEvent(customEvent, [to]);
+            this.addCustomEvent(customEvent, [to], false);
         }
+        this.currentScheduleIndex = this.previousStates[this.previousStates.length - 1].scheduleIndex; // return to previously selected schedule index
     }
 
     /**
@@ -356,8 +357,10 @@ export class Schedules {
     /**
      * Adds a new custom event to given indices
      */
-    addCustomEvent(newCustomEvent: RepeatingCustomEvent, scheduleIndices: number[]) {
-        this.addUndoState();
+    addCustomEvent(newCustomEvent: RepeatingCustomEvent, scheduleIndices: number[], addUndoState = true) {
+        if (addUndoState) {
+            this.addUndoState();
+        }
         for (const scheduleIndex of scheduleIndices) {
             if (!this.doesCustomEventExistInSchedule(newCustomEvent.customEventID, scheduleIndex)) {
                 this.schedules[scheduleIndex].customEvents.push(newCustomEvent);

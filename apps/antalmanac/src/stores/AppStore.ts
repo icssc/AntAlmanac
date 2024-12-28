@@ -295,8 +295,8 @@ class AppStore extends EventEmitter {
         window.localStorage.removeItem('unsavedActions');
     }
 
-    copySchedule(newScheduleName: string) {
-        this.schedule.copySchedule(newScheduleName);
+    copySchedule(index: number, newScheduleName: string) {
+        this.schedule.copySchedule(index, newScheduleName);
         this.unsavedChanges = true;
         const action: CopyScheduleAction = {
             type: 'copySchedule',
