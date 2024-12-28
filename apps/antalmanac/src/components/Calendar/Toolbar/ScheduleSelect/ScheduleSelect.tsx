@@ -139,7 +139,7 @@ export function SelectSchedulePopover() {
                             {
                                 name: 'offset',
                                 options: {
-                                    offset: [-2, -14],
+                                    offset: [-2, -10],
                                 },
                             },
                         ],
@@ -194,7 +194,7 @@ export function SelectSchedulePopover() {
                                                             {
                                                                 name: 'offset',
                                                                 options: {
-                                                                    offset: [-2, -14],
+                                                                    offset: [-2, -10],
                                                                 },
                                                             },
                                                         ],
