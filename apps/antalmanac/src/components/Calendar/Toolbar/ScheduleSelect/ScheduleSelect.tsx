@@ -11,6 +11,20 @@ import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import AppStore from '$stores/AppStore';
 
+type EventContext = {
+    triggeredBy?: string;
+};
+
+type ScheduleItem = {
+    id: number;
+    name: string;
+};
+
+function getScheduleItems(items?: string[]): ScheduleItem[] {
+    const scheduleNames: string[] = items || AppStore.getScheduleNames();
+    return scheduleNames.map((name, index) => ({ id: index, name }));
+}
+
 function handleScheduleChange(index: number) {
     logAnalytics({
         category: analyticsEnum.calendar.title,
@@ -36,8 +50,6 @@ function createScheduleSelector(index: number) {
 export function SelectSchedulePopover() {
     const theme = useTheme();
 
-    // const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
-    // const [skeletonMode, setSkeletonMode] = useState(() => AppStore.getSkeletonMode());
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const [scheduleMapping, setScheduleMapping] = useState(getScheduleItems());
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
@@ -65,63 +77,40 @@ export function SelectSchedulePopover() {
         setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
     }, []);
 
-    const handleSkeletonModeChange = () => {
-        setSkeletonMode(AppStore.getSkeletonMode());
-        setSkeletonScheduleMapping(getScheduleItems(AppStore.getSkeletonScheduleNames()));
-    };
-
-    function getScheduleItems(items: string[] = AppStore.getScheduleNames()) {
-        return [...new Array(items.length)].map((_, index) => ({
-            id: index,
-            name: items[index],
-        }));
-    }
-
     useEffect(() => {
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
-
-    useEffect(() => {
-        // AppStore.on('scheduleNamesChange', handleScheduleIndexChange);
         AppStore.on('addedCoursesChange', handleScheduleIndexChange);
         AppStore.on('customEventsChange', handleScheduleIndexChange);
         AppStore.on('colorChange', handleScheduleIndexChange);
         AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
 
         return () => {
-            // AppStore.off('scheduleNamesChange', handleScheduleIndexChange);
             AppStore.off('addedCoursesChange', handleScheduleIndexChange);
             AppStore.off('customEventsChange', handleScheduleIndexChange);
             AppStore.off('colorChange', handleScheduleIndexChange);
             AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
     }, [handleScheduleIndexChange]);
 
-    type EventContext = {
-        triggeredBy?: string;
-        [key: string]: any;
-    };
-
-    function handleScheduleNamesChange(context?: EventContext) {
-        if (context?.triggeredBy === 'reorder') {
-            return;
-        }
-        setScheduleMapping(getScheduleItems());
-    }
-
     useEffect(() => {
-        AppStore.on('scheduleNamesChange', (context) => handleScheduleNamesChange(context));
+        const handleScheduleNamesChange = (context?: EventContext) => {
+            if (context?.triggeredBy === 'reorder') {
+                return;
+            }
+            setScheduleMapping(getScheduleItems());
+        };
+        const handleSkeletonModeChange = () => {
+            setSkeletonMode(AppStore.getSkeletonMode());
+            setSkeletonScheduleMapping(getScheduleItems(AppStore.getSkeletonScheduleNames()));
+        };
+
+        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
+        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
 
         return () => {
             AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
+            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
-    }, [handleScheduleNamesChange]);
+    }, []);
 
     const scheduleMappingToUse = useMemo(
         () => (skeletonMode ? skeletonScheduleMapping : scheduleMapping),
