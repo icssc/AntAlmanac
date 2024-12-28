@@ -17,8 +17,6 @@ const ALIASES: Record<string, string | undefined> = {
 }
 
 async function main() {
-    console.log(process.env);
-
     const apiKey = process.env.ANTEATER_API_KEY;
     if (!apiKey) throw new Error("ANTEATER_API_KEY is required");
     console.log("Generating cache for fuzzy search.");
