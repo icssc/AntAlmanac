@@ -2,7 +2,6 @@ import {
     Box,
     Paper,
     Table,
-    TableBody,
     TableCell,
     TableContainer,
     TableHead,
@@ -11,25 +10,24 @@ import {
     Typography,
     useMediaQuery,
 } from '@material-ui/core';
-import { Assessment, Help, RateReview, ShowChart as ShowChartIcon } from '@material-ui/icons';
+import { Assessment, Help, RateReview, Search, ShowChart as ShowChartIcon } from '@material-ui/icons';
 import { useMemo } from 'react';
 
 import { MOBILE_BREAKPOINT } from '../../../globals';
 
-import CourseInfoBar from './CourseInfoBar';
-import CourseInfoButton from './CourseInfoButton';
 import { EnrollmentHistoryPopup } from './EnrollmentHistoryPopup';
 import GradesPopup from './GradesPopup';
 import { SectionTableProps } from './SectionTable.types';
-import SectionTableBody from './SectionTableBody';
 
+import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import analyticsEnum from '$lib/analytics';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
+import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
+import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
+import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
+import { useTabStore } from '$stores/TabStore';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
-
-// uncomment when we get past enrollment data back and restore the files (https://github.com/icssc/AntAlmanac/tree/5e89e035e66f00608042871d43730ba785f756b0/src/components/RightPane/SectionTable/EnrollmentGraph)
-// import AlmanacGraph from '../EnrollmentGraph/EnrollmentGraph';
 
 interface TableHeaderColumnDetails {
     label: string;
@@ -109,7 +107,7 @@ function SectionTable(props: SectionTableProps) {
     const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory } = props;
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
-
+    const [activeTab] = useTabStore((store) => [store.activeTab]);
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
 
     const courseId = useMemo(() => {
@@ -136,8 +134,7 @@ function SectionTable(props: SectionTableProps) {
                     analyticsCategory={analyticsCategory}
                 />
 
-                {/* Temporarily remove "Past Enrollment" until data on Anteater API */}
-                {/* <AlmanacGraph courseDetails={courseDetails} />  */}
+                {activeTab !== 2 ? null : <CourseInfoSearchButton courseDetails={courseDetails} term={term} />}
 
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}
@@ -196,20 +193,12 @@ function SectionTable(props: SectionTableProps) {
                         </TableRow>
                     </TableHead>
 
-                    <TableBody>
-                        {courseDetails.sections.map((section) => {
-                            return (
-                                <SectionTableBody
-                                    key={section.sectionCode}
-                                    section={section}
-                                    courseDetails={courseDetails}
-                                    term={term}
-                                    allowHighlight={allowHighlight}
-                                    scheduleNames={scheduleNames}
-                                />
-                            );
-                        })}
-                    </TableBody>
+                    <SectionTableBody
+                        courseDetails={courseDetails}
+                        term={term}
+                        allowHighlight={allowHighlight}
+                        scheduleNames={scheduleNames}
+                    />
                 </Table>
             </TableContainer>
         </>

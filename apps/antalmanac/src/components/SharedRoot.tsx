@@ -3,7 +3,7 @@ import { GlobalStyles, Paper, Stack, Tab, Tabs, Typography, useMediaQuery, useTh
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
-import Calendar from './Calendar/CalendarRoot';
+import { ScheduleCalendar } from './Calendar/CalendarRoot';
 import AddedCoursePane from './RightPane/AddedCourses/AddedCoursePane';
 import darkModeLoadingGif from './RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './RightPane/CoursePane/SearchForm/Gifs/loading.gif';
@@ -163,13 +163,13 @@ function ScheduleManagementDesktopTabs(props: ScheduleManagementTabsProps) {
 }
 
 function ScheduleManagementTabsContent(props: { activeTab: number; isMobile: boolean }) {
-    const { activeTab, isMobile } = props;
+    const { activeTab } = props;
 
     const isDark = useThemeStore((store) => store.isDark);
 
     switch (activeTab) {
         case 0:
-            return <Calendar isMobile={isMobile} />;
+            return <ScheduleCalendar />;
         case 1:
             return <CoursePaneRoot />;
         case 2:
@@ -241,7 +241,7 @@ export default function ScheduleManagement() {
         } else {
             setActiveTab(1);
         }
-    }, []);
+    }, [setActiveTab]);
 
     // Handle tab index for mobile screens.
     useEffect(() => {
@@ -254,7 +254,7 @@ export default function ScheduleManagement() {
         if (activeTab == 0) {
             setActiveTab(1);
         }
-    }, [activeTab, isMobile, tab]);
+    }, [activeTab, isMobile, setActiveTab, tab]);
 
     // Restore scroll position if it has been previously saved.
     useEffect(() => {
@@ -278,7 +278,7 @@ export default function ScheduleManagement() {
     }, [activeTab, positions]);
 
     if (activeTab === 0 && !isMobile) {
-        return <Calendar isMobile={isMobile} />;
+        return <ScheduleCalendar />;
     }
 
     return (

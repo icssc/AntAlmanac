@@ -17,7 +17,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { useThemeStore } from '$stores/SettingsStore';
 
 const DONATION_LINK = 'https://venmo.com/u/ICSSC';
-const FEEDBACK_LINK = 'https://forms.gle/k81f2aNdpdQYeKK8A';
+const FEEDBACK_LINK = '/feedback';
 
 const About = () => {
     const [open, setOpen] = useState(false);
@@ -95,17 +95,11 @@ const About = () => {
 const Feedback = () => {
     return (
         <Tooltip title="Give Us Feedback!">
-            <Button
-                onClick={() => {
-                    window.open(FEEDBACK_LINK, '_blank');
-                }}
-                color="inherit"
-                startIcon={<Assignment />}
-                size="large"
-                href={FEEDBACK_LINK}
-            >
-                Feedback
-            </Button>
+            <Link href={FEEDBACK_LINK} target="_blank" color="inherit" underline="none">
+                <Button color="inherit" startIcon={<Assignment />} size="large">
+                    Feedback
+                </Button>
+            </Link>
         </Tooltip>
     );
 };

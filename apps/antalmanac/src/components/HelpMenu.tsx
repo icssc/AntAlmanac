@@ -3,10 +3,10 @@ import HelpIcon from '@mui/icons-material/Help';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import { Fab, Tooltip, Box, IconButton, Paper } from '@mui/material';
 import { useState } from 'react';
-import HelpBox from '$components/RightPane/CoursePane/SearchForm/HelpBox';
 
-import Feedback from '$routes/Feedback';
+import HelpBox from '$components/RightPane/CoursePane/SearchForm/HelpBox';
 import { Tutorial } from '$components/Tutorial';
+import Feedback from '$routes/Feedback';
 
 export function HelpMenu() {
     const [isHovered, setIsHovered] = useState(false);

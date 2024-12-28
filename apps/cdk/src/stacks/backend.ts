@@ -1,4 +1,3 @@
-import { type } from 'arktype';
 import { Stack, type StackProps, RemovalPolicy, Duration } from 'aws-cdk-lib';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
@@ -7,27 +6,28 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import type { Construct } from 'constructs';
+import { z } from 'zod';
 
+import { deployEnvSchema } from '../../../backend/src/env';
 import { zoneName } from '../lib/constants';
 
 export class BackendStack extends Stack {
+    /**
+     * Env vars specifically for the CDK stack/deployment.
+     *
+     * If {@link env.PR_NUM} is defined, then {@link env.NODE_ENV} should be 'staging'.
+     */
+    static readonly CDKEnvironment = z.object({
+        CERTIFICATE_ARN: z.string(),
+        HOSTED_ZONE_ID: z.string(),
+        ANTEATER_API_KEY: z.string(),
+        NODE_ENV: z.string().optional(),
+        PR_NUM: z.string().optional(),
+    });
+
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
-
-        /**
-         * If {@link env.PR_NUM} is defined, then {@link env.NODE_ENV} should be 'staging'.
-         */
-        const env = type({
-            CERTIFICATE_ARN: 'string',
-            HOSTED_ZONE_ID: 'string',
-            MONGODB_URI_PROD: 'string',
-            GOOGLE_CLIENT_ID: 'string',
-            GOOGLE_CLIENT_SECRET: 'string',
-            'MAPBOX_ACCESS_TOKEN?': 'string',
-            'NODE_ENV?': 'string',
-            'PR_NUM?': 'string',
-            ANTEATER_API_KEY: 'string',
-        }).assert({ ...process.env });
+        const env = z.intersection(BackendStack.CDKEnvironment, deployEnvSchema).parse(process.env);
 
         /**
          * The domain that the backend API will be hosted on.
@@ -53,13 +53,10 @@ export class BackendStack extends Stack {
             runtime: lambda.Runtime.NODEJS_18_X,
             code: lambda.Code.fromAsset('../backend/dist'),
             handler: 'lambda.handler',
-            timeout: Duration.seconds(5),
+            timeout: Duration.seconds(10),
             memorySize: 256,
             environment: {
-                ANTEATER_API_KEY: env.ANTEATER_API_KEY,
-                AA_MONGODB_URI: env.MONGODB_URI_PROD,
-                MAPBOX_ACCESS_TOKEN: env.MAPBOX_ACCESS_TOKEN ?? '',
-                STAGE: env.NODE_ENV ?? 'development',
+                ...env,
                 USERDATA_TABLE_NAME: userDataDDB.tableName,
             },
         });

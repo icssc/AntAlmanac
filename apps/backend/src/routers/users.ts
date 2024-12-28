@@ -1,22 +1,16 @@
 import { type } from 'arktype';
+
 import { UserSchema } from '@packages/antalmanac-types';
+
+import { db } from 'src/db';
+import { mangleDupliateScheduleNames } from 'src/lib/formatting';
+import { RDS } from 'src/lib/rds';
 import { TRPCError } from '@trpc/server';
-import { router, procedure } from '../trpc';
-import { ddbClient, VISIBILITY } from '../db/ddb';
+import { procedure, router } from '../trpc';
+import { ddbClient } from '$db/ddb';
+
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
-
-const viewInputSchema = type({
-    /**
-     * ID of the user who's requesting to view another user's schedule.
-     */
-    requesterId: 'string',
-
-    /**
-     * ID of the user whose schedule is being requested.
-     */
-    requesteeId: 'string',
-});
 
 const saveInputSchema = type({
     /**
@@ -39,55 +33,39 @@ const usersRouter = router({
      */
     getUserData: procedure.input(userInputSchema.assert).query(async ({ input }) => {
         if ('googleId' in input) {
-            return await ddbClient.getGoogleUserData(input.googleId);
+            throw new TRPCError({
+                code: 'NOT_IMPLEMENTED',
+                message: 'Google login not implemented',
+            })
         }
-        return (await ddbClient.getUserData(input.userId)) ?? (await ddbClient.getLegacyUserData(input.userId));
+        return await RDS.getGuestUserData(db, input.userId);
     }),
 
     /**
      * Loads schedule data for a user that's logged in.
      */
-    saveUserData: procedure.input(saveInputSchema.assert).mutation(async ({ input }) => {
-        /**
-         * Assign default visility value.
-         */
-        input.data.visibility ??= VISIBILITY.PRIVATE;
+    saveUserData: procedure
+        .input(saveInputSchema.assert)
+        .mutation(
+            async ({ input }) => {
+                const data = input.data;
 
-        // Requester and requestee IDs must match if schedule is private.
+                // Mangle duplicate schedule names
+                data.userData.schedules = mangleDupliateScheduleNames(data.userData.schedules);
 
-        if (input.data.visibility === VISIBILITY.PRIVATE && input.id !== input.data.id) {
-            throw new TRPCError({
-                code: 'UNAUTHORIZED',
-                message: 'Schedule is private and user ID does not match.',
-            });
-        }
+                // Await both, but only throw if RDS save fails.
+                const results = await Promise.allSettled([
+                    ddbClient.insertItem(data)
+                        .catch((error) => console.error('DDB Failed to save user data:', error)),
+                    RDS.upsertGuestUserData(db, data)
+                        .catch((error) => console.error('RDS Failed to upsert user data:', error))
+                ]);
 
-        // Requester and requestee IDs must match if schedule is public (read-only).
-
-        if (input.data.visibility === VISIBILITY.PUBLIC && input.id !== input.data.id) {
-            throw new TRPCError({
-                code: 'UNAUTHORIZED',
-                message: 'Schedule is public and user ID does not match.',
-            });
-        }
-
-        // Schedule is open, or requester user ID and schedule's user ID match.
-
-        await ddbClient.insertItem(input.data);
-    }),
-
-    /**
-     * Users can view other users' schedules, even anonymously.
-     * Visibility permissions are used to determine if a user can view another user's schedule.
-     *
-     * Visibility values:
-     * - (default) private: Only the owner can view and edit.
-     * - public: Other users can view, but can't edit, i.e. "read-only".
-     * - open: Anybody can view and edit.
-     */
-    viewUserData: procedure.input(viewInputSchema.assert).query(async ({ input }) => {
-        return await ddbClient.viewUserData(input.requesterId, input.requesteeId);
-    }),
+                if (results[1].status === 'rejected') {
+                    throw results[1].reason;
+                }
+            }
+        ),
 });
 
 export default usersRouter;

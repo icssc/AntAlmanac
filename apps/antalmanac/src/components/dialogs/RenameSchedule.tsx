@@ -38,7 +38,7 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
 
     const handleCancel = useCallback(() => {
         onClose?.({}, 'escapeKeyDown');
-    }, [onClose, index]);
+    }, [onClose]);
 
     const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setName(event.target.value);
