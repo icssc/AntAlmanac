@@ -6,9 +6,8 @@ import { List } from '@mui/material';
 import type { ReactNode } from 'react';
 import { Fragment, useMemo, useState } from 'react';
 
-import { DragHandle, SortableItem } from './SortableItem';
-import { SortableOverlay } from './SortableOverlay';
-
+import { DragHandle, SortableItem } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableItem';
+import { SortableOverlay } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableOverlay';
 import AppStore from '$stores/AppStore';
 
 interface BaseItem {
