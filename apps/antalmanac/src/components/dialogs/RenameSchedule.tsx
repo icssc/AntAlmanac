@@ -71,6 +71,10 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
     }, [index]);
 
     useEffect(() => {
+        setName(AppStore.getScheduleNames()[index]);
+    }, [index]);
+
+    useEffect(() => {
         AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
 
         return () => {
