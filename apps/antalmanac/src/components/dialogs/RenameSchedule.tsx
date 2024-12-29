@@ -45,7 +45,7 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
     }, []);
 
     const submitName = useCallback(() => {
-        renameSchedule(name, index);
+        renameSchedule(index, name);
         onClose?.({}, 'escapeKeyDown');
     }, [onClose, name, index]);
 

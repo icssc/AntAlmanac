@@ -13,6 +13,8 @@ import type {
     ChangeCustomEventColorAction,
     ClearScheduleAction,
     CopyScheduleAction,
+    RenameScheduleAction,
+    DeleteScheduleAction,
     ChangeCourseColorAction,
     UndoAction,
 } from '$actions/ActionTypesStore';
@@ -71,8 +73,8 @@ class AppStore extends EventEmitter {
         }
     }
 
-    getNextScheduleName(newScheduleName: string, scheduleIndex: number) {
-        return this.schedule.getNextScheduleName(newScheduleName, scheduleIndex);
+    getNextScheduleName(scheduleIndex: number, newScheduleName: string) {
+        return this.schedule.getNextScheduleName(scheduleIndex, newScheduleName);
     }
 
     getDefaultScheduleName() {
@@ -285,8 +287,15 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNotesChange');
     }
 
-    renameSchedule(scheduleName: string, scheduleIndex: number) {
-        this.schedule.renameSchedule(scheduleName, scheduleIndex);
+    renameSchedule(scheduleIndex: number, newScheduleName: string) {
+        this.schedule.renameSchedule(scheduleIndex, newScheduleName);
+        this.unsavedChanges = true;
+        const action: RenameScheduleAction = {
+            type: 'renameSchedule',
+            scheduleIndex: scheduleIndex,
+            newScheduleName: newScheduleName,
+        };
+        actionTypesStore.autoSaveSchedule(action);
         this.emit('scheduleNamesChange');
     }
 
@@ -295,11 +304,12 @@ class AppStore extends EventEmitter {
         window.localStorage.removeItem('unsavedActions');
     }
 
-    copySchedule(newScheduleName: string) {
-        this.schedule.copySchedule(newScheduleName);
+    copySchedule(scheduleIndex: number, newScheduleName: string) {
+        this.schedule.copySchedule(scheduleIndex, newScheduleName);
         this.unsavedChanges = true;
         const action: CopyScheduleAction = {
             type: 'copySchedule',
+            scheduleIndex: scheduleIndex,
             newScheduleName: newScheduleName,
         };
         actionTypesStore.autoSaveSchedule(action);
@@ -364,6 +374,12 @@ class AppStore extends EventEmitter {
 
     deleteSchedule(scheduleIndex: number) {
         this.schedule.deleteSchedule(scheduleIndex);
+        this.unsavedChanges = true;
+        const action: DeleteScheduleAction = {
+            type: 'deleteSchedule',
+            scheduleIndex: scheduleIndex,
+        };
+        actionTypesStore.autoSaveSchedule(action);
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('addedCoursesChange');
