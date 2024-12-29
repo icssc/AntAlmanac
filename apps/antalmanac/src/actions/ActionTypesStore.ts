@@ -59,7 +59,14 @@ export interface ClearScheduleAction {
 
 export interface CopyScheduleAction {
     type: 'copySchedule';
+    index: number;
     newScheduleName: string;
+}
+
+export interface ReorderScheduleAction {
+    type: 'reorderSchedule';
+    from: number;
+    to: number;
 }
 
 export interface ChangeCourseColorAction {
@@ -78,6 +85,7 @@ export type ActionType =
     | ChangeCustomEventColorAction
     | ClearScheduleAction
     | CopyScheduleAction
+    | ReorderScheduleAction
     | ChangeCourseColorAction
     | UndoAction;
 
@@ -159,7 +167,10 @@ class ActionTypesStore extends EventEmitter {
                     AppStore.schedule.clearCurrentSchedule();
                     break;
                 case 'copySchedule':
-                    AppStore.schedule.copySchedule(action.newScheduleName);
+                    AppStore.schedule.copySchedule(action.index, action.newScheduleName);
+                    break;
+                case 'reorderSchedule':
+                    AppStore.schedule.reorderSchedule(action.from, action.to);
                     break;
                 default:
                     break;

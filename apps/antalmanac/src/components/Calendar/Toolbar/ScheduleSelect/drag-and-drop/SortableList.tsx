@@ -42,7 +42,7 @@ export function SortableList<T extends BaseItem>({ items, onChange, renderItem }
                     const activeIndex = items.findIndex(({ id }) => id === active.id);
                     const overIndex = items.findIndex(({ id }) => id === over.id);
                     onChange(arrayMove(items, activeIndex, overIndex));
-                    AppStore.reorderSchedules(activeIndex, overIndex);
+                    AppStore.reorderSchedule(activeIndex, overIndex);
                 }
                 setActive(null);
             }}

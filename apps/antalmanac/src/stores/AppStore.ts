@@ -13,6 +13,7 @@ import type {
     ChangeCustomEventColorAction,
     ClearScheduleAction,
     CopyScheduleAction,
+    ReorderScheduleAction,
     ChangeCourseColorAction,
     UndoAction,
 } from '$actions/ActionTypesStore';
@@ -300,6 +301,7 @@ class AppStore extends EventEmitter {
         this.unsavedChanges = true;
         const action: CopyScheduleAction = {
             type: 'copySchedule',
+            index: index,
             newScheduleName: newScheduleName,
         };
         actionTypesStore.autoSaveSchedule(action);
@@ -310,8 +312,15 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    reorderSchedules(from: number, to: number) {
-        this.schedule.reorderSchedules(from, to);
+    reorderSchedule(from: number, to: number) {
+        this.schedule.reorderSchedule(from, to);
+        this.unsavedChanges = true;
+        const action: ReorderScheduleAction = {
+            type: 'reorderSchedule',
+            from: from,
+            to: to,
+        };
+        actionTypesStore.autoSaveSchedule(action);
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNamesChange', { triggeredBy: 'reorder' });
         this.emit('reorderSchedule');

@@ -167,7 +167,7 @@ export class Schedules {
      * Reorder schedules by moving a schedule from one index to another.
      * This modifies the order of schedules and updates the current schedule index to maintain the correct reference.
      */
-    reorderSchedules(from: number, to: number) {
+    reorderSchedule(from: number, to: number) {
         this.addUndoState();
         const [removed] = this.schedules.splice(from, 1);
         this.schedules.splice(to, 0, removed);

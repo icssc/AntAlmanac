@@ -112,10 +112,7 @@ export function SelectSchedulePopover() {
         };
     }, []);
 
-    const scheduleMappingToUse = useMemo(
-        () => (skeletonMode ? skeletonScheduleMapping : scheduleMapping),
-        [skeletonMode, skeletonScheduleMapping, scheduleMapping]
-    );
+    const scheduleMappingToUse = skeletonMode ? skeletonScheduleMapping : scheduleMapping;
 
     return (
         <Box>
