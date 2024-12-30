@@ -1,5 +1,5 @@
 import { ContentCopy } from '@mui/icons-material';
-import { Box, IconButton, SxProps, Tooltip } from '@mui/material';
+import { IconButton, SxProps, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
 
 import CopyScheduleDialog from '$components/dialogs/CopySchedule';
@@ -22,7 +22,7 @@ export function CopyScheduleButton({ index, disabled, buttonSx }: CopyScheduleBu
     }, []);
 
     return (
-        <Box>
+        <>
             <Tooltip title="Copy Schedule">
                 <span>
                     <IconButton sx={buttonSx} onClick={handleOpen} size="small" disabled={disabled}>
@@ -31,6 +31,6 @@ export function CopyScheduleButton({ index, disabled, buttonSx }: CopyScheduleBu
                 </span>
             </Tooltip>
             <CopyScheduleDialog fullWidth open={open} index={index} onClose={handleClose} />
-        </Box>
+        </>
     );
 }
