@@ -12,6 +12,7 @@ import LegacySearch from './LegacySearch';
 import PrivacyPolicyBanner from './PrivacyPolicyBanner';
 import TermSelector from './TermSelector';
 
+import { HelpMenu } from '$components/HelpMenu';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { getLocalStorageHelpBoxDismissalTime, setLocalStorageHelpBoxDismissalTime } from '$lib/localStorage';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -115,6 +116,8 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
 
             {displayHelpBox && <HelpBox onDismiss={onHelpBoxDismiss} />}
             <PrivacyPolicyBanner />
+
+            <HelpMenu />
         </div>
     );
 };
