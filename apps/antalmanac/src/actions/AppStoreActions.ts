@@ -250,14 +250,14 @@ export const changeCourseColor = (sectionCode: string, term: string, newColor: s
     AppStore.changeCourseColor(sectionCode, term, newColor);
 };
 
-export const copySchedule = (newScheduleName: string, options?: CopyScheduleOptions) => {
+export const copySchedule = (scheduleIndex: number, newScheduleName: string, options?: CopyScheduleOptions) => {
     logAnalytics({
         category: analyticsEnum.addedClasses.title,
         action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
     });
 
     try {
-        AppStore.copySchedule(newScheduleName);
+        AppStore.copySchedule(scheduleIndex, newScheduleName);
         options?.onSuccess(newScheduleName);
     } catch (error) {
         options?.onError(newScheduleName);
@@ -268,8 +268,8 @@ export const addSchedule = (scheduleName: string) => {
     AppStore.addSchedule(scheduleName);
 };
 
-export const renameSchedule = (scheduleName: string, scheduleIndex: number) => {
-    AppStore.renameSchedule(scheduleName, scheduleIndex);
+export const renameSchedule = (scheduleIndex: number, scheduleName: string) => {
+    AppStore.renameSchedule(scheduleIndex, scheduleName);
 };
 
 export const deleteSchedule = (scheduleIndex: number) => {

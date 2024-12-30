@@ -77,7 +77,7 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
         onClose?.();
 
         if (rename) {
-            renameSchedule(scheduleName, scheduleRenameIndex as number); // typecast works b/c this function only runs when `const rename = scheduleRenameIndex !== undefined` is true.
+            renameSchedule(scheduleRenameIndex as number, scheduleName); // typecast works b/c this function only runs when `const rename = scheduleRenameIndex !== undefined` is true.
         } else {
             addSchedule(scheduleName);
         }

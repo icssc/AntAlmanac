@@ -31,7 +31,7 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
     }, [onClose]);
 
     const handleCopy = useCallback(() => {
-        copySchedule(name);
+        copySchedule(index, name);
         onClose?.({}, 'escapeKeyDown');
     }, [onClose, name]);
 
