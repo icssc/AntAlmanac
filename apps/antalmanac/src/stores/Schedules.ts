@@ -50,7 +50,7 @@ export class Schedules {
         this.skeletonSchedules = [];
     }
 
-    getNextScheduleName(newScheduleName: string, scheduleIndex: number) {
+    getNextScheduleName(scheduleIndex: number, newScheduleName: string) {
         const scheduleNames = this.getScheduleNames();
         scheduleNames.splice(scheduleIndex, 1);
         let nextScheduleName = newScheduleName;
@@ -108,7 +108,7 @@ export class Schedules {
         this.addUndoState();
         const scheduleNoteId = Math.random();
         this.schedules.push({
-            scheduleName: this.getNextScheduleName(newScheduleName, this.getNumberOfSchedules()),
+            scheduleName: this.getNextScheduleName(this.getNumberOfSchedules(), newScheduleName),
             courses: [],
             customEvents: [],
             scheduleNoteId: scheduleNoteId,
@@ -122,9 +122,9 @@ export class Schedules {
      * Rename schedule with the specified index.
      * @param newScheduleName The name of the new schedule. If a schedule with the same name already exists, a number will be appended to the name.
      */
-    renameSchedule(newScheduleName: string, scheduleIndex: number) {
+    renameSchedule(scheduleIndex: number, newScheduleName: string) {
         this.addUndoState();
-        this.schedules[scheduleIndex].scheduleName = this.getNextScheduleName(newScheduleName, scheduleIndex);
+        this.schedules[scheduleIndex].scheduleName = this.getNextScheduleName(scheduleIndex, newScheduleName);
     }
 
     /**
@@ -148,9 +148,9 @@ export class Schedules {
     /**
      * Copy the schedule at the provided index to a newly created schedule with the specified name.
      */
-    copySchedule(index: number, newScheduleName: string) {
+    copySchedule(scheduleIndex: number, newScheduleName: string) {
         this.addNewSchedule(newScheduleName);
-        this.currentScheduleIndex = index; // temporarily set current schedule to the one being copied
+        this.currentScheduleIndex = scheduleIndex; // temporarily set current schedule to the one being copied
         const to = this.getNumberOfSchedules() - 1;
 
         for (const course of this.getCurrentCourses()) {
@@ -179,7 +179,6 @@ export class Schedules {
             this.currentScheduleIndex += 1;
         }
     }
-
     getCurrentCourses() {
         return this.schedules[this.currentScheduleIndex]?.courses || [];
     }

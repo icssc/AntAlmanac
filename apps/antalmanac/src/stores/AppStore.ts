@@ -13,9 +13,12 @@ import type {
     ChangeCustomEventColorAction,
     ClearScheduleAction,
     CopyScheduleAction,
+    RenameScheduleAction,
+    DeleteScheduleAction,
     ReorderScheduleAction,
     ChangeCourseColorAction,
     UndoAction,
+    AddScheduleAction,
 } from '$actions/ActionTypesStore';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { SnackbarPosition } from '$components/NotificationSnackbar';
@@ -72,8 +75,8 @@ class AppStore extends EventEmitter {
         }
     }
 
-    getNextScheduleName(newScheduleName: string, scheduleIndex: number) {
-        return this.schedule.getNextScheduleName(newScheduleName, scheduleIndex);
+    getNextScheduleName(scheduleIndex: number, newScheduleName: string) {
+        return this.schedule.getNextScheduleName(scheduleIndex, newScheduleName);
     }
 
     getDefaultScheduleName() {
@@ -281,13 +284,26 @@ class AppStore extends EventEmitter {
         // another key/value pair to keep track of the section codes for that schedule,
         // and redirect the user to the new schedule
         this.schedule.addNewSchedule(newScheduleName);
+        this.unsavedChanges = true;
+        const action: AddScheduleAction = {
+            type: 'addSchedule',
+            newScheduleName: newScheduleName,
+        };
+        actionTypesStore.autoSaveSchedule(action);
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNotesChange');
     }
 
-    renameSchedule(scheduleName: string, scheduleIndex: number) {
-        this.schedule.renameSchedule(scheduleName, scheduleIndex);
+    renameSchedule(scheduleIndex: number, newScheduleName: string) {
+        this.schedule.renameSchedule(scheduleIndex, newScheduleName);
+        this.unsavedChanges = true;
+        const action: RenameScheduleAction = {
+            type: 'renameSchedule',
+            scheduleIndex: scheduleIndex,
+            newScheduleName: newScheduleName,
+        };
+        actionTypesStore.autoSaveSchedule(action);
         this.emit('scheduleNamesChange');
     }
 
@@ -296,12 +312,12 @@ class AppStore extends EventEmitter {
         window.localStorage.removeItem('unsavedActions');
     }
 
-    copySchedule(index: number, newScheduleName: string) {
-        this.schedule.copySchedule(index, newScheduleName);
+    copySchedule(scheduleIndex: number, newScheduleName: string) {
+        this.schedule.copySchedule(scheduleIndex, newScheduleName);
         this.unsavedChanges = true;
         const action: CopyScheduleAction = {
             type: 'copySchedule',
-            index: index,
+            scheduleIndex: scheduleIndex,
             newScheduleName: newScheduleName,
         };
         actionTypesStore.autoSaveSchedule(action);
@@ -380,6 +396,12 @@ class AppStore extends EventEmitter {
 
     deleteSchedule(scheduleIndex: number) {
         this.schedule.deleteSchedule(scheduleIndex);
+        this.unsavedChanges = true;
+        const action: DeleteScheduleAction = {
+            type: 'deleteSchedule',
+            scheduleIndex: scheduleIndex,
+        };
+        actionTypesStore.autoSaveSchedule(action);
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('addedCoursesChange');
