@@ -17,6 +17,7 @@ import type {
     DeleteScheduleAction,
     ChangeCourseColorAction,
     UndoAction,
+    AddScheduleAction,
 } from '$actions/ActionTypesStore';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { SnackbarPosition } from '$components/NotificationSnackbar';
@@ -282,6 +283,12 @@ class AppStore extends EventEmitter {
         // another key/value pair to keep track of the section codes for that schedule,
         // and redirect the user to the new schedule
         this.schedule.addNewSchedule(newScheduleName);
+        this.unsavedChanges = true;
+        const action: AddScheduleAction = {
+            type: 'addSchedule',
+            newScheduleName: newScheduleName,
+        };
+        actionTypesStore.autoSaveSchedule(action);
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNotesChange');
