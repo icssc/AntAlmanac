@@ -13,7 +13,7 @@ function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
     const isDark = useThemeStore((store) => store.isDark);
 
     const [name, setName] = useState(
-        AppStore.getNextScheduleName(AppStore.getScheduleNames().length, AppStore.getDefaultScheduleName())
+        AppStore.getNextScheduleName(() => AppStore.getScheduleNames().length, AppStore.getDefaultScheduleName())
     );
 
     const handleCancel = () => {
