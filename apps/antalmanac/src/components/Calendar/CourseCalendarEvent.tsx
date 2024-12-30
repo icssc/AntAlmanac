@@ -10,13 +10,11 @@ import { Link } from 'react-router-dom';
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
 import ColorPicker from '$components/ColorPicker';
-import depts from '$components/RightPane/CoursePane/SearchForm/DeptSearchBar/depts';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';
-import { clickToCopy } from '$lib/helpers';
+import { clickToCopy, quickSearchForClasses } from '$lib/helpers';
 import locationIds from '$lib/location_ids';
 import AppStore from '$stores/AppStore';
-import { useQuickSearchStore } from '$stores/QuickSearchStore';
 import { useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
@@ -194,25 +192,13 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                 finalExamString = `${finalExam.dayOfWeek} ${finalExamMonth} ${finalExam.day} ${timeString} ${locationString}`;
             }
         }
-        const quickSearch = () => {
-            const decompCourseInfo: string[] | undefined = title.match(/^(.*)\s(\S+)$/)?.slice(1);
-            const tabNum = useTabStore.getState().activeTab;
-
-            // tabNum == 1 locks this feature to only the Search page (even on mobile)
-            if (decompCourseInfo && tabNum == 1) {
-                const deptIdx: number = depts.findIndex((item) => item.deptValue === decompCourseInfo[0]);
-                useQuickSearchStore.getState().setValue({
-                    term: term,
-                    deptLabel: depts[deptIdx].deptLabel,
-                    deptValue: decompCourseInfo[0],
-                    courseNumber: decompCourseInfo[1],
-                });
-            }
+        const handleQuickSearch = () => {
+            quickSearchForClasses(title, term);
         };
         return (
             <Paper className={classes.courseContainer} ref={paperRef}>
                 <div className={classes.titleBar}>
-                    <Button size="small" onClick={quickSearch}>
+                    <Button size="small" onClick={handleQuickSearch}>
                         <Search fontSize="small" style={{ marginRight: 5 }} />
                         <span className={classes.title}>{`${title} ${sectionType}`}</span>
                     </Button>
