@@ -198,10 +198,12 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
         return (
             <Paper className={classes.courseContainer} ref={paperRef}>
                 <div className={classes.titleBar}>
-                    <Button size="small" onClick={handleQuickSearch}>
-                        <Search fontSize="small" style={{ marginRight: 5 }} />
-                        <span className={classes.title}>{`${title} ${sectionType}`}</span>
-                    </Button>
+                    <Tooltip title="Quick Search">
+                        <Button size="small" onClick={handleQuickSearch}>
+                            <Search fontSize="small" style={{ marginRight: 5 }} />
+                            <span className={classes.title}>{`${title} ${sectionType}`}</span>
+                        </Button>
+                    </Tooltip>
                     <Tooltip title="Delete">
                         <IconButton
                             size="small"
