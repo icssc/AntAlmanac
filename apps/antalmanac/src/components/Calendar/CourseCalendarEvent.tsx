@@ -1,7 +1,7 @@
-import { Chip, IconButton, Paper, Tooltip } from '@material-ui/core';
+import { Chip, IconButton, Paper, Tooltip, Button } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { Delete } from '@material-ui/icons';
+import { Delete, Search } from '@material-ui/icons';
 import { WebsocSectionFinalExam } from '@packages/antalmanac-types';
 import { useEffect, useRef, useCallback } from 'react';
 import { Event } from 'react-big-calendar';
@@ -10,11 +10,13 @@ import { Link } from 'react-router-dom';
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
 import ColorPicker from '$components/ColorPicker';
+import depts from '$components/RightPane/CoursePane/SearchForm/DeptSearchBar/depts';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';
 import { clickToCopy } from '$lib/helpers';
 import locationIds from '$lib/location_ids';
 import AppStore from '$stores/AppStore';
+import { useQuickSearchStore } from '$stores/QuickSearchStore';
 import { useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
@@ -192,14 +194,32 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                 finalExamString = `${finalExam.dayOfWeek} ${finalExamMonth} ${finalExam.day} ${timeString} ${locationString}`;
             }
         }
+        const quickSearch = () => {
+            const decompCourseInfo: string[] | undefined = title.match(/^(.*)\s(\S+)$/)?.slice(1);
+            const tabNum = useTabStore.getState().activeTab;
 
+            // tabNum == 1 locks this feature to only the Search page (even on mobile)
+            if (decompCourseInfo && tabNum == 1) {
+                const deptIdx: number = depts.findIndex((item) => item.deptValue === decompCourseInfo[0]);
+                useQuickSearchStore.getState().setValue({
+                    term: term,
+                    deptLabel: depts[deptIdx].deptLabel,
+                    deptValue: decompCourseInfo[0],
+                    courseNumber: decompCourseInfo[1],
+                });
+            }
+        };
         return (
             <Paper className={classes.courseContainer} ref={paperRef}>
                 <div className={classes.titleBar}>
-                    <span className={classes.title}>{`${title} ${sectionType}`}</span>
+                    <Button size="small" onClick={quickSearch}>
+                        <Search fontSize="small" style={{ marginRight: 5 }} />
+                        <span className={classes.title}>{`${title} ${sectionType}`}</span>
+                    </Button>
                     <Tooltip title="Delete">
                         <IconButton
                             size="small"
+                            style={{ textDecoration: 'underline' }}
                             onClick={() => {
                                 props.closePopover();
                                 deleteCourse(sectionCode, term);
