@@ -1,8 +1,8 @@
-import { MouseEvent } from 'react';
+import { MouseEvent, useCallback } from 'react';
 
 import { openSnackbar } from '$actions/AppStoreActions';
-import depts from '$components/RightPane/CoursePane/SearchForm/DeptSearchBar/depts';
-import { useQuickSearchStore } from '$stores/QuickSearchStore';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useTabStore } from '$stores/TabStore';
 
 export const warnMultipleTerms = (terms: Set<string>) => {
@@ -21,20 +21,27 @@ export async function clickToCopy(event: MouseEvent<HTMLElement>, sectionCode: s
     openSnackbar('success', 'WebsocSection code copied to clipboard');
 }
 
-export function quickSearchForClasses(title: string, term: string) {
-    const decompCourseInfo: string[] | undefined = title.match(/^(.*)\s(\S+)$/)?.slice(1);
-    const tabNum = useTabStore.getState().activeTab;
+export function useQuickSearchForClasses() {
+    const { displaySections, forceUpdate } = useCoursePaneStore();
+    const { setActiveTab } = useTabStore();
 
-    // tabNum == 1 locks this feature to only the Search page (even on mobile)
-    if (decompCourseInfo && tabNum == 1) {
-        const deptIdx: number = depts.findIndex((item) => item.deptValue === decompCourseInfo[0]);
-        useQuickSearchStore.getState().setValue({
-            term: term,
-            deptLabel: depts[deptIdx].deptLabel,
-            deptValue: decompCourseInfo[0],
-            courseNumber: decompCourseInfo[1],
-        });
-    }
+    return useCallback(
+        (title: string, termValue: string) => {
+            // separates the course title between it's course number and department label
+            const decomposeCourseInfo: string[] | undefined = title.match(/^(.*)\s(\S+)$/)?.slice(1);
+
+            if (decomposeCourseInfo) {
+                const [department, courseNumber] = decomposeCourseInfo;
+                RightPaneStore.updateFormValue('deptValue', department);
+                RightPaneStore.updateFormValue('courseNumber', courseNumber);
+                RightPaneStore.updateFormValue('term', termValue);
+                forceUpdate();
+                displaySections();
+                setActiveTab(1);
+            }
+        },
+        [displaySections, forceUpdate, setActiveTab]
+    ); // Added dependencies used inside callback
 }
 
 export const FAKE_LOCATIONS = ['VRTL REMOTE', 'ON LINE', 'TBA'];

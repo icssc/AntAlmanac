@@ -12,7 +12,7 @@ import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
 import ColorPicker from '$components/ColorPicker';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';
-import { clickToCopy, quickSearchForClasses } from '$lib/helpers';
+import { clickToCopy, useQuickSearchForClasses } from '$lib/helpers';
 import locationIds from '$lib/location_ids';
 import AppStore from '$stores/AppStore';
 import { useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
@@ -163,6 +163,8 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     }, []);
 
     const { setActiveTab } = useTabStore();
+    const quickSearch = useQuickSearchForClasses();
+
     const { isMilitaryTime } = useTimeFormatStore();
     const isDark = useThemeStore((store) => store.isDark);
 
@@ -192,9 +194,11 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                 finalExamString = `${finalExam.dayOfWeek} ${finalExamMonth} ${finalExam.day} ${timeString} ${locationString}`;
             }
         }
+
         const handleQuickSearch = () => {
-            quickSearchForClasses(title, term);
+            quickSearch(title, term);
         };
+
         return (
             <Paper className={classes.courseContainer} ref={paperRef}>
                 <div className={classes.titleBar}>
