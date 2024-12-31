@@ -4,26 +4,19 @@ import { AACourse } from '@packages/antalmanac-types';
 import { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
-import { useTabStore } from '$stores/TabStore';
+import { useQuickSearchForClasses } from '$lib/helpers';
 
 /**
  * Routes the user to the corresponding search result
  */
 export function CourseInfoSearchButton({ courseDetails, term }: { courseDetails: AACourse; term: string }) {
-    const { setActiveTab } = useTabStore();
-    const { displaySections } = useCoursePaneStore();
+    const quickSearch = useQuickSearchForClasses();
 
     const { deptCode, courseNumber } = courseDetails;
 
     const handleClick = useCallback(() => {
-        RightPaneStore.updateFormValue('deptValue', deptCode);
-        RightPaneStore.updateFormValue('courseNumber', courseNumber);
-        RightPaneStore.updateFormValue('term', term);
-        displaySections();
-        setActiveTab(1);
-    }, [courseNumber, deptCode, displaySections, setActiveTab, term]);
+        quickSearch(`${deptCode} ${courseNumber}`, term);
+    }, [courseNumber, deptCode, term]);
 
     const queryParams = {
         term: term,
