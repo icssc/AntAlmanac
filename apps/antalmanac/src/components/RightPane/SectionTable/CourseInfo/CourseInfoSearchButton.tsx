@@ -23,7 +23,7 @@ export function CourseInfoSearchButton({ courseDetails, term }: { courseDetails:
         RightPaneStore.updateFormValue('term', term);
         displaySections();
         setActiveTab(1);
-    }, []);
+    }, [courseNumber, deptCode, displaySections, setActiveTab, term]);
 
     const queryParams = {
         term: term,
