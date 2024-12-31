@@ -27,7 +27,7 @@ export function useQuickSearchForClasses() {
 
     return useCallback(
         (title: string, termValue: string) => {
-            // separates the course title between it's course number and department label
+            // separates the course title between it's deptValue and courseNumber
             const decomposeCourseInfo: string[] | undefined = title.match(/^(.*)\s(\S+)$/)?.slice(1);
 
             if (decomposeCourseInfo) {
