@@ -5,8 +5,8 @@ import type {
     ScheduleUndoState,
     ShortCourseSchedule,
     RepeatingCustomEvent,
+    CourseInfo,
 } from '@packages/antalmanac-types';
-import type { CourseInfo } from '@packages/antalmanac-types';
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 

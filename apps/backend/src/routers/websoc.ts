@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type {WebsocAPIResponse, CourseInfo, WebsocCourse} from '@packages/antalmanac-types';
+import type { WebsocAPIResponse, CourseInfo, WebsocCourse } from '@packages/antalmanac-types';
 import { procedure, router } from '../trpc';
 
 function sanitizeSearchParams(params: Record<string, string>) {
