@@ -196,7 +196,6 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
         }
 
         const handleQuickSearch = () => {
-            alert(JSON.stringify(props));
             quickSearch(title, term);
         };
 
