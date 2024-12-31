@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { getLocalStorageColumnToggles, setLocalStorageColumnToggles } from '$lib/localStorage';
 
 /**
  * Search results are displayed in a tabular format.
@@ -39,7 +40,8 @@ interface ColumnStore {
 }
 
 // Currently, the mapping/filtering does nothing, but this could be used to enable/disable columns.
-const selectedColumnsInitial = SECTION_TABLE_COLUMNS.map(() => true);
+const storedColumns = getLocalStorageColumnToggles();
+const selectedColumnsInitial = storedColumns ? JSON.parse(storedColumns) : SECTION_TABLE_COLUMNS.map(() => true);
 const activeColumnsInitial = SECTION_TABLE_COLUMNS.filter((_, index) => selectedColumnsInitial[index]);
 
 /**
@@ -55,6 +57,9 @@ export const useColumnStore = create<ColumnStore>((set, _) => {
                 const activeColumns: SectionTableColumn[] = SECTION_TABLE_COLUMNS.filter(
                     (_, index) => selectedColumns[index]
                 );
+
+                setLocalStorageColumnToggles(JSON.stringify(selectedColumns));
+
                 console.log('activeColumns', activeColumns);
                 return { selectedColumns, activeColumns };
             });
