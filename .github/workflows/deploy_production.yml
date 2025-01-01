@@ -28,6 +28,8 @@ env:
     VITE_TILES_ENDPOINT: ${{ secrets.VITE_TILES_ENDPOINT}}
     GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
     GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+    DB_URL: ${{ secrets.PROD_DB_URL }}
+    ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
 
     # Turborepo credentials.
     TURBO_API: ${{ vars.TURBO_API }}
@@ -43,6 +45,7 @@ env:
     HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
     CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
     PR_NUM: ${{ github.event.pull_request.number }}
+    STAGE: prod
 
 jobs:
     # Build production version of the frontend and upload the artifacts.
@@ -110,8 +113,13 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile --prod false
 
+            - name: Run database migrations
+              run: pnpm --filter "antalmanac-backend" migrate
+
             - name: Build backend
               run: pnpm --filter "antalmanac-backend" build
+              env:
+                  ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
 
             - name: Deploy backend production CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" backend-production deploy
@@ -140,6 +148,7 @@ jobs:
               run: pnpm --filter "antalmanac-backend" build
               env:
                   NODE_ENV: development
+                  ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
 
             - name: Deploy backend development CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" backend-development deploy

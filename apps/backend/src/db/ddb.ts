@@ -1,19 +1,12 @@
 import type { Type } from 'arktype';
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
-import { DynamoDB } from '@aws-sdk/client-dynamodb';
+import { DynamoDB, ScanCommandInput } from '@aws-sdk/client-dynamodb';
 
 import {
     UserSchema,
-    LegacyUserSchema,
-    ShortCourseSchema,
-    RepeatingCustomEventSchema,
-    type LegacyUserData,
     type ScheduleSaveState,
 } from '@packages/antalmanac-types';
-
-import LegacyUserModel from '../models/User';
-import connectToMongoDB from '../db/mongodb';
-import env from '../env';
+import {backendEnvSchema} from "../env";
 
 /**
  * TODO: enforce this in the schema too, or just leave it as an arbitrary string?
@@ -24,6 +17,8 @@ export const VISIBILITY = {
     OPEN: 'open',
 };
 
+const env = backendEnvSchema.parse(process.env);
+
 class DDBClient<T extends Type<Record<string, unknown>>> {
     private tableName: string;
 
@@ -33,45 +28,11 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
 
     documentClient: DynamoDBDocument;
 
-    static convertLegacySchedule(legacyUserData: LegacyUserData) {
-        const scheduleSaveState: ScheduleSaveState = { schedules: [], scheduleIndex: 0 };
-
-        for (const scheduleName of legacyUserData.scheduleNames) {
-            scheduleSaveState.schedules.push({
-                scheduleName: scheduleName,
-                courses: [],
-                customEvents: [],
-                scheduleNote: '',
-            });
-        }
-
-        for (const course of legacyUserData.addedCourses) {
-            const { data, problems } = ShortCourseSchema(course);
-
-            if (data === undefined) {
-                console.log(problems);
-                continue;
-            }
-
-            for (const scheduleIndex of course.scheduleIndices) {
-                scheduleSaveState.schedules[scheduleIndex].courses.push(data);
-            }
-        }
-
-        for (const customEvent of legacyUserData.customEvents) {
-            for (const scheduleIndex of customEvent.scheduleIndices) {
-                const { data } = RepeatingCustomEventSchema(customEvent);
-
-                if (data !== undefined) {
-                    scheduleSaveState.schedules[scheduleIndex].customEvents.push(data);
-                }
-            }
-        }
-
-        return scheduleSaveState;
-    }
-
     constructor(tableName: string, schema: T) {
+        if (!tableName) {
+            throw new Error('DDBClient(): tableName must be defined');
+        }
+
         this.tableName = tableName;
         this.schema = schema;
         this.client = new DynamoDB({
@@ -123,19 +84,7 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
 
         await this.documentClient.update(params);
     }
-
-    async getLegacyUserData(userId: string) {
-        await connectToMongoDB();
-
-        const { data, problems } = LegacyUserSchema(await LegacyUserModel.findById(userId));
-
-        if (problems != null || data.userData == null) {
-            return undefined;
-        }
-
-        return { id: userId, userData: DDBClient.convertLegacySchedule(data.userData) };
-    }
-
+    
     async getUserData(id: string) {
         return (await ddbClient.get('id', id))?.userData;
     }
@@ -172,6 +121,42 @@ class DDBClient<T extends Type<Record<string, unknown>>> {
             return parsedUserData.data;
         }
 
+    }
+
+    /**
+     * Reference: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.Pagination.html
+     * @returns An async generator that yields batches of user data from DynamoDB pages.
+     */
+    async* getAllUserDataBatches(){
+        const params: ScanCommandInput = {
+            TableName: this.tableName,
+        }
+    
+        while(true) {
+            const result = await this.documentClient.scan(params);
+            
+            
+            if (result.Items) {
+                console.log(`Scanned ${result.Items.length} items`);
+                const users = result.Items
+                    .map((item) => UserSchema(item))
+                    .filter(
+                        (result) => (
+                            result.problems == null 
+                            && result.data != null
+                        )
+                    )
+                    .map((result) => result.data);
+
+                yield users.filter(
+                    (user) => user.id !== undefined
+                );
+            }
+
+            if (typeof result.LastEvaluatedKey === 'undefined') return;
+
+            params.ExclusiveStartKey = result.LastEvaluatedKey;
+        }
     }
 }
 

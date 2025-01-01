@@ -1,20 +1,20 @@
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { AutocompleteInputChangeReason } from '@material-ui/lab/Autocomplete';
+import type { SearchResult } from '@packages/antalmanac-types';
 import { PureComponent } from 'react';
 import UAParser from 'ua-parser-js';
-import search from 'websoc-fuzzy-search';
-
-type SearchResult = ReturnType<typeof search>;
 
 import RightPaneStore from '../../RightPaneStore';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import trpc from '$lib/api/trpc';
+
+const SEARCH_TIMEOUT_MS = 150;
 
 const emojiMap: Record<string, string> = {
     GE_CATEGORY: '🏫', // U+1F3EB :school:
     DEPARTMENT: '🏢', // U+1F3E2 :office:
     COURSE: '📚', // U+1F4DA :books:
-    INSTRUCTOR: '🍎', // U+1F34E :apple:
 };
 
 const romanArr = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
@@ -34,10 +34,13 @@ interface FuzzySearchProps {
 }
 
 interface FuzzySearchState {
-    cache: Record<string, SearchResult>;
+    cache: Record<string, Record<string, SearchResult> | undefined>;
     open: boolean;
-    results: SearchResult;
+    results: Record<string, SearchResult> | undefined;
     value: string;
+    loading: boolean;
+    requestTimestamp?: number;
+    pendingRequest?: number;
 }
 
 class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
@@ -46,12 +49,15 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         open: false,
         results: {},
         value: '',
+        loading: false,
+        requestTimestamp: undefined,
+        pendingRequest: undefined,
     };
 
     doSearch = (value: string) => {
         if (!value) return;
         const emoji = value.slice(0, 2);
-        const ident: string[] = emoji === emojiMap.INSTRUCTOR ? [value.slice(3)] : value.slice(3).split(':');
+        const ident = value.slice(3).split(':');
         const term = RightPaneStore.getFormData().term;
         RightPaneStore.resetFormValues();
         RightPaneStore.updateFormValue('term', term);
@@ -68,36 +74,11 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 break;
             case emojiMap.COURSE: {
                 const deptValue = ident[0].split(' ').slice(0, -1).join(' ');
-                let deptLabel;
-                for (const [key, value] of Object.entries(this.state.cache)) {
-                    if (Object.keys(value ?? {}).includes(deptValue)) {
-                        deptLabel = this.state.cache[key]?.[deptValue].name;
-                        break;
-                    }
-                }
-                if (!deptLabel) {
-                    const deptSearch = search({ query: deptValue.toLowerCase(), numResults: 1 });
-                    if (deptSearch?.[deptValue]) {
-                        deptLabel = deptSearch[deptValue].name;
-                        this.setState({
-                            cache: {
-                                ...this.state.cache,
-                                [deptValue.toLowerCase()]: deptSearch,
-                            },
-                        });
-                    }
-                }
                 RightPaneStore.updateFormValue('deptValue', deptValue);
-                RightPaneStore.updateFormValue('deptLabel', `${deptValue}: ${deptLabel}`);
+                RightPaneStore.updateFormValue('deptLabel', deptValue);
                 RightPaneStore.updateFormValue('courseNumber', ident[0].split(' ').slice(-1)[0]);
                 break;
             }
-            case emojiMap.INSTRUCTOR:
-                RightPaneStore.updateFormValue(
-                    'instructor',
-                    Object.keys(this.state.results ?? {}).filter((x) => this.state.results?.[x].name === ident[0])[0]
-                );
-                break;
             default:
                 break;
         }
@@ -124,17 +105,42 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
             case 'DEPARTMENT':
                 return `${emojiMap.DEPARTMENT} ${option}: ${object.name}`;
             case 'COURSE':
-                // @ts-expect-error type SearchResult.metadata can only be of type CourseMetaData in this case, but the type is not exposed so we can't cast directly
                 return `${emojiMap.COURSE} ${object.metadata.department} ${object.metadata.number}: ${object.name}`;
-            case 'INSTRUCTOR':
-                return `${emojiMap.INSTRUCTOR} ${object.name}`;
             default:
-                break;
+                return '';
         }
-        return '';
     };
 
     getOptionSelected = () => true;
+
+    requestIsCurrent = (requestTimestamp: number) => this.state.requestTimestamp === requestTimestamp;
+
+    // Returns a function for use with setTimeout that exhibits the following behavior:
+    // If the request is current, make the request. Then, if it is still current, update the component's
+    // state to reflect the results of the query.
+    maybeDoSearchFactory = (requestTimestamp: number) => () => {
+        if (!this.requestIsCurrent(requestTimestamp)) return;
+        trpc.search.doSearch
+            .query({ query: this.state.value })
+            .then((result) => {
+                if (!this.requestIsCurrent(requestTimestamp)) return;
+                this.setState({
+                    cache: {
+                        ...this.state.cache,
+                        [this.state.value]: result,
+                    },
+                    results: result,
+                    loading: false,
+                    pendingRequest: undefined,
+                    requestTimestamp: undefined,
+                });
+            })
+            .catch((e) => {
+                if (!this.requestIsCurrent(requestTimestamp)) return;
+                this.setState({ results: {}, loading: false });
+                console.error(e);
+            });
+    };
 
     onInputChange = (_event: unknown, value: string, reason: AutocompleteInputChangeReason) => {
         const lowerCaseValue = value.toLowerCase();
@@ -149,16 +155,15 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                     if (this.state.cache[this.state.value]) {
                         this.setState({ results: this.state.cache[this.state.value] });
                     } else {
-                        try {
-                            const result = search({ query: this.state.value, numResults: 10 });
-                            this.setState({
-                                cache: { ...this.state.cache, [this.state.value]: result },
-                                results: result,
-                            });
-                        } catch (e) {
-                            this.setState({ results: {} });
-                            console.error(e);
-                        }
+                        const requestTimestamp = Date.now();
+                        this.setState({ results: {}, loading: true, requestTimestamp }, () => {
+                            window.clearTimeout(this.state.pendingRequest);
+                            const pendingRequest = window.setTimeout(
+                                this.maybeDoSearchFactory(requestTimestamp),
+                                SEARCH_TIMEOUT_MS
+                            );
+                            this.setState({ pendingRequest });
+                        });
                     }
                 }
             );
@@ -176,6 +181,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     render() {
         return (
             <Autocomplete
+                loading={this.state.loading}
                 style={{ width: '100%' }}
                 options={Object.keys(this.state.results ?? {})}
                 renderInput={(params) => (

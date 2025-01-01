@@ -1,19 +1,18 @@
-import { RepeatingCustomEvent, ScheduleCourse, ShortCourseSchedule } from '@packages/antalmanac-types';
+import { RepeatingCustomEvent, ScheduleCourse, ShortCourseSchedule, WebsocSection } from '@packages/antalmanac-types';
+import { CourseDetails } from '@packages/antalmanac-types';
 import { TRPCError } from '@trpc/server';
 import { VariantType } from 'notistack';
-import { WebsocSection } from 'peterportal-api-next-types';
 
 import { SnackbarPosition } from '$components/NotificationSnackbar';
 import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics';
 import trpc from '$lib/api/trpc';
-import { CourseDetails } from '$lib/course_data.types';
 import { warnMultipleTerms } from '$lib/helpers';
 import { removeLocalStorageUserId, setLocalStorageUserId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 
 export interface CopyScheduleOptions {
-    onSuccess: (index: number) => unknown;
-    onError: (index: number) => unknown;
+    onSuccess: (scheduleName: string) => unknown;
+    onError: (scheduleName: string) => unknown;
 }
 
 export const addCourse = (
@@ -251,17 +250,17 @@ export const changeCourseColor = (sectionCode: string, term: string, newColor: s
     AppStore.changeCourseColor(sectionCode, term, newColor);
 };
 
-export const copySchedule = (to: number, options?: CopyScheduleOptions) => {
+export const copySchedule = (scheduleIndex: number, newScheduleName: string, options?: CopyScheduleOptions) => {
     logAnalytics({
         category: analyticsEnum.addedClasses.title,
         action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
     });
 
     try {
-        AppStore.copySchedule(to);
-        options?.onSuccess(to);
+        AppStore.copySchedule(scheduleIndex, newScheduleName);
+        options?.onSuccess(newScheduleName);
     } catch (error) {
-        options?.onError(to);
+        options?.onError(newScheduleName);
     }
 };
 
@@ -269,8 +268,8 @@ export const addSchedule = (scheduleName: string) => {
     AppStore.addSchedule(scheduleName);
 };
 
-export const renameSchedule = (scheduleName: string, scheduleIndex: number) => {
-    AppStore.renameSchedule(scheduleName, scheduleIndex);
+export const renameSchedule = (scheduleIndex: number, scheduleName: string) => {
+    AppStore.renameSchedule(scheduleIndex, scheduleName);
 };
 
 export const deleteSchedule = (scheduleIndex: number) => {

@@ -1,7 +1,6 @@
 import { Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, useMediaQuery } from '@mui/material';
-import { AACourse, AASection } from '@packages/antalmanac-types';
-import { WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from 'peterportal-api-next-types';
+import { AACourse, AASection, WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
@@ -9,7 +8,7 @@ import RightPaneStore from '../RightPaneStore';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 
-import SchoolDeptCard from './SchoolDeptCard';
+import { SchoolDeptCard } from './SchoolDeptCard';
 import darkModeLoadingGif from './SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './SearchForm/Gifs/loading.gif';
 import darkNoNothing from './static/dark-no_results.png';
@@ -186,7 +185,7 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
-    const setHoveredEvents = useHoveredStore((store) => store.setHoveredEvents);
+    const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
     const loadCourses = useCallback(async () => {
         setLoading(true);
@@ -207,11 +206,14 @@ export default function CourseRenderPane(props: { id?: number }) {
             building: formData.building,
             room: formData.room,
             division: formData.division,
+            excludeRestrictionCodes: formData.excludeRestrictionCodes.split('').join(','), // comma delimited string (e.g. ABC -> A,B,C)
         };
 
         const gradesQueryParams = {
             department: formData.deptValue,
             ge: formData.ge as GE,
+            instructor: formData.instructor,
+            sectionCode: formData.sectionCode,
         };
 
         try {
@@ -274,9 +276,9 @@ export default function CourseRenderPane(props: { id?: number }) {
      */
     useEffect(() => {
         return () => {
-            setHoveredEvents(undefined);
+            setHoveredEvent(undefined);
         };
-    }, [setHoveredEvents]);
+    }, [setHoveredEvent]);
 
     return (
         <>

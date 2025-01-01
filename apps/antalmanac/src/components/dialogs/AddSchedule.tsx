@@ -1,6 +1,6 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import type { DialogProps } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { addSchedule } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
@@ -12,7 +12,9 @@ import { useThemeStore } from '$stores/SettingsStore';
 function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
     const isDark = useThemeStore((store) => store.isDark);
 
-    const [name, setName] = useState(AppStore.getDefaultScheduleName());
+    const [name, setName] = useState(
+        AppStore.getNextScheduleName(() => AppStore.getScheduleNames().length, AppStore.getDefaultScheduleName())
+    );
 
     const handleCancel = () => {
         onClose?.({}, 'escapeKeyDown');
@@ -24,7 +26,6 @@ function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
 
     const submitName = () => {
         addSchedule(name);
-        setName(AppStore.schedule.getDefaultScheduleName());
         onClose?.({}, 'escapeKeyDown');
     };
 
@@ -46,6 +47,17 @@ function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
         }
     };
 
+    const handleScheduleNamesChange = useCallback(() => {
+        setName(AppStore.getNextScheduleName(AppStore.getScheduleNames().length, AppStore.getDefaultScheduleName()));
+    }, []);
+
+    useEffect(() => {
+        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
+        return () => {
+            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
+        };
+    }, [handleScheduleNamesChange]);
+
     return (
         <Dialog onKeyDown={handleKeyDown} {...props}>
             <DialogTitle>Add Schedule</DialogTitle>
@@ -60,7 +72,7 @@ function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
                 <Button onClick={handleCancel} color={isDark ? 'secondary' : 'primary'}>
                     Cancel
                 </Button>
-                <Button onClick={submitName} variant="contained" color="primary" disabled={name.trim() === ''}>
+                <Button onClick={submitName} variant="contained" color="primary" disabled={name?.trim() === ''}>
                     Add Schedule
                 </Button>
             </DialogActions>

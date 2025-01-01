@@ -1,16 +1,13 @@
-import { ScheduleCourse } from '@packages/antalmanac-types';
-import {
-    DayOfWeek,
-    HourMinute,
-    WebsocSectionFinalExam,
-    WebsocSectionMeeting,
-    daysOfWeek,
-} from 'peterportal-api-next-types';
+import { ScheduleCourse, HourMinute, WebsocSectionFinalExam, WebsocSectionMeeting } from '@packages/antalmanac-types';
 
 import AppStore from '$stores/AppStore';
 
 const CURRENT_TERM = '2024 Winter'; // TODO: Check the current term when that PR's in
 let sampleClassesSectionCodes: Array<string> = [];
+
+const finalsDaysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
+
+type FinalsDaysOfWeek = (typeof finalsDaysOfWeek)[number];
 
 export function addSampleClasses() {
     if (AppStore.getAddedCourses().length > 0) return;
@@ -107,8 +104,8 @@ export function randint(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function randomWeekday(): DayOfWeek {
-    return daysOfWeek[randint(0, 6)];
+function randomWeekdayForFinals(): FinalsDaysOfWeek {
+    return finalsDaysOfWeek[randint(0, 6)];
 }
 
 function randomClasstime(): HourMinute {
@@ -127,6 +124,10 @@ function randomStartEndTime(duration: number): [HourMinute, HourMinute] {
     return [start, end];
 }
 
+type NonStrictPartialWebsocSectionMeeting = Partial<Extract<WebsocSectionMeeting, { timeIsTBA: false }>> & {
+    timeIsTBA?: boolean;
+};
+
 export function sampleMeetingsFactory({
     bldg = ['DBH 1200'],
     days = 'MWF',
@@ -139,7 +140,7 @@ export function sampleMeetingsFactory({
         minute: 50,
     },
     timeIsTBA = false,
-}: Partial<WebsocSectionMeeting>): WebsocSectionMeeting[] {
+}: NonStrictPartialWebsocSectionMeeting): WebsocSectionMeeting[] {
     return [
         {
             bldg,
@@ -151,6 +152,10 @@ export function sampleMeetingsFactory({
     ];
 }
 
+type NonStrictPartialWebsocSectionFinalExam = Partial<
+    Omit<Extract<WebsocSectionFinalExam, { examStatus: 'SCHEDULED_FINAL' }>, 'examStatus'>
+> & { examStatus?: WebsocSectionFinalExam['examStatus'] };
+
 export function sampleFinalExamFactory({
     examStatus = 'SCHEDULED_FINAL',
     dayOfWeek,
@@ -159,23 +164,8 @@ export function sampleFinalExamFactory({
     startTime,
     endTime,
     bldg = ['DBH'],
-}: Partial<WebsocSectionFinalExam>): WebsocSectionFinalExam {
-    if (examStatus == 'NO_FINAL')
-        return {
-            examStatus,
-            dayOfWeek: 'Mon',
-            month: 0,
-            day: 0,
-            startTime: {
-                hour: 0,
-                minute: 0,
-            },
-            endTime: {
-                hour: 0,
-                minute: 0,
-            },
-            bldg,
-        };
+}: NonStrictPartialWebsocSectionFinalExam): WebsocSectionFinalExam {
+    if (examStatus === 'NO_FINAL') return { examStatus };
 
     const [randomStartTime, randomEndTime] = randomStartEndTime(120);
     startTime = startTime ?? randomStartTime;
@@ -183,7 +173,7 @@ export function sampleFinalExamFactory({
 
     return {
         examStatus,
-        dayOfWeek: dayOfWeek ?? randomWeekday(),
+        dayOfWeek: dayOfWeek ?? randomWeekdayForFinals(),
         month,
         day,
         startTime: startTime,
@@ -236,9 +226,10 @@ export function sampleClassFactory({
             sectionCode: randint(10000, 99999).toString(),
             sectionComment: '',
             sectionNum: '1',
-            sectionType: 'LEC',
+            sectionType: 'Lec',
             status: 'Waitl',
             units: '4',
+            updatedAt: null,
         },
     };
 }

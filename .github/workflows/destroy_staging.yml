@@ -26,6 +26,7 @@ env:
     VITE_TILES_ENDPOINT: ${{ secrets.VITE_TILES_ENDPOINT}}
     GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
     GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+    ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
 
     # Turborepo credentials.
     TURBO_API: ${{ vars.TURBO_API }}
@@ -41,6 +42,7 @@ env:
     HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
     CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
     PR_NUM: ${{ github.event.pull_request.number }}
+    STAGE: dev
 
 jobs:
     destroy_staging_frontend:
@@ -88,6 +90,8 @@ jobs:
 
             - name: Build backend
               run: pnpm --filter "antalmanac-backend" build
+              env:
+                  ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
 
             - name: Destroy backend staging CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" backend-staging destroy --force

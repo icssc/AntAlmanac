@@ -8,7 +8,7 @@ import {
     TextField,
     type DialogProps,
 } from '@mui/material';
-import { useCallback, useState, useEffect, useMemo } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 
 import { renameSchedule } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
@@ -34,26 +34,18 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
      * This is destructured separately for memoization.
      */
     const { onClose } = props;
-
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
-
-    const [name, setName] = useState(scheduleNames[index]);
-
-    const disabled = useMemo(() => {
-        return name?.trim() === '';
-    }, [name]);
+    const [name, setName] = useState(AppStore.getScheduleNames()[index]);
 
     const handleCancel = useCallback(() => {
         onClose?.({}, 'escapeKeyDown');
-        setName(scheduleNames[index]);
-    }, [onClose, scheduleNames, index]);
+    }, [onClose]);
 
     const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setName(event.target.value);
     }, []);
 
     const submitName = useCallback(() => {
-        renameSchedule(name, index);
+        renameSchedule(index, name);
         onClose?.({}, 'escapeKeyDown');
     }, [onClose, name, index]);
 
@@ -75,8 +67,8 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
     );
 
     const handleScheduleNamesChange = useCallback(() => {
-        setScheduleNames(AppStore.getScheduleNames());
-    }, []);
+        setName(AppStore.getScheduleNames()[index]);
+    }, [index]);
 
     useEffect(() => {
         AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
@@ -100,7 +92,7 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
                 <Button onClick={handleCancel} color={'inherit'}>
                     Cancel
                 </Button>
-                <Button onClick={submitName} variant="contained" color="primary" disabled={disabled}>
+                <Button onClick={submitName} variant="contained" color="primary" disabled={name?.trim() === ''}>
                     Rename Schedule
                 </Button>
             </DialogActions>
