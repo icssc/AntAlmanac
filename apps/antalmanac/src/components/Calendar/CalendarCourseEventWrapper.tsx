@@ -27,8 +27,8 @@ export const CalendarCourseEventWrapper = ({ children, ...props }: CalendarCours
             e.stopPropagation();
 
             if (props.event && (e.metaKey || e.ctrlKey)) {
-                const courseInfo = props.event;
-                quickSearch(courseInfo.title, (courseInfo as CourseEvent)?.term);
+                const courseInfo = props.event as CourseEvent;
+                quickSearch(courseInfo.deptValue, courseInfo.courseNumber, courseInfo.term);
             } else {
                 setSelectedEvent(e, props.event);
             }

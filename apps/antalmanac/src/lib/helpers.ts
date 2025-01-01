@@ -26,19 +26,13 @@ export function useQuickSearchForClasses() {
     const { setActiveTab } = useTabStore();
 
     return useCallback(
-        (title: string, termValue: string) => {
-            // separates the course title between it's deptValue and courseNumber
-            const decomposeCourseInfo: string[] | undefined = title.match(/^(.*)\s(\S+)$/)?.slice(1);
-
-            if (decomposeCourseInfo) {
-                const [department, courseNumber] = decomposeCourseInfo;
-                RightPaneStore.updateFormValue('deptValue', department);
-                RightPaneStore.updateFormValue('courseNumber', courseNumber);
-                RightPaneStore.updateFormValue('term', termValue);
-                forceUpdate();
-                displaySections();
-                setActiveTab(1);
-            }
+        (deptValue: string, courseNumber: string, termValue: string) => {
+            RightPaneStore.updateFormValue('deptValue', deptValue);
+            RightPaneStore.updateFormValue('courseNumber', courseNumber);
+            RightPaneStore.updateFormValue('term', termValue);
+            forceUpdate();
+            displaySections();
+            setActiveTab(1);
         },
         [displaySections, forceUpdate, setActiveTab]
     ); // Added dependencies used inside callback

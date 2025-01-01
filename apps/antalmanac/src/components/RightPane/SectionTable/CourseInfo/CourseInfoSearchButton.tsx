@@ -15,7 +15,7 @@ export function CourseInfoSearchButton({ courseDetails, term }: { courseDetails:
     const { deptCode, courseNumber } = courseDetails;
 
     const handleClick = useCallback(() => {
-        quickSearch(`${deptCode} ${courseNumber}`, term);
+        quickSearch(deptCode, courseNumber, term);
     }, [courseNumber, deptCode, term]);
 
     const queryParams = {

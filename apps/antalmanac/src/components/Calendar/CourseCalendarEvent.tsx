@@ -119,6 +119,8 @@ export interface CourseEvent extends CommonCalendarEvent {
     isCustomEvent: false;
     sectionCode: string;
     sectionType: string;
+    deptValue: string;
+    courseNumber: string;
     term: string;
 }
 
@@ -175,7 +177,8 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     const { classes, selectedEvent } = props;
 
     if (!selectedEvent.isCustomEvent) {
-        const { term, instructors, sectionCode, title, finalExam, locations, sectionType } = selectedEvent;
+        const { term, instructors, sectionCode, title, finalExam, locations, sectionType, deptValue, courseNumber } =
+            selectedEvent;
 
         let finalExamString = '';
 
@@ -196,7 +199,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
         }
 
         const handleQuickSearch = () => {
-            quickSearch(title, term);
+            quickSearch(deptValue, courseNumber, term);
         };
 
         return (
