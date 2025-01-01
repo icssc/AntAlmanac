@@ -20,6 +20,7 @@ import ScheduleSelector from './ScheduleSelector';
 import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { getLatestTermByShortName } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
@@ -36,6 +37,7 @@ const defaultCustomEventValues: RepeatingCustomEvent = {
     days: [false, false, false, false, false, false, false],
     customEventID: 0,
     building: undefined,
+    term: undefined,
 };
 
 function CustomEventDialogs(props: CustomEventDialogProps) {
@@ -110,6 +112,8 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
     const handleAddToCalendar = () => {
         if (!days.some((day) => day) || scheduleIndices.length === 0) return;
 
+        const termsShortNames = AppStore.schedule.getCoursesFromSchedules(scheduleIndices).map((course) => course.term);
+
         const newCustomEvent: RepeatingCustomEvent = {
             color: props.customEvent ? props.customEvent.color : '#551a8b',
             title: title,
@@ -118,6 +122,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
             end: end,
             customEventID: props.customEvent ? props.customEvent.customEventID : Date.now(),
             building: building,
+            term: getLatestTermByShortName(termsShortNames)?.shortName,
         };
 
         resetForm();

@@ -189,6 +189,7 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
                 title: customEvent.title,
                 building: customEvent.building ?? '',
                 days,
+                term: customEvent.term ?? '',
             };
         });
     });

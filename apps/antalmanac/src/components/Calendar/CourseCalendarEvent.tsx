@@ -131,6 +131,7 @@ export interface CustomEvent extends CommonCalendarEvent {
     isCustomEvent: true;
     building: string;
     days: string[];
+    term: string;
 }
 
 export type CalendarEvent = CourseEvent | CustomEvent;
@@ -280,7 +281,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             </Paper>
         );
     } else {
-        const { title, customEventID, building } = selectedEvent;
+        const { title, customEventID, building, term } = selectedEvent;
         return (
             <Paper className={classes.customEventContainer} ref={paperRef}>
                 <div className={classes.title}>{title}</div>
@@ -295,6 +296,12 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             {buildingCatalogue[+building]?.name ?? ''}
                         </Link>
                     </div>
+                )}
+                {term && (
+                    <tr className={classes.table}>
+                        <td className={classes.alignToTop}>Term:&nbsp;</td>
+                        <td className={classes.rightCells}>{term}</td>
+                    </tr>
                 )}
                 <div className={classes.buttonBar}>
                     <div className={`${classes.colorPicker}`}>
