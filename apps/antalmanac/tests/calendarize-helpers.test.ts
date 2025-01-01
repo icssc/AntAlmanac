@@ -97,6 +97,8 @@ describe('calendarize-helpers', () => {
             },
             showLocationInfo: false,
             isCustomEvent: false,
+            deptValue: 'placeholderDeptCode',
+            courseNumber: 'placeholderCourseNumber',
         },
         {
             locations: [],
@@ -126,6 +128,8 @@ describe('calendarize-helpers', () => {
             },
             showLocationInfo: false,
             isCustomEvent: false,
+            deptValue: 'placeholderDeptCode',
+            courseNumber: 'placeholderCourseNumber',
         },
         {
             locations: [],
@@ -155,6 +159,8 @@ describe('calendarize-helpers', () => {
             },
             showLocationInfo: false,
             isCustomEvent: false,
+            deptValue: 'placeholderDeptCode',
+            courseNumber: 'placeholderCourseNumber',
         },
     ];
 

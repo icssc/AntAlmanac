@@ -55,6 +55,8 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): 
                         color: course.section.color,
                         term: course.term,
                         title: `${course.deptCode} ${course.courseNumber}`,
+                        deptValue: course.deptCode,
+                        courseNumber: course.courseNumber,
                         courseTitle: course.courseTitle,
                         locations: meeting.bldg.map(getLocation).map((location: Location) => {
                             return {
