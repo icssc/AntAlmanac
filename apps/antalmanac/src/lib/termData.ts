@@ -146,6 +146,56 @@ function getFinalsStartDateForTerm(term: string) {
     return year && month && day ? new Date(year, month, day + 1) : undefined;
 }
 
+/**
+ * Get latest term by short name.
+ *
+ * By default, use a static index.
+ * If an array of terms short names is provided, select the term with the latest start date.
+ * for example, if the events array contains terms from 2023 Winter, 2024 Spring and 2023 Summer the function will return 2024 Spring
+ */
+
+function getLatestTermByShortName(termsShortNames: string[] = []): Term {
+    if (termsShortNames.length === 0) {
+        return termData[defaultTerm];
+    }
+
+    // Initialize latestTerm as the oldest term in termData
+    let latestTermIndex = termData.length - 1;
+    let latestTerm = termData[latestTermIndex];
+    let foundMatchingTerm = false;
+
+    for (const termShortName of termsShortNames) {
+        const existingTermIndex = termData.findIndex((t) => t.shortName === termShortName);
+        const existingTerm = termData[existingTermIndex];
+        foundMatchingTerm = true;
+
+        // Compare start dates of existingTerm and latestTerm to determine which term is the latest
+        if (existingTerm.startDate && latestTerm.startDate) {
+            const existingStartDate = new Date(...existingTerm.startDate);
+            const latestStartDate = new Date(...latestTerm.startDate);
+
+            if (existingStartDate > latestStartDate) {
+                latestTerm = existingTerm;
+                latestTermIndex = existingTermIndex;
+            }
+
+            // If latestTerm or existingTerm does not have a startDate, set latestTerm to term with the smallest index
+        } else {
+            if (existingTermIndex < latestTermIndex) {
+                latestTerm = existingTerm;
+                latestTermIndex = existingTermIndex;
+            }
+        }
+    }
+
+    if (foundMatchingTerm) {
+        return latestTerm;
+    } else {
+        // Return defaultTerm if no matching terms are found in termData
+        return termData[defaultTerm];
+    }
+}
+
 export {
     defaultTerm,
     getDefaultTerm,
@@ -154,4 +204,5 @@ export {
     getDefaultFinalsStartDate,
     getFinalsStartForTerm,
     getFinalsStartDateForTerm,
+    getLatestTermByShortName,
 };

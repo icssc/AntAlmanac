@@ -5,8 +5,8 @@ import type {
     ScheduleUndoState,
     ShortCourseSchedule,
     RepeatingCustomEvent,
+    CourseInfo,
 } from '@packages/antalmanac-types';
-import type { CourseInfo } from '@packages/antalmanac-types';
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 
@@ -178,6 +178,16 @@ export class Schedules {
      */
     getAllCourses() {
         return this.schedules.map((schedule) => schedule.courses).flat(1);
+    }
+
+    /**
+     * Get combined list of courses from schedules specified by the given indices.
+     */
+    getCoursesFromSchedules(scheduleIndices: number[]) {
+        return scheduleIndices
+            .filter((index) => index >= 0 && index < this.getNumberOfSchedules())
+            .map((index) => this.schedules[index].courses)
+            .flat(1);
     }
 
     /**

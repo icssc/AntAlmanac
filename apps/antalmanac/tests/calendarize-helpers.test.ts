@@ -211,6 +211,7 @@ describe('calendarize-helpers', () => {
             title: 'title',
             building: '',
             days: ['Su', 'Tu', 'Th', 'Sa'],
+            term: '2018 Winter',
         },
         {
             isCustomEvent: true,
@@ -221,6 +222,7 @@ describe('calendarize-helpers', () => {
             title: 'title',
             building: '',
             days: ['Su', 'Tu', 'Th', 'Sa'],
+            term: '2018 Winter',
         },
         {
             isCustomEvent: true,
@@ -231,6 +233,7 @@ describe('calendarize-helpers', () => {
             title: 'title',
             building: '',
             days: ['Su', 'Tu', 'Th', 'Sa'],
+            term: '2018 Winter',
         },
         {
             isCustomEvent: true,
@@ -241,6 +244,7 @@ describe('calendarize-helpers', () => {
             title: 'title',
             building: '',
             days: ['Su', 'Tu', 'Th', 'Sa'],
+            term: '2018 Winter',
         },
     ];
 
