@@ -2,7 +2,6 @@ import { Search } from '@material-ui/icons';
 import { Button } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { useCallback } from 'react';
-import { Link } from 'react-router-dom';
 
 import { useQuickSearchForClasses } from '$lib/helpers';
 
@@ -18,16 +17,6 @@ export function CourseInfoSearchButton({ courseDetails, term }: { courseDetails:
         quickSearch(deptCode, courseNumber, term);
     }, [courseNumber, deptCode, term]);
 
-    const queryParams = {
-        term: term,
-        deptValue: deptCode,
-        courseNumber: courseNumber,
-    };
-
-    const href = `/?${Object.entries(queryParams)
-        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-        .join('&')}`;
-
     return (
         <div>
             <Button
@@ -35,8 +24,6 @@ export function CourseInfoSearchButton({ courseDetails, term }: { courseDetails:
                 size="small"
                 color="primary"
                 style={{ minWidth: 'fit-content' }}
-                to={href}
-                component={Link}
                 onClick={handleClick}
             >
                 <Search />

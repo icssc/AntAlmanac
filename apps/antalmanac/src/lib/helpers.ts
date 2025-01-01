@@ -1,4 +1,5 @@
 import { MouseEvent, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { openSnackbar } from '$actions/AppStoreActions';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
@@ -24,18 +25,30 @@ export async function clickToCopy(event: MouseEvent<HTMLElement>, sectionCode: s
 export function useQuickSearchForClasses() {
     const { displaySections, forceUpdate } = useCoursePaneStore();
     const { setActiveTab } = useTabStore();
+    const navigate = useNavigate();
 
     return useCallback(
         (deptValue: string, courseNumber: string, termValue: string) => {
+            const queryParams = {
+                term: termValue,
+                deptValue: deptValue,
+                courseNumber: courseNumber,
+            };
+
+            const href = `/?${Object.entries(queryParams)
+                .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+                .join('&')}`;
+
             RightPaneStore.updateFormValue('deptValue', deptValue);
             RightPaneStore.updateFormValue('courseNumber', courseNumber);
             RightPaneStore.updateFormValue('term', termValue);
-            forceUpdate();
-            displaySections();
+            navigate(href, { replace: false });
             setActiveTab(1);
+            displaySections();
+            forceUpdate();
         },
         [displaySections, forceUpdate, setActiveTab]
-    ); // Added dependencies used inside callback
+    );
 }
 
 export const FAKE_LOCATIONS = ['VRTL REMOTE', 'ON LINE', 'TBA'];
