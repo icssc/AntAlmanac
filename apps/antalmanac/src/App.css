@@ -10,3 +10,14 @@
     font-size: 30pt;
     color: white;
 }
+
+/* Hide the scrollbars on mobile devices */
+@media (max-width: 768px) {
+    ::-webkit-scrollbar {
+        display: none;
+    }
+
+    * {
+        scrollbar-width: none;
+    }
+}
