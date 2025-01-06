@@ -13,6 +13,7 @@ enum LocalStorageKeys {
     autoSave = 'autoSave',
     unsavedActions = 'unsavedActions',
     helpBoxDismissalTime = 'helpBoxDismissalTime',
+    columnToggles = 'columnToggles',
 }
 
 const LSK = LocalStorageKeys;
@@ -184,4 +185,13 @@ export function getLocalStorageHelpBoxDismissalTime() {
 
 export function removeLocalStorageHelpBoxDismissalTime() {
     window.localStorage.removeItem(LSK.helpBoxDismissalTime);
+}
+
+// Helper functions for columnToggles
+export function setLocalStorageColumnToggles(value: string) {
+    window.localStorage.setItem(LSK.columnToggles, value);
+}
+
+export function getLocalStorageColumnToggles() {
+    return window.localStorage.getItem(LSK.columnToggles);
 }
