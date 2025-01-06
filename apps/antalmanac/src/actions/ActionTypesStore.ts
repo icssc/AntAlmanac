@@ -57,8 +57,25 @@ export interface ClearScheduleAction {
     type: 'clearSchedule';
 }
 
+export interface AddScheduleAction {
+    type: 'addSchedule';
+    newScheduleName: string;
+}
+
+export interface RenameScheduleAction {
+    type: 'renameSchedule';
+    scheduleIndex: number;
+    newScheduleName: string;
+}
+
+export interface DeleteScheduleAction {
+    type: 'deleteSchedule';
+    scheduleIndex: number;
+}
+
 export interface CopyScheduleAction {
     type: 'copySchedule';
+    scheduleIndex: number;
     newScheduleName: string;
 }
 
@@ -77,6 +94,9 @@ export type ActionType =
     | EditCustomEventAction
     | ChangeCustomEventColorAction
     | ClearScheduleAction
+    | AddScheduleAction
+    | RenameScheduleAction
+    | DeleteScheduleAction
     | CopyScheduleAction
     | ChangeCourseColorAction
     | UndoAction;
@@ -158,8 +178,17 @@ class ActionTypesStore extends EventEmitter {
                 case 'clearSchedule':
                     AppStore.schedule.clearCurrentSchedule();
                     break;
+                case 'addSchedule':
+                    AppStore.schedule.addNewSchedule(action.newScheduleName);
+                    break;
+                case 'renameSchedule':
+                    AppStore.schedule.renameSchedule(action.scheduleIndex, action.newScheduleName);
+                    break;
                 case 'copySchedule':
-                    AppStore.schedule.copySchedule(action.newScheduleName);
+                    AppStore.schedule.copySchedule(action.scheduleIndex, action.newScheduleName);
+                    break;
+                case 'deleteSchedule':
+                    AppStore.schedule.deleteSchedule(action.scheduleIndex);
                     break;
                 default:
                     break;

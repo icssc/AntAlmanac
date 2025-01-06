@@ -4,7 +4,7 @@ import { TourProvider } from '@reactour/tour';
 import { SnackbarProvider } from 'notistack';
 import { useEffect } from 'react';
 import ReactGA4 from 'react-ga4';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 
 import { undoDelete } from './actions/AppStoreActions';
 import AppQueryProvider from './providers/Query';
@@ -29,6 +29,10 @@ const BrowserRouter = createBrowserRouter([
         path: '/feedback',
         element: <Feedback />,
         errorElement: <ErrorPage />,
+    },
+    {
+        path: '*',
+        element: <Navigate to="/" replace />,
     },
 ]);
 
