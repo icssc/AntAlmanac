@@ -27,12 +27,10 @@ const DaySelector = ({ days = [false, false, false, false, false, false, false],
                 display: 'flex',
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-                marginTop: 10,
-                marginBottom: 10,
-                marginLeft: -5,
-                marginRight: -5,
+                marginTop: 12,
+                marginBottom: 12,
             }}
-                    style={{ gap: '10px' }}
+            style={{ gap: '12px' }}
         >
             {normal_days.map((day, index) => (
                 <Button
@@ -45,9 +43,8 @@ const DaySelector = ({ days = [false, false, false, false, false, false, false],
                     style={{
                         display: 'block',
                         aspectRatio: 1 / 1,
-                        margin: 5,
                         minWidth: 20,
-                        minBlockSize: 40,
+                        minHeight: 40,
                     }}
                 >
                     {day[0]}

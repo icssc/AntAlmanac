@@ -139,6 +139,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
     }, []);
 
     const isDark = useThemeStore.getState().isDark;
+
     return (
         <>
             {props.customEvent ? (
@@ -168,20 +169,24 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
             )}
             <Dialog open={open} onClose={handleClose} maxWidth={'xs'}>
                 <DialogTitle id="form-dialog-title">
-                    Add a Custom Event
+                    {props.customEvent ? 'Edit a Custom Event' : 'Add a Custom Event'}
                 </DialogTitle>
                 <DialogContent>
                     <FormControl fullWidth>
                         <TextField
-                            id="outlined-basic"
+                            id="event-name-input"
                             label="Event Name"
                             variant="outlined"
                             required={true}
                             value={title}
                             onChange={handleEventNameChange}
+                            margin="dense"
                         />
                     </FormControl>
-                    <FormControl fullWidth sx={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
+                    <FormControl
+                        fullWidth
+                        sx={{ display: 'flex', flexDirection: 'row', gap: '12px', marginTop: '12px' }}
+                    >
                         <TextField
                             onChange={handleStartTimeChange}
                             label="Start Time"
@@ -208,7 +213,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                                 step: 300,
                             }}
                         />
-                    </form>
+                    </FormControl>
                     <DaySelector onSelectDay={handleDayChange} days={props.customEvent?.days} />
                     <BuildingSelect value={building} onChange={handleBuildingChange} variant="outlined" />
                     <ScheduleSelector
@@ -219,16 +224,12 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                     />
                 </DialogContent>
 
-                <DialogActions style={{ padding: '0px 16px 16px' }}>
+                <DialogActions>
                     <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>
                         Cancel
                     </Button>
                     <Button onClick={handleSubmit} variant="contained" color="primary" disabled={disabled}>
-                        {disabled
-                            ? 'Schedule and day must be checked'
-                            : props.customEvent
-                              ? 'Save Changes'
-                              : 'Add Event'}
+                        {disabled ? 'Specify schedule and day' : props.customEvent ? 'Save Changes' : 'Add Event'}
                     </Button>
                 </DialogActions>
             </Dialog>

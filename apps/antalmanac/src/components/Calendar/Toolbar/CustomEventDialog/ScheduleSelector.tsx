@@ -32,7 +32,7 @@ class ScheduleSelector extends PureComponent<ScheduleSelectorProps, ScheduleSele
 
     render() {
         return (
-            <FormControl style={{ marginTop: 10, maxWidth: 400 }} fullWidth variant="outlined">
+            <FormControl style={{ marginTop: '12px', maxWidth: 400 }} fullWidth variant="outlined">
                 <InputLabel id="schedule-select-label" htmlFor="select-multiple-chip">
                     Select schedules
                 </InputLabel>
@@ -40,7 +40,6 @@ class ScheduleSelector extends PureComponent<ScheduleSelectorProps, ScheduleSele
                     labelId="schedule-select-label"
                     id="schedule-select"
                     size="small"
-                    style={{ marginTop: 2 }}
                     multiple
                     value={this.state.scheduleIndices}
                     defaultValue={this.state.scheduleIndices}
