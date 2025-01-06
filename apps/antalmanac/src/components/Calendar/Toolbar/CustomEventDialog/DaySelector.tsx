@@ -32,6 +32,7 @@ const DaySelector = ({ days = [false, false, false, false, false, false, false],
                 marginLeft: -5,
                 marginRight: -5,
             }}
+                    style={{ gap: '10px' }}
         >
             {normal_days.map((day, index) => (
                 <Button
@@ -39,9 +40,7 @@ const DaySelector = ({ days = [false, false, false, false, false, false, false],
                     variant={selectedDays[index] ? 'contained' : 'outlined'}
                     size="small"
                     fullWidth
-                    onClick={() => {
-                        handleChange(index);
-                    }}
+                    onClick={() => handleChange(index)}
                     color={'default'}
                     style={{
                         display: 'block',

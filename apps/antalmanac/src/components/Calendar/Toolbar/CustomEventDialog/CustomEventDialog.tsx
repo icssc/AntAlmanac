@@ -167,7 +167,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                 </Tooltip>
             )}
             <Dialog open={open} onClose={handleClose} maxWidth={'xs'}>
-                <DialogTitle id="form-dialog-title" style={{ marginBottom: -10 }}>
+                <DialogTitle id="form-dialog-title">
                     Add a Custom Event
                 </DialogTitle>
                 <DialogContent>
@@ -179,10 +179,9 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                             required={true}
                             value={title}
                             onChange={handleEventNameChange}
-                            style={{ marginTop: 10, width: '100%' }}
                         />
                     </FormControl>
-                    <form noValidate style={{ display: 'flex', gap: 0, marginTop: 10 }}>
+                    <FormControl fullWidth sx={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
                         <TextField
                             onChange={handleStartTimeChange}
                             label="Start Time"
@@ -195,7 +194,6 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                             inputProps={{
                                 step: 300,
                             }}
-                            style={{ marginRight: 5, marginTop: 10 }}
                         />
                         <TextField
                             onChange={handleEndTimeChange}
@@ -209,7 +207,6 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                             inputProps={{
                                 step: 300,
                             }}
-                            style={{ marginTop: 10 }}
                         />
                     </form>
                     <DaySelector onSelectDay={handleDayChange} days={props.customEvent?.days} />

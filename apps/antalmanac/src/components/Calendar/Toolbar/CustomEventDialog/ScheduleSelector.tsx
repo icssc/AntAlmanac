@@ -6,7 +6,6 @@ import MenuItem from '@mui/material/MenuItem';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { int } from 'aws-sdk/clients/datapipeline';
 import { PureComponent } from 'react';
 
 interface ScheduleSelectorProps {
@@ -49,13 +48,13 @@ class ScheduleSelector extends PureComponent<ScheduleSelectorProps, ScheduleSele
                     input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
                     renderValue={(selected) => (
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                            {selected.map((value: int) => {
+                            {selected.map((value: number) => {
                                 return <Chip key={value} label={this.props.scheduleNames[value]} />;
                             })}
                         </Box>
                     )}
                 >
-                    {this.props.scheduleNames.map((name: string, index: int) => {
+                    {this.props.scheduleNames.map((name: string, index: number) => {
                         return (
                             <MenuItem key={index} value={index}>
                                 {name}
