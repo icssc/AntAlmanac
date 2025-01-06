@@ -1788,10 +1788,11 @@ export default {
         lng: -117.84476,
         imageURLs: [],
     },
+
     83063: {
         name: 'Interdisciplinary Science and Engineering Building  (ISEB)',
         lat: 33.6431,
         lng: -117.8437,
-        imageURLs: [],
+        imageURLs: ['463/201130_iseb_0361_sz_1200x800.png'],
     },
 } as Record<number, Building>;
