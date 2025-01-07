@@ -78,6 +78,7 @@ describe('download-ics', () => {
                 isCustomEvent: true,
                 days: ['M', 'W', 'F'],
                 building: 'placeholderCustomEventBuilding',
+                term: '2023 Fall', // Cannot be a random placeholder; it has to be in `quarterStartDates` otherwise it'll be undefined
             },
         ];
 

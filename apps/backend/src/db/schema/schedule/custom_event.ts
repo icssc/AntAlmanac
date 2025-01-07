@@ -30,6 +30,8 @@ export const customEvents = pgTable(
         building: text('building'),
 
         lastUpdated: timestamp('last_updated', { withTimezone: true }).defaultNow(),
+
+        term: text('term'),
     }
 );
 
