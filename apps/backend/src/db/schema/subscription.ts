@@ -4,7 +4,12 @@ import { users } from './auth/user';
 
 export const subscriptionTargetStatus = pgEnum(
     'subscription_target_status',
-    ['OPEN', 'WAITLISTED']
+    ['OPEN', 'WAITLISTED', 'FULL']
+)
+
+export const lastUpdatedStatus = pgEnum(
+    'last_updated_status',
+    ['OPEN/WAITLISTED', 'WAITLISTED/OPEN', 'FULL/OPEN', 'OPEN/FULL']
 )
 
 export const subscriptions = pgTable(
@@ -19,6 +24,20 @@ export const subscriptions = pgTable(
          * Section code.
          */
         sectionCode: integer('sectionCode'),
+
+        /**
+         * Term/quarter of subscriptions
+         * @example 2024-WINTER, 2024-SPRING, 2025-FALL, etc.
+         */
+
+        term: text('term'),
+
+        /**
+         * Status since polling script last updated 
+         * @example "OPEN/WAITLISTED" would indicate the section was open and is now waitlisted
+         */
+
+        lastUpdated: lastUpdatedStatus('lastUpdated'),
 
         /**
          * @example "OPEN" could indicate that the user wants to be notified when this

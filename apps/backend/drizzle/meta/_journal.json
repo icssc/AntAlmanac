@@ -22,6 +22,20 @@
             "when": 1732578460427,
             "tag": "0002_fat_ted_forrester",
             "breakpoints": true
+        },
+        {
+            "idx": 3,
+            "version": "7",
+            "when": 1735856098198,
+            "tag": "0003_cultured_bucky",
+            "breakpoints": true
+        },
+        {
+            "idx": 4,
+            "version": "7",
+            "when": 1735953198382,
+            "tag": "0004_regular_starhawk",
+            "breakpoints": true
         }
     ]
 }

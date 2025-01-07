@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "baseUrl": ".",
+        "outDir": "dist",
+        "resolveJsonModule": true,
+    },
+    "include": ["src/**/*", "drizzle.config.ts"],
+    "exclude": ["node_modules", "dist"]
+}
