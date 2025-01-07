@@ -112,7 +112,10 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
     const handleAddToCalendar = () => {
         if (!days.some((day) => day) || scheduleIndices.length === 0) return;
 
-        const termsShortNames = AppStore.schedule.getCoursesFromSchedules(scheduleIndices).map((course) => course.term);
+        const termsInScheduleShortNames = AppStore.schedule
+            .getCoursesFromSchedules(scheduleIndices)
+            .map((course) => course.term);
+        const latestTermInSchedule = getLatestTermByShortName(termsInScheduleShortNames)?.shortName;
 
         const newCustomEvent: RepeatingCustomEvent = {
             color: props.customEvent ? props.customEvent.color : '#551a8b',
@@ -122,7 +125,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
             end: end,
             customEventID: props.customEvent ? props.customEvent.customEventID : Date.now(),
             building: building,
-            term: getLatestTermByShortName(termsShortNames)?.shortName,
+            term: latestTermInSchedule,
         };
 
         resetForm();
