@@ -3,6 +3,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { Box, ListItem } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import type { CSSProperties, PropsWithChildren } from 'react';
 import { createContext, useContext, useMemo } from 'react';
 
@@ -57,6 +58,7 @@ interface DragHandleProps {
 
 export function DragHandle({ disabled = false }: DragHandleProps) {
     const { attributes, listeners, ref } = useContext(SortableItemContext);
+    const theme = useTheme();
 
     return (
         <Box
@@ -77,7 +79,11 @@ export function DragHandle({ disabled = false }: DragHandleProps) {
                 },
             }}
         >
-            <DragIndicatorIcon style={{ color: disabled ? 'gray' : 'white' }} />
+            <DragIndicatorIcon
+                style={{
+                    color: disabled ? 'gray' : theme.palette.mode === 'light' ? 'black' : 'white',
+                }}
+            />
         </Box>
     );
 }
