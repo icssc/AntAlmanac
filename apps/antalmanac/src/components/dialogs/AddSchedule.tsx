@@ -7,6 +7,30 @@ import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 /**
+ * Reusable component for the Schedule Name Field.
+ */
+function ScheduleNameField({
+    name,
+    errorMessage,
+    onNameChange,
+}: {
+    name: string;
+    errorMessage: string;
+    onNameChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
+}) {
+    return (
+        <TextField
+            fullWidth
+            label="Name"
+            value={name}
+            onChange={onNameChange}
+            error={Boolean(errorMessage)}
+            helperText={errorMessage}
+        />
+    );
+}
+
+/**
  * Dialog with a text field to add a schedule.
  */
 function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
@@ -60,13 +84,10 @@ function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
 
             <DialogContent>
                 <Box padding={1}>
-                    <TextField
-                        fullWidth
-                        label="Name"
-                        onChange={handleNameChange}
-                        value={name}
-                        error={!!errorMessage}
-                        helperText={errorMessage}
+                    <ScheduleNameField
+                        name={name}
+                        errorMessage={errorMessage}
+                        onNameChange={handleNameChange}
                     />
                 </Box>
             </DialogContent>
