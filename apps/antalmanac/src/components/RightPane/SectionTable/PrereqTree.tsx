@@ -3,8 +3,7 @@ import { Button, Popover } from '@material-ui/core';
 import { Prerequisite, PrerequisiteTree } from '@packages/antalmanac-types';
 import { FC, useState } from 'react';
 
-import { CourseInfo } from './CourseInfoBar';
-
+import { CourseInfo } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { useThemeStore } from '$stores/SettingsStore';
 
 import './PrereqTree.css';
