@@ -18,12 +18,6 @@ async function main() {
         throw new Error(`Please create an element with id ${rootId}`);
     }
 
-    if (import.meta.env.DEV) {
-        const script = document.createElement('script');
-        script.src = 'https://unpkg.com/react-scan/dist/auto.global.js';
-        document.head.appendChild(script);
-    }
-
     createRoot(root).render(<App />);
 }
 
