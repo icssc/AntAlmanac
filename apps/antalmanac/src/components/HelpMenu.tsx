@@ -1,7 +1,7 @@
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import HelpIcon from '@mui/icons-material/Help';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
-import { Fab, Tooltip, Box, IconButton, Paper } from '@mui/material';
+import { Fab, Tooltip, Box, IconButton, Paper, keyframes } from '@mui/material';
 import { useState } from 'react';
 
 import HelpBox from '$components/RightPane/CoursePane/SearchForm/HelpBox';
@@ -32,10 +32,21 @@ export function HelpMenu() {
         setShowHelpBox(false);
     };
 
+    const riseAnimation = keyframes`
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+`;
+
+
     return (
         <Box
             onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
             sx={{
                 position: 'fixed',
                 bottom: '6rem',
@@ -62,6 +73,8 @@ export function HelpMenu() {
             {/* Hovered Icons */}
             {isHovered && (
                 <Box
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
                     sx={{
                         position: 'absolute',
                         bottom: '5rem',
@@ -69,12 +82,19 @@ export function HelpMenu() {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
-                        gap: '0.5rem',
-                        transition: 'opacity 0.3s',
+                        gap: '1rem',
                     }}
                 >
                     {/* Tutorial Button */}
-                    <Tutorial />
+                    <Box
+                        sx={{
+                            animation: `${riseAnimation} 0.5s ease forwards`,
+                            animationDelay: '0.3s',
+                            opacity: 0,
+                        }}
+                    >
+                        <Tutorial />
+                    </Box>
 
                     {/* Feedback Form Button */}
                     <Tooltip title="Feedback Form">
@@ -85,6 +105,9 @@ export function HelpMenu() {
                             sx={{
                                 backgroundColor: '#fff',
                                 ':hover': { backgroundColor: '#e0f7fa' },
+                                animation: `${riseAnimation} 0.5s ease forwards`,
+                                animationDelay: '0.2s', 
+                                opacity: 0,
                             }}
                         >
                             <FeedbackIcon />
@@ -100,6 +123,9 @@ export function HelpMenu() {
                             sx={{
                                 backgroundColor: '#fff',
                                 ':hover': { backgroundColor: '#e0f7fa' },
+                                animation: `${riseAnimation} 0.5s ease forwards`,
+                                animationDelay: '0.1s', 
+                                opacity: 0,
                             }}
                         >
                             <HelpIcon />
