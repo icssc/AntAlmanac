@@ -2,7 +2,7 @@ import { TableBody } from '@material-ui/core';
 import { AACourse, AASection } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 
-import SectionTableBodyRow from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRow';
+import { SectionTableBodyRow } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRow';
 import AppStore from '$stores/AppStore';
 import { normalizeTime, parseDaysString } from '$stores/calendarizeHelpers';
 
