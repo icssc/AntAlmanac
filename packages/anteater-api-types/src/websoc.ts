@@ -18,3 +18,7 @@ export type WebsocSectionMeeting = WebsocSection['meetings'][number];
 export type WebsocSectionFinalExam = WebsocSection['finalExam'];
 
 export type HourMinute = Extract<WebsocSection['finalExam'], { examStatus: 'SCHEDULED_FINAL' }>['startTime'];
+
+export type WebsocSectionType = WebsocCourse['sections'][number]['sectionType'];
+
+export type WebsocSectionStatus = WebsocCourse['sections'][number]['status'];
