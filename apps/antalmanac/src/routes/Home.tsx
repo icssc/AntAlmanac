@@ -25,7 +25,7 @@ function DesktopHome() {
     const theme = useTheme();
     const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
 
-    const scheduleManagementRef = useRef<HTMLDivElement>();
+    const scheduleManagementRef = useRef<HTMLDivElement>(null);
 
     const handleDrag = useCallback(() => {
         const scheduleManagementElement = scheduleManagementRef.current;

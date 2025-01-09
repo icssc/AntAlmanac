@@ -171,7 +171,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     const isDark = useThemeStore((store) => store.isDark);
 
     const focusMap = useCallback(() => {
-        setActiveTab(2);
+        setActiveTab('map');
     }, [setActiveTab]);
 
     const { classes, selectedEvent } = props;
