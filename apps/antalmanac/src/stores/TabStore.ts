@@ -8,7 +8,7 @@ interface TabStore {
     /**
      * Sets the appropriate tab value given a string literal union
      */
-    setActiveTab: (value: TabName) => void;
+    setActiveTab: (name: TabName) => void;
 
     /**
      * Sets the appropriate tab value given a tab index.
@@ -19,9 +19,6 @@ interface TabStore {
 }
 
 export const useTabStore = create<TabStore>((set) => {
-    // const pathArray = typeof window !== 'undefined' ? window.location.pathname.split('/').slice(1) : [];
-    // const tabName = pathArray[0];
-
     return {
         activeTab: 1,
         setActiveTab: (name: TabName) => {
