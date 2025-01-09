@@ -4,7 +4,6 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { SectionActionCell } from '../cells/action';
 
-
 import { CourseCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/CourseCodeCell';
 import { DayAndTimeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DayAndTimeCell';
 import { EnrollmentCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/EnrollmentCell';
@@ -110,19 +109,6 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         return {};
     }, [allowHighlight, isDark, scheduleConflict, addedCourse]);
 
-    console.log({
-        '&:nth-of-type(odd)': {
-            backgroundColor: theme.palette.action.hover,
-        },
-        computedRowStyle,
-    });
-
-    /**
-     *  '&:nth-of-type(odd)': {
-                    backgroundColor: theme.palette.action.hover,
-                },
-                computedRowStyle],
-     */
     return (
         <TableRow
             /**
