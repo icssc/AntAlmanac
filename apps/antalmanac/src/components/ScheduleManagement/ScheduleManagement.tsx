@@ -1,5 +1,6 @@
 import { GlobalStyles, Stack, useMediaQuery, useTheme } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { ScheduleManagementTabsContent } from '$components/ScheduleManagement/ScheduleManagementTabsContent';
@@ -12,6 +13,7 @@ import { useTabStore } from '$stores/TabStore';
  */
 export function ScheduleManagement() {
     const { activeTab, setActiveTab } = useTabStore();
+    const { tab } = useParams();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -34,6 +36,19 @@ export function ScheduleManagement() {
 
     // Change the tab to the "added classes" tab if the user was previously logged in.
     useEffect(() => {
+        if (tab) {
+            switch (tab) {
+                case 'added':
+                    setActiveTab('added');
+                    break;
+                case 'map':
+                    setActiveTab('map');
+                    break;
+            }
+
+            return;
+        }
+
         const userId = getLocalStorageUserId();
 
         if (userId === null) {
