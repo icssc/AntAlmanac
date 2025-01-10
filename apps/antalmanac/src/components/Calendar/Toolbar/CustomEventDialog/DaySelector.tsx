@@ -27,8 +27,6 @@ const DaySelector = ({ days = [false, false, false, false, false, false, false],
                 display: 'flex',
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-                marginTop: 12,
-                marginBottom: 12,
             }}
             style={{ gap: '12px' }}
         >

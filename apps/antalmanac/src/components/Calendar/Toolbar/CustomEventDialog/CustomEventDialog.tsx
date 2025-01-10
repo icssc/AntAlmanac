@@ -171,7 +171,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                 <DialogTitle id="form-dialog-title">
                     {props.customEvent ? 'Edit a Custom Event' : 'Add a Custom Event'}
                 </DialogTitle>
-                <DialogContent>
+                <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <FormControl fullWidth>
                         <TextField
                             id="event-name-input"
@@ -183,10 +183,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                             margin="dense"
                         />
                     </FormControl>
-                    <FormControl
-                        fullWidth
-                        sx={{ display: 'flex', flexDirection: 'row', gap: '12px', marginTop: '12px' }}
-                    >
+                    <FormControl fullWidth sx={{ display: 'flex', flexDirection: 'row', gap: '12px' }}>
                         <TextField
                             onChange={handleStartTimeChange}
                             label="Start Time"
