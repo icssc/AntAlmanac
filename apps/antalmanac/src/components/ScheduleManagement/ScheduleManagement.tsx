@@ -1,8 +1,7 @@
 import { GlobalStyles, Stack, useMediaQuery, useTheme } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 
-import { ScheduleManagementDesktopTabs } from '$components/ScheduleManagement/ScheduleManagementDesktopTabs';
-import { ScheduleManagementMobileTabs } from '$components/ScheduleManagement/ScheduleManagementMobileTabs';
+import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { ScheduleManagementTabsContent } from '$components/ScheduleManagement/ScheduleManagementTabsContent';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import { useTabStore } from '$stores/TabStore';
@@ -67,7 +66,7 @@ export function ScheduleManagement() {
         <Stack direction="column" flexGrow={1} height="0">
             <GlobalStyles styles={{ '*::-webkit-scrollbar': { height: '8px' } }} />
 
-            {!isMobile && <ScheduleManagementDesktopTabs />}
+            {!isMobile && <ScheduleManagementTabs />}
 
             <Stack width="100%" height="0" flexGrow={1} padding={1}>
                 <Stack
@@ -83,7 +82,7 @@ export function ScheduleManagement() {
                 </Stack>
             </Stack>
 
-            {isMobile && <ScheduleManagementMobileTabs />}
+            {isMobile && <ScheduleManagementTabs />}
         </Stack>
     );
 }

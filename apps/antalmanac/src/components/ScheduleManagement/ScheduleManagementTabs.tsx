@@ -1,5 +1,5 @@
 import { Event, FormatListBulleted, MyLocation, Search } from '@mui/icons-material';
-import { Paper, SxProps, Tab, Tabs, useMediaQuery, useTheme } from '@mui/material';
+import { Paper, Tab, Tabs, useMediaQuery, useTheme } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 import { useThemeStore } from '$stores/SettingsStore';
@@ -24,7 +24,7 @@ export type ScheduleManagementTabInfo = {
     /**
      * Icon to display.
      */
-    icon: React.ElementType;
+    icon: React.ReactElement;
 
     /**
      * ID for the tab?
@@ -40,35 +40,30 @@ export type ScheduleManagementTabInfo = {
 const scheduleManagementTabs: Array<ScheduleManagementTabInfo> = [
     {
         label: 'Calendar',
-        icon: Event,
+        icon: <Event />,
         mobile: true,
         href: '',
     },
     {
         label: 'Search',
         href: '/',
-        icon: Search,
+        icon: <Search />,
     },
     {
         label: 'Added',
         href: '/added',
-        icon: FormatListBulleted,
+        icon: <FormatListBulleted />,
         id: 'added-courses-tab',
     },
     {
         label: 'Map',
         href: '/map',
-        icon: MyLocation,
+        icon: <MyLocation />,
         id: 'map-tab',
     },
 ];
 
-interface ScheduleManagementTabsProps {
-    sx?: SxProps;
-    label: (tab: ScheduleManagementTabInfo) => React.ReactNode;
-}
-
-export function ScheduleManagementTabs({ sx, label }: ScheduleManagementTabsProps) {
+export function ScheduleManagementTabs() {
     const { activeTab, setActiveTabValue } = useTabStore();
     const isDark = useThemeStore((store) => store.isDark);
     const theme = useTheme();
@@ -88,12 +83,21 @@ export function ScheduleManagementTabs({ sx, label }: ScheduleManagementTabsProp
                             id={tab.id}
                             component={Link}
                             to={tab.href}
+                            icon={tab.icon}
+                            iconPosition={isMobile ? 'top' : 'start'}
                             sx={{
-                                ...sx,
+                                ...(!isMobile
+                                    ? {
+                                          minHeight: 'auto',
+                                          height: '44px',
+                                          padding: 3,
+                                          minWidth: '33%',
+                                      }
+                                    : {}),
                                 display: !isMobile && tab.mobile ? 'none' : 'flex',
                                 ...(isDark ? { '&.Mui-selected': { color: 'white' } } : {}),
                             }}
-                            label={label(tab)}
+                            label={tab.label}
                         />
                     );
                 })}
@@ -101,5 +105,3 @@ export function ScheduleManagementTabs({ sx, label }: ScheduleManagementTabsProp
         </Paper>
     );
 }
-
-// sx={{ display: !isMobile && tab.mobile ? 'none' : 'flex' }}
