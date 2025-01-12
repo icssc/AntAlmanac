@@ -4,7 +4,8 @@
 
 import { eq, and } from 'drizzle-orm';
 import { db } from '../../backend/src/db/index';
-import { subscriptions, lastUpdatedStatus, subscriptionTargetStatus } from '../../backend/src/db/schema/subscription';
+import { subscriptions } from '../../backend/src/db/schema/subscription';
+import { users } from '../../backend/src/db/schema/auth/user';
 import { aapiKey } from './env';
 
 type Section = {
@@ -30,8 +31,6 @@ type Course = {
     sections: Section[];
 };
 
-type LastUpdatedType = 'OPEN/WAITLISTED' | 'WAITLISTED/OPEN' | 'FULL/OPEN' | 'OPEN/FULL';
-
 async function getUpdatedClasses(term: string, sections: string[]) {
     try {
         const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
@@ -56,22 +55,132 @@ async function getUpdatedClasses(term: string, sections: string[]) {
     }
 }
 
+function getUpdatedClassesDummy(term: string, sections: string[]) {
+    const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
+    url.searchParams.append('term', term);
+    url.searchParams.append('sections', sections.join(','));
+
+    const response1 = {
+        data: {
+            courses: [
+                {
+                    deptCode: 'COMPSCI',
+                    courseTitle: 'Algorithms',
+                    courseNumber: 161,
+                    sections: [
+                        {
+                            sectionCode: 101,
+                            maxCapacity: 100,
+                            numRequested: 50,
+                            numOnWaitlist: 10,
+                            numWaitlistCap: 20,
+                            status: {
+                                from: 'OPEN',
+                                to: 'WAITLISTED',
+                            },
+                            numCurrentlyEnrolled: {
+                                totalEnrolled: 60,
+                                sectionEnrolled: 30,
+                            },
+                        },
+                        {
+                            sectionCode: 102,
+                            maxCapacity: 100,
+                            numRequested: 50,
+                            numOnWaitlist: 10,
+                            numWaitlistCap: 20,
+                            status: {
+                                from: 'WAITLISTED',
+                                to: 'OPEN',
+                            },
+                            numCurrentlyEnrolled: {
+                                totalEnrolled: 60,
+                                sectionEnrolled: 30,
+                            },
+                        },
+                    ],
+                },
+                {
+                    deptCode: 'COMPSCI',
+                    courseTitle: 'Operating Systems',
+                    courseNumber: 111,
+                    sections: [
+                        {
+                            sectionCode: 111,
+                            maxCapacity: 100,
+                            numRequested: 50,
+                            numOnWaitlist: 10,
+                            numWaitlistCap: 20,
+                            status: {
+                                from: 'FULL',
+                                to: 'OPEN',
+                            },
+                            numCurrentlyEnrolled: {
+                                totalEnrolled: 60,
+                                sectionEnrolled: 30,
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+    };
+
+    const response2 = {
+        data: {
+            courses: [
+                {
+                    deptCode: 'BIO SCI',
+                    courseTitle: 'DNA TO ORGANISMS',
+                    courseNumber: 93,
+                    sections: [
+                        {
+                            sectionCode: 222,
+                            maxCapacity: 75,
+                            numRequested: 85,
+                            numOnWaitlist: 0,
+                            numWaitlistCap: 10,
+                            status: {
+                                from: 'WAITLISTED',
+                                to: 'OPEN',
+                            },
+                            numCurrentlyEnrolled: {
+                                totalEnrolled: 72,
+                                sectionEnrolled: 0,
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+    };
+
+    if (term == '2025-WINTER') {
+        return response1;
+    } else if (term == '2025-SPRING') {
+        return response2;
+    } else {
+        return response1;
+    }
+}
+
 async function getSubscriptionSectionCodes() {
     try {
         const result = await db
             .selectDistinct({
                 sectionCode: subscriptions.sectionCode,
                 term: subscriptions.term,
-                lastUpdated: subscriptions.lastUpdated,
             })
             .from(subscriptions);
 
         // group together by term
-        const groupedByTerm = result.reduce((acc: any, { term, sectionCode, lastUpdated }) => {
-            if (!acc[term!]) {
-                acc[term!] = [];
+        const groupedByTerm = result.reduce((acc: any, { term, sectionCode }) => {
+            if (term) {
+                if (!acc[term]) {
+                    acc[term] = [];
+                }
+                acc[term].push({ sectionCode });
             }
-            acc[term!].push({ sectionCode, lastUpdated });
             return acc;
         }, {});
 
@@ -81,7 +190,7 @@ async function getSubscriptionSectionCodes() {
     }
 }
 
-async function updateSubscriptionStatus(term: string, sectionCode: number, lastUpdated: LastUpdatedType) {
+async function updateSubscriptionStatus(term: string, sectionCode: number, lastUpdated: string) {
     try {
         await db
             .update(subscriptions)
@@ -92,26 +201,104 @@ async function updateSubscriptionStatus(term: string, sectionCode: number, lastU
     }
 }
 
-// async function sendNotification(term: string, sectionCode: number) {}
+async function getLastUpdatedStatus(term: string, sectionCode: number) {
+    try {
+        const result = await db
+            .select({ lastUpdated: subscriptions.lastUpdated })
+            .from(subscriptions)
+            .where(and(eq(subscriptions.term, term), eq(subscriptions.sectionCode, sectionCode)));
+
+        return result;
+    } catch (error: any) {
+        console.error('Error getting last updated status:', error.message);
+    }
+}
+
+async function sendNotification(
+    term: string,
+    sectionCode: number,
+    status: string,
+    deptCode: string,
+    courseNumber: number,
+    courseTitle: string
+) {
+    try {
+        let result;
+        if (status === 'OPEN') {
+            result = await db
+                .select({ userName: users.name })
+                .from(subscriptions)
+                .innerJoin(users, eq(subscriptions.userId, users.id))
+                .where(
+                    and(
+                        eq(subscriptions.term, term),
+                        eq(subscriptions.sectionCode, sectionCode),
+                        eq(subscriptions.openStatus, true)
+                    )
+                );
+        } else if (status === 'WAITLISTED') {
+            result = await db
+                .select({ userName: users.name })
+                .from(subscriptions)
+                .innerJoin(users, eq(subscriptions.userId, users.id))
+                .where(
+                    and(
+                        eq(subscriptions.term, term),
+                        eq(subscriptions.sectionCode, sectionCode),
+                        eq(subscriptions.waitlistStatus, true)
+                    )
+                );
+        } else if (status === 'FULL') {
+            result = await db
+                .select({ userName: users.name })
+                .from(subscriptions)
+                .innerJoin(users, eq(subscriptions.userId, users.id))
+                .where(
+                    and(
+                        eq(subscriptions.term, term),
+                        eq(subscriptions.sectionCode, sectionCode),
+                        eq(subscriptions.fullStatus, true)
+                    )
+                );
+        }
+
+        console.log('NOTIFICATION FOR', deptCode, courseNumber, courseTitle, sectionCode, '\n', result, '\n');
+
+        return result;
+        // send notification
+    } catch (error: any) {
+        console.error('Error sending notification:', error.message);
+    }
+}
 
 async function main() {
     try {
         const subscriptions = await getSubscriptionSectionCodes();
-        console.log(subscriptions);
-
         for (const term in subscriptions) {
-            const sectionCodes = subscriptions[term].map((detail: any) => detail.sectionCode);
-            console.log(sectionCodes);
+            // need to do batch requests
             // const response = await getUpdatedClasses(term, sectionCodes);
-            // response.data.courses.forEach((course: Course) => {
-            //     course.sections.forEach(section => {
-            //         const currentStatus = (section.status.from + '/' + section.status.to) as LastUpdatedType;
-            //         if (subscriptions[term][section.sectionCode].lastUpdated !== currentStatus) {
-            //             updateSubscriptionStatus(term, section.sectionCode, currentStatus);
-            //             // send notifications if needed
-            //         }
-            //     });
-            // });
+            const response = getUpdatedClassesDummy(term, subscriptions[term]);
+            for (const course of response.data.courses) {
+                for (const section of course.sections) {
+                    const currentStatus = section.status.to;
+                    const previousState = await getLastUpdatedStatus(term, section.sectionCode);
+                    const previousStatus: string | null = previousState?.[0]?.lastUpdated || null;
+                    if (previousStatus === currentStatus) {
+                        continue;
+                    }
+                    // no functionality for codes yet
+                    await sendNotification(
+                        term,
+                        section.sectionCode,
+                        currentStatus,
+                        course.deptCode,
+                        course.courseNumber,
+                        course.courseTitle
+                    );
+                    // send notification
+                    // update lastUpdated status
+                }
+            }
         }
     } catch (error: any) {
         console.error('Error in main function:', error.message);

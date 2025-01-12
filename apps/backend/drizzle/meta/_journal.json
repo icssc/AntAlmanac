@@ -36,6 +36,20 @@
             "when": 1735953198382,
             "tag": "0004_regular_starhawk",
             "breakpoints": true
+        },
+        {
+            "idx": 5,
+            "version": "7",
+            "when": 1736658029544,
+            "tag": "0005_magenta_kabuki",
+            "breakpoints": true
+        },
+        {
+            "idx": 6,
+            "version": "7",
+            "when": 1736661528783,
+            "tag": "0006_real_calypso",
+            "breakpoints": true
         }
     ]
 }

@@ -1,16 +1,5 @@
-import { integer, pgEnum, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
+import { integer, boolean, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
 import { users } from './auth/user';
-
-
-export const subscriptionTargetStatus = pgEnum(
-    'subscription_target_status',
-    ['OPEN', 'WAITLISTED', 'FULL']
-)
-
-export const lastUpdatedStatus = pgEnum(
-    'last_updated_status',
-    ['OPEN/WAITLISTED', 'WAITLISTED/OPEN', 'FULL/OPEN', 'OPEN/FULL']
-)
 
 export const subscriptions = pgTable(
     'subscriptions',
@@ -34,16 +23,32 @@ export const subscriptions = pgTable(
 
         /**
          * Status since polling script last updated 
-         * @example "OPEN/WAITLISTED" would indicate the section was open and is now waitlisted
+         * @example "OPEN" | "WAITLISTED" | "FULL"
          */
 
-        lastUpdated: lastUpdatedStatus('lastUpdated'),
+        lastUpdated: text('lastUpdated'),
 
         /**
-         * @example "OPEN" could indicate that the user wants to be notified when this
-         * section changes from "WAITLISTED" to "OPEN".
+         * Boolean if user wants to be notified when the section is OPEN
          */
-        status: subscriptionTargetStatus('status'),
+        openStatus: boolean('openStatus'),
+
+        /**
+         * Boolean if user wants to be notified when the section is WAITLISTED
+         */
+        waitlistStatus: boolean('waitlistStatus'),
+
+        /**
+         * Boolean if user wants to be notified when the section is FULL
+         */
+        fullStatus: boolean('fullStatus'),
+
+          /**
+         * Boolean if user wants to be notified when the section has RESTRICTION CODE CHANGES
+         */
+        restrictionStatus: boolean('restrictionStatus'),
+
+
     },
     (table) => [
         primaryKey({
