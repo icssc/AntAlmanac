@@ -8,7 +8,7 @@ import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import Header from '$components/Header';
 import NotificationSnackbar from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
-import ScheduleManagement from '$components/SharedRoot';
+import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
 import { Tutorial } from '$components/Tutorial';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
@@ -25,7 +25,7 @@ function DesktopHome() {
     const theme = useTheme();
     const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
 
-    const scheduleManagementRef = useRef<HTMLDivElement>();
+    const scheduleManagementRef = useRef<HTMLDivElement>(null);
 
     const handleDrag = useCallback(() => {
         const scheduleManagementElement = scheduleManagementRef.current;

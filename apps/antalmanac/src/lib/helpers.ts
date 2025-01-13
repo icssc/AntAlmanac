@@ -43,7 +43,7 @@ export function useQuickSearchForClasses() {
             RightPaneStore.updateFormValue('courseNumber', courseNumber);
             RightPaneStore.updateFormValue('term', termValue);
             navigate(href, { replace: false });
-            setActiveTab(1);
+            setActiveTab('search');
             displaySections();
             forceUpdate();
         },

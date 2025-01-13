@@ -3,7 +3,7 @@ import { Box, IconButton, Menu, MenuItem, TableCell, Tooltip, useMediaQuery } fr
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 
-import { MOBILE_BREAKPOINT } from '../../../../globals';
+import { MOBILE_BREAKPOINT } from '../../../../../globals';
 
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
@@ -13,7 +13,7 @@ import AppStore from '$stores/AppStore';
 /**
  * Props received by components that perform actions on a specified section.
  */
-interface SectionActionProps {
+interface ActionProps {
     /**
      * The section to perform actions on.
      */
@@ -43,7 +43,7 @@ interface SectionActionProps {
 /**
  * Sections added to a schedule, can be recolored or deleted.
  */
-export function ColorAndDelete(props: SectionActionProps) {
+export function ColorAndDelete(props: ActionProps) {
     const { section, term } = props;
 
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
@@ -86,7 +86,7 @@ const fieldsToReset = ['courseCode', 'courseNumber', 'deptLabel', 'deptValue', '
 /**
  * Sections that have not been added to a schedule can be added to a schedule.
  */
-export function ScheduleAddCell(props: SectionActionProps) {
+export function ScheduleAddCell(props: ActionProps) {
     const { section, courseDetails, term, scheduleNames, scheduleConflict } = props;
 
     const popupState = usePopupState({ popupId: 'SectionTableAddCellPopup', variant: 'popover' });
@@ -168,7 +168,7 @@ export function ScheduleAddCell(props: SectionActionProps) {
     );
 }
 
-export interface SectionActionCellProps extends Omit<SectionActionProps, 'classes'> {
+export interface ActionCellProps extends Omit<ActionProps, 'classes'> {
     /**
      * Whether the section has been added.
      */
@@ -178,7 +178,7 @@ export interface SectionActionCellProps extends Omit<SectionActionProps, 'classe
 /**
  * Given a section and schedule information, provides appropriate set of actions.
  */
-export function SectionActionCell(props: SectionActionCellProps) {
+export function ActionCell(props: ActionCellProps) {
     return (
         <TableCell padding="none" sx={{ width: '8%' }}>
             {props.addedCourse ? <ColorAndDelete {...props} /> : <ScheduleAddCell {...props} />}

@@ -363,7 +363,7 @@ function AddedSectionsGrid() {
     );
 }
 
-export default function AddedCoursePaneFunctionComponent() {
+export function AddedCoursePane() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     useEffect(() => {

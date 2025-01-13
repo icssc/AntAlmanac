@@ -18,7 +18,7 @@ export const LocationsCell = ({ meetings }: LocationsCellProps) => {
     const { setActiveTab } = useTabStore();
 
     const focusMap = useCallback(() => {
-        setActiveTab(2);
+        setActiveTab('map');
     }, [setActiveTab]);
 
     return (
