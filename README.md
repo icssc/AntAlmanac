@@ -78,12 +78,8 @@ Here is a rough guide on how to contribute:
    Repeat until your pull request is approved.
 8. Merge your pull request and your changes will appear on the live website shortly! 🥳
 
-## Video Walkhrough
-We also have a 30 minute contributor [video tutorial](https://www.youtube.com/watch?v=_v91cqGzu5o) available on YouTube.
-
 ## Additional Help
 If you ever need help, feel free to ask around on our [Discord server](https://discord.gg/Zu8KZHERtJ).
-
 
 # Development Environment
 
