@@ -32,8 +32,13 @@ async function fetchLocations() {
 
     // Go through all the locations
     for (const location of locations) {
-        // If one of the locations belongs to one of the categories above
-        if (CATEGORIES.has(location.catId)) {
+        // Check if location was already recorded
+        const locationExists: boolean = Object.values(locationsCatalogue).some(
+            (existingLocation) => existingLocation.name === location.name
+        );
+
+        // If one of the locations belongs to one of the categories above, and is not a duplicate
+        if (CATEGORIES.has(location.catId) && !locationExists) {
             // Hits location data API to get details on location
             const locationData = (await axios.get(LOCATIONS_DETAIL_API(location.id))).data;
 
@@ -49,23 +54,17 @@ async function fetchLocations() {
                 }
             }
 
-            // Check if location was already recorded to avoid duplicate entries
-            const locationExists = Object.values(locationsCatalogue).some(
-                (existingLocation) => existingLocation.name === location.name
-            );
-            if (!locationExists) {
-                locationsCatalogue[location.id] = {
-                    name: location.name,
-                    lat: location.lat,
-                    lng: location.lng,
-                    imageURLs: imgUrls,
-                };
+            locationsCatalogue[location.id] = {
+                name: location.name,
+                lat: location.lat,
+                lng: location.lng,
+                imageURLs: imgUrls,
+            };
 
-                const locationName = location.name.includes('(')
-                    ? location.name.substring(location.name.indexOf('(') + 1, location.name.indexOf(')'))
-                    : location.name;
-                locationIds[locationName] = location.id;
-            }
+            const locationName = location.name.includes('(')
+                ? location.name.substring(location.name.indexOf('(') + 1, location.name.indexOf(')'))
+                : location.name;
+            locationIds[locationName] = location.id;
 
             await sleep(250);
         }
