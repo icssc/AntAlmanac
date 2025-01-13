@@ -2,7 +2,8 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 import HelpIcon from '@mui/icons-material/Help';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import { Fab, Tooltip, Box, IconButton, Paper, keyframes } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 import HelpBox from '$components/RightPane/CoursePane/SearchForm/HelpBox';
 import { Tutorial } from '$components/Tutorial';
@@ -10,7 +11,7 @@ import Feedback from '$routes/Feedback';
 
 export function HelpMenu() {
     const [isHovered, setIsHovered] = useState(false);
-    const [showHelpBox, setShowHelpBox] = useState(false);
+    const [showHelpBox, setShowHelpBox] = useState(RightPaneStore.getHelpBoxVisible());
 
     const handleMouseEnter = () => {
         setIsHovered(true);
@@ -24,13 +25,16 @@ export function HelpMenu() {
         Feedback();
     };
 
-    const openHelpBox = () => {
-        setShowHelpBox(true);
-    };
+    useEffect(() => {
+        const handleHelpBoxChange = (newVisibility: boolean) => {
+            setShowHelpBox(newVisibility);
+        };
+        RightPaneStore.on('helpBoxChange', handleHelpBoxChange);
 
-    const closeHelpBox = () => {
-        setShowHelpBox(false);
-    };
+        return () => {
+            RightPaneStore.off('helpBoxChange', handleHelpBoxChange);
+        };
+    }, []);
 
     const riseAnimation = keyframes`
     0% {
@@ -54,7 +58,6 @@ export function HelpMenu() {
                 zIndex: 999,
             }}
         >
-            {/* Main Help Menu Icon */}
             <Tooltip title="Help Menu">
                 <Fab
                     color="primary"
@@ -70,7 +73,6 @@ export function HelpMenu() {
                 </Fab>
             </Tooltip>
 
-            {/* Hovered Icons */}
             {isHovered && (
                 <Box
                     onMouseEnter={handleMouseEnter}
@@ -85,7 +87,6 @@ export function HelpMenu() {
                         gap: '1rem',
                     }}
                 >
-                    {/* Tutorial Button */}
                     <Box
                         sx={{
                             animation: `${riseAnimation} 0.5s ease forwards`,
@@ -96,7 +97,6 @@ export function HelpMenu() {
                         <Tutorial />
                     </Box>
 
-                    {/* Feedback Form Button */}
                     <Tooltip title="Feedback Form">
                         <IconButton
                             color="primary"
@@ -114,11 +114,10 @@ export function HelpMenu() {
                         </IconButton>
                     </Tooltip>
 
-                    {/* Help Box Button */}
                     <Tooltip title="Help Box">
                         <IconButton
                             color="primary"
-                            onClick={openHelpBox}
+                            onClick={() => RightPaneStore.toggleHelpBox()}
                             size="large"
                             sx={{
                                 backgroundColor: '#fff',
@@ -147,7 +146,7 @@ export function HelpMenu() {
                     }}
                 >
                     <Paper variant="outlined" sx={{ padding: 2, boxShadow: 3 }}>
-                        <HelpBox onDismiss={closeHelpBox} />
+                        <HelpBox onDismiss={() => RightPaneStore.hideHelpBox()} />
                     </Paper>
                 </Box>
             )}
