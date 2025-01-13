@@ -9,7 +9,6 @@ import Header from '$components/Header';
 import NotificationSnackbar from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import ScheduleManagement from '$components/SharedRoot';
-import { Tutorial } from '$components/Tutorial';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
 function MobileHome() {
@@ -77,8 +76,6 @@ function DesktopHome() {
                     </Stack>
                 </Split>
             </Stack>
-
-            <Tutorial />
         </>
     );
 }
