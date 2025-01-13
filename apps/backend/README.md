@@ -31,27 +31,3 @@ Remove any `.env.*` files in the project root, and insert the `.env` you were gi
 # Architecture
 
 ## tRPC Routing (TODO)
-
-We're currently migrating to [tRPC](https://trpc.io) and thus deprecating the
-previous REST based architecture.
-The desired functionality of the backend is still documented below.
-
-## REST Routing (Deprecating)
-
-The backend provides the following functionality.
-
--   `/banners`  
-    Returns the ads displayed above course search results.
-
--   `/news`  
-    Returns a list of news announcements displayed on the top right navbar.
-
--   `/notifications`  
-    Used to register for class notifications.
-
--   `/users`  
-    Saves and returns user schedules.
-
--   `/enrollmentData`
-    Returns information about course enrollment from previous terms.
-    (Legacy - this information is provided by Anteater API)
