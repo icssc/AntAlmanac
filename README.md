@@ -25,6 +25,7 @@ A summary of the libraries we use are listed below.
 ### Backend
 - [tRPC](https://trpc.io) - type-safe API access layer for the AntAlmanac API.
 - [Anteater API](https://docs.icssc.club/developer/anteaterapi) - API maintained by ICSSC for retrieving UCI data.
+- [Drizzle ORM](https://orm.drizzle.team/) - [high-performance](https://orm.drizzle.team/benchmarks) type-safe SQL-like access layer compatiable with all major SQL dialects. 
 
 ### Tooling
 - [Vite](https://vitejs.dev) - Blazingly fast, modern bundler.
