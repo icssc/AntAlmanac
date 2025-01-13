@@ -216,6 +216,7 @@ export class RDS {
             color: event.color,
             building: event.building,
             lastUpdated: new Date(),
+            term: event.term
         }));
 
         await db.transaction(async (tx) => await tx.insert(customEvents).values(dbCustomEvents));
@@ -328,6 +329,7 @@ export class RDS {
                     days: customEvent.days.split('').map((day) => day === '1'),
                     color: customEvent.color ?? undefined,
                     building: customEvent.building ?? undefined,
+                    term: customEvent.term ?? undefined,
                 });
             }
 

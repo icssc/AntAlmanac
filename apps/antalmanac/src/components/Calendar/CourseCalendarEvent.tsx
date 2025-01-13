@@ -133,6 +133,7 @@ export interface CustomEvent extends CommonCalendarEvent {
     isCustomEvent: true;
     building: string;
     days: string[];
+    term: string;
 }
 
 export type CalendarEvent = CourseEvent | CustomEvent;
@@ -295,21 +296,29 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             </Paper>
         );
     } else {
-        const { title, customEventID, building } = selectedEvent;
+        const { title, customEventID, building, term } = selectedEvent;
         return (
             <Paper className={classes.customEventContainer} ref={paperRef}>
                 <div className={classes.title}>{title}</div>
                 {building && (
-                    <div className={classes.table}>
-                        Location:&nbsp;
-                        <Link
-                            className={classes.clickableLocation}
-                            to={`/map?location=${building ?? 0}`}
-                            onClick={focusMap}
-                        >
-                            {buildingCatalogue[+building]?.name ?? ''}
-                        </Link>
-                    </div>
+                    <tr className={classes.table}>
+                        <td className={classes.alignToTop}>Location</td>
+                        <td className={classes.rightCells}>
+                            <Link
+                                className={classes.clickableLocation}
+                                to={`/map?location=${building ?? 0}`}
+                                onClick={focusMap}
+                            >
+                                {buildingCatalogue[+building]?.name ?? ''}
+                            </Link>
+                        </td>
+                    </tr>
+                )}
+                {term && (
+                    <tr className={classes.table}>
+                        <td className={classes.alignToTop}>Term</td>
+                        <td className={classes.rightCells}>{term}</td>
+                    </tr>
                 )}
                 <div className={classes.buttonBar}>
                     <div className={`${classes.colorPicker}`}>
