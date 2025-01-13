@@ -1,7 +1,10 @@
 import { Box } from '@mui/material';
+import { useMediaQuery } from '@mui/material';
 import { WebsocSectionMeeting } from '@packages/antalmanac-types';
 import { Fragment, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+
+import { MOBILE_BREAKPOINT } from '../../../../../globals';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import locationIds from '$lib/location_ids';
@@ -16,9 +19,10 @@ interface LocationsCellProps {
 export const LocationsCell = ({ meetings }: LocationsCellProps) => {
     const isDark = useThemeStore((store) => store.isDark);
     const { setActiveTab } = useTabStore();
+    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
 
     const focusMap = useCallback(() => {
-        setActiveTab(2);
+        setActiveTab(isMobileScreen ? 3 : 2);
     }, [setActiveTab]);
 
     return (

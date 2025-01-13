@@ -2,10 +2,13 @@ import { Chip, IconButton, Paper, Tooltip, Button } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete, Search } from '@material-ui/icons';
+import { useMediaQuery } from '@mui/material';
 import { WebsocSectionFinalExam } from '@packages/antalmanac-types';
 import { useEffect, useRef, useCallback } from 'react';
 import { Event } from 'react-big-calendar';
 import { Link } from 'react-router-dom';
+
+import { MOBILE_BREAKPOINT } from '../../globals';
 
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
@@ -169,9 +172,9 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
 
     const { isMilitaryTime } = useTimeFormatStore();
     const isDark = useThemeStore((store) => store.isDark);
-
+    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
     const focusMap = useCallback(() => {
-        setActiveTab(2);
+        setActiveTab(isMobileScreen ? 3 : 2);
     }, [setActiveTab]);
 
     const { classes, selectedEvent } = props;
