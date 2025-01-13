@@ -7,7 +7,6 @@ import { mangleDupliateScheduleNames } from 'src/lib/formatting';
 import { RDS } from 'src/lib/rds';
 import { TRPCError } from '@trpc/server';
 import { procedure, router } from '../trpc';
-import { ddbClient } from '$db/ddb';
 
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
@@ -53,17 +52,9 @@ const usersRouter = router({
                 // Mangle duplicate schedule names
                 data.userData.schedules = mangleDupliateScheduleNames(data.userData.schedules);
 
-                // Await both, but only throw if RDS save fails.
-                const results = await Promise.allSettled([
-                    ddbClient.insertItem(data)
-                        .catch((error) => console.error('DDB Failed to save user data:', error)),
-                    RDS.upsertGuestUserData(db, data)
-                        .catch((error) => console.error('RDS Failed to upsert user data:', error))
-                ]);
-
-                if (results[1].status === 'rejected') {
-                    throw results[1].reason;
-                }
+                return await RDS
+                    .upsertGuestUserData(db, data)
+                    .catch((error) => console.error('RDS Failed to upsert user data:', error));
             }
         ),
 });
