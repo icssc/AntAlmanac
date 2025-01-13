@@ -9,24 +9,32 @@ to providing us this information.
 
 # Development
 
-## Non-Privileged
+## Environment Variables
+- Environment variables can be provided manually through the shell or using a `.env` file.
+    - The latter is recommended for convenience.
+    - The key-value pairs in the `.env` file, if it exists, will be automatically loaded into the environment.
+- For this, rename make a copy of the `.env.example` file and rename it to `.env`.
+- Populate the keys following the instructions below.
+    - Note that the Mapbox API key can be left blank, which will cause the app to default to OSM's tiles.
 
-When developing as a non-privileged member,
-the environment variables won't reflect real credentials to resources such as the database.
+## AnteaterAPI Key
+- The key is required to send course information requests to AnteaterAPI.
+- It can be acquired from the [AnteaterAPI Dashboard](https://dashboard.anteaterapi.com).
 
-The backend should still work, but with limited functionality.
-Please request credentials from a project lead if you need them.
-
-1. Ensure that you're in the backend project. i.e. `cd apps/backend` from the project root.
-2. Rename `.env.sample` to `.env` and follow any necessary instructions in there.
-3. Start the server with `pnpm start`.
-
-## Privileged
-
-ICSSC Project Committee Members can be given `.env` files with real credentials upon request.
-These can be used to access real resources such as DynamoDB, MapBox, etc.
-
-Remove any `.env.*` files in the project root, and insert the `.env` you were given.
+## Local Database
+- Install PostgreSQL and pgAdmin.
+    - [Instructions](https://medium.com/@jewelski/quickly-set-up-a-local-postgres-database-using-docker-5098052a4726) for setup with Docker.
+    - The instructions on PostgreSQL' website for direct-on-OS installation works as well.
+- Use pgAdmin to connect to the PostgreSQL server.
+- Create the database.
+    - Right-click on the server in the left bar, hover over "Create", and click "Database..."
+    - Name it antalmanac-dev.
+- Add the connection string to the `.env` file.
+    - It's in the format `postgres://USERNAME:PASSWORD@HOST:PORT/antalmanac-dev`
+- Migrate the database.
+    - This adds the relations (but not the data) to the currently-empty database.
+    - `cd` into `apps/backend`.
+    - Run `pnpm migrate`. This creates the migration SQL file and runs it on the database specified in the environment variables.
 
 # Architecture
 
