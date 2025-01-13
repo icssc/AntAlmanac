@@ -3,7 +3,7 @@ import { memo } from 'react';
 import { shallow } from 'zustand/shallow';
 
 import { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
-import locationIds from '$lib/location_ids';
+import locationIds from '$lib/locations/locations';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 
 export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) => {

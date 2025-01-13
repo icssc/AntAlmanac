@@ -4,7 +4,7 @@ import { Fragment, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import locationIds from '$lib/location_ids';
+import locationIds from '$lib/locations/locations';
 import { useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 
