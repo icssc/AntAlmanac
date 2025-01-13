@@ -12,8 +12,7 @@
         "format": "prettier --write src",
         "lint": "eslint --fix src",
         "studio": "drizzle-kit studio",
-        "migrate": "drizzle-kit generate && tsx scripts/migrate.ts",
-        "ddb-rds": "pnpm migrate && tsx scripts/ddb_to_rds.ts"
+        "migrate": "drizzle-kit generate && tsx scripts/migrate.ts"
     },
     "dependencies": {
         "@leeoniya/ufuzzy": "1.0.14",
