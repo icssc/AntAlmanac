@@ -7,7 +7,7 @@ This is **_NOT_** for retrieving enrollment data from UCI;
 [Anteater API](https://docs.icssc.club/developer/anteaterapi) is a separate ICSSC project dedicated
 to providing us this information.
 
-# Development
+# Setup
 
 ## Environment Variables
 - Environment variables can be provided manually through the shell or using a `.env` file.
@@ -33,9 +33,24 @@ to providing us this information.
     - It's in the format `postgres://USERNAME:PASSWORD@HOST:PORT/antalmanac-dev`
 - Migrate the database.
     - This adds the relations (but not the data) to the currently-empty database.
-    - `cd` into `apps/backend`.
+    - `cd` into this directory (`apps/backend` from the repository root).
     - Run `pnpm migrate`. This creates the migration SQL file and runs it on the database specified in the environment variables.
 
-# Architecture
+# Development
+
+## Database
+- The database is accessed and manipulated using [Drizzle ORM](https://orm.drizzle.team/).
+- The schema is defined in `src/db/schema`.
+
+### Applying Changes
+- Changes to the database will only be applied when `pnpm migrate` is run.
+    - This runs `drizzle-kit generate` and `drizzle-kit migrate`.
+    - The former creates an SQL file (migration) that representing the difference/change to the existing database schema. 
+    - The latter connects to the database and runs the migrations that have not been applied.
+- The new migrations must be committed for them to be applied to production when the PR is merged.
+
+### Viewing
+- The database's content can be viewed by running `pnpm studio`.
+    - This runs [Drizzle Studio](https://orm.drizzle.team/drizzle-studio/overview), a web application where tables and their data can be viewed and changed.
 
 ## tRPC Routing (TODO)
