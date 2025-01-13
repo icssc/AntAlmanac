@@ -53,4 +53,8 @@ to providing us this information.
 - The database's content can be viewed by running `pnpm studio`.
     - This runs [Drizzle Studio](https://orm.drizzle.team/drizzle-studio/overview), a web application where tables and their data can be viewed and changed.
 
-## tRPC Routing (TODO)
+## tRPC Routing
+- tRPC allows endpoints and their types to be defined as they are implemented.
+- The router is defined in `src/routers/index.ts` and is used in `src/index.ts` as a route of the Express server.
+- The router's type is imported in the frontend (`[repository root]/apps/antalmanac/src/lib/api/trpc.ts`) to create the client.
+    - The type-safe client ensures that requests from the front-end are correctly typed.
