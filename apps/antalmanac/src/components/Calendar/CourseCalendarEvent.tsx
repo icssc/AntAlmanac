@@ -8,6 +8,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import { Event } from 'react-big-calendar';
 import { Link } from 'react-router-dom';
 
+import MapLink from '../../components/buttons/MapLink';
 import { MOBILE_BREAKPOINT } from '../../globals';
 
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
@@ -265,14 +266,12 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             <td className={`${classes.multiline} ${classes.rightCells}`}>
                                 {locations.map((location) => (
                                     <div key={`${sectionCode} @ ${location.building} ${location.room}`}>
-                                        <Link
-                                            className={classes.clickableLocation}
-                                            to={`/map?location=${locationIds[location.building] ?? 0}`}
-                                            onClick={focusMap}
-                                            color={isDark ? '#1cbeff' : 'blue'}
-                                        >
-                                            {location.building} {location.room}
-                                        </Link>
+                                        <MapLink
+                                            buildingId={locationIds[location.building] ?? '0'}
+                                            buildingName={`${location.building} ${location.room}`}
+                                            focusMap={focusMap}
+                                            isDark={isDark}
+                                        />
                                     </div>
                                 ))}
                             </td>

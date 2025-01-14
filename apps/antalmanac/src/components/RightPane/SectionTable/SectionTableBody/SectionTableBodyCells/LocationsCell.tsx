@@ -2,9 +2,9 @@ import { Box } from '@mui/material';
 import { useMediaQuery } from '@mui/material';
 import { WebsocSectionMeeting } from '@packages/antalmanac-types';
 import { Fragment, useCallback } from 'react';
-import { Link } from 'react-router-dom';
 
 import { MOBILE_BREAKPOINT } from '../../../../../globals';
+import MapLink from '../../../../buttons/MapLink';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import locationIds from '$lib/location_ids';
@@ -34,16 +34,12 @@ export const LocationsCell = ({ meetings }: LocationsCellProps) => {
                         const buildingId = locationIds[buildingName];
                         return (
                             <Fragment key={meeting.timeIsTBA + bldg}>
-                                <Link
-                                    style={{
-                                        textDecoration: 'none',
-                                    }}
-                                    to={`/map?location=${buildingId}`}
-                                    onClick={focusMap}
-                                    color={isDark ? 'dodgerblue' : 'blue'}
-                                >
-                                    {bldg}
-                                </Link>
+                                <MapLink
+                                    buildingId={buildingId}
+                                    buildingName={bldg}
+                                    focusMap={focusMap}
+                                    isDark={isDark}
+                                />
                                 <br />
                             </Fragment>
                         );
