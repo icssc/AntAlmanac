@@ -71,8 +71,8 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
         label: 'Status',
         width: '8%',
     },
-    web: {
-        label: 'Web',
+    syllabus: {
+        label: 'Syllabus',
         width: '8%',
     },
 };

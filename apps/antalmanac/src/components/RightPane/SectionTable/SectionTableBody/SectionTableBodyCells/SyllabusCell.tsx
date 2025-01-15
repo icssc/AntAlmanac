@@ -4,11 +4,11 @@ import { Link } from 'react-router-dom';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useThemeStore } from '$stores/SettingsStore';
 
-interface WebCellProps {
+interface SyllabusCellProps {
     webURL: WebsocSectionStatus;
 }
 
-export const WebCell = ({ webURL }: WebCellProps) => {
+export const SyllabusCell = ({ webURL }: SyllabusCellProps) => {
     const isDark = useThemeStore((store) => store.isDark);
 
     if (!webURL) {

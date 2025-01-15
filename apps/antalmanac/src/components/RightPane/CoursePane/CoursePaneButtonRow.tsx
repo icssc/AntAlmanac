@@ -42,7 +42,7 @@ const columnLabels: Record<SectionTableColumn, string> = {
     sectionEnrollment: 'Enrollment',
     restrictions: 'Restrictions',
     status: 'Status',
-    web: 'Web',
+    syllabus: 'Syllabus',
 };
 
 /**
