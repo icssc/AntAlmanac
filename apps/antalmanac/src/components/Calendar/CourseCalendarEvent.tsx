@@ -2,14 +2,13 @@ import { Chip, IconButton, Paper, Tooltip, Button } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete, Search } from '@material-ui/icons';
-import { useMediaQuery } from '@mui/material';
 import { WebsocSectionFinalExam } from '@packages/antalmanac-types';
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 import { Event } from 'react-big-calendar';
 import { Link } from 'react-router-dom';
 
 import MapLink from '../../components/buttons/MapLink';
-import { MOBILE_BREAKPOINT } from '../../globals';
+
 
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
@@ -173,10 +172,6 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
 
     const { isMilitaryTime } = useTimeFormatStore();
     const isDark = useThemeStore((store) => store.isDark);
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
-    const focusMap = useCallback(() => {
-        setActiveTab(isMobileScreen ? 3 : 2);
-    }, [setActiveTab]);
 
     const { classes, selectedEvent } = props;
 
@@ -268,8 +263,8 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                                     <div key={`${sectionCode} @ ${location.building} ${location.room}`}>
                                         <MapLink
                                             buildingId={locationIds[location.building] ?? '0'}
-                                            buildingName={`${location.building} ${location.room}`}
-                                            focusMap={focusMap}
+                                            room={`${location.building} ${location.room}`}
+                                            setActiveTab={setActiveTab} 
                                             isDark={isDark}
                                         />
                                     </div>
@@ -304,13 +299,13 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                 {building && (
                     <div className={classes.table}>
                         Location:&nbsp;
-                        <Link
-                            className={classes.clickableLocation}
-                            to={`/map?location=${building ?? 0}`}
-                            onClick={focusMap}
-                        >
-                            {buildingCatalogue[+building]?.name ?? ''}
-                        </Link>
+                        <MapLink
+                        buildingId={+building} 
+                        room={buildingCatalogue[+building]?.name ?? ''} 
+                        isDark={isDark}
+                        setActiveTab={setActiveTab}
+                    />
+                        
                     </div>
                 )}
                 <div className={classes.buttonBar}>

@@ -1,14 +1,23 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { useMediaQuery } from '@mui/material';
+import { MOBILE_BREAKPOINT } from '../../globals';
 
 interface MapLinkProps {
     buildingId: number;
-    buildingName: string;
-    focusMap: () => void;
+    room: string;
     isDark: boolean;
+    setActiveTab: (tab: number) => void;
 }
 
-const MapLink: React.FC<MapLinkProps> = ({ buildingId, buildingName, focusMap, isDark }) => {
+const MapLink: React.FC<MapLinkProps> = ({ buildingId, room, isDark, setActiveTab }) => {
+    
+    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
+
+    const focusMap = useCallback(() => {
+        setActiveTab(isMobileScreen ? 3 : 2);
+    }, [isMobileScreen, setActiveTab]);
+
     return (
         <Link
             to={`/map?location=${buildingId}`}
@@ -18,7 +27,7 @@ const MapLink: React.FC<MapLinkProps> = ({ buildingId, buildingName, focusMap, i
                 color: isDark ? 'dodgerblue' : 'blue',
             }}
         >
-            {buildingName}
+            {room}
         </Link>
     );
 };
