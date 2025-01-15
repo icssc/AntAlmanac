@@ -10,9 +10,7 @@ function getEndpoint() {
     if (import.meta.env.VITE_LOCAL_SERVER) {
         return `http://localhost:3000`;
     }
-    return import.meta.env.MODE === 'development'
-        ? `https://dev.api.antalmanac.com`
-        : `https://cors-anywhere.herokuapp.com/https://api.antalmanac.com`;
+    return import.meta.env.MODE === 'development' ? `https://dev.api.antalmanac.com` : `https://api.antalmanac.com`;
 }
 
 const trpc = createTRPCProxyClient<AppRouter>({
