@@ -165,10 +165,30 @@ const LoadingMessage = () => {
     );
 };
 
-const ErrorMessage = () => {
+const ErrorMessage = ({ }: { courseData: (WebsocSchool | WebsocDepartment | AACourse)[] }) => {
     const isDark = useThemeStore((store) => store.isDark);
+    const formData = RightPaneStore.getFormData();
+    const deptValue = formData.deptValue?.replace(' ', '').toUpperCase() || 'UNKNOWN';
+    const courseNumber = formData.courseNumber?.replace(/\s+/g, '').toUpperCase() || 'UNKNOWN';
+    const courseName = deptValue !== 'UNKNOWN' && courseNumber !== 'UNKNOWN' 
+        ? `${deptValue}${courseNumber}` 
+        : null;
     return (
-        <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+            {courseName && (
+                <a
+                    href={`https://peterportal.org/course/${courseName}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                        textDecoration: 'none',
+                        color: isDark ? '#00aaff' : '#0056b3',
+                        fontSize: '1.4rem', 
+                    }}
+                >
+                    Click to find out when this course will run next on PeterPortal!
+                </a>
+            )}
             <img
                 src={isDark ? darkNoNothing : noNothing}
                 alt="No Results Found"
@@ -285,7 +305,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             {loading ? (
                 <LoadingMessage />
             ) : error || courseData.length === 0 ? (
-                <ErrorMessage />
+                <ErrorMessage courseData={courseData} />
             ) : (
                 <>
                     <RecruitmentBanner />
