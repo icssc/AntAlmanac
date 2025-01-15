@@ -11,29 +11,14 @@ import Feedback from '$routes/Feedback';
 
 export function HelpMenu() {
     const [isHovered, setIsHovered] = useState(false);
-    const [isClicked, setIsClicked] = useState(false);
     const [showHelpBox, setShowHelpBox] = useState(RightPaneStore.getHelpBoxVisible());
 
     const handleMouseEnter = () => {
-        if (!isClicked) {
-            setIsHovered(true);
-        }
+        setIsHovered(true);
     };
 
     const handleMouseLeave = () => {
-        if (!isClicked) {
-            setIsHovered(false);
-        }
-    };
-
-    const handleToggleClick = () => {
-        if (isClicked) {
-            setIsHovered(false);
-            setIsClicked(false);
-        } else {
-            setIsHovered(true);
-            setIsClicked(true);
-        }
+        setIsHovered(false);
     };
 
     useEffect(() => {
@@ -79,7 +64,6 @@ export function HelpMenu() {
                 <Fab
                     color="primary"
                     aria-label="Help Menu"
-                    onClick={handleToggleClick}
                     sx={{
                         width: '4rem',
                         height: '4rem',
@@ -91,7 +75,7 @@ export function HelpMenu() {
                 </Fab>
             </Tooltip>
 
-            {(isHovered || isClicked) && (
+            {(isHovered) && (
                 <Box
                     sx={{
                         display: 'flex',
