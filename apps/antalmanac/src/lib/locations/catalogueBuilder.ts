@@ -81,11 +81,11 @@ async function fetchLocations() {
     lng: number;
     name: string;
 }\n\n` +
-            `const locations: Record<string, Building> = ${JSON.stringify(
+            `const buildingCatalogue: Record<string, Building> = ${JSON.stringify(
                 locationsCatalogue,
                 null,
                 4
-            )};\nexport default locations;`
+            )};\nexport default buildingCatalogue;`
     );
 
     fs.writeFileSync(

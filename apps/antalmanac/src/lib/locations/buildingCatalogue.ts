@@ -5,7 +5,7 @@ export interface Building {
     name: string;
 }
 
-const locations: Record<string, Building> = {
+const buildingCatalogue: Record<string, Building> = {
     '83021': {
         name: 'Art Studio (ART)',
         lat: 33.650162,
@@ -1891,4 +1891,4 @@ const locations: Record<string, Building> = {
         imageURLs: [],
     },
 };
-export default locations;
+export default buildingCatalogue;
