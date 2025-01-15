@@ -111,8 +111,6 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         return {};
     }, [allowHighlight, isDark, scheduleConflict, addedCourse]);
 
-    console.log(courseDetails);
-
     return (
         <TableRow
             /**
