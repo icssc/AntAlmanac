@@ -5,6 +5,8 @@
  */
 const config = {
     parserOptions: {
+        sourceType: 'module',
+        ecmaVersion: 2015,
         project: ['tsconfig.json'],
     },
     plugins: ['react', 'react-hooks', 'jsx-a11y'],

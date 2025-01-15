@@ -18,6 +18,7 @@ export default defineConfig({
             includeAssets: ['favicon.ico', 'apple-touch-icon.png'], // may need mask-icon.svg
             injectManifest: {
                 globPatterns: ['**/*.{html,js,css,png,svg,jpg,json}'], // Match files for pre-caching
+                maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3MB
             },
             manifest: {
                 name: 'AntAlmanac',
