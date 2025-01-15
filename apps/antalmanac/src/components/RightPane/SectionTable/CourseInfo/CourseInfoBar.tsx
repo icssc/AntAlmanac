@@ -6,10 +6,9 @@ import { Skeleton } from '@material-ui/lab';
 import type { PrerequisiteTree } from '@packages/antalmanac-types';
 import { useState } from 'react';
 
-import { MOBILE_BREAKPOINT } from '../../../globals';
+import { MOBILE_BREAKPOINT } from '../../../../globals';
 
-import PrereqTree from './PrereqTree';
-
+import PrereqTree from '$components/RightPane/SectionTable/PrereqTree';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import trpc from '$lib/api/trpc';
 
@@ -67,7 +66,7 @@ export interface CourseInfo {
     ge_list: string;
 }
 
-const CourseInfoBar = (props: CourseInfoBarProps) => {
+export const CourseInfoBar = withStyles(styles)((props: CourseInfoBarProps) => {
     const { courseTitle, courseNumber, deptCode, prerequisiteLink, classes, analyticsCategory } = props;
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -208,6 +207,4 @@ const CourseInfoBar = (props: CourseInfoBarProps) => {
             </Popover>
         </>
     );
-};
-
-export default withStyles(styles)(CourseInfoBar);
+});

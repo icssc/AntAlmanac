@@ -288,16 +288,13 @@ export default function CourseMap() {
      */
     const startDestPairs = useMemo(() => {
         const allEvents = [...markersToDisplay, ...customEventMarkersToDisplay];
-        return allEvents.reduce(
-            (acc, cur, index) => {
-                acc.push([cur]);
-                if (index > 0) {
-                    acc[index - 1].push(cur);
-                }
-                return acc;
-            },
-            [] as (typeof allEvents)[]
-        );
+        return allEvents.reduce((acc, cur, index) => {
+            acc.push([cur]);
+            if (index > 0) {
+                acc[index - 1].push(cur);
+            }
+            return acc;
+        }, [] as (typeof allEvents)[]);
     }, [markersToDisplay, customEventMarkersToDisplay]);
 
     return (
@@ -313,7 +310,7 @@ export default function CourseMap() {
                             <Tab key={day} label={day} sx={{ padding: 1, minHeight: 'auto', minWidth: '10%' }} />
                         ))}
                     </Tabs>
-                    <BuildingSelect onChange={onBuildingChange} />
+                    <BuildingSelect onChange={onBuildingChange} variant="filled" />
                 </Paper>
 
                 <TileLayer
@@ -357,6 +354,7 @@ export default function CourseMap() {
                         <Fragment key={Object.values(marker).join('')}>
                             <LocationMarker
                                 {...marker}
+                                key={marker.key}
                                 label={today === 'All' ? undefined : (index + 1).toString()}
                                 stackIndex={coursesSameBuildingPrior.length}
                             >

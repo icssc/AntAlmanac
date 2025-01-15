@@ -1,19 +1,18 @@
-import { Chip, IconButton, Paper, Tooltip } from '@material-ui/core';
+import { Chip, IconButton, Paper, Tooltip, Button } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { Delete } from '@material-ui/icons';
+import { Delete, Search } from '@material-ui/icons';
 import { WebsocSectionFinalExam } from '@packages/antalmanac-types';
 import { useEffect, useRef, useCallback } from 'react';
 import { Event } from 'react-big-calendar';
 import { Link } from 'react-router-dom';
 
-import CustomEventDialog from './Toolbar/CustomEventDialog/CustomEventDialog';
-
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
+import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
 import ColorPicker from '$components/ColorPicker';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';
-import { clickToCopy } from '$lib/helpers';
+import { clickToCopy, useQuickSearchForClasses } from '$lib/helpers';
 import locationIds from '$lib/location_ids';
 import AppStore from '$stores/AppStore';
 import { useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
@@ -23,7 +22,6 @@ import { formatTimes } from '$stores/calendarizeHelpers';
 const styles: Styles<Theme, object> = {
     courseContainer: {
         padding: '0.5rem',
-        margin: '0 1rem',
         minWidth: '15rem',
     },
     customEventContainer: {
@@ -121,11 +119,13 @@ export interface CourseEvent extends CommonCalendarEvent {
     isCustomEvent: false;
     sectionCode: string;
     sectionType: string;
+    deptValue: string;
+    courseNumber: string;
     term: string;
 }
 
 /**
- * There is another CustomEvent interface in CourseCalendarEvent and they are slightly different.  The this one represents only one day, like the event on Monday, and needs to be duplicated to be repeated across multiple days. The other one, `CustomEventDialog`'s `RepeatingCustomEvent`, encapsulates the occurences of an event on multiple days, like Monday Tuesday Wednesday all in the same object as specified by the `days` array.
+ * There is another CustomEvent interface in CourseCalendarEvent and they are slightly different.  The this one represents only one day, like the event on Monday, and needs to be duplicated to be repeated across multiple days. The other one, `CustomEventDialog`'s `RepeatingCustomEvent`, encapsulates the occurrences of an event on multiple days, like Monday Tuesday Wednesday all in the same object as specified by the `days` array.
  * https://github.com/icssc/AntAlmanac/wiki/The-Great-AntAlmanac-TypeScript-Rewritening%E2%84%A2#duplicate-interface-names-%EF%B8%8F
  */
 export interface CustomEvent extends CommonCalendarEvent {
@@ -139,7 +139,7 @@ export type CalendarEvent = CourseEvent | CustomEvent;
 
 interface CourseCalendarEventProps {
     classes: ClassNameMap;
-    courseInMoreInfo: CalendarEvent;
+    selectedEvent: CalendarEvent;
     scheduleNames: string[];
     closePopover: () => void;
 }
@@ -165,6 +165,8 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     }, []);
 
     const { setActiveTab } = useTabStore();
+    const quickSearch = useQuickSearchForClasses();
+
     const { isMilitaryTime } = useTimeFormatStore();
     const isDark = useThemeStore((store) => store.isDark);
 
@@ -172,10 +174,11 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
         setActiveTab(2);
     }, [setActiveTab]);
 
-    const { classes, courseInMoreInfo } = props;
+    const { classes, selectedEvent } = props;
 
-    if (!courseInMoreInfo.isCustomEvent) {
-        const { term, instructors, sectionCode, title, finalExam, locations, sectionType } = courseInMoreInfo;
+    if (!selectedEvent.isCustomEvent) {
+        const { term, instructors, sectionCode, title, finalExam, locations, sectionType, deptValue, courseNumber } =
+            selectedEvent;
 
         let finalExamString = '';
 
@@ -195,13 +198,23 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             }
         }
 
+        const handleQuickSearch = () => {
+            quickSearch(deptValue, courseNumber, term);
+        };
+
         return (
             <Paper className={classes.courseContainer} ref={paperRef}>
                 <div className={classes.titleBar}>
-                    <span className={classes.title}>{`${title} ${sectionType}`}</span>
+                    <Tooltip title="Quick Search">
+                        <Button size="small" onClick={handleQuickSearch}>
+                            <Search fontSize="small" style={{ marginRight: 5 }} />
+                            <span className={classes.title}>{`${title} ${sectionType}`}</span>
+                        </Button>
+                    </Tooltip>
                     <Tooltip title="Delete">
                         <IconButton
                             size="small"
+                            style={{ textDecoration: 'underline' }}
                             onClick={() => {
                                 props.closePopover();
                                 deleteCourse(sectionCode, term);
@@ -269,10 +282,10 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             <td>Color</td>
                             <td className={`${classes.colorPicker} ${classes.stickToRight}`}>
                                 <ColorPicker
-                                    color={courseInMoreInfo.color}
-                                    isCustomEvent={courseInMoreInfo.isCustomEvent}
-                                    sectionCode={courseInMoreInfo.sectionCode}
-                                    term={courseInMoreInfo.term}
+                                    color={selectedEvent.color}
+                                    isCustomEvent={selectedEvent.isCustomEvent}
+                                    sectionCode={selectedEvent.sectionCode}
+                                    term={selectedEvent.term}
                                     analyticsCategory={analyticsEnum.calendar.title}
                                 />
                             </td>
@@ -282,7 +295,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             </Paper>
         );
     } else {
-        const { title, customEventID, building } = courseInMoreInfo;
+        const { title, customEventID, building } = selectedEvent;
         return (
             <Paper className={classes.customEventContainer} ref={paperRef}>
                 <div className={classes.title}>{title}</div>
@@ -301,9 +314,9 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                 <div className={classes.buttonBar}>
                     <div className={`${classes.colorPicker}`}>
                         <ColorPicker
-                            color={courseInMoreInfo.color}
+                            color={selectedEvent.color}
                             isCustomEvent={true}
-                            customEventID={courseInMoreInfo.customEventID}
+                            customEventID={selectedEvent.customEventID}
                             analyticsCategory={analyticsEnum.calendar.title}
                         />
                     </div>

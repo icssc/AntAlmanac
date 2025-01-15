@@ -1,16 +1,38 @@
-import { type } from 'arktype';
-import 'dotenv/config';
+import {z} from "zod";
+import * as dotenv from "dotenv";
 
-const Environment = type({
-    'NODE_ENV?': "'development' | 'production' | 'staging'",
-    USERDATA_TABLE_NAME: 'string',
-    AA_MONGODB_URI: 'string',
-    AWS_REGION: 'string',
-    MAPBOX_ACCESS_TOKEN: 'string',
-    'PR_NUM?': 'number',
-    STAGE: "string",
-});
+dotenv.config();
 
-const env = Environment.assert({ ...process.env });
 
-export default env;
+/**
+ * Environment variables required by the backend during deploy time.
+ */
+export const deployEnvSchema = z.object({
+    DB_URL: z.string(),
+    STAGE: z.string(),
+    MAPBOX_ACCESS_TOKEN: z.string(),
+})
+
+/**
+ * Environment variables required by the backend to connect to the RDS instance.
+ */
+export const rdsEnvSchema = z.object({
+    DB_URL: z.string(),
+    NODE_ENV: z.string().optional(),
+})
+
+/**
+ * Environment variables required by the backend to connect to the DynamoDB table.
+ * 
+ * This will be removed once we complete migration to RDS.
+ */
+export const ddbEnvSchema = z.object({
+    USERDATA_TABLE_NAME: z.string(),
+    AWS_REGION: z.string(),
+    NODE_ENV: z.string().optional(),
+})
+
+/**
+ * Environment variables required by the backend during runtime.
+ */
+export const backendEnvSchema = z.intersection(deployEnvSchema, rdsEnvSchema)

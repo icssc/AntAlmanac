@@ -50,3 +50,6 @@ Desktop.ini
 
 ## VSCode settings.
 .vscode/
+
+## Turbo
+.turbo/

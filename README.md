@@ -25,6 +25,7 @@ A summary of the libraries we use are listed below.
 ### Backend
 - [tRPC](https://trpc.io) - type-safe API access layer for the AntAlmanac API.
 - [Anteater API](https://docs.icssc.club/developer/anteaterapi) - API maintained by ICSSC for retrieving UCI data.
+- [Drizzle ORM](https://orm.drizzle.team/) - [high-performance](https://orm.drizzle.team/benchmarks) type-safe SQL-like access layer compatiable with all major SQL dialects. 
 
 ### Tooling
 - [Vite](https://vitejs.dev) - Blazingly fast, modern bundler.
@@ -52,8 +53,9 @@ Since then, the project has continued to evolve and grow with successive generat
 | 2019 - 2021    | @devsdevsdevs        |
 | 2021 - 2022    | @ChaseC99            |
 | 2022 - 2024    | @EricPedley          |
-| 2023 - Present | @ap0nia              |
+| 2023 - 2024    | @ap0nia              |
 | 2024 - Present | @MinhxNguyen7        |
+| 2024 - Present | @adcockdalton        |
 
 
 # Contributing
@@ -77,12 +79,8 @@ Here is a rough guide on how to contribute:
    Repeat until your pull request is approved.
 8. Merge your pull request and your changes will appear on the live website shortly! 🥳
 
-## Video Walkhrough
-We also have a 30 minute contributor [video tutorial](https://www.youtube.com/watch?v=_v91cqGzu5o) available on YouTube.
-
 ## Additional Help
 If you ever need help, feel free to ask around on our [Discord server](https://discord.gg/Zu8KZHERtJ).
-
 
 # Development Environment
 

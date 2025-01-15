@@ -299,6 +299,7 @@ const locationIds: Record<string, number> = {
     'Maya Lin Water Table': 471180,
     'Gloria Gellman Sculpture': 471202,
     'Sue & Bill Gross Hall: A CIRM Institute': 114607,
+    ISEB: 83063,
 };
 
 export default locationIds;

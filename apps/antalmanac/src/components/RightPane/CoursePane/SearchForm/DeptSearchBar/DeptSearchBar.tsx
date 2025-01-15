@@ -91,10 +91,12 @@ class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState
     }
 
     resetField = () => {
+        const formData = RightPaneStore.getFormData();
+
         this.setState({
             value: {
-                deptValue: RightPaneStore.getFormData().deptValue,
-                deptLabel: RightPaneStore.getFormData().deptLabel,
+                deptValue: formData.deptValue,
+                deptLabel: formData.deptLabel,
                 isFavorite: false,
             },
         });

@@ -28,6 +28,7 @@ env:
     VITE_TILES_ENDPOINT: ${{ secrets.VITE_TILES_ENDPOINT}}
     GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
     GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+    DB_URL: ${{ secrets.STAGING_DB_URL }}
     ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
 
     # Turborepo credentials.
@@ -44,6 +45,7 @@ env:
     HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
     CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
     PR_NUM: ${{ github.event.pull_request.number }}
+    STAGE: dev
 
 jobs:
     get_staging_configuration:

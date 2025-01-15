@@ -8,7 +8,7 @@ import RightPaneStore from '../RightPaneStore';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 
-import SchoolDeptCard from './SchoolDeptCard';
+import { SchoolDeptCard } from './SchoolDeptCard';
 import darkModeLoadingGif from './SearchForm/Gifs/dark-loading.gif';
 import loadingGif from './SearchForm/Gifs/loading.gif';
 import darkNoNothing from './static/dark-no_results.png';
@@ -185,7 +185,7 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
 
-    const setHoveredEvents = useHoveredStore((store) => store.setHoveredEvents);
+    const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
     const loadCourses = useCallback(async () => {
         setLoading(true);
@@ -213,6 +213,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             department: formData.deptValue,
             ge: formData.ge as GE,
             instructor: formData.instructor,
+            sectionCode: formData.sectionCode,
         };
 
         try {
@@ -275,9 +276,9 @@ export default function CourseRenderPane(props: { id?: number }) {
      */
     useEffect(() => {
         return () => {
-            setHoveredEvents(undefined);
+            setHoveredEvent(undefined);
         };
-    }, [setHoveredEvents]);
+    }, [setHoveredEvent]);
 
     return (
         <>

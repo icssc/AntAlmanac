@@ -24,12 +24,13 @@
         "arktype": "1.0.14-alpha",
         "aws-cdk-lib": "^2.94.0",
         "constructs": "^10.2.70",
-        "dotenv": "^16.0.3"
+        "dotenv": "^16.0.3",
+        "zod": "3.23.8"
     },
     "devDependencies": {
         "@types/node": "^20.11.5",
         "aws-cdk": "^2.94.0",
-        "tsx": "^3.12.7",
+        "tsx": "^4.19.2",
         "typescript": "5.6.3"
     },
     "packageManager": "pnpm@8.6.12",

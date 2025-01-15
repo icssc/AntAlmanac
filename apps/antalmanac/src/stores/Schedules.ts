@@ -5,8 +5,8 @@ import type {
     ScheduleUndoState,
     ShortCourseSchedule,
     RepeatingCustomEvent,
+    CourseInfo,
 } from '@packages/antalmanac-types';
-import type { CourseInfo } from '@packages/antalmanac-types';
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 
@@ -50,10 +50,20 @@ export class Schedules {
         this.skeletonSchedules = [];
     }
 
+    getNextScheduleName(scheduleIndex: number, newScheduleName: string) {
+        const scheduleNames = this.getScheduleNames();
+        scheduleNames.splice(scheduleIndex, 1);
+        let nextScheduleName = newScheduleName;
+        let counter = 1;
+
+        while (scheduleNames.includes(nextScheduleName)) {
+            nextScheduleName = `${newScheduleName}(${counter++})`;
+        }
+        return nextScheduleName;
+    }
+
     getDefaultScheduleName() {
-        const termName = termData[0].shortName.replaceAll(' ', '-');
-        const countSameScheduleNames = this.getScheduleNames().filter((name) => name.includes(termName)).length;
-        return `${termName + (countSameScheduleNames == 0 ? '' : '(' + countSameScheduleNames + ')')}`;
+        return termData[0].shortName.replaceAll(' ', '-');
     }
 
     getCurrentScheduleIndex() {
@@ -92,12 +102,13 @@ export class Schedules {
 
     /**
      * Create an empty schedule.
+     * @param newScheduleName The name of the new schedule. If a schedule with the same name already exists, a number will be appended to the name.
      */
     addNewSchedule(newScheduleName: string) {
         this.addUndoState();
         const scheduleNoteId = Math.random();
         this.schedules.push({
-            scheduleName: newScheduleName,
+            scheduleName: this.getNextScheduleName(this.getNumberOfSchedules(), newScheduleName),
             courses: [],
             customEvents: [],
             scheduleNoteId: scheduleNoteId,
@@ -109,10 +120,11 @@ export class Schedules {
 
     /**
      * Rename schedule with the specified index.
+     * @param newScheduleName The name of the new schedule. If a schedule with the same name already exists, a number will be appended to the name.
      */
-    renameSchedule(newScheduleName: string, scheduleIndex: number) {
+    renameSchedule(scheduleIndex: number, newScheduleName: string) {
         this.addUndoState();
-        this.schedules[scheduleIndex].scheduleName = newScheduleName;
+        this.schedules[scheduleIndex].scheduleName = this.getNextScheduleName(scheduleIndex, newScheduleName);
     }
 
     /**
@@ -134,28 +146,22 @@ export class Schedules {
     }
 
     /**
-     * Append all courses from current schedule to the schedule with the target index.
-     * @param to Index of the schedule to append courses to. If equal to number of schedules, will append courses to all schedules.
+     * Copy the schedule at the provided index to a newly created schedule with the specified name.
      */
-    copySchedule(to: number) {
-        this.addUndoState();
+    copySchedule(scheduleIndex: number, newScheduleName: string) {
+        this.addNewSchedule(newScheduleName);
+        this.currentScheduleIndex = scheduleIndex; // temporarily set current schedule to the one being copied
+        const to = this.getNumberOfSchedules() - 1;
+
         for (const course of this.getCurrentCourses()) {
-            if (to === this.getNumberOfSchedules()) {
-                this.addCourseToAllSchedules(course);
-            } else {
-                this.addCourse(course, to, false);
-            }
+            this.addCourse(course, to, false);
         }
 
         for (const customEvent of this.getCurrentCustomEvents()) {
-            if (to === this.getNumberOfSchedules()) {
-                this.addCustomEvent(customEvent, [...Array(to).keys()]);
-            } else {
-                this.addCustomEvent(customEvent, [to]);
-            }
+            this.addCustomEvent(customEvent, [to], false);
         }
+        this.currentScheduleIndex = this.previousStates[this.previousStates.length - 1].scheduleIndex; // return to previously selected schedule index
     }
-
     getCurrentCourses() {
         return this.schedules[this.currentScheduleIndex]?.courses || [];
     }
@@ -333,8 +339,10 @@ export class Schedules {
     /**
      * Adds a new custom event to given indices
      */
-    addCustomEvent(newCustomEvent: RepeatingCustomEvent, scheduleIndices: number[]) {
-        this.addUndoState();
+    addCustomEvent(newCustomEvent: RepeatingCustomEvent, scheduleIndices: number[], addUndoState = true) {
+        if (addUndoState) {
+            this.addUndoState();
+        }
         for (const scheduleIndex of scheduleIndices) {
             if (!this.doesCustomEventExistInSchedule(newCustomEvent.customEventID, scheduleIndex)) {
                 this.schedules[scheduleIndex].customEvents.push(newCustomEvent);
@@ -525,7 +533,7 @@ export class Schedules {
                 for (const shortCourse of shortCourseSchedule.courses) {
                     const courseInfoMap = courseInfoDict.get(shortCourse.term);
                     if (courseInfoMap !== undefined) {
-                        const courseInfo = courseInfoMap[shortCourse.sectionCode];
+                        const courseInfo = courseInfoMap[shortCourse.sectionCode.padStart(5, '0')];
                         if (courseInfo === undefined) {
                             // Class doesn't exist/was cancelled
                             continue;

@@ -4,7 +4,7 @@ import { CssBaseline, useMediaQuery, useTheme, Stack } from '@mui/material';
 import { useCallback, useEffect, useRef } from 'react';
 import Split from 'react-split';
 
-import Calendar from '$components/Calendar/CalendarRoot';
+import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import Header from '$components/Header';
 import NotificationSnackbar from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
@@ -70,7 +70,7 @@ function DesktopHome() {
                     onDrag={handleDrag}
                 >
                     <Stack direction="column">
-                        <Calendar isMobile={false} />
+                        <ScheduleCalendar />
                     </Stack>
                     <Stack direction="column" ref={scheduleManagementRef}>
                         <ScheduleManagement />
