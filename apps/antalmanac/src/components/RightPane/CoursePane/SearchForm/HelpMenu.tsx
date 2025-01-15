@@ -36,10 +36,6 @@ export function HelpMenu() {
         }
     };
 
-    const openFeedbackForm = () => {
-        Feedback();
-    };
-
     useEffect(() => {
         const handleHelpBoxChange = (newVisibility: boolean) => {
             setShowHelpBox(newVisibility);
@@ -147,6 +143,24 @@ export function HelpMenu() {
                             <HelpIcon />
                         </IconButton>
                     </Tooltip>
+                </Box>
+            )}
+
+            {showHelpBox && (
+                <Box
+                    sx={{
+                        position: 'fixed',
+                        right: '1rem',
+                        bottom: '5rem',
+                        width: '50%',
+                        height: 'auto',
+                        zIndex: 1000,
+                        overflow: 'auto',
+                    }}
+                >
+                    <Paper variant="outlined" sx={{ padding: 2, boxShadow: 3 }}>
+                        <HelpBox onDismiss={() => RightPaneStore.hideHelpBox()} />
+                    </Paper>
                 </Box>
             )}
         </Box>
