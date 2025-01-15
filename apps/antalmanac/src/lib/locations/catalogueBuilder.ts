@@ -61,7 +61,7 @@ async function fetchLocations() {
                 imageURLs: imgUrls,
             };
 
-            const locationName = location.name.includes('(')
+            const locationName: string = location.name.includes('(')
                 ? location.name.substring(location.name.indexOf('(') + 1, location.name.indexOf(')'))
                 : location.name;
             locationIds[locationName] = location.id;
