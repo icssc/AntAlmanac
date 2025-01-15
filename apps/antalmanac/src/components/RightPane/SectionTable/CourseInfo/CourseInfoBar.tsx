@@ -8,9 +8,9 @@ import { useState } from 'react';
 
 import { MOBILE_BREAKPOINT } from '../../../../globals';
 
+import PrereqTree from '$components/RightPane/SectionTable/PrereqTree';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import trpc from '$lib/api/trpc';
-import PrereqTree from '$components/RightPane/SectionTable/PrereqTree';
 
 const styles = () => ({
     rightSpace: {

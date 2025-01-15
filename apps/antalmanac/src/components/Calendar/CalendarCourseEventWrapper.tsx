@@ -4,6 +4,7 @@ import { EventWrapperProps } from 'react-big-calendar';
 import { shallow } from 'zustand/shallow';
 
 import type { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
+import { useQuickSearchForClasses } from '$lib/helpers';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 
 interface CalendarCourseEventWrapperProps extends EventWrapperProps<CalendarEvent> {
@@ -15,6 +16,7 @@ interface CalendarCourseEventWrapperProps extends EventWrapperProps<CalendarEven
  */
 export const CalendarCourseEventWrapper = ({ children, ...props }: CalendarCourseEventWrapperProps) => {
     const ref = useRef<HTMLDivElement>(null);
+    const quickSearch = useQuickSearchForClasses();
 
     const setSelectedEvent = useSelectedEventStore((state) => state.setSelectedEvent, shallow);
 
@@ -23,7 +25,12 @@ export const CalendarCourseEventWrapper = ({ children, ...props }: CalendarCours
             e.preventDefault();
             e.stopPropagation();
 
-            setSelectedEvent(e, props.event);
+            if (props.event && !props.event.isCustomEvent && (e.metaKey || e.ctrlKey)) {
+                const courseInfo = props.event;
+                quickSearch(courseInfo.deptValue, courseInfo.courseNumber, courseInfo.term);
+            } else {
+                setSelectedEvent(e, props.event);
+            }
         },
         [props.event, setSelectedEvent]
     );

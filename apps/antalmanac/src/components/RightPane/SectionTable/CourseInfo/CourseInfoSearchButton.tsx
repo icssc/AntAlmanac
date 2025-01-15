@@ -1,39 +1,21 @@
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
-import { useTabStore } from '$stores/TabStore';
+import { Button } from '@material-ui/core';
 import { Search } from '@material-ui/icons';
-import { Button } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { useCallback } from 'react';
-import { Link } from 'react-router-dom';
+
+import { useQuickSearchForClasses } from '$lib/helpers';
 
 /**
  * Routes the user to the corresponding search result
  */
 export function CourseInfoSearchButton({ courseDetails, term }: { courseDetails: AACourse; term: string }) {
-    const { setActiveTab } = useTabStore();
-    const { displaySections } = useCoursePaneStore();
+    const quickSearch = useQuickSearchForClasses();
 
     const { deptCode, courseNumber } = courseDetails;
 
     const handleClick = useCallback(() => {
-        RightPaneStore.updateFormValue('deptValue', deptCode);
-        RightPaneStore.updateFormValue('courseNumber', courseNumber);
-        RightPaneStore.updateFormValue('term', term);
-
-        displaySections();
-        setActiveTab(1);
-    }, []);
-
-    const queryParams = {
-        term: term,
-        deptValue: deptCode,
-        courseNumber: courseNumber,
-    };
-
-    const href = `/?${Object.entries(queryParams)
-        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-        .join('&')}`;
+        quickSearch(deptCode, courseNumber, term);
+    }, [courseNumber, deptCode, term]);
 
     return (
         <div>
@@ -42,8 +24,6 @@ export function CourseInfoSearchButton({ courseDetails, term }: { courseDetails:
                 size="small"
                 color="primary"
                 style={{ minWidth: 'fit-content' }}
-                to={href}
-                component={Link}
                 onClick={handleClick}
             >
                 <Search />

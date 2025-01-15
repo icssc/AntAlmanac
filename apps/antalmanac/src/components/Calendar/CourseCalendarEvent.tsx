@@ -1,7 +1,7 @@
-import { Chip, IconButton, Paper, Tooltip } from '@material-ui/core';
+import { Chip, IconButton, Paper, Tooltip, Button } from '@material-ui/core';
 import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { Delete } from '@material-ui/icons';
+import { Delete, Search } from '@material-ui/icons';
 import { WebsocSectionFinalExam } from '@packages/antalmanac-types';
 import { useEffect, useRef, useCallback } from 'react';
 import { Event } from 'react-big-calendar';
@@ -12,7 +12,7 @@ import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
 import ColorPicker from '$components/ColorPicker';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';
-import { clickToCopy } from '$lib/helpers';
+import { clickToCopy, useQuickSearchForClasses } from '$lib/helpers';
 import locationIds from '$lib/location_ids';
 import AppStore from '$stores/AppStore';
 import { useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
@@ -119,6 +119,8 @@ export interface CourseEvent extends CommonCalendarEvent {
     isCustomEvent: false;
     sectionCode: string;
     sectionType: string;
+    deptValue: string;
+    courseNumber: string;
     term: string;
 }
 
@@ -163,6 +165,8 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     }, []);
 
     const { setActiveTab } = useTabStore();
+    const quickSearch = useQuickSearchForClasses();
+
     const { isMilitaryTime } = useTimeFormatStore();
     const isDark = useThemeStore((store) => store.isDark);
 
@@ -173,7 +177,8 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
     const { classes, selectedEvent } = props;
 
     if (!selectedEvent.isCustomEvent) {
-        const { term, instructors, sectionCode, title, finalExam, locations, sectionType } = selectedEvent;
+        const { term, instructors, sectionCode, title, finalExam, locations, sectionType, deptValue, courseNumber } =
+            selectedEvent;
 
         let finalExamString = '';
 
@@ -193,13 +198,23 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             }
         }
 
+        const handleQuickSearch = () => {
+            quickSearch(deptValue, courseNumber, term);
+        };
+
         return (
             <Paper className={classes.courseContainer} ref={paperRef}>
                 <div className={classes.titleBar}>
-                    <span className={classes.title}>{`${title} ${sectionType}`}</span>
+                    <Tooltip title="Quick Search">
+                        <Button size="small" onClick={handleQuickSearch}>
+                            <Search fontSize="small" style={{ marginRight: 5 }} />
+                            <span className={classes.title}>{`${title} ${sectionType}`}</span>
+                        </Button>
+                    </Tooltip>
                     <Tooltip title="Delete">
                         <IconButton
                             size="small"
+                            style={{ textDecoration: 'underline' }}
                             onClick={() => {
                                 props.closePopover();
                                 deleteCourse(sectionCode, term);
