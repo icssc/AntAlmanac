@@ -13,6 +13,7 @@ import { InstructorsCell } from '$components/RightPane/SectionTable/SectionTable
 import { LocationsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/LocationsCell';
 import { RestrictionsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/RestrictionsCell';
 import { StatusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/StatusCell';
+import { WebCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/WebCell';
 import AppStore from '$stores/AppStore';
 import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
@@ -40,6 +41,7 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     sectionEnrollment: EnrollmentCell,
     restrictions: RestrictionsCell,
     status: StatusCell,
+    web: WebCell,
 };
 
 export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
@@ -108,6 +110,8 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
 
         return {};
     }, [allowHighlight, isDark, scheduleConflict, addedCourse]);
+
+    console.log(courseDetails);
 
     return (
         <TableRow

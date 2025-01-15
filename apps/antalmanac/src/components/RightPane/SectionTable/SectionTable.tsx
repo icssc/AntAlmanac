@@ -71,6 +71,10 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
         label: 'Status',
         width: '8%',
     },
+    web: {
+        label: 'Web',
+        width: '8%',
+    },
 };
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
