@@ -1,4 +1,5 @@
 import { Close } from '@mui/icons-material';
+import RightPaneStore from '../../RightPaneStore';
 import {
     Paper,
     ImageList,
@@ -31,14 +32,14 @@ interface HelpBoxProps {
     onDismiss: () => void;
 }
 
-function HelpBox({ onDismiss }: HelpBoxProps) {
+function HelpBox({}: HelpBoxProps) {
     return (
         <Paper variant="outlined" sx={{ padding: 2, marginBottom: '10px', marginRight: '5px' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="h5" fontWeight="bold">
                     Need help planning your schedule?
                 </Typography>
-                <IconButton aria-label="close" size="large" color="inherit" onClick={onDismiss}>
+                <IconButton aria-label="close" size="large" color="inherit" onClick={() => RightPaneStore.hideHelpBox()}>
                     <Close fontSize="inherit" />
                 </IconButton>
             </Box>
