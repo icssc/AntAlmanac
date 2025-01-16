@@ -3,6 +3,7 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { CssBaseline, useMediaQuery, useTheme, Stack } from '@mui/material';
 import { useCallback, useEffect, useRef } from 'react';
 import Split from 'react-split';
+import { useTour } from '@reactour/tour';
 
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import Header from '$components/Header';
@@ -10,6 +11,7 @@ import NotificationSnackbar from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import ScheduleManagement from '$components/SharedRoot';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
+import { tourShouldRun, stepsFactory } from '$lib/TutorialHelpers';
 
 function MobileHome() {
     return (
@@ -84,6 +86,17 @@ export default function Home() {
     const theme = useTheme();
 
     const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+    const { setIsOpen, setCurrentStep, setSteps } = useTour();
+
+    useEffect(() => {
+        setSteps(stepsFactory(() => setCurrentStep(0)));
+
+        if (tourShouldRun()) {
+            setCurrentStep(0);
+            setIsOpen(true);
+        }
+    }, [setCurrentStep, setIsOpen, setSteps]);
 
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>

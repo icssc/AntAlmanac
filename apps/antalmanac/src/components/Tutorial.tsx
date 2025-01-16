@@ -7,7 +7,7 @@ import { stepsFactory, tourShouldRun } from '$lib/TutorialHelpers';
 import { removeSampleClasses } from '$lib/tourExampleGeneration';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
-export function Tutorial() {
+export function Tutorial({ }: { onRestart?: () => void }) {
     const { setCurrentStep, setIsOpen, setSteps, isOpen } = useTour();
     const [displaySearch, disableManualSearch] = useCoursePaneStore((state) => [
         state.displaySearch,
