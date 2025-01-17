@@ -4,6 +4,7 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
 import Import from './Import';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
+import Login from './Login';
 import { Logo } from './Logo';
 import AppDrawer from './SettingsMenu';
 
@@ -43,6 +44,7 @@ const Header = ({ classes }: CustomAppBarProps) => {
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
                     <LoadSaveScheduleFunctionality />
                     <Import key="studylist" />
+                    <Login />
                     <AppDrawer key="settings" />
                 </div>
             </Toolbar>
