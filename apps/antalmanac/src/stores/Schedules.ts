@@ -181,6 +181,16 @@ export class Schedules {
     }
 
     /**
+     * Get combined list of courses from schedules specified by the given indices.
+     */
+    getCoursesFromSchedules(scheduleIndices: number[]) {
+        return scheduleIndices
+            .filter((index) => index >= 0 && index < this.getNumberOfSchedules())
+            .map((index) => this.schedules[index].courses)
+            .flat(1);
+    }
+
+    /**
      * Get course that matches the params across **all** schedules.
      */
     getExistingCourse(sectionCode: string, term: string) {
