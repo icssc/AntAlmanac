@@ -9,9 +9,6 @@ import { RDS } from 'src/lib/rds';
 import { TRPCError } from '@trpc/server';
 import { procedure, router } from '../trpc';
 import { z } from 'zod';
-import { eq } from 'drizzle-orm';
-
-import { users, sessions } from '$db/schema';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
@@ -56,47 +53,39 @@ const usersRouter = router({
         });
         return url;
     }),
-    handleGoogleCallback: procedure.input(z.object({ code: z.string() })).query(async ({ input }) => {
-        // on signup/signin
-        const { tokens } = await oauth2Client.getToken({ code: input.code });
-        oauth2Client.setCredentials(tokens);
-        const ticket = await oauth2Client.verifyIdToken({
-            idToken: tokens.id_token!,
-            audience: GOOGLE_CLIENT_ID,
-        });
+    handleGoogleCallback: procedure
+        .input(z.object({ code: z.string(), token: z.string() }))
+        .query(async ({ input }) => {
+            // on signup/signin
+            const { tokens } = await oauth2Client.getToken({ code: input.code });
+            oauth2Client.setCredentials(tokens);
+            const ticket = await oauth2Client.verifyIdToken({
+                idToken: tokens.id_token!,
+                audience: GOOGLE_CLIENT_ID,
+            });
+            console.log(input);
 
-        const payload = ticket.getPayload()!;
-        console.log(payload);
+            // account payload
+            const payload = ticket.getPayload()!;
+            console.log(payload);
 
-        let user = await db.query.users.findFirst({
-            where: eq(users.id, payload.sub!),
-        });
-        if (!user) {
-            // create user
-            user = await db
-                .insert(users)
-                .values({
-                    id: payload.sub,
-                    name: payload.name,
-                    avatar: payload.picture,
-                })
-                .returning()
-                .then((res) => res[0]);
-        }
+            let account = await RDS.getAccount(db, payload.sub);
 
-        if (user) {
-            // setup session
-            const session = await db
-                .insert(sessions)
-                .values({
-                    id: crypto.randomUUID(),
-                    userId: user.id,
-                    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-                })
-                .returning()
-                .then((res) => res[0]);
-        }
-    }),
+            let userId: string;
+            if (account) {
+                userId = account.userId;
+            } else {
+                const newAccount = await RDS.createUserAccount(db, payload.sub);
+                userId = newAccount?.userId ?? '';
+            }
+
+            if (userId.length > 0) {
+                let session = await RDS.upsertSession(db, userId, input.token);
+                console.log(session);
+                return session?.refreshToken ?? null;
+            }
+            return null;
+        }),
     /**
      * Loads schedule data for a user that's logged in.
      */

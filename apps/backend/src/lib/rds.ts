@@ -1,17 +1,20 @@
 import { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent } from '@packages/antalmanac-types';
-
+import { randomBytes } from 'crypto';
 import { and, eq } from 'drizzle-orm';
-import type { Database } from '$db/index';
+import { type Database } from '$db/index';
 import {
     schedules,
     users,
-    accounts,
     coursesInSchedule,
     customEvents,
     AccountType,
     Schedule,
     CourseInSchedule,
     CustomEvent,
+    sessions,
+    Account,
+    accounts,
+    Session,
 } from '$db/schema';
 
 type DatabaseOrTransaction = Omit<Database, '$client'>;
@@ -27,6 +30,58 @@ export class RDS {
             .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.providerAccountId, name)))
             .limit(1)
             .then((xs) => xs[0]?.id ?? null);
+    }
+    /**
+     * Retrieves an account with the specified user ID and account type 'GOOGLE'.
+     *
+     * @param db - The database or transaction object.
+     * @param userId - The ID of the user whose account is to be retrieved.
+     * @returns A promise that resolves to the account object if found, otherwise null.
+     */
+    static async getAccount(db: DatabaseOrTransaction, providerId: string): Promise<Account | null> {
+        return db.transaction((tx) =>
+            tx
+                .select()
+                .from(accounts)
+                .where(and(eq(accounts.accountType, 'GOOGLE'), eq(accounts.providerAccountId, providerId)))
+                .limit(1)
+                .then((res) => res[0] ?? null)
+        );
+    }
+
+    /**
+     * Adds a new account to an existing user.
+     *
+     * @param db - The database or transaction object.
+     * @param userId - The ID of the user to whom the account will be added.
+     * @param providerId - The provider account ID for the new account.
+     * @returns A promise that resolves to the newly created account object.
+     */
+    static async createAccount(db: DatabaseOrTransaction, userId: string, providerId: string): Promise<Account | null> {
+        return db.transaction((tx) =>
+            tx
+                .insert(accounts)
+                .values({ userId: userId, providerAccountId: providerId, accountType: 'GOOGLE' })
+                .returning()
+                .then((res) => res[0])
+        );
+    }
+
+    /**
+     * Creates a new user and an associated account with the specified provider ID.
+     *
+     * @param db - The database or transaction object.
+     * @param providerId - The provider account ID for the new account.
+     * @returns A promise that resolves to the newly created account object.
+     */
+    static async createUserAccount(db: DatabaseOrTransaction, providerId: string) {
+        const userId = crypto.randomUUID();
+        await db.insert(users).values({
+            id: userId,
+        });
+
+        const account = await this.createAccount(db, userId, providerId);
+        return account;
     }
 
     /**
@@ -350,5 +405,51 @@ export class RDS {
 
         // Sort schedules by index
         return Object.values(schedulesMapping).sort((a, b) => a.index - b.index);
+    }
+
+    static async getCurrentSession(db: DatabaseOrTransaction, refreshToken: string) {
+        return db.transaction((tx) =>
+            tx
+                .select()
+                .from(sessions)
+                .where(eq(sessions.refreshToken, refreshToken))
+                .then((res) => res[0] ?? null)
+        );
+    }
+
+    static async createSession(db: DatabaseOrTransaction, userID: string): Promise<Session | null> {
+        return db.transaction((tx) =>
+            tx
+                .insert(sessions)
+                .values({
+                    id: crypto.randomUUID(),
+                    userId: userID,
+                    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+                })
+                .returning()
+                .then((res) => res[0] ?? null)
+        );
+    }
+
+    static async refreshToken(db: DatabaseOrTransaction, refreshToken: string): Promise<Session | null> {
+        let updateSession = await db
+            .update(sessions)
+            .set({ refreshToken: randomBytes(24).toString('base64url') })
+            .where(eq(sessions.refreshToken, refreshToken))
+            .returning()
+            .then((res) => res[0] ?? null);
+        return updateSession;
+    }
+
+    static async upsertSession(
+        db: DatabaseOrTransaction,
+        userId: string,
+        refreshToken: string
+    ): Promise<Session | null> {
+        const currentSession = await this.getCurrentSession(db, refreshToken);
+        if (currentSession && new Date(currentSession.expires) < new Date()) {
+            return await this.refreshToken(db, refreshToken);
+        }
+        return await RDS.createSession(db, userId);
     }
 }
