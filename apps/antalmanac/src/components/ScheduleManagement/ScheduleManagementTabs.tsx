@@ -1,8 +1,7 @@
 import { Event, FormatListBulleted, MyLocation, Search } from '@mui/icons-material';
-import { Paper, Tab, Tabs, useMediaQuery, useTheme } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Paper, Tabs } from '@mui/material';
 
-import { useThemeStore } from '$stores/SettingsStore';
+import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleManagementTab';
 import { useTabStore } from '$stores/TabStore';
 
 /**
@@ -65,9 +64,6 @@ const scheduleManagementTabs: Array<ScheduleManagementTabInfo> = [
 
 export function ScheduleManagementTabs() {
     const { activeTab, setActiveTabValue } = useTabStore();
-    const isDark = useThemeStore((store) => store.isDark);
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const onChange = (_event: React.SyntheticEvent, value: number) => {
         setActiveTabValue(value);
@@ -76,31 +72,9 @@ export function ScheduleManagementTabs() {
     return (
         <Paper elevation={0} variant="outlined" square sx={{ borderRadius: '4px 4px 0 0' }}>
             <Tabs value={activeTab} onChange={onChange} indicatorColor="primary" variant="fullWidth" centered>
-                {scheduleManagementTabs.map((tab) => {
-                    return (
-                        <Tab
-                            key={tab.label}
-                            id={tab.id}
-                            component={Link}
-                            to={tab.href}
-                            icon={tab.icon}
-                            iconPosition={isMobile ? 'top' : 'start'}
-                            sx={{
-                                ...(!isMobile
-                                    ? {
-                                          minHeight: 'auto',
-                                          height: '44px',
-                                          padding: 3,
-                                          minWidth: '33%',
-                                      }
-                                    : {}),
-                                display: !isMobile && tab.mobile ? 'none' : 'flex',
-                                ...(isDark ? { '&.Mui-selected': { color: 'white' } } : {}),
-                            }}
-                            label={tab.label}
-                        />
-                    );
-                })}
+                {scheduleManagementTabs.map((tab) => (
+                    <ScheduleManagementTab tab={tab} />
+                ))}
             </Tabs>
         </Paper>
     );
