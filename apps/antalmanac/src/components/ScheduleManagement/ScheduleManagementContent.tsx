@@ -9,10 +9,9 @@ import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot'
 import { useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 
-
 const UCIMap = lazy(() => import('../Map/Map'));
 
-export function ScheduleManagementTabsContent() {
+export function ScheduleManagementContent() {
     const { activeTab } = useTabStore();
     const isDark = useThemeStore((store) => store.isDark);
 

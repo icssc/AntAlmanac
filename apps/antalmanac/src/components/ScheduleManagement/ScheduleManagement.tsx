@@ -2,8 +2,8 @@ import { GlobalStyles, Stack, useMediaQuery, useTheme } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
+import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
-import { ScheduleManagementTabsContent } from '$components/ScheduleManagement/ScheduleManagementTabsContent';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import { useTabStore } from '$stores/TabStore';
 
@@ -93,7 +93,7 @@ export function ScheduleManagement() {
                     ref={ref}
                     onScroll={onScroll}
                 >
-                    <ScheduleManagementTabsContent />
+                    <ScheduleManagementContent />
                 </Stack>
             </Stack>
 
