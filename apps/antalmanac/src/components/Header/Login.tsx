@@ -1,23 +1,27 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import GoogleIcon from '@mui/icons-material/Google';
-import { Button, Box, Dialog, DialogTitle, DialogContent, Stack } from '@mui/material';
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Stack, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import trpc from '$lib/api/trpc';
+import { useThemeStore } from '$stores/SettingsStore';
 
-interface SimpleDialogProps {
+
+interface SignInDialogProps {
     open: boolean;
     onClose: () => void;
 }
-function SimpleDialog(props: SimpleDialogProps) {
-    const { onClose, open } = props;
 
+function SignInDialog(props: SignInDialogProps) {
+    const { onClose, open } = props;
+    const isDark = useThemeStore((store) => store.isDark);
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const [cookies, setCookie] = useCookies(['session']);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [guestDialogOpen, setGuestDialogOpen] = useState(false);
 
     const handleLogin = async () => {
         try {
@@ -65,38 +69,61 @@ function SimpleDialog(props: SimpleDialogProps) {
 
     const handleClose = () => {
         onClose();
+        setGuestDialogOpen(false);
+    };
+
+    const handleOpenGuestDialog = () => {
+        setGuestDialogOpen(true);
+    };
+
+    const handleCloseGuestDialog = () => {
+        setGuestDialogOpen(false);
     };
 
     return (
         <Dialog open={open} onClose={handleClose} maxWidth={'xl'}>
-            <Box
-                sx={{
-                    padding: '1rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexDirection: 'column',
-                }}
-            >
-                <DialogTitle fontSize={'large'}>Login or Signup</DialogTitle>
-                <DialogContent>
-                    <Stack spacing={2}>
-                        <Button
-                            onClick={handleLogin}
-                            startIcon={<GoogleIcon />}
-                            size="large"
-                            color="primary"
-                            variant="contained"
-                            href="#"
-                        >
-                            Continue With Google
-                        </Button>
-                        <Button onClick={handleLogin} size="large" color="primary" variant="outlined" href="#">
-                            Continue As Guest
-                        </Button>
+            <Stack spacing={2}>
+                <DialogTitle fontSize={'large'}>{!guestDialogOpen ? 'Login or Sign Up' : 'Guest Login'}</DialogTitle>
+                <DialogContent sx={{ padding: 5, width: '35rem' }}>
+                    <Stack spacing={2} sx={{ marginTop: '1rem' }}>
+                        {!guestDialogOpen ? (
+                            <>
+                                <Button
+                                    onClick={handleLogin}
+                                    startIcon={<GoogleIcon />}
+                                    size="large"
+                                    color="primary"
+                                    variant="contained"
+                                    href="#"
+                                >
+                                    Continue With Google
+                                </Button>
+                                <Button
+                                    onClick={handleOpenGuestDialog}
+                                    size="large"
+                                    color={isDark ? 'secondary' : 'primary'}
+                                    variant="outlined"
+                                    href="#"
+                                >
+                                    Continue As Guest
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <TextField label="Username" color={isDark ? 'secondary' : undefined} fullWidth />
+                                <DialogActions>
+                                    <Button color={isDark ? 'secondary' : undefined} onClick={handleCloseGuestDialog}>
+                                        Cancel
+                                    </Button>
+                                    <Button color="primary" variant="contained">
+                                        Continue
+                                    </Button>
+                                </DialogActions>
+                            </>
+                        )}
                     </Stack>
                 </DialogContent>
-            </Box>
+            </Stack>
         </Dialog>
     );
 }
@@ -117,7 +144,7 @@ function Login() {
             <Button onClick={handleClickOpen} startIcon={<AccountCircleIcon />} color="inherit">
                 Sign in
             </Button>
-            <SimpleDialog open={open} onClose={handleClose} />
+            <SignInDialog open={open} onClose={handleClose} />
         </>
     );
 }
