@@ -16,25 +16,29 @@ interface SignInDialogProps {
 
 function SignInDialog(props: SignInDialogProps) {
     const { onClose, open } = props;
+
     const isDark = useThemeStore((store) => store.isDark);
+
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+
     const [cookies, setCookie] = useCookies(['session']);
     const [isProcessing, setIsProcessing] = useState(false);
-    const [guestDialogOpen, setGuestDialogOpen] = useState(false);
+    const [openGuestOption, setOpenGuestOption] = useState(false);
 
     const handleLogin = async () => {
         try {
             const authUrl = await trpc.users.getGoogleAuthUrl.query();
             if (authUrl) {
-                window.location.href = authUrl; // Redirect to Google login
+                window.location.href = authUrl;
             }
         } catch (error) {
             console.error('Error during login initiation', error);
         }
     };
+
     const handleCallback = async () => {
-        if (isProcessing) return; // Prevent duplicate processing
+        if (isProcessing) return;
         setIsProcessing(true);
 
         try {
@@ -42,12 +46,11 @@ function SignInDialog(props: SignInDialogProps) {
             if (code && !cookies.session) {
                 const session = await trpc.users.handleGoogleCallback.query({
                     code: code,
-                    token: cookies.session || '', // Use existing session token if available
+                    token: cookies.session || '',
                 });
 
                 setCookie('session', session, { path: '/' });
 
-                // Clean up URL
                 const newUrl = window.location.origin + window.location.pathname;
                 window.history.replaceState({}, '', newUrl);
                 console.log(cookies.session);
@@ -69,24 +72,24 @@ function SignInDialog(props: SignInDialogProps) {
 
     const handleClose = () => {
         onClose();
-        setGuestDialogOpen(false);
+        handleGuestOptionClose();
     };
 
-    const handleOpenGuestDialog = () => {
-        setGuestDialogOpen(true);
+    const handleGuestOptionOpen = () => {
+        setOpenGuestOption(true);
     };
 
-    const handleCloseGuestDialog = () => {
-        setGuestDialogOpen(false);
+    const handleGuestOptionClose = () => {
+        setOpenGuestOption(false);
     };
 
     return (
         <Dialog open={open} onClose={handleClose} maxWidth={'xl'}>
             <Stack spacing={2}>
-                <DialogTitle fontSize={'large'}>{!guestDialogOpen ? 'Login or Sign Up' : 'Guest Login'}</DialogTitle>
+                <DialogTitle fontSize={'large'}>{!openGuestOption ? 'Login or Sign Up' : 'Guest Login'}</DialogTitle>
                 <DialogContent sx={{ padding: 5, width: '35rem' }}>
                     <Stack spacing={2} sx={{ marginTop: '1rem' }}>
-                        {!guestDialogOpen ? (
+                        {!openGuestOption ? (
                             <>
                                 <Button
                                     onClick={handleLogin}
@@ -99,7 +102,7 @@ function SignInDialog(props: SignInDialogProps) {
                                     Continue With Google
                                 </Button>
                                 <Button
-                                    onClick={handleOpenGuestDialog}
+                                    onClick={handleGuestOptionOpen}
                                     size="large"
                                     color={isDark ? 'secondary' : 'primary'}
                                     variant="outlined"
@@ -112,7 +115,7 @@ function SignInDialog(props: SignInDialogProps) {
                             <>
                                 <TextField label="Username" color={isDark ? 'secondary' : undefined} fullWidth />
                                 <DialogActions>
-                                    <Button color={isDark ? 'secondary' : undefined} onClick={handleCloseGuestDialog}>
+                                    <Button color={isDark ? 'secondary' : undefined} onClick={handleGuestOptionClose}>
                                         Cancel
                                     </Button>
                                     <Button color="primary" variant="contained">
