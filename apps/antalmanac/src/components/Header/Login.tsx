@@ -1,9 +1,9 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import GoogleIcon from '@mui/icons-material/Google';
-import { Button, Box, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import { Button, Box, Dialog, DialogTitle, DialogContent, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import trpc from '$lib/api/trpc';
 
@@ -14,33 +14,54 @@ interface SimpleDialogProps {
 function SimpleDialog(props: SimpleDialogProps) {
     const { onClose, open } = props;
 
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const [cookies, setCookie] = useCookies(['session']);
+    const [isProcessing, setIsProcessing] = useState(false);
 
-    const handleLogin = () => {
-        const handleAuth = async () => {
-            try {
-                const authUrl = await trpc.users.getGoogleAuthUrl.query();
-                if (authUrl) window.location.href = authUrl;
-                const code = searchParams.get('code');
+    const handleLogin = async () => {
+        try {
+            const authUrl = await trpc.users.getGoogleAuthUrl.query();
+            if (authUrl) {
+                window.location.href = authUrl; // Redirect to Google login
+            }
+        } catch (error) {
+            console.error('Error during login initiation', error);
+        }
+    };
+    const handleCallback = async () => {
+        if (isProcessing) return; // Prevent duplicate processing
+        setIsProcessing(true);
+
+        try {
+            const code = searchParams.get('code');
+            if (code && !cookies.session) {
                 const session = await trpc.users.handleGoogleCallback.query({
-                    code: code ?? '',
-                    token: cookies.session === '' || !cookies.session ? '' : cookies.session,
+                    code: code,
+                    token: cookies.session || '', // Use existing session token if available
                 });
+
                 setCookie('session', session, { path: '/' });
 
-                console.log(session);
-            } catch (error) {
-                console.error('Error during authentication', error);
-            }
-        };
+                // Clean up URL
+                const newUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, '', newUrl);
+                console.log(cookies.session);
 
-        handleAuth();
+                console.log('Session:', session);
+            }
+        } catch (error) {
+            console.error('Error during authentication', error);
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     useEffect(() => {
         console.log(cookies.session);
-    }, [searchParams, setCookie]);
+        handleCallback();
+        navigate('/');
+    }, [searchParams]);
 
     const handleClose = () => {
         onClose();
@@ -59,16 +80,21 @@ function SimpleDialog(props: SimpleDialogProps) {
             >
                 <DialogTitle fontSize={'large'}>Login or Signup</DialogTitle>
                 <DialogContent>
-                    <Button
-                        onClick={handleLogin}
-                        startIcon={<GoogleIcon />}
-                        size="large"
-                        color="primary"
-                        variant="contained"
-                        href="#"
-                    >
-                        Continue With Google
-                    </Button>
+                    <Stack spacing={2}>
+                        <Button
+                            onClick={handleLogin}
+                            startIcon={<GoogleIcon />}
+                            size="large"
+                            color="primary"
+                            variant="contained"
+                            href="#"
+                        >
+                            Continue With Google
+                        </Button>
+                        <Button onClick={handleLogin} size="large" color="primary" variant="outlined" href="#">
+                            Continue As Guest
+                        </Button>
+                    </Stack>
                 </DialogContent>
             </Box>
         </Dialog>
@@ -89,7 +115,7 @@ function Login() {
     return (
         <>
             <Button onClick={handleClickOpen} startIcon={<AccountCircleIcon />} color="inherit">
-                Signin
+                Sign in
             </Button>
             <SimpleDialog open={open} onClose={handleClose} />
         </>

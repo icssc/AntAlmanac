@@ -335,15 +335,6 @@ export class RDS {
         return { user: res[0].users, account: res[0].accounts };
     }
 
-    static async signInAccount(db: DatabaseOrTransaction, providerAccountId: string) {
-        const user = this.getUserAndAccount(db, 'GOOGLE', providerAccountId);
-        if (user !== null) {
-            return user;
-        }
-
-        // create user
-    }
-
     /**
      * Aggregates the user's schedule data from the results of two queries.
      */
