@@ -1,12 +1,10 @@
 import { Box } from '@mui/material';
 import { WebsocSectionMeeting } from '@packages/antalmanac-types';
-import { Fragment, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Fragment } from 'react';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { MapLink } from '$components/buttons/MapLink';
 import locationIds from '$lib/location_ids';
-import { useThemeStore } from '$stores/SettingsStore';
-import { useTabStore } from '$stores/TabStore';
 
 interface LocationsCellProps {
     meetings: WebsocSectionMeeting[];
@@ -14,13 +12,6 @@ interface LocationsCellProps {
 }
 
 export const LocationsCell = ({ meetings }: LocationsCellProps) => {
-    const isDark = useThemeStore((store) => store.isDark);
-    const { setActiveTab } = useTabStore();
-
-    const focusMap = useCallback(() => {
-        setActiveTab('map');
-    }, [setActiveTab]);
-
     return (
         <TableBodyCellContainer>
             {meetings.map((meeting) => {
@@ -30,16 +21,7 @@ export const LocationsCell = ({ meetings }: LocationsCellProps) => {
                         const buildingId = locationIds[buildingName];
                         return (
                             <Fragment key={meeting.timeIsTBA + bldg}>
-                                <Link
-                                    style={{
-                                        textDecoration: 'none',
-                                    }}
-                                    to={`/map?location=${buildingId}`}
-                                    onClick={focusMap}
-                                    color={isDark ? 'dodgerblue' : 'blue'}
-                                >
-                                    {bldg}
-                                </Link>
+                                <MapLink buildingId={buildingId} room={bldg} />
                                 <br />
                             </Fragment>
                         );

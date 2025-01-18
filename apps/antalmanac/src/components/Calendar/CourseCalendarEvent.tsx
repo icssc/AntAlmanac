@@ -3,20 +3,19 @@ import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete, Search } from '@material-ui/icons';
 import { WebsocSectionFinalExam } from '@packages/antalmanac-types';
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 import { Event } from 'react-big-calendar';
-import { Link } from 'react-router-dom';
 
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
 import ColorPicker from '$components/ColorPicker';
+import { MapLink } from '$components/buttons/MapLink';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';
 import { clickToCopy, useQuickSearchForClasses } from '$lib/helpers';
 import locationIds from '$lib/location_ids';
 import AppStore from '$stores/AppStore';
-import { useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
-import { useTabStore } from '$stores/TabStore';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
 
 const styles: Styles<Theme, object> = {
@@ -146,8 +145,10 @@ interface CourseCalendarEventProps {
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
+const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopover }: CourseCalendarEventProps) => {
     const paperRef = useRef<HTMLInputElement>(null);
+    const quickSearch = useQuickSearchForClasses();
+    const { isMilitaryTime } = useTimeFormatStore();
 
     useEffect(() => {
         const handleKeyDown = (event: { keyCode: number }) => {
@@ -163,18 +164,6 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             document.removeEventListener('keydown', handleKeyDown);
         };
     }, []);
-
-    const { setActiveTab } = useTabStore();
-    const quickSearch = useQuickSearchForClasses();
-
-    const { isMilitaryTime } = useTimeFormatStore();
-    const isDark = useThemeStore((store) => store.isDark);
-
-    const focusMap = useCallback(() => {
-        setActiveTab('map');
-    }, [setActiveTab]);
-
-    const { classes, selectedEvent } = props;
 
     if (!selectedEvent.isCustomEvent) {
         const { term, instructors, sectionCode, title, finalExam, locations, sectionType, deptValue, courseNumber } =
@@ -216,7 +205,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             size="small"
                             style={{ textDecoration: 'underline' }}
                             onClick={() => {
-                                props.closePopover();
+                                closePopover();
                                 deleteCourse(sectionCode, term);
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
@@ -262,14 +251,10 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             <td className={`${classes.multiline} ${classes.rightCells}`}>
                                 {locations.map((location) => (
                                     <div key={`${sectionCode} @ ${location.building} ${location.room}`}>
-                                        <Link
-                                            className={classes.clickableLocation}
-                                            to={`/map?location=${locationIds[location.building] ?? 0}`}
-                                            onClick={focusMap}
-                                            color={isDark ? '#1cbeff' : 'blue'}
-                                        >
-                                            {location.building} {location.room}
-                                        </Link>
+                                        <MapLink
+                                            buildingId={locationIds[location.building] ?? '0'}
+                                            room={`${location.building} ${location.room}`}
+                                        />
                                     </div>
                                 ))}
                             </td>
@@ -302,13 +287,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                 {building && (
                     <div className={classes.table}>
                         Location:&nbsp;
-                        <Link
-                            className={classes.clickableLocation}
-                            to={`/map?location=${building ?? 0}`}
-                            onClick={focusMap}
-                        >
-                            {buildingCatalogue[+building]?.name ?? ''}
-                        </Link>
+                        <MapLink buildingId={+building} room={buildingCatalogue[+building]?.name ?? ''} />
                     </div>
                 )}
                 <div className={classes.buttonBar}>
@@ -321,15 +300,15 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         />
                     </div>
                     <CustomEventDialog
-                        onDialogClose={props.closePopover}
+                        onDialogClose={closePopover}
                         customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)}
-                        scheduleNames={props.scheduleNames}
+                        scheduleNames={scheduleNames}
                     />
 
                     <Tooltip title="Delete">
                         <IconButton
                             onClick={() => {
-                                props.closePopover();
+                                closePopover();
                                 deleteCustomEvent(customEventID);
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
