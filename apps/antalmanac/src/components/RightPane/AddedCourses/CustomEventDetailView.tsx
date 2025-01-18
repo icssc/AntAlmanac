@@ -60,7 +60,7 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
     const { setActiveTab } = useTabStore();
 
     const focusMap = useCallback(() => {
-        setActiveTab(2);
+        setActiveTab(1);
     }, [setActiveTab]);
 
     return (

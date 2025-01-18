@@ -6,11 +6,11 @@ import { WebsocSectionFinalExam } from '@packages/antalmanac-types';
 import { useEffect, useRef } from 'react';
 import { Event } from 'react-big-calendar';
 
-import { MapLink } from '../buttons/MapLink';
 
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
 import ColorPicker from '$components/ColorPicker';
+import { MapLink } from '$components/buttons/MapLink';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';
 import { clickToCopy, useQuickSearchForClasses } from '$lib/helpers';

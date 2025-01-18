@@ -2,9 +2,8 @@ import { Box } from '@mui/material';
 import { WebsocSectionMeeting } from '@packages/antalmanac-types';
 import { Fragment } from 'react';
 
-import { MapLink } from '../../../../buttons/MapLink';
-
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { MapLink } from '$components/buttons/MapLink';
 import locationIds from '$lib/location_ids';
 
 interface LocationsCellProps {
