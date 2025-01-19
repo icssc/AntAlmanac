@@ -6,7 +6,6 @@ import { WebsocSectionFinalExam } from '@packages/antalmanac-types';
 import { useEffect, useRef } from 'react';
 import { Event } from 'react-big-calendar';
 
-
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
 import ColorPicker from '$components/ColorPicker';
@@ -146,8 +145,10 @@ interface CourseCalendarEventProps {
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
+const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopover }: CourseCalendarEventProps) => {
     const paperRef = useRef<HTMLInputElement>(null);
+    const quickSearch = useQuickSearchForClasses();
+    const { isMilitaryTime } = useTimeFormatStore();
 
     useEffect(() => {
         const handleKeyDown = (event: { keyCode: number }) => {
@@ -163,12 +164,6 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
             document.removeEventListener('keydown', handleKeyDown);
         };
     }, []);
-
-    const quickSearch = useQuickSearchForClasses();
-
-    const { isMilitaryTime } = useTimeFormatStore();
-
-    const { classes, selectedEvent } = props;
 
     if (!selectedEvent.isCustomEvent) {
         const { term, instructors, sectionCode, title, finalExam, locations, sectionType, deptValue, courseNumber } =
@@ -210,7 +205,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                             size="small"
                             style={{ textDecoration: 'underline' }}
                             onClick={() => {
-                                props.closePopover();
+                                closePopover();
                                 deleteCourse(sectionCode, term);
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
@@ -305,15 +300,15 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                         />
                     </div>
                     <CustomEventDialog
-                        onDialogClose={props.closePopover}
+                        onDialogClose={closePopover}
                         customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)}
-                        scheduleNames={props.scheduleNames}
+                        scheduleNames={scheduleNames}
                     />
 
                     <Tooltip title="Delete">
                         <IconButton
                             onClick={() => {
-                                props.closePopover();
+                                closePopover();
                                 deleteCustomEvent(customEventID);
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
