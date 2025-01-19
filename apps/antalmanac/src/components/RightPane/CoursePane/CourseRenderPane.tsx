@@ -1,5 +1,5 @@
 import { Close } from '@mui/icons-material';
-import { Alert, Box, IconButton, useMediaQuery } from '@mui/material';
+import { Alert, AlertTitle, Box, IconButton, useMediaQuery } from '@mui/material';
 import { AACourse, AASection, WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
@@ -176,24 +176,36 @@ const ErrorMessage = ({ }: { courseData: (WebsocSchool | WebsocDepartment | AACo
     return (
         <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
             {courseName && (
-                <a
-                    href={`https://peterportal.org/course/${courseName}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                        textDecoration: 'none',
-                        color: isDark ? '#00aaff' : '#0056b3',
-                        fontSize: '1.4rem', 
-                    }}
-                >
-                    Click to find out when this course will run next on PeterPortal!
-                </a>
+                <Alert
+                severity="info"
+                onClick={() => window.open(`https://peterportal.org/course/${courseName}`, '_blank')}
+                sx={{
+                  width: '100%',
+                  cursor: 'pointer',
+                  backgroundColor: isDark ? '#2a3136' : 'rgb(240, 248, 255)', 
+                  border: `1px solid ${isDark ? '#202224' : '#90caf9'}`, 
+                  color: isDark ? '#ece6e6' : '#1e88e5', 
+                  fontSize: '1.1rem',
+                  '& .MuiAlertTitle-root': {
+                    fontSize: '1.3rem',
+                  },
+                  padding: '8px',
+                  boxSizing: 'border-box',
+                  marginTop: '35px',
+                '&:hover': {
+                    backgroundColor: isDark ? '#1f2529' : 'rgb(230, 240, 255)',
+                },
+                }}
+              >
+                <AlertTitle>Click HERE to see when {courseName} will be offered next on PeterPortal!</AlertTitle>
+                
+              </Alert>
             )}
-            <img
+            { <img
                 src={isDark ? darkNoNothing : noNothing}
                 alt="No Results Found"
                 style={{ objectFit: 'contain', width: '80%', height: '80%' }}
-            />
+            /> }
         </Box>
     );
 };
