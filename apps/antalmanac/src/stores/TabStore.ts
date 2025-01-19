@@ -2,6 +2,13 @@ import { create } from 'zustand';
 
 type TabName = 'calendar' | 'search' | 'added' | 'map';
 
+const TabMap: Record<TabName, number> = {
+    calendar: 0,
+    search: 1,
+    added: 2,
+    map: 3,
+};
+
 interface TabStore {
     activeTab: number;
 
@@ -22,29 +29,9 @@ export const useTabStore = create<TabStore>((set) => {
     return {
         activeTab: 1,
         setActiveTab: (name: TabName) => {
-            if (name === 'calendar') {
-                set(() => ({
-                    activeTab: 0,
-                }));
-            }
-
-            if (name === 'search') {
-                set(() => ({
-                    activeTab: 1,
-                }));
-            }
-
-            if (name === 'added') {
-                set(() => ({
-                    activeTab: 2,
-                }));
-            }
-
-            if (name === 'map') {
-                set(() => ({
-                    activeTab: 3,
-                }));
-            }
+            set(() => ({
+                activeTab: TabMap[name],
+            }));
         },
         setActiveTabValue: (value: number) => {
             set(() => ({ activeTab: value }));
