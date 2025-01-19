@@ -31,9 +31,7 @@ export interface CalendarPaneToolbarProps {
  */
 export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-    const [skeletonScheduleNames, setSkeletonScheduleNames] = useState(AppStore.getSkeletonScheduleNames());
 
     const handleToggleFinals = useCallback(() => {
         logAnalytics({
@@ -43,14 +41,9 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
         toggleDisplayFinalsSchedule();
     }, [toggleDisplayFinalsSchedule]);
 
-    const handleScheduleNamesChange = useCallback(() => {
-        setScheduleNames(AppStore.getScheduleNames());
-    }, []);
-
     useEffect(() => {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
-            setSkeletonScheduleNames(AppStore.getSkeletonScheduleNames());
         };
 
         AppStore.on('skeletonModeChange', handleSkeletonModeChange);
@@ -59,14 +52,6 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
     }, []);
-
-    useEffect(() => {
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-
-        return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-        };
-    }, [handleScheduleNamesChange]);
 
     return (
         <Paper
@@ -82,7 +67,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             }}
         >
             <Box gap={1} display="flex" alignItems="center">
-                <SelectSchedulePopover scheduleNames={skeletonMode ? skeletonScheduleNames : scheduleNames} />
+                <SelectSchedulePopover />
                 <Tooltip title="Toggle showing finals schedule">
                     <Button
                         color={showFinalsSchedule ? 'primary' : 'inherit'}
