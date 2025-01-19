@@ -1,5 +1,6 @@
 import { Close } from '@mui/icons-material';
 import RightPaneStore from '../../RightPaneStore';
+import { useState, useEffect } from 'react';
 import {
     Paper,
     ImageList,
@@ -32,16 +33,40 @@ interface HelpBoxProps {
     onDismiss: () => void;
 }
 
-function HelpBox({}: HelpBoxProps) {
+function HelpBox({ onDismiss }: HelpBoxProps) {
+    const [isVisible, setIsVisible] = useState(true);
+
+    useEffect(() => {
+        const handleVisibilityChange = (newVisibility: boolean) => {
+            setIsVisible(newVisibility);
+        };
+
+        RightPaneStore.on('helpBoxChange', handleVisibilityChange);
+
+        return () => {
+            RightPaneStore.off('helpBoxChange', handleVisibilityChange);
+        };
+    }, []);
+
+    if (!isVisible) return null;
+
     return (
         <Paper variant="outlined" sx={{ padding: 2, marginBottom: '10px', marginRight: '5px' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="h5" fontWeight="bold">
                     Need help planning your schedule?
                 </Typography>
-                <IconButton aria-label="close" size="large" color="inherit" onClick={() => RightPaneStore.hideHelpBox()}>
+                <IconButton
+                    aria-label="close"
+                    size="large"
+                    color="inherit"
+                    onClick={() => {
+                        setIsVisible(false);
+                        onDismiss();
+                    }}
+                >
                     <Close fontSize="inherit" />
-                </IconButton>
+                </IconButton>  
             </Box>
 
             <List component="ol" sx={{ listStyle: 'decimal', pl: 2, pb: 0 }}>

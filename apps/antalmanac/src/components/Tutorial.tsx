@@ -7,7 +7,7 @@ import { stepsFactory, tourShouldRun } from '$lib/TutorialHelpers';
 import { removeSampleClasses } from '$lib/tourExampleGeneration';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
-export function Tutorial({ }: { onRestart?: () => void }) {
+export function Tutorial({ onDismiss }: { onDismiss?: () => void }) {
     const { setCurrentStep, setIsOpen, setSteps, isOpen } = useTour();
     const [displaySearch, disableManualSearch] = useCoursePaneStore((state) => [
         state.displaySearch,
@@ -30,7 +30,8 @@ export function Tutorial({ }: { onRestart?: () => void }) {
     useEffect(() => {
         if (isOpen) return;
         removeSampleClasses();
-    }, [isOpen]);
+        if (onDismiss) onDismiss(); 
+    }, [isOpen, onDismiss]);
 
     // The steps need to be generated here, in the component, because Reactour hooks can only be used in components.
     useEffect(() => {

@@ -2,7 +2,7 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 import HelpIcon from '@mui/icons-material/Help';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import { Fab, Tooltip, Box, IconButton, Paper, keyframes } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef} from 'react';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 import HelpBox from '$components/RightPane/CoursePane/SearchForm/HelpBox';
@@ -11,15 +11,32 @@ import Feedback from '$routes/Feedback';
 
 export function HelpMenu() {
     const [isHovered, setIsHovered] = useState(false);
+    const [hoverLock, setHoverLock] = useState(false);
+    const collapseTimeout = useRef<NodeJS.Timeout | null>(null);
     const [showHelpBox, setShowHelpBox] = useState(RightPaneStore.getHelpBoxVisible());
 
     const handleMouseEnter = () => {
+        if (hoverLock && collapseTimeout.current) {
+            clearTimeout(collapseTimeout.current);
+            collapseTimeout.current = null;
+        }
         setIsHovered(true);
+        setHoverLock(true);
     };
 
     const handleMouseLeave = () => {
-        setIsHovered(false);
+        collapseTimeout.current = setTimeout(() => {
+            setHoverLock(false);
+            setIsHovered(false);
+            collapseTimeout.current = null;
+        }, 1000);
     };
+
+    const handleButtonClick = () => {
+        console.log("test");
+        setHoverLock(false);
+        setIsHovered(false);
+    }
 
     useEffect(() => {
         const handleHelpBoxChange = (newVisibility: boolean) => {
@@ -91,13 +108,16 @@ export function HelpMenu() {
                             opacity: 0,
                         }}
                     >
-                        <Tutorial />
+                        <Tutorial/>
                     </Box>
 
                     <Tooltip title="Feedback Form">
                         <IconButton
                             color="primary"
-                            onClick={Feedback}
+                            onClick={() => {
+                                Feedback();
+                                //handleButtonClick();
+                            }}
                             size="large"
                             sx={{
                                 backgroundColor: '#fff',
@@ -114,7 +134,10 @@ export function HelpMenu() {
                     <Tooltip title="Help Box">
                         <IconButton
                             color="primary"
-                            onClick={() => RightPaneStore.toggleHelpBox()}
+                            onClick={() => {
+                                RightPaneStore.toggleHelpBox();
+                                handleButtonClick();
+                            }}
                             size="large"
                             sx={{
                                 backgroundColor: '#fff',
@@ -127,24 +150,6 @@ export function HelpMenu() {
                             <HelpIcon />
                         </IconButton>
                     </Tooltip>
-                </Box>
-            )}
-
-            {showHelpBox && (
-                <Box
-                    sx={{
-                        position: 'fixed',
-                        right: '1rem',
-                        bottom: '5rem',
-                        width: '50%',
-                        height: 'auto',
-                        zIndex: 1000,
-                        overflow: 'auto',
-                    }}
-                >
-                    <Paper variant="outlined" sx={{ padding: 2, boxShadow: 3 }}>
-                        <HelpBox onDismiss={() => RightPaneStore.hideHelpBox()} />
-                    </Paper>
                 </Box>
             )}
         </Box>
