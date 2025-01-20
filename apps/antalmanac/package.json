@@ -58,6 +58,7 @@
         "react-big-calendar": "^1.6.4",
         "react-chartjs-2": "^5.2.0",
         "react-color": "^2.19.3",
+        "react-cookie": "^7.2.2",
         "react-dom": "^18.2.0",
         "react-ga4": "^2.0.0",
         "react-input-mask": "^2.0.4",
