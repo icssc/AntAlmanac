@@ -74,10 +74,12 @@ export class RDS {
      * @param providerId - The provider account ID for the new account.
      * @returns A promise that resolves to the newly created account object.
      */
-    static async createUserAccount(db: DatabaseOrTransaction, providerId: string) {
+    static async createUserAccount(db: DatabaseOrTransaction, providerId: string, avatar: string, name: string) {
         const userId = crypto.randomUUID();
         await db.insert(users).values({
             id: userId,
+            avatar: avatar,
+            name: name,
         });
 
         const account = await this.createAccount(db, userId, providerId);

@@ -6,8 +6,8 @@ import { useCookies } from 'react-cookie';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import trpc from '$lib/api/trpc';
+import { COOKIES } from '$lib/cookies';
 import { useThemeStore } from '$stores/SettingsStore';
-
 
 interface SignInDialogProps {
     open: boolean;
@@ -22,8 +22,9 @@ function SignInDialog(props: SignInDialogProps) {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
-    const [cookies, setCookie] = useCookies(['session']);
+    const [cookies, setCookie] = useCookies([COOKIES.SESSION]);
     const [isProcessing, setIsProcessing] = useState(false);
+
     const [openGuestOption, setOpenGuestOption] = useState(false);
 
     const handleLogin = async () => {
@@ -65,7 +66,6 @@ function SignInDialog(props: SignInDialogProps) {
     };
 
     useEffect(() => {
-        console.log(cookies.session);
         handleCallback();
         navigate('/');
     }, [searchParams]);
@@ -85,10 +85,10 @@ function SignInDialog(props: SignInDialogProps) {
 
     return (
         <Dialog open={open} onClose={handleClose} maxWidth={'xl'}>
-            <Stack spacing={2}>
-                <DialogTitle fontSize={'large'}>{!openGuestOption ? 'Login or Sign Up' : 'Guest Login'}</DialogTitle>
-                <DialogContent sx={{ padding: 5, width: '35rem' }}>
-                    <Stack spacing={2} sx={{ marginTop: '1rem' }}>
+            <Stack spacing={0} sx={{ textAlign: 'center' }}>
+                <DialogTitle fontSize={'large'}>{!openGuestOption ? 'Sign in' : 'Guest Login'}</DialogTitle>
+                <DialogContent sx={{ width: '35rem', height: '13rem' }}>
+                    <Stack spacing={2} sx={{ paddingTop: '1rem' }}>
                         {!openGuestOption ? (
                             <>
                                 <Button
@@ -99,7 +99,7 @@ function SignInDialog(props: SignInDialogProps) {
                                     variant="contained"
                                     href="#"
                                 >
-                                    Continue With Google
+                                    Sign in with Google
                                 </Button>
                                 <Button
                                     onClick={handleGuestOptionOpen}
@@ -132,7 +132,9 @@ function SignInDialog(props: SignInDialogProps) {
 }
 
 function Login() {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
+    const [hasSession, setHasSession] = useState(false);
+    const [cookies] = useCookies([COOKIES.SESSION]);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -142,12 +144,35 @@ function Login() {
         setOpen(false);
     };
 
+    const validateSession = async () => {
+        const session = await trpc.users.validateSession.query({ token: cookies.session });
+        console.log(session);
+        setHasSession(session !== null);
+    };
+
+    useEffect(() => {
+        if (hasSession) {
+            setOpen(false);
+        }
+        validateSession();
+    }, [hasSession, cookies]);
     return (
         <>
-            <Button onClick={handleClickOpen} startIcon={<AccountCircleIcon />} color="inherit">
-                Sign in
-            </Button>
-            <SignInDialog open={open} onClose={handleClose} />
+            {hasSession ? (
+                <>
+                    <Button onClick={handleClickOpen} startIcon={<AccountCircleIcon />} color="inherit">
+                        Log out
+                    </Button>
+                    <SignInDialog open={open} onClose={handleClose} />
+                </>
+            ) : (
+                <>
+                    <Button onClick={handleClickOpen} startIcon={<AccountCircleIcon />} color="inherit">
+                        Sign in
+                    </Button>
+                    <SignInDialog open={open} onClose={handleClose} />
+                </>
+            )}
         </>
     );
 }

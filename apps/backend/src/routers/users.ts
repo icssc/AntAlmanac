@@ -46,6 +46,9 @@ const usersRouter = router({
         }
         return await RDS.getGuestUserData(db, input.userId);
     }),
+    validateSession: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
+        return RDS.getCurrentSession(db, input.token);
+    }),
     getGoogleAuthUrl: procedure.query(async () => {
         const url = oauth2Client.generateAuthUrl({
             access_type: 'offline',
@@ -56,32 +59,31 @@ const usersRouter = router({
     handleGoogleCallback: procedure
         .input(z.object({ code: z.string(), token: z.string() }))
         .query(async ({ input }) => {
-            // on signup/signin
             const { tokens } = await oauth2Client.getToken({ code: input.code });
             oauth2Client.setCredentials(tokens);
             const ticket = await oauth2Client.verifyIdToken({
                 idToken: tokens.id_token!,
                 audience: GOOGLE_CLIENT_ID,
             });
-            console.log(input);
 
-            // account payload
             const payload = ticket.getPayload()!;
-            console.log(payload);
-
             let account = await RDS.getAccount(db, payload.sub);
 
             let userId: string;
             if (account) {
                 userId = account.userId;
             } else {
-                const newAccount = await RDS.createUserAccount(db, payload.sub);
+                const newAccount = await RDS.createUserAccount(
+                    db,
+                    payload.sub,
+                    payload.picture ?? '',
+                    payload.name ?? ''
+                );
                 userId = newAccount?.userId ?? '';
             }
 
             if (userId.length > 0) {
                 let session = await RDS.upsertSession(db, userId, input.token);
-                console.log(session);
                 return session?.refreshToken ?? null;
             }
             return null;
