@@ -3,57 +3,38 @@
  */
 
 import { eq, and } from 'drizzle-orm';
+
 import { db } from '../../backend/src/db/index';
-import { subscriptions } from '../../backend/src/db/schema/subscription';
 import { users } from '../../backend/src/db/schema/auth/user';
-import { aapiKey } from './env';
+import { subscriptions } from '../../backend/src/db/schema/subscription';
+// import { aapiKey } from './env';
 
-type Section = {
-    sectionCode: number;
-    maxCapacity: number;
-    numRequested: number;
-    numOnWaitlist: number;
-    numWaitlistCap: number;
-    status: {
-        from: string;
-        to: string;
-    };
-    numCurrentlyEnrolled: {
-        totalEnrolled: number;
-        sectionEnrolled: number;
-    };
-};
+const BATCH_SIZE = 5;
 
-type Course = {
-    deptCode: string;
-    courseTitle: string;
-    courseNumber: number;
-    sections: Section[];
-};
+// uncomment when AAPI endpoint is set up
+// async function getUpdatedClasses(term: string, sections: string[]) {
+//     try {
+//         const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
+//         url.searchParams.append('term', term);
+//         url.searchParams.append('sections', sections.join(','));
 
-async function getUpdatedClasses(term: string, sections: string[]) {
-    try {
-        const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
-        url.searchParams.append('term', term);
-        url.searchParams.append('sections', sections.join(','));
+//         const response = await fetch(url.toString(), {
+//             method: 'GET',
+//             headers: {
+//                 ...(aapiKey.parse(process.env) && { Authorization: `Bearer ${aapiKey.parse(process.env)}` }),
+//             },
+//         });
 
-        const response = await fetch(url.toString(), {
-            method: 'GET',
-            headers: {
-                ...(aapiKey.parse(process.env) && { Authorization: `Bearer ${aapiKey.parse(process.env)}` }),
-            },
-        });
+//         if (!response.ok) {
+//             throw new Error(`HTTP error! Status: ${response.status}`);
+//         }
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data;
-    } catch (error: any) {
-        console.error('Error calling API:', error.message);
-    }
-}
+//         const data = await response.json();
+//         return data;
+//     } catch (error: any) {
+//         console.error('Error calling API:', error.message);
+//     }
+// }
 
 function getUpdatedClassesDummy(term: string, sections: string[]) {
     const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
@@ -76,7 +57,7 @@ function getUpdatedClassesDummy(term: string, sections: string[]) {
                             numWaitlistCap: 20,
                             status: {
                                 from: 'OPEN',
-                                to: 'WAITLISTED',
+                                to: 'FULL',
                             },
                             numCurrentlyEnrolled: {
                                 totalEnrolled: 60,
@@ -142,7 +123,7 @@ function getUpdatedClassesDummy(term: string, sections: string[]) {
                             numWaitlistCap: 10,
                             status: {
                                 from: 'WAITLISTED',
-                                to: 'OPEN',
+                                to: 'FULL',
                             },
                             numCurrentlyEnrolled: {
                                 totalEnrolled: 72,
@@ -214,6 +195,14 @@ async function getLastUpdatedStatus(term: string, sectionCode: number) {
     }
 }
 
+async function batchCourseCodes(codes: string[]) {
+    const batches = [];
+    for (let i = 0; i < codes.length; i += BATCH_SIZE) {
+        batches.push(codes.slice(i, i + BATCH_SIZE));
+    }
+    return batches;
+}
+
 async function sendNotification(
     term: string,
     sectionCode: number,
@@ -275,28 +264,31 @@ async function main() {
     try {
         const subscriptions = await getSubscriptionSectionCodes();
         for (const term in subscriptions) {
-            // need to do batch requests
-            // const response = await getUpdatedClasses(term, sectionCodes);
-            const response = getUpdatedClassesDummy(term, subscriptions[term]);
-            for (const course of response.data.courses) {
-                for (const section of course.sections) {
-                    const currentStatus = section.status.to;
-                    const previousState = await getLastUpdatedStatus(term, section.sectionCode);
-                    const previousStatus: string | null = previousState?.[0]?.lastUpdated || null;
-                    if (previousStatus === currentStatus) {
-                        continue;
+            // batch course codes
+            const batches = await batchCourseCodes(subscriptions[term]);
+            for (const batch of batches) {
+                // const response = await getUpdatedClasses(term, sectionCodes);
+                const response = getUpdatedClassesDummy(term, batch);
+                for (const course of response.data.courses) {
+                    for (const section of course.sections) {
+                        const currentStatus = section.status.to;
+                        const previousState = await getLastUpdatedStatus(term, section.sectionCode);
+                        const previousStatus: string | null = previousState?.[0]?.lastUpdated || null;
+                        if (previousStatus === currentStatus) {
+                            continue;
+                        }
+                        // no functionality for codes yet
+                        await sendNotification(
+                            term,
+                            section.sectionCode,
+                            currentStatus,
+                            course.deptCode,
+                            course.courseNumber,
+                            course.courseTitle
+                        );
+                        // send notification
+                        await updateSubscriptionStatus(term, section.sectionCode, currentStatus);
                     }
-                    // no functionality for codes yet
-                    await sendNotification(
-                        term,
-                        section.sectionCode,
-                        currentStatus,
-                        course.deptCode,
-                        course.courseNumber,
-                        course.courseTitle
-                    );
-                    // send notification
-                    // update lastUpdated status
                 }
             }
         }
