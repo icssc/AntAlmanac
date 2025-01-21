@@ -93,8 +93,8 @@ function getUpdatedClassesDummy(term: string, sections: string[]) {
                             numOnWaitlist: 10,
                             numWaitlistCap: 20,
                             status: {
-                                from: 'FULL',
-                                to: 'OPEN',
+                                from: 'OPEN',
+                                to: 'FULL',
                             },
                             numCurrentlyEnrolled: {
                                 totalEnrolled: 60,
@@ -187,7 +187,8 @@ async function getLastUpdatedStatus(term: string, sectionCode: number) {
         const result = await db
             .select({ lastUpdated: subscriptions.lastUpdated })
             .from(subscriptions)
-            .where(and(eq(subscriptions.term, term), eq(subscriptions.sectionCode, sectionCode)));
+            .where(and(eq(subscriptions.term, term), eq(subscriptions.sectionCode, sectionCode)))
+            .limit(1);
 
         return result;
     } catch (error: any) {
@@ -293,7 +294,7 @@ async function main() {
             }
         }
     } catch (error: any) {
-        console.error('Error in main function:', error.message);
+        console.error('Error in managing subscription:', error.message);
     } finally {
         process.exit(0); // This ensures the script exits after execution.
     }
