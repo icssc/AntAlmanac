@@ -14,7 +14,7 @@ export const MapLink = ({ buildingId, room }: MapLinkProps) => {
     const isDark = useThemeStore((store) => store.isDark);
 
     const focusMap = useCallback(() => {
-        setActiveTab(2);
+        setActiveTab('map');
     }, [setActiveTab]);
 
     return (
