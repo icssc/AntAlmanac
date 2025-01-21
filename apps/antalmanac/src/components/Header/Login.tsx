@@ -1,23 +1,23 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import GoogleIcon from '@mui/icons-material/Google';
-import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Stack, TextField } from '@mui/material';
+import { Button, DialogActions, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
+import { AuthDialog } from '$components/dialogs/AuthDialog';
 import trpc from '$lib/api/trpc';
 import { COOKIES } from '$lib/cookies';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface SignInDialogProps {
     open: boolean;
+    isDark: boolean;
     onClose: () => void;
 }
 
 function SignInDialog(props: SignInDialogProps) {
-    const { onClose, open } = props;
-
-    const isDark = useThemeStore((store) => store.isDark);
+    const { onClose, isDark, open } = props;
 
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -50,7 +50,7 @@ function SignInDialog(props: SignInDialogProps) {
                     token: cookies.session || '',
                 });
 
-                setCookie('session', session, { path: '/' });
+                setCookie('session', session, { path: '/', sameSite: 'none' });
 
                 const newUrl = window.location.origin + window.location.pathname;
                 window.history.replaceState({}, '', newUrl);
@@ -84,75 +84,91 @@ function SignInDialog(props: SignInDialogProps) {
     };
 
     return (
-        <Dialog open={open} onClose={handleClose} maxWidth={'xl'}>
-            <Stack spacing={0} sx={{ textAlign: 'center' }}>
-                <DialogTitle fontSize={'large'}>{!openGuestOption ? 'Sign in' : 'Guest Login'}</DialogTitle>
-                <DialogContent sx={{ width: '35rem', height: '13rem' }}>
-                    <Stack spacing={2} sx={{ paddingTop: '1rem' }}>
-                        {!openGuestOption ? (
-                            <>
-                                <Button
-                                    onClick={handleLogin}
-                                    startIcon={<GoogleIcon />}
-                                    size="large"
-                                    color="primary"
-                                    variant="contained"
-                                    href="#"
-                                >
-                                    Sign in with Google
-                                </Button>
-                                <Button
-                                    onClick={handleGuestOptionOpen}
-                                    size="large"
-                                    color={isDark ? 'secondary' : 'primary'}
-                                    variant="outlined"
-                                    href="#"
-                                >
-                                    Continue As Guest
-                                </Button>
-                            </>
-                        ) : (
-                            <>
-                                <TextField label="Username" color={isDark ? 'secondary' : undefined} fullWidth />
-                                <DialogActions>
-                                    <Button color={isDark ? 'secondary' : undefined} onClick={handleGuestOptionClose}>
-                                        Cancel
-                                    </Button>
-                                    <Button color="primary" variant="contained">
-                                        Continue
-                                    </Button>
-                                </DialogActions>
-                            </>
-                        )}
-                    </Stack>
-                </DialogContent>
-            </Stack>
-        </Dialog>
+        <AuthDialog open={open} onClose={handleClose} title={!openGuestOption ? 'Sign in' : 'Guest Login'}>
+            {!openGuestOption ? (
+                <>
+                    <Button
+                        onClick={handleLogin}
+                        startIcon={<GoogleIcon />}
+                        size="large"
+                        color="primary"
+                        variant="contained"
+                    >
+                        Sign in with Google
+                    </Button>
+                    <Button
+                        onClick={handleGuestOptionOpen}
+                        size="large"
+                        color={isDark ? 'secondary' : 'primary'}
+                        variant="outlined"
+                    >
+                        Continue As Guest
+                    </Button>
+                </>
+            ) : (
+                <>
+                    <TextField label="Username" color={isDark ? 'secondary' : undefined} fullWidth />
+                    <DialogActions>
+                        <Button color={isDark ? 'secondary' : undefined} onClick={handleGuestOptionClose}>
+                            Cancel
+                        </Button>
+                        <Button color="primary" variant="contained">
+                            Continue
+                        </Button>
+                    </DialogActions>
+                </>
+            )}
+        </AuthDialog>
+    );
+}
+
+function SignOutDialog(props: SignInDialogProps) {
+    const { onClose, isDark, open } = props;
+    const [cookie, _, removeCookie] = useCookies([COOKIES.SESSION]);
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        removeCookie(COOKIES.SESSION);
+        console.log(cookie.session);
+        await trpc.users.removeSession.mutate({ token: cookie.session });
+        navigate('/');
+        onClose();
+    };
+    return (
+        <AuthDialog open={open} onClose={onClose} title={'Log Out'}>
+            <Button variant="contained" color="error" size="large" onClick={handleLogout}>
+                Logout
+            </Button>
+            <Button variant="outlined" color={isDark ? 'secondary' : undefined} size="large" onClick={onClose}>
+                Cancel
+            </Button>
+        </AuthDialog>
     );
 }
 
 function Login() {
-    const [open, setOpen] = useState(true);
+    const [openSignIn, setOpenSignIn] = useState(true);
+    const [openSignOut, setOpenSignOut] = useState(false);
     const [hasSession, setHasSession] = useState(false);
     const [cookies] = useCookies([COOKIES.SESSION]);
 
-    const handleClickOpen = () => {
-        setOpen(true);
+    const isDark = useThemeStore((store) => store.isDark);
+
+    const handleClickSignOut = () => {
+        setOpenSignOut(!openSignOut);
     };
 
-    const handleClose = () => {
-        setOpen(false);
+    const handleClickSignIn = () => {
+        setOpenSignIn(!openSignIn);
     };
 
     const validateSession = async () => {
-        const session = await trpc.users.validateSession.query({ token: cookies.session });
-        console.log(session);
-        setHasSession(session !== null);
+        setHasSession(await trpc.users.validateSession.query({ token: cookies.session }));
     };
 
     useEffect(() => {
         if (hasSession) {
-            setOpen(false);
+            setOpenSignIn(false);
         }
         validateSession();
     }, [hasSession, cookies]);
@@ -160,19 +176,24 @@ function Login() {
         <>
             {hasSession ? (
                 <>
-                    <Button onClick={handleClickOpen} startIcon={<AccountCircleIcon />} color="inherit">
+                    <Button onClick={handleClickSignOut} startIcon={<AccountCircleIcon />} color="inherit">
                         Log out
                     </Button>
-                    <SignInDialog open={open} onClose={handleClose} />
+                    <SignOutDialog isDark={isDark} open={openSignOut} onClose={handleClickSignOut} />
                 </>
             ) : (
                 <>
-                    <Button onClick={handleClickOpen} startIcon={<AccountCircleIcon />} color="inherit">
+                    <Button onClick={handleClickSignIn} startIcon={<AccountCircleIcon />} color="inherit">
                         Sign in
                     </Button>
-                    <SignInDialog open={open} onClose={handleClose} />
+                    <SignInDialog isDark={isDark} open={openSignIn} onClose={handleClickSignIn} />
                 </>
             )}
+
+            <Button onClick={handleClickSignIn} startIcon={<AccountCircleIcon />} color="inherit">
+                Sign in
+            </Button>
+            <SignInDialog isDark={isDark} open={openSignIn} onClose={handleClickSignIn} />
         </>
     );
 }

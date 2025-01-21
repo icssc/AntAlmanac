@@ -46,9 +46,38 @@ const usersRouter = router({
         }
         return await RDS.getGuestUserData(db, input.userId);
     }),
+    /**
+     * Returns the current session, returns true if the session exists exist and hasn't expired
+     */
     validateSession: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
-        return RDS.getCurrentSession(db, input.token);
+        try {
+            const session = await RDS.getCurrentSession(db, input.token);
+            return session !== null && session.expires > new Date();
+        } catch (error) {
+            console.error('Failed to validate session:', error);
+            return false;
+        }
     }),
+    /**
+     */
+    removeSession: procedure.input(z.object({ token: z.string() })).mutation(async ({ input }) => {
+        const session = await RDS.getCurrentSession(db, input.token);
+        if (!session) return null;
+
+        console.log(session);
+        await RDS.removeSession(db, session.userId, session.refreshToken);
+    }),
+    /**
+     * Returns the user id associated with a given session
+     */
+    getSessionUser: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
+        const user = await RDS.getCurrentSession(db, input.token);
+        if (user) return user.userId;
+        return '';
+    }),
+    /**
+     * Retrieves Google auth url to login/sign up
+     */
     getGoogleAuthUrl: procedure.query(async () => {
         const url = oauth2Client.generateAuthUrl({
             access_type: 'offline',
@@ -56,9 +85,13 @@ const usersRouter = router({
         });
         return url;
     }),
+    /**
+     * Logs in or signs up a user and creates user's session
+     */
     handleGoogleCallback: procedure
         .input(z.object({ code: z.string(), token: z.string() }))
         .query(async ({ input }) => {
+            // const { tokens } = await oauth2Client.getToken({ code: input.code });
             const { tokens } = await oauth2Client.getToken({ code: input.code });
             oauth2Client.setCredentials(tokens);
             const ticket = await oauth2Client.verifyIdToken({

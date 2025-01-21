@@ -86,6 +86,15 @@ export class RDS {
         return account;
     }
 
+    static async getUser(db: DatabaseOrTransaction, userId: string) {
+        return db.transaction((tx) =>
+            tx
+                .select()
+                .from(users)
+                .where(eq(users.id, userId))
+                .then((res) => res[0])
+        );
+    }
     /**
      * Creates a guest user if they don't already exist.
      *
@@ -169,9 +178,9 @@ export class RDS {
      * If the guest user with the username in the userData object doesn't already exist,
      * create a new guest user and populate their data. Otherwise, returns null.
      */
-    static async insertGuestUserData(db: DatabaseOrTransaction, userData: User): Promise<string | null> {
+    static async insertUserData(db: DatabaseOrTransaction, userData: User): Promise<string | null> {
         return db.transaction(async (tx) => {
-            const userId = await RDS.guestUserIdWithNameOrNull(tx, userData.id);
+            const userId = await RDS.getUser(tx, userData.id);
             if (userId) return null;
             return RDS.upsertGuestUserData(tx, userData);
         });
@@ -186,7 +195,11 @@ export class RDS {
      */
     static async upsertGuestUserData(db: DatabaseOrTransaction, userData: User): Promise<string> {
         return db.transaction(async (tx) => {
-            const userId = await this.createGuestUserOptional(tx, userData.id);
+            let userId = userData.id;
+            let user = await this.getUser(db, userId);
+            if (!user) {
+                userId = await this.createGuestUserOptional(tx, userId);
+            }
 
             if (userId === undefined) {
                 throw new Error(`Failed to create guest user for ${userData.id}`);
@@ -283,13 +296,14 @@ export class RDS {
         await db.transaction(async (tx) => await tx.insert(customEvents).values(dbCustomEvents));
     }
 
-    static async getGuestUserData(db: DatabaseOrTransaction, guestId: string): Promise<User | null> {
-        const userAndAccount = await RDS.getUserAndAccount(db, 'GUEST', guestId);
+    static async getGuestUserData(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
+        // const userAndAccount = await RDS.getUserAndAccount(db, 'GUEST', guestId);
+        const userAndAccount = await RDS.getUser(db, userId);
         if (!userAndAccount) {
             return null;
         }
 
-        const userId = userAndAccount.user.id;
+        // const userId = userAndAccount.id;
 
         const sectionResults = await db
             .select()
@@ -305,12 +319,12 @@ export class RDS {
 
         const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
 
-        const scheduleIndex = userAndAccount.user.currentScheduleId
-            ? userSchedules.findIndex((schedule) => schedule.id === userAndAccount.user.currentScheduleId)
+        const scheduleIndex = userAndAccount.currentScheduleId
+            ? userSchedules.findIndex((schedule) => schedule.id === userAndAccount.currentScheduleId)
             : userSchedules.length;
 
         return {
-            id: guestId,
+            id: userId,
             userData: {
                 schedules: userSchedules,
                 scheduleIndex,
@@ -423,15 +437,10 @@ export class RDS {
                 .then((res) => res[0] ?? null)
         );
     }
-
-    static async refreshToken(db: DatabaseOrTransaction, refreshToken: string): Promise<Session | null> {
-        let updateSession = await db
-            .update(sessions)
-            .set({ refreshToken: randomBytes(24).toString('base64url') })
-            .where(eq(sessions.refreshToken, refreshToken))
-            .returning()
-            .then((res) => res[0] ?? null);
-        return updateSession;
+    static async removeSession(db: DatabaseOrTransaction, userId: string, refreshToken: string | null) {
+        if (refreshToken) {
+            await db.delete(sessions).where(and(eq(sessions.userId, userId), eq(sessions.refreshToken, refreshToken)));
+        }
     }
 
     static async upsertSession(
@@ -440,9 +449,7 @@ export class RDS {
         refreshToken: string
     ): Promise<Session | null> {
         const currentSession = await this.getCurrentSession(db, refreshToken);
-        if (currentSession && new Date(currentSession.expires) < new Date()) {
-            return await this.refreshToken(db, refreshToken);
-        }
+
         return await RDS.createSession(db, userId);
     }
 }
