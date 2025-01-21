@@ -18,7 +18,7 @@ import { getLocalStoragePatchNotesKey, setLocalStoragePatchNotesKey } from '$lib
  *
  * @example '20230819'
  */
-export const latestPatchNotesUpdate = '20241124';
+export const latestPatchNotesUpdate = '20250121';
 
 /**
  * Whether the user's last visited patch notes is outdated.
@@ -53,29 +53,21 @@ function PatchNotes() {
             data-testid={dialogTestId}
             slots={{ backdrop: PatchNotesBackdrop }}
         >
-            <DialogTitle>{"What's New - November 2024"}</DialogTitle>
+            <DialogTitle>{"What's New - January 2025"}</DialogTitle>
 
             <DialogContent>
-                <Typography>Migration</Typography>
-                <ul>
-                    <li>We are migrating our database to support exciting features coming this year!</li>
-                    <li>
-                        If you experience issues with saving and retrieving schedules, please let us know by filling out
-                        the{' '}
-                        <a
-                            href="https://docs.google.com/forms/d/e/1FAIpQLSe0emRHqog-Ctl8tjZfJvewY_CSGXys8ykBkFBy1EEUUUHbUw/viewform"
-                            target="_blank"
-                        >
-                            feedback form
-                        </a>
-                        .
-                    </li>
-                </ul>
-
                 <Typography>Features</Typography>
                 <ul>
-                    <li>Search now contains all new classes and will update automatically!</li>
-                    <li>Many bug fixes and quality-of-life improvements</li>
+                    <li>
+                        Added column linking to course syllabi (thanks to the ASUCI{' '}
+                        <a href="https://asuci.uci.edu/academicvp/">AAVP</a>!).
+                    </li>
+                    <li>Direct course search buttons in calendar pop-up and course header.</li>
+                    <li>Search caching for faster results on repeated queries.</li>
+                </ul>
+                <Typography>Bug Fixes</Typography>
+                <ul>
+                    <li>Loading schedules with BIO SCI classes. Thank you for your feedback and patience!</li>
                 </ul>
             </DialogContent>
 
