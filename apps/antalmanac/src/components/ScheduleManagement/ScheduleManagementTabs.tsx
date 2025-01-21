@@ -63,17 +63,13 @@ const scheduleManagementTabs: Array<ScheduleManagementTabInfo> = [
 ];
 
 export function ScheduleManagementTabs() {
-    const { activeTab, setActiveTabValue } = useTabStore();
-
-    const onChange = (_event: React.SyntheticEvent, value: number) => {
-        setActiveTabValue(value);
-    };
+    const { activeTab } = useTabStore();
 
     return (
         <Paper elevation={0} variant="outlined" square sx={{ borderRadius: '4px 4px 0 0' }}>
-            <Tabs value={activeTab} onChange={onChange} indicatorColor="primary" variant="fullWidth" centered>
-                {scheduleManagementTabs.map((tab) => (
-                    <ScheduleManagementTab tab={tab} />
+            <Tabs value={activeTab} indicatorColor="primary" variant="fullWidth" centered>
+                {scheduleManagementTabs.map((tab, index) => (
+                    <ScheduleManagementTab key={tab.label} tab={tab} value={index} />
                 ))}
             </Tabs>
         </Paper>

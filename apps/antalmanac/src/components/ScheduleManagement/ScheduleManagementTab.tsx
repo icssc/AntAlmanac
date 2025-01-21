@@ -3,19 +3,25 @@ import { Link } from 'react-router-dom';
 
 import { ScheduleManagementTabInfo } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useThemeStore } from '$stores/SettingsStore';
+import { useTabStore } from '$stores/TabStore';
 
 interface ScheduleManagementTabProps {
     tab: ScheduleManagementTabInfo;
+    value: number;
 }
 
-export function ScheduleManagementTab({ tab }: ScheduleManagementTabProps) {
+export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps) => {
+    const { setActiveTabValue } = useTabStore();
     const isDark = useThemeStore((store) => store.isDark);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+    const handleClick = () => {
+        setActiveTabValue(value);
+    };
+
     return (
         <Tab
-            key={tab.label}
             id={tab.id}
             component={Link}
             to={tab.href}
@@ -29,11 +35,13 @@ export function ScheduleManagementTab({ tab }: ScheduleManagementTabProps) {
                           padding: 3,
                           minWidth: '33%',
                       }
-                    : {}),
+                    : { minWidth: '25%' }),
                 display: !isMobile && tab.mobile ? 'none' : 'flex',
                 ...(isDark ? { '&.Mui-selected': { color: 'white' } } : {}),
             }}
             label={tab.label}
+            onClick={handleClick}
+            value={value}
         />
     );
-}
+};
