@@ -12,7 +12,7 @@ import { SnackbarPosition } from '$components/NotificationSnackbar';
 import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
-import { removeLocalStorageUserId, setLocalStorageUserId } from '$lib/localStorage';
+import { getLocalStorageSessionId, removeLocalStorageUserId, setLocalStorageUserId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 
 export interface CopyScheduleOptions {
@@ -192,9 +192,13 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
 
             try {
                 const res = await trpc.users.getUserData.query({ userId });
+
+                const token = getLocalStorageSessionId() ?? '';
+                const validSession = await trpc.users.validateSession.query({ token });
+
                 const scheduleSaveState = res && 'userData' in res ? res.userData : res;
 
-                if (scheduleSaveState == null) {
+                if (scheduleSaveState == null && !validSession) {
                     openSnackbar('error', `Couldn't find schedules for username "${userId}".`);
                 } else if (await AppStore.loadSchedule(scheduleSaveState)) {
                     openSnackbar('success', `Schedule for username "${userId}" loaded.`);

@@ -164,6 +164,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
 const LoadSaveScheduleFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
 
+    const [hasSession, setHasSession] = useState(false);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
@@ -180,6 +181,16 @@ const LoadSaveScheduleFunctionality = () => {
         setSaving(false);
     };
 
+    const saveScheduleWithSignin = async () => {
+        setSaving(true);
+        const sessionToken = getLocalStorageSessionId() ?? '';
+        const userId = await trpc.users.getSessionUser.query({ token: sessionToken });
+        if (userId) {
+            await saveSchedule(userId, true);
+        }
+        setSaving(false);
+    };
+
     useEffect(() => {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
@@ -192,7 +203,7 @@ const LoadSaveScheduleFunctionality = () => {
         };
     }, []);
 
-    const getSessionUser = async (sessionId: string) => {
+    const loadSessionData = async (sessionId: string) => {
         const userId = await trpc.users.getSessionUser.query({ token: sessionId });
         void loadScheduleAndSetLoading(userId, true);
     };
@@ -201,7 +212,8 @@ const LoadSaveScheduleFunctionality = () => {
             const savedUserID = getLocalStorageUserId();
             const sessionToken = getLocalStorageSessionId();
             if (sessionToken) {
-                getSessionUser(sessionToken);
+                setHasSession(true);
+                loadSessionData(sessionToken);
             } else if (savedUserID != null) {
                 // this `void` is for eslint "no floating promises"
                 void loadScheduleAndSetLoading(savedUserID, true);
@@ -224,22 +236,30 @@ const LoadSaveScheduleFunctionality = () => {
 
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
-            <LoadSaveButtonBase
-                id="save-button"
-                actionName={'Save'}
-                action={saveScheduleAndSetLoading}
-                disabled={loading}
-                loading={saving}
-                colorType={isDark ? 'secondary' : 'primary'}
-            />
-            <LoadSaveButtonBase
-                id="load-button"
-                actionName={'Load'}
-                action={loadScheduleAndSetLoading}
-                disabled={skeletonMode}
-                loading={loading}
-                colorType={isDark ? 'secondary' : 'primary'}
-            />
+            {hasSession ? (
+                <Button color="inherit" startIcon={<Save />} onClick={saveScheduleWithSignin}>
+                    Save
+                </Button>
+            ) : (
+                <>
+                    <LoadSaveButtonBase
+                        id="save-button"
+                        actionName={'Save'}
+                        action={saveScheduleAndSetLoading}
+                        disabled={loading}
+                        loading={saving}
+                        colorType={isDark ? 'secondary' : 'primary'}
+                    />
+                    <LoadSaveButtonBase
+                        id="load-button"
+                        actionName={'Load'}
+                        action={loadScheduleAndSetLoading}
+                        disabled={skeletonMode}
+                        loading={loading}
+                        colorType={isDark ? 'secondary' : 'primary'}
+                    />
+                </>
+            )}
         </div>
     );
 };

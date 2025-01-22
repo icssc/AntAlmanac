@@ -6,7 +6,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { AuthDialog } from '$components/dialogs/AuthDialog';
 import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId, setLocalStorageSessionId } from '$lib/localStorage';
+import { getLocalStorageSessionId, removeLocalStorageSessionId, setLocalStorageSessionId } from '$lib/localStorage';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface SignInDialogProps {
@@ -120,10 +120,10 @@ function SignOutDialog(props: SignInDialogProps) {
 
     const handleLogout = async () => {
         const token = getLocalStorageSessionId();
-        console.log(token);
         if (token) {
             await trpc.users.removeSession.mutate({ token: token });
             navigate('/');
+            removeLocalStorageSessionId();
             window.location.reload();
             onClose();
         }
