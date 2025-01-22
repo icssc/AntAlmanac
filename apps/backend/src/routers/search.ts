@@ -1,11 +1,9 @@
 import { z } from 'zod';
-import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
+import type { GESearchResult, SearchResult } from '@packages/antalmanac-types';
 import uFuzzy from '@leeoniya/ufuzzy';
 import * as fuzzysort from "fuzzysort";
 import { procedure, router } from '../trpc';
-import * as searchData from "../generated/searchData";
-
-type SearchDataExports = keyof typeof searchData;
+import {courses, departments} from "../generated/searchData";
 
 const geCategoryKeys = ['ge1a', 'ge1b', 'ge2', 'ge3', 'ge4', 'ge5a', 'ge5b', 'ge6', 'ge7', 'ge8'] as const;
 
@@ -33,50 +31,24 @@ const toMutable = <T>(arr: readonly T[]): T[] => arr as T[];
 
 const searchRouter = router({
     doSearch: procedure
-        .input(z.object({ query: z.string(), term: z.string()}))
+        .input(z.object({ query: z.string() }))
         .query(async ({ input }): Promise<Record<string, SearchResult>> => {
             const { query } = input;
-
-            const [year, quarter] = input.term.split(" ");
-            const parsedTerm = `${quarter}${year}`;
-            const termData = searchData[parsedTerm as SearchDataExports] as Record<string, SectionSearchResult>;
-
-            const num = Number(input.query);
-            const matchedSections: SectionSearchResult[] = [];
-            if (!isNaN(num) && num >= 0 && Number.isInteger(num)) {
-                const baseCourseCode = input.query;
-                if (input.query.length === 4) {
-                    for (let i =0; i < 10; i++){
-                        const possibleCourseCode = `${baseCourseCode}${i}`;
-                        if (termData[possibleCourseCode]) {
-                            matchedSections.push(termData[possibleCourseCode]);
-                        }
-                    }   
-                } else if (input.query.length === 5) {
-                    if (termData[baseCourseCode]) {
-                        matchedSections.push(termData[baseCourseCode]);
-                    }
-                }
-            }
-
             const u = new uFuzzy();
             const matchedGEs = u.search(toMutable(geCategoryKeys), query)[0]?.map((i) => geCategoryKeys[i]) ?? [];
             if (matchedGEs.length) return Object.fromEntries(matchedGEs.map(toGESearchResult));
-
-            const matchedDepts = matchedSections.length === 10  ? [] : fuzzysort.go(query, searchData.departments, {
+            const matchedDepts = fuzzysort.go(query, departments, {
                 keys: ['id', 'alias'],
-                limit: 10 - matchedSections.length
+                limit: 10
             })
-            const matchedCourses = matchedSections.length + matchedDepts.length === 10 ? [] : fuzzysort.go(query, searchData.courses, {
+            const matchedCourses = matchedDepts.length === 10 ? [] : fuzzysort.go(query, courses, {
                 keys: ['id', 'name', 'alias', 'metadata.department', 'metadata.number'],
-                limit: 10 - matchedDepts.length - matchedSections.length
+                limit: 10 - matchedDepts.length
             })
-
-            return Object.fromEntries([
-                ...matchedSections.map(x => [x.sectionCode, x]),
-                ...matchedDepts.map(x => [x.obj.id, x.obj]),
-                ...matchedCourses.map(x => [x.obj.id, x.obj]),
-            ]);
+            return Object.fromEntries(
+                [...matchedDepts.map(x => [x.obj.id, x.obj]),
+                ...matchedCourses.map(x => [x.obj.id, x.obj]),]
+            );
         }),
 });
 
