@@ -48,6 +48,7 @@ const usersRouter = router({
     }),
     handleGuestSession: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
         const userId = await RDS.createGuestUserOptional(db, input.name);
+
         if (userId.length > 0) {
             let session = await RDS.upsertSession(db, userId, '');
             return session?.refreshToken ?? null;

@@ -237,7 +237,7 @@ const LoadSaveScheduleFunctionality = () => {
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
             {hasSession ? (
                 <Button color="inherit" startIcon={<Save />} onClick={saveScheduleWithSignin}>
-                    Save Sesh
+                    Save
                 </Button>
             ) : (
                 <>

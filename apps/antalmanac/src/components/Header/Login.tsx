@@ -69,6 +69,8 @@ function SignInDialog(props: SignInDialogProps) {
         if (guestName.length > 0) {
             const sessionId = await trpc.users.handleGuestSession.query({ name: guestName });
             setLocalStorageSessionId(sessionId);
+            navigate('/');
+            window.location.reload();
             onClose();
         }
     };
@@ -114,20 +116,27 @@ function SignInDialog(props: SignInDialogProps) {
                 </>
             ) : (
                 <>
-                    <TextField
-                        label="Guest Name"
-                        color={isDark ? 'secondary' : undefined}
-                        fullWidth
-                        onChange={(e) => setGuestName(e.target.value)}
-                    />
-                    <DialogActions>
-                        <Button color={isDark ? 'secondary' : undefined} onClick={handleGuestOptionClose}>
-                            Cancel
-                        </Button>
-                        <Button color="primary" variant="contained" onClick={handleGuestLogin}>
-                            Continue
-                        </Button>
-                    </DialogActions>
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleGuestLogin();
+                        }}
+                    >
+                        <TextField
+                            label="Guest Name"
+                            color={isDark ? 'secondary' : undefined}
+                            fullWidth
+                            onChange={(e) => setGuestName(e.target.value)}
+                        />
+                        <DialogActions>
+                            <Button color={isDark ? 'secondary' : undefined} onClick={handleGuestOptionClose}>
+                                Cancel
+                            </Button>
+                            <Button color="primary" variant="contained" type="submit">
+                                Continue
+                            </Button>
+                        </DialogActions>
+                    </form>
                 </>
             )}
         </AuthDialog>
