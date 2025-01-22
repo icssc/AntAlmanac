@@ -1,7 +1,9 @@
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, appendFile} from 'node:fs/promises';
 import {Course, CourseSearchResult, DepartmentSearchResult} from '@packages/antalmanac-types';
+import { queryGraphQL } from 'src/lib/helpers';
+import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from 'src/lib/term-section-codes';
 
 import "dotenv/config";
 
@@ -50,12 +52,46 @@ async function main() {
         });
     }
     console.log(`Fetched ${deptMap.size} departments.`);
+
+    const QUERY_TEMPLATE = `{
+        websoc(query: {year: "$$YEAR$$", quarter: $$QUARTER$$}) {
+            schools {
+                departments {
+                    deptCode
+                    courses {
+                        courseTitle
+                        courseNumber
+                        sections {
+                            sectionCode
+                            sectionType
+                            sectionNum
+                        }
+                    }
+                }
+            }
+        }
+    }`;
     await mkdir(join(__dirname, "../src/generated/"), { recursive: true });
     await writeFile(join(__dirname, "../src/generated/searchData.ts"), `
-    import type { CourseSearchResult, DepartmentSearchResult } from "@packages/antalmanac-types";
+    import type { CourseSearchResult, DepartmentSearchResult, SectionSearchResult } from "@packages/antalmanac-types";
     export const departments: Array<DepartmentSearchResult & { id: string }> = ${JSON.stringify(Array.from(deptMap.values()))};
     export const courses: Array<CourseSearchResult & { id: string }> = ${JSON.stringify(Array.from(courseMap.values()))};
     `)
+    let count = 0;
+    for (const term of termData){
+        const [year, quarter] = term.shortName.split(" ");
+        const query = QUERY_TEMPLATE.replace("$$YEAR$$", year).replace("$$QUARTER$$", quarter);
+        const res = await queryGraphQL<SectionCodesGraphQLResponse>(query);
+        if (!res) {
+            throw new Error("Error fetching section codes.");
+        }
+        const parsedSectionData = parseSectionCodes(res);
+        console.log(`Fetched ${Object.keys(parsedSectionData).length} course codes for ${term.shortName} from Anteater API.`);
+        count += Object.keys(parsedSectionData).length;
+        await appendFile(join(__dirname, "../src/generated/searchData.ts"), `export const ${quarter}${year}: Record<string, SectionSearchResult> = ${JSON.stringify(parsedSectionData)};
+    `)
+    }
+    console.log(`Fetched ${count} course codes for ${termData.length} terms from Anteater API.`);
     console.log("Cache generated.");
 }
 
