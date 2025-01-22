@@ -50,13 +50,9 @@ const usersRouter = router({
      * Returns the current session, returns true if the session exists exist and hasn't expired
      */
     validateSession: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
-        try {
-            const session = await RDS.getCurrentSession(db, input.token);
-            return session !== null && session.expires > new Date();
-        } catch (error) {
-            console.error('Failed to validate session:', error);
-            return false;
-        }
+        if (input.token === '') return false;
+        const session = await RDS.getCurrentSession(db, input.token);
+        return session !== null && session.expires > new Date();
     }),
     /**
      */
@@ -117,6 +113,7 @@ const usersRouter = router({
 
             if (userId.length > 0) {
                 let session = await RDS.upsertSession(db, userId, input.token);
+                console.log(session?.refreshToken);
                 return session?.refreshToken ?? null;
             }
             return null;

@@ -2,12 +2,11 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import GoogleIcon from '@mui/icons-material/Google';
 import { Button, DialogActions, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { AuthDialog } from '$components/dialogs/AuthDialog';
 import trpc from '$lib/api/trpc';
-import { COOKIES } from '$lib/cookies';
+import { getLocalStorageSessionId, setLocalStorageSessionId } from '$lib/localStorage';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface SignInDialogProps {
@@ -22,7 +21,6 @@ function SignInDialog(props: SignInDialogProps) {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
-    const [cookies, setCookie] = useCookies([COOKIES.SESSION]);
     const [isProcessing, setIsProcessing] = useState(false);
 
     const [openGuestOption, setOpenGuestOption] = useState(false);
@@ -41,22 +39,17 @@ function SignInDialog(props: SignInDialogProps) {
     const handleCallback = async () => {
         if (isProcessing) return;
         setIsProcessing(true);
-
         try {
             const code = searchParams.get('code');
-            if (code && !cookies.session) {
+            const token = getLocalStorageSessionId() ?? '';
+            if (code) {
                 const session = await trpc.users.handleGoogleCallback.query({
                     code: code,
-                    token: cookies.session || '',
+                    token: token,
                 });
+                setLocalStorageSessionId(session);
 
-                setCookie('session', session, { path: '/', sameSite: 'none' });
-
-                const newUrl = window.location.origin + window.location.pathname;
-                window.history.replaceState({}, '', newUrl);
-                console.log(cookies.session);
-
-                console.log('Session:', session);
+                navigate('/');
             }
         } catch (error) {
             console.error('Error during authentication', error);
@@ -67,7 +60,6 @@ function SignInDialog(props: SignInDialogProps) {
 
     useEffect(() => {
         handleCallback();
-        navigate('/');
     }, [searchParams]);
 
     const handleClose = () => {
@@ -124,15 +116,17 @@ function SignInDialog(props: SignInDialogProps) {
 
 function SignOutDialog(props: SignInDialogProps) {
     const { onClose, isDark, open } = props;
-    const [cookie, _, removeCookie] = useCookies([COOKIES.SESSION]);
     const navigate = useNavigate();
 
     const handleLogout = async () => {
-        removeCookie(COOKIES.SESSION);
-        console.log(cookie.session);
-        await trpc.users.removeSession.mutate({ token: cookie.session });
-        navigate('/');
-        onClose();
+        const token = getLocalStorageSessionId();
+        console.log(token);
+        if (token) {
+            await trpc.users.removeSession.mutate({ token: token });
+            navigate('/');
+            window.location.reload();
+            onClose();
+        }
     };
     return (
         <AuthDialog open={open} onClose={onClose} title={'Log Out'}>
@@ -147,10 +141,9 @@ function SignOutDialog(props: SignInDialogProps) {
 }
 
 function Login() {
-    const [openSignIn, setOpenSignIn] = useState(true);
+    const [openSignIn, setOpenSignIn] = useState(false);
     const [openSignOut, setOpenSignOut] = useState(false);
     const [hasSession, setHasSession] = useState(false);
-    const [cookies] = useCookies([COOKIES.SESSION]);
 
     const isDark = useThemeStore((store) => store.isDark);
 
@@ -163,15 +156,14 @@ function Login() {
     };
 
     const validateSession = async () => {
-        setHasSession(await trpc.users.validateSession.query({ token: cookies.session }));
+        const token: string = getLocalStorageSessionId() ?? '';
+        const valid = await trpc.users.validateSession.query({ token: token });
+        setHasSession(valid !== null);
     };
 
     useEffect(() => {
-        if (hasSession) {
-            setOpenSignIn(false);
-        }
         validateSession();
-    }, [hasSession, cookies]);
+    }, [hasSession]);
     return (
         <>
             {hasSession ? (
@@ -189,11 +181,6 @@ function Login() {
                     <SignInDialog isDark={isDark} open={openSignIn} onClose={handleClickSignIn} />
                 </>
             )}
-
-            <Button onClick={handleClickSignIn} startIcon={<AccountCircleIcon />} color="inherit">
-                Sign in
-            </Button>
-            <SignInDialog isDark={isDark} open={openSignIn} onClose={handleClickSignIn} />
         </>
     );
 }
