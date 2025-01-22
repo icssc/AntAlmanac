@@ -44,8 +44,16 @@ const usersRouter = router({
                 message: 'Google login not implemented',
             });
         }
-        console.log(input.userId);
         return await RDS.getGuestUserData(db, input.userId);
+    }),
+    handleGuestSession: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
+        const userId = await RDS.createGuestUserOptional(db, input.name);
+        if (userId.length > 0) {
+            let session = await RDS.upsertSession(db, userId, '');
+            console.log(session);
+            return session?.refreshToken ?? null;
+        }
+        return null;
     }),
     /**
      * Returns the current session, returns true if the session exists exist and hasn't expired
@@ -107,7 +115,8 @@ const usersRouter = router({
                     db,
                     payload.sub,
                     payload.picture ?? '',
-                    payload.name ?? ''
+                    payload.name ?? '',
+                    'GOOGLE'
                 );
                 userId = newAccount?.userId ?? '';
             }

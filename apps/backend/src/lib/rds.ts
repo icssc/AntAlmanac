@@ -57,16 +57,20 @@ export class RDS {
      * @param providerId - The provider account ID for the new account.
      * @returns A promise that resolves to the newly created account object.
      */
-    static async createAccount(db: DatabaseOrTransaction, userId: string, providerId: string): Promise<Account | null> {
+    static async createAccount(
+        db: DatabaseOrTransaction,
+        userId: string,
+        providerId: string,
+        accountType: 'GOOGLE' | 'GUEST'
+    ): Promise<Account | null> {
         return db.transaction((tx) =>
             tx
                 .insert(accounts)
-                .values({ userId: userId, providerAccountId: providerId, accountType: 'GOOGLE' })
+                .values({ userId: userId, providerAccountId: providerId, accountType: accountType })
                 .returning()
                 .then((res) => res[0])
         );
     }
-
     /**
      * Creates a new user and an associated account with the specified provider ID.
      *
@@ -74,7 +78,13 @@ export class RDS {
      * @param providerId - The provider account ID for the new account.
      * @returns A promise that resolves to the newly created account object.
      */
-    static async createUserAccount(db: DatabaseOrTransaction, providerId: string, avatar: string, name: string) {
+    static async createUserAccount(
+        db: DatabaseOrTransaction,
+        providerId: string,
+        avatar: string,
+        name: string,
+        accountType: 'GOOGLE' | 'GUEST'
+    ) {
         const userId = crypto.randomUUID();
         await db.insert(users).values({
             id: userId,
@@ -82,7 +92,7 @@ export class RDS {
             name: name,
         });
 
-        const account = await this.createAccount(db, userId, providerId);
+        const account = await this.createAccount(db, userId, providerId, accountType);
         return account;
     }
 
@@ -297,7 +307,7 @@ export class RDS {
     }
 
     static async getGuestUserData(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
-        // const userAndAccount = await RDS.getUserAndAccount(db, 'GUEST', guestId);
+        // const userAcocunt = await RDS.getUserAndAccount(db, 'GUEST', guestId);
         const userAndAccount = await RDS.getUser(db, userId);
         if (!userAndAccount) {
             return null;
@@ -449,7 +459,7 @@ export class RDS {
         refreshToken: string
     ): Promise<Session | null> {
         const currentSession = await this.getCurrentSession(db, refreshToken);
-
+        if (currentSession) return currentSession;
         return await RDS.createSession(db, userId);
     }
 }

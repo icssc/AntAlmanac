@@ -183,10 +183,12 @@ const LoadSaveScheduleFunctionality = () => {
 
     const saveScheduleWithSignin = async () => {
         setSaving(true);
-        const sessionToken = getLocalStorageSessionId() ?? '';
-        const userId = await trpc.users.getSessionUser.query({ token: sessionToken });
-        if (userId) {
-            await saveSchedule(userId, true);
+        const sessionToken = getLocalStorageSessionId();
+        if (sessionToken) {
+            const userId = await trpc.users.getSessionUser.query({ token: sessionToken });
+            if (userId) {
+                await saveSchedule(userId, true);
+            }
         }
         setSaving(false);
     };
@@ -205,18 +207,15 @@ const LoadSaveScheduleFunctionality = () => {
 
     const loadSessionData = async (sessionId: string) => {
         const userId = await trpc.users.getSessionUser.query({ token: sessionId });
+        setHasSession(userId !== null);
+        console.log(userId);
         void loadScheduleAndSetLoading(userId, true);
     };
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
-            const savedUserID = getLocalStorageUserId();
             const sessionToken = getLocalStorageSessionId();
             if (sessionToken) {
-                setHasSession(true);
                 loadSessionData(sessionToken);
-            } else if (savedUserID != null) {
-                // this `void` is for eslint "no floating promises"
-                void loadScheduleAndSetLoading(savedUserID, true);
             }
         }
     }, []);
@@ -238,7 +237,7 @@ const LoadSaveScheduleFunctionality = () => {
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
             {hasSession ? (
                 <Button color="inherit" startIcon={<Save />} onClick={saveScheduleWithSignin}>
-                    Save
+                    Save Sesh
                 </Button>
             ) : (
                 <>

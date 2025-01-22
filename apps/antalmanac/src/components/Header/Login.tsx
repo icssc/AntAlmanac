@@ -6,7 +6,13 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { AuthDialog } from '$components/dialogs/AuthDialog';
 import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId, removeLocalStorageSessionId, setLocalStorageSessionId } from '$lib/localStorage';
+import {
+    getLocalStorageSessionId,
+    getLocalStorageUserId,
+    removeLocalStorageSessionId,
+    removeLocalStorageUserId,
+    setLocalStorageSessionId,
+} from '$lib/localStorage';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface SignInDialogProps {
@@ -21,8 +27,8 @@ function SignInDialog(props: SignInDialogProps) {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
+    const [guestName, setGuestName] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
-
     const [openGuestOption, setOpenGuestOption] = useState(false);
 
     const handleLogin = async () => {
@@ -48,6 +54,7 @@ function SignInDialog(props: SignInDialogProps) {
                     token: token,
                 });
                 setLocalStorageSessionId(session);
+                removeLocalStorageUserId();
                 navigate('/');
                 window.location.reload();
             }
@@ -55,6 +62,15 @@ function SignInDialog(props: SignInDialogProps) {
             console.error('Error during authentication', error);
         } finally {
             setIsProcessing(false);
+        }
+    };
+
+    const handleGuestLogin = async () => {
+        if (guestName.length > 0) {
+            const sessionId = await trpc.users.handleGuestSession.query({ name: guestName });
+            console.log(sessionId);
+            setLocalStorageSessionId(sessionId);
+            onClose();
         }
     };
 
@@ -99,12 +115,17 @@ function SignInDialog(props: SignInDialogProps) {
                 </>
             ) : (
                 <>
-                    <TextField label="Username" color={isDark ? 'secondary' : undefined} fullWidth />
+                    <TextField
+                        label="Guest Name"
+                        color={isDark ? 'secondary' : undefined}
+                        fullWidth
+                        onChange={(e) => setGuestName(e.target.value)}
+                    />
                     <DialogActions>
                         <Button color={isDark ? 'secondary' : undefined} onClick={handleGuestOptionClose}>
                             Cancel
                         </Button>
-                        <Button color="primary" variant="contained">
+                        <Button color="primary" variant="contained" onClick={handleGuestLogin}>
                             Continue
                         </Button>
                     </DialogActions>
@@ -122,11 +143,11 @@ function SignOutDialog(props: SignInDialogProps) {
         const token = getLocalStorageSessionId();
         if (token) {
             await trpc.users.removeSession.mutate({ token: token });
-            navigate('/');
-            removeLocalStorageSessionId();
-            window.location.reload();
-            onClose();
         }
+        removeLocalStorageUserId();
+        removeLocalStorageSessionId();
+        navigate('/');
+        window.location.reload();
     };
     return (
         <AuthDialog open={open} onClose={onClose} title={'Log Out'}>
@@ -156,9 +177,10 @@ function Login() {
     };
 
     const validateSession = async () => {
+        const guest = getLocalStorageUserId();
         const token: string = getLocalStorageSessionId() ?? '';
         const valid = await trpc.users.validateSession.query({ token: token });
-        setHasSession(valid);
+        setHasSession(valid || guest !== null);
     };
 
     useEffect(() => {
