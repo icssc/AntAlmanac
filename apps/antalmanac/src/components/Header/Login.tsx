@@ -68,7 +68,6 @@ function SignInDialog(props: SignInDialogProps) {
     const handleGuestLogin = async () => {
         if (guestName.length > 0) {
             const sessionId = await trpc.users.handleGuestSession.query({ name: guestName });
-            console.log(sessionId);
             setLocalStorageSessionId(sessionId);
             onClose();
         }

@@ -50,7 +50,6 @@ const usersRouter = router({
         const userId = await RDS.createGuestUserOptional(db, input.name);
         if (userId.length > 0) {
             let session = await RDS.upsertSession(db, userId, '');
-            console.log(session);
             return session?.refreshToken ?? null;
         }
         return null;
@@ -69,7 +68,6 @@ const usersRouter = router({
         const session = await RDS.getCurrentSession(db, input.token);
         if (!session) return null;
 
-        console.log(session);
         await RDS.removeSession(db, session.userId, session.refreshToken);
     }),
     /**
@@ -123,7 +121,6 @@ const usersRouter = router({
 
             if (userId.length > 0) {
                 let session = await RDS.upsertSession(db, userId, input.token);
-                console.log(session?.refreshToken);
                 return session?.refreshToken ?? null;
             }
             return null;
