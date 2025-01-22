@@ -185,7 +185,7 @@ const LoadSaveScheduleFunctionality = () => {
         setSaving(true);
         const sessionToken = getLocalStorageSessionId();
         if (sessionToken) {
-            const userId = await trpc.users.getSessionUser.query({ token: sessionToken });
+            const userId = await trpc.session.getSessionUser.query({ token: sessionToken });
             if (userId) {
                 await saveSchedule(userId, true);
             }
@@ -206,9 +206,8 @@ const LoadSaveScheduleFunctionality = () => {
     }, []);
 
     const loadSessionData = async (sessionId: string) => {
-        const userId = await trpc.users.getSessionUser.query({ token: sessionId });
+        const userId = await trpc.session.getSessionUser.query({ token: sessionId });
         setHasSession(userId !== null);
-        console.log(userId);
         void loadScheduleAndSetLoading(userId, true);
     };
     useEffect(() => {

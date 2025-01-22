@@ -194,7 +194,7 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
                 const res = await trpc.users.getUserData.query({ userId });
 
                 const token = getLocalStorageSessionId() ?? '';
-                const validSession = await trpc.users.validateSession.query({ token });
+                const validSession = await trpc.session.validateSession.query({ token });
 
                 const scheduleSaveState = res && 'userData' in res ? res.userData : res;
 

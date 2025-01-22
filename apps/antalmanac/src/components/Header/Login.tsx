@@ -67,7 +67,7 @@ function SignInDialog(props: SignInDialogProps) {
 
     const handleGuestLogin = async () => {
         if (guestName.length > 0) {
-            const sessionId = await trpc.users.handleGuestSession.query({ name: guestName });
+            const sessionId = await trpc.session.handleGuestSession.query({ name: guestName });
             setLocalStorageSessionId(sessionId);
             navigate('/');
             window.location.reload();
@@ -150,7 +150,7 @@ function SignOutDialog(props: SignInDialogProps) {
     const handleLogout = async () => {
         const token = getLocalStorageSessionId();
         if (token) {
-            await trpc.users.removeSession.mutate({ token: token });
+            await trpc.session.removeSession.mutate({ token: token });
         }
         removeLocalStorageUserId();
         removeLocalStorageSessionId();
@@ -187,7 +187,7 @@ function Login() {
     const validateSession = async () => {
         const guest = getLocalStorageUserId();
         const token: string = getLocalStorageSessionId() ?? '';
-        const valid = await trpc.users.validateSession.query({ token: token });
+        const valid = await trpc.session.validateSession.query({ token: token });
         setHasSession(valid || guest !== null);
     };
 
