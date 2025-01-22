@@ -48,8 +48,8 @@ function SignInDialog(props: SignInDialogProps) {
                     token: token,
                 });
                 setLocalStorageSessionId(session);
-
                 navigate('/');
+                window.location.reload();
             }
         } catch (error) {
             console.error('Error during authentication', error);
@@ -158,7 +158,7 @@ function Login() {
     const validateSession = async () => {
         const token: string = getLocalStorageSessionId() ?? '';
         const valid = await trpc.users.validateSession.query({ token: token });
-        setHasSession(valid !== null);
+        setHasSession(valid);
     };
 
     useEffect(() => {

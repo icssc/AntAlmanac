@@ -16,7 +16,8 @@ import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
-import { getLocalStorageUserId } from '$lib/localStorage';
+import trpc from '$lib/api/trpc';
+import { getLocalStorageSessionId, getLocalStorageUserId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
@@ -126,7 +127,6 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                             Make sure the user ID is unique and secret, or someone else can overwrite your schedule.
                         </DialogContentText>
                         <TextField
-                            // eslint-disable-next-line jsx-a11y/no-autofocus
                             autoFocus
                             margin="dense"
                             label="Unique User ID"
@@ -192,11 +192,17 @@ const LoadSaveScheduleFunctionality = () => {
         };
     }, []);
 
+    const getSessionUser = async (sessionId: string) => {
+        const userId = await trpc.users.getSessionUser.query({ token: sessionId });
+        void loadScheduleAndSetLoading(userId, true);
+    };
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
             const savedUserID = getLocalStorageUserId();
-
-            if (savedUserID != null) {
+            const sessionToken = getLocalStorageSessionId();
+            if (sessionToken) {
+                getSessionUser(sessionToken);
+            } else if (savedUserID != null) {
                 // this `void` is for eslint "no floating promises"
                 void loadScheduleAndSetLoading(savedUserID, true);
             }

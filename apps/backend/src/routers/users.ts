@@ -44,6 +44,7 @@ const usersRouter = router({
                 message: 'Google login not implemented',
             });
         }
+        console.log(input.userId);
         return await RDS.getGuestUserData(db, input.userId);
     }),
     /**
