@@ -185,27 +185,37 @@ const ErrorMessage = ({ }: { courseData: (WebsocSchool | WebsocDepartment | AACo
                   backgroundColor: isDark ? '#2a3136' : 'rgb(240, 248, 255)', 
                   border: `1px solid ${isDark ? '#202224' : '#90caf9'}`, 
                   color: isDark ? '#ece6e6' : '#1e88e5', 
-                  fontSize: '1.1rem',
+                  fontSize: '1rem',
                   '& .MuiAlertTitle-root': {
-                    fontSize: '1.3rem',
+                    fontSize: '1.1rem',
                   },
-                  padding: '8px',
+                  padding: '0.6rem',
                   boxSizing: 'border-box',
-                  marginTop: '35px',
+                  marginTop: '3rem',
                 '&:hover': {
                     backgroundColor: isDark ? '#1f2529' : 'rgb(230, 240, 255)',
                 },
                 }}
               >
-                <AlertTitle>Click HERE to see when {courseName} will be offered next on PeterPortal!</AlertTitle>
+                <AlertTitle>
+                    <span style={{ color: 'black' }}>
+                        Search for{' '}
+                        <span
+                        style={{color: '#5191D6', textDecoration: 'underline', }}
+                        >
+                        {deptValue} {courseNumber}
+                        </span>{' '}
+                        on PeterPortal
+                    </span>
+                </AlertTitle>
                 
               </Alert>
             )}
-            { <img
+            <img
                 src={isDark ? darkNoNothing : noNothing}
                 alt="No Results Found"
                 style={{ objectFit: 'contain', width: '80%', height: '80%' }}
-            /> }
+            />
         </Box>
     );
 };
