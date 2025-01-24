@@ -62,7 +62,10 @@ function PatchNotes() {
                     <li>
                         If you experience issues with saving and retrieving schedules, please let us know by filling out
                         the{' '}
-                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSe0emRHqog-Ctl8tjZfJvewY_CSGXys8ykBkFBy1EEUUUHbUw/viewform">
+                        <a
+                            href="https://docs.google.com/forms/d/e/1FAIpQLSe0emRHqog-Ctl8tjZfJvewY_CSGXys8ykBkFBy1EEUUUHbUw/viewform"
+                            target="_blank"
+                        >
                             feedback form
                         </a>
                         .
