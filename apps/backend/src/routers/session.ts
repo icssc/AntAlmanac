@@ -5,11 +5,11 @@ import { RDS } from 'src/lib/rds';
 
 const sessionRouter = router({
     handleGuestSession: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
-        const userId = await RDS.createGuestUserOptional(db, input.name);
+        const account = await RDS.registerUserAccount(db, input.name, input.name, 'GUEST');
 
-        if (userId.length > 0) {
-            let session = await RDS.upsertSession(db, userId, '');
-            return session?.refreshToken ?? null;
+        if (account.userId.length > 0) {
+            let session = await RDS.upsertSession(db, account.userId);
+            return session?.refreshToken;
         }
         return null;
     }),
@@ -19,21 +19,28 @@ const sessionRouter = router({
     validateSession: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
         if (input.token === '') return false;
         const session = await RDS.getCurrentSession(db, input.token);
+
         return session !== null && session.expires > new Date();
     }),
     /**
      */
     removeSession: procedure.input(z.object({ token: z.string() })).mutation(async ({ input }) => {
         const session = await RDS.getCurrentSession(db, input.token);
-        if (!session) return null;
+        if (!session) return false;
 
-        await RDS.removeSession(db, session.userId, session.refreshToken);
+        try {
+            await RDS.removeSession(db, session.userId, session.refreshToken);
+            return true;
+        } catch (error) {
+            return false;
+        }
     }),
     /**
      * Returns the user id associated with a given session
      */
     getSessionUser: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
         const user = await RDS.getCurrentSession(db, input.token);
+        console;
         if (user) return user.userId;
         return '';
     }),

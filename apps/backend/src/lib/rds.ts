@@ -31,6 +31,7 @@ export class RDS {
             .limit(1)
             .then((xs) => xs[0]?.id ?? null);
     }
+
     /**
      * Retrieves an account with the specified user ID and account type 'GOOGLE'.
      *
@@ -38,7 +39,7 @@ export class RDS {
      * @param userId - The ID of the user whose account is to be retrieved.
      * @returns A promise that resolves to the account object if found, otherwise null.
      */
-    static async getAccount(db: DatabaseOrTransaction, providerId: string): Promise<Account | null> {
+    static async getAccountByProviderId(db: DatabaseOrTransaction, providerId: string): Promise<Account | null> {
         return db.transaction((tx) =>
             tx
                 .select()
@@ -50,53 +51,49 @@ export class RDS {
     }
 
     /**
-     * Adds a new account to an existing user.
-     *
-     * @param db - The database or transaction object.
-     * @param userId - The ID of the user to whom the account will be added.
-     * @param providerId - The provider account ID for the new account.
-     * @returns A promise that resolves to the newly created account object.
-     */
-    static async createAccount(
-        db: DatabaseOrTransaction,
-        userId: string,
-        providerId: string,
-        accountType: 'GOOGLE' | 'GUEST'
-    ): Promise<Account | null> {
-        return db.transaction((tx) =>
-            tx
-                .insert(accounts)
-                .values({ userId: userId, providerAccountId: providerId, accountType: accountType })
-                .returning()
-                .then((res) => res[0])
-        );
-    }
-    /**
      * Creates a new user and an associated account with the specified provider ID.
      *
      * @param db - The database or transaction object.
      * @param providerId - The provider account ID for the new account.
      * @returns A promise that resolves to the newly created account object.
      */
-    static async createUserAccount(
+    static async registerUserAccount(
         db: DatabaseOrTransaction,
         providerId: string,
-        avatar: string,
         name: string,
-        accountType: 'GOOGLE' | 'GUEST'
+        accountType: 'GOOGLE' | 'GUEST',
+        email?: string,
+        avatar?: string
     ) {
-        const userId = crypto.randomUUID();
-        await db.insert(users).values({
-            id: userId,
-            avatar: avatar,
-            name: name,
-        });
+        const existingAccount = await this.getAccountByProviderId(db, providerId);
+        if (!existingAccount) {
+            const userId = crypto.randomUUID();
+            await db.insert(users).values({
+                id: userId,
+                avatar: avatar ?? '',
+                name: name,
+                email: email ?? '',
+            });
 
-        const account = await this.createAccount(db, userId, providerId, accountType);
-        return account;
+            const account = await db
+                .insert(accounts)
+                .values({ userId: userId, providerAccountId: providerId, accountType: accountType })
+                .returning()
+                .then((res) => res[0]);
+
+            return account;
+        }
+        return existingAccount;
     }
 
-    static async getUser(db: DatabaseOrTransaction, userId: string) {
+    /**
+     * Retrieves a user by their ID from the database.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param userId - The ID of the user to retrieve.
+     * @returns A promise that resolves to the user object if found, otherwise undefined.
+     */
+    static async getUserById(db: DatabaseOrTransaction, userId: string) {
         return db.transaction((tx) =>
             tx
                 .select()
@@ -105,6 +102,7 @@ export class RDS {
                 .then((res) => res[0])
         );
     }
+
     /**
      * Creates a guest user if they don't already exist.
      *
@@ -185,28 +183,16 @@ export class RDS {
     }
 
     /**
-     * If the guest user with the username in the userData object doesn't already exist,
-     * create a new guest user and populate their data. Otherwise, returns null.
-     */
-    static async insertUserData(db: DatabaseOrTransaction, userData: User): Promise<string | null> {
-        return db.transaction(async (tx) => {
-            const userId = await RDS.getUser(tx, userData.id);
-            if (userId) return null;
-            return RDS.upsertGuestUserData(tx, userData);
-        });
-    }
-
-    /**
      * Does the same thing as `insertGuestUserData`, but also updates the user's schedules and courses if they exist.
      *
      * @param db The Drizzle client or transaction object
      * @param userData The object of data containing the user's schedules and courses
      * @returns The user's ID
      */
-    static async upsertGuestUserData(db: DatabaseOrTransaction, userData: User): Promise<string> {
+    static async upsertUserData(db: DatabaseOrTransaction, userData: User): Promise<string> {
         return db.transaction(async (tx) => {
             let userId = userData.id;
-            let user = await this.getUser(db, userId);
+            let user = await this.getUserById(db, userId);
             if (!user) {
                 userId = await this.createGuestUserOptional(tx, userId);
             }
@@ -306,14 +292,18 @@ export class RDS {
         await db.transaction(async (tx) => await tx.insert(customEvents).values(dbCustomEvents));
     }
 
-    static async getGuestUserData(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
-        // const userAcocunt = await RDS.getUserAndAccount(db, 'GUEST', guestId);
-        const userAndAccount = await RDS.getUser(db, userId);
-        if (!userAndAccount) {
+    /**
+     * Retrieves user data by user ID, including schedules and custom events.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param userId - The unique identifier of the user.
+     * @returns A promise that resolves to a User object containing user data and schedules, or null if the user is not found.
+     */
+    static async getUserDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
+        const user = await RDS.getUserById(db, userId);
+        if (!user) {
             return null;
         }
-
-        // const userId = userAndAccount.id;
 
         const sectionResults = await db
             .select()
@@ -329,8 +319,8 @@ export class RDS {
 
         const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
 
-        const scheduleIndex = userAndAccount.currentScheduleId
-            ? userSchedules.findIndex((schedule) => schedule.id === userAndAccount.currentScheduleId)
+        const scheduleIndex = user.currentScheduleId
+            ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
             : userSchedules.length;
 
         return {
@@ -424,6 +414,13 @@ export class RDS {
         return Object.values(schedulesMapping).sort((a, b) => a.index - b.index);
     }
 
+    /**
+     * Retrieves the current session from the database using the provided refresh token.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param refreshToken - The refresh token to search for in the sessions table.
+     * @returns A promise that resolves to the current session object if found, or null if not found.
+     */
     static async getCurrentSession(db: DatabaseOrTransaction, refreshToken: string) {
         return db.transaction((tx) =>
             tx
@@ -434,6 +431,13 @@ export class RDS {
         );
     }
 
+    /**
+     * Creates a new session for a user in the database.
+     *
+     * @param db - The database or transaction object to use for the operation.
+     * @param userID - The ID of the user for whom the session is being created.
+     * @returns A promise that resolves to the created session object or null if the creation failed.
+     */
     static async createSession(db: DatabaseOrTransaction, userID: string): Promise<Session | null> {
         return db.transaction((tx) =>
             tx
@@ -447,18 +451,36 @@ export class RDS {
                 .then((res) => res[0] ?? null)
         );
     }
+
+    /**
+     * Removes a session from the database for a given user and refresh token.
+     *
+     * @param db - The database or transaction object to perform the operation.
+     * @param userId - The ID of the user whose session is to be removed.
+     * @param refreshToken - The refresh token of the session to be removed. If null, no action is taken.
+     * @returns A promise that resolves when the session is removed.
+     */
     static async removeSession(db: DatabaseOrTransaction, userId: string, refreshToken: string | null) {
         if (refreshToken) {
             await db.delete(sessions).where(and(eq(sessions.userId, userId), eq(sessions.refreshToken, refreshToken)));
         }
     }
 
+    /**
+     * Upserts a session for a user. If a session with the given refresh token already exists,
+     * it returns the current session. Otherwise, it creates a new session for the user.
+     *
+     * @param db - The database or transaction object to use for the operation.
+     * @param userId - The ID of the user for whom the session is being upserted.
+     * @param refreshToken - The refresh token to check for an existing session.
+     * @returns A promise that resolves to the current session if it exists, or a new session if it was created, or null if the operation fails.
+     */
     static async upsertSession(
         db: DatabaseOrTransaction,
         userId: string,
-        refreshToken: string
+        refreshToken?: string
     ): Promise<Session | null> {
-        const currentSession = await this.getCurrentSession(db, refreshToken);
+        const currentSession = await this.getCurrentSession(db, refreshToken ?? '');
         if (currentSession) return currentSession;
         return await RDS.createSession(db, userId);
     }

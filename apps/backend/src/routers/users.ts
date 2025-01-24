@@ -44,7 +44,7 @@ const usersRouter = router({
                 message: 'Google login not implemented',
             });
         }
-        return await RDS.getGuestUserData(db, input.userId);
+        return await RDS.getUserDataByUid(db, input.userId);
     }),
     /**
      * Retrieves Google auth url to login/sign up
@@ -62,7 +62,6 @@ const usersRouter = router({
     handleGoogleCallback: procedure
         .input(z.object({ code: z.string(), token: z.string() }))
         .query(async ({ input }) => {
-            // const { tokens } = await oauth2Client.getToken({ code: input.code });
             const { tokens } = await oauth2Client.getToken({ code: input.code });
             oauth2Client.setCredentials(tokens);
             const ticket = await oauth2Client.verifyIdToken({
@@ -71,28 +70,36 @@ const usersRouter = router({
             });
 
             const payload = ticket.getPayload()!;
-            let account = await RDS.getAccount(db, payload.sub);
 
-            let userId: string;
-            if (account) {
-                userId = account.userId;
-            } else {
-                const newAccount = await RDS.createUserAccount(
-                    db,
-                    payload.sub,
-                    payload.picture ?? '',
-                    payload.name ?? '',
-                    'GOOGLE'
-                );
-                userId = newAccount?.userId ?? '';
-            }
+            const account = await RDS.registerUserAccount(
+                db,
+                payload.sub,
+                payload.name ?? '',
+                'GOOGLE',
+                payload.email ?? '',
+                payload.picture ?? ''
+            );
+
+            const userId: string = account.userId;
 
             if (userId.length > 0) {
                 let session = await RDS.upsertSession(db, userId, input.token);
-                return session?.refreshToken ?? null;
+                return session?.refreshToken;
             }
             return null;
         }),
+    /**
+     * Logs in or signs up existing user
+     */
+    handleGuestLogin: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
+        const account = await RDS.registerUserAccount(db, input.name, input.name, 'GUEST');
+
+        if (account.userId.length > 0) {
+            let session = await RDS.upsertSession(db, account.userId);
+            return session?.refreshToken;
+        }
+        return null;
+    }),
     /**
      * Loads schedule data for a user that's logged in.
      */
@@ -102,7 +109,7 @@ const usersRouter = router({
         // Mangle duplicate schedule names
         data.userData.schedules = mangleDupliateScheduleNames(data.userData.schedules);
 
-        return await RDS.upsertGuestUserData(db, data).catch((error) =>
+        return await RDS.upsertUserData(db, data).catch((error) =>
             console.error('RDS Failed to upsert user data:', error)
         );
     }),
