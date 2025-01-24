@@ -60,7 +60,10 @@ function PatchNotes() {
                 <ul>
                     <li>
                         Added column linking to course syllabi (thanks to the ASUCI{' '}
-                        <a href="https://asuci.uci.edu/academicvp/">AAVP</a>!).
+                        <a href="https://asuci.uci.edu/academicvp/" target="_blank">
+                            AAVP
+                        </a>
+                        !).
                     </li>
                     <li>Direct course search buttons in calendar pop-up and course header.</li>
                     <li>Search caching for faster results on repeated queries.</li>
