@@ -17,8 +17,9 @@ import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
 import actionTypesStore from '$actions/ActionTypesStore';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
 import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId, getLocalStorageUserId } from '$lib/localStorage';
+import { getLocalStorageUserId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
+import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface LoadSaveButtonBaseProps {
@@ -163,8 +164,8 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
 
 const LoadSaveScheduleFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
+    const { session, validSession } = useSessionStore();
 
-    const [hasSession, setHasSession] = useState(false);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
@@ -183,9 +184,8 @@ const LoadSaveScheduleFunctionality = () => {
 
     const saveScheduleWithSignin = async () => {
         setSaving(true);
-        const sessionToken = getLocalStorageSessionId();
-        if (sessionToken) {
-            const userId = await trpc.session.getSessionUser.query({ token: sessionToken });
+        if (session) {
+            const userId = await trpc.session.getSessionUserId.query({ token: session });
             if (userId) {
                 await saveSchedule(userId, true);
             }
@@ -205,17 +205,15 @@ const LoadSaveScheduleFunctionality = () => {
         };
     }, []);
 
-    const loadSessionData = async (sessionId: string) => {
-        const userId = await trpc.session.getSessionUser.query({ token: sessionId });
-        setHasSession(userId !== null);
-        void loadScheduleAndSetLoading(userId, true);
+    const loadSessionData = async () => {
+        if (validSession) {
+            const userId = await trpc.session.getSessionUserId.query({ token: session ?? '' });
+            void loadScheduleAndSetLoading(userId, true);
+        }
     };
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
-            const sessionToken = getLocalStorageSessionId();
-            if (sessionToken) {
-                loadSessionData(sessionToken);
-            }
+            loadSessionData();
         }
     }, []);
 
@@ -234,7 +232,7 @@ const LoadSaveScheduleFunctionality = () => {
 
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
-            {hasSession ? (
+            {validSession ? (
                 <Button color="inherit" startIcon={<Save />} onClick={saveScheduleWithSignin}>
                     Save
                 </Button>

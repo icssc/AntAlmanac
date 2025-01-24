@@ -6,13 +6,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { AuthDialog } from '$components/dialogs/AuthDialog';
 import trpc from '$lib/api/trpc';
-import {
-    getLocalStorageSessionId,
-    getLocalStorageUserId,
-    removeLocalStorageSessionId,
-    removeLocalStorageUserId,
-    setLocalStorageSessionId,
-} from '$lib/localStorage';
+import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface SignInDialogProps {
@@ -24,6 +18,7 @@ interface SignInDialogProps {
 function SignInDialog(props: SignInDialogProps) {
     const { onClose, isDark, open } = props;
 
+    const { session, setSession } = useSessionStore();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
@@ -47,16 +42,14 @@ function SignInDialog(props: SignInDialogProps) {
         setIsProcessing(true);
         try {
             const code = searchParams.get('code');
-            const token = getLocalStorageSessionId() ?? '';
+            // const token = useSessionStore.getState().session;
             if (code) {
-                const session = await trpc.users.handleGoogleCallback.query({
+                const newSession = await trpc.users.handleGoogleCallback.query({
                     code: code,
-                    token: token,
+                    token: session ?? '',
                 });
-                setLocalStorageSessionId(session);
-                removeLocalStorageUserId();
+                setSession(newSession);
                 navigate('/');
-                window.location.reload();
             }
         } catch (error) {
             console.error('Error during authentication', error);
@@ -68,9 +61,8 @@ function SignInDialog(props: SignInDialogProps) {
     const handleGuestLogin = async () => {
         if (guestName.length > 0) {
             const sessionId = await trpc.session.handleGuestSession.query({ name: guestName });
-            setLocalStorageSessionId(sessionId);
+            setSession(sessionId);
             navigate('/');
-            window.location.reload();
             onClose();
         }
     };
@@ -145,17 +137,13 @@ function SignInDialog(props: SignInDialogProps) {
 
 function SignOutDialog(props: SignInDialogProps) {
     const { onClose, isDark, open } = props;
+    const { session, validSession, clearSession } = useSessionStore();
     const navigate = useNavigate();
 
     const handleLogout = async () => {
-        const token = getLocalStorageSessionId();
-        if (token) {
-            await trpc.session.removeSession.mutate({ token: token });
-        }
-        removeLocalStorageUserId();
-        removeLocalStorageSessionId();
+        clearSession();
         navigate('/');
-        window.location.reload();
+        console.log(session, validSession);
     };
     return (
         <AuthDialog open={open} onClose={onClose} title={'Log Out'}>
@@ -172,8 +160,8 @@ function SignOutDialog(props: SignInDialogProps) {
 function Login() {
     const [openSignIn, setOpenSignIn] = useState(false);
     const [openSignOut, setOpenSignOut] = useState(false);
-    const [hasSession, setHasSession] = useState(false);
 
+    const { session, setSession, validSession } = useSessionStore();
     const isDark = useThemeStore((store) => store.isDark);
 
     const handleClickSignOut = () => {
@@ -184,19 +172,13 @@ function Login() {
         setOpenSignIn(!openSignIn);
     };
 
-    const validateSession = async () => {
-        const guest = getLocalStorageUserId();
-        const token: string = getLocalStorageSessionId() ?? '';
-        const valid = await trpc.session.validateSession.query({ token: token });
-        setHasSession(valid || guest !== null);
-    };
-
     useEffect(() => {
-        validateSession();
-    }, [hasSession]);
+        console.log(validSession, session);
+        setSession(session); // called validate the local session
+    }, [session, validSession]);
     return (
         <>
-            {hasSession ? (
+            {validSession ? (
                 <>
                     <Button onClick={handleClickSignOut} startIcon={<AccountCircleIcon />} color="inherit">
                         Log out

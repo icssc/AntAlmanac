@@ -12,8 +12,9 @@ import { SnackbarPosition } from '$components/NotificationSnackbar';
 import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
-import { getLocalStorageSessionId, removeLocalStorageUserId, setLocalStorageUserId } from '$lib/localStorage';
+import { removeLocalStorageUserId, setLocalStorageUserId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
+import { useSessionStore } from '$stores/SessionStore';
 
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
@@ -123,14 +124,11 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
                     },
                 });
 
-                openSnackbar(
-                    'success',
-                    `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
-                );
+                openSnackbar('success', `Schedule saved! Don't forget to sign up for classes on WebReg!`);
                 AppStore.saveSchedule();
             } catch (e) {
                 if (e instanceof TRPCError) {
-                    openSnackbar('error', `Schedule could not be saved under username "${userID}`);
+                    openSnackbar('error', `Schedule could not be saved`);
                 } else {
                     openSnackbar('error', 'Network error or server is down.');
                 }
@@ -184,24 +182,17 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
     ) {
         userId = userId.replace(/\s+/g, '');
         if (userId.length > 0) {
-            if (rememberMe) {
-                setLocalStorageUserId(userId);
-            } else {
-                removeLocalStorageUserId();
-            }
-
             try {
-                const res = await trpc.users.getUserData.query({ userId });
-
-                const token = getLocalStorageSessionId() ?? '';
-                const validSession = await trpc.session.validateSession.query({ token });
+                const session = useSessionStore.getState().session ?? '';
+                const userId = (await trpc.session.getSessionUserId.query({ token: session })) ?? '';
+                const res = await trpc.users.getUserData.query({ userId: userId });
 
                 const scheduleSaveState = res && 'userData' in res ? res.userData : res;
 
-                if (scheduleSaveState == null && !validSession) {
-                    openSnackbar('error', `Couldn't find schedules for username "${userId}".`);
+                if (scheduleSaveState == null && session !== '') {
+                    openSnackbar('error', `Couldn't find schedules :(`);
                 } else if (await AppStore.loadSchedule(scheduleSaveState)) {
-                    openSnackbar('success', `Schedule for username "${userId}" loaded.`);
+                    openSnackbar('success', `Schedule loaded successfully!`);
                 } else {
                     AppStore.loadSkeletonSchedule(scheduleSaveState);
                     openSnackbar(
