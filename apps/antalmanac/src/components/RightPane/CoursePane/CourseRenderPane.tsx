@@ -199,7 +199,7 @@ const ErrorMessage = () => {
                     >
                         <span>
                             Search for{' '}
-                            <span>
+                            <span style={{ textDecoration: 'underline' }}>
                                 {deptValue} {courseNumber}
                             </span>{' '}
                             on PeterPortal!
