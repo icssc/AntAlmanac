@@ -14,6 +14,9 @@ coverage/
 ## Vite build output for React.
 build/
 
+## Development files for Vite PWA. https://vite-pwa-org.netlify.app/guide/development
+dev-dist/
+
 ## `tsc` output, specified by tsconfig.json
 dist/
 
