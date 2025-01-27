@@ -7,7 +7,7 @@ import { stepsFactory, tourShouldRun } from '$lib/TutorialHelpers';
 import { removeSampleClasses } from '$lib/tourExampleGeneration';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
-export function Tutorial({ onDismiss }: { onDismiss?: () => void }) {
+export function Tutorial({ onClick, onDismiss }: { onClick?: () => void; onDismiss?: () => void }) {
     const { setCurrentStep, setIsOpen, setSteps, isOpen } = useTour();
     const [displaySearch, disableManualSearch] = useCoursePaneStore((state) => [
         state.displaySearch,
@@ -48,7 +48,10 @@ export function Tutorial({ onDismiss }: { onDismiss?: () => void }) {
                 size="large"
                 sx={{
                     backgroundColor: '#fff',
-                    ':hover': { backgroundColor: '#e0f7fa' },
+                    ':hover': { backgroundColor: '#e0f7fa', 
+                        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', 
+                     },
+                    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.6)',
                 }}
             >
                 <ReplayIcon />

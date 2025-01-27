@@ -5,7 +5,6 @@ import { Fab, Tooltip, Box, IconButton, Paper, keyframes } from '@mui/material';
 import { useEffect, useState, useRef} from 'react';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
-import HelpBox from '$components/RightPane/CoursePane/SearchForm/HelpBox';
 import { Tutorial } from '$components/Tutorial';
 import Feedback from '$routes/Feedback';
 
@@ -14,29 +13,67 @@ export function HelpMenu() {
     const [hoverLock, setHoverLock] = useState(false);
     const collapseTimeout = useRef<NodeJS.Timeout | null>(null);
     const [showHelpBox, setShowHelpBox] = useState(RightPaneStore.getHelpBoxVisible());
+    const [isMobile, setIsMobile] = useState(false);
+    const [isTutorialOpen, setIsTutorialOpen] = useState(false);
+
+    useEffect(() => {
+        const checkIsMobile = () => {
+            setIsMobile(window.matchMedia('(pointer: coarse)').matches);
+        };
+
+        checkIsMobile();
+        window.addEventListener('resize', checkIsMobile);
+
+        return () => {
+            window.removeEventListener('resize', checkIsMobile);
+        };
+    }, []);
 
     const handleMouseEnter = () => {
         if (hoverLock && collapseTimeout.current) {
             clearTimeout(collapseTimeout.current);
             collapseTimeout.current = null;
         }
-        setIsHovered(true);
-        setHoverLock(true);
+        if (!isMobile) {
+            setIsHovered(true);
+        }
     };
 
     const handleMouseLeave = () => {
-        collapseTimeout.current = setTimeout(() => {
-            setHoverLock(false);
-            setIsHovered(false);
-            collapseTimeout.current = null;
-        }, 1000);
+        if (!isMobile) {
+            collapseTimeout.current = setTimeout(() => {
+                setHoverLock(false);
+                setIsHovered(false);
+                collapseTimeout.current = null;
+            }, 150);
+        }
+    };
+
+    const handleToggleClick = () => {
+        if (isMobile) {
+            if (hoverLock) {
+                setHoverLock(false);
+                setIsHovered(false);
+            } else {
+                setHoverLock(true);
+                setIsHovered(true);
+            }
+        }
     };
 
     const handleButtonClick = () => {
-        console.log("test");
-        setHoverLock(false);
+        setHoverLock(false); 
         setIsHovered(false);
-    }
+    };
+
+    const openTutorial = () => {
+        handleToggleClick();    
+        setIsTutorialOpen(true);
+    };
+
+    const dismissTutorial = () => {
+        setIsTutorialOpen(false);
+    };
 
     useEffect(() => {
         const handleHelpBoxChange = (newVisibility: boolean) => {
@@ -60,72 +97,80 @@ export function HelpMenu() {
     }
 `;
 
+    const styles = {
+        buttonBase: {
+            backgroundColor: '#fff',
+            ':hover': {
+                backgroundColor: '#e0f7fa',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)', 
+            },
+            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.6)',
+            animation: `${riseAnimation} 0.5s ease forwards`,
+            opacity: 0,
+        },
+        fab: {
+            width: '4rem',
+            height: '4rem',
+            position: 'relative',
+            transition: 'all 0.3s',
+        },
+        container: {
+            position: 'fixed',
+            bottom: '6rem',
+            right: '1rem',
+            zIndex: 999,
+            width: 'auto',
+            display: 'flex',
+            flexDirection: 'column-reverse',
+            alignItems: 'center',
+            gap: '1rem',
+            pointerEvents: 'auto',
+        },
+        tutorial: {
+            animation: `${riseAnimation} 0.5s ease forwards`,
+            animationDelay: '0.3s',
+            opacity: 0,
+        },
+    };
+
     return (
         <Box
-            onMouseEnter={handleMouseEnter}
+            onMouseEnter={handleMouseEnter  }
             onMouseLeave={handleMouseLeave}
-            sx={{
-                position: 'fixed',
-                bottom: '6rem',
-                right: '1rem',
-                zIndex: 999,
-                width: 'auto',
-                display: 'flex',
-                flexDirection: 'column-reverse',
-                alignItems: 'center',
-                gap: '1rem',
-                pointerEvents: 'auto',
-            }}
+            sx={styles.container}
         >
             <Tooltip title="Help Menu">
                 <Fab
                     color="primary"
                     aria-label="Help Menu"
-                    sx={{
-                        width: '4rem',
-                        height: '4rem',
-                        position: 'relative',
-                        transition: 'all 0.3s',
-                    }}
+                    onClick={isMobile ? handleToggleClick : undefined}
+                    sx={styles.fab}
                 >
                     <LightbulbIcon />
                 </Fab>
             </Tooltip>
 
-            {(isHovered) && (
+            {(isHovered && !isTutorialOpen) && (
                 <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '1rem',
-                    }}
+                    sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', }}
                 >
-                    <Box
-                        sx={{
-                            animation: `${riseAnimation} 0.5s ease forwards`,
-                            animationDelay: '0.3s',
-                            opacity: 0,
-                        }}
-                    >
-                        <Tutorial/>
-                    </Box>
+                    {!isMobile && (
+                        <Box
+                            onClick={() => {
+                                openTutorial();
+                            }}
+                            sx={styles.tutorial}
+                        >
+                            <Tutorial onClick={handleToggleClick} onDismiss={dismissTutorial} />
+                        </Box>
+                    )}
 
                     <Tooltip title="Feedback Form">
                         <IconButton
                             color="primary"
-                            onClick={() => {
-                                Feedback();
-                                //handleButtonClick();
-                            }}
+                            onClick={() => {Feedback(); handleToggleClick();}}
                             size="large"
-                            sx={{
-                                backgroundColor: '#fff',
-                                ':hover': { backgroundColor: '#e0f7fa' },
-                                animation: `${riseAnimation} 0.5s ease forwards`,
-                                animationDelay: '0.2s',
-                                opacity: 0,
-                            }}
+                            sx={{...styles.buttonBase, animationDelay: '0.2s',}}
                         >
                             <FeedbackIcon />
                         </IconButton>
@@ -139,13 +184,7 @@ export function HelpMenu() {
                                 handleButtonClick();
                             }}
                             size="large"
-                            sx={{
-                                backgroundColor: '#fff',
-                                ':hover': { backgroundColor: '#e0f7fa' },
-                                animation: `${riseAnimation} 0.5s ease forwards`,
-                                animationDelay: '0.1s',
-                                opacity: 0,
-                            }}
+                            sx={{...styles.buttonBase, animationDelay: '0.1s', }}
                         >
                             <HelpIcon />
                         </IconButton>
@@ -154,6 +193,5 @@ export function HelpMenu() {
             )}
         </Box>
     );
-}
-
-export default HelpMenu;
+    }
+    export default HelpMenu;

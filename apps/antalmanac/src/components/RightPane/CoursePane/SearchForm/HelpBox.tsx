@@ -62,6 +62,7 @@ function HelpBox({ onDismiss }: HelpBoxProps) {
                     color="inherit"
                     onClick={() => {
                         setIsVisible(false);
+                        RightPaneStore.hideHelpBox();
                         onDismiss();
                     }}
                 >
