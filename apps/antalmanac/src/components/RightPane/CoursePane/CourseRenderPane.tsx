@@ -179,7 +179,6 @@ const ErrorMessage = () => {
             sx={{
                 height: '100%',
                 display: 'flex',
-                justifyContent: 'center',
                 alignItems: 'center',
                 flexDirection: 'column',
             }}
@@ -321,6 +320,8 @@ export default function CourseRenderPane(props: { id?: number }) {
 
     return (
         <>
+            <Box sx={{ height: '56px' }} />
+
             {loading ? (
                 <LoadingMessage />
             ) : error || courseData.length === 0 ? (
@@ -329,7 +330,6 @@ export default function CourseRenderPane(props: { id?: number }) {
                 <>
                     <RecruitmentBanner />
                     <Box>
-                        <Box sx={{ height: '50px', marginBottom: '5px' }} />
                         {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
                             let heightEstimate = 200;
                             if ((courseData[index] as AACourse).sections !== undefined)
