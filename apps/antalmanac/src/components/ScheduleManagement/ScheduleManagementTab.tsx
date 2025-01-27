@@ -28,15 +28,19 @@ export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps
             icon={tab.icon}
             iconPosition={isMobile ? 'top' : 'start'}
             sx={{
-                ...(!isMobile
+                ...(isMobile
                     ? {
+                          minHeight: 'unset',
+                          minWidth: '25%',
+                          height: 56,
+                      }
+                    : {
                           minHeight: 'auto',
                           height: '44px',
                           padding: 3,
                           minWidth: '33%',
-                      }
-                    : { minWidth: '25%' }),
-                display: !isMobile && tab.mobile ? 'none' : 'flex',
+                      }),
+                display: isMobile || !tab.mobile ? 'flex' : 'none',
                 ...(isDark ? { '&.Mui-selected': { color: 'white' } } : {}),
             }}
             label={tab.label}
