@@ -1,5 +1,5 @@
 import { Close } from '@mui/icons-material';
-import { Alert, Box, IconButton, useMediaQuery } from '@mui/material';
+import { Alert, AlertTitle, Box, IconButton, useMediaQuery } from '@mui/material';
 import { AACourse, AASection, WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
@@ -165,10 +165,52 @@ const LoadingMessage = () => {
     );
 };
 
-const ErrorMessage = () => {
+const ErrorMessage = ({ }: { courseData: (WebsocSchool | WebsocDepartment | AACourse)[] }) => {
     const isDark = useThemeStore((store) => store.isDark);
+    const formData = RightPaneStore.getFormData();
+    const deptValue = formData.deptValue?.replace(' ', '').toUpperCase() || 'UNKNOWN';
+    const courseNumber = formData.courseNumber?.replace(/\s+/g, '').toUpperCase() || 'UNKNOWN';
+    const courseName = deptValue !== 'UNKNOWN' && courseNumber !== 'UNKNOWN' 
+        ? `${deptValue}${courseNumber}` 
+        : null;
     return (
-        <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+            {courseName && (
+                <Alert
+                severity="info"
+                onClick={() => window.open(`https://peterportal.org/course/${courseName}`, '_blank')}
+                sx={{
+                  width: '100%',
+                  cursor: 'pointer',
+                  backgroundColor: isDark ? '#2a3136' : 'rgb(240, 248, 255)', 
+                  border: `1px solid ${isDark ? '#202224' : '#90caf9'}`, 
+                  color: isDark ? '#ece6e6' : '#1e88e5', 
+                  fontSize: '1rem',
+                  '& .MuiAlertTitle-root': {
+                    fontSize: '1.1rem',
+                  },
+                  padding: '0.6rem',
+                  boxSizing: 'border-box',
+                  marginTop: '3rem',
+                '&:hover': {
+                    backgroundColor: isDark ? '#1f2529' : 'rgb(230, 240, 255)',
+                },
+                }}
+              >
+                <AlertTitle>
+                    <span style={{ color: 'black' }}>
+                        Search for{' '}
+                        <span
+                        style={{color: '#5191D6', textDecoration: 'underline', }}
+                        >
+                        {deptValue} {courseNumber}
+                        </span>{' '}
+                        on PeterPortal
+                    </span>
+                </AlertTitle>
+                
+              </Alert>
+            )}
             <img
                 src={isDark ? darkNoNothing : noNothing}
                 alt="No Results Found"
@@ -285,7 +327,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             {loading ? (
                 <LoadingMessage />
             ) : error || courseData.length === 0 ? (
-                <ErrorMessage />
+                <ErrorMessage courseData={courseData} />
             ) : (
                 <>
                     <RecruitmentBanner />
