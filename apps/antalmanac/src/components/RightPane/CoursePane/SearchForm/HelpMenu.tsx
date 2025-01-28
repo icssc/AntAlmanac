@@ -72,7 +72,6 @@ export function HelpMenu() {
     };
 
     const dismissTutorial = useCallback(() => {
-        console.log("test");
         setIsTutorialOpen(false);
     }, []);
 
