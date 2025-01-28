@@ -2,7 +2,7 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 import HelpIcon from '@mui/icons-material/Help';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import { Fab, Tooltip, Box, IconButton, Paper, keyframes } from '@mui/material';
-import { useEffect, useState, useRef} from 'react';
+import { useEffect, useState, useRef, useCallback} from 'react';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 import { Tutorial } from '$components/Tutorial';
@@ -71,9 +71,10 @@ export function HelpMenu() {
         setIsTutorialOpen(true);
     };
 
-    const dismissTutorial = () => {
+    const dismissTutorial = useCallback(() => {
+        console.log("test");
         setIsTutorialOpen(false);
-    };
+    }, []);
 
     useEffect(() => {
         const handleHelpBoxChange = (newVisibility: boolean) => {
@@ -156,7 +157,8 @@ export function HelpMenu() {
                 >
                     {!isMobile && (
                         <Box
-                            onClick={() => {
+                            onClick={(e) => {
+                                e.stopPropagation();7
                                 openTutorial();
                             }}
                             sx={styles.tutorial}
