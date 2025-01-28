@@ -336,7 +336,7 @@ function AddedSectionsGrid() {
                 <ClearScheduleButton buttonSx={buttonSx} />
                 <ColumnToggleDropdown />
             </Box>
-            <Box style={{ marginTop: 50 }}>
+            <Box style={{ marginTop: 56 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
                 {courses.length < 1 ? NoCoursesBox : null}
                 <Box display="flex" flexDirection="column" gap={1}>
