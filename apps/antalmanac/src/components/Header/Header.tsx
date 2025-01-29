@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 
 import Import from './Import';
-import InstallPWA from './InstallPWA';
+import InstallPWAButton from './InstallPWAButton';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import { Logo } from './Logo';
 import AppDrawer from './SettingsMenu';
@@ -44,7 +44,7 @@ const Header = ({ classes }: CustomAppBarProps) => {
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
                     <LoadSaveScheduleFunctionality />
                     <Import key="studylist" />
-                    <InstallPWA />
+                    <InstallPWAButton />
                     <AppDrawer key="settings" />
                 </div>
             </Toolbar>
