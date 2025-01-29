@@ -16,8 +16,10 @@ import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
+import trpc from '$lib/api/trpc';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
+import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface LoadSaveButtonBaseProps {
@@ -126,7 +128,6 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                             Make sure the user ID is unique and secret, or someone else can overwrite your schedule.
                         </DialogContentText>
                         <TextField
-                            // eslint-disable-next-line jsx-a11y/no-autofocus
                             autoFocus
                             margin="dense"
                             label="Unique User ID"
@@ -163,6 +164,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
 
 const LoadSaveScheduleFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
+    const { session, validSession } = useSessionStore();
 
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -180,6 +182,17 @@ const LoadSaveScheduleFunctionality = () => {
         setSaving(false);
     };
 
+    const saveScheduleWithSignin = async () => {
+        setSaving(true);
+        if (session) {
+            const userId = await trpc.session.getSessionUserId.query({ token: session });
+            if (userId) {
+                await saveSchedule(userId, true);
+            }
+        }
+        setSaving(false);
+    };
+
     useEffect(() => {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
@@ -192,14 +205,15 @@ const LoadSaveScheduleFunctionality = () => {
         };
     }, []);
 
+    const loadSessionData = async () => {
+        if (validSession) {
+            const userId = await trpc.session.getSessionUserId.query({ token: session ?? '' });
+            void loadScheduleAndSetLoading(userId, true);
+        }
+    };
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
-            const savedUserID = getLocalStorageUserId();
-
-            if (savedUserID != null) {
-                // this `void` is for eslint "no floating promises"
-                void loadScheduleAndSetLoading(savedUserID, true);
-            }
+            loadSessionData();
         }
     }, []);
 
@@ -218,22 +232,30 @@ const LoadSaveScheduleFunctionality = () => {
 
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
-            <LoadSaveButtonBase
-                id="save-button"
-                actionName={'Save'}
-                action={saveScheduleAndSetLoading}
-                disabled={loading}
-                loading={saving}
-                colorType={isDark ? 'secondary' : 'primary'}
-            />
-            <LoadSaveButtonBase
-                id="load-button"
-                actionName={'Load'}
-                action={loadScheduleAndSetLoading}
-                disabled={skeletonMode}
-                loading={loading}
-                colorType={isDark ? 'secondary' : 'primary'}
-            />
+            {validSession ? (
+                <Button color="inherit" startIcon={<Save />} onClick={saveScheduleWithSignin}>
+                    Save
+                </Button>
+            ) : (
+                <>
+                    <LoadSaveButtonBase
+                        id="save-button"
+                        actionName={'Save'}
+                        action={saveScheduleAndSetLoading}
+                        disabled={loading}
+                        loading={saving}
+                        colorType={isDark ? 'secondary' : 'primary'}
+                    />
+                    <LoadSaveButtonBase
+                        id="load-button"
+                        actionName={'Load'}
+                        action={loadScheduleAndSetLoading}
+                        disabled={skeletonMode}
+                        loading={loading}
+                        colorType={isDark ? 'secondary' : 'primary'}
+                    />
+                </>
+            )}
         </div>
     );
 };
