@@ -447,6 +447,20 @@ export class Schedules {
     }
 
     /**
+     * Getter for previous states
+     */
+    getPreviousStates() {
+        return this.previousStates;
+    }
+
+    /**
+     * Clears previous states
+     */
+    clearPreviousStates() {
+        this.previousStates = [];
+    }
+
+    /**
      * Appends a copy of the current schedule to previous states to revert to
      * Previous states are capped to 50
      */
@@ -466,6 +480,11 @@ export class Schedules {
      * All actions that call `addUndoState()` can be reverted.
      */
     revertState() {
+        // prevent the user from undoing to an empty state
+        if (this.previousStates.length <= 1) {
+            return;
+        }
+
         const state = this.previousStates.pop();
         if (state !== undefined) {
             this.schedules = state.schedules;
