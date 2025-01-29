@@ -47,7 +47,7 @@ function InstallPWAButton() {
     if (!canInstall) return null;
 
     return (
-        <Tooltip title="Install AntAlmanac as a desktop app">
+        <Tooltip title="Install AntAlmanac as an app">
             {isMobile ? (
                 <IconButton color="inherit" id="install-pwa-button" onClick={handleInstall} hidden={!canInstall}>
                     <BrowserUpdatedIcon />
@@ -59,7 +59,7 @@ function InstallPWAButton() {
                     startIcon={<BrowserUpdatedIcon />}
                     onClick={handleInstall}
                 >
-                    Install App
+                    Install
                 </Button>
             )}
         </Tooltip>
