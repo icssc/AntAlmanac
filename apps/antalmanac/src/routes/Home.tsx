@@ -1,6 +1,6 @@
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { CssBaseline, useMediaQuery, useTheme, Stack } from '@mui/material';
+import { useMediaQuery, useTheme, Stack } from '@mui/material';
 import { useCallback, useEffect, useRef } from 'react';
 import Split from 'react-split';
 
@@ -90,8 +90,6 @@ export default function Home() {
 
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <CssBaseline />
-
             <PatchNotes />
 
             {isMobileScreen ? <MobileHome /> : <DesktopHome />}

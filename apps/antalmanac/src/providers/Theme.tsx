@@ -1,4 +1,4 @@
-import { createTheme } from '@material-ui/core';
+import { createTheme, CssBaseline } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { useEffect } from 'react';
 
@@ -51,11 +51,6 @@ export default function AppThemeProvider(props: Props) {
                 xl: 1536,
             },
         },
-        typography: {
-            htmlFontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10),
-            fontSize:
-                parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
-        },
         palette: {
             type: appTheme == 'dark' ? 'dark' : 'light',
             primary: {
@@ -74,5 +69,10 @@ export default function AppThemeProvider(props: Props) {
         spacing: 4,
     });
 
-    return <ThemeProvider theme={AppTheme}>{props.children}</ThemeProvider>;
+    return (
+        <ThemeProvider theme={AppTheme}>
+            <CssBaseline />
+            {props.children}
+        </ThemeProvider>
+    );
 }

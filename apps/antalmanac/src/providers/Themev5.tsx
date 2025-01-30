@@ -64,6 +64,14 @@ export default function AppThemev5Provider(props: Props) {
                             },
                         },
                     },
+                    // https://github.com/mui/material-ui/issues/43683#issuecomment-2492787970
+                    MuiDialog: {
+                        styleOverrides: {
+                            paper: {
+                                backgroundImage: 'none',
+                            },
+                        },
+                    },
                 },
                 breakpoints: {
                     /**
