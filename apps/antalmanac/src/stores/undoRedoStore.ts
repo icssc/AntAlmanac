@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { UndoAction } from '$actions/ActionTypesStore';
 import actionTypesStore from '$actions/ActionTypesStore';
-import { useScheduleStore } from '$stores/scheduleStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 
 interface UndoRedoStore {
     undoAction: () => void;
