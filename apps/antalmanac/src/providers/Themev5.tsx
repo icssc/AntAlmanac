@@ -83,12 +83,13 @@ export default function AppThemev5Provider(props: Props) {
                     MuiButton: {
                         styleOverrides: {
                             root: ({ ownerState }) => ({
-                                ...(ownerState.variant === 'contained' && {
-                                    backgroundColor: BLUE,
-                                    ':hover': {
-                                        backgroundColor: '#003A75',
-                                    },
-                                }),
+                                ...(ownerState.variant === 'contained' &&
+                                    ownerState.color === 'primary' && {
+                                        backgroundColor: BLUE,
+                                        ':hover': {
+                                            backgroundColor: '#003A75',
+                                        },
+                                    }),
                             }),
                         },
                     },

@@ -194,6 +194,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                         }}
                         fullWidth
                         label={'Search'}
+                        placeholder="Search for courses"
                     />
                 )}
                 autoHighlight={true}
