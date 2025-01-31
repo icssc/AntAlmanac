@@ -14,7 +14,7 @@ import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseE
 import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 
@@ -28,10 +28,10 @@ const CALENDAR_MAX_DATE = new Date(2018, 0, 1, 23);
 
 export const ScheduleCalendar = memo(() => {
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
-    const [eventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
-    const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
-    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
-    const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
+    const eventsInCalendar = useScheduleStore((store) => store.getEventsInCalendar());
+    const finalsEventsInCalendar = useScheduleStore((store) => store.getFinalEventsInCalendar());
+    const currentScheduleIndex = useScheduleStore((store) => store.getCurrentScheduleIndex());
+    const scheduleNames = useScheduleStore((store) => store.getScheduleNames());
 
     const { isMilitaryTime } = useTimeFormatStore();
     const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
@@ -148,32 +148,6 @@ export const ScheduleCalendar = memo(() => {
             },
         });
     }, [hasWeekendCourse, showFinalsSchedule]);
-
-    useEffect(() => {
-        const updateEventsInCalendar = () => {
-            setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
-            setEventsInCalendar(AppStore.getEventsInCalendar());
-            setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
-        };
-
-        const updateScheduleNames = () => {
-            setScheduleNames(AppStore.getScheduleNames());
-        };
-
-        AppStore.on('addedCoursesChange', updateEventsInCalendar);
-        AppStore.on('customEventsChange', updateEventsInCalendar);
-        AppStore.on('colorChange', updateEventsInCalendar);
-        AppStore.on('currentScheduleIndexChange', updateEventsInCalendar);
-        AppStore.on('scheduleNamesChange', updateScheduleNames);
-
-        return () => {
-            AppStore.off('addedCoursesChange', updateEventsInCalendar);
-            AppStore.off('customEventsChange', updateEventsInCalendar);
-            AppStore.off('colorChange', updateEventsInCalendar);
-            AppStore.off('currentScheduleIndexChange', updateEventsInCalendar);
-            AppStore.off('scheduleNamesChange', updateScheduleNames);
-        };
-    }, []);
 
     return (
         <Box id="calendar-root" borderRadius={1} flexGrow={1} height={'0px'} display="flex" flexDirection="column">

@@ -2,8 +2,7 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextFie
 import type { DialogProps } from '@mui/material';
 import { useState, useEffect, useCallback } from 'react';
 
-import { addSchedule } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 /**
@@ -12,8 +11,13 @@ import { useThemeStore } from '$stores/SettingsStore';
 function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
     const isDark = useThemeStore((store) => store.isDark);
 
+    const getNextScheduleName = useScheduleStore((store) => store.getNextScheduleName);
+    const getScheduleNames = useScheduleStore((store) => store.getScheduleNames);
+    const getDefaultScheduleName = useScheduleStore((store) => store.getDefaultScheduleName);
+    const addSchedule = useScheduleStore((store) => store.addSchedule);
+
     const [name, setName] = useState(
-        AppStore.getNextScheduleName(() => AppStore.getScheduleNames().length, AppStore.getDefaultScheduleName())
+        getNextScheduleName(getScheduleNames().length, getDefaultScheduleName())
     );
 
     const handleCancel = () => {
@@ -48,14 +52,11 @@ function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
     };
 
     const handleScheduleNamesChange = useCallback(() => {
-        setName(AppStore.getNextScheduleName(AppStore.getScheduleNames().length, AppStore.getDefaultScheduleName()));
-    }, []);
+        setName(getNextScheduleName(getScheduleNames().length, getDefaultScheduleName()));
+    }, [getNextScheduleName, getScheduleNames, getDefaultScheduleName]);
 
     useEffect(() => {
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-        return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-        };
+        handleScheduleNamesChange();
     }, [handleScheduleNamesChange]);
 
     return (

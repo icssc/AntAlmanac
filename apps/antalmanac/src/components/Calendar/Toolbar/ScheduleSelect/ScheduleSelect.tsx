@@ -8,7 +8,7 @@ import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelec
 import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 
 function handleScheduleChange(index: number) {
     logAnalytics({
@@ -35,8 +35,8 @@ function createScheduleSelector(index: number) {
 export function SelectSchedulePopover(props: { scheduleNames: string[] }) {
     const theme = useTheme();
 
-    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
-    const [skeletonMode, setSkeletonMode] = useState(() => AppStore.getSkeletonMode());
+    const currentScheduleIndex = useScheduleStore((store) => store.getCurrentScheduleIndex());
+    const skeletonMode = useScheduleStore((store) => store.getSkeletonMode());
     const [anchorEl, setAnchorEl] = useState<HTMLElement>();
 
     // TODO: maybe these widths should be dynamic based on i.e. the viewport width?
@@ -56,30 +56,6 @@ export function SelectSchedulePopover(props: { scheduleNames: string[] }) {
     const handleClose = useCallback(() => {
         setAnchorEl(undefined);
     }, []);
-
-    const handleScheduleIndexChange = useCallback(() => {
-        setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
-    }, []);
-
-    const handleSkeletonModeChange = () => {
-        setSkeletonMode(AppStore.getSkeletonMode());
-    };
-
-    useEffect(() => {
-        AppStore.on('addedCoursesChange', handleScheduleIndexChange);
-        AppStore.on('customEventsChange', handleScheduleIndexChange);
-        AppStore.on('colorChange', handleScheduleIndexChange);
-        AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('addedCoursesChange', handleScheduleIndexChange);
-            AppStore.off('customEventsChange', handleScheduleIndexChange);
-            AppStore.off('colorChange', handleScheduleIndexChange);
-            AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, [handleScheduleIndexChange]);
 
     return (
         <Box>
