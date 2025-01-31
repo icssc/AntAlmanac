@@ -3,7 +3,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import { PaletteOptions } from '@material-ui/core/styles/createPalette';
 import { useEffect } from 'react';
 
-import { DODGER_BLUE } from '$src/globals';
+import { BLUE, DODGER_BLUE } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 
 const lightTheme: PaletteOptions = {
@@ -61,7 +61,7 @@ export default function AppThemeProvider(props: Props) {
             MuiCssBaseline: {
                 '@global': {
                     a: {
-                        color: appTheme == 'dark' ? 'dodgerBlue' : 'blue',
+                        color: appTheme == 'dark' ? DODGER_BLUE : BLUE,
                     },
                 },
             },
