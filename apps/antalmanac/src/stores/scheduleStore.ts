@@ -16,7 +16,6 @@ import type {
     RenameScheduleAction,
     DeleteScheduleAction,
     ChangeCourseColorAction,
-    UndoAction,
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
 
@@ -52,7 +51,6 @@ interface ScheduleStoreState {
     addCourse: (newCourse: ScheduleCourse, scheduleIndex?: number) => void;
     deleteCourse: (sectionCode: string, term: string, triggerUnsavedWarning?: boolean) => void;
     deleteCourses: (sectionCodes: string[], term: string, triggerUnsavedWarning?: boolean) => void;
-    undoAction: () => void;
     addCustomEvent: (customEvent: RepeatingCustomEvent, scheduleIndices: number[]) => void;
     editCustomEvent: (editedCustomEvent: RepeatingCustomEvent, newScheduleIndices: number[]) => void;
     deleteCustomEvent: (customEventId: number) => void;
@@ -134,15 +132,6 @@ interface ScheduleStoreState {
   
     deleteCourses: (sectionCodes: string[], term: string, triggerUnsavedWarning = true) => {
       sectionCodes.forEach((sectionCode) => get().deleteCourse(sectionCode, term, triggerUnsavedWarning));
-    },
-  
-    undoAction: () => {
-      get().schedule.revertState();
-      set({ unsavedChanges: true });
-      const action: UndoAction = {
-        type: 'undoAction',
-      };
-      actionTypesStore.autoSaveSchedule(action);
     },
   
     addCustomEvent: (customEvent: RepeatingCustomEvent, scheduleIndices: number[]) => {
