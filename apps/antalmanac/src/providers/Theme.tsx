@@ -1,4 +1,4 @@
-import { createTheme, CssBaseline } from '@material-ui/core';
+import { createTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { useEffect } from 'react';
 
@@ -69,10 +69,5 @@ export default function AppThemeProvider(props: Props) {
         spacing: 4,
     });
 
-    return (
-        <ThemeProvider theme={AppTheme}>
-            <CssBaseline />
-            {props.children}
-        </ThemeProvider>
-    );
+    return <ThemeProvider theme={AppTheme}>{props.children}</ThemeProvider>;
 }
