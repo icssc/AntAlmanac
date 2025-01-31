@@ -1,6 +1,7 @@
 import { createTheme, CssBaseline, ThemeProvider, type PaletteOptions } from '@mui/material';
 import { useEffect, useMemo } from 'react';
 
+import { DODGER_BLUE } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 
 const lightTheme: PaletteOptions = {
@@ -18,7 +19,7 @@ const lightTheme: PaletteOptions = {
 
 const darkTheme: PaletteOptions = {
     primary: {
-        main: '#305db7',
+        main: DODGER_BLUE,
     },
     secondary: {
         main: '#ffffff',
@@ -70,6 +71,25 @@ export default function AppThemev5Provider(props: Props) {
                             paper: {
                                 backgroundImage: 'none',
                             },
+                        },
+                    },
+                    MuiAppBar: {
+                        styleOverrides: {
+                            root: {
+                                backgroundImage: 'none',
+                            },
+                        },
+                    },
+                    MuiButton: {
+                        styleOverrides: {
+                            root: ({ ownerState }) => ({
+                                ...(ownerState.variant === 'contained' && {
+                                    backgroundColor: '#305db7',
+                                    ':hover': {
+                                        backgroundColor: '#003A75',
+                                    },
+                                }),
+                            }),
                         },
                     },
                 },
