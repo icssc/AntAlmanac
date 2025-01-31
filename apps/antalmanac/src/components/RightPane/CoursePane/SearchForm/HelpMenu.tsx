@@ -1,12 +1,13 @@
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import HelpIcon from '@mui/icons-material/Help';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
-import { Fab, Tooltip, Box, IconButton, Paper, keyframes } from '@mui/material';
-import { useEffect, useState, useRef, useCallback} from 'react';
+import { Fab, Tooltip, Box, IconButton, keyframes } from '@mui/material';
+import { useEffect, useState, useRef } from 'react';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 import { Tutorial } from '$components/Tutorial';
 import Feedback from '$routes/Feedback';
+import { useTour } from '@reactour/tour';
 
 export function HelpMenu() {
     const [isHovered, setIsHovered] = useState(false);
@@ -14,19 +15,16 @@ export function HelpMenu() {
     const collapseTimeout = useRef<NodeJS.Timeout | null>(null);
     const [showHelpBox, setShowHelpBox] = useState(RightPaneStore.getHelpBoxVisible());
     const [isMobile, setIsMobile] = useState(false);
-    const [isTutorialOpen, setIsTutorialOpen] = useState(false);
+    const { isOpen } = useTour();
+
+    const checkIsMobile = () => {
+        setIsMobile(window.matchMedia('(pointer: coarse)').matches);
+    };
 
     useEffect(() => {
-        const checkIsMobile = () => {
-            setIsMobile(window.matchMedia('(pointer: coarse)').matches);
-        };
-
         checkIsMobile();
         window.addEventListener('resize', checkIsMobile);
-
-        return () => {
-            window.removeEventListener('resize', checkIsMobile);
-        };
+        return () => window.removeEventListener('resize', checkIsMobile);
     }, []);
 
     const handleMouseEnter = () => {
@@ -51,29 +49,15 @@ export function HelpMenu() {
 
     const handleToggleClick = () => {
         if (isMobile) {
-            if (hoverLock) {
-                setHoverLock(false);
-                setIsHovered(false);
-            } else {
-                setHoverLock(true);
-                setIsHovered(true);
-            }
+            setHoverLock(!hoverLock);
+            setIsHovered(!hoverLock);
         }
     };
 
-    const handleButtonClick = () => {
+    const closeHelpMenu = () => {
         setHoverLock(false); 
         setIsHovered(false);
     };
-
-    const openTutorial = () => {
-        handleToggleClick();    
-        setIsTutorialOpen(true);
-    };
-
-    const dismissTutorial = useCallback(() => {
-        setIsTutorialOpen(false);
-    }, []);
 
     useEffect(() => {
         const handleHelpBoxChange = (newVisibility: boolean) => {
@@ -85,6 +69,12 @@ export function HelpMenu() {
             RightPaneStore.off('helpBoxChange', handleHelpBoxChange);
         };
     }, []);
+
+    useEffect(() => {
+        if (!isOpen) {
+            setIsHovered(false);
+        }
+    }, [isOpen]);
 
     const riseAnimation = keyframes`
     0% {
@@ -150,26 +140,25 @@ export function HelpMenu() {
                 </Fab>
             </Tooltip>
 
-            {(isHovered && !isTutorialOpen) && (
+            {(isHovered && !isOpen) && (
                 <Box
                     sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', }}
                 >
                     {!isMobile && (
                         <Box
-                            onClick={(e) => {
-                                e.stopPropagation();7
-                                openTutorial();
-                            }}
                             sx={styles.tutorial}
                         >
-                            <Tutorial onClick={handleToggleClick} onDismiss={dismissTutorial} />
+                            <Tutorial/>
                         </Box>
                     )}
 
                     <Tooltip title="Feedback Form">
                         <IconButton
                             color="primary"
-                            onClick={() => {Feedback(); handleToggleClick();}}
+                            onClick={() => {
+                                Feedback(); 
+                                closeHelpMenu();
+                            }}
                             size="large"
                             sx={{...styles.buttonBase, animationDelay: '0.2s',}}
                         >
@@ -182,7 +171,7 @@ export function HelpMenu() {
                             color="primary"
                             onClick={() => {
                                 RightPaneStore.toggleHelpBox();
-                                handleButtonClick();
+                                closeHelpMenu();
                             }}
                             size="large"
                             sx={{...styles.buttonBase, animationDelay: '0.1s', }}
