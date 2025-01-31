@@ -1,5 +1,5 @@
-import { Button } from '@material-ui/core';
 import { Search } from '@material-ui/icons';
+import { Button } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { useCallback } from 'react';
 
@@ -18,16 +18,14 @@ export function CourseInfoSearchButton({ courseDetails, term }: { courseDetails:
     }, [courseNumber, deptCode, term]);
 
     return (
-        <div>
-            <Button
-                variant="contained"
-                size="small"
-                color="primary"
-                style={{ minWidth: 'fit-content' }}
-                onClick={handleClick}
-            >
-                <Search />
-            </Button>
-        </div>
+        <Button
+            variant="contained"
+            size="small"
+            color="primary"
+            style={{ minWidth: 'fit-content' }}
+            onClick={handleClick}
+        >
+            <Search />
+        </Button>
     );
 }
