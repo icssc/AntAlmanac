@@ -14,6 +14,7 @@ export default defineConfig({
             $lib: resolve(__dirname, './src/lib'),
             $providers: resolve(__dirname, './src/providers'),
             $routes: resolve(__dirname, './src/routes'),
+            $src: resolve(__dirname, './src'),
             $stores: resolve(__dirname, './src/stores'),
         },
     },

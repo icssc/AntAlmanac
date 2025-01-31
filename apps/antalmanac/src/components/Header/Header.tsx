@@ -1,53 +1,39 @@
-import { AppBar, Toolbar } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { AppBar, Box } from '@mui/material';
 
 import Import from './Import';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import { Logo } from './Logo';
 import AppDrawer from './SettingsMenu';
 
-const styles = {
-    appBar: {
-        marginBottom: '4px',
-        boxShadow: 'none',
-        minHeight: 0,
-        height: '50px',
-    },
-    buttonMargin: {
-        marginRight: '4px',
-    },
-    fallback: {
-        height: '100%',
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    menuIconContainer: {
-        padding: '0.25rem',
-        display: 'flex',
-    },
-};
+import { BLUE } from '$src/globals';
 
-interface CustomAppBarProps {
-    classes: ClassNameMap;
-}
-
-const Header = ({ classes }: CustomAppBarProps) => {
+export function Header() {
     return (
-        <AppBar position="static" className={classes.appBar}>
-            <Toolbar variant="dense" style={{ padding: '5px', display: 'flex', justifyContent: 'space-between' }}>
+        <AppBar
+            position="static"
+            sx={{
+                height: 52,
+                padding: 1,
+                boxShadow: 'none',
+                backgroundColor: BLUE,
+            }}
+        >
+            <Box
+                sx={{
+                    display: 'flex',
+                    height: '100%',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                }}
+            >
                 <Logo />
 
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                <Box style={{ display: 'flex', flexDirection: 'row' }}>
                     <LoadSaveScheduleFunctionality />
                     <Import key="studylist" />
                     <AppDrawer key="settings" />
-                </div>
-            </Toolbar>
+                </Box>
+            </Box>
         </AppBar>
     );
-};
-
-export default withStyles(styles)(Header);
+}

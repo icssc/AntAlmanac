@@ -223,7 +223,7 @@ export function getTermLength(quarter: string) {
  */
 export function getRRule(bydays: string[], quarter: string) {
     /**
-     * Number of occurences in the quarter
+     * Number of occurrences in the quarter
      */
     let count = getTermLength(quarter) * bydays.length;
 

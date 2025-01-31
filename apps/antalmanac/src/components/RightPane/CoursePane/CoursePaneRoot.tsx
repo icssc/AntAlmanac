@@ -54,7 +54,7 @@ export function CoursePaneRoot() {
     }, [handleKeydown]);
 
     return (
-        <Box height={'0px'} flexGrow={1} marginX={0.5}>
+        <Box height={'0px'} flexGrow={1}>
             <CoursePaneButtonRow
                 showSearch={!searchIsDisplayed}
                 onDismissSearchResults={displaySearch}

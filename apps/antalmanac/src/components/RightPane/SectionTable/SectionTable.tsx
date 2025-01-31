@@ -13,8 +13,6 @@ import {
 import { Assessment, Help, RateReview, ShowChart as ShowChartIcon } from '@material-ui/icons';
 import { useMemo } from 'react';
 
-import { MOBILE_BREAKPOINT } from '../../../globals';
-
 import { EnrollmentHistoryPopup } from './EnrollmentHistoryPopup';
 import GradesPopup from './GradesPopup';
 import { SectionTableProps } from './SectionTable.types';
@@ -24,6 +22,7 @@ import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import analyticsEnum from '$lib/analytics';
+import { MOBILE_BREAKPOINT } from '$src/globals';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import { useTabStore } from '$stores/TabStore';
 
