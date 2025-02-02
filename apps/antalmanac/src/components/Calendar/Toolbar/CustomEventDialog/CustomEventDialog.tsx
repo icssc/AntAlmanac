@@ -167,7 +167,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                     </IconButton>
                 </Tooltip>
             )}
-            <Dialog open={open} onClose={handleClose} maxWidth={'xs'}>
+            <Dialog open={open} onClose={handleClose}>
                 <DialogTitle id="form-dialog-title">
                     {props.customEvent ? 'Edit a Custom Event' : 'Add a Custom Event'}
                 </DialogTitle>
@@ -211,7 +211,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                             }}
                         />
                     </FormControl>
-                    <DaySelector onSelectDay={handleDayChange} days={props.customEvent?.days} />
+                    <DaySelector onSelectDay={handleDayChange} days={days} />
                     <BuildingSelect value={building} onChange={handleBuildingChange} variant="outlined" />
                     <ScheduleSelector
                         scheduleIndices={scheduleIndices}
