@@ -8,7 +8,7 @@ interface DaySelectorProps {
     onSelectDay: (days: boolean[]) => void;
 }
 
-const DaySelector = ({ days, onSelectDay }: DaySelectorProps) => {
+export const DaySelector = ({ days, onSelectDay }: DaySelectorProps) => {
     const selectedDays = DAYS_LIST.filter((_, i) => days[i]);
 
     const handleChange = useCallback((_: React.MouseEvent, newDays: string[]) => {
@@ -25,5 +25,3 @@ const DaySelector = ({ days, onSelectDay }: DaySelectorProps) => {
         </ToggleButtonGroup>
     );
 };
-
-export default DaySelector;

@@ -139,13 +139,12 @@ export type CalendarEventProps = CourseEventProps | CustomEventProps;
 interface CourseCalendarEventProps {
     classes: ClassNameMap;
     selectedEvent: CalendarEventProps;
-    scheduleNames: string[];
     closePopover: () => void;
 }
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopover }: CourseCalendarEventProps) => {
+const CourseCalendarEvent = ({ classes, selectedEvent, closePopover }: CourseCalendarEventProps) => {
     const paperRef = useRef<HTMLInputElement>(null);
     const quickSearch = useQuickSearchForClasses();
     const { isMilitaryTime } = useTimeFormatStore();
@@ -302,7 +301,6 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                     <CustomEventDialog
                         onDialogClose={closePopover}
                         customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)}
-                        scheduleNames={scheduleNames}
                     />
 
                     <Tooltip title="Delete">

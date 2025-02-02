@@ -14,12 +14,10 @@ import AppStore from '$stores/AppStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 
 interface CustomEventDetailViewProps {
-    scheduleNames: string[];
     customEvent: RepeatingCustomEvent;
 }
 
-const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
-    const { customEvent } = props;
+const CustomEventDetailView = ({ customEvent }: CustomEventDetailViewProps) => {
     const { isMilitaryTime } = useTimeFormatStore();
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
@@ -93,7 +91,7 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                         />
                     </Box>
 
-                    <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
+                    <CustomEventDialog customEvent={customEvent} />
 
                     <Tooltip title="Delete">
                         <IconButton

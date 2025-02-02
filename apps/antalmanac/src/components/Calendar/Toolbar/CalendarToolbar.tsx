@@ -112,7 +112,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
 
                 <ClearScheduleButton size="medium" fontSize="small" skeletonMode={skeletonMode} />
 
-                <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
+                <CustomEventDialog key="custom" />
             </Box>
         </Paper>
     );

@@ -13,10 +13,9 @@ import {
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 
-import DaySelector from './DaySelector';
-import ScheduleSelector from './ScheduleSelector';
-
 import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
+import { DaySelector } from '$components/Calendar/Toolbar/CustomEventDialog/DaySelector';
+import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog/ScheduleSelector';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import AppStore from '$stores/AppStore';
@@ -25,7 +24,6 @@ import { useThemeStore } from '$stores/SettingsStore';
 interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;
     onDialogClose?: () => void;
-    scheduleNames: string[];
 }
 
 const defaultCustomEventValues: RepeatingCustomEvent = {
@@ -37,11 +35,13 @@ const defaultCustomEventValues: RepeatingCustomEvent = {
     building: undefined,
 };
 
-function CustomEventDialogs(props: CustomEventDialogProps) {
+function CustomEventDialog(props: CustomEventDialogProps) {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const [open, setOpen] = useState(false);
-    const [scheduleIndices, setScheduleIndices] = useState<number[]>([]);
+    const [scheduleIndices, setScheduleIndices] = useState<number[]>(() => [
+        AppStore.schedule.getCurrentScheduleIndex(),
+    ]);
     const [start, setStart] = useState(defaultCustomEventValues.start);
     const [end, setEnd] = useState(defaultCustomEventValues.end);
     const [title, setTitle] = useState(defaultCustomEventValues.title);
@@ -70,7 +70,6 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
 
     const handleOpen = useCallback(() => {
         setOpen(true);
-        setScheduleIndices([AppStore.schedule.getCurrentScheduleIndex()]);
 
         logAnalytics({
             category: analyticsEnum.calendar.title,
@@ -216,8 +215,6 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                     <ScheduleSelector
                         scheduleIndices={scheduleIndices}
                         onSelectScheduleIndices={handleSelectScheduleIndices}
-                        customEvent={props.customEvent}
-                        scheduleNames={props.scheduleNames}
                     />
                 </DialogContent>
 
@@ -233,4 +230,4 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
         </>
     );
 }
-export default CustomEventDialogs;
+export default CustomEventDialog;
