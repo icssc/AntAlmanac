@@ -4,10 +4,9 @@ import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 
-import ColorPicker from '../../ColorPicker';
-
 import { deleteCustomEvent } from '$actions/AppStoreActions';
 import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
+import { ColorPicker } from '$components/ColorPicker';
 import { MapLink } from '$components/buttons/MapLink';
 import analyticsEnum from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';
@@ -89,7 +88,7 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                         <ColorPicker
                             color={customEvent.color as string}
                             isCustomEvent={true}
-                            customEventID={customEvent.customEventID}
+                            customEventId={customEvent.customEventID}
                             analyticsCategory={analyticsEnum.addedClasses.title}
                         />
                     </Box>

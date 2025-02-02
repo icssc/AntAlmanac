@@ -8,7 +8,7 @@ import { Event } from 'react-big-calendar';
 
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
-import ColorPicker from '$components/ColorPicker';
+import { ColorPicker } from '$components/ColorPicker';
 import { MapLink } from '$components/buttons/MapLink';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';
@@ -295,7 +295,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                         <ColorPicker
                             color={selectedEvent.color}
                             isCustomEvent={true}
-                            customEventID={selectedEvent.customEventID}
+                            customEventId={selectedEvent.customEventID}
                             analyticsCategory={analyticsEnum.calendar.title}
                         />
                     </div>
