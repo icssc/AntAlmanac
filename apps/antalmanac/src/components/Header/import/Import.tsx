@@ -1,3 +1,5 @@
+import { ContentPasteGo } from '@mui/icons-material';
+import { TabContext, TabPanel } from '@mui/lab';
 import {
     Box,
     Button,
@@ -6,40 +8,40 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
-    FormControl,
-    FormControlLabel,
-    Radio,
-    RadioGroup,
-    TextField,
+    Paper,
+    Tab,
+    Tabs,
     Tooltip,
-} from '@material-ui/core';
-import InputLabel from '@material-ui/core/InputLabel';
-import { PostAdd } from '@material-ui/icons';
+} from '@mui/material';
 import { CourseInfo } from '@packages/antalmanac-types';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
-import RightPaneStore from '../RightPane/RightPaneStore';
+import TermSelector from '../../RightPane/CoursePane/SearchForm/TermSelector';
+import RightPaneStore from '../../RightPane/RightPaneStore';
 
 import { addCustomEvent, openSnackbar, addCourse } from '$actions/AppStoreActions';
+import { ImportTabContent } from '$components/Header/import/ImportTabContent';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import AppStore from '$stores/AppStore';
-import { useThemeStore } from '$stores/SettingsStore';
 
-function Import() {
+
+export enum ImportSource {
+    StudyList = 'Study List',
+    Zotcourse = 'Zotcourse',
+}
+
+export function Import() {
+    const [skeletonMode, setSkeletonMode] = useState(() => AppStore.getSkeletonMode());
+
     const [open, setOpen] = useState(false);
     const [term, setTerm] = useState(RightPaneStore.getFormData().term);
-    const [importSource, setImportSource] = useState('studylist');
+    const [importSource, setImportSource] = useState<ImportSource>(ImportSource.StudyList);
     const [studyListText, setStudyListText] = useState('');
     const [zotcourseScheduleName, setZotcourseScheduleName] = useState('');
-
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-
-    const { isDark } = useThemeStore();
 
     const handleOpen = useCallback(() => {
         setOpen(true);
@@ -49,10 +51,10 @@ function Import() {
         setOpen(false);
     }, []);
 
-    const handleSubmit = async () => {
+    const handleSubmit = useCallback(async () => {
         const currentSchedule = AppStore.getCurrentScheduleIndex();
 
-        const isZotcourseImport = importSource === 'zotcourse';
+        const isZotcourseImport = importSource === 'Zotcourse';
         let sectionCodes: string[] | null = null;
 
         if (isZotcourseImport) {
@@ -120,7 +122,7 @@ function Import() {
 
         setStudyListText('');
         handleClose();
-    };
+    }, []);
 
     const addCoursesMultiple = (
         courseInfo: { [sectionCode: string]: CourseInfo },
@@ -139,16 +141,8 @@ function Import() {
         return Object.values(courseInfo).length;
     };
 
-    const handleImportSourceChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-        setImportSource(event.currentTarget.value);
-    }, []);
-
-    const handleStudyListTextChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        setStudyListText(event.currentTarget.value);
-    }, []);
-
-    const handleZotcourseScheduleNameChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        setZotcourseScheduleName(event.currentTarget.value);
+    const handleImportSourceChange = useCallback((_: React.SyntheticEvent, value: ImportSource) => {
+        setImportSource(value);
     }, []);
 
     useEffect(() => {
@@ -165,90 +159,72 @@ function Import() {
 
     return (
         <>
-            {/* TODO after mui v5 migration: change icon to ContentPasteGo */}
             <Tooltip title="Import a schedule from your Study List">
                 <Button
                     onClick={handleOpen}
                     color="inherit"
-                    startIcon={<PostAdd />}
+                    startIcon={<ContentPasteGo />}
                     disabled={skeletonMode}
                     id="import-button"
                 >
                     Import
                 </Button>
             </Tooltip>
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Import Schedule</DialogTitle>
-                <DialogContent>
-                    <FormControl>
-                        <RadioGroup
-                            name="changeImportSource"
-                            aria-label="changeImportSource"
-                            value={importSource}
-                            onChange={handleImportSourceChange}
-                        >
-                            <FormControlLabel
-                                value="studylist"
-                                control={<Radio color="primary" />}
-                                label="From Study List"
-                            />
-                            <FormControlLabel
-                                value="zotcourse"
-                                control={<Radio color="primary" />}
-                                label="From Zotcourse"
-                            />
-                        </RadioGroup>
-                    </FormControl>
-                    {importSource === 'studylist' ? (
-                        <Box>
-                            <DialogContentText>
-                                Paste the contents of your Study List below to import it into AntAlmanac.
-                                <br />
-                                To find your Study List, go to{' '}
-                                <a href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>WebReg</a> or{' '}
-                                <a href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</a>, and click
-                                on Study List once you&apos;ve logged in. Copy everything below the column names (Code,
-                                Dept, etc.) under the Enrolled Classes section.
-                            </DialogContentText>
-                            <InputLabel style={{ fontSize: '9px' }}>Study List</InputLabel>
-                            <TextField
-                                fullWidth
-                                multiline
-                                margin="dense"
-                                type="text"
-                                placeholder="Paste here"
-                                value={studyListText}
-                                onChange={handleStudyListTextChange}
-                            />
-                            <br />
-                        </Box>
-                    ) : (
-                        <Box>
-                            <DialogContentText>
-                                Paste your Zotcourse schedule name below to import it into AntAlmanac.
-                            </DialogContentText>
-                            <InputLabel style={{ fontSize: '9px' }}>Zotcourse Schedule</InputLabel>
-                            <TextField
-                                fullWidth
-                                multiline
-                                margin="dense"
-                                type="text"
-                                placeholder="Paste here"
-                                value={zotcourseScheduleName}
-                                onChange={handleZotcourseScheduleNameChange}
-                            />
-                            <br />
-                        </Box>
-                    )}
 
-                    <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
-                    <TermSelector changeTerm={setTerm} fieldName={'selectedTerm'} />
+            <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
+                <DialogTitle>Import Schedule</DialogTitle>
+
+                <DialogContent>
+                    <TabContext value={importSource}>
+                        <Paper elevation={0} variant="outlined" square sx={{ borderRadius: '4px 4px 0 0' }}>
+                            <Tabs value={importSource} onChange={handleImportSourceChange} variant="fullWidth">
+                                <Tab label="From Study List" value={ImportSource.StudyList} />
+                                <Tab label="From Zotcourse" value={ImportSource.Zotcourse} />
+                            </Tabs>
+                        </Paper>
+
+                        <TabPanel value={ImportSource.StudyList} sx={{ paddingX: 0 }}>
+                            <ImportTabContent
+                                value={studyListText}
+                                setValue={setStudyListText}
+                                importSource={ImportSource.StudyList}
+                            >
+                                <DialogContentText>
+                                    Paste the contents of your Study List below to import it into AntAlmanac.
+                                    <br />
+                                    To find your Study List, go to{' '}
+                                    <a href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>WebReg</a> or{' '}
+                                    <a href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</a>, and
+                                    click on Study List once you&apos;ve logged in. Copy everything below the column
+                                    names (Code, Dept, etc.) under the Enrolled Classes section.
+                                </DialogContentText>
+                            </ImportTabContent>
+                        </TabPanel>
+
+                        <TabPanel value={ImportSource.Zotcourse} sx={{ paddingX: 0 }}>
+                            <ImportTabContent
+                                value={zotcourseScheduleName}
+                                setValue={setZotcourseScheduleName}
+                                importSource={ImportSource.Zotcourse}
+                            >
+                                <DialogContentText>
+                                    Paste your Zotcourse schedule name below to import it into AntAlmanac.
+                                </DialogContentText>
+                            </ImportTabContent>
+                        </TabPanel>
+                    </TabContext>
+
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
+                        <TermSelector changeTerm={setTerm} fieldName={'selectedTerm'} />
+                    </Box>
                 </DialogContent>
+
                 <DialogActions>
-                    <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>
+                    <Button color="inherit" onClick={handleClose}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} color={isDark ? 'secondary' : 'primary'}>
+                    <Button color="inherit" onClick={handleSubmit}>
                         Import
                     </Button>
                 </DialogActions>
