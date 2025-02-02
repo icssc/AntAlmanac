@@ -4,10 +4,9 @@ import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 
-import ColorPicker from '../../ColorPicker';
-
 import { deleteCustomEvent } from '$actions/AppStoreActions';
 import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
+import { ColorPicker } from '$components/ColorPicker';
 import { MapLink } from '$components/buttons/MapLink';
 import analyticsEnum from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';
@@ -15,12 +14,10 @@ import AppStore from '$stores/AppStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 
 interface CustomEventDetailViewProps {
-    scheduleNames: string[];
     customEvent: RepeatingCustomEvent;
 }
 
-const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
-    const { customEvent } = props;
+const CustomEventDetailView = ({ customEvent }: CustomEventDetailViewProps) => {
     const { isMilitaryTime } = useTimeFormatStore();
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
@@ -89,12 +86,12 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                         <ColorPicker
                             color={customEvent.color as string}
                             isCustomEvent={true}
-                            customEventID={customEvent.customEventID}
+                            customEventId={customEvent.customEventID}
                             analyticsCategory={analyticsEnum.addedClasses.title}
                         />
                     </Box>
 
-                    <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
+                    <CustomEventDialog customEvent={customEvent} />
 
                     <Tooltip title="Delete">
                         <IconButton

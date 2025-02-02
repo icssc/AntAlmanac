@@ -12,9 +12,8 @@ import {
     Legend,
 } from 'recharts';
 
-import { MOBILE_BREAKPOINT } from '../../../globals';
-
 import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
+import { MOBILE_BREAKPOINT } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 
 type PopupHeaderCallback = () => void;

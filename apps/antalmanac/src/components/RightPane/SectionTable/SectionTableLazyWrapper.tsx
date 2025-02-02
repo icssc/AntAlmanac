@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react';
 
-import { SectionTableProps } from './SectionTable.types';
+import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 
 // This should be in SectionTable.tsx, IMO
 const SectionTable = lazy(() => import('./SectionTable'));

@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 
-import { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { CourseEventProps } from '$components/Calendar/CalendarEventPopoverContent';
 import { getDefaultTerm, defaultTerm, termData } from '$lib/termData';
 
 describe('termData', () => {
@@ -13,7 +13,7 @@ describe('termData', () => {
     });
 
     test('uses first term found in event list if provided', () => {
-        const event: CourseEvent = {
+        const event: CourseEventProps = {
             locations: [],
             showLocationInfo: false,
             finalExam: {

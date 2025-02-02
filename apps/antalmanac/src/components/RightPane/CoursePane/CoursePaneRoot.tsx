@@ -5,9 +5,9 @@ import RightPaneStore from '../RightPaneStore';
 
 import { CoursePaneButtonRow } from './CoursePaneButtonRow';
 import CourseRenderPane from './CourseRenderPane';
-import SearchForm from './SearchForm/SearchForm';
 
 import { openSnackbar } from '$actions/AppStoreActions';
+import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { Grades } from '$lib/grades';
 import { WebSOC } from '$lib/websoc';
@@ -54,7 +54,7 @@ export function CoursePaneRoot() {
     }, [handleKeydown]);
 
     return (
-        <Box height={'0px'} flexGrow={1} marginX={0.5}>
+        <Box height={'0px'} flexGrow={1}>
             <CoursePaneButtonRow
                 showSearch={!searchIsDisplayed}
                 onDismissSearchResults={displaySearch}

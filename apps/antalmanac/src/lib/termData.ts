@@ -1,4 +1,4 @@
-import { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
+import { CourseEventProps, CustomEventProps } from '$components/Calendar/CalendarEventPopoverContent';
 
 // The index of the default term in termData, as per WebSOC
 const defaultTerm = 0;
@@ -99,7 +99,7 @@ const termData = [
  * By default, use a static index.
  * If an array of events is provided, select the first term found.
  */
-function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): Term {
+function getDefaultTerm(events: (CustomEventProps | CourseEventProps)[] = []): Term {
     let term = termData[defaultTerm];
 
     for (const event of events) {

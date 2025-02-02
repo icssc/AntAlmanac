@@ -1,43 +1,13 @@
-import { Box } from '@material-ui/core';
-import { memo } from 'react';
-import { shallow } from 'zustand/shallow';
+import { Box } from '@mui/material';
 
-import { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
-import locationIds from '$lib/location_ids';
-import { useSelectedEventStore } from '$stores/SelectedEventStore';
+import { CourseEventProps } from '$components/Calendar/CalendarEventPopoverContent';
 
-export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) => {
-    const setSelectedEvent = useSelectedEventStore((state) => state.setSelectedEvent, shallow);
+interface CalendarCourseEventProps {
+    event: CourseEventProps;
+    handleClick: (e: React.MouseEvent) => void;
+}
 
-    const handleClick = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        setSelectedEvent(e, event);
-    };
-
-    if (event.isCustomEvent) {
-        return (
-            <Box onClick={handleClick}>
-                <Box
-                    style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        justifyContent: 'space-between',
-                        fontWeight: 500,
-                        fontSize: '0.8rem',
-                    }}
-                >
-                    <Box>{event.title}</Box>
-                </Box>
-
-                <Box style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontSize: '0.7rem' }}>
-                    <Box>{Object.keys(locationIds).find((key) => locationIds[key] === parseInt(event.building))}</Box>
-                </Box>
-            </Box>
-        );
-    }
-
+export const CalendarCourseEvent = ({ event, handleClick }: CalendarCourseEventProps) => {
     return (
         <Box onClick={handleClick}>
             <Box
@@ -64,6 +34,4 @@ export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) =>
             </Box>
         </Box>
     );
-});
-
-CalendarCourseEvent.displayName = 'CalendarCourseEvent';
+};

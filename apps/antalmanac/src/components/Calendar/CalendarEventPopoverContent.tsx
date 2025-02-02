@@ -8,7 +8,7 @@ import { Event } from 'react-big-calendar';
 
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
-import ColorPicker from '$components/ColorPicker';
+import { ColorPicker } from '$components/ColorPicker';
 import { MapLink } from '$components/buttons/MapLink';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';
@@ -109,7 +109,7 @@ export type FinalExam =
     | (Omit<Extract<WebsocSectionFinalExam, { examStatus: 'SCHEDULED_FINAL' }>, 'bldg'> & { locations: Location[] })
     | Extract<WebsocSectionFinalExam, { examStatus: 'NO_FINAL' | 'TBA_FINAL' }>;
 
-export interface CourseEvent extends CommonCalendarEvent {
+export interface CourseEventProps extends CommonCalendarEvent {
     locations: Location[];
     showLocationInfo: boolean;
     finalExam: FinalExam;
@@ -127,25 +127,24 @@ export interface CourseEvent extends CommonCalendarEvent {
  * There is another CustomEvent interface in CourseCalendarEvent and they are slightly different.  The this one represents only one day, like the event on Monday, and needs to be duplicated to be repeated across multiple days. The other one, `CustomEventDialog`'s `RepeatingCustomEvent`, encapsulates the occurrences of an event on multiple days, like Monday Tuesday Wednesday all in the same object as specified by the `days` array.
  * https://github.com/icssc/AntAlmanac/wiki/The-Great-AntAlmanac-TypeScript-Rewritening%E2%84%A2#duplicate-interface-names-%EF%B8%8F
  */
-export interface CustomEvent extends CommonCalendarEvent {
+export interface CustomEventProps extends CommonCalendarEvent {
     customEventID: number;
     isCustomEvent: true;
     building: string;
     days: string[];
 }
 
-export type CalendarEvent = CourseEvent | CustomEvent;
+export type CalendarEventProps = CourseEventProps | CustomEventProps;
 
 interface CourseCalendarEventProps {
     classes: ClassNameMap;
-    selectedEvent: CalendarEvent;
-    scheduleNames: string[];
+    selectedEvent: CalendarEventProps;
     closePopover: () => void;
 }
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopover }: CourseCalendarEventProps) => {
+const CourseCalendarEvent = ({ classes, selectedEvent, closePopover }: CourseCalendarEventProps) => {
     const paperRef = useRef<HTMLInputElement>(null);
     const quickSearch = useQuickSearchForClasses();
     const { isMilitaryTime } = useTimeFormatStore();
@@ -295,14 +294,13 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                         <ColorPicker
                             color={selectedEvent.color}
                             isCustomEvent={true}
-                            customEventID={selectedEvent.customEventID}
+                            customEventId={selectedEvent.customEventID}
                             analyticsCategory={analyticsEnum.calendar.title}
                         />
                     </div>
                     <CustomEventDialog
                         onDialogClose={closePopover}
                         customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)}
-                        scheduleNames={scheduleNames}
                     />
 
                     <Tooltip title="Delete">

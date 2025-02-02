@@ -1,4 +1,4 @@
-import { TextField } from '@material-ui/core';
+import { TextField } from '@mui/material';
 import { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
@@ -48,16 +48,14 @@ class SectionCodeSearchBar extends PureComponent {
 
     render() {
         return (
-            <div>
-                <TextField
-                    label="Course Code or Range"
-                    value={this.state.sectionCode}
-                    onChange={this.handleChange}
-                    type="search"
-                    helperText="ex. 14200, 29000-29100"
-                    fullWidth
-                />
-            </div>
+            <TextField
+                label="Course Code or Range"
+                value={this.state.sectionCode}
+                onChange={this.handleChange}
+                type="search"
+                helperText="ex. 14200, 29000-29100"
+                fullWidth
+            />
         );
     }
 }

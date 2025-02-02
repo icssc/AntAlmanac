@@ -19,7 +19,7 @@ import type {
     UndoAction,
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
-import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { CalendarEventProps, CourseEventProps } from '$components/Calendar/CalendarEventPopoverContent';
 import { SnackbarPosition } from '$components/NotificationSnackbar';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
@@ -41,9 +41,9 @@ class AppStore extends EventEmitter {
 
     snackbarStyle: object;
 
-    eventsInCalendar: CalendarEvent[];
+    eventsInCalendar: CalendarEventProps[];
 
-    finalsEventsInCalendar: CourseEvent[];
+    finalsEventsInCalendar: CourseEventProps[];
 
     unsavedChanges: boolean;
 

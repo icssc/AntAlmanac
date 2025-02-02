@@ -5,7 +5,7 @@ import type {
     WebsocSectionFinalExam,
 } from '@packages/antalmanac-types';
 
-import { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
+import { CourseEventProps, CustomEventProps, Location } from '$components/Calendar/CalendarEventPopoverContent';
 import { getFinalsStartForTerm } from '$lib/termData';
 import { notNull, getReferencesOccurring } from '$lib/utils';
 
@@ -18,7 +18,7 @@ export function getLocation(location: string): Location {
     return { building, room };
 }
 
-export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): CourseEvent[] => {
+export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): CourseEventProps[] => {
     return currentCourses.flatMap((course) => {
         return course.section.meetings
             .filter((meeting) => !meeting.timeIsTBA)
@@ -84,7 +84,7 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): 
     });
 };
 
-export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
+export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): CourseEventProps[] {
     return currentCourses
         .filter((course) => course.section.finalExam.examStatus === 'SCHEDULED_FINAL')
         .flatMap((course) => {
@@ -120,8 +120,8 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
             const locationsWithNoDays = bldg
                 ? bldg.map(getLocation)
                 : !course.section.meetings[0].timeIsTBA
-                  ? course.section.meetings[0].bldg.map(getLocation)
-                  : [];
+                ? course.section.meetings[0].bldg.map(getLocation)
+                : [];
 
             /**
              * Fallback to January 2018 if no finals start date is available.
@@ -167,7 +167,7 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
         });
 }
 
-export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[] = []): CustomEvent[] {
+export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[] = []): CustomEventProps[] {
     return currentCustomEvents.flatMap((customEvent) => {
         const dayIndicesOccurring = customEvent.days.map((day, index) => (day ? index : undefined)).filter(notNull);
         /**

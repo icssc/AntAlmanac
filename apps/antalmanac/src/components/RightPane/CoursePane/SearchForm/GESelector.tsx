@@ -22,7 +22,6 @@ const geList: { value: string; label: string }[] = [
 const styles = {
     formControl: {
         flexGrow: 1,
-        marginRight: 15,
         width: '50%',
     },
 };

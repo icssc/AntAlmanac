@@ -58,8 +58,8 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
 };
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
-
-    const isDark = useThemeStore((store) => store.isDark);
+    const theme = useTheme();
+    const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
     const recruitmentDismissalTime = getLocalStorageRecruitmentDismissalTime();
@@ -71,7 +71,10 @@ const RecruitmentBanner = () => {
     );
     const displayRecruitmentBanner = bannerVisibility && !dismissedRecently && isSearchCS;
 
-    const isMobileScreen = useMediaQuery('(max-width: 750px)');
+    const handleClick = () => {
+        setLocalStorageRecruitmentDismissalTime(Date.now().toString());
+        setBannerVisibility(false);
+    };
 
     return (
         <Box sx={{ position: 'fixed', bottom: 5, right: isMobileScreen ? 5 : 75, zIndex: 999 }}>
@@ -80,19 +83,12 @@ const RecruitmentBanner = () => {
                     icon={false}
                     severity="info"
                     style={{
-                        color: isDark ? '#ece6e6' : '#2e2e2e',
-                        backgroundColor: isDark ? '#2e2e2e' : '#ece6e6',
+                        color: 'unset',
+                        backgroundColor: theme.palette.background.paper,
+                        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
                     }}
                     action={
-                        <IconButton
-                            aria-label="close"
-                            size="small"
-                            color="inherit"
-                            onClick={() => {
-                                setLocalStorageRecruitmentDismissalTime(Date.now().toString());
-                                setBannerVisibility(false);
-                            }}
-                        >
+                        <IconButton aria-label="close" size="small" color="inherit" onClick={handleClick}>
                             <Close fontSize="inherit" />
                         </IconButton>
                     }
