@@ -1,3 +1,4 @@
+import { RateReview, Assessment, ShowChart } from '@mui/icons-material';
 import {
     Box,
     Paper,
@@ -6,11 +7,9 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Tooltip,
-    Typography,
     useMediaQuery,
-} from '@material-ui/core';
-import { Assessment, Help, RateReview, ShowChart as ShowChartIcon } from '@material-ui/icons';
+    useTheme,
+} from '@mui/material';
 import { useMemo } from 'react';
 
 import { EnrollmentHistoryPopup } from './EnrollmentHistoryPopup';
@@ -20,11 +19,12 @@ import { SectionTableProps } from './SectionTable.types';
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
+import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import analyticsEnum from '$lib/analytics';
-import { MOBILE_BREAKPOINT } from '$src/globals';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import { useTabStore } from '$stores/TabStore';
+
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -77,41 +77,19 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
 };
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
-interface EnrollmentColumnHeaderProps {
-    label: string;
-}
-
-function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
-
-    return (
-        <Box display="flex">
-            {props.label}
-            {!isMobileScreen && (
-                <Tooltip
-                    title={
-                        <Typography>
-                            Enrolled/Capacity
-                            <br />
-                            Waitlist
-                            <br />
-                            New-Only Reserved
-                        </Typography>
-                    }
-                >
-                    <Help fontSize="small" />
-                </Tooltip>
-            )}
-        </Box>
-    );
-}
-
-function SectionTable(props: SectionTableProps) {
-    const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory } = props;
+// SectionTable is exported as default to support lazy loading
+export default function SectionTable({
+    courseDetails,
+    term,
+    allowHighlight,
+    scheduleNames,
+    analyticsCategory,
+}: SectionTableProps) {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
@@ -121,14 +99,14 @@ function SectionTable(props: SectionTableProps) {
      * Limit table width to force side scrolling.
      */
     const tableMinWidth = useMemo(() => {
-        const width = isMobileScreen ? 600 : 780;
+        const width = isMobile ? 600 : 780;
         const numActiveColumns = activeColumns.length;
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
-    }, [isMobileScreen, activeColumns]);
+    }, [isMobile, activeColumns]);
 
     return (
         <>
-            <Box style={{ display: 'flex', gap: 4, marginTop: 4, marginBottom: 8 }}>
+            <Box sx={{ display: 'flex', gap: 0.5, marginTop: 0.5, marginBottom: 1 }}>
                 <CourseInfoBar
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
@@ -156,7 +134,7 @@ function SectionTable(props: SectionTableProps) {
                         <GradesPopup
                             deptCode={courseDetails.deptCode}
                             courseNumber={courseDetails.courseNumber}
-                            isMobileScreen={isMobileScreen}
+                            isMobileScreen={isMobile}
                         />
                     }
                 />
@@ -165,7 +143,7 @@ function SectionTable(props: SectionTableProps) {
                     analyticsCategory={analyticsCategory}
                     analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_ENROLLMENT}
                     text="Past Enrollment"
-                    icon={<ShowChartIcon />}
+                    icon={<ShowChart />}
                     popupContent={
                         <EnrollmentHistoryPopup
                             department={courseDetails.deptCode}
@@ -207,5 +185,3 @@ function SectionTable(props: SectionTableProps) {
         </>
     );
 }
-
-export default SectionTable;
