@@ -1,66 +1,34 @@
-import { IconButton, Theme, Tooltip } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { IconButton, Tooltip } from '@material-ui/core';
 import { Tune } from '@material-ui/icons';
-import { FormEvent, useState } from 'react';
+import { Box, FormControl, Stack } from '@mui/material';
+import { FormEvent, useCallback, useState } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
 
-import FuzzySearch from './FuzzySearch';
-import HelpBox from './HelpBox';
-import TermSelector from './TermSelector';
-
+import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
+import HelpBox from '$components/RightPane/CoursePane/SearchForm/HelpBox';
 import { LegacySearch } from '$components/RightPane/CoursePane/SearchForm/LegacySearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
+import TermSelector from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { getLocalStorageHelpBoxDismissalTime, setLocalStorageHelpBoxDismissalTime } from '$lib/localStorage';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
-const styles: Styles<Theme, object> = {
-    rightPane: {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        overflowX: 'hidden',
-    },
-    container: {
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-        gap: 16,
-    },
-    searchBar: {
-        display: 'flex',
-        flexDirection: 'row',
-    },
-    margin: {
-        borderTop: 'solid 8px transparent',
-        display: 'inline-flex',
-    },
-    form: {
-        marginBottom: '20px',
-        flexGrow: 2,
-    },
-    fallback: {
-        height: '100%',
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-};
+interface SearchFormProps {
+    toggleSearch: VoidFunction;
+}
 
-const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) => {
-    const { classes, toggleSearch } = props;
+export function SearchForm({ toggleSearch }: SearchFormProps) {
     const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
     const [helpBoxVisibility, setHelpBoxVisibility] = useState(true);
 
-    const onFormSubmit = (event: FormEvent) => {
+    const onFormSubmit = useCallback((event: FormEvent) => {
         event.preventDefault();
         toggleSearch();
-    };
+    }, []);
 
     const currentMonthIndex = new Date().getMonth(); // 0=Jan
+
     // Active months: February/March for Spring planning, May/June for Fall planning, July/August for Summer planning,
     // and November/December for Winter planning
     const activeMonthIndices = [false, true, true, false, true, true, true, true, false, false, true, true];
@@ -78,10 +46,15 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
     };
 
     return (
-        <div className={classes.rightPane}>
-            <form onSubmit={onFormSubmit} className={classes.form}>
-                <div className={classes.container}>
-                    <div className={classes.margin}>
+        <Stack sx={{ overflowX: 'hidden', height: '100%' }} spacing={2.5}>
+            <FormControl onSubmit={onFormSubmit} sx={{ display: 'flex', flexGrow: 1 }}>
+                <Stack spacing={2}>
+                    <Box
+                        sx={{
+                            borderTop: 'solid 8px transparent',
+                            display: 'inline-flex',
+                        }}
+                    >
                         <TermSelector
                             changeTerm={(field: string, value: string) => RightPaneStore.updateFormValue(field, value)}
                             fieldName={'term'}
@@ -91,14 +64,12 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                                 <Tune />
                             </IconButton>
                         </Tooltip>
-                    </div>
+                    </Box>
 
                     {!manualSearchEnabled ? (
-                        <div className={classes.container}>
-                            <div className={classes.searchBar} id="searchBar">
-                                <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleManualSearch} />
-                            </div>
-                        </div>
+                        <Stack direction="row" id="searchBar">
+                            <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleManualSearch} />
+                        </Stack>
                     ) : (
                         <LegacySearch
                             onSubmit={() => {
@@ -110,13 +81,13 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                             onReset={RightPaneStore.resetFormValues}
                         />
                     )}
-                </div>
-            </form>
+                </Stack>
+            </FormControl>
 
-            {displayHelpBox && <HelpBox onDismiss={onHelpBoxDismiss} />}
-            <PrivacyPolicyBanner />
-        </div>
+            <Box>
+                {displayHelpBox && <HelpBox onDismiss={onHelpBoxDismiss} />}
+                <PrivacyPolicyBanner />
+            </Box>
+        </Stack>
     );
-};
-
-export default withStyles(styles)(SearchForm);
+}
