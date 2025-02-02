@@ -1,4 +1,4 @@
-import { TextField, Box, FormControl, InputLabel, Select, Switch, FormControlLabel } from '@material-ui/core';
+import { TextField, Box, FormControl, InputLabel, Select, Switch, FormControlLabel } from '@mui/material';
 import { MenuItem } from '@mui/material';
 import { useState, useEffect, useCallback } from 'react';
 
@@ -146,25 +146,27 @@ export function AdvancedSearchTextFields() {
                 label="Instructor"
                 type="search"
                 value={instructor}
-                onChange={handleChange('instructor')}
+                onChange={() => handleChange('instructor')}
                 helperText="Last name only"
+                variant="standard"
             />
 
             <TextField
                 id="units"
                 label="Units"
                 value={units}
-                onChange={handleChange('units')}
+                onChange={() => handleChange('units')}
                 type="search"
                 helperText="ex. 3, 4, or VAR"
                 style={{ width: 80 }}
+                variant="standard"
             />
 
             <FormControl>
                 <InputLabel>Class Full Option</InputLabel>
                 <Select
                     value={coursesFull}
-                    onChange={handleChange('coursesFull')}
+                    onChange={() => handleChange('coursesFull')}
                     MenuProps={{
                         anchorOrigin: {
                             vertical: 'bottom',
@@ -175,6 +177,7 @@ export function AdvancedSearchTextFields() {
                             horizontal: 'left',
                         },
                     }}
+                    variant="standard"
                 >
                     <MenuItem value={'ANY'}>Include all classes</MenuItem>
                     <MenuItem value={'SkipFullWaitlist'}>Include full courses if space on waitlist</MenuItem>
@@ -191,7 +194,7 @@ export function AdvancedSearchTextFields() {
                 <Select
                     labelId="division-label"
                     value={division}
-                    onChange={handleChange('division')}
+                    onChange={() => handleChange('division')}
                     displayEmpty
                     MenuProps={{
                         anchorOrigin: {
@@ -203,6 +206,7 @@ export function AdvancedSearchTextFields() {
                             horizontal: 'left',
                         },
                     }}
+                    variant="standard"
                 >
                     <MenuItem value={''}>Any Division</MenuItem>
                     <MenuItem value={'LowerDiv'}>Lower Division</MenuItem>
@@ -216,8 +220,9 @@ export function AdvancedSearchTextFields() {
                 <Select
                     labelId="starts-after-dropdown-label"
                     value={startTime}
-                    onChange={handleChange('startTime')}
+                    onChange={() => handleChange('startTime')}
                     style={{ width: 130 }}
+                    variant="standard"
                 >
                     {startsAfterMenuItems}
                 </Select>
@@ -228,8 +233,9 @@ export function AdvancedSearchTextFields() {
                 <Select
                     labelId="ends-before-dropdown-label"
                     value={endTime}
-                    onChange={handleChange('endTime')}
+                    onChange={() => handleChange('endTime')}
                     style={{ width: 130 }}
+                    variant="standard"
                 >
                     {endsBeforeMenuItems}
                 </Select>
@@ -238,7 +244,7 @@ export function AdvancedSearchTextFields() {
             <FormControlLabel
                 control={
                     <Switch
-                        onChange={handleChange('online')}
+                        onChange={() => handleChange('online')}
                         value="online"
                         color="primary"
                         checked={building === 'ON'}
@@ -254,10 +260,18 @@ export function AdvancedSearchTextFields() {
                 label="Building"
                 type="search"
                 value={building}
-                onChange={handleChange('building')}
+                onChange={() => handleChange('building')}
+                variant="standard"
             />
 
-            <TextField id="room" label="Room" type="search" value={room} onChange={handleChange('room')} />
+            <TextField
+                id="room"
+                label="Room"
+                type="search"
+                value={room}
+                onChange={() => handleChange('room')}
+                variant="standard"
+            />
 
             <FormControl style={{ minWidth: 150 }}>
                 <InputLabel id="exclude-restriction-codes-label">Exclude Restrictions</InputLabel>
@@ -265,8 +279,9 @@ export function AdvancedSearchTextFields() {
                     multiple
                     labelId="exclude-restriction-codes-label"
                     value={excludeRestrictionCodes.split('')}
-                    onChange={handleChange('excludeRestrictionCodes')}
+                    onChange={() => handleChange('excludeRestrictionCodes')}
                     renderValue={(selected) => (selected as string[]).join(', ')}
+                    variant="standard"
                 >
                     {EXCLUDE_RESTRICTION_CODES_OPTIONS.map((option) => (
                         <MenuItem
