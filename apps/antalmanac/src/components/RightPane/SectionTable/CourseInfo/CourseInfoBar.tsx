@@ -1,34 +1,11 @@
-import { Button, Popover, useMediaQuery } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
-import { Skeleton } from '@material-ui/lab';
+import { InfoOutlined } from '@mui/icons-material';
+import { Box, Button, Popover, Skeleton, useMediaQuery, useTheme } from '@mui/material';
 import type { PrerequisiteTree } from '@packages/antalmanac-types';
 import { useState } from 'react';
 
 import { PrereqTree } from '$components/RightPane/SectionTable/prereq/PrereqTree';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import trpc from '$lib/api/trpc';
-import { MOBILE_BREAKPOINT } from '$src/globals';
-
-const styles = () => ({
-    rightSpace: {
-        marginRight: 4,
-    },
-    button: {
-        backgroundColor: '#72a9ed',
-        boxShadow: 'none',
-    },
-    courseInfoPane: {
-        margin: 10,
-        maxWidth: 500,
-    },
-    skeleton: {
-        margin: 10,
-        width: 500,
-        height: 150,
-    },
-});
 
 const noCourseInfo = {
     id: '',
@@ -48,7 +25,6 @@ interface CourseInfoBarProps {
     courseNumber: string;
     deptCode: string;
     prerequisiteLink: string;
-    classes: ClassNameMap;
     analyticsCategory: string;
 }
 
@@ -65,8 +41,8 @@ export interface CourseInfo {
     ge_list: string;
 }
 
-export const CourseInfoBar = withStyles(styles)((props: CourseInfoBarProps) => {
-    const { courseTitle, courseNumber, deptCode, prerequisiteLink, classes, analyticsCategory } = props;
+export const CourseInfoBar = (props: CourseInfoBarProps) => {
+    const { courseTitle, courseNumber, deptCode, prerequisiteLink, analyticsCategory } = props;
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [courseInfo, setCourseInfo] = useState<CourseInfo | null>(null);
@@ -108,7 +84,7 @@ export const CourseInfoBar = withStyles(styles)((props: CourseInfoBarProps) => {
     const getPopoverContent = () => {
         if (courseInfo === null) {
             return (
-                <div className={classes.skeleton}>
+                <Box sx={{ margin: 1.5, width: 500, height: 150 }}>
                     <p>
                         <Skeleton variant="text" animation="wave" height={30} width="50%" />
                     </p>
@@ -119,13 +95,18 @@ export const CourseInfoBar = withStyles(styles)((props: CourseInfoBarProps) => {
                         <Skeleton variant="text" animation="wave" />
                         <Skeleton variant="text" animation="wave" />
                     </p>
-                </div>
+                </Box>
             );
         } else {
             const { title, prerequisite_tree, prerequisite_text, prerequisite_for, description, ge_list } = courseInfo;
 
             return (
-                <div className={classes.courseInfoPane}>
+                <Box
+                    sx={{
+                        margin: 1.5,
+                        maxWidth: 500,
+                    }}
+                >
                     <p>
                         <strong>{title}</strong>
                     </p>
@@ -145,36 +126,38 @@ export const CourseInfoBar = withStyles(styles)((props: CourseInfoBarProps) => {
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
-                                <span className={classes.rightSpace}>Prerequisites:</span>
+                                <span>Prerequisites:</span>
                             </a>
                             {prerequisite_text}
                         </p>
                     )}
                     {prerequisite_for.length !== 0 && (
                         <p>
-                            <span className={classes.rightSpace}>Prerequisite for:</span>
+                            <span>Prerequisite for:</span>
                             {prerequisite_for.join(', ')}
                         </p>
                     )}
 
                     {ge_list !== '' && (
                         <p>
-                            <span className={classes.rightSpace}>General Education Categories:</span>
+                            <span>General Education Categories:</span>
                             {ge_list}
                         </p>
                     )}
-                </div>
+                </Box>
             );
         }
     };
 
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     return (
         <>
             <Button
                 variant="contained"
-                startIcon={!isMobileScreen && <InfoOutlinedIcon />}
+                color={'secondary'}
+                startIcon={!isMobile && <InfoOutlined />}
                 size="small"
                 onClick={(event) => {
                     logAnalytics({
@@ -182,13 +165,14 @@ export const CourseInfoBar = withStyles(styles)((props: CourseInfoBarProps) => {
                         action: analyticsEnum.classSearch.actions.CLICK_INFO,
                     });
                     const currentTarget = event.currentTarget;
-                    void togglePopover(currentTarget);
+                    togglePopover(currentTarget);
                 }}
             >
                 <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {`${deptCode} ${courseNumber} | ${courseTitle}`}
                 </span>
             </Button>
+
             <Popover
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
@@ -206,4 +190,4 @@ export const CourseInfoBar = withStyles(styles)((props: CourseInfoBarProps) => {
             </Popover>
         </>
     );
-});
+};
