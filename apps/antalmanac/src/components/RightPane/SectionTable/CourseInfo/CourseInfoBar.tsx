@@ -6,7 +6,7 @@ import { Skeleton } from '@material-ui/lab';
 import type { PrerequisiteTree } from '@packages/antalmanac-types';
 import { useState } from 'react';
 
-import PrereqTree from '$components/RightPane/SectionTable/PrereqTree';
+import { PrereqTree } from '$components/RightPane/SectionTable/prereq/PrereqTree';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import trpc from '$lib/api/trpc';
 import { MOBILE_BREAKPOINT } from '$src/globals';

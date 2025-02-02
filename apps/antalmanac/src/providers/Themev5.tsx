@@ -73,6 +73,13 @@ export default function AppThemev5Provider(props: Props) {
                             },
                         },
                     },
+                    MuiPopover: {
+                        styleOverrides: {
+                            paper: {
+                                backgroundImage: 'none',
+                            },
+                        },
+                    },
                     MuiAppBar: {
                         styleOverrides: {
                             root: {
