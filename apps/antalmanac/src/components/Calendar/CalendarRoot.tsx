@@ -1,7 +1,7 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
 
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import moment from 'moment';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
@@ -9,8 +9,8 @@ import { shallow } from 'zustand/shallow';
 
 import type { CalendarEventProps, CourseEventProps } from './CalendarEventPopoverContent';
 
-import { CalendarEvent } from '$components/Calendar/CalendarEvent';
 import { CalendarEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
+import { CalendarEvent } from '$components/Calendar/CalendarEvent';
 import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
@@ -114,8 +114,8 @@ export const ScheduleCalendar = memo(() => {
     const finalsDate = hoveredCalendarizedFinal
         ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
         : onlyCourseEvents.length > 0
-        ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
-        : getDefaultFinalsStartDate();
+          ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
+          : getDefaultFinalsStartDate();
 
     const finalsDateFormat = finalsDate ? 'ddd MM/DD' : 'ddd';
     const date = showFinalsSchedule && finalsDate ? finalsDate : new Date(2018, 0, 1);
@@ -176,7 +176,10 @@ export const ScheduleCalendar = memo(() => {
     }, []);
 
     return (
-        <Box id="calendar-root" borderRadius={1} flexGrow={1} height={'0px'} display="flex" flexDirection="column">
+        <Box
+            id="calendar-root"
+            sx={{ display: 'flex', flexDirection: 'column', height: 0, flexGrow: 1, borderRadius: 1 }}
+        >
             <CalendarToolbar
                 currentScheduleIndex={currentScheduleIndex}
                 toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
@@ -184,7 +187,7 @@ export const ScheduleCalendar = memo(() => {
                 scheduleNames={scheduleNames}
             />
 
-            <Box id="screenshot" height="0" flexGrow={1}>
+            <Box id="screenshot" sx={{ height: 0, flexGrow: 1 }}>
                 <CalendarEventPopover />
 
                 <Calendar<CalendarEventProps, object>
