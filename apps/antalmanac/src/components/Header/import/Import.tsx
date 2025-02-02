@@ -16,11 +16,11 @@ import {
 import { CourseInfo } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 
-import TermSelector from '../../RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '../../RightPane/RightPaneStore';
 
 import { addCustomEvent, openSnackbar, addCourse } from '$actions/AppStoreActions';
 import { ImportTabContent } from '$components/Header/import/ImportTabContent';
+import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';

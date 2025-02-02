@@ -8,11 +8,10 @@ import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch
 import HelpBox from '$components/RightPane/CoursePane/SearchForm/HelpBox';
 import { LegacySearch } from '$components/RightPane/CoursePane/SearchForm/LegacySearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
-import TermSelector from '$components/RightPane/CoursePane/SearchForm/TermSelector';
+import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { getLocalStorageHelpBoxDismissalTime, setLocalStorageHelpBoxDismissalTime } from '$lib/localStorage';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
-
 
 interface SearchFormProps {
     toggleSearch: VoidFunction;
