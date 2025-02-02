@@ -8,10 +8,10 @@ import RightPaneStore from '../../RightPaneStore';
 
 import FuzzySearch from './FuzzySearch';
 import HelpBox from './HelpBox';
-import PrivacyPolicyBanner from './PrivacyPolicyBanner';
 import TermSelector from './TermSelector';
 
 import { LegacySearch } from '$components/RightPane/CoursePane/SearchForm/LegacySearch';
+import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { getLocalStorageHelpBoxDismissalTime, setLocalStorageHelpBoxDismissalTime } from '$lib/localStorage';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
