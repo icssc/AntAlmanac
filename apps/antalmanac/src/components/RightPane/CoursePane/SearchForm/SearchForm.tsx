@@ -1,6 +1,5 @@
-import { IconButton, Tooltip } from '@material-ui/core';
-import { Tune } from '@material-ui/icons';
-import { Box, FormControl, Stack } from '@mui/material';
+import { Tune } from '@mui/icons-material';
+import { Box, FormControl, IconButton, Stack, Tooltip } from '@mui/material';
 import { FormEvent, useCallback, useState } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
@@ -13,6 +12,7 @@ import TermSelector from '$components/RightPane/CoursePane/SearchForm/TermSelect
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { getLocalStorageHelpBoxDismissalTime, setLocalStorageHelpBoxDismissalTime } from '$lib/localStorage';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
+
 
 interface SearchFormProps {
     toggleSearch: VoidFunction;
