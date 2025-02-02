@@ -1,9 +1,9 @@
 import { memo, useCallback } from 'react';
 
+import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
+import { CalendarCustomEvent } from '$components/Calendar/CalendarCustomEvent';
 import { CalendarEventProps } from '$components/Calendar/CalendarEventPopoverContent';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
-import { CalendarCustomEvent } from '$components/Calendar/CalendarCustomEvent';
-import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
 
 export const CalendarEvent = memo(({ event }: { event: CalendarEventProps }) => {
     const { setSelectedEvent } = useSelectedEventStore();

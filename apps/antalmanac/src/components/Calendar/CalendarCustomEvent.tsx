@@ -1,6 +1,7 @@
+import { Box } from '@mui/material';
+
 import { CustomEventProps } from '$components/Calendar/CalendarEventPopoverContent';
 import locationIds from '$lib/location_ids';
-import { Box } from '@mui/material';
 
 interface CalendarCustomEventProps {
     event: CustomEventProps;

@@ -28,7 +28,6 @@ import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import AppStore from '$stores/AppStore';
 
-
 export enum ImportSource {
     StudyList = 'Study List',
     Zotcourse = 'Zotcourse',
@@ -232,5 +231,3 @@ export function Import() {
         </>
     );
 }
-
-export default Import;

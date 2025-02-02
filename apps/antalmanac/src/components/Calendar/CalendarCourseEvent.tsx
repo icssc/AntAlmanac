@@ -1,5 +1,6 @@
-import { CourseEventProps } from '$components/Calendar/CalendarEventPopoverContent';
 import { Box } from '@mui/material';
+
+import { CourseEventProps } from '$components/Calendar/CalendarEventPopoverContent';
 
 interface CalendarCourseEventProps {
     event: CourseEventProps;
@@ -26,8 +27,8 @@ export const CalendarCourseEvent = ({ event, handleClick }: CalendarCourseEventP
                     {event.showLocationInfo
                         ? event.locations.map((location) => `${location.building} ${location.room}`).join(', ')
                         : event.locations.length > 1
-                        ? `${event.locations.length} Locations`
-                        : `${event.locations[0].building} ${event.locations[0].room}`}
+                          ? `${event.locations.length} Locations`
+                          : `${event.locations[0].building} ${event.locations[0].room}`}
                 </Box>
                 <Box>{event.sectionCode}</Box>
             </Box>
