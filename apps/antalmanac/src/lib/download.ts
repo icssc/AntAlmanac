@@ -5,7 +5,7 @@ import { createEvents, type EventAttributes } from 'ics';
 import { notNull } from './utils';
 
 import { openSnackbar } from '$actions/AppStoreActions';
-import { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
+import { CustomEventProps, FinalExam } from '$components/Calendar/CalendarEventPopoverContent';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';
 import { getDefaultTerm, termData } from '$lib/termData';
@@ -263,7 +263,7 @@ export function getEventsFromCourses(
         if (event.isCustomEvent) {
             // FIXME: We don't have a way to get the term for custom events,
             // so we just use the default term.
-            const { title, start, end, building } = event as CustomEvent;
+            const { title, start, end, building } = event as CustomEventProps;
             const days = getByDays(event.days.join(''));
             const rrule = getRRule(days, getQuarter(term));
             const eventStartDate = getClassStartDate(term, days);

@@ -1,19 +1,19 @@
 import { SyntheticEvent } from 'react';
 import { create } from 'zustand';
 
-import { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
+import { CalendarEventProps } from '$components/Calendar/CalendarEventPopoverContent';
 
 export interface SelectedEventStore {
-    selectedEvent: CalendarEvent | null;
+    selectedEvent: CalendarEventProps | null;
     selectedEventAnchorEl: Element | null;
-    setSelectedEvent: (anchorEl: SyntheticEvent | null, selectedEvent: CalendarEvent | null) => void;
+    setSelectedEvent: (anchorEl: SyntheticEvent | null, selectedEvent: CalendarEventProps | null) => void;
 }
 
 export const useSelectedEventStore = create<SelectedEventStore>((set) => {
     return {
         selectedEvent: null,
         selectedEventAnchorEl: null,
-        setSelectedEvent: (anchorEl: SyntheticEvent | null, selectedEvent: CalendarEvent | null) => {
+        setSelectedEvent: (anchorEl: SyntheticEvent | null, selectedEvent: CalendarEventProps | null) => {
             set({
                 selectedEvent: selectedEvent,
                 selectedEventAnchorEl: anchorEl?.currentTarget,

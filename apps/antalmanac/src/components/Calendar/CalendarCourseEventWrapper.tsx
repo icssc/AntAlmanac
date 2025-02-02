@@ -3,18 +3,18 @@ import { useCallback, useEffect, useRef } from 'react';
 import { EventWrapperProps } from 'react-big-calendar';
 import { shallow } from 'zustand/shallow';
 
-import type { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CalendarEventProps } from '$components/Calendar/CalendarEventPopoverContent';
 import { useQuickSearchForClasses } from '$lib/helpers';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 
-interface CalendarCourseEventWrapperProps extends EventWrapperProps<CalendarEvent> {
+interface CalendarEventWrapperProps extends EventWrapperProps<CalendarEventProps> {
     children?: React.ReactNode;
 }
 
 /**
- * CalendarCourseEventWrapper allows us to override the default onClick event behavior which problamtically rerenders the entire calendar
+ * This component allows us to override the default onClick event behavior which problamtically rerenders the entire calendar
  */
-export const CalendarCourseEventWrapper = ({ children, ...props }: CalendarCourseEventWrapperProps) => {
+export const CalendarEventWrapper = ({ children, ...props }: CalendarEventWrapperProps) => {
     const ref = useRef<HTMLDivElement>(null);
     const quickSearch = useQuickSearchForClasses();
 

@@ -7,10 +7,10 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
 import { shallow } from 'zustand/shallow';
 
-import { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
+import type { CalendarEventProps, CourseEventProps } from './CalendarEventPopoverContent';
 
-import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
-import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
+import { CalendarEvent } from '$components/Calendar/CalendarEvent';
+import { CalendarEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
 import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
@@ -19,10 +19,10 @@ import { useHoveredStore } from '$stores/HoveredStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 
 const CALENDAR_LOCALIZER: DateLocalizer = momentLocalizer(moment);
-const CALENDAR_VIEWS: ViewsProps<CalendarEvent, object> = [Views.WEEK, Views.WORK_WEEK];
-const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
-    event: CalendarCourseEvent,
-    eventWrapper: CalendarCourseEventWrapper,
+const CALENDAR_VIEWS: ViewsProps<CalendarEventProps, object> = [Views.WEEK, Views.WORK_WEEK];
+const CALENDAR_COMPONENTS: Components<CalendarEventProps, object> = {
+    event: CalendarEvent,
+    eventWrapper: CalendarEventWrapper,
 };
 const CALENDAR_MAX_DATE = new Date(2018, 0, 1, 23);
 
@@ -39,7 +39,7 @@ export const ScheduleCalendar = memo(() => {
         shallow
     );
 
-    const getEventsForCalendar = useCallback((): CalendarEvent[] => {
+    const getEventsForCalendar = useCallback((): CalendarEventProps[] => {
         if (showFinalsSchedule)
             return hoveredCalendarizedFinal
                 ? [...finalsEventsInCalendar, hoveredCalendarizedFinal]
@@ -69,7 +69,7 @@ export const ScheduleCalendar = memo(() => {
         return new Date(2018, 0, 1, Math.min(7, Math.min(...eventStartHours)));
     }, [events]);
 
-    const eventStyleGetter = useCallback((event: CalendarEvent) => {
+    const eventStyleGetter = useCallback((event: CalendarEventProps) => {
         const style = {
             backgroundColor: event.color,
             cursor: 'pointer',
@@ -109,7 +109,7 @@ export const ScheduleCalendar = memo(() => {
     const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
     const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
 
-    const onlyCourseEvents = eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[];
+    const onlyCourseEvents = eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEventProps[];
 
     const finalsDate = hoveredCalendarizedFinal
         ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
@@ -187,7 +187,7 @@ export const ScheduleCalendar = memo(() => {
             <Box id="screenshot" height="0" flexGrow={1}>
                 <CalendarEventPopover />
 
-                <Calendar<CalendarEvent, object>
+                <Calendar<CalendarEventProps, object>
                     localizer={CALENDAR_LOCALIZER}
                     toolbar={false}
                     formats={formats}

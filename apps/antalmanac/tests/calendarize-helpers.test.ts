@@ -1,7 +1,7 @@
 import type { Schedule, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { describe, test, expect } from 'vitest';
 
-import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CourseEventProps, CustomEventProps } from '$components/Calendar/CalendarEventPopoverContent';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
 
 describe('calendarize-helpers', () => {
@@ -68,7 +68,7 @@ describe('calendarize-helpers', () => {
     ];
 
     // 3 of the same event
-    const calendarizedCourses: CourseEvent[] = [
+    const calendarizedCourses: CourseEventProps[] = [
         {
             locations: [],
             color: 'placeholderColor',
@@ -164,7 +164,7 @@ describe('calendarize-helpers', () => {
         },
     ];
 
-    const calendarizedCourseFinals: CourseEvent[] = [
+    const calendarizedCourseFinals: CourseEventProps[] = [
         {
             locations: [],
             color: 'placeholderColor',
@@ -207,7 +207,7 @@ describe('calendarize-helpers', () => {
         },
     ];
 
-    const calendarizedCustomEvents: CustomEvent[] = [
+    const calendarizedCustomEvents: CustomEventProps[] = [
         {
             isCustomEvent: true,
             customEventID: 0,

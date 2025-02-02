@@ -3,14 +3,14 @@ import { create } from 'zustand';
 
 import { calendarizeCourseEvents, calendarizeFinals } from './calendarizeHelpers';
 
-import { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { CourseEventProps } from '$components/Calendar/CalendarEventPopoverContent';
 
 const HOVERED_SECTION_COLOR = '#80808080';
 export interface HoveredStore {
     hoveredEvent: ScheduleCourse | undefined;
     setHoveredEvent: (section?: AASection, courseDetails?: CourseDetails, term?: string) => void;
-    hoveredCalendarizedCourses: CourseEvent[] | undefined;
-    hoveredCalendarizedFinal: CourseEvent | undefined;
+    hoveredCalendarizedCourses: CourseEventProps[] | undefined;
+    hoveredCalendarizedFinal: CourseEventProps | undefined;
 }
 
 const DEFAULT_HOVERED_STORE = {

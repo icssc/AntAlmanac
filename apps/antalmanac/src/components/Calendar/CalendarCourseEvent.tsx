@@ -1,43 +1,12 @@
-import { Box } from '@material-ui/core';
-import { memo } from 'react';
-import { shallow } from 'zustand/shallow';
+import { CourseEventProps } from '$components/Calendar/CalendarEventPopoverContent';
+import { Box } from '@mui/material';
 
-import { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
-import locationIds from '$lib/location_ids';
-import { useSelectedEventStore } from '$stores/SelectedEventStore';
+interface CalendarCourseEventProps {
+    event: CourseEventProps;
+    handleClick: (e: React.MouseEvent) => void;
+}
 
-export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) => {
-    const setSelectedEvent = useSelectedEventStore((state) => state.setSelectedEvent, shallow);
-
-    const handleClick = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        setSelectedEvent(e, event);
-    };
-
-    if (event.isCustomEvent) {
-        return (
-            <Box onClick={handleClick}>
-                <Box
-                    style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        justifyContent: 'space-between',
-                        fontWeight: 500,
-                        fontSize: '0.8rem',
-                    }}
-                >
-                    <Box>{event.title}</Box>
-                </Box>
-
-                <Box style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontSize: '0.7rem' }}>
-                    <Box>{Object.keys(locationIds).find((key) => locationIds[key] === parseInt(event.building))}</Box>
-                </Box>
-            </Box>
-        );
-    }
-
+export const CalendarCourseEvent = ({ event, handleClick }: CalendarCourseEventProps) => {
     return (
         <Box onClick={handleClick}>
             <Box
@@ -57,13 +26,11 @@ export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) =>
                     {event.showLocationInfo
                         ? event.locations.map((location) => `${location.building} ${location.room}`).join(', ')
                         : event.locations.length > 1
-                          ? `${event.locations.length} Locations`
-                          : `${event.locations[0].building} ${event.locations[0].room}`}
+                        ? `${event.locations.length} Locations`
+                        : `${event.locations[0].building} ${event.locations[0].room}`}
                 </Box>
                 <Box>{event.sectionCode}</Box>
             </Box>
         </Box>
     );
-});
-
-CalendarCourseEvent.displayName = 'CalendarCourseEvent';
+};
