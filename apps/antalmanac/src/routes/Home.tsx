@@ -6,7 +6,7 @@ import Split from 'react-split';
 
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { Header } from '$components/Header/Header';
-import NotificationSnackbar from '$components/NotificationSnackbar';
+import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
 import { Tutorial } from '$components/Tutorial';
