@@ -170,9 +170,14 @@ const LoadSaveScheduleFunctionality = () => {
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    const loadScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
+    const loadScheduleAndSetLoadingByName = async (name: string) => {
         setLoading(true);
-        await loadSchedule(userID, rememberMe);
+        await loadSchedule(name, true);
+        setLoading(false);
+    };
+    const loadScheduleAndSetLoading = async (userID: string) => {
+        setLoading(true);
+        await loadSchedule(userID);
         setLoading(false);
     };
 
@@ -203,19 +208,26 @@ const LoadSaveScheduleFunctionality = () => {
         return () => {
             AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
-    }, []);
+    }, [session]);
 
     const loadSessionData = async () => {
         if (validSession) {
             const userId = await trpc.session.getSessionUserId.query({ token: session ?? '' });
-            void loadScheduleAndSetLoading(userId, true);
+            const { users, accounts } = await trpc.users.getUserAndAccountBySessionToken.query({
+                sessionToken: session ?? '',
+            });
+            if (accounts.accountType === 'GUEST') {
+                void loadScheduleAndSetLoadingByName(users.name);
+            } else {
+                void loadScheduleAndSetLoading(userId);
+            }
         }
     };
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
             loadSessionData();
         }
-    }, []);
+    }, [session, validSession]);
 
     useEffect(() => {
         const handleAutoSaveStart = () => setSaving(true);

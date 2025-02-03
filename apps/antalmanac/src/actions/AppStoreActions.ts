@@ -3,6 +3,7 @@ import type {
     RepeatingCustomEvent,
     ScheduleCourse,
     ShortCourseSchedule,
+    User,
     WebsocSection,
 } from '@packages/antalmanac-types';
 import { TRPCError } from '@trpc/server';
@@ -168,12 +169,13 @@ export async function autoSaveSchedule(userID: string) {
     }
 }
 
-export const loadSchedule = async (userId: string, rememberMe: boolean) => {
+// I will rewrite this function to better handle guests
+export const loadSchedule = async (userId: string, guest = false) => {
     logAnalytics({
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
         label: userId,
-        value: rememberMe ? 1 : 0,
+        value: guest ? 1 : 0,
     });
     if (
         userId != null &&
@@ -184,8 +186,17 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
         if (userId.length > 0) {
             try {
                 const session = useSessionStore.getState().session ?? '';
-                const userId = (await trpc.session.getSessionUserId.query({ token: session })) ?? '';
-                const res = await trpc.users.getUserData.query({ userId: userId });
+                let userId: string = (await trpc.session.getSessionUserId.query({ token: session })) ?? '';
+
+                const res: User = await trpc.users.getUserData.query({ userId: userId });
+                // if (guest) {
+                //     res = await trpc.users.getGuestUserData.query({ name: userId });
+                //     alert(JSON.stringify(res));
+                //     return;
+                // } else {
+                //     res = await trpc.users.getUserData.query({ userId: userId });
+                //     alert('google');
+                // }
 
                 const scheduleSaveState = res && 'userData' in res ? res.userData : res;
 

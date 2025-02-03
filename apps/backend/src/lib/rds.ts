@@ -38,14 +38,33 @@ export class RDS {
      * @param userId - The ID of the user whose account is to be retrieved.
      * @returns A promise that resolves to the account object if found, otherwise null.
      */
-    static async getAccountByProviderId(db: DatabaseOrTransaction, providerId: string): Promise<Account | null> {
+    static async getAccountByProviderId(
+        db: DatabaseOrTransaction,
+        accountType: 'GOOGLE' | 'GUEST',
+        providerId: string
+    ): Promise<Account | null> {
         return db.transaction((tx) =>
             tx
                 .select()
                 .from(accounts)
-                .where(and(eq(accounts.accountType, 'GOOGLE'), eq(accounts.providerAccountId, providerId)))
+                .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerId)))
                 .limit(1)
                 .then((res) => res[0] ?? null)
+        );
+    }
+
+    static async getAccountUserByToken(db: DatabaseOrTransaction, refreshToken: string) {
+        return db.transaction((tx) =>
+            tx
+                .select()
+                .from(sessions)
+                .innerJoin(users, eq(sessions.userId, users.id))
+                .innerJoin(accounts, eq(users.id, accounts.userId))
+                .where(eq(sessions.refreshToken, refreshToken))
+                .execute()
+                .then((res) => {
+                    return { users: res[0].users, accounts: res[0].accounts };
+                })
         );
     }
 
@@ -64,7 +83,7 @@ export class RDS {
         email?: string,
         avatar?: string
     ) {
-        const existingAccount = await this.getAccountByProviderId(db, providerId);
+        const existingAccount = await this.getAccountByProviderId(db, accountType, providerId);
         if (!existingAccount) {
             const userId = crypto.randomUUID();
             await db.insert(users).values({
@@ -98,6 +117,16 @@ export class RDS {
                 .select()
                 .from(users)
                 .where(eq(users.id, userId))
+                .then((res) => res[0])
+        );
+    }
+
+    static async getAccountById(db: DatabaseOrTransaction, userId: string) {
+        return db.transaction((tx) =>
+            tx
+                .select()
+                .from(accounts)
+                .where(eq(accounts.userId, userId))
                 .then((res) => res[0])
         );
     }
@@ -291,19 +320,8 @@ export class RDS {
         await db.transaction(async (tx) => await tx.insert(customEvents).values(dbCustomEvents));
     }
 
-    /**
-     * Retrieves user data by user ID, including schedules and custom events.
-     *
-     * @param db - The database or transaction object to use for the query.
-     * @param userId - The unique identifier of the user.
-     * @returns A promise that resolves to a User object containing user data and schedules, or null if the user is not found.
-     */
-    static async getUserDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
-        const user = await RDS.getUserById(db, userId);
-        if (!user) {
-            return null;
-        }
-
+    private static async fetchUserData(db: DatabaseOrTransaction, user: any) {
+        const userId = user.id;
         const sectionResults = await db
             .select()
             .from(schedules)
@@ -329,6 +347,28 @@ export class RDS {
                 scheduleIndex,
             },
         };
+    }
+    /**
+     * Retrieves user data by user ID, including schedules and custom events.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param userId - The unique identifier of the user.
+     * @returns A promise that resolves to a User object containing user data and schedules, or null if the user is not found.
+     */
+    static async getUserDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
+        const user = await RDS.getUserById(db, userId);
+        if (!user) {
+            return null;
+        }
+        return await this.fetchUserData(db, user);
+    }
+
+    static async getUserDataByGuestName(db: DatabaseOrTransaction, guestName: string) {
+        const user = await RDS.guestUserIdWithNameOrNull(db, guestName);
+        // if (!user) {
+        //     return null;
+        // }
+        return user;
     }
 
     private static async getUserAndAccount(

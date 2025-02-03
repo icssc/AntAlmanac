@@ -37,6 +37,17 @@ const usersRouter = router({
     /**
      * Loads schedule data for a user that's logged in.
      */
+    getUserAndAccountBySessionToken: procedure
+        .input(z.object({ sessionToken: z.string() }))
+        .query(async ({ input }) => {
+            return await RDS.getAccountUserByToken(db, input.sessionToken);
+        }),
+    getAccountByUid: procedure.input(z.object({ userid: z.string() })).query(async ({ input }) => {
+        return await RDS.getAccountById(db, input.userid);
+    }),
+    getUserByUid: procedure.input(z.object({ userid: z.string() })).query(async ({ input }) => {
+        return await RDS.getUserById(db, input.userid);
+    }),
     getUserData: procedure.input(userInputSchema.assert).query(async ({ input }) => {
         if ('googleId' in input) {
             throw new TRPCError({
@@ -44,7 +55,17 @@ const usersRouter = router({
                 message: 'Google login not implemented',
             });
         }
-        return await RDS.getUserDataByUid(db, input.userId);
+        const res = await RDS.getUserDataByUid(db, input.userId);
+        return res;
+    }),
+    getGuestUserData: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
+        if ('googleId' in input) {
+            throw new TRPCError({
+                code: 'NOT_IMPLEMENTED',
+                message: 'Google login not implemented',
+            });
+        }
+        return await RDS.getUserById(db, input.name);
     }),
     /**
      * Retrieves Google auth url to login/sign up

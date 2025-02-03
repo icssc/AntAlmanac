@@ -137,13 +137,12 @@ function SignInDialog(props: SignInDialogProps) {
 
 function SignOutDialog(props: SignInDialogProps) {
     const { onClose, isDark, open } = props;
-    const { session, validSession, clearSession } = useSessionStore();
+    const { clearSession } = useSessionStore();
     const navigate = useNavigate();
 
     const handleLogout = async () => {
         clearSession();
         navigate('/');
-        console.log(session, validSession);
     };
     return (
         <AuthDialog open={open} onClose={onClose} title={'Log Out'}>
