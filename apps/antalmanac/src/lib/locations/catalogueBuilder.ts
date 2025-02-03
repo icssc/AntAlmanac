@@ -49,38 +49,40 @@ async function fetchLocations() {
             (existingLocation) => existingLocation.name === location.name
         );
 
+        if (!CATEGORIES.has(location.catId)) return;
+
+        if (locationExists) return;
+
         // If one of the locations belongs to one of the categories above, and is not a duplicate
-        if (CATEGORIES.has(location.catId) && !locationExists) {
-            // Hits location data API to get details on location
-            const locationsDetailResponse: Response = await fetch(LOCATIONS_DETAIL_API(location.id));
-            const locationData: LocationDetailData = await locationsDetailResponse.json();
+        // Hits location data API to get details on location
+        const locationsDetailResponse: Response = await fetch(LOCATIONS_DETAIL_API(location.id));
+        const locationData: LocationDetailData = await locationsDetailResponse.json();
 
-            const imgUrls: string[] = [];
+        const imgUrls: string[] = [];
 
-            // Collects image URLs by checking if type is an image
-            // { 'mediaUrlTypes': ['image', '...', 'image'], 'mediaUrls': ['xyz.jpg', '...', 'abc.png']}
-            if (locationData.mediaUrlTypes !== undefined) {
-                for (const [i, media] of locationData.mediaUrlTypes.entries()) {
-                    if (media === 'image') {
-                        imgUrls.push(locationData.mediaUrls[i]);
-                    }
+        // Collects image URLs by checking if type is an image
+        // { 'mediaUrlTypes': ['image', '...', 'image'], 'mediaUrls': ['xyz.jpg', '...', 'abc.png']}
+        if (locationData.mediaUrlTypes !== undefined) {
+            for (const [i, media] of locationData.mediaUrlTypes.entries()) {
+                if (media === 'image') {
+                    imgUrls.push(locationData.mediaUrls[i]);
                 }
             }
-
-            locationsCatalogue[location.id] = {
-                name: location.name,
-                lat: location.lat,
-                lng: location.lng,
-                imageURLs: imgUrls,
-            };
-
-            const locationName: string = location.name.includes('(')
-                ? location.name.substring(location.name.indexOf('(') + 1, location.name.indexOf(')'))
-                : location.name;
-            locationIds[locationName] = location.id;
-
-            await sleep(250);
         }
+
+        locationsCatalogue[location.id] = {
+            name: location.name,
+            lat: location.lat,
+            lng: location.lng,
+            imageURLs: imgUrls,
+        };
+
+        const locationName: string = location.name.includes('(')
+            ? location.name.substring(location.name.indexOf('(') + 1, location.name.indexOf(')'))
+            : location.name;
+        locationIds[locationName] = location.id;
+
+        await sleep(250);
     }
 }
 
