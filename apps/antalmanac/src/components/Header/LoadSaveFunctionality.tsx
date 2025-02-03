@@ -17,7 +17,7 @@ import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
 import actionTypesStore from '$actions/ActionTypesStore';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
 import trpc from '$lib/api/trpc';
-import { getLocalStorageUserId } from '$lib/localStorage';
+import { getLocalStorageScheduleCache, getLocalStorageUserId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -170,21 +170,15 @@ const LoadSaveScheduleFunctionality = () => {
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    // const loadScheduleAndSetLoadingByName = async () => {
-    //     setLoading(true);
-    //     await loadSchedule(true);
-    //     setLoading(false);
-    // };
     const loadScheduleAndSetLoading = async () => {
         setLoading(true);
         await loadSchedule();
         setLoading(false);
     };
 
-    const saveScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
-        setSaving(true);
-        await saveSchedule(userID, rememberMe);
-        setSaving(false);
+    const saveScheduleAndSetLoading = async () => {
+        const cache = getLocalStorageScheduleCache();
+        alert(cache);
     };
 
     const saveScheduleWithSignin = async () => {

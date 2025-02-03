@@ -10,6 +10,7 @@ import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface SignInDialogProps {
+    buttonText: string;
     open: boolean;
     isDark: boolean;
     onClose: () => void;
@@ -172,7 +173,6 @@ function Login() {
     };
 
     useEffect(() => {
-        console.log(validSession, session);
         setSession(session); // called validate the local session
     }, [session, validSession]);
     return (

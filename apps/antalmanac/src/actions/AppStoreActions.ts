@@ -170,16 +170,18 @@ export async function autoSaveSchedule(userID: string) {
 }
 
 // I will rewrite this function to better handle guests
-export const loadSchedule = async (guest = false) => {
+export const loadSchedule = async () => {
     const session = useSessionStore.getState();
     try {
         const userId: string = (await trpc.session.getSessionUserId.query({ token: session.session ?? '' })) ?? '';
-        logAnalytics({
-            category: analyticsEnum.nav.title,
-            action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
-            label: userId,
-            value: guest ? 1 : 0,
-        });
+
+        // logAnalytics({
+        //     category: analyticsEnum.nav.title,
+        //     action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
+        //     label: userId,
+        //     value: account.AccountType === 'GUEST' ? 1 : 0,
+        // });
+
         const res: User = await trpc.users.getUserData.query({ userId: userId });
         const scheduleSaveState = res && 'userData' in res ? res.userData : res;
         if (scheduleSaveState == null && session.session !== '') {
