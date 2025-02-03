@@ -39,9 +39,9 @@ const sessionRouter = router({
      * Returns the user id associated with a given session
      */
     getSessionUserId: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
-        const session = await RDS.getCurrentSession(db, input.token);
-        if (session) return session.userId;
-        return '';
+        if (input.token === '') return '';
+        const session = (await RDS.getCurrentSession(db, input.token)) ?? '';
+        return session.userId;
     }),
 });
 

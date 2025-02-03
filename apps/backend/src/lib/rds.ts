@@ -365,9 +365,6 @@ export class RDS {
 
     static async getUserDataByGuestName(db: DatabaseOrTransaction, guestName: string) {
         const user = await RDS.guestUserIdWithNameOrNull(db, guestName);
-        // if (!user) {
-        //     return null;
-        // }
         return user;
     }
 

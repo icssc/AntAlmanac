@@ -170,55 +170,38 @@ export async function autoSaveSchedule(userID: string) {
 }
 
 // I will rewrite this function to better handle guests
-export const loadSchedule = async (userId: string, guest = false) => {
-    logAnalytics({
-        category: analyticsEnum.nav.title,
-        action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
-        label: userId,
-        value: guest ? 1 : 0,
-    });
-    if (
-        userId != null &&
-        (!AppStore.hasUnsavedChanges() ||
-            window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
-    ) {
-        userId = userId.replace(/\s+/g, '');
-        if (userId.length > 0) {
-            try {
-                const session = useSessionStore.getState().session ?? '';
-                let userId: string = (await trpc.session.getSessionUserId.query({ token: session })) ?? '';
-
-                const res: User = await trpc.users.getUserData.query({ userId: userId });
-                // if (guest) {
-                //     res = await trpc.users.getGuestUserData.query({ name: userId });
-                //     alert(JSON.stringify(res));
-                //     return;
-                // } else {
-                //     res = await trpc.users.getUserData.query({ userId: userId });
-                //     alert('google');
-                // }
-
-                const scheduleSaveState = res && 'userData' in res ? res.userData : res;
-
-                if (scheduleSaveState == null && session !== '') {
-                    openSnackbar('error', `Couldn't find schedules :(`);
-                } else if (await AppStore.loadSchedule(scheduleSaveState)) {
-                    openSnackbar('success', `Schedule loaded successfully!`);
-                } else {
-                    AppStore.loadSkeletonSchedule(scheduleSaveState);
-                    openSnackbar(
-                        'error',
-                        `Network error loading course information for "${userId}". 	              
+export const loadSchedule = async (guest = false) => {
+    const session = useSessionStore.getState();
+    try {
+        const userId: string = (await trpc.session.getSessionUserId.query({ token: session.session ?? '' })) ?? '';
+        logAnalytics({
+            category: analyticsEnum.nav.title,
+            action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
+            label: userId,
+            value: guest ? 1 : 0,
+        });
+        const res: User = await trpc.users.getUserData.query({ userId: userId });
+        const scheduleSaveState = res && 'userData' in res ? res.userData : res;
+        if (scheduleSaveState == null && session.session !== '') {
+            openSnackbar('error', `Couldn't find schedules :(`);
+        } else if (await AppStore.loadSchedule(scheduleSaveState)) {
+            openSnackbar('success', `Schedule loaded successfully!`);
+        } else {
+            AppStore.loadSkeletonSchedule(scheduleSaveState);
+            openSnackbar(
+                'error',
+                `Network error loading course information for "${userId}". 	              
                         If this continues to happen, please submit a feedback form.`
-                    );
-                }
-            } catch (e) {
-                console.error(e);
-                openSnackbar(
-                    'error',
-                    `Failed to load schedules. If this continues to happen, please submit a feedback form.`
-                );
-            }
+            );
+        }
+    } catch (e) {
+        console.error(e);
+        // if the session is valid and the user data doesn't load there's a problem
+        if (session.validSession) {
+            openSnackbar(
+                'error',
+                `Failed to load schedules. If this continues to happen, please submit a feedback form.`
+            );
         }
     }
 };
