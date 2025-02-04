@@ -14,16 +14,16 @@ export const useSessionStore = create<SessionState>((set) => {
     const localSessionId = getLocalStorageSessionId();
     return {
         session: localSessionId,
-        validSession: !!localSessionId && localSessionId !== '',
+        validSession: false,
         setSession: async (session) => {
             if (session) {
                 const validSession: boolean = await trpc.session.validateSession.query({ token: session });
                 if (validSession) {
                     setLocalStorageSessionId(session);
                     set({ session: session, validSession: true });
+                } else {
+                    set({ session: null, validSession: false });
                 }
-            } else {
-                set({ session: null, validSession: false });
             }
         },
         clearSession: async () => {
