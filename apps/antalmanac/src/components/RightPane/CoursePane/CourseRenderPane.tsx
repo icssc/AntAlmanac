@@ -1,5 +1,5 @@
 import { Close } from '@mui/icons-material';
-import { Alert, Box, IconButton, useMediaQuery } from '@mui/material';
+import { Alert, Box, IconButton, Link, useMediaQuery, useTheme } from '@mui/material';
 import { AACourse, AASection, WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
@@ -166,13 +166,51 @@ const LoadingMessage = () => {
 };
 
 const ErrorMessage = () => {
+    const theme = useTheme();
     const isDark = useThemeStore((store) => store.isDark);
+
+    const formData = RightPaneStore.getFormData();
+    const deptValue = formData.deptValue.replace(' ', '').toUpperCase() || null;
+    const courseNumber = formData.courseNumber.replace(/\s+/g, '').toUpperCase() || null;
+    const courseId = deptValue && courseNumber ? `${deptValue}${courseNumber}` : null;
+
     return (
-        <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Box
+            sx={{
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                flexDirection: 'column',
+            }}
+        >
+            {courseId ? (
+                <Link href={`https://peterportal.org/course/${courseId}`} target="_blank" sx={{ width: '100%' }}>
+                    <Alert
+                        variant="filled"
+                        severity="info"
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            fontSize: 14,
+                            backgroundColor: theme.palette.primary.main,
+                            color: 'white',
+                        }}
+                    >
+                        <span>
+                            Search for{' '}
+                            <span style={{ textDecoration: 'underline' }}>
+                                {deptValue} {courseNumber}
+                            </span>{' '}
+                            on PeterPortal!
+                        </span>
+                    </Alert>
+                </Link>
+            ) : null}
+
             <img
                 src={isDark ? darkNoNothing : noNothing}
                 alt="No Results Found"
-                style={{ objectFit: 'contain', width: '80%', height: '80%' }}
+                style={{ objectFit: 'contain', width: '80%', height: '80%', pointerEvents: 'none' }}
             />
         </Box>
     );
@@ -282,6 +320,8 @@ export default function CourseRenderPane(props: { id?: number }) {
 
     return (
         <>
+            <Box sx={{ height: '56px' }} />
+
             {loading ? (
                 <LoadingMessage />
             ) : error || courseData.length === 0 ? (
@@ -290,7 +330,6 @@ export default function CourseRenderPane(props: { id?: number }) {
                 <>
                     <RecruitmentBanner />
                     <Box>
-                        <Box sx={{ height: '50px', marginBottom: '5px' }} />
                         {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
                             let heightEstimate = 200;
                             if ((courseData[index] as AACourse).sections !== undefined)

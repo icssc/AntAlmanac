@@ -374,7 +374,7 @@ class AppStore extends EventEmitter {
         this.emit('skeletonModeChange');
 
         // Switch to added courses tab since Anteater API can't be reached anyway
-        useTabStore.getState().setActiveTab(2);
+        useTabStore.getState().setActiveTab('added');
     }
 
     changeCurrentSchedule(newScheduleIndex: number) {

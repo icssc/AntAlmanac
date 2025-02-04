@@ -1,8 +1,6 @@
 import { Button, Box } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 
-import { useThemeStore } from '$stores/SettingsStore';
-
 const normal_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 interface DaySelectorProps {
@@ -12,8 +10,6 @@ interface DaySelectorProps {
 
 const DaySelector = ({ days = [false, false, false, false, false, false, false], onSelectDay }: DaySelectorProps) => {
     const [selectedDays, setSelectedDays] = useState(days);
-
-    const { isDark } = useThemeStore();
 
     useEffect(() => {
         onSelectDay(selectedDays);
@@ -30,24 +26,23 @@ const DaySelector = ({ days = [false, false, false, false, false, false, false],
             sx={{
                 display: 'flex',
                 flexDirection: 'row',
-                justifyContent: 'center',
-                padding: 5,
+                justifyContent: 'space-between',
             }}
+            style={{ gap: '12px' }}
         >
             {normal_days.map((day, index) => (
                 <Button
                     key={index}
                     variant={selectedDays[index] ? 'contained' : 'outlined'}
                     size="small"
-                    onClick={() => {
-                        handleChange(index);
-                    }}
-                    color={isDark ? 'default' : 'primary'}
+                    fullWidth
+                    onClick={() => handleChange(index)}
+                    color={'default'}
                     style={{
-                        margin: 5,
-                        maxWidth: 40,
-                        minWidth: 40,
-                        aspectRatio: 1,
+                        display: 'block',
+                        aspectRatio: 1 / 1,
+                        minWidth: 20,
+                        minHeight: 40,
                     }}
                 >
                     {day[0]}

@@ -4,10 +4,9 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
+    DialogTitle,
     FormControl,
     IconButton,
-    Input,
-    InputLabel,
     TextField,
     Tooltip,
 } from '@mui/material';
@@ -140,6 +139,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
     }, []);
 
     const isDark = useThemeStore.getState().isDark;
+
     return (
         <>
             {props.customEvent ? (
@@ -167,42 +167,52 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                     </IconButton>
                 </Tooltip>
             )}
-            <Dialog open={open} onClose={handleClose} maxWidth={'lg'}>
-                <DialogContent>
-                    <FormControl>
-                        <InputLabel htmlFor="EventNameInput">Event Name</InputLabel>
-                        <Input required={true} value={title} onChange={handleEventNameChange} />
+            <Dialog open={open} onClose={handleClose} maxWidth={'xs'}>
+                <DialogTitle id="form-dialog-title">
+                    {props.customEvent ? 'Edit a Custom Event' : 'Add a Custom Event'}
+                </DialogTitle>
+                <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <FormControl fullWidth>
+                        <TextField
+                            id="event-name-input"
+                            label="Event Name"
+                            variant="outlined"
+                            required={true}
+                            value={title}
+                            onChange={handleEventNameChange}
+                            margin="dense"
+                        />
                     </FormControl>
-                    <form noValidate style={{ display: 'flex', gap: 5, marginTop: 5 }}>
+                    <FormControl fullWidth sx={{ display: 'flex', flexDirection: 'row', gap: '12px' }}>
                         <TextField
                             onChange={handleStartTimeChange}
                             label="Start Time"
                             type="time"
                             defaultValue={start}
+                            fullWidth
                             InputLabelProps={{
                                 shrink: true,
                             }}
                             inputProps={{
                                 step: 300,
                             }}
-                            style={{ marginRight: 5, marginTop: 5 }}
                         />
                         <TextField
                             onChange={handleEndTimeChange}
                             label="End Time"
                             type="time"
                             defaultValue={end}
+                            fullWidth
                             InputLabelProps={{
                                 shrink: true,
                             }}
                             inputProps={{
                                 step: 300,
                             }}
-                            style={{ marginRight: 5, marginTop: 5 }}
                         />
-                    </form>
+                    </FormControl>
                     <DaySelector onSelectDay={handleDayChange} days={props.customEvent?.days} />
-                    <BuildingSelect value={building} onChange={handleBuildingChange} />
+                    <BuildingSelect value={building} onChange={handleBuildingChange} variant="outlined" />
                     <ScheduleSelector
                         scheduleIndices={scheduleIndices}
                         onSelectScheduleIndices={handleSelectScheduleIndices}
@@ -216,11 +226,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                         Cancel
                     </Button>
                     <Button onClick={handleSubmit} variant="contained" color="primary" disabled={disabled}>
-                        {disabled
-                            ? 'Schedule and day must be checked'
-                            : props.customEvent
-                              ? 'Save Changes'
-                              : 'Add Event'}
+                        {disabled ? 'Specify schedule and day' : props.customEvent ? 'Save Changes' : 'Add Event'}
                     </Button>
                 </DialogActions>
             </Dialog>
