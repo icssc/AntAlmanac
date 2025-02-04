@@ -8,6 +8,7 @@ import RightPaneStore from '../../RightPaneStore';
 
 import FuzzySearch from './FuzzySearch';
 import HelpBox from './HelpBox';
+import InstallPWABanner from './InstallPWAButton';
 import LegacySearch from './LegacySearch';
 import PrivacyPolicyBanner from './PrivacyPolicyBanner';
 import TermSelector from './TermSelector';
@@ -115,6 +116,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
 
             {displayHelpBox && <HelpBox onDismiss={onHelpBoxDismiss} />}
             <PrivacyPolicyBanner />
+            <InstallPWABanner />
         </div>
     );
 };
