@@ -1,142 +1,24 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import GoogleIcon from '@mui/icons-material/Google';
-import { Button, DialogActions, TextField } from '@mui/material';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { Button, Menu } from '@mui/material';
+import { User } from '@packages/antalmanac-types';
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { AuthDialog } from '$components/dialogs/AuthDialog';
+import { SignInDialog } from '$components/dialogs/SignInDialog';
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
-interface SignInDialogProps {
-    buttonText: string;
+
+interface DialogProps {
     open: boolean;
     isDark: boolean;
     onClose: () => void;
 }
 
-function SignInDialog(props: SignInDialogProps) {
-    const { onClose, isDark, open } = props;
-
-    const { session, setSession } = useSessionStore();
-    const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
-
-    const [guestName, setGuestName] = useState('');
-    const [isProcessing, setIsProcessing] = useState(false);
-    const [openGuestOption, setOpenGuestOption] = useState(false);
-
-    const handleLogin = async () => {
-        try {
-            const authUrl = await trpc.users.getGoogleAuthUrl.query();
-            if (authUrl) {
-                window.location.href = authUrl;
-            }
-        } catch (error) {
-            console.error('Error during login initiation', error);
-        }
-    };
-
-    const handleCallback = async () => {
-        if (isProcessing) return;
-        setIsProcessing(true);
-        try {
-            const code = searchParams.get('code');
-            // const token = useSessionStore.getState().session;
-            if (code) {
-                const newSession = await trpc.users.handleGoogleCallback.query({
-                    code: code,
-                    token: session ?? '',
-                });
-                setSession(newSession);
-                navigate('/');
-            }
-        } catch (error) {
-            console.error('Error during authentication', error);
-        } finally {
-            setIsProcessing(false);
-        }
-    };
-
-    const handleGuestLogin = async () => {
-        if (guestName.length > 0) {
-            const sessionId = await trpc.session.handleGuestSession.query({ name: guestName });
-            setSession(sessionId);
-            navigate('/');
-            onClose();
-        }
-    };
-
-    useEffect(() => {
-        handleCallback();
-    }, [searchParams]);
-
-    const handleClose = () => {
-        onClose();
-        handleGuestOptionClose();
-    };
-
-    const handleGuestOptionOpen = () => {
-        setOpenGuestOption(true);
-    };
-
-    const handleGuestOptionClose = () => {
-        setOpenGuestOption(false);
-    };
-
-    return (
-        <AuthDialog open={open} onClose={handleClose} title={!openGuestOption ? 'Sign in' : 'Guest Login'}>
-            {!openGuestOption ? (
-                <>
-                    <Button
-                        onClick={handleLogin}
-                        startIcon={<GoogleIcon />}
-                        size="large"
-                        color="primary"
-                        variant="contained"
-                    >
-                        Sign in with Google
-                    </Button>
-                    <Button
-                        onClick={handleGuestOptionOpen}
-                        size="large"
-                        color={isDark ? 'secondary' : 'primary'}
-                        variant="outlined"
-                    >
-                        Continue As Guest
-                    </Button>
-                </>
-            ) : (
-                <>
-                    <form
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            handleGuestLogin();
-                        }}
-                    >
-                        <TextField
-                            label="Guest Name"
-                            color={isDark ? 'secondary' : undefined}
-                            fullWidth
-                            onChange={(e) => setGuestName(e.target.value)}
-                        />
-                        <DialogActions>
-                            <Button color={isDark ? 'secondary' : undefined} onClick={handleGuestOptionClose}>
-                                Cancel
-                            </Button>
-                            <Button color="primary" variant="contained" type="submit">
-                                Continue
-                            </Button>
-                        </DialogActions>
-                    </form>
-                </>
-            )}
-        </AuthDialog>
-    );
-}
-
-function SignOutDialog(props: SignInDialogProps) {
+function SignOutDialog(props: DialogProps) {
     const { onClose, isDark, open } = props;
     const { clearSession } = useSessionStore();
     const navigate = useNavigate();
@@ -160,9 +42,19 @@ function SignOutDialog(props: SignInDialogProps) {
 function Login() {
     const [openSignIn, setOpenSignIn] = useState(false);
     const [openSignOut, setOpenSignOut] = useState(false);
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [user, setUser] = useState<null | User>(null);
 
     const { session, setSession, validSession } = useSessionStore();
     const isDark = useThemeStore((store) => store.isDark);
+
+    const open = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     const handleClickSignOut = () => {
         setOpenSignOut(!openSignOut);
@@ -172,16 +64,46 @@ function Login() {
         setOpenSignIn(!openSignIn);
     };
 
+    const handleUser = async () => {
+        if (validSession) {
+            const userId = await trpc.session.getSessionUserId.query({ token: session ?? '' });
+            if (userId) {
+                setUser(await trpc.users.getUserByUid.query({ userid: userId }));
+            }
+        }
+    };
+
     useEffect(() => {
         setSession(session); // called validate the local session
+        handleUser();
     }, [session, validSession]);
     return (
         <>
             {validSession ? (
                 <>
-                    <Button onClick={handleClickSignOut} startIcon={<AccountCircleIcon />} color="inherit">
-                        Log out
+                    <Button
+                        aria-controls={open ? 'basic-menu' : undefined}
+                        color="inherit"
+                        aria-haspopup="true"
+                        aria-expanded={open ? 'true' : undefined}
+                        onClick={handleClick}
+                        startIcon={<AccountCircleIcon />}
+                    >
+                        {user?.name}
                     </Button>
+                    <Menu
+                        id="basic-menu"
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        MenuListProps={{
+                            'aria-labelledby': 'basic-button',
+                        }}
+                    >
+                        <Button onClick={handleClickSignOut} startIcon={<LogoutIcon />} color="inherit">
+                            Log out
+                        </Button>
+                    </Menu>
                     <SignOutDialog isDark={isDark} open={openSignOut} onClose={handleClickSignOut} />
                 </>
             ) : (
