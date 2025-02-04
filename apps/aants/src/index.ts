@@ -9,7 +9,11 @@ import { users } from '../../backend/src/db/schema/auth/user';
 import { subscriptions } from '../../backend/src/db/schema/subscription';
 // import { aapiKey } from './env';
 
-const BATCH_SIZE = 5;
+const BATCH_SIZE = 900;
+
+type User = {
+    userName: string | null;
+};
 
 // uncomment when AAPI endpoint is set up
 // async function getUpdatedClasses(term: string, sections: string[]) {
@@ -72,7 +76,7 @@ function getUpdatedClassesDummy(term: string, sections: string[]) {
                             numWaitlistCap: 20,
                             status: {
                                 from: 'WAITLISTED',
-                                to: 'OPEN',
+                                to: 'FULL',
                             },
                             numCurrentlyEnrolled: {
                                 totalEnrolled: 60,
@@ -204,14 +208,7 @@ async function batchCourseCodes(codes: string[]) {
     return batches;
 }
 
-async function sendNotification(
-    term: string,
-    sectionCode: number,
-    status: string,
-    deptCode: string,
-    courseNumber: number,
-    courseTitle: string
-) {
+async function getUsers(term: string, sectionCode: number, status: string) {
     try {
         let result;
         if (status === 'OPEN') {
@@ -251,10 +248,36 @@ async function sendNotification(
                     )
                 );
         }
-
-        console.log('NOTIFICATION FOR', deptCode, courseNumber, courseTitle, sectionCode, '\n', result, '\n');
-
         return result;
+    } catch (error: any) {
+        console.error('Error getting users:', error.message);
+    }
+}
+
+async function sendNotification(
+    term: string,
+    sectionCode: number,
+    status: string,
+    deptCode: string,
+    courseNumber: number,
+    courseTitle: string,
+    users: User[]
+) {
+    try {
+        console.log(
+            'NOTIFICATION FOR',
+            deptCode,
+            courseNumber,
+            courseTitle,
+            sectionCode,
+            'in ',
+            term,
+            '\n',
+            users,
+            '\nTHE CLASS IS NOW: ',
+            status,
+            '\n'
+        );
         // send notification
     } catch (error: any) {
         console.error('Error sending notification:', error.message);
@@ -279,13 +302,16 @@ async function main() {
                             continue;
                         }
                         // no functionality for codes yet
+
+                        const users: User[] = (await getUsers(term, section.sectionCode, currentStatus)) || [];
                         await sendNotification(
                             term,
                             section.sectionCode,
                             currentStatus,
                             course.deptCode,
                             course.courseNumber,
-                            course.courseTitle
+                            course.courseTitle,
+                            users
                         );
                         // send notification
                         await updateSubscriptionStatus(term, section.sectionCode, currentStatus);
@@ -296,7 +322,7 @@ async function main() {
     } catch (error: any) {
         console.error('Error in managing subscription:', error.message);
     } finally {
-        process.exit(0); // This ensures the script exits after execution.
+        process.exit(0);
     }
 }
 
