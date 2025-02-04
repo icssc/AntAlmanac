@@ -16,8 +16,8 @@ import UserLocator from './UserLocator';
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
 import { TILES_URL } from '$lib/api/endpoints';
-import buildingCatalogue, { Building } from '$lib/buildingCatalogue';
-import locationIds from '$lib/location_ids';
+import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
+import locationIds from '$lib/locations/locations';
 import { notNull } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 
