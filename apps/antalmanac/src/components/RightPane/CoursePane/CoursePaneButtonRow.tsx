@@ -42,6 +42,7 @@ const columnLabels: Record<SectionTableColumn, string> = {
     sectionEnrollment: 'Enrollment',
     restrictions: 'Restrictions',
     status: 'Status',
+    syllabus: 'Syllabus',
 };
 
 /**
@@ -153,7 +154,6 @@ export function CoursePaneButtonRow(props: CoursePaneButtonRowProps) {
                 display: props.showSearch ? 'block' : 'none',
                 width: '100%',
                 zIndex: 3,
-                marginBottom: 8,
                 position: 'absolute',
             }}
         >

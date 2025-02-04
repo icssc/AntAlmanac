@@ -55,7 +55,7 @@ function KbdCard(props: { children?: React.ReactNode }) {
 }
 
 export function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepName, StepType> {
-    const setTab = useTabStore.getState().setActiveTab;
+    const setActiveTab = useTabStore.getState().setActiveTab;
 
     const goToNamedStep = (stepName: TourStepName) => {
         const stepIndex = tourStepNames.findIndex((step) => step == stepName);
@@ -91,7 +91,7 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
             content: 'You can search for your classes here!',
             action: () => {
                 markTourHasRun();
-                setTab(0);
+                setActiveTab('search');
             },
             mutationObservables: ['#searchBar'],
         },
@@ -161,7 +161,7 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
                     <b>Select</b> the added courses tab for a list of your courses and details
                 </>
             ),
-            action: () => setTab(1),
+            action: () => setActiveTab('added'),
             mutationObservables: ['#course-pane-box'],
         },
         map: {
@@ -179,7 +179,7 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
         mapPane: {
             selector: '#map-pane',
             content: 'Click on a day to see your route!',
-            action: () => setTab(2),
+            action: () => setActiveTab('map'),
             mutationObservables: ['#map-pane'],
         },
         saveAndLoad: {

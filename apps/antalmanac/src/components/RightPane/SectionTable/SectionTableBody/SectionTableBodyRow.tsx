@@ -2,7 +2,7 @@ import { TableRow, useTheme } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { SectionActionCell } from '../cells/action';
+import { ActionCell } from './SectionTableBodyCells/ActionCell';
 
 import { CourseCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/CourseCodeCell';
 import { DayAndTimeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DayAndTimeCell';
@@ -13,6 +13,7 @@ import { InstructorsCell } from '$components/RightPane/SectionTable/SectionTable
 import { LocationsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/LocationsCell';
 import { RestrictionsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/RestrictionsCell';
 import { StatusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/StatusCell';
+import { SyllabusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SyllabusCell';
 import AppStore from '$stores/AppStore';
 import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
@@ -30,7 +31,7 @@ interface SectionTableBodyRowProps {
 // These components have too varied of types, any is fine here
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
-    action: SectionActionCell,
+    action: ActionCell,
     sectionCode: CourseCodeCell,
     sectionDetails: DetailsCell,
     instructors: InstructorsCell,
@@ -40,6 +41,7 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     sectionEnrollment: EnrollmentCell,
     restrictions: RestrictionsCell,
     status: StatusCell,
+    syllabus: SyllabusCell,
 };
 
 export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {

@@ -2,18 +2,17 @@ import { Delete } from '@mui/icons-material';
 import { Box, Card, CardActions, CardHeader, IconButton, Tooltip } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import moment from 'moment';
-import { useEffect, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 import ColorPicker from '../../ColorPicker';
 
 import { deleteCustomEvent } from '$actions/AppStoreActions';
 import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
+import { MapLink } from '$components/buttons/MapLink';
 import analyticsEnum from '$lib/analytics';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import AppStore from '$stores/AppStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
-import { useTabStore } from '$stores/TabStore';
 
 interface CustomEventDetailViewProps {
     scheduleNames: string[];
@@ -57,12 +56,6 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
         return `${startTime.format(timeFormat)} — ${endTime.format(timeFormat)} • ${daysString}`;
     };
 
-    const { setActiveTab } = useTabStore();
-
-    const focusMap = useCallback(() => {
-        setActiveTab(2);
-    }, [setActiveTab]);
-
     return (
         <Card>
             <CardHeader
@@ -74,9 +67,10 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                 }}
             />
             <Box sx={{ margin: '0.75rem', color: '#bbbbbb', fontSize: '1rem' }}>
-                <Link to={`/map?location=${customEvent.building ?? 0}`} onClick={focusMap}>
-                    {(customEvent.building && buildingCatalogue[+customEvent.building]?.name) || ''}
-                </Link>
+                <MapLink
+                    buildingId={Number(customEvent.building) || 0}
+                    room={(customEvent.building && buildingCatalogue[+customEvent.building]?.name) || ''}
+                />
             </Box>
 
             {!skeletonMode && (
