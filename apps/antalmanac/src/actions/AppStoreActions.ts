@@ -15,7 +15,6 @@ import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import {
     removeLocalStorageUserId,
-    setLocalStorageUserId,
     getLocalStorageScheduleCache,
     removeLocalStorageScheduleCache,
 } from '$lib/localStorage';
@@ -103,11 +102,11 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
         userID = userID.replace(/\s+/g, '');
 
         if (userID.length > 0) {
-            if (rememberMe) {
-                setLocalStorageUserId(userID);
-            } else {
-                removeLocalStorageUserId();
-            }
+            removeLocalStorageUserId();
+            // if (rememberMe) {
+            //     setLocalStorageUserId(userID);
+            // } else {
+            // }
 
             const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
@@ -173,10 +172,13 @@ export async function autoSaveSchedule(userID: string) {
 }
 
 // I will rewrite this function to better handle guests
-export const loadSchedule = async () => {
+export const loadSchedule = async (loadCache = false) => {
     const session = useSessionStore.getState();
     try {
+        console.log(session.session);
         const userId: string | null = await trpc.session.getSessionUserId.query({ token: session.session ?? '' });
+        const scheduleCache = JSON.parse(getLocalStorageScheduleCache() ?? 'null');
+        removeLocalStorageScheduleCache();
         if (!userId) return;
 
         // logAnalytics({
@@ -187,20 +189,19 @@ export const loadSchedule = async () => {
         // });
 
         const res: User = await trpc.users.getUserData.query({ userId: userId });
-
         const scheduleSaveState = res && 'userData' in res ? res.userData : res;
         if (isEmptySchedule(scheduleSaveState.schedules)) return;
 
-        const scheduleCache = JSON.parse(getLocalStorageScheduleCache() ?? 'null');
-        if (scheduleCache) {
-            const cacheSchedule = scheduleCache.map((schedule: ShortCourseSchedule) => {
-                return {
-                    ...schedule,
-                    scheduleName: '(IMPORTED)-' + schedule.scheduleName,
-                };
-            });
-            scheduleSaveState.schedules.push(...cacheSchedule);
-            removeLocalStorageScheduleCache();
+        if (loadCache) {
+            if (scheduleCache) {
+                const cacheSchedule = scheduleCache.map((schedule: ShortCourseSchedule) => {
+                    return {
+                        ...schedule,
+                        scheduleName: '(IMPORTED)-' + schedule.scheduleName,
+                    };
+                });
+                scheduleSaveState.schedules.push(...cacheSchedule);
+            }
         }
 
         if (scheduleSaveState == null && !session.validSession) {

@@ -23,6 +23,7 @@ const sessionRouter = router({
         return session !== null && session.expires > new Date();
     }),
     /**
+    Removes a session from the database
      */
     removeSession: procedure.input(z.object({ token: z.string() })).mutation(async ({ input }) => {
         const session = await RDS.getCurrentSession(db, input.token);

@@ -56,7 +56,7 @@ export function SignInDialog(props: SignInDialogProps) {
                     code: code,
                     token: session ?? '',
                 });
-                cacheSchedule();
+
                 setSession(newSession);
                 navigate('/');
             }
