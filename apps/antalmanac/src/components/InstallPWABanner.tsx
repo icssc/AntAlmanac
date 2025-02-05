@@ -1,7 +1,7 @@
 import { IconButton, Button } from '@material-ui/core';
 import { Close } from '@mui/icons-material';
 import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
-import { Alert, Box, useMediaQuery, useTheme } from '@mui/material';
+import { Alert, Box, Slide } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { shallow } from 'zustand/shallow';
 
@@ -15,13 +15,14 @@ function InstallPWABanner() {
         shallow
     );
 
-    const [bannerVisibility, setBannerVisibility] = useState(true);
-
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const [bannerVisibility, setBannerVisibility] = useState(false);
     const isDark = useThemeStore((store) => store.isDark);
 
     useEffect(() => {
+        const timeoutIn = setTimeout(() => {
+            setBannerVisibility(true);
+        }, 15000);
+
         const beforeInstallHandler = (e: BeforeInstallPromptEvent) => {
             e.preventDefault();
             setCanInstall(true);
@@ -37,6 +38,7 @@ function InstallPWABanner() {
         window.addEventListener('appinstalled', disableInstallHandler);
 
         return () => {
+            clearTimeout(timeoutIn);
             window.removeEventListener('beforeinstallprompt', beforeInstallHandler);
             window.removeEventListener('appinstalled', disableInstallHandler);
         };
@@ -58,8 +60,16 @@ function InstallPWABanner() {
     const displayPWABanner = bannerVisibility && !dismissedRecently && canInstall;
 
     return (
-        <Box sx={{ position: 'fixed', bottom: isMobile ? 180 : 90, right: 20, zIndex: 999 }}>
-            {displayPWABanner ? (
+        <Box
+            sx={{
+                position: 'fixed',
+                top: 90,
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                zIndex: 999,
+            }}
+        >
+            <Slide direction="down" in={displayPWABanner} timeout={500} mountOnEnter unmountOnExit>
                 <Alert
                     icon={false}
                     severity="info"
@@ -81,14 +91,11 @@ function InstallPWABanner() {
                         </IconButton>
                     }
                 >
-                    Want quicker access to your schedules?
-                    <br />
                     <Button id="install-pwa-button" startIcon={<BrowserUpdatedIcon />} onClick={handleInstall}>
                         Install AntAlmanac app
                     </Button>
-                    <br />
                 </Alert>
-            ) : null}
+            </Slide>
         </Box>
     );
 }
