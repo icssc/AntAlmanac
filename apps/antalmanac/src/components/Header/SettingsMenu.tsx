@@ -11,7 +11,7 @@ import { AboutButtonGroup } from './AboutButtonGroup';
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
 import { getLocalStorageUserId } from '$lib/localStorage';
-import appStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
 
@@ -165,7 +165,7 @@ function ExperimentalMenu() {
         if (!savedUserID) return;
         actionTypesStore.emit('autoSaveStart');
         await autoSaveSchedule(savedUserID);
-        appStore.unsavedChanges = false;
+        useScheduleStore.getState().unsavedChanges = false;
         actionTypesStore.emit('autoSaveEnd');
     };
 

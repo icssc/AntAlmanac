@@ -11,7 +11,7 @@ import { deleteCustomEvent } from '$actions/AppStoreActions';
 import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
 import analyticsEnum from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 
@@ -23,20 +23,9 @@ interface CustomEventDetailViewProps {
 const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
     const { customEvent } = props;
     const { isMilitaryTime } = useTimeFormatStore();
+    const scheduleStore = useScheduleStore();
 
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
+    const skeletonMode = useScheduleStore((state) => state.getSkeletonMode());
 
     const readableDateAndTimeFormat = (start: string, end: string, days: boolean[]) => {
         const startTime = moment({

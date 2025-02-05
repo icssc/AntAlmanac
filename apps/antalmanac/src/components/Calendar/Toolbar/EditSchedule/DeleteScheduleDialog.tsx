@@ -14,7 +14,7 @@ import { Clear } from '@material-ui/icons';
 import { useState } from 'react';
 
 import { deleteSchedule } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface DeleteScheduleDialogProps {
@@ -43,9 +43,11 @@ const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
         setIsOpen(false);
     };
 
+    const { getNumberOfSchedules, getScheduleName } = useScheduleStore.getState().schedule;
+
     return (
         <Box>
-            <MenuItem onClick={handleOpen} disabled={AppStore.schedule.getNumberOfSchedules() === 1}>
+            <MenuItem onClick={handleOpen} disabled={getNumberOfSchedules() === 1}>
                 <Tooltip title="Delete Schedule">
                     <IconButton size="small">
                         <Clear />
@@ -56,7 +58,7 @@ const DeleteScheduleDialog = (props: DeleteScheduleDialogProps) => {
                 <DialogTitle>Delete Schedule</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Are you sure you want to delete {`"${AppStore.schedule.getScheduleName(scheduleIndex)}"`}?
+                        Are you sure you want to delete {`"${getScheduleName(scheduleIndex)}"`}?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>

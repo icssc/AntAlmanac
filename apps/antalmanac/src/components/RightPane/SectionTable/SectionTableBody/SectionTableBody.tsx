@@ -3,8 +3,8 @@ import { AACourse, AASection } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 
 import { SectionTableBodyRow } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRow';
-import AppStore from '$stores/AppStore';
 import { normalizeTime, parseDaysString } from '$stores/calendarizeHelpers';
+import { useScheduleStore } from '$stores/ScheduleStore';
 
 interface SectionTableBodyProps {
     courseDetails: AACourse;
@@ -14,7 +14,8 @@ interface SectionTableBodyProps {
 }
 
 export function SectionTableBody({ courseDetails, term, scheduleNames, allowHighlight }: SectionTableBodyProps) {
-    const [calendarEvents, setCalendarEvents] = useState(() => AppStore.getCourseEventsInCalendar());
+    const { getCourseEventsInCalendar } = useScheduleStore();
+    const [calendarEvents, setCalendarEvents] = useState(() => getCourseEventsInCalendar());
 
     /**
      * Additional information about the current section being rendered.
@@ -57,20 +58,6 @@ export function SectionTableBody({ courseDetails, term, scheduleNames, allowHigh
         },
         [calendarEvents, parseSectionDetails]
     );
-
-    const updateCalendarEvents = useCallback(() => {
-        setCalendarEvents(AppStore.getCourseEventsInCalendar());
-    }, [setCalendarEvents]);
-
-    useEffect(() => {
-        AppStore.on('addedCoursesChange', updateCalendarEvents);
-        AppStore.on('currentScheduleIndexChange', updateCalendarEvents);
-
-        return () => {
-            AppStore.removeListener('addedCoursesChange', updateCalendarEvents);
-            AppStore.removeListener('currentScheduleIndexChange', updateCalendarEvents);
-        };
-    }, [updateCalendarEvents]);
 
     return (
         <TableBody>

@@ -19,7 +19,7 @@ import { TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { Building } from '$lib/buildingCatalogue';
 import locationIds from '$lib/location_ids';
 import { notNull } from '$lib/utils';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 
 const ATTRIBUTION_MARKUP =
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
@@ -41,7 +41,7 @@ interface MarkerContent {
  * Each course's info is used to render a marker to the map.
  */
 export function getCoursesPerBuilding() {
-    const courseEvents = AppStore.getCourseEventsInCalendar();
+    const courseEvents = useScheduleStore((state) => state.getCourseEventsInCalendar());
 
     const courseBuildings = courseEvents.flatMap((event) => event.locations.map((location) => location.building));
 
@@ -82,7 +82,7 @@ export function getCoursesPerBuilding() {
 }
 
 export function getCustomEventPerBuilding() {
-    const customEvents = AppStore.getCustomEventsInCalendar();
+    const customEvents = useScheduleStore((state) => state.getCustomEventsInCalendar());
 
     const customEventBuildings = customEvents.map((e) => e.building).filter(notNull);
 
@@ -153,42 +153,7 @@ export default function CourseMap() {
     const [selectedDayIndex, setSelectedDay] = useState(0);
     const [markers, setMarkers] = useState(getCoursesPerBuilding());
     const [customEventMarkers, setCustomEventMarkers] = useState(getCustomEventPerBuilding());
-    const [calendarEvents, setCalendarEvents] = useState(AppStore.getEventsInCalendar());
-
-    useEffect(() => {
-        const updateAllMarkers = () => {
-            setMarkers(getCoursesPerBuilding());
-            setCustomEventMarkers(getCustomEventPerBuilding());
-        };
-
-        AppStore.on('addedCoursesChange', updateAllMarkers);
-        AppStore.on('customEventsChange', updateAllMarkers);
-        AppStore.on('currentScheduleIndexChange', updateAllMarkers);
-        AppStore.on('colorChange', updateAllMarkers);
-
-        return () => {
-            AppStore.removeListener('addedCoursesChange', updateAllMarkers);
-            AppStore.removeListener('customEventsChange', updateAllMarkers);
-            AppStore.removeListener('currentScheduleIndexChange', updateAllMarkers);
-            AppStore.removeListener('colorChange', updateAllMarkers);
-        };
-    }, []);
-
-    useEffect(() => {
-        const updateCalendarEvents = () => {
-            setCalendarEvents(AppStore.getEventsInCalendar());
-        };
-
-        AppStore.on('addedCoursesChange', updateCalendarEvents);
-        AppStore.on('customEventsChange', updateCalendarEvents);
-        AppStore.on('currentScheduleIndexChange', updateCalendarEvents);
-
-        return () => {
-            AppStore.removeListener('addedCoursesChange', updateCalendarEvents);
-            AppStore.removeListener('customEventsChange', updateCalendarEvents);
-            AppStore.removeListener('currentScheduleIndexChange', updateCalendarEvents);
-        };
-    }, []);
+    const calendarEvents = useScheduleStore((state) => state.getEventsInCalendar());
 
     useEffect(() => {
         const locationID = Number(searchParams.get('location') ?? 0);

@@ -9,7 +9,8 @@ import { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';
 import { getDefaultTerm, termData } from '$lib/termData';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
+import { useSnackbarStore } from '$stores/SnackbarStore';
 
 export const quarterStartDates = Object.fromEntries(
     termData
@@ -255,7 +256,7 @@ export function getRRule(bydays: string[], quarter: string) {
 }
 
 export function getEventsFromCourses(
-    events = AppStore.getEventsWithFinalsInCalendar(),
+    events = useScheduleStore.getState().getEventsWithFinalsInCalendar(),
     term = getDefaultTerm(events).shortName
 ): EventAttributes[] {
     const customEventIDs = new Set();
@@ -354,7 +355,7 @@ export function exportCalendar() {
         });
 
         if (error) {
-            openSnackbar('error', 'Something went wrong! Unable to download schedule.', 5);
+            useSnackbarStore.getState().openSnackbar('error', 'Something went wrong! Unable to download schedule.', 5);
             console.log(error);
             return;
         }
@@ -371,6 +372,6 @@ export function exportCalendar() {
 
         // Download the .ics file
         saveAs(data, 'schedule.ics');
-        openSnackbar('success', 'Schedule downloaded!', 5);
+        useSnackbarStore.getState().openSnackbar('success', 'Schedule downloaded!', 5);
     });
 }

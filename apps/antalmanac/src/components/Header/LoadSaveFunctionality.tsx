@@ -17,7 +17,7 @@ import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
 import actionTypesStore from '$actions/ActionTypesStore';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
 import { getLocalStorageUserId } from '$lib/localStorage';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface LoadSaveButtonBaseProps {
@@ -163,10 +163,10 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
 
 const LoadSaveScheduleFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
-
+    const skeletonMode = useScheduleStore((state) => state.getSkeletonMode());
+    
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const loadScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
         setLoading(true);
@@ -179,18 +179,6 @@ const LoadSaveScheduleFunctionality = () => {
         await saveSchedule(userID, rememberMe);
         setSaving(false);
     };
-
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
 
     useEffect(() => {
         if (typeof Storage !== 'undefined') {

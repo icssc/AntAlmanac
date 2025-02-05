@@ -8,7 +8,7 @@ import { MOBILE_BREAKPOINT } from '../../../../globals';
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 
 /**
  * Props received by components that perform actions on a specified section.
@@ -45,6 +45,7 @@ interface SectionActionProps {
  */
 export function ColorAndDelete(props: SectionActionProps) {
     const { section, term } = props;
+    const { getCurrentScheduleIndex } = useScheduleStore();
 
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
@@ -66,7 +67,7 @@ export function ColorAndDelete(props: SectionActionProps) {
             </IconButton>
 
             <ColorPicker
-                key={AppStore.getCurrentScheduleIndex()}
+                key={getCurrentScheduleIndex()}
                 color={section.color}
                 isCustomEvent={false}
                 sectionCode={section.sectionCode}
@@ -88,6 +89,7 @@ const fieldsToReset = ['courseCode', 'courseNumber', 'deptLabel', 'deptValue', '
  */
 export function ScheduleAddCell(props: SectionActionProps) {
     const { section, courseDetails, term, scheduleNames, scheduleConflict } = props;
+    const { getCurrentScheduleIndex } = useScheduleStore();
 
     const popupState = usePopupState({ popupId: 'SectionTableAddCellPopup', variant: 'popover' });
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
@@ -141,12 +143,12 @@ export function ScheduleAddCell(props: SectionActionProps) {
         <Box flexDirection={flexDirection} display="flex" justifyContent="space-evenly">
             {scheduleConflict ? (
                 <Tooltip title="This course overlaps with another event in your calendar!" arrow>
-                    <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
+                    <IconButton onClick={() => closeAndAddCourse(getCurrentScheduleIndex())}>
                         <Add fontSize="small" />
                     </IconButton>
                 </Tooltip>
             ) : (
-                <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
+                <IconButton onClick={() => closeAndAddCourse(getCurrentScheduleIndex())}>
                     <Add fontSize="small" />
                 </IconButton>
             )}

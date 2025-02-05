@@ -11,7 +11,7 @@ import {
 import { useCallback, useState, useEffect } from 'react';
 
 import { renameSchedule } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 
 interface ScheduleNameDialogProps extends DialogProps {
     /**
@@ -34,7 +34,10 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
      * This is destructured separately for memoization.
      */
     const { onClose } = props;
-    const [name, setName] = useState(AppStore.getScheduleNames()[index]);
+    const renameSchedule = useScheduleStore((state) => state.renameSchedule);
+    const getScheduleNames = useScheduleStore((state) => state.getScheduleNames);
+
+    const [name, setName] = useState(getScheduleNames()[index]);
 
     const handleCancel = useCallback(() => {
         onClose?.({}, 'escapeKeyDown');
@@ -47,7 +50,7 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
     const submitName = useCallback(() => {
         renameSchedule(index, name);
         onClose?.({}, 'escapeKeyDown');
-    }, [onClose, name, index]);
+    }, [onClose, name, index, renameSchedule]);
 
     const handleKeyDown = useCallback(
         (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -66,17 +69,9 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
         [onClose, submitName, onKeyDown]
     );
 
-    const handleScheduleNamesChange = useCallback(() => {
-        setName(AppStore.getScheduleNames()[index]);
-    }, [index]);
-
     useEffect(() => {
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-
-        return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-        };
-    }, [handleScheduleNamesChange]);
+        setName(useScheduleStore.getState().getScheduleNames()[index]);
+    }, [index]);
 
     return (
         <Dialog onKeyDown={handleKeyDown} {...dialogProps}>

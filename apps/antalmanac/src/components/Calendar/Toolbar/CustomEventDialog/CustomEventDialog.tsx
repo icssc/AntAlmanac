@@ -11,7 +11,7 @@ import {
     Tooltip,
 } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import DaySelector from './DaySelector';
 import ScheduleSelector from './ScheduleSelector';
@@ -19,7 +19,7 @@ import ScheduleSelector from './ScheduleSelector';
 import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface CustomEventDialogProps {
@@ -38,7 +38,9 @@ const defaultCustomEventValues: RepeatingCustomEvent = {
 };
 
 function CustomEventDialogs(props: CustomEventDialogProps) {
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const skeletonMode = useScheduleStore((state) => state.getSkeletonMode());
+    const getCurrentScheduleIndex = useScheduleStore((state) => state.getCurrentScheduleIndex);
+    const getIndexesOfCustomEvent = useScheduleStore((state) => state.schedule.getIndexesOfCustomEvent);
 
     const [open, setOpen] = useState(false);
     const [scheduleIndices, setScheduleIndices] = useState<number[]>([]);
@@ -70,7 +72,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
 
     const handleOpen = useCallback(() => {
         setOpen(true);
-        setScheduleIndices([AppStore.schedule.getCurrentScheduleIndex()]);
+        setScheduleIndices([getCurrentScheduleIndex()]);
 
         logAnalytics({
             category: analyticsEnum.calendar.title,
@@ -126,18 +128,6 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
             : addCustomEvent(newCustomEvent, scheduleIndices);
     };
 
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
-
     const isDark = useThemeStore.getState().isDark;
 
     return (
@@ -149,7 +139,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                             handleOpen();
                             // Typecasting prevents TypeScript possibly undefined compile error
                             const customEvent = props.customEvent as RepeatingCustomEvent;
-                            setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(customEvent.customEventID));
+                            setScheduleIndices(getIndexesOfCustomEvent(customEvent.customEventID));
                             setStart(customEvent.start);
                             setEnd(customEvent.end);
                             setTitle(customEvent.title);

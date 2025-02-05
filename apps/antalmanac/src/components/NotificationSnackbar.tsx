@@ -5,8 +5,7 @@ import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import CloseIcon from '@material-ui/icons/Close';
 import { ProviderContext, withSnackbar } from 'notistack';
 import { PureComponent } from 'react';
-
-import AppStore from '$stores/AppStore';
+import { useSnackbarStore } from '$stores/SnackbarStore';
 
 const styles: Styles<Theme, object> = (theme) => ({
     success: {
@@ -48,17 +47,27 @@ class NotificationSnackbar extends PureComponent<NotificationSnackbarProps> {
         duration: 3000,
     };
 
-    openSnackbar = () => {
-        this.props.enqueueSnackbar(AppStore.getSnackbarMessage(), {
-            variant: AppStore.getSnackbarVariant(),
-            // @ts-expect-error notistack type claims it doesn't support `duration`, but this still runs without errors 🤷‍♂️
-            duration: AppStore.getSnackbarDuration(),
-            position: AppStore.getSnackbarPosition(),
-            action: this.snackbarAction,
-            style: AppStore.getSnackbarStyle(),
-        });
-    };
+    unsubscribe: (() => void) | null = null;
 
+    openSnackbar = () => {
+        const state = useSnackbarStore.getState();
+        
+        if (state.snackbarMessage && state.snackbarMessage !== this.state.message) {
+            this.setState({
+                message: state.snackbarMessage,
+                variant: state.snackbarVariant,
+                duration: state.snackbarDuration,
+            });
+
+            this.props.enqueueSnackbar(state.snackbarMessage, {
+                variant: state.snackbarVariant,
+                autoHideDuration: state.snackbarDuration * 1000,
+                anchorOrigin: state.snackbarPosition,
+                action: this.snackbarAction,
+                style: state.snackbarStyle,
+            });
+        }
+    };
     snackbarAction = (key: string | number) => {
         const { classes } = this.props;
         return (
@@ -74,9 +83,17 @@ class NotificationSnackbar extends PureComponent<NotificationSnackbarProps> {
         );
     };
 
-    componentDidMount = () => {
-        AppStore.on('openSnackbar', this.openSnackbar);
-    };
+    componentDidMount() {
+        this.unsubscribe = useSnackbarStore.subscribe(() => {
+            this.openSnackbar();
+        });
+    }
+
+    componentWillUnmount() {
+        if (this.unsubscribe) {
+            this.unsubscribe();
+        }
+    }
 
     render() {
         return null;

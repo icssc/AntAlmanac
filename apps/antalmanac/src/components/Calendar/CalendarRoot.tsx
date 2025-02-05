@@ -28,10 +28,20 @@ const CALENDAR_MAX_DATE = new Date(2018, 0, 1, 23);
 
 export const ScheduleCalendar = memo(() => {
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
-    const eventsInCalendar = useScheduleStore((store) => store.getEventsInCalendar());
-    const finalsEventsInCalendar = useScheduleStore((store) => store.getFinalEventsInCalendar());
-    const currentScheduleIndex = useScheduleStore((store) => store.getCurrentScheduleIndex());
-    const scheduleNames = useScheduleStore((store) => store.getScheduleNames());
+    const {
+        getEventsInCalendar,
+        getFinalEventsInCalendar,
+        getCurrentScheduleIndex,
+        getScheduleNames,
+    } = useScheduleStore(
+        (state) => ({
+            getEventsInCalendar: state.getEventsInCalendar(),
+            getFinalEventsInCalendar: state.getFinalEventsInCalendar(),
+            getCurrentScheduleIndex: state.getCurrentScheduleIndex(),
+            getScheduleNames: state.getScheduleNames(),
+        }),
+        shallow
+    );
 
     const { isMilitaryTime } = useTimeFormatStore();
     const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
@@ -42,13 +52,13 @@ export const ScheduleCalendar = memo(() => {
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
         if (showFinalsSchedule)
             return hoveredCalendarizedFinal
-                ? [...finalsEventsInCalendar, hoveredCalendarizedFinal]
-                : finalsEventsInCalendar;
+                ? [...getFinalEventsInCalendar, hoveredCalendarizedFinal]
+                : getFinalEventsInCalendar;
         else
-            return hoveredCalendarizedCourses ? [...eventsInCalendar, ...hoveredCalendarizedCourses] : eventsInCalendar;
+            return hoveredCalendarizedCourses ? [...getEventsInCalendar, ...hoveredCalendarizedCourses] : getEventsInCalendar;
     }, [
-        eventsInCalendar,
-        finalsEventsInCalendar,
+        getEventsInCalendar,
+        getFinalEventsInCalendar,
         hoveredCalendarizedCourses,
         hoveredCalendarizedFinal,
         showFinalsSchedule,
@@ -109,7 +119,7 @@ export const ScheduleCalendar = memo(() => {
     const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
     const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
 
-    const onlyCourseEvents = eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[];
+    const onlyCourseEvents = getEventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[];
 
     const finalsDate = hoveredCalendarizedFinal
         ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
@@ -152,10 +162,10 @@ export const ScheduleCalendar = memo(() => {
     return (
         <Box id="calendar-root" borderRadius={1} flexGrow={1} height={'0px'} display="flex" flexDirection="column">
             <CalendarToolbar
-                currentScheduleIndex={currentScheduleIndex}
+                currentScheduleIndex={getCurrentScheduleIndex}
                 toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
                 showFinalsSchedule={showFinalsSchedule}
-                scheduleNames={scheduleNames}
+                scheduleNames={getScheduleNames}
             />
 
             <Box id="screenshot" height="0" flexGrow={1}>

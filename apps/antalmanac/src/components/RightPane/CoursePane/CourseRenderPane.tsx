@@ -19,12 +19,12 @@ import analyticsEnum from '$lib/analytics';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 function getColors() {
-    const currentCourses = AppStore.schedule.getCurrentCourses();
+    const currentCourses = useScheduleStore.getState().schedule.getCurrentCourses();
     const courseColors = currentCourses.reduce(
         (accumulator, { section }) => {
             accumulator[section.sectionCode] = section.color;
@@ -183,7 +183,7 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+    const [scheduleNames, setScheduleNames] = useState(useScheduleStore.getState().getScheduleNames());
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
@@ -241,10 +241,6 @@ export default function CourseRenderPane(props: { id?: number }) {
         }
     }, []);
 
-    const updateScheduleNames = () => {
-        setScheduleNames(AppStore.getScheduleNames());
-    };
-
     useEffect(() => {
         const changeColors = () => {
             if (websocResp == null) {
@@ -253,21 +249,20 @@ export default function CourseRenderPane(props: { id?: number }) {
             setCourseData(flattenSOCObject(websocResp));
         };
 
-        AppStore.on('currentScheduleIndexChange', changeColors);
-
         return () => {
-            AppStore.off('currentScheduleIndexChange', changeColors);
+            changeColors();
         };
     }, [websocResp]);
 
     useEffect(() => {
         loadCourses();
-        AppStore.on('scheduleNamesChange', updateScheduleNames);
-
-        return () => {
-            AppStore.off('scheduleNamesChange', updateScheduleNames);
-        };
     }, [loadCourses, props.id]);
+
+    useEffect(() => {
+        return () => {
+            setHoveredEvent(undefined);
+        };
+    }, [setHoveredEvent]);
 
     /**
      * Removes hovered course when component unmounts

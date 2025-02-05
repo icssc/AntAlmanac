@@ -11,7 +11,7 @@ import {
 import { useState, useEffect, useCallback } from 'react';
 
 import { copySchedule } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 
 interface CopyScheduleDialogProps extends DialogProps {
     index: number;
@@ -20,7 +20,9 @@ interface CopyScheduleDialogProps extends DialogProps {
 function CopyScheduleDialog(props: CopyScheduleDialogProps) {
     const { index } = props;
     const { onClose } = props; // destructured separately for memoization.
-    const [name, setName] = useState<string>(`Copy of ${AppStore.getScheduleNames()[index]}`);
+    const scheduleNames = useScheduleStore((state) => state.getScheduleNames());
+
+    const [name, setName] = useState(() => `Copy of ${scheduleNames[index] ?? 'Untitled Schedule'}`);
 
     const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setName(event.target.value);
@@ -34,17 +36,6 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
         copySchedule(index, name);
         onClose?.({}, 'escapeKeyDown');
     }, [onClose, name]);
-
-    const handleScheduleNamesChange = useCallback(() => {
-        setName(`Copy of ${AppStore.getScheduleNames()[index]}`);
-    }, [index]);
-
-    useEffect(() => {
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-        return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-        };
-    }, [handleScheduleNamesChange]);
 
     return (
         <Dialog onClose={onClose} {...props}>

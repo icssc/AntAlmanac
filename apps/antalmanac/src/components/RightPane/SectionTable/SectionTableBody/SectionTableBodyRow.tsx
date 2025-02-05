@@ -13,7 +13,7 @@ import { InstructorsCell } from '$components/RightPane/SectionTable/SectionTable
 import { LocationsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/LocationsCell';
 import { RestrictionsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/RestrictionsCell';
 import { StatusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/StatusCell';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
@@ -50,16 +50,13 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     const activeColumns = useColumnStore((store) => store.activeColumns);
     const previewMode = usePreviewStore((store) => store.previewMode);
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
+    const getAddedSectionCodes = useScheduleStore((state) => state.getAddedSectionCodes);
 
     const [addedCourse, setAddedCourse] = useState(
-        AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
+        getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
     );
 
     // Stable references to event listeners will synchronize React state with the store.
-
-    const updateHighlight = useCallback(() => {
-        setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
-    }, [section.sectionCode, term]);
 
     const handleMouseEnter = useCallback(() => {
         if (!previewMode || addedCourse) {
@@ -75,14 +72,18 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
 
     // Attach event listeners to the store.
     useEffect(() => {
-        AppStore.on('addedCoursesChange', updateHighlight);
-        AppStore.on('currentScheduleIndexChange', updateHighlight);
-
+        const unsubscribe = useScheduleStore.subscribe((state) => {
+            setAddedCourse(state.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
+        });
+    
         return () => {
-            AppStore.removeListener('addedCoursesChange', updateHighlight);
-            AppStore.removeListener('currentScheduleIndexChange', updateHighlight);
+            unsubscribe();
         };
-    }, [updateHighlight]);
+    }, [section.sectionCode, term]);
+
+    // useEffect(() => {
+    //     setAddedCourse(getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
+    // }, [getAddedSectionCodes, section.sectionCode, term]);
 
     const computedRowStyle = useMemo(() => {
         if (addedCourse) {

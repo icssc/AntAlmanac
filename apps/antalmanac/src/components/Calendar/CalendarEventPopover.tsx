@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { shallow } from 'zustand/shallow';
 
 import CourseCalendarEvent from '$components/Calendar/CourseCalendarEvent';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 
 export function CalendarEventPopover() {
@@ -12,23 +12,11 @@ export function CalendarEventPopover() {
         shallow
     );
 
-    const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
+    const scheduleNames = useScheduleStore((state) => state.getScheduleNames());
 
     const handleClosePopover = useCallback(() => {
         setSelectedEvent(null, null);
     }, [setSelectedEvent]);
-
-    useEffect(() => {
-        const updateScheduleNames = () => {
-            setScheduleNames(AppStore.getScheduleNames());
-        };
-
-        AppStore.on('scheduleNamesChange', updateScheduleNames);
-
-        return () => {
-            AppStore.off('scheduleNamesChange', updateScheduleNames);
-        };
-    }, []);
 
     if (!selectedEvent) {
         return null;

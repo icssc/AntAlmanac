@@ -9,7 +9,7 @@ import { ClearScheduleButton } from '$components/buttons/Clear';
 import DownloadButton from '$components/buttons/Download';
 import ScreenshotButton from '$components/buttons/Screenshot';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 
 function handleUndo() {
     logAnalytics({
@@ -31,9 +31,10 @@ export interface CalendarPaneToolbarProps {
  */
 export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-    const [skeletonScheduleNames, setSkeletonScheduleNames] = useState(AppStore.getSkeletonScheduleNames());
+    const scheduleNames = useScheduleStore((state) => state.getScheduleNames());
+    const skeletonMode = useScheduleStore((state) => state.getSkeletonMode());
+    const skeletonScheduleNames = useScheduleStore((state) => state.getSkeletonScheduleNames());
+
 
     const handleToggleFinals = useCallback(() => {
         logAnalytics({
@@ -42,31 +43,6 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
         });
         toggleDisplayFinalsSchedule();
     }, [toggleDisplayFinalsSchedule]);
-
-    const handleScheduleNamesChange = useCallback(() => {
-        setScheduleNames(AppStore.getScheduleNames());
-    }, []);
-
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-            setSkeletonScheduleNames(AppStore.getSkeletonScheduleNames());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
-
-    useEffect(() => {
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-
-        return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-        };
-    }, [handleScheduleNamesChange]);
 
     return (
         <Paper
@@ -112,7 +88,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
 
                 <ClearScheduleButton size="medium" fontSize="small" skeletonMode={skeletonMode} />
 
-                <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
+                <CustomEventDialog key="custom" scheduleNames={scheduleNames} />
             </Box>
         </Paper>
     );

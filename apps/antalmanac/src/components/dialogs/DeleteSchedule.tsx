@@ -10,7 +10,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 
 import { deleteSchedule } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface ScheduleNameDialogProps extends DialogProps {
@@ -35,7 +35,7 @@ function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
      * This is destructured separately for memoization.
      */
     const { onClose } = props;
-    const [name, setName] = useState<string>(AppStore.getScheduleNames()[index]);
+    const name = useScheduleStore((state) => state.getScheduleNames()[index]);
 
     const handleCancel = useCallback(() => {
         onClose?.({}, 'escapeKeyDown');
@@ -45,18 +45,6 @@ function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
         deleteSchedule(index);
         onClose?.({}, 'escapeKeyDown');
     }, [index, onClose]);
-
-    const handleScheduleNamesChange = useCallback(() => {
-        setName(AppStore.getScheduleNames()[index]);
-    }, [index]);
-
-    useEffect(() => {
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-
-        return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-        };
-    }, [handleScheduleNamesChange]);
 
     return (
         <Dialog {...dialogProps}>

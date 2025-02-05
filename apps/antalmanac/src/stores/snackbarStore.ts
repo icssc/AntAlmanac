@@ -43,9 +43,9 @@ export const useSnackbarStore = create<SnackbarStore>((set, get) => ({
         set((state) => ({
             snackbarMessage: message,
             snackbarVariant: variant,
-            snackbarDuration: duration ?? state.snackbarDuration,
-            snackbarPosition: position ?? state.snackbarPosition,
-            snackbarStyle: style ?? {},
+            snackbarDuration: duration ? duration : state.snackbarDuration,
+            snackbarPosition: position ? position : state.snackbarPosition,
+            snackbarStyle: style ? style : state.snackbarStyle,
         }));
     },
 }));

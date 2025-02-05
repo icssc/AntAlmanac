@@ -15,7 +15,7 @@ import { warnMultipleTerms } from '$lib/helpers';
 import { removeLocalStorageUserId, setLocalStorageUserId } from '$lib/localStorage';
 import { useScheduleStore } from '$stores/ScheduleStore';
 import { useUndoRedoStore } from '$stores/UndoRedoStore';
-import AppStore from '$stores/AppStore'
+import { useSnackbarStore } from '$stores/SnackbarStore';
 
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
@@ -66,7 +66,7 @@ export const openSnackbar = (
     position?: SnackbarPosition,
     style?: { [cssPropertyName: string]: string }
 ) => {
-    AppStore.openSnackbar(variant, message, duration, position, style);
+    useSnackbarStore.getState().openSnackbar(variant, message, duration, position, style);
 };
 
 function isEmptySchedule(schedules: ShortCourseSchedule[]) {

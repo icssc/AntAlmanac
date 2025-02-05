@@ -5,7 +5,7 @@ import { SketchPicker } from 'react-color';
 
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 
 interface ColorPickerProps {
     color: string;
@@ -25,6 +25,8 @@ class ColorPicker extends PureComponent<ColorPickerProps> {
         anchorEl: null,
         color: this.props.color,
     };
+
+    store = useScheduleStore.getState(); 
 
     handleClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
         event.stopPropagation();
@@ -66,14 +68,14 @@ class ColorPicker extends PureComponent<ColorPickerProps> {
         if (this.props.isCustomEvent && this.props.customEventID) colorPickerId = this.props.customEventID.toString();
         else if (this.props.sectionCode) colorPickerId = this.props.sectionCode;
         else throw new Error("Colorpicker custom component wasn't supplied a custom event id or a section code.");
-        AppStore.registerColorPicker(colorPickerId, this.updateColor);
+        this.store.registerColorPicker(colorPickerId, this.updateColor);
     };
     componentWillUnmount = () => {
         let colorPickerId;
         if (this.props.isCustomEvent && this.props.customEventID) colorPickerId = this.props.customEventID.toString();
         else if (this.props.sectionCode) colorPickerId = this.props.sectionCode;
         else throw new Error("Colorpicker custom component wasn't supplied a custom event id or a section code.");
-        AppStore.unregisterColorPicker(colorPickerId, this.updateColor);
+        this.store.unregisterColorPicker(colorPickerId, this.updateColor);
     };
 
     render() {

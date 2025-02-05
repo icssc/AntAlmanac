@@ -1,6 +1,6 @@
 import { ScheduleCourse, HourMinute, WebsocSectionFinalExam, WebsocSectionMeeting } from '@packages/antalmanac-types';
 
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 
 const CURRENT_TERM = '2024 Winter'; // TODO: Check the current term when that PR's in
 let sampleClassesSectionCodes: Array<string> = [];
@@ -10,7 +10,7 @@ const finalsDaysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as co
 type FinalsDaysOfWeek = (typeof finalsDaysOfWeek)[number];
 
 export function addSampleClasses() {
-    if (AppStore.getAddedCourses().length > 0) return;
+    if (useScheduleStore.getState().getAddedCourses().length > 0) return;
 
     const sampleClassesOptions: sampleClassOptions[] = [
         {
@@ -90,13 +90,13 @@ export function addSampleClasses() {
     const sampleClasses: Array<ScheduleCourse> = sampleClassesOptions.map(sampleClassFactory);
 
     sampleClasses.forEach((sampleClass) => {
-        AppStore.addCourse(sampleClass);
+        useScheduleStore.getState().addCourse(sampleClass);
         sampleClassesSectionCodes.push(sampleClass.section.sectionCode);
     });
 }
 
 export function removeSampleClasses() {
-    AppStore.deleteCourses(sampleClassesSectionCodes, CURRENT_TERM, false);
+    useScheduleStore.getState().deleteCourses(sampleClassesSectionCodes, CURRENT_TERM, false);
     sampleClassesSectionCodes = [];
 }
 

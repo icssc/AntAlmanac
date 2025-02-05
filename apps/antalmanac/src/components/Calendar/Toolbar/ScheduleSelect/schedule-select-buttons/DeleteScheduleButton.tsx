@@ -3,7 +3,7 @@ import { Box, IconButton, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
 
 import DeleteScheduleDialog from '$components/dialogs/DeleteSchedule';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 
 interface DeleteScheduleButtonProps {
     index: number;
@@ -28,7 +28,7 @@ export function DeleteScheduleButton({ index, disabled }: DeleteScheduleButtonPr
                     <IconButton
                         onClick={handleOpen}
                         size="small"
-                        disabled={AppStore.schedule.getNumberOfSchedules() === 1 || disabled}
+                        disabled={useScheduleStore.getState().schedule.getNumberOfSchedules() === 1 || disabled}
                     >
                         <ClearIcon />
                     </IconButton>

@@ -18,6 +18,7 @@ import type {
     ChangeCourseColorAction,
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
+import EventEmitter from 'events';
 
 interface ScheduleStoreState {
     // State
@@ -27,6 +28,7 @@ interface ScheduleStoreState {
     finalsEventsInCalendar: any[];
     unsavedChanges: boolean;
     skeletonMode: boolean;
+    colorPickers: Record<string, EventEmitter>;
   
     // Getters
     getNextScheduleName: (scheduleIndex: number, newScheduleName: string) => string;
@@ -63,6 +65,8 @@ interface ScheduleStoreState {
     changeCurrentSchedule: (newScheduleIndex: number) => void;
     clearSchedule: () => void;
     deleteSchedule: (scheduleIndex: number) => void;
+    registerColorPicker: (id: string, update: (color: string) => void) => void;
+    unregisterColorPicker: (id: string, update: (color: string) => void) => void;
     changeCourseColor: (sectionCode: string, term: string, newColor: string) => void;
     saveSchedule: () => void;
     updateScheduleNote: (newScheduleNote: string, scheduleIndex: number) => void;
@@ -77,6 +81,7 @@ interface ScheduleStoreState {
     finalsEventsInCalendar: [],
     unsavedChanges: false,
     skeletonMode: false,
+    colorPickers: {},
   
     // Getters
     getNextScheduleName: (scheduleIndex, newScheduleName) => get().schedule.getNextScheduleName(scheduleIndex, newScheduleName),
@@ -165,6 +170,32 @@ interface ScheduleStoreState {
       };
       actionTypesStore.autoSaveSchedule(action);
     },
+
+    registerColorPicker: (id: string, update: (color: string) => void) => {
+      set((state) => ({
+        colorPickers: {
+            ...state.colorPickers,
+            [id]: state.colorPickers[id] || new EventEmitter(),
+        },
+      }));
+      get().colorPickers[id].on('colorChange', update);
+    },
+    
+    unregisterColorPicker: (id: string, update: (color: string) => void) => {
+      const pickers = get().colorPickers;
+
+      if (pickers[id]) {
+          pickers[id].removeListener('colorChange', update);
+
+          set((state) => {
+              const updatedPickers = { ...state.colorPickers };
+              if (updatedPickers[id] && updatedPickers[id].listenerCount('colorChange') === 0) {
+                  delete updatedPickers[id];
+              }
+              return { colorPickers: updatedPickers };
+          });
+      }
+    },
   
     changeCustomEventColor: (customEventId: number, newColor: string) => {
       get().schedule.changeCustomEventColor(customEventId, newColor);
@@ -175,6 +206,26 @@ interface ScheduleStoreState {
         newColor,
       };
       actionTypesStore.autoSaveSchedule(action);
+      const pickers = get().colorPickers;
+      if (pickers[customEventId]) {
+          pickers[customEventId].emit('colorChange', newColor);
+      }
+    },
+
+    changeCourseColor: (sectionCode: string, term: string, newColor: string) => {
+      get().schedule.changeCourseColor(sectionCode, term, newColor);
+      set({ unsavedChanges: true });
+      const action: ChangeCourseColorAction = {
+        type: 'changeCourseColor',
+        sectionCode,
+        term,
+        newColor,
+      };
+      actionTypesStore.autoSaveSchedule(action);
+      const pickers = get().colorPickers;
+      if (pickers[sectionCode]) {
+          pickers[sectionCode].emit('colorChange', newColor);
+      }
     },
   
     addSchedule: (newScheduleName: string) => {
@@ -244,18 +295,6 @@ interface ScheduleStoreState {
       const action: DeleteScheduleAction = {
         type: 'deleteSchedule',
         scheduleIndex,
-      };
-      actionTypesStore.autoSaveSchedule(action);
-    },
-  
-    changeCourseColor: (sectionCode: string, term: string, newColor: string) => {
-      get().schedule.changeCourseColor(sectionCode, term, newColor);
-      set({ unsavedChanges: true });
-      const action: ChangeCourseColorAction = {
-        type: 'changeCourseColor',
-        sectionCode,
-        term,
-        newColor,
       };
       actionTypesStore.autoSaveSchedule(action);
     },

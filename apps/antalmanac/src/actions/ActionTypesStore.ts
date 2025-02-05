@@ -10,7 +10,7 @@ import {
     removeLocalStorageUnsavedActions,
     setLocalStorageUnsavedActions,
 } from '$lib/localStorage';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 
 const MAX_UNSAVED_ACTIONS = 1000;
 
@@ -122,7 +122,7 @@ class ActionTypesStore extends EventEmitter {
             if (savedUserID) {
                 this.emit('autoSaveStart');
                 await autoSaveSchedule(savedUserID);
-                AppStore.unsavedChanges = false;
+                useScheduleStore.setState({ unsavedChanges: false });
                 this.emit('autoSaveEnd');
             }
         } else {
@@ -151,44 +151,45 @@ class ActionTypesStore extends EventEmitter {
         }
 
         const actions = parseUnsavedActionsString(unsavedActionsString);
+        const scheduleStore = useScheduleStore.getState();
 
         actions.forEach((action) => {
             switch (action.type) {
                 case 'addCourse':
-                    AppStore.schedule.addCourse(action.course, action.scheduleIndex);
+                    scheduleStore.addCourse(action.course, action.scheduleIndex);
                     break;
                 case 'deleteCourse':
-                    AppStore.schedule.deleteCourse(action.sectionCode, action.term);
+                    scheduleStore.deleteCourse(action.sectionCode, action.term);
                     break;
                 case 'addCustomEvent':
-                    AppStore.schedule.addCustomEvent(action.customEvent, action.scheduleIndices);
+                    scheduleStore.addCustomEvent(action.customEvent, action.scheduleIndices);
                     break;
                 case 'deleteCustomEvent':
-                    AppStore.schedule.deleteCustomEvent(action.customEventId);
+                    scheduleStore.deleteCustomEvent(action.customEventId);
                     break;
                 case 'editCustomEvent':
-                    AppStore.schedule.editCustomEvent(action.editedCustomEvent, action.newScheduleIndices);
+                    scheduleStore.editCustomEvent(action.editedCustomEvent, action.newScheduleIndices);
                     break;
                 case 'changeCustomEventColor':
-                    AppStore.schedule.changeCustomEventColor(action.customEventId, action.newColor);
+                    scheduleStore.changeCustomEventColor(action.customEventId, action.newColor);
                     break;
                 case 'changeCourseColor':
-                    AppStore.schedule.changeCourseColor(action.sectionCode, action.term, action.newColor);
+                    scheduleStore.changeCourseColor(action.sectionCode, action.term, action.newColor);
                     break;
                 case 'clearSchedule':
-                    AppStore.schedule.clearCurrentSchedule();
+                    scheduleStore.schedule.clearCurrentSchedule();
                     break;
                 case 'addSchedule':
-                    AppStore.schedule.addNewSchedule(action.newScheduleName);
+                    scheduleStore.schedule.addNewSchedule(action.newScheduleName);
                     break;
                 case 'renameSchedule':
-                    AppStore.schedule.renameSchedule(action.scheduleIndex, action.newScheduleName);
+                    scheduleStore.renameSchedule(action.scheduleIndex, action.newScheduleName);
                     break;
                 case 'copySchedule':
-                    AppStore.schedule.copySchedule(action.scheduleIndex, action.newScheduleName);
+                    scheduleStore.copySchedule(action.scheduleIndex, action.newScheduleName);
                     break;
                 case 'deleteSchedule':
-                    AppStore.schedule.deleteSchedule(action.scheduleIndex);
+                    scheduleStore.deleteSchedule(action.scheduleIndex);
                     break;
                 default:
                     break;

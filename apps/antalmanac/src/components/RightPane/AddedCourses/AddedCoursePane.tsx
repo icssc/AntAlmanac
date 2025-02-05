@@ -12,7 +12,7 @@ import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy } from '$lib/helpers';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 
 /**
  * All the interactive buttons have the same styles.
@@ -36,7 +36,7 @@ interface CourseWithTerm extends AACourse {
 const NOTE_MAX_LEN = 5000;
 
 function getCourses() {
-    const currentCourses = AppStore.schedule.getCurrentCourses();
+    const currentCourses = useScheduleStore.getState().schedule.getCurrentCourses();
 
     const formattedCourses: CourseWithTerm[] = [];
 
@@ -81,37 +81,20 @@ function getCourses() {
 }
 
 function CustomEventsBox() {
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const scheduleStore = useScheduleStore();
+    const [skeletonMode, setSkeletonMode] = useState(scheduleStore.getSkeletonMode());
 
     const [customEvents, setCustomEvents] = useState(
-        skeletonMode ? AppStore.getCurrentSkeletonSchedule().customEvents : AppStore.schedule.getCurrentCustomEvents()
+        skeletonMode ? scheduleStore.getCurrentSkeletonSchedule().customEvents : scheduleStore.getCustomEvents()
     );
 
     useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
+        setSkeletonMode(scheduleStore.getSkeletonMode());
+    }, [scheduleStore.getSkeletonMode]);
 
     useEffect(() => {
-        const handleCustomEventsChange = () => {
-            setCustomEvents([...AppStore.schedule.getCurrentCustomEvents()]);
-        };
-
-        AppStore.on('customEventsChange', handleCustomEventsChange);
-        AppStore.on('currentScheduleIndexChange', handleCustomEventsChange);
-
-        return () => {
-            AppStore.off('customEventsChange', handleCustomEventsChange);
-            AppStore.off('currentScheduleIndexChange', handleCustomEventsChange);
-        };
-    }, []);
+        setCustomEvents([...scheduleStore.getCustomEvents()]);
+    }, [scheduleStore.getCustomEvents]);
 
     if (customEvents.length <= 0) {
         return null;
@@ -121,12 +104,12 @@ function CustomEventsBox() {
         <Box>
             <Typography variant="h6">Custom Events</Typography>
             <Box display="flex" flexDirection="column" gap={1}>
-                {customEvents.map((customEvent) => {
+                {customEvents.map((customEvent: any) => {
                     return (
                         <Box key={customEvent.title}>
                             <CustomEventDetailView
                                 customEvent={customEvent}
-                                scheduleNames={AppStore.getScheduleNames()}
+                                scheduleNames={scheduleStore.getScheduleNames()}
                             />
                         </Box>
                     );
@@ -137,11 +120,12 @@ function CustomEventsBox() {
 }
 
 function ScheduleNoteBox() {
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const scheduleStore = useScheduleStore();
+    const [skeletonMode, setSkeletonMode] = useState(scheduleStore.getSkeletonMode());
     const [scheduleNote, setScheduleNote] = useState(
-        skeletonMode ? AppStore.getCurrentSkeletonSchedule().scheduleNote : AppStore.getCurrentScheduleNote()
+        skeletonMode ? scheduleStore.getCurrentSkeletonSchedule().scheduleNote : scheduleStore.getCurrentScheduleNote()
     );
-    const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+    const [scheduleIndex, setScheduleIndex] = useState(scheduleStore.getCurrentScheduleIndex());
 
     const handleNoteChange = useCallback(
         (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -152,34 +136,16 @@ function ScheduleNoteBox() {
     );
 
     useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
+        setSkeletonMode(scheduleStore.getSkeletonMode());
+    }, [scheduleStore.getSkeletonMode]);
 
     useEffect(() => {
-        const handleScheduleNoteChange = () => {
-            setScheduleNote(AppStore.getCurrentScheduleNote());
-        };
+        setScheduleNote(scheduleStore.getCurrentScheduleNote());
+    }, [scheduleStore.getCurrentScheduleNote]);
 
-        const handleScheduleIndexChange = () => {
-            setScheduleIndex(AppStore.getCurrentScheduleIndex());
-        };
-
-        AppStore.on('scheduleNotesChange', handleScheduleNoteChange);
-        AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
-
-        return () => {
-            AppStore.off('scheduleNotesChange', handleScheduleNoteChange);
-            AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
-        };
-    }, []);
+    useEffect(() => {
+        setScheduleIndex(scheduleStore.getCurrentScheduleIndex());
+    }, [scheduleStore.getCurrentScheduleIndex]);
 
     return (
         <Box>
@@ -202,25 +168,11 @@ function ScheduleNoteBox() {
 }
 
 function SkeletonSchedule() {
-    const [skeletonSchedule, setSkeletonSchedule] = useState(AppStore.getCurrentSkeletonSchedule());
-
-    useEffect(() => {
-        const updateSkeletonSchedule = () => {
-            setSkeletonSchedule(AppStore.getCurrentSkeletonSchedule());
-        };
-
-        AppStore.on('skeletonScheduleChange', updateSkeletonSchedule);
-        AppStore.on('currentScheduleIndexChange', updateSkeletonSchedule);
-
-        return () => {
-            AppStore.off('skeletonScheduleChange', updateSkeletonSchedule);
-            AppStore.off('currentScheduleIndexChange', updateSkeletonSchedule);
-        };
-    }, []);
+    const skeletonSchedule = useScheduleStore((state) => state.getCurrentSkeletonSchedule());
 
     const sectionsByTerm: [string, string[]][] = useMemo(() => {
         const result = skeletonSchedule.courses.reduce(
-            (accumulated, course) => {
+            (accumulated: any, course: any) => {
                 accumulated[course.term] ??= [];
                 accumulated[course.term].push(course.sectionCode);
                 return accumulated;
@@ -275,34 +227,8 @@ function SkeletonSchedule() {
 
 function AddedSectionsGrid() {
     const [courses, setCourses] = useState(getCourses());
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
-    const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
-
-    useEffect(() => {
-        const handleCoursesChange = () => {
-            setCourses(getCourses());
-        };
-
-        const handleScheduleNamesChange = () => {
-            setScheduleNames([...AppStore.getScheduleNames()]);
-        };
-
-        const handleScheduleIndexChange = () => {
-            setScheduleIndex(AppStore.getCurrentScheduleIndex());
-        };
-
-        AppStore.on('addedCoursesChange', handleCoursesChange);
-        AppStore.on('currentScheduleIndexChange', handleCoursesChange);
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-        AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
-
-        return () => {
-            AppStore.off('addedCoursesChange', handleCoursesChange);
-            AppStore.off('currentScheduleIndexChange', handleCoursesChange);
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-            AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
-        };
-    }, []);
+    const scheduleNames = useScheduleStore((state) => state.getScheduleNames());
+    const scheduleIndex = useScheduleStore((state) => state.getCurrentScheduleIndex());
 
     const scheduleUnits = useMemo(() => {
         let result = 0;
@@ -364,19 +290,7 @@ function AddedSectionsGrid() {
 }
 
 export default function AddedCoursePaneFunctionComponent() {
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
+    const skeletonMode = useScheduleStore((state) => state.getSkeletonMode());
 
     return <Box>{skeletonMode ? <SkeletonSchedule /> : <AddedSectionsGrid />}</Box>;
 }

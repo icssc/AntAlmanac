@@ -14,7 +14,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import buildingCatalogue from '$lib/buildingCatalogue';
 import { clickToCopy, useQuickSearchForClasses } from '$lib/helpers';
 import locationIds from '$lib/location_ids';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 import { useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
@@ -322,7 +322,7 @@ const CourseCalendarEvent = (props: CourseCalendarEventProps) => {
                     </div>
                     <CustomEventDialog
                         onDialogClose={props.closePopover}
-                        customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)}
+                        customEvent={useScheduleStore.getState().schedule.getExistingCustomEvent(customEventID)}
                         scheduleNames={props.scheduleNames}
                     />
 
