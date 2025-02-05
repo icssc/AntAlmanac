@@ -335,7 +335,8 @@ class AppStore extends EventEmitter {
         }
         this.unsavedChanges = false;
 
-        // await actionTypesStore.loadScheduleFromLocalSave();
+        await actionTypesStore.loadScheduleFromLocalSave();
+        this.schedule.clearPreviousStates();
 
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
@@ -359,7 +360,7 @@ class AppStore extends EventEmitter {
         this.emit('skeletonModeChange');
 
         // Switch to added courses tab since Anteater API can't be reached anyway
-        useTabStore.getState().setActiveTab(2);
+        useTabStore.getState().setActiveTab('added');
     }
 
     changeCurrentSchedule(newScheduleIndex: number) {
@@ -430,6 +431,8 @@ class AppStore extends EventEmitter {
 
     termsInSchedule = (term: string) =>
         new Set([term, ...this.schedule.getCurrentCourses().map((course) => course.term)]);
+
+    getPreviousStates = () => this.schedule.getPreviousStates();
 }
 
 const store = new AppStore();

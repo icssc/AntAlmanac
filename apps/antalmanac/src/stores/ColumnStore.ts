@@ -19,6 +19,7 @@ export const SECTION_TABLE_COLUMNS = [
     'sectionEnrollment',
     'restrictions',
     'status',
+    'syllabus',
 ] as const;
 
 export type SectionTableColumn = (typeof SECTION_TABLE_COLUMNS)[number];
