@@ -10,7 +10,6 @@ import { setLocalStorageScheduleCache } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 
-
 interface SignInDialogProps {
     open: boolean;
     isDark: boolean;
@@ -72,10 +71,7 @@ export function SignInDialog(props: SignInDialogProps) {
         if (userName.length > 0) {
             const sessionId = await trpc.session.handleGuestSession.query({ name: userName });
 
-            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState().schedules;
-            if (!isEmptySchedule(scheduleSaveState)) {
-                setLocalStorageScheduleCache(JSON.stringify(scheduleSaveState));
-            }
+            cacheSchedule();
             setSession(sessionId);
             onClose();
         }
