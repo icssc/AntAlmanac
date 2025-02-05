@@ -1,21 +1,14 @@
 import { Close } from '@mui/icons-material';
-import { Alert, Box, IconButton, Link, useMediaQuery, useTheme } from '@mui/material';
+import { Alert, Box, IconButton, useMediaQuery } from '@mui/material';
 import { AACourse, AASection, WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
-import RightPaneStore from '../RightPaneStore';
-import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
-import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
-
-import { SchoolDeptCard } from './SchoolDeptCard';
-import darkModeLoadingGif from './SearchForm/Gifs/dark-loading.gif';
-import loadingGif from './SearchForm/Gifs/loading.gif';
-import darkNoNothing from './static/dark-no_results.png';
-import noNothing from './static/no_results.png';
-
 import { openSnackbar } from '$actions/AppStoreActions';
-import analyticsEnum from '$lib/analytics';
+import { ErrorMessage } from '$components/RightPane/CoursePane/messages/ErrorMessage';
+import { LoadingMessage } from '$components/RightPane/CoursePane/messages/LoadingMessage';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { SectionTableWrapped } from '$components/RightPane/SectionTable/SectionTableWrapped';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
@@ -56,6 +49,7 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
         return accumulator;
     }, []);
 };
+
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
 
@@ -106,112 +100,6 @@ const RecruitmentBanner = () => {
                     We have opportunities for experienced devs and those with zero experience!
                 </Alert>
             ) : null}
-        </Box>
-    );
-};
-
-/* TODO: all this typecasting in the conditionals is pretty messy, but type guards don't really work in this context
- *  for reasons that are currently beyond me (probably something in the transpiling process that JS doesn't like).
- *  If you can find a way to make this cleaner, do it.
- */
-const SectionTableWrapped = (
-    index: number,
-    data: { scheduleNames: string[]; courseData: (WebsocSchool | WebsocDepartment | AACourse)[] }
-) => {
-    const { courseData, scheduleNames } = data;
-    const formData = RightPaneStore.getFormData();
-
-    let component;
-
-    if ((courseData[index] as WebsocSchool).departments !== undefined) {
-        const school = courseData[index] as WebsocSchool;
-        component = <SchoolDeptCard comment={school.schoolComment} type={'school'} name={school.schoolName} />;
-    } else if ((courseData[index] as WebsocDepartment).courses !== undefined) {
-        const dept = courseData[index] as WebsocDepartment;
-        component = <SchoolDeptCard name={`Department of ${dept.deptName}`} comment={dept.deptComment} type={'dept'} />;
-    } else if (formData.ge !== 'ANY') {
-        const course = courseData[index] as AACourse;
-        component = (
-            <GeDataFetchProvider
-                term={formData.term}
-                courseDetails={course}
-                allowHighlight={true}
-                scheduleNames={scheduleNames}
-                analyticsCategory={analyticsEnum.classSearch.title}
-            />
-        );
-    } else {
-        const course = courseData[index] as AACourse;
-        component = (
-            <SectionTableLazyWrapper
-                term={formData.term}
-                courseDetails={course}
-                allowHighlight={true}
-                scheduleNames={scheduleNames}
-                analyticsCategory={analyticsEnum.classSearch.title}
-            />
-        );
-    }
-
-    return <div>{component}</div>;
-};
-
-const LoadingMessage = () => {
-    const isDark = useThemeStore((store) => store.isDark);
-    return (
-        <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <img src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading courses" />
-        </Box>
-    );
-};
-
-const ErrorMessage = () => {
-    const theme = useTheme();
-    const isDark = useThemeStore((store) => store.isDark);
-
-    const formData = RightPaneStore.getFormData();
-    const deptValue = formData.deptValue.replace(' ', '').toUpperCase() || null;
-    const courseNumber = formData.courseNumber.replace(/\s+/g, '').toUpperCase() || null;
-    const courseId = deptValue && courseNumber ? `${deptValue}${courseNumber}` : null;
-
-    return (
-        <Box
-            sx={{
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                flexDirection: 'column',
-            }}
-        >
-            {courseId ? (
-                <Link href={`https://peterportal.org/course/${courseId}`} target="_blank" sx={{ width: '100%' }}>
-                    <Alert
-                        variant="filled"
-                        severity="info"
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            fontSize: 14,
-                            backgroundColor: theme.palette.primary.main,
-                            color: 'white',
-                        }}
-                    >
-                        <span>
-                            Search for{' '}
-                            <span style={{ textDecoration: 'underline' }}>
-                                {deptValue} {courseNumber}
-                            </span>{' '}
-                            on PeterPortal!
-                        </span>
-                    </Alert>
-                </Link>
-            ) : null}
-
-            <img
-                src={isDark ? darkNoNothing : noNothing}
-                alt="No Results Found"
-                style={{ objectFit: 'contain', width: '80%', height: '80%', pointerEvents: 'none' }}
-            />
         </Box>
     );
 };
@@ -318,34 +206,37 @@ export default function CourseRenderPane(props: { id?: number }) {
         };
     }, [setHoveredEvent]);
 
+    if (loading) {
+        return <LoadingMessage />;
+    }
+
+    if (error || courseData.length === 0) {
+        return <ErrorMessage />;
+    }
+
     return (
         <>
             <Box sx={{ height: '56px' }} />
 
-            {loading ? (
-                <LoadingMessage />
-            ) : error || courseData.length === 0 ? (
-                <ErrorMessage />
-            ) : (
-                <>
-                    <RecruitmentBanner />
-                    <Box>
-                        {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
-                            let heightEstimate = 200;
-                            if ((courseData[index] as AACourse).sections !== undefined)
-                                heightEstimate = (courseData[index] as AACourse).sections.length * 60 + 20 + 40;
-                            return (
-                                <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>
-                                    {SectionTableWrapped(index, {
-                                        courseData: courseData,
-                                        scheduleNames: scheduleNames,
-                                    })}
-                                </LazyLoad>
-                            );
-                        })}
-                    </Box>
-                </>
-            )}
+            <RecruitmentBanner />
+            <Box>
+                {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
+                    const heightEstimate =
+                        (courseData[index] as AACourse).sections !== undefined
+                            ? (courseData[index] as AACourse).sections.length * 60 + 20 + 40
+                            : 200;
+
+                    return (
+                        <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>
+                            {SectionTableWrapped({
+                                index: index,
+                                courseData: courseData,
+                                scheduleNames: scheduleNames,
+                            })}
+                        </LazyLoad>
+                    );
+                })}
+            </Box>
         </>
     );
 }
