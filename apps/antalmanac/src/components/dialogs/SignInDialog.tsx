@@ -3,9 +3,13 @@ import { Button, DialogActions, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
+import { isEmptySchedule } from '$actions/AppStoreActions';
 import { AuthDialog } from '$components/dialogs/AuthDialog';
 import trpc from '$lib/api/trpc';
+import { setLocalStorageScheduleCache } from '$lib/localStorage';
+import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
+
 
 interface SignInDialogProps {
     open: boolean;
@@ -24,10 +28,18 @@ export function SignInDialog(props: SignInDialogProps) {
     const [isProcessing, setIsProcessing] = useState(false);
     const [openUserNameOption, setOpenUserNameOption] = useState(false);
 
+    const cacheSchedule = () => {
+        const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState().schedules;
+        if (!isEmptySchedule(scheduleSaveState)) {
+            setLocalStorageScheduleCache(JSON.stringify(scheduleSaveState));
+        }
+    };
+
     const handleLogin = async () => {
         try {
             const authUrl = await trpc.users.getGoogleAuthUrl.query();
             if (authUrl) {
+                cacheSchedule();
                 window.location.href = authUrl;
             }
         } catch (error) {
@@ -45,7 +57,7 @@ export function SignInDialog(props: SignInDialogProps) {
                     code: code,
                     token: session ?? '',
                 });
-
+                cacheSchedule();
                 setSession(newSession);
                 navigate('/');
             }
@@ -59,6 +71,11 @@ export function SignInDialog(props: SignInDialogProps) {
     const handleUserNameLogin = async () => {
         if (userName.length > 0) {
             const sessionId = await trpc.session.handleGuestSession.query({ name: userName });
+
+            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState().schedules;
+            if (!isEmptySchedule(scheduleSaveState)) {
+                setLocalStorageScheduleCache(JSON.stringify(scheduleSaveState));
+            }
             setSession(sessionId);
             onClose();
         }

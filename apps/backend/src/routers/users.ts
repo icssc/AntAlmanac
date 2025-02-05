@@ -85,6 +85,7 @@ const usersRouter = router({
         .query(async ({ input }) => {
             const { tokens } = await oauth2Client.getToken({ code: input.code });
             oauth2Client.setCredentials(tokens);
+
             const ticket = await oauth2Client.verifyIdToken({
                 idToken: tokens.id_token!,
                 audience: GOOGLE_CLIENT_ID,

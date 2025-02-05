@@ -335,7 +335,7 @@ class AppStore extends EventEmitter {
         }
         this.unsavedChanges = false;
 
-        await actionTypesStore.loadScheduleFromLocalSave();
+        // await actionTypesStore.loadScheduleFromLocalSave();
 
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');

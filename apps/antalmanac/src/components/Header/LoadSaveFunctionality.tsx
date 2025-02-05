@@ -17,15 +17,10 @@ const LoadSaveScheduleFunctionality = () => {
         await loadSchedule();
     };
 
-    // const saveScheduleAndSetLoading = async () => {
-    //     const cache = getLocalStorageScheduleCache();
-    //     alert(cache);
-    // };
-
     const saveScheduleWithSignin = async () => {
-        if (session) {
+        if (validSession && session) {
             const userId = await trpc.session.getSessionUserId.query({ token: session });
-            if (userId) await saveSchedule(userId, true);
+            await saveSchedule(userId, true);
         }
     };
 
