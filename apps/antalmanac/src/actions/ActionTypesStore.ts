@@ -28,6 +28,7 @@ export interface DeleteCourseAction {
     type: 'deleteCourse';
     sectionCode: string;
     term: string;
+    scheduleIndex: number;
 }
 
 export interface AddCustomEventAction {
@@ -39,6 +40,7 @@ export interface AddCustomEventAction {
 export interface DeleteCustomEventAction {
     type: 'deleteCustomEvent';
     customEventId: number;
+    scheduleIndices: number[];
 }
 
 export interface EditCustomEventAction {
@@ -150,7 +152,7 @@ class ActionTypesStore extends EventEmitter {
 
     async loadScheduleFromLocalSave() {
         const unsavedActionsString = getLocalStorageUnsavedActions();
-
+        console.log(unsavedActionsString);
         if (unsavedActionsString == null) return;
         if (!confirm('You have unsaved changes. Would you like to load them?')) {
             removeLocalStorageUnsavedActions();
@@ -160,18 +162,20 @@ class ActionTypesStore extends EventEmitter {
         const actions = parseUnsavedActionsString(unsavedActionsString);
 
         actions.forEach((action) => {
+            console.log(typeof action);
+
             switch (action.type) {
                 case 'addCourse':
                     AppStore.schedule.addCourse(action.course, action.scheduleIndex);
                     break;
                 case 'deleteCourse':
-                    AppStore.schedule.deleteCourse(action.sectionCode, action.term);
+                    AppStore.schedule.deleteCourse(action.sectionCode, action.term, action.scheduleIndex);
                     break;
                 case 'addCustomEvent':
                     AppStore.schedule.addCustomEvent(action.customEvent, action.scheduleIndices);
                     break;
                 case 'deleteCustomEvent':
-                    AppStore.schedule.deleteCustomEvent(action.customEventId);
+                    AppStore.schedule.deleteCustomEvent(action.customEventId, action.scheduleIndices);
                     break;
                 case 'editCustomEvent':
                     AppStore.schedule.editCustomEvent(action.editedCustomEvent, action.newScheduleIndices);

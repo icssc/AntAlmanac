@@ -298,9 +298,10 @@ export class Schedules {
     /**
      * Delete a course in current schedule.
      */
-    deleteCourse(sectionCode: string, term: string) {
+    deleteCourse(sectionCode: string, term: string, scheduleIndex: number) {
         this.addUndoState();
-        this.schedules[this.currentScheduleIndex].courses = this.getCurrentCourses().filter((course) => {
+        this.setCurrentScheduleIndex(scheduleIndex);
+        this.schedules[scheduleIndex].courses = this.schedules[this.currentScheduleIndex].courses.filter((course) => {
             return !(course.section.sectionCode === sectionCode && course.term === term);
         });
     }

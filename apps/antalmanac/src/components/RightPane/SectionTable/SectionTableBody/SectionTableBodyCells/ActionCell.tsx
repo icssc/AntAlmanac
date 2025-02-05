@@ -51,7 +51,7 @@ export function ColorAndDelete(props: ActionProps) {
     const flexDirection = isMobileScreen ? 'column' : undefined;
 
     const handleClick = () => {
-        deleteCourse(section.sectionCode, term);
+        deleteCourse(section.sectionCode, term, AppStore.getCurrentScheduleIndex());
 
         logAnalytics({
             category: analyticsEnum.addedClasses.title,
