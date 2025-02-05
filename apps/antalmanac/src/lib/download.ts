@@ -7,7 +7,7 @@ import { notNull } from './utils';
 import { openSnackbar } from '$actions/AppStoreActions';
 import { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import buildingCatalogue from '$lib/buildingCatalogue';
+import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { getDefaultTerm, termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 
@@ -289,7 +289,7 @@ export function getEventsFromCourses(
             };
             return customEvent;
         } else {
-            const { term, title, courseTitle, instructors, sectionType, start, end, finalExam } = event;
+            const { title, courseTitle, instructors, sectionType, start, end, finalExam } = event;
             const courseEvents: EventAttributes[] = event.locations
                 .map((location) => {
                     if (location.days === undefined) {
