@@ -278,6 +278,7 @@ interface ScheduleStoreState {
   
     changeCurrentSchedule: (newScheduleIndex: number) => {
       get().schedule.setCurrentScheduleIndex(newScheduleIndex);
+      set({});
     },
   
     clearSchedule: () => {

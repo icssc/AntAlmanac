@@ -2,30 +2,12 @@ import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
 import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { changeCurrentSchedule } from '$actions/AppStoreActions';
 import { AddScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton';
 import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/DeleteScheduleButton';
 import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { useScheduleStore } from '$stores/ScheduleStore';
-
-function handleScheduleChange(index: number) {
-    logAnalytics({
-        category: analyticsEnum.calendar.title,
-        action: analyticsEnum.calendar.actions.CHANGE_SCHEDULE,
-    });
-    changeCurrentSchedule(index);
-}
-
-/**
- * Creates an event handler callback that will change the current schedule to the one at a specified index.
- */
-function createScheduleSelector(index: number) {
-    return () => {
-        handleScheduleChange(index);
-    };
-}
 
 /**
  * Simulates an HTML select element using a popover.
@@ -35,8 +17,10 @@ function createScheduleSelector(index: number) {
 export function SelectSchedulePopover(props: { scheduleNames: string[] }) {
     const theme = useTheme();
 
-    const currentScheduleIndex = useScheduleStore((store) => store.getCurrentScheduleIndex());
-    const skeletonMode = useScheduleStore((store) => store.getSkeletonMode());
+    const currentScheduleIndex = useScheduleStore((state) => state.getCurrentScheduleIndex());
+    const scheduleNames = useScheduleStore((state) => state.getScheduleNames());
+    const skeletonMode = useScheduleStore((state) => state.getSkeletonMode());
+
     const [anchorEl, setAnchorEl] = useState<HTMLElement>();
 
     // TODO: maybe these widths should be dynamic based on i.e. the viewport width?
@@ -44,10 +28,10 @@ export function SelectSchedulePopover(props: { scheduleNames: string[] }) {
     const maxWidth = useMemo(() => 150, []);
 
     const open = useMemo(() => Boolean(anchorEl), [anchorEl]);
-
+    
     const currentScheduleName = useMemo(() => {
-        return props.scheduleNames[currentScheduleIndex];
-    }, [props.scheduleNames, currentScheduleIndex]);
+        return scheduleNames[currentScheduleIndex];
+    }, [scheduleNames, currentScheduleIndex]);
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -56,6 +40,14 @@ export function SelectSchedulePopover(props: { scheduleNames: string[] }) {
     const handleClose = useCallback(() => {
         setAnchorEl(undefined);
     }, []);
+
+    const handleScheduleChange = (index: number) => {
+        logAnalytics({
+            category: analyticsEnum.calendar.title,
+            action: analyticsEnum.calendar.actions.CHANGE_SCHEDULE,
+        });
+        useScheduleStore.getState().changeCurrentSchedule(index);
+    };  
 
     return (
         <Box>
@@ -98,7 +90,7 @@ export function SelectSchedulePopover(props: { scheduleNames: string[] }) {
                                                     ? theme.palette.action.selected
                                                     : undefined,
                                         }}
-                                        onClick={createScheduleSelector(index)}
+                                        onClick={() => handleScheduleChange(index)}
                                     >
                                         <Typography
                                             overflow="hidden"

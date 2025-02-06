@@ -230,6 +230,10 @@ function AddedSectionsGrid() {
     const scheduleNames = useScheduleStore((state) => state.getScheduleNames());
     const scheduleIndex = useScheduleStore((state) => state.getCurrentScheduleIndex());
 
+    useEffect(() => {
+        setCourses(getCourses());
+    }, [scheduleIndex]);
+
     const scheduleUnits = useMemo(() => {
         let result = 0;
 
