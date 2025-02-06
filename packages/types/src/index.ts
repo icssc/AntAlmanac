@@ -8,4 +8,5 @@ export * from './websoc';
 export * from '@packages/anteater-api-types/src/courses';
 export * from '@packages/anteater-api-types/src/enrollHist';
 export * from '@packages/anteater-api-types/src/grades';
+export * from '@packages/anteater-api-types/src/larc';
 export * from '@packages/anteater-api-types/src/websoc';
