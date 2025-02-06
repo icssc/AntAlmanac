@@ -3,7 +3,7 @@ import { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import trpc from './api/trpc';
 import { QueryZotcourseError } from './customErrors';
 
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
 
 export interface ZotcourseResponse {
     codes: string[];
@@ -26,7 +26,7 @@ export async function queryZotcourse(schedule_name: string) {
                 start: event.start,
                 end: event.end,
                 days: days.map((_, index) => event.dow.includes(index)),
-                scheduleIndices: [AppStore.getCurrentScheduleIndex()],
+                scheduleIndices: [useScheduleStore.getState().getCurrentScheduleIndex()],
                 customEventID: Date.now(),
                 color: '#551a8b',
             };

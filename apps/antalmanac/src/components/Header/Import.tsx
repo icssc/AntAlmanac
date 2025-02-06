@@ -27,7 +27,8 @@ import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
-import AppStore from '$stores/AppStore';
+import { useScheduleStore } from '$stores/ScheduleStore';
+import { useSnackbarStore } from '$stores/SnackbarStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 function Import() {
@@ -37,9 +38,11 @@ function Import() {
     const [studyListText, setStudyListText] = useState('');
     const [zotcourseScheduleName, setZotcourseScheduleName] = useState('');
 
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-
+    const { getSkeletonMode, getCurrentScheduleIndex, termsInSchedule } = useScheduleStore();
+    const { openSnackbar } = useSnackbarStore();
     const { isDark } = useThemeStore();
+
+    const [skeletonMode, setSkeletonMode] = useState(getSkeletonMode());
 
     const handleOpen = useCallback(() => {
         setOpen(true);
@@ -50,7 +53,7 @@ function Import() {
     }, []);
 
     const handleSubmit = async () => {
-        const currentSchedule = AppStore.getCurrentScheduleIndex();
+        const currentSchedule = getCurrentScheduleIndex();
 
         const isZotcourseImport = importSource === 'zotcourse';
         let sectionCodes: string[] | null = null;
@@ -131,7 +134,7 @@ function Import() {
             addCourse(section.section, section.courseDetails, term, scheduleIndex, true);
         }
 
-        const terms = AppStore.termsInSchedule(term);
+        const terms = termsInSchedule(term);
         if (terms.size > 1) {
             warnMultipleTerms(terms);
         }
@@ -152,16 +155,8 @@ function Import() {
     }, []);
 
     useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
+        setSkeletonMode(getSkeletonMode());
+    }, [getSkeletonMode]);
 
     return (
         <>
