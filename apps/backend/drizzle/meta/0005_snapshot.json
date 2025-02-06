@@ -1,0 +1,468 @@
+{
+    "id": "0c3347fe-0dbf-4b46-bc30-0421fa99a2d9",
+    "prevId": "a8904a72-e669-4ad3-a9cd-487267721dce",
+    "version": "7",
+    "dialect": "postgresql",
+    "tables": {
+        "public.accounts": {
+            "name": "accounts",
+            "schema": "",
+            "columns": {
+                "user_id": {
+                    "name": "user_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "account_type": {
+                    "name": "account_type",
+                    "type": "account_type",
+                    "typeSchema": "public",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "provider_account_id": {
+                    "name": "provider_account_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "accounts_user_id_users_id_fk": {
+                    "name": "accounts_user_id_users_id_fk",
+                    "tableFrom": "accounts",
+                    "tableTo": "users",
+                    "columnsFrom": ["user_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {
+                "accounts_user_id_account_type_pk": {
+                    "name": "accounts_user_id_account_type_pk",
+                    "columns": ["user_id", "account_type"]
+                }
+            },
+            "uniqueConstraints": {},
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
+        },
+        "public.sessions": {
+            "name": "sessions",
+            "schema": "",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "user_id": {
+                    "name": "user_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "expires": {
+                    "name": "expires",
+                    "type": "timestamp",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "refresh_token": {
+                    "name": "refresh_token",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "sessions_user_id_users_id_fk": {
+                    "name": "sessions_user_id_users_id_fk",
+                    "tableFrom": "sessions",
+                    "tableTo": "users",
+                    "columnsFrom": ["user_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {},
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
+        },
+        "public.users": {
+            "name": "users",
+            "schema": "",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "phone": {
+                    "name": "phone",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "avatar": {
+                    "name": "avatar",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "name": {
+                    "name": "name",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "current_schedule_id": {
+                    "name": "current_schedule_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "last_updated": {
+                    "name": "last_updated",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "default": "now()"
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "users_current_schedule_id_schedules_id_fk": {
+                    "name": "users_current_schedule_id_schedules_id_fk",
+                    "tableFrom": "users",
+                    "tableTo": "schedules",
+                    "columnsFrom": ["current_schedule_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "set null",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {},
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
+        },
+        "public.schedules": {
+            "name": "schedules",
+            "schema": "",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "user_id": {
+                    "name": "user_id",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "name": {
+                    "name": "name",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "notes": {
+                    "name": "notes",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "index": {
+                    "name": "index",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "last_updated": {
+                    "name": "last_updated",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": true
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "schedules_user_id_users_id_fk": {
+                    "name": "schedules_user_id_users_id_fk",
+                    "tableFrom": "schedules",
+                    "tableTo": "users",
+                    "columnsFrom": ["user_id"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {
+                "schedules_user_id_name_unique": {
+                    "name": "schedules_user_id_name_unique",
+                    "nullsNotDistinct": false,
+                    "columns": ["user_id", "name"]
+                },
+                "schedules_user_id_index_unique": {
+                    "name": "schedules_user_id_index_unique",
+                    "nullsNotDistinct": false,
+                    "columns": ["user_id", "index"]
+                }
+            },
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
+        },
+        "public.coursesInSchedule": {
+            "name": "coursesInSchedule",
+            "schema": "",
+            "columns": {
+                "scheduleId": {
+                    "name": "scheduleId",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "sectionCode": {
+                    "name": "sectionCode",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "term": {
+                    "name": "term",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "color": {
+                    "name": "color",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "last_updated": {
+                    "name": "last_updated",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "default": "now()"
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "coursesInSchedule_scheduleId_schedules_id_fk": {
+                    "name": "coursesInSchedule_scheduleId_schedules_id_fk",
+                    "tableFrom": "coursesInSchedule",
+                    "tableTo": "schedules",
+                    "columnsFrom": ["scheduleId"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {
+                "coursesInSchedule_scheduleId_sectionCode_term_pk": {
+                    "name": "coursesInSchedule_scheduleId_sectionCode_term_pk",
+                    "columns": ["scheduleId", "sectionCode", "term"]
+                }
+            },
+            "uniqueConstraints": {},
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
+        },
+        "public.customEvents": {
+            "name": "customEvents",
+            "schema": "",
+            "columns": {
+                "id": {
+                    "name": "id",
+                    "type": "text",
+                    "primaryKey": true,
+                    "notNull": true
+                },
+                "scheduleId": {
+                    "name": "scheduleId",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "title": {
+                    "name": "title",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "start": {
+                    "name": "start",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "end": {
+                    "name": "end",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "days": {
+                    "name": "days",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": true
+                },
+                "color": {
+                    "name": "color",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "building": {
+                    "name": "building",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "last_updated": {
+                    "name": "last_updated",
+                    "type": "timestamp with time zone",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "default": "now()"
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "customEvents_scheduleId_schedules_id_fk": {
+                    "name": "customEvents_scheduleId_schedules_id_fk",
+                    "tableFrom": "customEvents",
+                    "tableTo": "schedules",
+                    "columnsFrom": ["scheduleId"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {},
+            "uniqueConstraints": {},
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
+        },
+        "public.subscriptions": {
+            "name": "subscriptions",
+            "schema": "",
+            "columns": {
+                "userId": {
+                    "name": "userId",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "sectionCode": {
+                    "name": "sectionCode",
+                    "type": "integer",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "term": {
+                    "name": "term",
+                    "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "lastUpdated": {
+                    "name": "lastUpdated",
+                    "type": "last_updated_status",
+                    "typeSchema": "public",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "openStatus": {
+                    "name": "openStatus",
+                    "type": "boolean",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "waitlistStatus": {
+                    "name": "waitlistStatus",
+                    "type": "boolean",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "fullStatus": {
+                    "name": "fullStatus",
+                    "type": "boolean",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "restrictionStatus": {
+                    "name": "restrictionStatus",
+                    "type": "boolean",
+                    "primaryKey": false,
+                    "notNull": false
+                }
+            },
+            "indexes": {},
+            "foreignKeys": {
+                "subscriptions_userId_users_id_fk": {
+                    "name": "subscriptions_userId_users_id_fk",
+                    "tableFrom": "subscriptions",
+                    "tableTo": "users",
+                    "columnsFrom": ["userId"],
+                    "columnsTo": ["id"],
+                    "onDelete": "cascade",
+                    "onUpdate": "no action"
+                }
+            },
+            "compositePrimaryKeys": {
+                "subscriptions_userId_sectionCode_pk": {
+                    "name": "subscriptions_userId_sectionCode_pk",
+                    "columns": ["userId", "sectionCode"]
+                }
+            },
+            "uniqueConstraints": {},
+            "policies": {},
+            "checkConstraints": {},
+            "isRLSEnabled": false
+        }
+    },
+    "enums": {
+        "public.account_type": {
+            "name": "account_type",
+            "schema": "public",
+            "values": ["GOOGLE", "GUEST"]
+        },
+        "public.last_updated_status": {
+            "name": "last_updated_status",
+            "schema": "public",
+            "values": ["WAITLISTED", "OPEN", "FULL"]
+        }
+    },
+    "schemas": {},
+    "sequences": {},
+    "roles": {},
+    "policies": {},
+    "views": {},
+    "_meta": {
+        "columns": {},
+        "schemas": {},
+        "tables": {}
+    }
+}

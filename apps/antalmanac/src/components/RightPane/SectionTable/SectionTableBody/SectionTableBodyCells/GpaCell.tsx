@@ -8,7 +8,6 @@ import { TableBodyCellContainer } from '$components/RightPane/SectionTable/Secti
 import { Grades } from '$lib/grades';
 import { useThemeStore } from '$stores/SettingsStore';
 
-
 async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
     const namedInstructors = instructors.filter((instructor) => instructor !== 'STAFF');
 
