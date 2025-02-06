@@ -164,6 +164,7 @@ export const loadSchedule = async (loadCache = false) => {
     const session = useSessionStore.getState();
     try {
         const userId: string | null = await trpc.session.getSessionUserId.query({ token: session.session ?? '' });
+
         const scheduleCache = JSON.parse(getLocalStorageScheduleCache() ?? 'null');
         removeLocalStorageScheduleCache();
         if (!userId) return;
@@ -177,18 +178,17 @@ export const loadSchedule = async (loadCache = false) => {
 
         const res: User = await trpc.users.getUserData.query({ userId: userId });
         const scheduleSaveState = res && 'userData' in res ? res.userData : res;
-        if (isEmptySchedule(scheduleSaveState.schedules)) return;
 
+        if (isEmptySchedule(scheduleSaveState.schedules)) return;
         if (loadCache) {
             if (scheduleCache) {
                 const cacheSchedule = scheduleCache.map((schedule: ShortCourseSchedule) => {
                     return {
                         ...schedule,
-                        scheduleName: '(IMPORTED)-' + schedule.scheduleName,
+                        scheduleName: '(RESTORED)-' + schedule.scheduleName,
                     };
                 });
                 scheduleSaveState.schedules.push(...cacheSchedule);
-                await saveSchedule(userId);
             }
         }
 
@@ -196,6 +196,7 @@ export const loadSchedule = async (loadCache = false) => {
             openSnackbar('error', `Couldn't find schedules :(`);
         } else if (await AppStore.loadSchedule(scheduleSaveState)) {
             openSnackbar('success', `Schedule loaded successfully!`);
+            await saveSchedule(userId);
         } else {
             AppStore.loadSkeletonSchedule(scheduleSaveState);
             openSnackbar(
