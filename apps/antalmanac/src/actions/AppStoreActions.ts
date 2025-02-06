@@ -13,11 +13,7 @@ import { SnackbarPosition } from '$components/NotificationSnackbar';
 import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
-import {
-    removeLocalStorageUserId,
-    getLocalStorageScheduleCache,
-    removeLocalStorageScheduleCache,
-} from '$lib/localStorage';
+import { getLocalStorageScheduleCache, removeLocalStorageScheduleCache } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 export interface CopyScheduleOptions {
@@ -90,24 +86,16 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
     return true;
 }
 
-export const saveSchedule = async (userID: string, rememberMe: boolean) => {
-    logAnalytics({
-        category: analyticsEnum.nav.title,
-        action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
-        label: userID,
-        value: rememberMe ? 1 : 0,
-    });
+export const saveSchedule = async (userID: string) => {
+    // logAnalytics({
+    //     category: analyticsEnum.nav.title,
+    //     action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
+    //     label: userID,
+    //     value: rememberMe ? 1 : 0,
+    // });
 
     if (userID != null) {
-        userID = userID.replace(/\s+/g, '');
-
         if (userID.length > 0) {
-            removeLocalStorageUserId();
-            // if (rememberMe) {
-            //     setLocalStorageUserId(userID);
-            // } else {
-            // }
-
             const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
             if (
@@ -175,7 +163,6 @@ export async function autoSaveSchedule(userID: string) {
 export const loadSchedule = async (loadCache = false) => {
     const session = useSessionStore.getState();
     try {
-        console.log(session.session);
         const userId: string | null = await trpc.session.getSessionUserId.query({ token: session.session ?? '' });
         const scheduleCache = JSON.parse(getLocalStorageScheduleCache() ?? 'null');
         removeLocalStorageScheduleCache();
@@ -201,6 +188,7 @@ export const loadSchedule = async (loadCache = false) => {
                     };
                 });
                 scheduleSaveState.schedules.push(...cacheSchedule);
+                await saveSchedule(userId);
             }
         }
 

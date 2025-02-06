@@ -9,7 +9,6 @@ import trpc from '$lib/api/trpc';
 import { getLocalStorageScheduleCache } from '$lib/localStorage';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
-
 interface LoadCacheDialogProps {
     open: boolean;
     onClose: () => void;
@@ -24,7 +23,7 @@ const LoadCacheDialog = (props: LoadCacheDialogProps) => {
                     Yes restore my changes
                 </Button>
                 <Button onClick={onClose} size="large" variant="contained">
-                    Cancel
+                    Cancel changes
                 </Button>
             </>
         </AuthDialog>
@@ -36,12 +35,6 @@ const LoadSaveScheduleFunctionality = () => {
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [openLoadCacheDialog, setOpenLoadCacheDialog] = useState(false);
 
-    const saveScheduleWithSignin = async () => {
-        if (validSession && session) {
-            const userId = await trpc.session.getSessionUserId.query({ token: session });
-            await saveSchedule(userId, true);
-        }
-    };
     const handleClickSignIn = () => {
         setOpenSignInDialog(!openSignInDialog);
     };
@@ -50,9 +43,17 @@ const LoadSaveScheduleFunctionality = () => {
         setOpenLoadCacheDialog(!openLoadCacheDialog);
         await loadSchedule(false);
     };
+
     const confirmLoadCache = async () => {
         setOpenLoadCacheDialog(false);
         await loadSchedule(true);
+    };
+
+    const saveScheduleWithSignin = async () => {
+        if (validSession && session) {
+            const userId = await trpc.session.getSessionUserId.query({ token: session });
+            await saveSchedule(userId);
+        }
     };
 
     const loadSessionData = async () => {
