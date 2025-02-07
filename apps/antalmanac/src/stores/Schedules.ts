@@ -481,7 +481,7 @@ export class Schedules {
      */
     revertState() {
         // prevent the user from undoing to an empty state
-        if (this.previousStates.length <= 1) {
+        if (this.previousStates.length === 0) {
             return;
         }
 
