@@ -4,20 +4,16 @@ interface AuthDialogProps {
     title: string;
     open: boolean;
     children?: React.ReactNode;
-    onClose: () => void;
+    onClose?: () => void; // not providing this prop will prevent the dialog from closing when clicking outside of it
 }
 
 export function AuthDialog(props: AuthDialogProps) {
     const { title, onClose, children, open } = props;
 
-    const handleClose = () => {
-        onClose();
-    };
-
     return (
         <Dialog
             open={open}
-            onClose={handleClose}
+            onClose={onClose}
             maxWidth={'xl'}
             fullScreen={true}
             sx={{

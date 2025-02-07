@@ -1,4 +1,4 @@
-import { Save } from '@material-ui/icons';
+import { Save, SaveAlt } from '@material-ui/icons';
 import { Button, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 
@@ -18,12 +18,19 @@ const LoadCacheDialog = (props: LoadCacheDialogProps) => {
     const { open, onConfirm, onClose } = props;
 
     return (
-        <AuthDialog title="Save your progress?" open={open} onClose={onClose}>
-            <Stack spacing={2} sx={{ alighItems: 'center' }}>
-                <Button onClick={onConfirm} size="large" color="primary" variant="contained">
-                    Yes restore my changes
+        <AuthDialog title="Save your progress?" open={open}>
+            <Stack spacing={2} alignItems="center">
+                <Button
+                    startIcon={<SaveAlt />}
+                    onClick={onConfirm}
+                    size="large"
+                    color="primary"
+                    variant="contained"
+                    sx={{ width: '20rem' }}
+                >
+                    Yes keep all changes
                 </Button>
-                <Button onClick={onClose} size="large" color="secondary" variant="outlined">
+                <Button onClick={onClose} size="large" color="secondary" variant="outlined" sx={{ width: '20rem' }}>
                     Cancel changes
                 </Button>
             </Stack>
@@ -35,7 +42,7 @@ const LoadSaveScheduleFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
     const { session, validSession } = useSessionStore();
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
-    const [openLoadCacheDialog, setOpenLoadCacheDialog] = useState(false);
+    const [openLoadCacheDialog, setOpenLoadCacheDialog] = useState(true);
 
     const handleClickSignIn = () => {
         setOpenSignInDialog(!openSignInDialog);
