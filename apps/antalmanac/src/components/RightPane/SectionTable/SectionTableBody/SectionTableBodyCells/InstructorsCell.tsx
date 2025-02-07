@@ -1,4 +1,5 @@
 import { Box } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 
@@ -15,13 +16,13 @@ export const InstructorsCell = ({ instructors }: InstructorsCellProps) => {
         const lastName = profName.substring(0, profName.indexOf(','));
         return (
             <Box key={profName}>
-                <a
-                    href={`https://www.ratemyprofessors.com/search/professors/1074?q=${lastName}`}
+                <Link
+                    to={`https://www.ratemyprofessors.com/search/professors/1074?q=${lastName}`}
                     target="_blank"
                     rel="noopener noreferrer"
                 >
                     {profName}
-                </a>
+                </Link>
             </Box>
         );
     });
