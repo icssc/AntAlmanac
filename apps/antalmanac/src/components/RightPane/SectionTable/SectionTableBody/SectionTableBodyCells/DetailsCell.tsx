@@ -1,9 +1,8 @@
 import { Box, useMediaQuery } from '@mui/material';
 import { WebsocSectionType } from '@packages/antalmanac-types';
 
-import { MOBILE_BREAKPOINT } from '../../../../../globals';
-
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { MOBILE_BREAKPOINT } from '$src/globals';
 
 const SECTION_COLORS = {
     Act: { color: '#c87137' },
