@@ -1,12 +1,12 @@
-import { Button } from '@material-ui/core';
 import { Save } from '@material-ui/icons';
+import { Button, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
 import { AuthDialog } from '$components/dialogs/AuthDialog';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import trpc from '$lib/api/trpc';
-import { getLocalStorageScheduleCache } from '$lib/localStorage';
+import { getLocalStorageScheduleCache, removeLocalStorageScheduleCache } from '$lib/localStorage';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 interface LoadCacheDialogProps {
@@ -17,15 +17,15 @@ interface LoadCacheDialogProps {
 const LoadCacheDialog = (props: LoadCacheDialogProps) => {
     const { open, onConfirm, onClose } = props;
     return (
-        <AuthDialog title="Restore Changes?" open={open} onClose={onClose}>
-            <>
+        <AuthDialog title="Save your progress?" open={open} onClose={onClose}>
+            <Stack spacing={2} sx={{ alighItems: 'center' }}>
                 <Button onClick={onConfirm} size="large" color="primary" variant="contained">
                     Yes restore my changes
                 </Button>
-                <Button onClick={onClose} size="large" variant="contained">
+                <Button onClick={onClose} size="large" color="secondary" variant="outlined">
                     Cancel changes
                 </Button>
-            </>
+            </Stack>
         </AuthDialog>
     );
 };
@@ -65,7 +65,10 @@ const LoadSaveScheduleFunctionality = () => {
 
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
-            if (getLocalStorageScheduleCache()) {
+            if (getLocalStorageScheduleCache() && !validSession) {
+                // if the user somehow has a cached schedule and is not signed in, remove the cache
+                removeLocalStorageScheduleCache();
+            } else if (getLocalStorageScheduleCache()) {
                 setOpenLoadCacheDialog(true);
             } else {
                 loadSessionData();
