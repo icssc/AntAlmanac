@@ -52,7 +52,7 @@ function Login() {
         handleUser();
     }, [session, validSession, user]);
     return (
-        <>
+        <div id="load-save-container">
             {validSession ? (
                 <>
                     <Button
@@ -93,7 +93,7 @@ function Login() {
                     <SignInDialog isDark={isDark} open={openSignIn} onClose={handleClickSignIn} />
                 </>
             )}
-        </>
+        </div>
     );
 }
 

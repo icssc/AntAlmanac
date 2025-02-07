@@ -42,31 +42,26 @@ const LoadSaveScheduleFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
     const { session, validSession } = useSessionStore();
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
-    const [openLoadCacheDialog, setOpenLoadCacheDialog] = useState(true);
+    const [openLoadCacheDialog, setOpenLoadCacheDialog] = useState(false);
 
     const handleClickSignIn = () => {
         setOpenSignInDialog(!openSignInDialog);
     };
 
-    const cancelLoadCache = async () => {
+    const closeLoadCacheDialog = async (loadCache: boolean) => {
         setOpenLoadCacheDialog(false);
-        await loadSchedule(false);
-    };
-    const confirmLoadCache = async () => {
-        setOpenLoadCacheDialog(false);
-        await loadSchedule(true);
+        await loadSchedule(loadCache);
     };
 
-    const saveScheduleWithSignin = async () => {
+    const saveScheduleData = async () => {
         if (validSession && session) {
             const userId = await trpc.session.getSessionUserId.query({ token: session });
             await saveSchedule(userId);
         }
     };
 
-    const loadSessionData = async () => {
+    const loadScheduleData = async () => {
         if (validSession) {
-            // if the cahce dialog is open then we need to prompt the user if we want to display their cached schedule
             await loadSchedule();
         }
     };
@@ -76,24 +71,25 @@ const LoadSaveScheduleFunctionality = () => {
             if (getLocalStorageScheduleCache()) {
                 setOpenLoadCacheDialog(validSession);
             } else {
-                loadSessionData();
+                loadScheduleData();
             }
         }
     }, [session, validSession]);
 
     return (
-        <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
-            <Button
-                color="inherit"
-                startIcon={<Save />}
-                onClick={validSession ? saveScheduleWithSignin : handleClickSignIn}
-            >
+        <Stack direction="row">
+            <Button color="inherit" startIcon={<Save />} onClick={validSession ? saveScheduleData : handleClickSignIn}>
                 Save
             </Button>
 
             <SignInDialog isDark={isDark} open={openSignInDialog} onClose={handleClickSignIn} />
-            <LoadCacheDialog open={openLoadCacheDialog} onClose={cancelLoadCache} onConfirm={confirmLoadCache} />
-        </div>
+
+            <LoadCacheDialog
+                open={openLoadCacheDialog}
+                onClose={() => closeLoadCacheDialog(false)}
+                onConfirm={() => closeLoadCacheDialog(true)}
+            />
+        </Stack>
     );
 };
 
