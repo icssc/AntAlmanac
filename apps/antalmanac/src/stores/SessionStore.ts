@@ -1,7 +1,13 @@
 import { create } from 'zustand';
 
 import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId, removeLocalStorageSessionId, setLocalStorageSessionId } from '$lib/localStorage';
+import {
+    getLocalStorageSessionId,
+    removeLocalStorageSessionId,
+    setLocalStorageSessionId,
+    getLocalStorageScheduleCache,
+    removeLocalStorageScheduleCache,
+} from '$lib/localStorage';
 
 interface SessionState {
     session: string | null;
@@ -21,9 +27,11 @@ export const useSessionStore = create<SessionState>((set) => {
                 if (validSession) {
                     setLocalStorageSessionId(session);
                     set({ session: session, validSession: true });
-                } else {
-                    set({ session: null, validSession: false });
                 }
+            } else {
+                // if the session becomes invalid and we have a cache, we should remove it
+                if (getLocalStorageScheduleCache()) removeLocalStorageScheduleCache();
+                set({ session: null, validSession: false });
             }
         },
         clearSession: async () => {
