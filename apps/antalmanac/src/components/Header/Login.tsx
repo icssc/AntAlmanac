@@ -1,6 +1,6 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Button, Menu } from '@mui/material';
+import { Button, Menu, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -50,7 +50,7 @@ function Login() {
     useEffect(() => {
         setSession(session); // called validate the local session
         handleUser();
-    }, [session, validSession]);
+    }, [session, validSession, user]);
     return (
         <>
             {validSession ? (
@@ -68,15 +68,21 @@ function Login() {
                     <Menu
                         id="basic-menu"
                         anchorEl={anchorEl}
-                        open={open}
                         onClose={handleClose}
+                        open={open}
                         MenuListProps={{
                             'aria-labelledby': 'basic-button',
                         }}
                     >
-                        <Button onClick={handleLogout} startIcon={<LogoutIcon />} color="inherit">
-                            Log out
-                        </Button>
+                        <MenuItem onClick={handleLogout}>
+                            <ListItemIcon>
+                                <LogoutIcon />
+                            </ListItemIcon>
+                            <ListItemText>Log out</ListItemText>
+                            {/* <Button onClick={handleLogout} startIcon={<LogoutIcon />} color="inherit">
+                                Log out
+                            </Button> */}
+                        </MenuItem>
                     </Menu>
                 </>
             ) : (
