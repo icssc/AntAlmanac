@@ -1,5 +1,5 @@
 import GoogleIcon from '@mui/icons-material/Google';
-import { Button, DialogActions, TextField } from '@mui/material';
+import { Button, DialogActions, TextField, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -101,13 +101,14 @@ export function SignInDialog(props: SignInDialogProps) {
             title={!openUserNameOption ? 'Sign in to save' : 'Username Login'}
         >
             {!openUserNameOption ? (
-                <>
+                <Stack spacing={2} alignItems="center">
                     <Button
                         onClick={handleLogin}
                         startIcon={<GoogleIcon />}
                         size="large"
                         color="primary"
                         variant="contained"
+                        sx={{ width: '20rem' }}
                     >
                         Sign in with Google
                     </Button>
@@ -117,9 +118,10 @@ export function SignInDialog(props: SignInDialogProps) {
                         color={isDark ? 'secondary' : 'primary'}
                         variant="outlined"
                         sx={{
+                            width: '20rem',
                             position: 'relative',
                             '&::after': {
-                                content: '"Use your schedule name to load in your old schedule"',
+                                content: '"You can load your old schedule here"',
                                 position: 'absolute',
                                 bottom: '-20px',
                                 right: '0',
@@ -131,7 +133,7 @@ export function SignInDialog(props: SignInDialogProps) {
                     >
                         Continue with username
                     </Button>
-                </>
+                </Stack>
             ) : (
                 <>
                     <form
@@ -144,6 +146,7 @@ export function SignInDialog(props: SignInDialogProps) {
                             label="Username"
                             color={isDark ? 'secondary' : undefined}
                             fullWidth
+                            sx={{ marginTop: '1rem' }}
                             onChange={(e) => setUserName(e.target.value)}
                         />
                         <DialogActions>

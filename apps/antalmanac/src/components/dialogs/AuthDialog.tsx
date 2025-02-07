@@ -1,4 +1,4 @@
-import { Dialog, DialogTitle, DialogContent, Stack } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent } from '@mui/material';
 
 interface AuthDialogProps {
     title: string;
@@ -15,15 +15,21 @@ export function AuthDialog(props: AuthDialogProps) {
     };
 
     return (
-        <Dialog open={open} onClose={handleClose} maxWidth={'xl'}>
-            <Stack spacing={0} sx={{ textAlign: 'center' }}>
-                <DialogTitle fontSize={'large'}>{title}</DialogTitle>
-                <DialogContent sx={{ width: '30rem', height: '13rem' }}>
-                    <Stack spacing={2} sx={{ paddingTop: '1rem' }}>
-                        {children}
-                    </Stack>
-                </DialogContent>
-            </Stack>
+        <Dialog
+            open={open}
+            onClose={handleClose}
+            maxWidth={'xl'}
+            fullScreen={true}
+            sx={{
+                '& .MuiDialog-paper': {
+                    width: { xs: '50%', sm: '35%' },
+                    height: '18rem', // Set height to auto to adjust dynamically
+                },
+                padding: '1rem',
+            }}
+        >
+            <DialogTitle fontSize={'large'}>{title}</DialogTitle>
+            <DialogContent>{children}</DialogContent>
         </Dialog>
     );
 }

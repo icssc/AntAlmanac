@@ -159,7 +159,6 @@ export async function autoSaveSchedule(userID: string) {
     }
 }
 
-// I will rewrite this function to better handle guests
 export const loadSchedule = async (loadCache = false) => {
     const session = useSessionStore.getState();
     try {
