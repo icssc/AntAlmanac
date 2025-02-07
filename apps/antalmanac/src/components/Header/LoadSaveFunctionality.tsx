@@ -6,7 +6,7 @@ import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
 import { AuthDialog } from '$components/dialogs/AuthDialog';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import trpc from '$lib/api/trpc';
-import { getLocalStorageScheduleCache, removeLocalStorageScheduleCache } from '$lib/localStorage';
+import { getLocalStorageScheduleCache } from '$lib/localStorage';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 interface LoadCacheDialogProps {
@@ -16,6 +16,7 @@ interface LoadCacheDialogProps {
 }
 const LoadCacheDialog = (props: LoadCacheDialogProps) => {
     const { open, onConfirm, onClose } = props;
+
     return (
         <AuthDialog title="Save your progress?" open={open} onClose={onClose}>
             <Stack spacing={2} sx={{ alighItems: 'center' }}>
@@ -29,6 +30,7 @@ const LoadCacheDialog = (props: LoadCacheDialogProps) => {
         </AuthDialog>
     );
 };
+
 const LoadSaveScheduleFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
     const { session, validSession } = useSessionStore();
@@ -40,10 +42,9 @@ const LoadSaveScheduleFunctionality = () => {
     };
 
     const cancelLoadCache = async () => {
-        setOpenLoadCacheDialog(!openLoadCacheDialog);
+        setOpenLoadCacheDialog(false);
         await loadSchedule(false);
     };
-
     const confirmLoadCache = async () => {
         setOpenLoadCacheDialog(false);
         await loadSchedule(true);
@@ -57,7 +58,7 @@ const LoadSaveScheduleFunctionality = () => {
     };
 
     const loadSessionData = async () => {
-        if (validSession && !openLoadCacheDialog) {
+        if (validSession) {
             // if the cahce dialog is open then we need to prompt the user if we want to display their cached schedule
             await loadSchedule();
         }
@@ -65,11 +66,8 @@ const LoadSaveScheduleFunctionality = () => {
 
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
-            if (getLocalStorageScheduleCache() && !validSession) {
-                // if the user somehow has a cached schedule and is not signed in, remove the cache
-                removeLocalStorageScheduleCache();
-            } else if (getLocalStorageScheduleCache()) {
-                setOpenLoadCacheDialog(true);
+            if (getLocalStorageScheduleCache()) {
+                setOpenLoadCacheDialog(validSession);
             } else {
                 loadSessionData();
             }

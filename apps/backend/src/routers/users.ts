@@ -36,38 +36,63 @@ const saveInputSchema = type({
 const usersRouter = router({
     /**
      * Loads schedule data for a user that's logged in.
+     * @param input - An object containing the session token.
+     * @returns The account and user data associated with the session token.
      */
-    getUserAndAccountBySessionToken: procedure
-        .input(z.object({ sessionToken: z.string() }))
-        .query(async ({ input }) => {
-            return await RDS.getAccountUserByToken(db, input.sessionToken);
-        }),
-    getAccountByUid: procedure.input(z.object({ userid: z.string() })).query(async ({ input }) => {
-        return await RDS.getAccountById(db, input.userid);
+    getUserAndAccountBySessionToken: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
+        return await RDS.getAccountUserByToken(db, input.token);
     }),
-    getUserByUid: procedure.input(z.object({ userid: z.string() })).query(async ({ input }) => {
-        return await RDS.getUserById(db, input.userid);
-    }),
-    getUserData: procedure.input(userInputSchema.assert).query(async ({ input }) => {
-        if ('googleId' in input) {
-            throw new TRPCError({
-                code: 'NOT_IMPLEMENTED',
-                message: 'Google login not implemented',
-            });
-        }
-        const res = await RDS.getUserDataByUid(db, input.userId);
-        return res;
-    }),
-    getGuestUserData: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
-        if ('googleId' in input) {
-            throw new TRPCError({
-                code: 'NOT_IMPLEMENTED',
-                message: 'Google login not implemented',
-            });
-        }
-        return await RDS.getUserById(db, input.name);
-    }),
+
     /**
+     * Retrieves account information by user ID.
+     * @param input - An object containing the user ID.
+     * @returns The account information associated with the user ID.
+     */
+    getAccountByUid: procedure.input(userInputSchema.assert).query(async ({ input }) => {
+        if ('userId' in input) {
+            return await RDS.getAccountById(db, input.userId);
+        } else {
+            throw new TRPCError({
+                code: 'BAD_REQUEST',
+                message: 'Invalid input: userId is required',
+            });
+        }
+    }),
+
+    /**
+     * Retrieves user information by user ID.
+     * @param input - An object containing the user ID.
+     * @returns The user information associated with the user ID.
+     */
+    getUserByUid: procedure.input(userInputSchema.assert).query(async ({ input }) => {
+        if ('userId' in input) {
+            return await RDS.getUserById(db, input.userId);
+        } else {
+            throw new TRPCError({
+                code: 'BAD_REQUEST',
+                message: 'Invalid input: userId is required',
+            });
+        }
+    }),
+
+    /**
+     * Retrieves user data by user ID.
+     * @param input - An object containing the user ID.
+     * @returns The user data associated with the user ID.
+     */
+    getUserData: procedure.input(userInputSchema.assert).query(async ({ input }) => {
+        if ('userId' in input) {
+            return await RDS.getUserDataByUid(db, input.userId);
+        } else {
+            throw new TRPCError({
+                code: 'BAD_REQUEST',
+                message: 'Invalid input: userId is required',
+            });
+        }
+    }),
+
+    /**
+     * Retrieves Google authentication URL for login/sign up.
      * Retrieves Google auth url to login/sign up
      */
     getGoogleAuthUrl: procedure.query(async () => {

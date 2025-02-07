@@ -42,7 +42,7 @@ function Login() {
         if (validSession) {
             const userId = await trpc.session.getSessionUserId.query({ token: session ?? '' });
             if (userId) {
-                setUser(await trpc.users.getUserByUid.query({ userid: userId }));
+                setUser(await trpc.users.getUserByUid.query({ userId: userId }));
             }
         }
     };
