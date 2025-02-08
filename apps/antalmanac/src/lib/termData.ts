@@ -146,7 +146,7 @@ function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): Term {
 
         const [year, month, day] = t.socAvailableDate;
 
-        return new Date() >= new Date(Date.UTC(year, month, day, 8, 0, 0)); // Midnight PST
+        return new Date() >= new Date(year, month, day);
     });
 
     for (const event of events) {

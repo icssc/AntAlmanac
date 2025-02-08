@@ -14,20 +14,20 @@ interface LocationsCellProps {
 export const LocationsCell = ({ meetings }: LocationsCellProps) => {
     return (
         <TableBodyCellContainer>
-            {meetings.map((meeting) => {
+            {meetings.map((meeting, index) => {
                 return !meeting.timeIsTBA ? (
                     meeting.bldg.map((bldg) => {
                         const [buildingName = ''] = bldg.split(' ');
                         const buildingId = locationIds[buildingName];
                         return (
-                            <Fragment key={meeting.timeIsTBA + bldg}>
+                            <Fragment key={index}>
                                 <MapLink buildingId={buildingId} room={bldg} />
                                 <br />
                             </Fragment>
                         );
                     })
                 ) : (
-                    <Box>{'TBA'}</Box>
+                    <Box key={index}>{'TBA'}</Box>
                 );
             })}
         </TableBodyCellContainer>

@@ -16,12 +16,6 @@ import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 
-moment.updateLocale('es-us', {
-    week: {
-        dow: 6,
-    },
-});
-
 const CALENDAR_LOCALIZER: DateLocalizer = momentLocalizer(moment);
 const CALENDAR_VIEWS: ViewsProps<CalendarEvent, object> = [Views.WEEK, Views.WORK_WEEK];
 const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
@@ -133,6 +127,18 @@ export const ScheduleCalendar = memo(() => {
         }),
         [calendarGutterTimeFormat, calendarTimeFormat, finalsDateFormat, showFinalsSchedule]
     );
+
+    useEffect(() => {
+        /**
+         * If a final is on a Saturday or Sunday, let the calendar start on Saturday
+         */
+        // eslint-disable-next-line import/no-named-as-default-member -- moment doesn't expose named exports: https://github.com/vitejs/vite-plugin-react/issues/202
+        moment.updateLocale('en-us', {
+            week: {
+                dow: showFinalsSchedule ? 6 : hasWeekendCourse ? 7 : 1,
+            },
+        });
+    }, [hasWeekendCourse, showFinalsSchedule]);
 
     useEffect(() => {
         const updateEventsInCalendar = () => {
