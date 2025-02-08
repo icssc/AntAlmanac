@@ -134,7 +134,7 @@ const termData = [
  * If an array of events is provided, select the first term found.
  */
 function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): Term {
-    let term = termData.find((t) => {
+    let term = getSocAvailableTerms().find((t) => {
         if (!t.socAvailableDate) {
             return false;
         }
@@ -146,7 +146,7 @@ function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): Term {
 
         const [year, month, day] = t.socAvailableDate;
 
-        return new Date() >= new Date(year, month, day);
+        return new Date(2025, 6, 1) >= new Date(year, month, day);
     });
 
     for (const event of events) {
@@ -188,4 +188,4 @@ function getSocAvailableTerms(): Term[] {
     return termData.slice(socAvailableIndex);
 }
 
-export { termData, getTerm, getDefaultTerm, getSocAvailableTerms };
+export { getTerm, getDefaultTerm, getSocAvailableTerms };

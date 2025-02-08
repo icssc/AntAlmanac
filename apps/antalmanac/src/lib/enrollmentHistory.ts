@@ -1,6 +1,5 @@
-import { termData } from './termData';
-
 import trpc from '$lib/api/trpc';
+import { getSocAvailableTerms } from '$lib/termData';
 
 // This represents the enrollment history of a course section during one quarter
 export interface EnrollmentHistoryGraphQL {
@@ -46,7 +45,7 @@ export interface EnrollmentHistoryDay {
 export class DepartmentEnrollmentHistory {
     // Each key in the cache will be the department and courseNumber concatenated
     static enrollmentHistoryCache: Record<string, EnrollmentHistory[] | null> = {};
-    static termShortNames: string[] = termData.map((term) => term.shortName);
+    static termShortNames: string[] = getSocAvailableTerms().map((term) => term.shortName);
 
     department: string;
 
@@ -56,8 +55,9 @@ export class DepartmentEnrollmentHistory {
 
     async find(courseNumber: string): Promise<EnrollmentHistory[] | null> {
         const cacheKey = this.department + courseNumber;
-        return (DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey] ??=
-            await this.queryEnrollmentHistory(courseNumber));
+        return (DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey] ??= await this.queryEnrollmentHistory(
+            courseNumber
+        ));
     }
 
     async queryEnrollmentHistory(courseNumber: string): Promise<EnrollmentHistory[] | null> {

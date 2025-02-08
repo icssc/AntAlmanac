@@ -8,11 +8,11 @@ import { openSnackbar } from '$actions/AppStoreActions';
 import { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
-import { getDefaultTerm, termData } from '$lib/termData';
+import { getDefaultTerm, getSocAvailableTerms } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 
 export const quarterStartDates = Object.fromEntries(
-    termData
+    getSocAvailableTerms()
         .filter((term) => term.startDate !== undefined)
         .map((term) => [term.shortName, term.startDate as [number, number, number]])
 );
