@@ -1,17 +1,9 @@
 import { describe, test, expect } from 'vitest';
 
 import { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { getDefaultTerm, defaultTerm, termData } from '$lib/termData';
+import { getDefaultTerm } from '$lib/termData';
 
 describe('termData', () => {
-    /**
-     * Leaky/abstracted test because it knows how the function actually works.
-     */
-    test('uses default term index if no events is provided', () => {
-        const term = getDefaultTerm();
-        expect(term.shortName).toEqual(termData[defaultTerm]);
-    });
-
     test('uses first term found in event list if provided', () => {
         const event: CourseEvent = {
             locations: [],

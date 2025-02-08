@@ -6,7 +6,7 @@ import type {
 } from '@packages/antalmanac-types';
 
 import { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
-import { getFinalsStartForTerm } from '$lib/termData';
+import { getTerm } from '$lib/termData';
 import { notNull, getReferencesOccurring } from '$lib/utils';
 
 export const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
@@ -127,7 +127,7 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
              * Fallback to January 2018 if no finals start date is available.
              * finalsDay is handled later by day since it varies by day.
              */
-            const [finalsYear, finalsMonth, finalsDay] = [...(getFinalsStartForTerm(course.term) ?? [2018, 0])];
+            const [finalsYear, finalsMonth, finalsDay] = [...(getTerm(course.term).finalsStartDate ?? [2018, 0])];
 
             return dayIndicesOccurring.map((dayIndex) => ({
                 color: course.section.color,

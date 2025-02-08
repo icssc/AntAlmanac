@@ -5,15 +5,13 @@ import { Box } from '@material-ui/core';
 import moment from 'moment';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
-import { shallow } from 'zustand/shallow';
-
-import { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
 
 import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
 import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
 import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
+import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
-import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
+import { getTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
@@ -34,10 +32,7 @@ export const ScheduleCalendar = memo(() => {
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
 
     const { isMilitaryTime } = useTimeFormatStore();
-    const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
-        (state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal],
-        shallow
-    );
+    const { hoveredCalendarizedCourses, hoveredCalendarizedFinal } = useHoveredStore();
 
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
         if (showFinalsSchedule)
@@ -111,11 +106,7 @@ export const ScheduleCalendar = memo(() => {
 
     const onlyCourseEvents = eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[];
 
-    const finalsDate = hoveredCalendarizedFinal
-        ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
-        : onlyCourseEvents.length > 0
-        ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
-        : getDefaultFinalsStartDate();
+    const finalsDate = getTerm(hoveredCalendarizedFinal?.term ?? onlyCourseEvents.at(0)?.term).getFinalsStartDate();
 
     const finalsDateFormat = finalsDate ? 'ddd MM/DD' : 'ddd';
     const date = showFinalsSchedule && finalsDate ? finalsDate : new Date(2018, 0, 1);

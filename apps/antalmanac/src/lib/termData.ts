@@ -1,23 +1,51 @@
 import { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 
-// The index of the default term in termData, as per WebSOC
-const defaultTerm = 0;
-
 class Term {
     shortName: `${string} ${string}`;
     longName: string;
     startDate?: [number, number, number];
     finalsStartDate?: [number, number, number];
+    socAvailableDate?: [number, number, number];
+
     constructor(
         shortName: `${string} ${string}`,
         longName: string,
         startDate?: [number, number, number],
-        finalsStartDate?: [number, number, number]
+        finalsStartDate?: [number, number, number],
+        socAvailableDate?: [number, number, number]
     ) {
         this.shortName = shortName;
         this.longName = longName;
         this.startDate = startDate;
         this.finalsStartDate = finalsStartDate;
+        this.socAvailableDate = socAvailableDate;
+    }
+
+    getStartDate(): Date | undefined {
+        if (!this.startDate) {
+            return;
+        }
+
+        const [year, month, day] = this.startDate;
+        return new Date(year, month, day);
+    }
+
+    getFinalsStartDate(): Date | undefined {
+        if (!this.finalsStartDate) {
+            return;
+        }
+
+        const [year, month, day] = this.finalsStartDate;
+        return new Date(year, month, day);
+    }
+
+    getSocAvailableDate(): Date | undefined {
+        if (!this.socAvailableDate) {
+            return;
+        }
+
+        const [year, month, day] = this.socAvailableDate;
+        return new Date(year, month, day);
     }
 }
 
@@ -26,10 +54,16 @@ class Term {
  * Quick Reference Ten Year Calendar {@link https://www.reg.uci.edu/calendars/academic/tenyr-19-29.html}
  * The `startDate`, if available, should correspond to the __instruction start date__ (not the quarter start date)
  * The `finalsStartDate`, if available, should correspond to the __final exams__ first date (should be a Saturday)
- * Months are 0-indexed
+ *
+ * NB: Months are 0-indexed, Days are 1-index
  */
 const termData = [
-    new Term('2025 Winter', '2025 Winter Quarter', [2025, 0, 6], [2025, 2, 15]),
+    new Term('2025 Fall', '2025 Fall Quarter', [2025, 8, 25], [2025, 11, 6], [2025, 4, 3]),
+    new Term('2025 Summer2', '2025 Summer Session 2', [2025, 7, 4], [2025, 8, 9], [2025, 2, 1]),
+    new Term('2025 Summer10wk', '2025 10-wk Summer', [2025, 5, 23], [2025, 7, 29], [2025, 2, 1]),
+    new Term('2025 Summer1', '2025 Summer Session 1', [2025, 5, 23], [2025, 6, 29], [2025, 2, 1]),
+    new Term('2025 Spring', '2025 Spring Quarter', [2025, 2, 31], [2025, 5, 7], [2025, 1, 8]),
+    new Term('2025 Winter', '2025 Winter Quarter', [2025, 0, 6], [2025, 2, 15], [2024, 10, 2]),
     new Term('2024 Fall', '2024 Fall Quarter', [2024, 8, 26], [2024, 11, 7]),
     new Term('2024 Summer2', '2024 Summer Session 2', [2024, 7, 5], [2024, 8, 10]),
     new Term('2024 Summer10wk', '2024 10-wk Summer', [2024, 5, 24], [2024, 7, 30]),
@@ -100,7 +134,20 @@ const termData = [
  * If an array of events is provided, select the first term found.
  */
 function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): Term {
-    let term = termData[defaultTerm];
+    let term = termData.find((t) => {
+        if (!t.socAvailableDate) {
+            return false;
+        }
+
+        // Prefer defaulting to a "major" quarter
+        if (t.shortName.includes('Summer')) {
+            return false;
+        }
+
+        const [year, month, day] = t.socAvailableDate;
+
+        return new Date() >= new Date(Date.UTC(year, month, day, 8, 0, 0)); // Midnight PST
+    });
 
     for (const event of events) {
         if (!event.isCustomEvent && event.term) {
@@ -112,46 +159,16 @@ function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): Term {
         }
     }
 
-    return term;
-}
-
-// Returns the default finals start as array
-function getDefaultFinalsStart() {
-    // FIXME: Un-offset once Spring starts, or figure out a proper fix
-    return termData[defaultTerm + 1].finalsStartDate;
-}
-
-function getFinalsStartForTerm(term: string) {
-    const termThatMatches = termData.find((t) => t.shortName === term);
-    if (termThatMatches === undefined) {
-        console.warn(`No matching term for ${term}`);
-        return getDefaultFinalsStart();
-    }
-    return termThatMatches.finalsStartDate;
+    return term ?? termData[0];
 }
 
 /**
- * Returns the default finals start as Date object
- * Days offset by 1 to accommodate toggling with Saturday finals
+ *
+ * @param termShortName the `shortName` property of a Term
+ * @returns the Term corresponding, or the default if prop is not provided
  */
-function getDefaultFinalsStartDate() {
-    // FIXME: Un-offset once Spring starts, or figure out a proper fix
-    const [year, month, day] = getDefaultFinalsStart() ?? [];
-    return year && month && day ? new Date(year, month, day + 1) : undefined;
+function getTerm(termShortName?: string): Term {
+    return termData.find((t) => t.shortName === termShortName) ?? getDefaultTerm();
 }
 
-function getFinalsStartDateForTerm(term: string) {
-    const date = getFinalsStartForTerm(term);
-    const [year, month, day] = date ?? [];
-    return year && month && day ? new Date(year, month, day + 1) : undefined;
-}
-
-export {
-    defaultTerm,
-    getDefaultTerm,
-    termData,
-    getDefaultFinalsStart,
-    getDefaultFinalsStartDate,
-    getFinalsStartForTerm,
-    getFinalsStartDateForTerm,
-};
+export { termData, getTerm, getDefaultTerm };
