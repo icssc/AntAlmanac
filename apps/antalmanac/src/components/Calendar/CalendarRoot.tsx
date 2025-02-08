@@ -135,7 +135,7 @@ export const ScheduleCalendar = memo(() => {
         // eslint-disable-next-line import/no-named-as-default-member -- moment doesn't expose named exports: https://github.com/vitejs/vite-plugin-react/issues/202
         moment.updateLocale('en-us', {
             week: {
-                dow: showFinalsSchedule ? 6 : hasWeekendCourse ? 7 : 1,
+                dow: hasWeekendCourse && showFinalsSchedule ? 6 : 0,
             },
         });
     }, [hasWeekendCourse, showFinalsSchedule]);
