@@ -3,27 +3,15 @@ import { ChangeEvent, useEffect, useState } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
 
-import { termData } from '$lib/termData';
+import { getSocAvailableTerms } from '$lib/termData';
 
 interface TermSelectorProps {
-    changeTerm: (field: string, value: string) => void;
     fieldName: string;
+    changeTerm: (field: string, value: string) => void;
 }
 
-function TermSelector(props: TermSelectorProps) {
-    const { changeTerm, fieldName } = props;
-
-    const getTerm = () => {
-        const urlTerm = RightPaneStore.getUrlTermValue();
-
-        if (urlTerm) {
-            RightPaneStore.updateFormValue('term', urlTerm);
-        }
-
-        return RightPaneStore.getFormData().term;
-    };
-
-    const [term, setTerm] = useState(getTerm());
+function TermSelector({ fieldName, changeTerm }: TermSelectorProps) {
+    const [term, setTerm] = useState(() => RightPaneStore.getFormData().term);
 
     const handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
         const newValue = event.target.value as string;
@@ -52,7 +40,7 @@ function TermSelector(props: TermSelectorProps) {
         <FormControl fullWidth>
             <InputLabel>Term</InputLabel>
             <Select value={term} onChange={handleChange}>
-                {termData.map((term, index) => (
+                {getSocAvailableTerms().map((term, index) => (
                     <MenuItem key={index} value={term.shortName}>
                         {term.longName}
                     </MenuItem>

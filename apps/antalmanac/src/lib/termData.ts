@@ -171,4 +171,21 @@ function getTerm(termShortName?: string): Term {
     return termData.find((t) => t.shortName === termShortName) ?? getDefaultTerm();
 }
 
-export { termData, getTerm, getDefaultTerm };
+/**
+ * Returns all terms that are available on SOC
+ */
+function getSocAvailableTerms(): Term[] {
+    const socAvailableIndex = termData.findIndex((t) => {
+        const socAvailableDate = t.getSocAvailableDate();
+
+        if (!socAvailableDate) {
+            return false;
+        }
+
+        return Date.now() >= socAvailableDate.getTime();
+    });
+
+    return termData.slice(socAvailableIndex);
+}
+
+export { termData, getTerm, getDefaultTerm, getSocAvailableTerms };
