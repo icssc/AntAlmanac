@@ -96,7 +96,7 @@ export function addSampleClasses() {
 }
 
 export function removeSampleClasses() {
-    AppStore.deleteCourses(sampleClassesSectionCodes, CURRENT_TERM, false);
+    AppStore.deleteCourses(sampleClassesSectionCodes, CURRENT_TERM, AppStore.getCurrentScheduleIndex(), false);
     sampleClassesSectionCodes = [];
 }
 
