@@ -65,13 +65,13 @@ class AppStore extends EventEmitter {
         this.unsavedChanges = false;
         this.skeletonMode = false;
 
-        if (typeof window !== 'undefined') {
-            window.addEventListener('beforeunload', (event) => {
-                if (this.unsavedChanges) {
-                    event.returnValue = `Are you sure you want to leave? You have unsaved changes!`;
-                }
-            });
-        }
+        // if (typeof window !== 'undefined') {
+        //     window.addEventListener('beforeunload', (event) => {
+        //         if (this.unsavedChanges) {
+        //             event.returnValue = `Are you sure you want to leave? You have unsaved changes!`;
+        //         }
+        //     });
+        // }
     }
 
     getNextScheduleName(scheduleIndex: number, newScheduleName: string) {
