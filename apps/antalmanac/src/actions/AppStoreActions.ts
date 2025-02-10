@@ -159,12 +159,27 @@ export async function autoSaveSchedule(userID: string) {
     }
 }
 
+const mergeSchedules = (schedules: ShortCourseSchedule[], incomingSchedule: ShortCourseSchedule[]) => {
+    const existingScheduleNames = new Set(schedules.map((s: ShortCourseSchedule) => s.scheduleName));
+    const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
+        let scheduleName = schedule.scheduleName;
+        if (existingScheduleNames.has(schedule.scheduleName)) {
+            scheduleName = scheduleName + '(1)';
+        }
+        return {
+            ...schedule,
+            scheduleName: '(RESTORED)-' + scheduleName,
+        };
+    });
+    schedules.push(...cacheSchedule);
+};
+
 export const loadSchedule = async (loadCache = false) => {
     const session = useSessionStore.getState();
     try {
         const userId: string | null = await trpc.session.getSessionUserId.query({ token: session.session ?? '' });
 
-        const scheduleCache = JSON.parse(getLocalStorageScheduleCache() ?? 'null');
+        const shortCourseSchedules = JSON.parse(getLocalStorageScheduleCache() ?? 'null');
         removeLocalStorageScheduleCache();
         if (!userId) return;
 
@@ -179,16 +194,8 @@ export const loadSchedule = async (loadCache = false) => {
         const scheduleSaveState = res && 'userData' in res ? res.userData : res;
 
         if (isEmptySchedule(scheduleSaveState.schedules)) return;
-        if (loadCache) {
-            if (scheduleCache) {
-                const cacheSchedule = scheduleCache.map((schedule: ShortCourseSchedule) => {
-                    return {
-                        ...schedule,
-                        scheduleName: '(RESTORED)-' + schedule.scheduleName,
-                    };
-                });
-                scheduleSaveState.schedules.push(...cacheSchedule);
-            }
+        if (loadCache && shortCourseSchedules) {
+            mergeSchedules(scheduleSaveState.schedules, shortCourseSchedules);
         }
 
         if (scheduleSaveState == null && !session.validSession) {
