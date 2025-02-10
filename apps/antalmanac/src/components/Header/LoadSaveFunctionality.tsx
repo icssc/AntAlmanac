@@ -6,7 +6,7 @@ import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
 import { InputDialog } from '$components/dialogs/InputDialog';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import trpc from '$lib/api/trpc';
-import { getLocalStorageScheduleCache } from '$lib/localStorage';
+import { getLocalStorageDataCache } from '$lib/localStorage';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 interface LoadCacheDialogProps {
@@ -68,7 +68,7 @@ const LoadSaveScheduleFunctionality = () => {
 
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
-            if (getLocalStorageScheduleCache()) {
+            if (getLocalStorageDataCache()) {
                 setOpenLoadCacheDialog(validSession);
             } else {
                 loadScheduleData();

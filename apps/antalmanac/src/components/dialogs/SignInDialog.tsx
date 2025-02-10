@@ -6,7 +6,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { isEmptySchedule } from '$actions/AppStoreActions';
 import { InputDialog } from '$components/dialogs/InputDialog';
 import trpc from '$lib/api/trpc';
-import { setLocalStorageScheduleCache } from '$lib/localStorage';
+import { setLocalStorageDataCache } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 
@@ -29,7 +29,7 @@ export function SignInDialog(props: SignInDialogProps) {
     const cacheSchedule = () => {
         const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState().schedules;
         if (!isEmptySchedule(scheduleSaveState)) {
-            setLocalStorageScheduleCache(JSON.stringify(scheduleSaveState));
+            setLocalStorageDataCache(JSON.stringify(scheduleSaveState));
         }
     };
 

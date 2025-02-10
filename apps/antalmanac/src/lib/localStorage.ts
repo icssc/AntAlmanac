@@ -15,21 +15,21 @@ enum LocalStorageKeys {
     helpBoxDismissalTime = 'helpBoxDismissalTime',
     columnToggles = 'columnToggles',
     sessionId = 'sessionId',
-    scheduleCache = 'scheduleCache',
+    dataCache = 'dataCache',
 }
 
 const LSK = LocalStorageKeys;
 
-export function setLocalStorageScheduleCache(value: string) {
-    window.localStorage.setItem(LSK.scheduleCache, value);
+export function setLocalStorageDataCache(value: string) {
+    window.localStorage.setItem(LSK.dataCache, value);
 }
 
-export function getLocalStorageScheduleCache() {
-    return window.localStorage.getItem(LSK.scheduleCache);
+export function getLocalStorageDataCache() {
+    return window.localStorage.getItem(LSK.dataCache);
 }
 
-export function removeLocalStorageScheduleCache() {
-    window.localStorage.removeItem(LSK.scheduleCache);
+export function removeLocalStorageDataCache() {
+    window.localStorage.removeItem(LSK.dataCache);
 }
 
 export function setLocalStorageUserId(value: string) {

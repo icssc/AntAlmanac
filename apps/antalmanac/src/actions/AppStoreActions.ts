@@ -13,7 +13,7 @@ import { SnackbarPosition } from '$components/NotificationSnackbar';
 import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
-import { getLocalStorageScheduleCache, removeLocalStorageScheduleCache } from '$lib/localStorage';
+import { getLocalStorageDataCache, removeLocalStorageDataCache } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 export interface CopyScheduleOptions {
@@ -180,8 +180,8 @@ export const loadSchedule = async (loadCache = false) => {
             token: session.session ?? '',
         });
 
-        const shortCourseSchedules = JSON.parse(getLocalStorageScheduleCache() ?? 'null');
-        removeLocalStorageScheduleCache();
+        const shortCourseSchedules = JSON.parse(getLocalStorageDataCache() ?? 'null');
+        removeLocalStorageDataCache();
         if (!users.id) return;
 
         logAnalytics({
