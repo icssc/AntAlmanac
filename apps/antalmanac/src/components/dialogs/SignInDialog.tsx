@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { isEmptySchedule } from '$actions/AppStoreActions';
-import { AuthDialog } from '$components/dialogs/AuthDialog';
+import { InputDialog } from '$components/dialogs/InputDialog';
 import trpc from '$lib/api/trpc';
 import { setLocalStorageScheduleCache } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
@@ -85,7 +85,7 @@ export function SignInDialog(props: SignInDialogProps) {
     };
 
     return (
-        <AuthDialog open={open} onClose={handleClose} title={'Sign in to Save'}>
+        <InputDialog open={open} onClose={handleClose} title={'Sign in to Save'}>
             <Stack spacing={2} alignItems="center">
                 <Button
                     onClick={handleLogin}
@@ -128,6 +128,6 @@ export function SignInDialog(props: SignInDialogProps) {
                     </Stack>
                 </form>
             </Stack>
-        </AuthDialog>
+        </InputDialog>
     );
 }

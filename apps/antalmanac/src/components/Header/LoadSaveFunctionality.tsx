@@ -3,7 +3,7 @@ import { Button, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
-import { AuthDialog } from '$components/dialogs/AuthDialog';
+import { InputDialog } from '$components/dialogs/InputDialog';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageScheduleCache } from '$lib/localStorage';
@@ -18,7 +18,7 @@ const LoadCacheDialog = (props: LoadCacheDialogProps) => {
     const { open, onConfirm, onClose } = props;
 
     return (
-        <AuthDialog title="Save your progress?" open={open}>
+        <InputDialog title="Save your progress?" open={open}>
             <Stack spacing={2} alignItems="center">
                 <Button
                     startIcon={<SaveAlt />}
@@ -34,7 +34,7 @@ const LoadCacheDialog = (props: LoadCacheDialogProps) => {
                     Cancel changes
                 </Button>
             </Stack>
-        </AuthDialog>
+        </InputDialog>
     );
 };
 

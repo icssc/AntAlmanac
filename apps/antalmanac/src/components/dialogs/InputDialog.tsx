@@ -1,13 +1,13 @@
 import { Dialog, DialogTitle, DialogContent } from '@mui/material';
 
-interface AuthDialogProps {
+interface InputDialogProps {
     title: string;
     open: boolean;
     children?: React.ReactNode;
     onClose?: () => void; // not providing this prop will prevent the dialog from closing when clicking outside of it
 }
 
-export function AuthDialog(props: AuthDialogProps) {
+export function InputDialog(props: InputDialogProps) {
     const { title, onClose, children, open } = props;
 
     return (
