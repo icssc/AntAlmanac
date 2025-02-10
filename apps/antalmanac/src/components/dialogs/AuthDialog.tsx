@@ -18,14 +18,14 @@ export function AuthDialog(props: AuthDialogProps) {
             fullScreen={true}
             sx={{
                 '& .MuiDialog-paper': {
-                    width: { xs: '50%', sm: '35%' },
-                    height: '18rem', // Set height to auto to adjust dynamically
+                    width: { xs: '50%' },
+                    height: 'fit-content',
                 },
                 padding: '1rem',
             }}
         >
             <DialogTitle fontSize={'large'}>{title}</DialogTitle>
-            <DialogContent>{children}</DialogContent>
+            <DialogContent sx={{ width: '100%' }}>{children}</DialogContent>
         </Dialog>
     );
 }

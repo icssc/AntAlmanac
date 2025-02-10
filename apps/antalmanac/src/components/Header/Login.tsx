@@ -62,8 +62,9 @@ function Login() {
                         aria-expanded={open ? 'true' : undefined}
                         onClick={handleClick}
                         startIcon={<AccountCircleIcon />}
+                        sx={{ maxWidth: '9rem', minWidth: '5rem' }}
                     >
-                        {user?.name}
+                        {user?.name && user?.name.length > 6 ? `${user?.name.substring(0, 6)}...` : user?.name}
                     </Button>
                     <Menu
                         id="basic-menu"
@@ -79,9 +80,6 @@ function Login() {
                                 <LogoutIcon />
                             </ListItemIcon>
                             <ListItemText>Log out</ListItemText>
-                            {/* <Button onClick={handleLogout} startIcon={<LogoutIcon />} color="inherit">
-                                Log out
-                            </Button> */}
                         </MenuItem>
                     </Menu>
                 </>

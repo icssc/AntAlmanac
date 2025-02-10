@@ -1,5 +1,5 @@
 import GoogleIcon from '@mui/icons-material/Google';
-import { Button, DialogActions, TextField, Stack } from '@mui/material';
+import { Button, TextField, Stack, Divider } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -25,7 +25,6 @@ export function SignInDialog(props: SignInDialogProps) {
 
     const [userName, setUserName] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
-    const [openUserNameOption, setOpenUserNameOption] = useState(false);
 
     const cacheSchedule = () => {
         const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState().schedules;
@@ -83,83 +82,52 @@ export function SignInDialog(props: SignInDialogProps) {
 
     const handleClose = () => {
         onClose();
-        handleUserNameOptionClose();
-    };
-
-    const handleUserNameOptionOpen = () => {
-        setOpenUserNameOption(true);
-    };
-
-    const handleUserNameOptionClose = () => {
-        setOpenUserNameOption(false);
     };
 
     return (
-        <AuthDialog
-            open={open}
-            onClose={handleClose}
-            title={!openUserNameOption ? 'Sign in to save' : 'Username Login'}
-        >
-            {!openUserNameOption ? (
-                <Stack spacing={2} alignItems="center">
-                    <Button
-                        onClick={handleLogin}
-                        startIcon={<GoogleIcon />}
-                        size="large"
-                        color="primary"
-                        variant="contained"
-                        sx={{ width: '20rem' }}
-                    >
-                        Sign in with Google
-                    </Button>
-                    <Button
-                        onClick={handleUserNameOptionOpen}
-                        size="large"
-                        color={isDark ? 'secondary' : 'primary'}
-                        variant="outlined"
-                        sx={{
-                            width: '20rem',
-                            position: 'relative',
-                            '&::after': {
-                                content: '"You can load your old schedule here"',
-                                position: 'absolute',
-                                bottom: '-20px',
-                                right: '0',
-                                fontSize: '0.7rem',
-                                fontStyle: 'italic',
-                                color: isDark ? 'secondary.main' : 'primary.main',
-                            },
-                        }}
-                    >
-                        Continue with username
-                    </Button>
-                </Stack>
-            ) : (
-                <>
-                    <form
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            handleUserNameLogin();
-                        }}
-                    >
+        <AuthDialog open={open} onClose={handleClose} title={'Sign in to Save'}>
+            <Stack spacing={2} alignItems="center">
+                <Button
+                    onClick={handleLogin}
+                    startIcon={<GoogleIcon />}
+                    size="large"
+                    color="primary"
+                    variant="contained"
+                    sx={{ width: '75%' }}
+                >
+                    Sign in with Google
+                </Button>
+
+                <Divider sx={{ width: '100%' }}>or</Divider>
+
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        handleUserNameLogin();
+                    }}
+                    style={{ width: '75%' }}
+                >
+                    <Stack spacing={1}>
                         <TextField
-                            label="Username"
+                            label="Sign In With Guest Username"
                             color={isDark ? 'secondary' : undefined}
                             fullWidth
-                            sx={{ marginTop: '1rem' }}
+                            size="small"
+                            helperText="Have an old schedule? Enter your user ID here"
                             onChange={(e) => setUserName(e.target.value)}
                         />
-                        <DialogActions>
-                            <Button color={isDark ? 'secondary' : undefined} onClick={handleUserNameOptionClose}>
-                                Cancel
-                            </Button>
-                            <Button color="primary" variant="contained" type="submit">
-                                Continue
-                            </Button>
-                        </DialogActions>
-                    </form>
-                </>
-            )}
+                        <Button
+                            color="primary"
+                            variant="contained"
+                            disabled={userName.length === 0}
+                            type="submit"
+                            sx={{ width: 'fit-content', alignSelf: 'end' }}
+                        >
+                            Continue
+                        </Button>
+                    </Stack>
+                </form>
+            </Stack>
         </AuthDialog>
     );
 }
