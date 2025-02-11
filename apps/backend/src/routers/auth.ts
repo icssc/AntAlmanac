@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { db } from 'src/db';
 import { RDS } from 'src/lib/rds';
 
-const sessionRouter = router({
+const authRouter = router({
     handleGuestSession: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
         const account = await RDS.registerUserAccount(db, input.name, input.name, 'GUEST');
 
@@ -46,4 +46,4 @@ const sessionRouter = router({
     }),
 });
 
-export default sessionRouter;
+export default authRouter;

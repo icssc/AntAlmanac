@@ -33,7 +33,7 @@ const saveInputSchema = type({
     data: UserSchema,
 });
 
-const usersRouter = router({
+const userDataRouter = router({
     /**
      * Loads schedule data for a user that's logged in.
      * @param input - An object containing the session token.
@@ -146,4 +146,4 @@ const usersRouter = router({
     }),
 });
 
-export default usersRouter;
+export default userDataRouter;

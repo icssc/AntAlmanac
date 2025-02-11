@@ -122,7 +122,7 @@ class ActionTypesStore extends EventEmitter {
         if (!sessionStore.validSession || !sessionStore.session) return;
 
         if (autoSave) {
-            const userId = await trpc.session.getSessionUserId.query({ token: sessionStore.session });
+            const userId = await trpc.auth.getSessionUserId.query({ token: sessionStore.session });
 
             if (userId) {
                 this.emit('autoSaveStart');

@@ -40,9 +40,9 @@ function Login() {
 
     const handleUser = async () => {
         if (validSession) {
-            const userId = await trpc.session.getSessionUserId.query({ token: session ?? '' });
+            const userId = await trpc.auth.getSessionUserId.query({ token: session ?? '' });
             if (userId) {
-                setUser(await trpc.users.getUserByUid.query({ userId: userId }));
+                setUser(await trpc.userData.getUserByUid.query({ userId: userId }));
             }
         }
     };

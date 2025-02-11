@@ -55,7 +55,7 @@ const LoadSaveScheduleFunctionality = () => {
 
     const saveScheduleData = async () => {
         if (validSession && session) {
-            const { users, accounts } = await trpc.users.getUserAndAccountBySessionToken.query({ token: session });
+            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({ token: session });
             await saveSchedule(users.id, accounts.AccountType);
         }
     };

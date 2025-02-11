@@ -107,7 +107,7 @@ export const saveSchedule = async (userID: string, accountType: 'GOOGLE' | 'GUES
         }
 
         try {
-            await trpc.users.saveUserData.mutate({
+            await trpc.userData.saveUserData.mutate({
                 id: userID,
                 data: {
                     id: userID,
@@ -139,7 +139,7 @@ export async function autoSaveSchedule(userID: string) {
 
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
     try {
-        await trpc.users.saveUserData.mutate({
+        await trpc.userData.saveUserData.mutate({
             id: userID,
             data: {
                 id: userID,
@@ -175,7 +175,7 @@ const mergeSchedules = (schedules: ShortCourseSchedule[], incomingSchedule: Shor
 export const loadSchedule = async (loadCache = false) => {
     const session = useSessionStore.getState();
     try {
-        const { users, accounts } = await trpc.users.getUserAndAccountBySessionToken.query({
+        const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
             token: session.session ?? '',
         });
 
@@ -190,7 +190,7 @@ export const loadSchedule = async (loadCache = false) => {
             value: accounts.AccountType === 'GUEST' ? 1 : 0,
         });
 
-        const res: User = await trpc.users.getUserData.query({ userId: users.id });
+        const res: User = await trpc.userData.getUserData.query({ userId: users.id });
         const scheduleSaveState = res && 'userData' in res ? res.userData : res;
 
         if (isEmptySchedule(scheduleSaveState.schedules)) return;

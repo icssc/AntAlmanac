@@ -35,7 +35,7 @@ export function SignInDialog(props: SignInDialogProps) {
 
     const handleLogin = async () => {
         try {
-            const authUrl = await trpc.users.getGoogleAuthUrl.query();
+            const authUrl = await trpc.userData.getGoogleAuthUrl.query();
             if (authUrl) {
                 cacheSchedule();
                 window.location.href = authUrl;
@@ -51,7 +51,7 @@ export function SignInDialog(props: SignInDialogProps) {
         try {
             const code = searchParams.get('code');
             if (code) {
-                const newSession = await trpc.users.handleGoogleCallback.query({
+                const newSession = await trpc.userData.handleGoogleCallback.query({
                     code: code,
                     token: session ?? '',
                 });
@@ -68,7 +68,7 @@ export function SignInDialog(props: SignInDialogProps) {
 
     const handleUserNameLogin = async () => {
         if (userName.length > 0) {
-            const sessionId = await trpc.session.handleGuestSession.query({ name: userName });
+            const sessionId = await trpc.auth.handleGuestSession.query({ name: userName });
 
             cacheSchedule();
             setSession(sessionId);
