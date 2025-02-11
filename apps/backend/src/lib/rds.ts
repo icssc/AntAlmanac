@@ -20,19 +20,7 @@ type DatabaseOrTransaction = Omit<Database, '$client'>;
 
 export class RDS {
     /**
-     * If a guest user with the specified name exists, return their ID, otherwise return null.
-     */
-    static async guestUserIdWithNameOrNull(db: DatabaseOrTransaction, name: string): Promise<string | null> {
-        return db
-            .select({ id: accounts.userId })
-            .from(accounts)
-            .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.providerAccountId, name)))
-            .limit(1)
-            .then((xs) => xs[0]?.id ?? null);
-    }
-
-    /**
-     * Retrieves an account with the specified user ID and account type 'GOOGLE'.
+     * Retrieves an account with the specified user ID and account type.
      *
      * @param db - The database or transaction object.
      * @param userId - The ID of the user whose account is to be retrieved.
@@ -40,7 +28,7 @@ export class RDS {
      */
     static async getAccountByProviderId(
         db: DatabaseOrTransaction,
-        accountType: 'GOOGLE' | 'GUEST',
+        accountType: Account['accountType'],
         providerId: string
     ): Promise<Account | null> {
         return db.transaction((tx) =>
@@ -79,7 +67,7 @@ export class RDS {
         db: DatabaseOrTransaction,
         providerId: string,
         name: string,
-        accountType: 'GOOGLE' | 'GUEST',
+        accountType: Account['accountType'],
         email?: string,
         avatar?: string
     ) {
@@ -131,39 +119,6 @@ export class RDS {
                 .where(eq(accounts.userId, userId))
                 .then((res) => res[0])
         );
-    }
-
-    /**
-     * Creates a guest user if they don't already exist.
-     *
-     * @param db Database or transaction object
-     * @param name Guest user's name, to be used as providerAccountID and username
-     * @returns The new/existing user's ID
-     */
-    static async createGuestUserOptional(db: DatabaseOrTransaction, name: string) {
-        return db.transaction(async (tx) => {
-            const maybeUserId = await RDS.guestUserIdWithNameOrNull(tx, name);
-
-            const userId = maybeUserId
-                ? maybeUserId
-                : await tx
-                      .insert(users)
-                      .values({ name })
-                      .returning({ id: users.id })
-                      .then((users) => users[0].id);
-
-            if (userId === undefined) {
-                throw new Error(`Failed to create guest user for ${name}`);
-            }
-
-            await tx
-                .insert(accounts)
-                .values({ userId, accountType: 'GUEST', providerAccountId: name })
-                .onConflictDoNothing()
-                .execute();
-
-            return userId;
-        });
     }
 
     /**
@@ -360,11 +315,6 @@ export class RDS {
             return null;
         }
         return await this.fetchUserData(db, user);
-    }
-
-    static async getUserDataByGuestName(db: DatabaseOrTransaction, guestName: string) {
-        const user = await RDS.guestUserIdWithNameOrNull(db, guestName);
-        return user;
     }
 
     private static async getUserAndAccount(

@@ -20,6 +20,7 @@ export function InputDialog(props: InputDialogProps) {
                 '& .MuiDialog-paper': {
                     width: { xs: '45%', lg: '30%' },
                     height: 'fit-content',
+                    borderRadius: '0.5rem',
                 },
                 padding: '1rem',
             }}

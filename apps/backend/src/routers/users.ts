@@ -44,22 +44,6 @@ const usersRouter = router({
     }),
 
     /**
-     * Retrieves account information by user ID.
-     * @param input - An object containing the user ID.
-     * @returns The account information associated with the user ID.
-     */
-    getAccountByUid: procedure.input(userInputSchema.assert).query(async ({ input }) => {
-        if ('userId' in input) {
-            return await RDS.getAccountById(db, input.userId);
-        } else {
-            throw new TRPCError({
-                code: 'BAD_REQUEST',
-                message: 'Invalid input: userId is required',
-            });
-        }
-    }),
-
-    /**
      * Retrieves user information by user ID.
      * @param input - An object containing the user ID.
      * @returns The user information associated with the user ID.

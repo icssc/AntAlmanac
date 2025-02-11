@@ -86,14 +86,13 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
     return true;
 }
 
-export const saveSchedule = async (userID: string) => {
+export const saveSchedule = async (userID: string, accountType: 'GOOGLE' | 'GUEST') => {
     if (userID != null && userID.length > 0) {
-        const account = await trpc.users.getAccountByUid.query({ userId: userID });
         logAnalytics({
             category: analyticsEnum.nav.title,
             action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
             label: userID,
-            value: account.AccountType === 'GUEST' ? 1 : 0,
+            value: accountType === 'GUEST' ? 1 : 0,
         });
 
         const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
@@ -203,7 +202,7 @@ export const loadSchedule = async (loadCache = false) => {
             openSnackbar('error', `Couldn't find schedules :(`);
         } else if (await AppStore.loadSchedule(scheduleSaveState)) {
             openSnackbar('success', `Schedule loaded successfully!`);
-            await saveSchedule(users.id);
+            await saveSchedule(users.id, accounts.AccountType);
         } else {
             AppStore.loadSkeletonSchedule(scheduleSaveState);
             openSnackbar(
