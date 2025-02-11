@@ -53,7 +53,7 @@ export class RDS {
         );
     }
 
-    static async getAccountUserByToken(db: DatabaseOrTransaction, refreshToken: string) {
+    static async getAccountAndUserByToken(db: DatabaseOrTransaction, refreshToken: string) {
         return db.transaction((tx) =>
             tx
                 .select()
@@ -85,13 +85,15 @@ export class RDS {
     ) {
         const existingAccount = await this.getAccountByProviderId(db, accountType, providerId);
         if (!existingAccount) {
-            const userId = crypto.randomUUID();
-            await db.insert(users).values({
-                id: userId,
-                avatar: avatar ?? '',
-                name: name,
-                email: email ?? '',
-            });
+            const { userId } = await db
+                .insert(users)
+                .values({
+                    avatar: avatar ?? '',
+                    name: name,
+                    email: email ?? '',
+                })
+                .returning({ userId: users.id })
+                .then((res) => res[0]);
 
             const account = await db
                 .insert(accounts)
@@ -220,13 +222,10 @@ export class RDS {
     static async upsertUserData(db: DatabaseOrTransaction, userData: User): Promise<string> {
         return db.transaction(async (tx) => {
             let userId = userData.id;
+
             let user = await this.getUserById(db, userId);
             if (!user) {
-                userId = await this.createGuestUserOptional(tx, userId);
-            }
-
-            if (userId === undefined) {
-                throw new Error(`Failed to create guest user for ${userData.id}`);
+                throw new Error(`Failed to create user`);
             }
 
             // Add schedules and courses

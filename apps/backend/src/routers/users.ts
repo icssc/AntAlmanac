@@ -40,7 +40,7 @@ const usersRouter = router({
      * @returns The account and user data associated with the session token.
      */
     getUserAndAccountBySessionToken: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
-        return await RDS.getAccountUserByToken(db, input.token);
+        return await RDS.getAccountAndUserByToken(db, input.token);
     }),
 
     /**
