@@ -18,7 +18,7 @@ export function InputDialog(props: InputDialogProps) {
             fullScreen={true}
             sx={{
                 '& .MuiDialog-paper': {
-                    width: { xs: '50%' },
+                    width: { xs: '45%', lg: '30%' },
                     height: 'fit-content',
                 },
                 padding: '1rem',
