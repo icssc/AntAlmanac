@@ -113,7 +113,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                     )}
                 </Tooltip>
             </Box>
-            {!isSmallScreen && <Box flexGrow={1} />}
+            <Box flexGrow={1} />
 
             <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
                 <ScreenshotButton />
