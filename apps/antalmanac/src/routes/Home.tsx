@@ -1,16 +1,17 @@
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { CssBaseline, useMediaQuery, useTheme, Stack } from '@mui/material';
+import { useMediaQuery, useTheme, Stack } from '@mui/material';
 import { useCallback, useEffect, useRef } from 'react';
 import Split from 'react-split';
 
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
-import Header from '$components/Header';
 import InstallPWABanner from '$components/InstallPWABanner';
+import { Header } from '$components/Header/Header';
 import NotificationSnackbar from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
-import ScheduleManagement from '$components/SharedRoot';
+import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
 import { Tutorial } from '$components/Tutorial';
+import { BLUE } from '$src/globals';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
 function MobileHome() {
@@ -23,10 +24,9 @@ function MobileHome() {
 }
 
 function DesktopHome() {
-    const theme = useTheme();
     const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
 
-    const scheduleManagementRef = useRef<HTMLDivElement>();
+    const scheduleManagementRef = useRef<HTMLDivElement>(null);
 
     const handleDrag = useCallback(() => {
         const scheduleManagementElement = scheduleManagementRef.current;
@@ -63,10 +63,12 @@ function DesktopHome() {
                     dragInterval={1}
                     direction="horizontal"
                     cursor="col-resize"
-                    style={{ display: 'flex', flexGrow: 1 }}
+                    style={{ display: 'flex', flexGrow: 1, marginTop: 4 }}
                     gutterStyle={() => ({
-                        backgroundColor: theme.palette.primary.main,
+                        backgroundColor: BLUE,
                         width: '10px',
+                        // gutter contents are slightly offset to the right, this centers the content
+                        paddingRight: '1px',
                     })}
                     onDrag={handleDrag}
                 >
@@ -91,8 +93,6 @@ export default function Home() {
 
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
-            <CssBaseline />
-
             <PatchNotes />
             <InstallPWABanner />
 

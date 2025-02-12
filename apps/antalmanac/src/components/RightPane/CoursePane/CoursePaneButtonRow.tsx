@@ -154,7 +154,6 @@ export function CoursePaneButtonRow(props: CoursePaneButtonRowProps) {
                 display: props.showSearch ? 'block' : 'none',
                 width: '100%',
                 zIndex: 3,
-                marginBottom: 8,
                 position: 'absolute',
             }}
         >

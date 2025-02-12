@@ -447,6 +447,20 @@ export class Schedules {
     }
 
     /**
+     * Getter for previous states
+     */
+    getPreviousStates() {
+        return this.previousStates;
+    }
+
+    /**
+     * Clears previous states
+     */
+    clearPreviousStates() {
+        this.previousStates = [];
+    }
+
+    /**
      * Appends a copy of the current schedule to previous states to revert to
      * Previous states are capped to 50
      */

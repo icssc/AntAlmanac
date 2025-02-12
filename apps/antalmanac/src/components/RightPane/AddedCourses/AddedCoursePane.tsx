@@ -330,13 +330,13 @@ function AddedSectionsGrid() {
     );
 
     return (
-        <Box display="flex" flexDirection="column" gap={1} marginX={0.5}>
+        <Box display="flex" flexDirection="column" gap={1}>
             <Box display="flex" width={1} position="absolute" zIndex="2">
                 <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
                 <ClearScheduleButton buttonSx={buttonSx} />
                 <ColumnToggleDropdown />
             </Box>
-            <Box style={{ marginTop: 50 }}>
+            <Box style={{ marginTop: 56 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
                 {courses.length < 1 ? NoCoursesBox : null}
                 <Box display="flex" flexDirection="column" gap={1}>
@@ -363,7 +363,7 @@ function AddedSectionsGrid() {
     );
 }
 
-export default function AddedCoursePaneFunctionComponent() {
+export function AddedCoursePane() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     useEffect(() => {
