@@ -34,6 +34,12 @@ interface Props {
     children?: React.ReactNode;
 }
 
+declare module '@mui/material/styles' {
+    interface BreakpointOverrides {
+        xxs: true;
+    }
+}
+
 /**
  * sets and provides the MUI theme for the app
  */
@@ -100,6 +106,7 @@ export default function AppThemev5Provider(props: Props) {
                      * @see https://tailwindcss.com/docs/screens
                      */
                     values: {
+                        xxs: 400,
                         xs: 640,
                         sm: 768,
                         md: 1024,
