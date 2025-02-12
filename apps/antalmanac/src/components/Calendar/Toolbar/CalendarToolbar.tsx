@@ -1,5 +1,5 @@
-import { Undo as UndoIcon } from '@mui/icons-material';
-import { Box, Button, IconButton, Paper, Tooltip } from '@mui/material';
+import { Undo as UndoIcon, Description as DescriptionIcon } from '@mui/icons-material';
+import { useMediaQuery, Box, Button, IconButton, Paper, Tooltip } from '@mui/material';
 import { useState, useCallback, useEffect, memo } from 'react';
 
 import { undoDelete } from '$actions/AppStoreActions';
@@ -34,6 +34,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const [skeletonScheduleNames, setSkeletonScheduleNames] = useState(AppStore.getSkeletonScheduleNames());
+    const isSmallScreen = useMediaQuery('(max-width: 400px)');
 
     const handleToggleFinals = useCallback(() => {
         logAnalytics({
@@ -84,20 +85,31 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             <Box gap={1} display="flex" alignItems="center">
                 <SelectSchedulePopover scheduleNames={skeletonMode ? skeletonScheduleNames : scheduleNames} />
                 <Tooltip title="Toggle showing finals schedule">
-                    <Button
-                        color={showFinalsSchedule ? 'primary' : 'inherit'}
-                        variant={showFinalsSchedule ? 'contained' : 'outlined'}
-                        onClick={handleToggleFinals}
-                        size="small"
-                        id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
-                        disabled={skeletonMode}
-                    >
-                        Finals
-                    </Button>
+                    {isSmallScreen ? (
+                        <IconButton
+                            color={showFinalsSchedule ? 'primary' : 'inherit'}
+                            onClick={handleToggleFinals}
+                            id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
+                            disabled={skeletonMode}
+                        >
+                            <DescriptionIcon />
+                        </IconButton>
+                    ) : (
+                        <Button
+                            color={showFinalsSchedule ? 'primary' : 'inherit'}
+                            variant={showFinalsSchedule ? 'contained' : 'outlined'}
+                            onClick={handleToggleFinals}
+                            size="small"
+                            id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
+                            disabled={skeletonMode}
+                        >
+                            Finals
+                        </Button>
+                    )}
                 </Tooltip>
             </Box>
 
-            <Box flexGrow={1} />
+            {!isSmallScreen && <Box flexGrow={1} />}
 
             <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
                 <ScreenshotButton />
