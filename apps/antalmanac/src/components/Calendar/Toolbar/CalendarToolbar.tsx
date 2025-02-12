@@ -1,5 +1,9 @@
-import { Undo as UndoIcon, Description as DescriptionIcon } from '@mui/icons-material';
-import { useMediaQuery, Box, Button, IconButton, Paper, Tooltip } from '@mui/material';
+import {
+    Undo as UndoIcon,
+    Description as DescriptionIcon,
+    DescriptionOutlined as DescriptionOutlinedIcon,
+} from '@mui/icons-material';
+import { useTheme, useMediaQuery, Box, Button, IconButton, Paper, Tooltip } from '@mui/material';
 import { useState, useCallback, useEffect, memo } from 'react';
 
 import { undoDelete } from '$actions/AppStoreActions';
@@ -30,11 +34,12 @@ export interface CalendarPaneToolbarProps {
  * The root toolbar will pass down the schedule names to its children.
  */
 export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
+    const theme = useTheme();
     const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const [skeletonScheduleNames, setSkeletonScheduleNames] = useState(AppStore.getSkeletonScheduleNames());
-    const isSmallScreen = useMediaQuery('(max-width: 400px)');
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('xxs'));
 
     const handleToggleFinals = useCallback(() => {
         logAnalytics({
@@ -92,7 +97,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
                             disabled={skeletonMode}
                         >
-                            <DescriptionIcon />
+                            {showFinalsSchedule ? <DescriptionIcon /> : <DescriptionOutlinedIcon />}
                         </IconButton>
                     ) : (
                         <Button
@@ -108,7 +113,6 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                     )}
                 </Tooltip>
             </Box>
-
             {!isSmallScreen && <Box flexGrow={1} />}
 
             <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
