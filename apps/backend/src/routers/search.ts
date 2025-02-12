@@ -31,7 +31,11 @@ const toMutable = <T>(arr: readonly T[]): T[] => arr as T[];
 
 const searchRouter = router({
     doSearch: procedure
-        .input(z.object({ query: z.string() }))
+        .input(z.object({ 
+            query: z.string(),
+            userId: z.string().optional(),
+            filterTakenClasses: z.boolean().optional()
+        }))
         .query(async ({ input }): Promise<Record<string, SearchResult>> => {
             const { query } = input;
             const u = new uFuzzy();
@@ -45,10 +49,27 @@ const searchRouter = router({
                 keys: ['id', 'name', 'alias', 'metadata.department', 'metadata.number'],
                 limit: 10 - matchedDepts.length
             })
-            return Object.fromEntries(
-                [...matchedDepts.map(x => [x.obj.id, x.obj]),
-                ...matchedCourses.map(x => [x.obj.id, x.obj]),]
-            );
+            let results = [
+                ...matchedDepts.map(x => [x.obj.id, x.obj]),
+                ...matchedCourses.map(x => [x.obj.id, x.obj]),
+            ]
+
+            console.log("Initial Search Results:", results.map(([id, obj]) => obj.name || obj.id));
+
+            if (filterTakenClasses) {
+                // const userCourses = await fetchUserCoursesPeterPortal(userId);
+                const userCourses = new Set(['MATH 2A', 'CS 161', 'BIO SCI 93']);
+                console.log("User's Taken Courses (for filtering):", Array.from(userCourses));
+                results = results.filter(([id, obj]) => {
+                    if (obj.type === 'COURSE') {
+                        const courseKey = `${obj.metadata.department} ${obj.metadata.number}`;
+                        return !userCourses.has(courseKey);
+                    }
+                    return true;
+                });
+                console.log("Filtered Results:", results.map(([id, obj]) => obj.name || obj.id));
+            }
+            return Object.fromEntries(results);
         }),
 });
 

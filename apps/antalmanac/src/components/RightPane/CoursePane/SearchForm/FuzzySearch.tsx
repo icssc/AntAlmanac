@@ -38,7 +38,9 @@ interface FuzzySearchState {
     open: boolean;
     results: Record<string, SearchResult> | undefined;
     value: string;
+    userID: string;
     loading: boolean;
+    filterTakenClasses: boolean;
     requestTimestamp?: number;
     pendingRequest?: number;
 }
@@ -49,7 +51,9 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         open: false,
         results: {},
         value: '',
+        userID: '',
         loading: false,
+        filterTakenClasses: false,
         requestTimestamp: undefined,
         pendingRequest: undefined,
     };
@@ -121,7 +125,11 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     maybeDoSearchFactory = (requestTimestamp: number) => () => {
         if (!this.requestIsCurrent(requestTimestamp)) return;
         trpc.search.doSearch
-            .query({ query: this.state.value })
+            .query({ 
+                query: this.state.value,
+                userId: this.state.userID,
+                filterTakenClasses: this.state.filterTakenClasses
+            })
             .then((result) => {
                 if (!this.requestIsCurrent(requestTimestamp)) return;
                 this.setState({
@@ -180,34 +188,39 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
     render() {
         return (
-            <Autocomplete
-                loading={this.state.loading}
-                style={{ width: '100%' }}
-                options={Object.keys(this.state.results ?? {})}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        inputRef={(input: HTMLInputElement | null) => {
-                            if (input && !isMobile()) {
-                                input.focus();
-                            }
-                        }}
-                        fullWidth
-                        label={'Search'}
-                        placeholder="Search for courses, departments, GEs..."
-                    />
-                )}
-                autoHighlight={true}
-                filterOptions={this.filterOptions}
-                getOptionLabel={this.getOptionLabel}
-                getOptionSelected={this.getOptionSelected}
-                id={'fuzzy-search'}
-                noOptionsText={'No results found! Please try broadening your search.'}
-                onClose={this.onClose}
-                onInputChange={this.onInputChange}
-                open={this.state.open}
-                popupIcon={''}
-            />
+            <div>
+                <button onClick={this.toggleFilter}>
+                    {this.state.filterTakenClasses ? "Hide Taken Classes" : "Show All Classes"}
+                </button>
+                <Autocomplete
+                    loading={this.state.loading}
+                    style={{ width: '100%' }}
+                    options={Object.keys(this.state.results ?? {})}
+                    renderInput={(params) => (
+                        <TextField
+                            {...params}
+                            inputRef={(input: HTMLInputElement | null) => {
+                                if (input && !isMobile()) {
+                                    input.focus();
+                                }
+                            }}
+                            fullWidth
+                            label={'Search'}
+                            placeholder="Search for courses, departments, GEs..."
+                        />
+                    )}
+                    autoHighlight={true}
+                    filterOptions={this.filterOptions}
+                    getOptionLabel={this.getOptionLabel}
+                    getOptionSelected={this.getOptionSelected}
+                    id={'fuzzy-search'}
+                    noOptionsText={'No results found! Please try broadening your search.'}
+                    onClose={this.onClose}
+                    onInputChange={this.onInputChange}
+                    open={this.state.open}
+                    popupIcon={''}
+                />
+            </div>
         );
     }
 }
