@@ -1,1 +1,0 @@
-ALTER TYPE "public"."subscription_target_status" ADD VALUE 'FULL';
