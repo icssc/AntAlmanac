@@ -124,6 +124,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             style={computedRowStyle}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            data-testid="class-table-row"
         >
             {Object.entries(tableBodyCells)
                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))

@@ -86,6 +86,7 @@ export function ScheduleManagement() {
             <Stack width="100%" height="0" flexGrow={1} padding={1}>
                 <Stack
                     id="course-pane-box"
+                    data-testid="course-pane-box"
                     direction="column"
                     overflow="auto"
                     height="0px"

@@ -31,6 +31,7 @@ export function SchoolDeptCard({ name, type, comment }: SchoolDeptCardProps) {
                         }}
                     >
                         <Typography
+                            data-testid={type === 'school' ? 'school-name' : 'dept-name'}
                             variant={type === 'school' ? 'h6' : 'subtitle1'}
                             sx={{ textOverflow: 'ellipsis', overflow: 'hidden' }}
                         >

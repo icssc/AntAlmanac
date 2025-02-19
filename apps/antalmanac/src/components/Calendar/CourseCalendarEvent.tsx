@@ -192,7 +192,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
         };
 
         return (
-            <Paper className={classes.courseContainer} ref={paperRef}>
+            <Paper className={classes.courseContainer} ref={paperRef} data-testid="course-calendar-event">
                 <div className={classes.titleBar}>
                     <Tooltip title="Quick Search">
                         <Button size="small" onClick={handleQuickSearch}>
