@@ -3,7 +3,7 @@
  */
 
 import type { WebsocAPIResponse } from '@packages/antalmanac-types';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, or } from 'drizzle-orm';
 
 import { db } from '../../backend/src/db/index';
 import { users } from '../../backend/src/db/schema/auth/user';
@@ -85,7 +85,7 @@ function getUpdatedClassesDummy(year: string, quarter: string, sections: string[
                     sectionCode: '34250',
                     to: {
                         maxCapacity: '150',
-                        status: 'OPEN',
+                        status: 'FULL',
                         numCurrentlyEnrolled: {
                             totalEnrolled: '150',
                             sectionEnrolled: '150',
@@ -101,7 +101,7 @@ function getUpdatedClassesDummy(year: string, quarter: string, sections: string[
                     sectionCode: '35870',
                     to: {
                         maxCapacity: '100',
-                        status: 'WAITLISTED',
+                        status: 'FULL',
                         numCurrentlyEnrolled: {
                             totalEnrolled: '100',
                             sectionEnrolled: '100',
@@ -109,7 +109,7 @@ function getUpdatedClassesDummy(year: string, quarter: string, sections: string[
                         numRequested: '0',
                         numOnWaitlist: '5',
                         numWaitlistCap: '20',
-                        restrictionCodes: [],
+                        restrictionCodes: ['A,L'],
                         updatedAt: '2025-01-11T08:30:15.372Z',
                     },
                 },
@@ -165,11 +165,17 @@ async function getSubscriptionSectionCodes() {
     }
 }
 
-async function updateSubscriptionStatus(year: string, quarter: string, sectionCode: number, lastUpdated: string) {
+async function updateSubscriptionStatus(
+    year: string,
+    quarter: string,
+    sectionCode: number,
+    lastUpdated: string,
+    lastCodes: string
+) {
     try {
         await db
             .update(subscriptions)
-            .set({ lastUpdated: lastUpdated })
+            .set({ lastUpdated: lastUpdated, lastCodes: lastCodes })
             .where(
                 and(
                     eq(subscriptions.year, year),
@@ -185,7 +191,10 @@ async function updateSubscriptionStatus(year: string, quarter: string, sectionCo
 async function getLastUpdatedStatus(year: string, quarter: string, sectionCode: number) {
     try {
         const result = await db
-            .select({ lastUpdated: subscriptions.lastUpdated })
+            .select({
+                lastUpdated: subscriptions.lastUpdated,
+                lastCodes: subscriptions.lastCodes,
+            })
             .from(subscriptions)
             .where(
                 and(
@@ -210,49 +219,44 @@ async function batchCourseCodes(codes: string[]) {
     return batches;
 }
 
-async function getUsers(quarter: string, year: string, sectionCode: number, status: string) {
+async function getUsers(
+    quarter: string,
+    year: string,
+    sectionCode: number,
+    status: string,
+    statusChanged: boolean,
+    codesChanged: boolean
+) {
     try {
-        let result;
-        if (status === 'OPEN') {
-            result = await db
-                .select({ userName: users.name, email: users.email })
-                .from(subscriptions)
-                .innerJoin(users, eq(subscriptions.userId, users.id))
-                .where(
-                    and(
-                        eq(subscriptions.year, year),
-                        eq(subscriptions.quarter, quarter),
-                        eq(subscriptions.sectionCode, sectionCode),
-                        eq(subscriptions.openStatus, true)
-                    )
-                );
-        } else if (status === 'WAITLISTED') {
-            result = await db
-                .select({ userName: users.name, email: users.email })
-                .from(subscriptions)
-                .innerJoin(users, eq(subscriptions.userId, users.id))
-                .where(
-                    and(
-                        eq(subscriptions.year, year),
-                        eq(subscriptions.quarter, quarter),
-                        eq(subscriptions.sectionCode, sectionCode),
-                        eq(subscriptions.waitlistStatus, true)
-                    )
-                );
-        } else if (status === 'FULL') {
-            result = await db
-                .select({ userName: users.name, email: users.email })
-                .from(subscriptions)
-                .innerJoin(users, eq(subscriptions.userId, users.id))
-                .where(
-                    and(
-                        eq(subscriptions.year, year),
-                        eq(subscriptions.quarter, quarter),
-                        eq(subscriptions.sectionCode, sectionCode),
-                        eq(subscriptions.fullStatus, true)
-                    )
-                );
+        const statusColumnMap: Record<string, any> = {
+            OPEN: subscriptions.openStatus,
+            WAITLISTED: subscriptions.waitlistStatus,
+            FULL: subscriptions.fullStatus,
+        };
+
+        const statusColumn = statusColumnMap[status];
+
+        let query = db
+            .select({ userName: users.name, email: users.email })
+            .from(subscriptions)
+            .innerJoin(users, eq(subscriptions.userId, users.id))
+            .where(
+                and(
+                    eq(subscriptions.year, year),
+                    eq(subscriptions.quarter, quarter),
+                    eq(subscriptions.sectionCode, sectionCode),
+                    eq(statusColumn, true)
+                )
+            );
+
+        if (statusChanged == true && codesChanged == true) {
+            query = query.where(or(eq(statusColumn, true), eq(subscriptions.restrictionStatus, true)));
+        } else if (statusChanged == true) {
+            query = query.where(eq(statusColumn, true));
+        } else if (codesChanged == true) {
+            query = query.where(eq(subscriptions.restrictionStatus, true));
         }
+        const result = await query;
         return result;
     } catch (error: any) {
         console.error('Error getting users:', error.message);
@@ -264,13 +268,25 @@ async function sendNotification(
     quarter: string,
     sectionCode: number,
     status: string,
+    codes: string,
     sectionInfo: WebsocAPIResponse,
-    users: User[]
+    users: User[],
+    statusChanged: boolean,
+    codesChanged: boolean
 ) {
     try {
         const deptCode = sectionInfo.data?.schools?.[0]?.departments?.[0]?.courses?.[0].deptCode;
         const courseNumber = sectionInfo.data?.schools?.[0]?.departments?.[0]?.courses?.[0].courseNumber;
         const courseTitle = sectionInfo.data?.schools?.[0]?.departments?.[0]?.courses?.[0].courseTitle;
+
+        let notification = ``;
+
+        if (statusChanged == true) {
+            notification += ` ${status}`;
+        }
+        if (codesChanged == true) {
+            notification += ` with restriction codes: ${codes}`;
+        }
         console.log(
             'notification for',
             deptCode,
@@ -283,7 +299,7 @@ async function sendNotification(
             '\n',
             users,
             '\nclass is now: ',
-            status,
+            notification,
             '\n'
         );
         // send notification
@@ -303,12 +319,26 @@ async function main() {
                 // const response = await getUpdatedClasses(quarter, year, batch);
                 const sectionPromises = response.data.sections.map(async (section) => {
                     const currentStatus = section.to.status;
+                    const currentCodes = section.to.restrictionCodes.join(',');
+
                     const previousState = await getLastUpdatedStatus(year, quarter, Number(section.sectionCode));
                     const previousStatus: string | null = previousState?.[0]?.lastUpdated || null;
-                    if (previousStatus === currentStatus) return;
+                    const previousCodes: string | null = previousState?.[0]?.lastCodes || '';
+
+                    const statusChanged = previousStatus !== currentStatus;
+                    const codesChanged = previousCodes !== currentCodes;
+
+                    if (!statusChanged && !codesChanged) return;
 
                     const [users, sectionInfo] = await Promise.all([
-                        getUsers(quarter, year, Number(section.sectionCode), currentStatus),
+                        getUsers(
+                            quarter,
+                            year,
+                            Number(section.sectionCode),
+                            currentStatus,
+                            statusChanged,
+                            codesChanged
+                        ),
                         getSectionInformation(quarter, year, section.sectionCode),
                     ]);
 
@@ -318,11 +348,20 @@ async function main() {
                             quarter,
                             Number(section.sectionCode),
                             currentStatus,
+                            currentCodes,
                             sectionInfo,
-                            users
+                            users,
+                            statusChanged,
+                            codesChanged
                         );
                     }
-                    await updateSubscriptionStatus(year, quarter, Number(section.sectionCode), currentStatus);
+                    await updateSubscriptionStatus(
+                        year,
+                        quarter,
+                        Number(section.sectionCode),
+                        currentStatus,
+                        currentCodes
+                    );
                 });
                 await Promise.all(sectionPromises);
             }

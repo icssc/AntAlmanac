@@ -43,6 +43,20 @@
             "when": 1739925959231,
             "tag": "0005_nifty_goblin_queen",
             "breakpoints": true
+        },
+        {
+            "idx": 6,
+            "version": "7",
+            "when": 1739940731652,
+            "tag": "0006_outgoing_martin_li",
+            "breakpoints": true
+        },
+        {
+            "idx": 7,
+            "version": "7",
+            "when": 1739940940466,
+            "tag": "0007_sleepy_sage",
+            "breakpoints": true
         }
     ]
 }
