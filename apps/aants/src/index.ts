@@ -2,7 +2,6 @@
  * To run this script, use 'pnpm run aants'
  */
 
-import type { WebsocAPIResponse } from '@packages/antalmanac-types';
 // import { SES } from 'aws-sdk';
 import { eq, and, or } from 'drizzle-orm';
 
@@ -17,126 +16,127 @@ type User = {
     userName: string | null;
 };
 
-async function getUpdatedClasses(quarter: string, year: string, sections: string[]) {
-    try {
-        // const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
-        const url = new URL('https://anteater-api-staging-125.icssc.workers.dev/v2/rest/enrollmentChanges');
-        const now = new Date().toISOString();
-        url.searchParams.append('quarter', quarter);
-        url.searchParams.append('year', year);
-        url.searchParams.append('sections', sections.join(','));
-        url.searchParams.append('since', now);
-        console.log(url.toString());
+// async function getUpdatedClasses(quarter: string, year: string, sections: string[]) {
+//     try {
+//         // const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
+//         const url = new URL('https://anteater-api-staging-125.icssc.workers.dev/v2/rest/enrollmentChanges');
+//         const now = new Date().toISOString();
+//         url.searchParams.append('quarter', quarter);
+//         url.searchParams.append('year', year);
+//         url.searchParams.append('sections', sections.join(','));
+//         url.searchParams.append('since', now);
+//         console.log(url.toString());
 
-        const response = await fetch(url.toString(), {
-            method: 'GET',
-            headers: {
-                ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
-            },
-        });
+//         const response = await fetch(url.toString(), {
+//             method: 'GET',
+//             headers: {
+//                 ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
+//             },
+//         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+//         if (!response.ok) {
+//             throw new Error(`HTTP error! Status: ${response.status}`);
+//         }
 
-        const data = await response.json();
-        return data;
-    } catch (error: any) {
-        console.error('Error calling API:', error.message);
-    }
+//         const data = await response.json();
+//         return data;
+//     } catch (error: any) {
+//         console.error('Error calling API:', error.message);
+//     }
+// }
+
+function getUpdatedClassesDummy(year: string, quarter: string, sections: string[]) {
+    const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
+    const now = new Date().toISOString();
+    url.searchParams.append('quarter', quarter);
+    url.searchParams.append('year', year);
+    url.searchParams.append('sections', sections.join(','));
+    url.searchParams.append('since', now);
+
+    const response1 = {
+        ok: true,
+        data: {
+            courses: [
+                {
+                    id: 'I&CSCI139W',
+                    title: 'CRITICAL WRITING',
+                    department: 'I&C SCI',
+                    courseNumber: '139W',
+                    sections: [
+                        {
+                            sectionCode: '35870',
+                            to: {
+                                maxCapacity: '100',
+                                status: 'WAITLISTED',
+                                numCurrentlyEnrolled: {
+                                    totalEnrolled: '0',
+                                    sectionEnrolled: '',
+                                },
+                                numRequested: '0',
+                                numOnWaitlist: '',
+                                numWaitlistCap: '0',
+                                numNewOnlyReserved: '0',
+                                restrictionCodes: ['A,L'],
+                                updatedAt: '2025-02-19T20:37:36.557Z',
+                            },
+                        },
+                    ],
+                },
+                {
+                    id: 'COMPSCI161',
+                    title: 'DES&ANALYS OF ALGOR',
+                    department: 'COMPSCI',
+                    courseNumber: '161',
+                    sections: [
+                        {
+                            sectionCode: '34250',
+                            to: {
+                                maxCapacity: '350',
+                                status: 'OPEN',
+                                numCurrentlyEnrolled: {
+                                    totalEnrolled: '0',
+                                    sectionEnrolled: '',
+                                },
+                                numRequested: '0',
+                                numOnWaitlist: '0',
+                                numWaitlistCap: '53',
+                                numNewOnlyReserved: '0',
+                                restrictionCodes: ['L'],
+                                updatedAt: '2025-02-19T20:37:36.557Z',
+                            },
+                        },
+                    ],
+                },
+            ],
+        },
+    };
+
+    return response1;
 }
 
-async function getSectionInformation(quarter: string, year: string, sectionCode: string) {
-    try {
-        const url = new URL('https://anteaterapi.com/v2/rest/websoc');
-        url.searchParams.append('quarter', quarter);
-        url.searchParams.append('year', year);
-        url.searchParams.append('sectionCodes', sectionCode);
+// async function getSectionInformation(quarter: string, year: string, sectionCode: string) {
+//     try {
+//         const url = new URL('https://anteaterapi.com/v2/rest/websoc');
+//         url.searchParams.append('quarter', quarter);
+//         url.searchParams.append('year', year);
+//         url.searchParams.append('sectionCodes', sectionCode);
 
-        const response = await fetch(url.toString(), {
-            method: 'GET',
-            headers: {
-                ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
-            },
-        });
+//         const response = await fetch(url.toString(), {
+//             method: 'GET',
+//             headers: {
+//                 ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
+//             },
+//         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+//         if (!response.ok) {
+//             throw new Error(`HTTP error! Status: ${response.status}`);
+//         }
 
-        const data = await response.json();
-        return data;
-    } catch (error: any) {
-        console.error('Error calling API:', error.message);
-    }
-}
-
-// function getUpdatedClassesDummy(year: string, quarter: string, sections: string[]) {
-//     const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
-//     const now = new Date().toISOString();
-//     url.searchParams.append('quarter', quarter);
-//     url.searchParams.append('year', year);
-//     url.searchParams.append('sections', sections.join(','));
-//     url.searchParams.append('since', now);
-
-//     const response1 = {
-//         ok: true,
-//         data: {
-//             sections: [
-//                 {
-//                     sectionCode: '34250',
-//                     to: {
-//                         maxCapacity: '150',
-//                         status: 'FULL',
-//                         numCurrentlyEnrolled: {
-//                             totalEnrolled: '150',
-//                             sectionEnrolled: '150',
-//                         },
-//                         numRequested: '0',
-//                         numOnWaitlist: '10',
-//                         numWaitlistCap: '20',
-//                         restrictionCodes: [],
-//                         updatedAt: '2025-01-10T09:20:15.372Z',
-//                     },
-//                 },
-//                 {
-//                     sectionCode: '35870',
-//                     to: {
-//                         maxCapacity: '100',
-//                         status: 'FULL',
-//                         numCurrentlyEnrolled: {
-//                             totalEnrolled: '100',
-//                             sectionEnrolled: '100',
-//                         },
-//                         numRequested: '0',
-//                         numOnWaitlist: '5',
-//                         numWaitlistCap: '20',
-//                         restrictionCodes: ['A,L'],
-//                         updatedAt: '2025-01-11T08:30:15.372Z',
-//                     },
-//                 },
-//                 {
-//                     sectionCode: '34300',
-
-//                     to: {
-//                         maxCapacity: '200',
-//                         status: 'WAITLISTED',
-//                         numCurrentlyEnrolled: {
-//                             totalEnrolled: '180',
-//                             sectionEnrolled: '180',
-//                         },
-//                         numRequested: '0',
-//                         numOnWaitlist: '15',
-//                         numWaitlistCap: '30',
-//                         restrictionCodes: [],
-//                         updatedAt: '2025-01-12T10:15:15.372Z',
-//                     },
-//                 },
-//             ],
-//         },
-//     };
-
-//     return response1;
+//         const data = await response.json();
+//         return data;
+//     } catch (error: any) {
+//         console.error('Error calling API:', error.message);
+//     }
 // }
 
 async function getSubscriptionSectionCodes() {
@@ -248,7 +248,8 @@ async function getUsers(
                     eq(subscriptions.quarter, quarter),
                     eq(subscriptions.sectionCode, sectionCode)
                 )
-            );
+            )
+            .$dynamic();
 
         if (statusChanged == true && codesChanged == true) {
             query = query.where(or(eq(statusColumn, true), eq(subscriptions.restrictionStatus, true)));
@@ -270,16 +271,14 @@ async function sendNotification(
     sectionCode: number,
     status: string,
     codes: string,
-    sectionInfo: WebsocAPIResponse,
+    deptCode: string,
+    courseNumber: string,
+    courseTitle: string,
     users: User[],
     statusChanged: boolean,
     codesChanged: boolean
 ) {
     try {
-        const deptCode = sectionInfo.data?.schools?.[0]?.departments?.[0]?.courses?.[0].deptCode;
-        const courseNumber = sectionInfo.data?.schools?.[0]?.departments?.[0]?.courses?.[0].courseNumber;
-        const courseTitle = sectionInfo.data?.schools?.[0]?.departments?.[0]?.courses?.[0].courseTitle;
-
         let notification = ``;
 
         if (statusChanged == true) {
@@ -292,9 +291,11 @@ async function sendNotification(
             'notification for',
             deptCode,
             courseNumber,
+            '(',
             courseTitle,
+            ')',
             sectionCode,
-            'in ',
+            'in',
             year,
             quarter,
             '\n',
@@ -312,63 +313,79 @@ async function sendNotification(
 async function main() {
     try {
         const subscriptions = await getSubscriptionSectionCodes();
-        for (const term in subscriptions) {
-            const batches = await batchCourseCodes(subscriptions[term]);
-            const [quarter, year] = term.split('-');
-            for (const batch of batches) {
-                // const response = getUpdatedClassesDummy(quarter, year, batch);
-                const response = await getUpdatedClasses(quarter, year, batch);
-                const sectionPromises = response.data.sections.map(async (section) => {
-                    const currentStatus = section.to.status;
-                    const currentCodes = section.to.restrictionCodes.join(',');
+        await Promise.all(
+            Object.entries(subscriptions).map(async ([term, sectionCodes]) => {
+                const [quarter, year] = term.split('-');
+                const batches = await batchCourseCodes(sectionCodes);
 
-                    const previousState = await getLastUpdatedStatus(year, quarter, Number(section.sectionCode));
-                    const previousStatus: string | null = previousState?.[0]?.lastUpdated || null;
-                    const previousCodes: string | null = previousState?.[0]?.lastCodes || '';
+                await Promise.all(
+                    batches.map(async (batch) => {
+                        const response = getUpdatedClassesDummy(quarter, year, batch);
+                        // const response = await getUpdatedClasses(quarter, year, batch);
 
-                    const statusChanged = previousStatus !== currentStatus;
-                    const codesChanged = previousCodes !== currentCodes;
+                        await Promise.all(
+                            response.data.courses.map(async (course) => {
+                                const { department: deptCode, courseNumber, title: courseTitle } = course;
 
-                    if (!statusChanged && !codesChanged) return;
+                                await Promise.all(
+                                    course.sections.map(async (section) => {
+                                        const sectionCode = Number(section.sectionCode);
+                                        const currentStatus = section.to.status;
+                                        const currentCodes = section.to.restrictionCodes.join(',');
 
-                    const [users, sectionInfo] = await Promise.all([
-                        getUsers(
-                            quarter,
-                            year,
-                            Number(section.sectionCode),
-                            currentStatus,
-                            statusChanged,
-                            codesChanged
-                        ),
-                        getSectionInformation(quarter, year, section.sectionCode),
-                    ]);
+                                        const previousState = await getLastUpdatedStatus(year, quarter, sectionCode);
+                                        const previousStatus = previousState?.[0]?.lastUpdated || null;
+                                        const previousCodes = previousState?.[0]?.lastCodes || '';
 
-                    if (users && users.length > 0) {
-                        await sendNotification(
-                            year,
-                            quarter,
-                            Number(section.sectionCode),
-                            currentStatus,
-                            currentCodes,
-                            sectionInfo,
-                            users,
-                            statusChanged,
-                            codesChanged
+                                        const changes = {
+                                            statusChanged: previousStatus !== currentStatus,
+                                            codesChanged: previousCodes !== currentCodes,
+                                        };
+
+                                        if (!changes.statusChanged && !changes.codesChanged) return;
+
+                                        const users = await getUsers(
+                                            quarter,
+                                            year,
+                                            sectionCode,
+                                            currentStatus,
+                                            changes.statusChanged,
+                                            changes.codesChanged
+                                        );
+
+                                        // Run notification and status update in parallel if there are users
+                                        if (users && users.length > 0) {
+                                            await sendNotification(
+                                                year,
+                                                quarter,
+                                                sectionCode,
+                                                currentStatus,
+                                                currentCodes,
+                                                deptCode,
+                                                courseNumber,
+                                                courseTitle,
+                                                users,
+                                                changes.statusChanged,
+                                                changes.codesChanged
+                                            );
+                                        }
+                                        await updateSubscriptionStatus(
+                                            year,
+                                            quarter,
+                                            sectionCode,
+                                            currentStatus,
+                                            currentCodes
+                                        );
+                                    })
+                                );
+                            })
                         );
-                    }
-                    await updateSubscriptionStatus(
-                        year,
-                        quarter,
-                        Number(section.sectionCode),
-                        currentStatus,
-                        currentCodes
-                    );
-                });
-                await Promise.all(sectionPromises);
-            }
-        }
-    } catch (error: any) {
-        console.error('Error in managing subscription:', error.message);
+                    })
+                );
+            })
+        );
+    } catch (error) {
+        console.error('Error in managing subscription:', error instanceof Error ? error.message : String(error));
     } finally {
         process.exit(0);
     }
