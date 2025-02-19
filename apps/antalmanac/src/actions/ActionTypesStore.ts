@@ -152,7 +152,6 @@ class ActionTypesStore extends EventEmitter {
 
     async loadScheduleFromLocalSave() {
         const unsavedActionsString = getLocalStorageUnsavedActions();
-        console.log(unsavedActionsString);
         if (unsavedActionsString == null) return;
         if (!confirm('You have unsaved changes. Would you like to load them?')) {
             removeLocalStorageUnsavedActions();
@@ -162,8 +161,6 @@ class ActionTypesStore extends EventEmitter {
         const actions = parseUnsavedActionsString(unsavedActionsString);
 
         actions.forEach((action) => {
-            console.log(typeof action);
-
             switch (action.type) {
                 case 'addCourse':
                     AppStore.schedule.addCourse(action.course, action.scheduleIndex);

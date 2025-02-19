@@ -163,11 +163,13 @@ export function SelectSchedulePopover() {
                             return (
                                 <SortableList.Item id={item.id}>
                                     <Box
-                                        display="flex"
-                                        gap={1}
-                                        justifyContent="space-between"
-                                        alignItems="center"
-                                        flexGrow={1}
+                                        sx={{
+                                            display: 'flex',
+                                            gap: 1,
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            flexGrow: 1,
+                                        }}
                                     >
                                         <SortableList.DragHandle disabled={skeletonMode} />
                                         <Box flexGrow={1}>

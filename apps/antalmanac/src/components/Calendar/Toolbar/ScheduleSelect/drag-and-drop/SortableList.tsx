@@ -6,7 +6,8 @@ import { List } from '@mui/material';
 import type { ReactNode } from 'react';
 import { Fragment, useMemo, useState } from 'react';
 
-import { DragHandle, SortableItem } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableItem';
+import { DragHandle } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/DragHandle';
+import { SortableItem } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableItem';
 import { SortableOverlay } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableOverlay';
 import AppStore from '$stores/AppStore';
 
@@ -20,6 +21,7 @@ interface Props<T extends BaseItem> {
     renderItem(item: T): ReactNode;
 }
 
+// ref: https://codesandbox.io/p/sandbox/dnd-kit-sortable-starter-template-22x1ix
 export function SortableList<T extends BaseItem>({ items, onChange, renderItem }: Props<T>) {
     const [active, setActive] = useState<Active | null>(null);
     const activeItem = useMemo(() => items.find((item) => item.id === active?.id), [active, items]);
