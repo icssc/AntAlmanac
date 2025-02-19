@@ -1,10 +1,12 @@
 import { Add, ArrowDropDown, Delete } from '@mui/icons-material';
-import { Box, IconButton, Menu, MenuItem, TableCell, Tooltip, useMediaQuery } from '@mui/material';
+import { Box, IconButton, Menu, MenuItem, Tooltip, useMediaQuery, useTheme } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
+import { useCallback } from 'react';
 
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
+import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { MOBILE_BREAKPOINT } from '$src/globals';
 import AppStore from '$stores/AppStore';
@@ -42,24 +44,25 @@ interface ActionProps {
 /**
  * Sections added to a schedule, can be recolored or deleted.
  */
-export function ColorAndDelete(props: ActionProps) {
-    const { section, term } = props;
+export function ColorAndDelete({ section, term }: ActionProps) {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
+    const flexDirection = isMobile ? 'column' : undefined;
 
-    const flexDirection = isMobileScreen ? 'column' : undefined;
-
-    const handleClick = () => {
+    const handleClick = useCallback(() => {
         deleteCourse(section.sectionCode, term);
 
         logAnalytics({
             category: analyticsEnum.addedClasses.title,
             action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
         });
-    };
+    }, []);
 
     return (
-        <Box flexDirection={flexDirection} display="flex" justifyContent="space-evenly">
+        <Box
+            sx={{ display: 'flex', flexDirection: flexDirection, justifyContent: 'space-evenly', alignItems: 'center' }}
+        >
             <IconButton onClick={handleClick}>
                 <Delete fontSize="small" />
             </IconButton>
@@ -177,10 +180,10 @@ export interface ActionCellProps extends Omit<ActionProps, 'classes'> {
 /**
  * Given a section and schedule information, provides appropriate set of actions.
  */
-export function ActionCell(props: ActionCellProps) {
+export function ActionCell({ addedCourse, ...props }: ActionCellProps) {
     return (
-        <TableCell padding="none" sx={{ width: '8%' }}>
-            {props.addedCourse ? <ColorAndDelete {...props} /> : <ScheduleAddCell {...props} />}
-        </TableCell>
+        <TableBodyCellContainer sx={{ width: '8%' }}>
+            {addedCourse ? <ColorAndDelete {...props} /> : <ScheduleAddCell {...props} />}
+        </TableBodyCellContainer>
     );
 }
