@@ -99,7 +99,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             size="small"
                             sx={{
                                 border: '1px solid',
-                                borderColor: showFinalsSchedule ? 'primary' : 'white',
+                                borderColor: showFinalsSchedule ? 'primary' : 'inherit',
                                 borderRadius: '4px',
                                 padding: '3px',
                             }}
