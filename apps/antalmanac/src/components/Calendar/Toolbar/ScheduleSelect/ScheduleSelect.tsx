@@ -90,6 +90,7 @@ export function SelectSchedulePopover(props: { scheduleNames: string[] }) {
                     variant="outlined"
                     onClick={handleClick}
                     sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
+                    data-testid="schedule-select-button"
                 >
                     <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
                         {currentScheduleName}
@@ -103,6 +104,7 @@ export function SelectSchedulePopover(props: { scheduleNames: string[] }) {
                 anchorEl={anchorEl}
                 onClose={handleClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                data-testid="schedule-popover"
             >
                 <Box padding={1}>
                     {props.scheduleNames.map((name, index) => (
