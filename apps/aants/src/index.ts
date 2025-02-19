@@ -3,6 +3,7 @@
  */
 
 import type { WebsocAPIResponse } from '@packages/antalmanac-types';
+// import { SES } from 'aws-sdk';
 import { eq, and, or } from 'drizzle-orm';
 
 import { db } from '../../backend/src/db/index';
@@ -10,39 +11,40 @@ import { users } from '../../backend/src/db/schema/auth/user';
 import { subscriptions } from '../../backend/src/db/schema/subscription';
 
 const BATCH_SIZE = 450;
+// const ses = new SES({ region: 'us-east-1' });
 
 type User = {
     userName: string | null;
 };
 
-// async function getUpdatedClasses(quarter: string, year: string, sections: string[]) {
-//     try {
-//         // const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
-//         const url = new URL('https://anteater-api-staging-125.icssc.workers.dev/v2/rest/enrollmentChanges');
-//         const now = new Date().toISOString();
-//         url.searchParams.append('quarter', quarter);
-//         url.searchParams.append('year', year);
-//         url.searchParams.append('sections', sections.join(','));
-//         url.searchParams.append('since', now);
-//         console.log(url.toString());
+async function getUpdatedClasses(quarter: string, year: string, sections: string[]) {
+    try {
+        // const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
+        const url = new URL('https://anteater-api-staging-125.icssc.workers.dev/v2/rest/enrollmentChanges');
+        const now = new Date().toISOString();
+        url.searchParams.append('quarter', quarter);
+        url.searchParams.append('year', year);
+        url.searchParams.append('sections', sections.join(','));
+        url.searchParams.append('since', now);
+        console.log(url.toString());
 
-//         const response = await fetch(url.toString(), {
-//             method: 'GET',
-//             headers: {
-//                 ...((process.env.ANTEATER_API_KEY) && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
-//             },
-//         });
+        const response = await fetch(url.toString(), {
+            method: 'GET',
+            headers: {
+                ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
+            },
+        });
 
-//         if (!response.ok) {
-//             throw new Error(`HTTP error! Status: ${response.status}`);
-//         }
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
-//         const data = await response.json();
-//         return data;
-//     } catch (error: any) {
-//         console.error('Error calling API:', error.message);
-//     }
-// }
+        const data = await response.json();
+        return data;
+    } catch (error: any) {
+        console.error('Error calling API:', error.message);
+    }
+}
 
 async function getSectionInformation(quarter: string, year: string, sectionCode: string) {
     try {
@@ -69,73 +71,73 @@ async function getSectionInformation(quarter: string, year: string, sectionCode:
     }
 }
 
-function getUpdatedClassesDummy(year: string, quarter: string, sections: string[]) {
-    const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
-    const now = new Date().toISOString();
-    url.searchParams.append('quarter', quarter);
-    url.searchParams.append('year', year);
-    url.searchParams.append('sections', sections.join(','));
-    url.searchParams.append('since', now);
+// function getUpdatedClassesDummy(year: string, quarter: string, sections: string[]) {
+//     const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
+//     const now = new Date().toISOString();
+//     url.searchParams.append('quarter', quarter);
+//     url.searchParams.append('year', year);
+//     url.searchParams.append('sections', sections.join(','));
+//     url.searchParams.append('since', now);
 
-    const response1 = {
-        ok: true,
-        data: {
-            sections: [
-                {
-                    sectionCode: '34250',
-                    to: {
-                        maxCapacity: '150',
-                        status: 'FULL',
-                        numCurrentlyEnrolled: {
-                            totalEnrolled: '150',
-                            sectionEnrolled: '150',
-                        },
-                        numRequested: '0',
-                        numOnWaitlist: '10',
-                        numWaitlistCap: '20',
-                        restrictionCodes: [],
-                        updatedAt: '2025-01-10T09:20:15.372Z',
-                    },
-                },
-                {
-                    sectionCode: '35870',
-                    to: {
-                        maxCapacity: '100',
-                        status: 'FULL',
-                        numCurrentlyEnrolled: {
-                            totalEnrolled: '100',
-                            sectionEnrolled: '100',
-                        },
-                        numRequested: '0',
-                        numOnWaitlist: '5',
-                        numWaitlistCap: '20',
-                        restrictionCodes: ['A,L'],
-                        updatedAt: '2025-01-11T08:30:15.372Z',
-                    },
-                },
-                {
-                    sectionCode: '34300',
+//     const response1 = {
+//         ok: true,
+//         data: {
+//             sections: [
+//                 {
+//                     sectionCode: '34250',
+//                     to: {
+//                         maxCapacity: '150',
+//                         status: 'FULL',
+//                         numCurrentlyEnrolled: {
+//                             totalEnrolled: '150',
+//                             sectionEnrolled: '150',
+//                         },
+//                         numRequested: '0',
+//                         numOnWaitlist: '10',
+//                         numWaitlistCap: '20',
+//                         restrictionCodes: [],
+//                         updatedAt: '2025-01-10T09:20:15.372Z',
+//                     },
+//                 },
+//                 {
+//                     sectionCode: '35870',
+//                     to: {
+//                         maxCapacity: '100',
+//                         status: 'FULL',
+//                         numCurrentlyEnrolled: {
+//                             totalEnrolled: '100',
+//                             sectionEnrolled: '100',
+//                         },
+//                         numRequested: '0',
+//                         numOnWaitlist: '5',
+//                         numWaitlistCap: '20',
+//                         restrictionCodes: ['A,L'],
+//                         updatedAt: '2025-01-11T08:30:15.372Z',
+//                     },
+//                 },
+//                 {
+//                     sectionCode: '34300',
 
-                    to: {
-                        maxCapacity: '200',
-                        status: 'WAITLISTED',
-                        numCurrentlyEnrolled: {
-                            totalEnrolled: '180',
-                            sectionEnrolled: '180',
-                        },
-                        numRequested: '0',
-                        numOnWaitlist: '15',
-                        numWaitlistCap: '30',
-                        restrictionCodes: [],
-                        updatedAt: '2025-01-12T10:15:15.372Z',
-                    },
-                },
-            ],
-        },
-    };
+//                     to: {
+//                         maxCapacity: '200',
+//                         status: 'WAITLISTED',
+//                         numCurrentlyEnrolled: {
+//                             totalEnrolled: '180',
+//                             sectionEnrolled: '180',
+//                         },
+//                         numRequested: '0',
+//                         numOnWaitlist: '15',
+//                         numWaitlistCap: '30',
+//                         restrictionCodes: [],
+//                         updatedAt: '2025-01-12T10:15:15.372Z',
+//                     },
+//                 },
+//             ],
+//         },
+//     };
 
-    return response1;
-}
+//     return response1;
+// }
 
 async function getSubscriptionSectionCodes() {
     try {
@@ -244,8 +246,7 @@ async function getUsers(
                 and(
                     eq(subscriptions.year, year),
                     eq(subscriptions.quarter, quarter),
-                    eq(subscriptions.sectionCode, sectionCode),
-                    eq(statusColumn, true)
+                    eq(subscriptions.sectionCode, sectionCode)
                 )
             );
 
@@ -315,8 +316,8 @@ async function main() {
             const batches = await batchCourseCodes(subscriptions[term]);
             const [quarter, year] = term.split('-');
             for (const batch of batches) {
-                const response = getUpdatedClassesDummy(quarter, year, batch);
-                // const response = await getUpdatedClasses(quarter, year, batch);
+                // const response = getUpdatedClassesDummy(quarter, year, batch);
+                const response = await getUpdatedClasses(quarter, year, batch);
                 const sectionPromises = response.data.sections.map(async (section) => {
                     const currentStatus = section.to.status;
                     const currentCodes = section.to.restrictionCodes.join(',');
