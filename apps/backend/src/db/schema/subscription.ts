@@ -1,4 +1,5 @@
 import { integer, boolean, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
+
 import { users } from './auth/user';
 
 export const subscriptions = pgTable(
@@ -15,8 +16,15 @@ export const subscriptions = pgTable(
         sectionCode: integer('sectionCode'),
 
         /**
-         * Term/quarter of subscriptions
-         * @example 2024-WINTER, 2024-SPRING, 2025-FALL, etc.
+         * Year of subscription
+         * @example 2024, 2025, etc.
+         */
+
+        year: text('year'),
+
+        /**
+         * Quarter of subscription
+         * @example Fall, Winter, Spring, Summer, etc.
          */
 
         term: text('term'),
