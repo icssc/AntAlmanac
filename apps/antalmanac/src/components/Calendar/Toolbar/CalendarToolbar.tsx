@@ -96,6 +96,13 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             onClick={handleToggleFinals}
                             id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
                             disabled={skeletonMode}
+                            size="small"
+                            sx={{
+                                border: '1px solid',
+                                borderColor: showFinalsSchedule ? 'primary' : 'white',
+                                borderRadius: '4px',
+                                padding: '3px',
+                            }}
                         >
                             {showFinalsSchedule ? <DescriptionIcon /> : <DescriptionOutlinedIcon />}
                         </IconButton>
