@@ -1,11 +1,10 @@
-import { Add, ArrowDropDown, Delete } from '@mui/icons-material';
+import { Add, ArrowDropDown, Delete, NotificationAddOutlined } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, Tooltip, useMediaQuery, useTheme } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useCallback } from 'react';
 
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
-import ColorPicker from '$components/ColorPicker';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { MOBILE_BREAKPOINT } from '$src/globals';
@@ -61,20 +60,20 @@ export function ColorAndDelete({ section, term }: ActionProps) {
 
     return (
         <Box
-            sx={{ display: 'flex', flexDirection: flexDirection, justifyContent: 'space-evenly', alignItems: 'center' }}
+            sx={{
+                display: 'flex',
+                flexDirection: flexDirection,
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
         >
             <IconButton onClick={handleClick}>
                 <Delete fontSize="small" />
             </IconButton>
 
-            <ColorPicker
-                key={AppStore.getCurrentScheduleIndex()}
-                color={section.color}
-                isCustomEvent={false}
-                sectionCode={section.sectionCode}
-                term={term}
-                analyticsCategory={analyticsEnum.addedClasses.title}
-            />
+            <IconButton>
+                <NotificationAddOutlined fontSize="small" />
+            </IconButton>
         </Box>
     );
 }
@@ -140,7 +139,14 @@ export function ScheduleAddCell(props: ActionProps) {
     };
 
     return (
-        <Box flexDirection={flexDirection} display="flex" justifyContent="space-evenly">
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: flexDirection,
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+        >
             {scheduleConflict ? (
                 <Tooltip title="This course overlaps with another event in your calendar!" arrow>
                     <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
