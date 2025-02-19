@@ -9,16 +9,16 @@ import { users } from '../../backend/src/db/schema/auth/user';
 import { subscriptions } from '../../backend/src/db/schema/subscription';
 // import { aapiKey } from './env';
 
-const BATCH_SIZE = 900;
+const BATCH_SIZE = 450;
 
 type User = {
     userName: string | null;
 };
 
-// uncomment when AAPI endpoint is set up
 // async function getUpdatedClasses(term: string, sections: string[]) {
 //     try {
-//         const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
+//         // const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
+//         const url = new URL('https://anteater-api-staging-125.icssc.workers.dev/v2/rest/enrollmentChanges');
 //         url.searchParams.append('term', term);
 //         url.searchParams.append('sections', sections.join(','));
 
@@ -76,7 +76,7 @@ function getUpdatedClassesDummy(term: string, sections: string[]) {
                             numWaitlistCap: 20,
                             status: {
                                 from: 'WAITLISTED',
-                                to: 'FULL',
+                                to: 'WAITLISTED',
                             },
                             numCurrentlyEnrolled: {
                                 totalEnrolled: 60,
@@ -91,14 +91,14 @@ function getUpdatedClassesDummy(term: string, sections: string[]) {
                     courseNumber: 111,
                     sections: [
                         {
-                            sectionCode: 111,
+                            sectionCode: 103,
                             maxCapacity: 100,
                             numRequested: 50,
                             numOnWaitlist: 10,
                             numWaitlistCap: 20,
                             status: {
                                 from: 'OPEN',
-                                to: 'FULL',
+                                to: 'OPEN',
                             },
                             numCurrentlyEnrolled: {
                                 totalEnrolled: 60,
@@ -213,7 +213,7 @@ async function getUsers(term: string, sectionCode: number, status: string) {
         let result;
         if (status === 'OPEN') {
             result = await db
-                .select({ userName: users.name })
+                .select({ userName: users.name, email: users.email })
                 .from(subscriptions)
                 .innerJoin(users, eq(subscriptions.userId, users.id))
                 .where(
@@ -225,7 +225,7 @@ async function getUsers(term: string, sectionCode: number, status: string) {
                 );
         } else if (status === 'WAITLISTED') {
             result = await db
-                .select({ userName: users.name })
+                .select({ userName: users.name, email: users.email })
                 .from(subscriptions)
                 .innerJoin(users, eq(subscriptions.userId, users.id))
                 .where(
@@ -237,7 +237,7 @@ async function getUsers(term: string, sectionCode: number, status: string) {
                 );
         } else if (status === 'FULL') {
             result = await db
-                .select({ userName: users.name })
+                .select({ userName: users.name, email: users.email })
                 .from(subscriptions)
                 .innerJoin(users, eq(subscriptions.userId, users.id))
                 .where(
