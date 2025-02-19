@@ -2,12 +2,12 @@
  * To run this script, use 'pnpm run aants'
  */
 
+import type { WebsocAPIResponse } from '@packages/antalmanac-types';
 import { eq, and } from 'drizzle-orm';
 
 import { db } from '../../backend/src/db/index';
 import { users } from '../../backend/src/db/schema/auth/user';
 import { subscriptions } from '../../backend/src/db/schema/subscription';
-// import { aapiKey } from './env';
 
 const BATCH_SIZE = 450;
 
@@ -15,17 +15,21 @@ type User = {
     userName: string | null;
 };
 
-// async function getUpdatedClasses(term: string, sections: string[]) {
+// async function getUpdatedClasses(quarter: string, year: string, sections: string[]) {
 //     try {
 //         // const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
 //         const url = new URL('https://anteater-api-staging-125.icssc.workers.dev/v2/rest/enrollmentChanges');
-//         url.searchParams.append('term', term);
+//         const now = new Date().toISOString();
+//         url.searchParams.append('quarter', quarter);
+//         url.searchParams.append('year', year);
 //         url.searchParams.append('sections', sections.join(','));
+//         url.searchParams.append('since', now);
+//         console.log(url.toString());
 
 //         const response = await fetch(url.toString(), {
 //             method: 'GET',
 //             headers: {
-//                 ...(aapiKey.parse(process.env) && { Authorization: `Bearer ${aapiKey.parse(process.env)}` }),
+//                 ...((process.env.ANTEATER_API_KEY) && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
 //             },
 //         });
 
@@ -40,113 +44,97 @@ type User = {
 //     }
 // }
 
-function getUpdatedClassesDummy(term: string, sections: string[]) {
+async function getSectionInformation(quarter: string, year: string, sectionCode: string) {
+    try {
+        const url = new URL('https://anteaterapi.com/v2/rest/websoc');
+        url.searchParams.append('quarter', quarter);
+        url.searchParams.append('year', year);
+        url.searchParams.append('sectionCodes', sectionCode);
+
+        const response = await fetch(url.toString(), {
+            method: 'GET',
+            headers: {
+                ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error: any) {
+        console.error('Error calling API:', error.message);
+    }
+}
+
+function getUpdatedClassesDummy(year: string, quarter: string, sections: string[]) {
     const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
-    url.searchParams.append('term', term);
+    const now = new Date().toISOString();
+    url.searchParams.append('quarter', quarter);
+    url.searchParams.append('year', year);
     url.searchParams.append('sections', sections.join(','));
+    url.searchParams.append('since', now);
 
     const response1 = {
+        ok: true,
         data: {
-            courses: [
+            sections: [
                 {
-                    deptCode: 'COMPSCI',
-                    courseTitle: 'Algorithms',
-                    courseNumber: 161,
-                    sections: [
-                        {
-                            sectionCode: 101,
-                            maxCapacity: 100,
-                            numRequested: 50,
-                            numOnWaitlist: 10,
-                            numWaitlistCap: 20,
-                            status: {
-                                from: 'OPEN',
-                                to: 'FULL',
-                            },
-                            numCurrentlyEnrolled: {
-                                totalEnrolled: 60,
-                                sectionEnrolled: 30,
-                            },
+                    sectionCode: '34250',
+                    to: {
+                        maxCapacity: '150',
+                        status: 'OPEN',
+                        numCurrentlyEnrolled: {
+                            totalEnrolled: '150',
+                            sectionEnrolled: '150',
                         },
-                        {
-                            sectionCode: 102,
-                            maxCapacity: 100,
-                            numRequested: 50,
-                            numOnWaitlist: 10,
-                            numWaitlistCap: 20,
-                            status: {
-                                from: 'WAITLISTED',
-                                to: 'WAITLISTED',
-                            },
-                            numCurrentlyEnrolled: {
-                                totalEnrolled: 60,
-                                sectionEnrolled: 30,
-                            },
-                        },
-                    ],
+                        numRequested: '0',
+                        numOnWaitlist: '10',
+                        numWaitlistCap: '20',
+                        restrictionCodes: [],
+                        updatedAt: '2025-01-10T09:20:15.372Z',
+                    },
                 },
                 {
-                    deptCode: 'COMPSCI',
-                    courseTitle: 'Operating Systems',
-                    courseNumber: 111,
-                    sections: [
-                        {
-                            sectionCode: 103,
-                            maxCapacity: 100,
-                            numRequested: 50,
-                            numOnWaitlist: 10,
-                            numWaitlistCap: 20,
-                            status: {
-                                from: 'OPEN',
-                                to: 'OPEN',
-                            },
-                            numCurrentlyEnrolled: {
-                                totalEnrolled: 60,
-                                sectionEnrolled: 30,
-                            },
+                    sectionCode: '35870',
+                    to: {
+                        maxCapacity: '100',
+                        status: 'WAITLISTED',
+                        numCurrentlyEnrolled: {
+                            totalEnrolled: '100',
+                            sectionEnrolled: '100',
                         },
-                    ],
+                        numRequested: '0',
+                        numOnWaitlist: '5',
+                        numWaitlistCap: '20',
+                        restrictionCodes: [],
+                        updatedAt: '2025-01-11T08:30:15.372Z',
+                    },
+                },
+                {
+                    sectionCode: '34300',
+
+                    to: {
+                        maxCapacity: '200',
+                        status: 'WAITLISTED',
+                        numCurrentlyEnrolled: {
+                            totalEnrolled: '180',
+                            sectionEnrolled: '180',
+                        },
+                        numRequested: '0',
+                        numOnWaitlist: '15',
+                        numWaitlistCap: '30',
+                        restrictionCodes: [],
+                        updatedAt: '2025-01-12T10:15:15.372Z',
+                    },
                 },
             ],
         },
     };
 
-    const response2 = {
-        data: {
-            courses: [
-                {
-                    deptCode: 'BIO SCI',
-                    courseTitle: 'DNA TO ORGANISMS',
-                    courseNumber: 93,
-                    sections: [
-                        {
-                            sectionCode: 222,
-                            maxCapacity: 75,
-                            numRequested: 85,
-                            numOnWaitlist: 0,
-                            numWaitlistCap: 10,
-                            status: {
-                                from: 'WAITLISTED',
-                                to: 'FULL',
-                            },
-                            numCurrentlyEnrolled: {
-                                totalEnrolled: 72,
-                                sectionEnrolled: 0,
-                            },
-                        },
-                    ],
-                },
-            ],
-        },
-    };
-
-    if (term == '2025-WINTER') {
-        return response1;
-    } else if (term == '2025-SPRING') {
-        return response2;
-    } else {
-        return response1;
-    }
+    return response1;
 }
 
 async function getSubscriptionSectionCodes() {
@@ -154,13 +142,15 @@ async function getSubscriptionSectionCodes() {
         const result = await db
             .selectDistinct({
                 sectionCode: subscriptions.sectionCode,
-                term: subscriptions.term,
+                quarter: subscriptions.quarter,
+                year: subscriptions.year,
             })
             .from(subscriptions);
 
-        // group together by term
-        const groupedByTerm = result.reduce((acc: any, { term, sectionCode }) => {
-            if (term) {
+        // group together by year and quarter
+        const groupedByTerm = result.reduce((acc: any, { quarter, year, sectionCode }) => {
+            if (quarter && year) {
+                const term = `${quarter}-${year}`;
                 if (!acc[term]) {
                     acc[term] = [];
                 }
@@ -175,23 +165,35 @@ async function getSubscriptionSectionCodes() {
     }
 }
 
-async function updateSubscriptionStatus(term: string, sectionCode: number, lastUpdated: string) {
+async function updateSubscriptionStatus(year: string, quarter: string, sectionCode: number, lastUpdated: string) {
     try {
         await db
             .update(subscriptions)
             .set({ lastUpdated: lastUpdated })
-            .where(and(eq(subscriptions.term, term), eq(subscriptions.sectionCode, sectionCode)));
+            .where(
+                and(
+                    eq(subscriptions.year, year),
+                    eq(subscriptions.quarter, quarter),
+                    eq(subscriptions.sectionCode, sectionCode)
+                )
+            );
     } catch (error: any) {
         console.error('Error updating subscription:', error.message);
     }
 }
 
-async function getLastUpdatedStatus(term: string, sectionCode: number) {
+async function getLastUpdatedStatus(year: string, quarter: string, sectionCode: number) {
     try {
         const result = await db
             .select({ lastUpdated: subscriptions.lastUpdated })
             .from(subscriptions)
-            .where(and(eq(subscriptions.term, term), eq(subscriptions.sectionCode, sectionCode)))
+            .where(
+                and(
+                    eq(subscriptions.year, year),
+                    eq(subscriptions.quarter, quarter),
+                    eq(subscriptions.sectionCode, sectionCode)
+                )
+            )
             .limit(1);
 
         return result;
@@ -208,7 +210,7 @@ async function batchCourseCodes(codes: string[]) {
     return batches;
 }
 
-async function getUsers(term: string, sectionCode: number, status: string) {
+async function getUsers(quarter: string, year: string, sectionCode: number, status: string) {
     try {
         let result;
         if (status === 'OPEN') {
@@ -218,7 +220,8 @@ async function getUsers(term: string, sectionCode: number, status: string) {
                 .innerJoin(users, eq(subscriptions.userId, users.id))
                 .where(
                     and(
-                        eq(subscriptions.term, term),
+                        eq(subscriptions.year, year),
+                        eq(subscriptions.quarter, quarter),
                         eq(subscriptions.sectionCode, sectionCode),
                         eq(subscriptions.openStatus, true)
                     )
@@ -230,7 +233,8 @@ async function getUsers(term: string, sectionCode: number, status: string) {
                 .innerJoin(users, eq(subscriptions.userId, users.id))
                 .where(
                     and(
-                        eq(subscriptions.term, term),
+                        eq(subscriptions.year, year),
+                        eq(subscriptions.quarter, quarter),
                         eq(subscriptions.sectionCode, sectionCode),
                         eq(subscriptions.waitlistStatus, true)
                     )
@@ -242,7 +246,8 @@ async function getUsers(term: string, sectionCode: number, status: string) {
                 .innerJoin(users, eq(subscriptions.userId, users.id))
                 .where(
                     and(
-                        eq(subscriptions.term, term),
+                        eq(subscriptions.year, year),
+                        eq(subscriptions.quarter, quarter),
                         eq(subscriptions.sectionCode, sectionCode),
                         eq(subscriptions.fullStatus, true)
                     )
@@ -255,26 +260,29 @@ async function getUsers(term: string, sectionCode: number, status: string) {
 }
 
 async function sendNotification(
-    term: string,
+    year: string,
+    quarter: string,
     sectionCode: number,
     status: string,
-    deptCode: string,
-    courseNumber: number,
-    courseTitle: string,
+    sectionInfo: WebsocAPIResponse,
     users: User[]
 ) {
     try {
+        const deptCode = sectionInfo.data?.schools?.[0]?.departments?.[0]?.courses?.[0].deptCode;
+        const courseNumber = sectionInfo.data?.schools?.[0]?.departments?.[0]?.courses?.[0].courseNumber;
+        const courseTitle = sectionInfo.data?.schools?.[0]?.departments?.[0]?.courses?.[0].courseTitle;
         console.log(
-            'NOTIFICATION FOR',
+            'notification for',
             deptCode,
             courseNumber,
             courseTitle,
             sectionCode,
             'in ',
-            term,
+            year,
+            quarter,
             '\n',
             users,
-            '\nTHE CLASS IS NOW: ',
+            '\nclass is now: ',
             status,
             '\n'
         );
@@ -288,35 +296,35 @@ async function main() {
     try {
         const subscriptions = await getSubscriptionSectionCodes();
         for (const term in subscriptions) {
-            // batch course codes
             const batches = await batchCourseCodes(subscriptions[term]);
+            const [quarter, year] = term.split('-');
             for (const batch of batches) {
-                // const response = await getUpdatedClasses(term, sectionCodes);
-                const response = getUpdatedClassesDummy(term, batch);
-                for (const course of response.data.courses) {
-                    for (const section of course.sections) {
-                        const currentStatus = section.status.to;
-                        const previousState = await getLastUpdatedStatus(term, section.sectionCode);
-                        const previousStatus: string | null = previousState?.[0]?.lastUpdated || null;
-                        if (previousStatus === currentStatus) {
-                            continue;
-                        }
-                        // no functionality for codes yet
+                const response = getUpdatedClassesDummy(quarter, year, batch);
+                // const response = await getUpdatedClasses(quarter, year, batch);
+                const sectionPromises = response.data.sections.map(async (section) => {
+                    const currentStatus = section.to.status;
+                    const previousState = await getLastUpdatedStatus(year, quarter, Number(section.sectionCode));
+                    const previousStatus: string | null = previousState?.[0]?.lastUpdated || null;
+                    if (previousStatus === currentStatus) return;
 
-                        const users: User[] = (await getUsers(term, section.sectionCode, currentStatus)) || [];
+                    const [users, sectionInfo] = await Promise.all([
+                        getUsers(quarter, year, Number(section.sectionCode), currentStatus),
+                        getSectionInformation(quarter, year, section.sectionCode),
+                    ]);
+
+                    if (users && users.length > 0) {
                         await sendNotification(
-                            term,
-                            section.sectionCode,
+                            year,
+                            quarter,
+                            Number(section.sectionCode),
                             currentStatus,
-                            course.deptCode,
-                            course.courseNumber,
-                            course.courseTitle,
+                            sectionInfo,
                             users
                         );
-                        // send notification
-                        await updateSubscriptionStatus(term, section.sectionCode, currentStatus);
                     }
-                }
+                    await updateSubscriptionStatus(year, quarter, Number(section.sectionCode), currentStatus);
+                });
+                await Promise.all(sectionPromises);
             }
         }
     } catch (error: any) {
