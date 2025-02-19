@@ -27,7 +27,7 @@ export const subscriptions = pgTable(
          * @example Fall, Winter, Spring, Summer, etc.
          */
 
-        term: text('term'),
+        quarter: text('quarter'),
 
         /**
          * Status since polling script last updated 

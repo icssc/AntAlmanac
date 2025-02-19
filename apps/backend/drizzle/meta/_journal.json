@@ -36,6 +36,13 @@
             "when": 1739394096685,
             "tag": "0004_chubby_raza",
             "breakpoints": true
+        },
+        {
+            "idx": 5,
+            "version": "7",
+            "when": 1739925959231,
+            "tag": "0005_nifty_goblin_queen",
+            "breakpoints": true
         }
     ]
 }
