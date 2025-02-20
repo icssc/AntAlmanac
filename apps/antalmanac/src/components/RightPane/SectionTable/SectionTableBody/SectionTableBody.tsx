@@ -1,9 +1,10 @@
 import { TableBody } from '@material-ui/core';
 import { AACourse, AASection } from '@packages/antalmanac-types';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { SectionTableBodyRow } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRow';
 import AppStore from '$stores/AppStore';
+import { useNotificationStore } from '$stores/NotificationStore';
 import { normalizeTime, parseDaysString } from '$stores/calendarizeHelpers';
 
 interface SectionTableBodyProps {
@@ -14,6 +15,8 @@ interface SectionTableBodyProps {
 }
 
 export function SectionTableBody({ courseDetails, term, scheduleNames, allowHighlight }: SectionTableBodyProps) {
+    const { notifications } = useNotificationStore();
+
     const [calendarEvents, setCalendarEvents] = useState(() => AppStore.getCourseEventsInCalendar());
 
     /**
@@ -76,6 +79,12 @@ export function SectionTableBody({ courseDetails, term, scheduleNames, allowHigh
         <TableBody>
             {courseDetails.sections.map((section) => {
                 const conflict = scheduleConflict(section);
+                const key = section.sectionCode + term;
+
+                const notificationStatus = useMemo(
+                    () => notifications?.[key],
+                    [notifications?.[key], section.sectionCode, term]
+                );
 
                 return (
                     <SectionTableBodyRow
@@ -86,6 +95,7 @@ export function SectionTableBody({ courseDetails, term, scheduleNames, allowHigh
                         allowHighlight={allowHighlight}
                         scheduleNames={scheduleNames}
                         scheduleConflict={conflict}
+                        notificationStatus={notificationStatus}
                     />
                 );
             })}

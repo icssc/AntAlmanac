@@ -18,6 +18,7 @@ import actionTypesStore from '$actions/ActionTypesStore';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
+import { useNotificationStore } from '$stores/NotificationStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface LoadSaveButtonBaseProps {
@@ -163,6 +164,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
 
 const LoadSaveScheduleFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
+    const { initializeNotifications } = useNotificationStore();
 
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -199,6 +201,16 @@ const LoadSaveScheduleFunctionality = () => {
             if (savedUserID != null) {
                 // this `void` is for eslint "no floating promises"
                 void loadScheduleAndSetLoading(savedUserID, true);
+
+                // ! GET NOTIFICATIONS HERE
+                initializeNotifications({
+                    '340202025 Spring': {
+                        openStatus: true,
+                        waitlistStatus: false,
+                        fullStatus: false,
+                        restrictionStatus: false,
+                    },
+                });
             }
         }
     }, []);

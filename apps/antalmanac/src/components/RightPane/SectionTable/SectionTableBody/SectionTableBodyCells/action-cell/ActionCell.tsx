@@ -1,4 +1,4 @@
-import { Add, ArrowDropDown, Delete, NotificationAddOutlined } from '@mui/icons-material';
+import { Add, ArrowDropDown, Delete } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, Tooltip, useMediaQuery, useTheme } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
@@ -6,9 +6,11 @@ import { useCallback } from 'react';
 
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { NotificationMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationMenu';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { MOBILE_BREAKPOINT } from '$src/globals';
 import AppStore from '$stores/AppStore';
+import { type NotificationStatus } from '$stores/NotificationStore';
 
 /**
  * Props received by components that perform actions on a specified section.
@@ -38,15 +40,16 @@ interface ActionProps {
      * Whether the section has a schedule conflict with another event in the calendar.
      */
     scheduleConflict: boolean;
+
+    notificationStatus?: NotificationStatus;
 }
 
 /**
  * Sections added to a schedule, can be recolored or deleted.
  */
-export function ColorAndDelete({ section, term }: ActionProps) {
+function DeleteAndNotifications({ section, term, notificationStatus }: ActionProps) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
     const flexDirection = isMobile ? 'column' : undefined;
 
     const handleClick = useCallback(() => {
@@ -71,9 +74,7 @@ export function ColorAndDelete({ section, term }: ActionProps) {
                 <Delete fontSize="small" />
             </IconButton>
 
-            <IconButton>
-                <NotificationAddOutlined fontSize="small" />
-            </IconButton>
+            <NotificationMenu sectionCode={section.sectionCode} term={term} notificationStatus={notificationStatus} />
         </Box>
     );
 }
@@ -189,7 +190,7 @@ export interface ActionCellProps extends Omit<ActionProps, 'classes'> {
 export function ActionCell({ addedCourse, ...props }: ActionCellProps) {
     return (
         <TableBodyCellContainer sx={{ width: '8%' }}>
-            {addedCourse ? <ColorAndDelete {...props} /> : <ScheduleAddCell {...props} />}
+            {addedCourse ? <DeleteAndNotifications {...props} /> : <ScheduleAddCell {...props} />}
         </TableBodyCellContainer>
     );
 }
