@@ -51,8 +51,8 @@ function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
     }, [index]);
 
     useEffect(() => {
+        handleScheduleNamesChange();
         AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-
         return () => {
             AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
         };

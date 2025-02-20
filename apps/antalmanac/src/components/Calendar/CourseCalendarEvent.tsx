@@ -206,7 +206,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                             style={{ textDecoration: 'underline' }}
                             onClick={() => {
                                 closePopover();
-                                deleteCourse(sectionCode, term);
+                                deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
                                     action: analyticsEnum.calendar.actions.DELETE_COURSE,
@@ -309,7 +309,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                         <IconButton
                             onClick={() => {
                                 closePopover();
-                                deleteCustomEvent(customEventID);
+                                deleteCustomEvent(customEventID, [AppStore.getCurrentScheduleIndex()]);
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,

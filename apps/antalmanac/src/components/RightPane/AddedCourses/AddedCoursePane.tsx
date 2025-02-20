@@ -191,11 +191,19 @@ function ScheduleNoteBox() {
                 label="Click here to start typing!"
                 onChange={handleNoteChange}
                 value={scheduleNote}
-                inputProps={{ maxLength: NOTE_MAX_LEN }}
+                inputProps={{
+                    maxLength: NOTE_MAX_LEN,
+                    style: { cursor: skeletonMode ? 'not-allowed' : 'text' },
+                }}
                 InputProps={{ disableUnderline: true }}
                 fullWidth
                 multiline
                 disabled={skeletonMode}
+                sx={{
+                    '& .MuiInputBase-root': {
+                        cursor: skeletonMode ? 'not-allowed' : 'text',
+                    },
+                }}
             />
         </Box>
     );
