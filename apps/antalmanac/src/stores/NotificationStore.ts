@@ -23,7 +23,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
             }));
         },
         setNotifications: (sectionCode, term, status) => {
-            const key = sectionCode + term;
+            const key = sectionCode + ' ' + term;
 
             set((state) => {
                 const notificationStatus = state.notifications ?? {};

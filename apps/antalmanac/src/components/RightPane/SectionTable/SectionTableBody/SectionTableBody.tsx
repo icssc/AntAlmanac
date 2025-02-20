@@ -79,7 +79,7 @@ export function SectionTableBody({ courseDetails, term, scheduleNames, allowHigh
         <TableBody>
             {courseDetails.sections.map((section) => {
                 const conflict = scheduleConflict(section);
-                const key = section.sectionCode + term;
+                const key = section.sectionCode + ' ' + term;
 
                 const notificationStatus = useMemo(
                     () => notifications?.[key],

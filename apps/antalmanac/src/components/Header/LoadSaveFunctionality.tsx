@@ -204,7 +204,7 @@ const LoadSaveScheduleFunctionality = () => {
 
                 // ! GET NOTIFICATIONS HERE
                 initializeNotifications({
-                    '340202025 Spring': {
+                    '34020 2025 Spring': {
                         openStatus: true,
                         waitlistStatus: false,
                         fullStatus: false,
