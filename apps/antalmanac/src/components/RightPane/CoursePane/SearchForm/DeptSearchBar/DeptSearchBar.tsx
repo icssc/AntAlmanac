@@ -13,7 +13,6 @@ import { getLocalStorageFavorites, setLocalStorageFavorites } from '$lib/localSt
 const style = {
     formControl: {
         flexGrow: 1,
-        marginRight: 15,
         width: '50%',
     },
 };

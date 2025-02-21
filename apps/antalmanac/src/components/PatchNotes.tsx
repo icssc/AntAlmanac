@@ -38,7 +38,7 @@ function PatchNotesBackdrop(props: BackdropProps) {
  * PatchNotes follows structure/layout of AboutPage.tsx
  */
 function PatchNotes() {
-    const [open, setOpen] = useState(isOutdated());
+    const [open, setOpen] = useState(() => isOutdated());
 
     const handleClose = useCallback(() => {
         setLocalStoragePatchNotesKey(latestPatchNotesUpdate);

@@ -355,6 +355,7 @@ class AppStore extends EventEmitter {
         this.unsavedChanges = false;
 
         await actionTypesStore.loadScheduleFromLocalSave();
+        this.schedule.clearPreviousStates();
 
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
@@ -449,6 +450,8 @@ class AppStore extends EventEmitter {
 
     termsInSchedule = (term: string) =>
         new Set([term, ...this.schedule.getCurrentCourses().map((course) => course.term)]);
+
+    getPreviousStates = () => this.schedule.getPreviousStates();
 }
 
 const store = new AppStore();

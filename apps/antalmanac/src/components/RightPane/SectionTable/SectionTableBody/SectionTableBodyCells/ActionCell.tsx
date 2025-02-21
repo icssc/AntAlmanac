@@ -3,11 +3,10 @@ import { Box, IconButton, Menu, MenuItem, TableCell, Tooltip, useMediaQuery } fr
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 
-import { MOBILE_BREAKPOINT } from '../../../../../globals';
-
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { MOBILE_BREAKPOINT } from '$src/globals';
 import AppStore from '$stores/AppStore';
 
 /**
