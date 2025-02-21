@@ -17,8 +17,8 @@ export const useSessionStore = create<SessionState>((set) => {
         sessionIsValid: false,
         updateSession: async (session) => {
             if (session) {
-                const validSession: boolean = await trpc.auth.validateSession.query({ token: session });
-                if (validSession) {
+                const sessionIsValid: boolean = await trpc.auth.validateSession.query({ token: session });
+                if (sessionIsValid) {
                     setLocalStorageSessionId(session);
                     set({ session: session, sessionIsValid: true });
                 }
@@ -29,7 +29,7 @@ export const useSessionStore = create<SessionState>((set) => {
         clearSession: async () => {
             const currentSession = getLocalStorageSessionId();
             if (currentSession) {
-                await trpc.auth.removeSession.mutate({ token: currentSession });
+                await trpc.auth.invalidateSession.mutate({ token: currentSession });
                 removeLocalStorageSessionId();
                 set({ session: null, sessionIsValid: false });
                 window.location.reload();

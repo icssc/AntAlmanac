@@ -6,6 +6,9 @@ import { db } from 'src/db';
 import { RDS } from 'src/lib/rds';
 
 const authRouter = router({
+    /**
+     * Returns the session refresh token for a guest user
+     */
     handleGuestSession: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
         const account = await RDS.registerUserAccount(db, input.name, input.name, 'GUEST');
 
@@ -16,7 +19,7 @@ const authRouter = router({
         return null;
     }),
     /**
-     * Returns the current session, returns true if the session exists exist and hasn't expired
+     * returns true if the session exists exist and hasn't expired
      */
     validateSession: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
         if (input.token === '') return false;
@@ -25,9 +28,9 @@ const authRouter = router({
         return session !== null && session.expires > new Date();
     }),
     /**
-    Removes a session from the database
+     * Removes a session from the database
      */
-    removeSession: procedure.input(z.object({ token: z.string() })).mutation(async ({ input }) => {
+    invalidateSession: procedure.input(z.object({ token: z.string() })).mutation(async ({ input }) => {
         const session = await RDS.getCurrentSession(db, input.token);
         if (!session) return false;
 
