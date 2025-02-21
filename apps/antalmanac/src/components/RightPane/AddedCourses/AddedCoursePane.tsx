@@ -13,6 +13,7 @@ import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
+import { NotificationsDialog } from '$components/RightPane/AddedCourses/NotificationsDialog';
 
 /**
  * All the interactive buttons have the same styles.
@@ -219,14 +220,11 @@ function SkeletonSchedule() {
     }, []);
 
     const sectionsByTerm: [string, string[]][] = useMemo(() => {
-        const result = skeletonSchedule.courses.reduce(
-            (accumulated, course) => {
-                accumulated[course.term] ??= [];
-                accumulated[course.term].push(course.sectionCode);
-                return accumulated;
-            },
-            {} as Record<string, string[]>
-        );
+        const result = skeletonSchedule.courses.reduce((accumulated, course) => {
+            accumulated[course.term] ??= [];
+            accumulated[course.term].push(course.sectionCode);
+            return accumulated;
+        }, {} as Record<string, string[]>);
 
         return Object.entries(result);
     }, [skeletonSchedule.courses]);
@@ -335,6 +333,7 @@ function AddedSectionsGrid() {
                 <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
                 <ClearScheduleButton buttonSx={buttonSx} />
                 <ColumnToggleDropdown />
+                <NotificationsDialog buttonSx={buttonSx} />
             </Box>
             <Box style={{ marginTop: 56 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>

@@ -2,7 +2,7 @@ import { TableRow, useTheme } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { ActionCell } from './SectionTableBodyCells/ActionCell';
+import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
 
 import { CourseCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/CourseCodeCell';
 import { DayAndTimeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DayAndTimeCell';
@@ -17,6 +17,7 @@ import { SyllabusCell } from '$components/RightPane/SectionTable/SectionTableBod
 import AppStore from '$stores/AppStore';
 import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
+import { type NotificationStatus } from '$stores/NotificationStore';
 import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
 
 interface SectionTableBodyRowProps {
@@ -26,6 +27,7 @@ interface SectionTableBodyRowProps {
     allowHighlight: boolean;
     scheduleNames: string[];
     scheduleConflict: boolean;
+    notificationStatus?: NotificationStatus;
 }
 
 // These components have too varied of types, any is fine here
@@ -45,7 +47,7 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
 };
 
 export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
-    const { section, courseDetails, term, allowHighlight, scheduleNames, scheduleConflict } = props;
+    const { section, courseDetails, term, allowHighlight, scheduleNames, scheduleConflict, notificationStatus } = props;
 
     const theme = useTheme();
     const isDark = useThemeStore((store) => store.isDark);
@@ -142,6 +144,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
                             maxCapacity={parseInt(section.maxCapacity, 10)}
                             units={parseFloat(section.units)}
                             courseName={`${courseDetails.deptCode} ${courseDetails.courseNumber}`}
+                            notificationStatus={notificationStatus}
                             {...courseDetails}
                         />
                     );
