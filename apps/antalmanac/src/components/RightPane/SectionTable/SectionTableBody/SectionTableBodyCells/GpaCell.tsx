@@ -1,7 +1,6 @@
 import { Button, Popover, useMediaQuery } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
-
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { Grades } from '$lib/grades';
