@@ -1,5 +1,5 @@
 import GoogleIcon from '@mui/icons-material/Google';
-import { Button, TextField, Stack, Divider } from '@mui/material';
+import { Button, TextField, Stack, Divider, Snackbar, Alert } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -18,6 +18,7 @@ interface SignInDialogProps {
 
 export function SignInDialog(props: SignInDialogProps) {
     const { onClose, isDark, open } = props;
+    const [openAlert, setOpenAlert] = useState(false);
 
     const { session, updateSession: setSession } = useSessionStore();
     const navigate = useNavigate();
@@ -42,6 +43,7 @@ export function SignInDialog(props: SignInDialogProps) {
             }
         } catch (error) {
             console.error('Error during login initiation', error);
+            setOpenAlert(true);
         }
     };
 
@@ -61,7 +63,7 @@ export function SignInDialog(props: SignInDialogProps) {
             }
         } catch (error) {
             console.error('Error during authentication', error);
-            alert('Error during authentication');
+            setOpenAlert(true);
         } finally {
             setIsProcessing(false);
         }
@@ -86,49 +88,61 @@ export function SignInDialog(props: SignInDialogProps) {
     };
 
     return (
-        <InputDialog open={open} onClose={handleClose} title={'Sign in to Save'}>
-            <Stack spacing={2} alignItems="center">
-                <Button
-                    onClick={handleLogin}
-                    startIcon={<GoogleIcon />}
-                    size="large"
-                    color="primary"
-                    variant="contained"
-                    sx={{ width: '75%' }}
-                >
-                    Sign in with Google
-                </Button>
+        <>
+            <InputDialog open={open} onClose={handleClose} title={'Sign in to Save'}>
+                <Stack spacing={2} alignItems="center">
+                    <Button
+                        onClick={handleLogin}
+                        startIcon={<GoogleIcon />}
+                        size="large"
+                        color="primary"
+                        variant="contained"
+                        sx={{ width: '75%' }}
+                    >
+                        Sign in with Google
+                    </Button>
 
-                <Divider sx={{ width: '100%' }}>or</Divider>
+                    <Divider sx={{ width: '100%' }}>or</Divider>
 
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        handleUserNameLogin();
-                    }}
-                    style={{ width: '75%' }}
-                >
-                    <Stack spacing={1}>
-                        <TextField
-                            label="Sign In With Guest Username"
-                            color={isDark ? 'secondary' : undefined}
-                            fullWidth
-                            size="small"
-                            helperText="Have an old schedule? Enter your user ID here"
-                            onChange={(e) => setUserName(e.target.value)}
-                        />
-                        <Button
-                            color="primary"
-                            variant="contained"
-                            disabled={userName.length === 0}
-                            type="submit"
-                            sx={{ width: 'fit-content', alignSelf: 'end' }}
-                        >
-                            Continue
-                        </Button>
-                    </Stack>
-                </form>
-            </Stack>
-        </InputDialog>
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleUserNameLogin();
+                        }}
+                        style={{ width: '75%' }}
+                    >
+                        <Stack spacing={1}>
+                            <TextField
+                                label="Sign In With Guest Username"
+                                color={isDark ? 'secondary' : undefined}
+                                fullWidth
+                                size="small"
+                                helperText="Have an old schedule? Enter your user ID here"
+                                onChange={(e) => setUserName(e.target.value)}
+                            />
+                            <Button
+                                color="primary"
+                                variant="contained"
+                                disabled={userName.length === 0}
+                                type="submit"
+                                sx={{ width: 'fit-content', alignSelf: 'end' }}
+                            >
+                                Continue
+                            </Button>
+                        </Stack>
+                    </form>
+                </Stack>
+            </InputDialog>
+            <Snackbar
+                open={openAlert}
+                autoHideDuration={6000}
+                onClose={() => setOpenAlert(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleClose} severity="error" variant="filled" sx={{ width: '100%' }}>
+                    Error during authentication. Please try again.
+                </Alert>
+            </Snackbar>
+        </>
     );
 }
