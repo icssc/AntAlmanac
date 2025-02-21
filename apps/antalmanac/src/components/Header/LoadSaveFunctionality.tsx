@@ -40,7 +40,7 @@ const LoadCacheDialog = (props: LoadCacheDialogProps) => {
 
 const LoadSaveScheduleFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
-    const { session, validSession } = useSessionStore();
+    const { session, sessionIsValid: validSession } = useSessionStore();
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [openLoadCacheDialog, setOpenLoadCacheDialog] = useState(false);
 

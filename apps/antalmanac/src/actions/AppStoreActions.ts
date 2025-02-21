@@ -198,7 +198,7 @@ export const loadSchedule = async (loadCache = false) => {
             mergeSchedules(scheduleSaveState.schedules, shortCourseSchedules);
         }
 
-        if (scheduleSaveState == null && !session.validSession) {
+        if (scheduleSaveState == null && !session.sessionIsValid) {
             openSnackbar('error', `Couldn't find schedules :(`);
         } else if (await AppStore.loadSchedule(scheduleSaveState)) {
             openSnackbar('success', `Schedule loaded successfully!`);
@@ -214,7 +214,7 @@ export const loadSchedule = async (loadCache = false) => {
     } catch (e) {
         console.error(e);
         // if the session is valid and the user data doesn't load there's a problem
-        if (session.validSession) {
+        if (session.sessionIsValid) {
             openSnackbar(
                 'error',
                 `Failed to load schedules. If this continues to happen, please submit a feedback form.`
