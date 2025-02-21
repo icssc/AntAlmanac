@@ -133,12 +133,7 @@ export function SignInDialog(props: SignInDialogProps) {
                     </form>
                 </Stack>
             </InputDialog>
-            <Snackbar
-                open={openAlert}
-                autoHideDuration={6000}
-                onClose={() => setOpenAlert(false)}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-            >
+            <Snackbar open={openAlert} autoHideDuration={6000} onClose={() => setOpenAlert(false)}>
                 <Alert onClose={handleClose} severity="error" variant="filled" sx={{ width: '100%' }}>
                     Error during authentication. Please try again.
                 </Alert>
