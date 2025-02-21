@@ -38,7 +38,9 @@ interface FuzzySearchState {
     open: boolean;
     results: Record<string, SearchResult> | undefined;
     value: string;
+    userID: string;
     loading: boolean;
+    filterTakenClasses: boolean;
     requestTimestamp?: number;
     pendingRequest?: number;
 }
@@ -49,7 +51,9 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         open: false,
         results: {},
         value: '',
+        userID: '',
         loading: false,
+        filterTakenClasses: false,
         requestTimestamp: undefined,
         pendingRequest: undefined,
     };
@@ -121,7 +125,11 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     maybeDoSearchFactory = (requestTimestamp: number) => () => {
         if (!this.requestIsCurrent(requestTimestamp)) return;
         trpc.search.doSearch
-            .query({ query: this.state.value })
+            .query({ 
+                query: this.state.value,
+                userId: this.state.userID,
+                filterTakenClasses: this.state.filterTakenClasses
+            })
             .then((result) => {
                 if (!this.requestIsCurrent(requestTimestamp)) return;
                 this.setState({

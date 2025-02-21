@@ -4,6 +4,7 @@ import uFuzzy from '@leeoniya/ufuzzy';
 import * as fuzzysort from "fuzzysort";
 import { procedure, router } from '../trpc';
 import {courses, departments} from "../generated/searchData";
+import { backendEnvSchema } from 'src/env';
 
 const geCategoryKeys = ['ge1a', 'ge1b', 'ge2', 'ge3', 'ge4', 'ge5a', 'ge5b', 'ge6', 'ge7', 'ge8'] as const;
 
@@ -22,6 +23,8 @@ const geCategories: Record<GECategoryKey, GESearchResult> = {
     ge8: { type: 'GE_CATEGORY', name: 'International/Global Issues' },
 };
 
+const PETERPORTAL_API_URL = "https://staging-598.peterportal.org/api/trpc/external.roadmaps.getByGoogleID";
+
 const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
     key.toUpperCase().replace('GE', 'GE-'),
     geCategories[key],
@@ -29,11 +32,53 @@ const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
 
 const toMutable = <T>(arr: readonly T[]): T[] => arr as T[];
 
+async function fetchUserCoursesPeterPortal(userId: string): Promise<Set<string>> {
+    const env = backendEnvSchema.parse(process.env);
+    const apiKey = env.PETERPORTAL_API_KEY;
+    if (!apiKey) throw new Error("PETERPORTAL_API_KEY is required");
+    const searchParams = new URLSearchParams({ input: JSON.stringify({ googleUserId: userId }) });
+    const url = `${PETERPORTAL_API_URL}?${searchParams.toString()}`;
+    try {
+        console.log("Fetching user courses from:", url);
+        
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${apiKey}`,
+                "Content-Type": "application/json"
+            },
+        });
+
+        if(!response.ok) throw new Error(`Failed to fetch courses: ${response.statusText}`);
+        
+        const data = await response.json();
+        const coursesTaken = new Set<string>();
+    
+        for (const roadmap of data.result.data) {
+            for (const year of roadmap.content) {
+                for (const quarter of year.quarters) {
+                    quarter.courses.forEach(course => coursesTaken.add(course));
+                }
+            }
+        }
+    
+        console.log("Fetched user courses:", coursesTaken);
+        return coursesTaken;
+    } catch (error) {
+        console.error("Error fetching user courses:", error);
+        return new Set();
+    }
+}
+
 const searchRouter = router({
     doSearch: procedure
-        .input(z.object({ query: z.string() }))
+        .input(z.object({ 
+            query: z.string(),
+            userId: z.string().optional(),
+            filterTakenClasses: z.boolean().optional()
+        }))
         .query(async ({ input }): Promise<Record<string, SearchResult>> => {
-            const { query } = input;
+            const { query, userId, filterTakenClasses } = input;
             const u = new uFuzzy();
             const matchedGEs = u.search(toMutable(geCategoryKeys), query)[0]?.map((i) => geCategoryKeys[i]) ?? [];
             if (matchedGEs.length) return Object.fromEntries(matchedGEs.map(toGESearchResult));
@@ -45,10 +90,26 @@ const searchRouter = router({
                 keys: ['id', 'name', 'alias', 'metadata.department', 'metadata.number'],
                 limit: 10 - matchedDepts.length
             })
-            return Object.fromEntries(
-                [...matchedDepts.map(x => [x.obj.id, x.obj]),
-                ...matchedCourses.map(x => [x.obj.id, x.obj]),]
-            );
+            let results = [
+                ...matchedDepts.map(x => [x.obj.id, x.obj]),
+                ...matchedCourses.map(x => [x.obj.id, x.obj]),
+            ]
+
+            console.log("Initial Search Results:", results.map(([id, obj]) => obj.id));
+            
+            if (filterTakenClasses && userId) {
+                console.log("Filtering taken classes...");
+                console.log("Pre-Filtered Results:", results.map(([id, obj]) => obj.id));
+                const userCourses = await fetchUserCoursesPeterPortal(userId);
+                results = results.filter(([id, obj]) => {
+                    if (obj.type === 'COURSE') {
+                        return !userCourses.has(obj.id);
+                    }
+                    return true;
+                });
+                console.log("Filtered Results:", results.map(([id, obj]) => obj.id));
+            }
+            return Object.fromEntries(results);
         }),
 });
 
