@@ -27,6 +27,7 @@ env:
     GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
     GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
     ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
+    DB_URL: ${{ secrets.STAGING_DB_URL }}
 
     # Turborepo credentials.
     TURBO_API: ${{ vars.TURBO_API }}

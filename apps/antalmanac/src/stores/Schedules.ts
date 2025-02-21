@@ -480,11 +480,6 @@ export class Schedules {
      * All actions that call `addUndoState()` can be reverted.
      */
     revertState() {
-        // prevent the user from undoing to an empty state
-        if (this.previousStates.length <= 1) {
-            return;
-        }
-
         const state = this.previousStates.pop();
         if (state !== undefined) {
             this.schedules = state.schedules;

@@ -14,6 +14,7 @@ enum LocalStorageKeys {
     unsavedActions = 'unsavedActions',
     helpBoxDismissalTime = 'helpBoxDismissalTime',
     columnToggles = 'columnToggles',
+    pwaDismissalTime = 'pwaDismissalTime',
     sessionId = 'sessionId',
     dataCache = 'dataCache',
 }
@@ -218,4 +219,13 @@ export function setLocalStorageColumnToggles(value: string) {
 
 export function getLocalStorageColumnToggles() {
     return window.localStorage.getItem(LSK.columnToggles);
+}
+
+// Helper functions for pwaDismissalTime
+export function setLocalStoragePWADismissalTime(value: string) {
+    window.localStorage.setItem(LSK.pwaDismissalTime, value);
+}
+
+export function getLocalStoragePWADismissalTime() {
+    return window.localStorage.getItem(LSK.pwaDismissalTime);
 }
