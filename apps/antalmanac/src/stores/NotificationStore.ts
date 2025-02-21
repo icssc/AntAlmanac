@@ -8,9 +8,15 @@ export type NotificationStatus = {
     restrictionStatus: boolean;
 };
 
+export type Notification = {
+    term: string;
+    sectionCode: AASection['sectionCode'];
+    notificationStatus: NotificationStatus;
+};
+
 export interface NotificationStore {
-    notifications: Record<string, NotificationStatus> | undefined;
-    initializeNotifications: (notifications: Record<string, NotificationStatus>) => void;
+    notifications: Record<string, Notification> | undefined;
+    initializeNotifications: (notifications: Record<string, Notification>) => void;
     setNotifications: (sectionCode: AASection['sectionCode'], term: string, status: keyof NotificationStatus) => void;
 }
 
@@ -26,23 +32,23 @@ export const useNotificationStore = create<NotificationStore>((set) => {
             const key = sectionCode + ' ' + term;
 
             set((state) => {
-                const notificationStatus = state.notifications ?? {};
-                const currentStatus = notificationStatus[key] ?? {
-                    openStatus: false,
-                    waitlistStatus: false,
-                    fullStatus: false,
-                    restrictionStatus: false,
+                const notifications = state.notifications ?? {};
+                const notification = notifications[key] ?? {
+                    term,
+                    sectionCode,
+                    notificationStatus: {
+                        openStatus: false,
+                        waitlistStatus: false,
+                        fullStatus: false,
+                        restrictionStatus: false,
+                    },
                 };
-
-                const updatedStatus = {
-                    ...currentStatus,
-                    [status]: !currentStatus[status],
-                };
+                notification.notificationStatus[status] = !notification.notificationStatus[status];
 
                 return {
                     notifications: {
-                        ...notificationStatus,
-                        [key]: updatedStatus,
+                        ...notifications,
+                        notification,
                     },
                 };
             });

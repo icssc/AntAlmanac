@@ -205,10 +205,54 @@ const LoadSaveScheduleFunctionality = () => {
                 // ! GET NOTIFICATIONS HERE
                 initializeNotifications({
                     '34020 2025 Spring': {
-                        openStatus: true,
-                        waitlistStatus: false,
-                        fullStatus: false,
-                        restrictionStatus: false,
+                        term: '2025 Spring',
+                        sectionCode: '34020',
+                        notificationStatus: {
+                            openStatus: true,
+                            waitlistStatus: false,
+                            fullStatus: false,
+                            restrictionStatus: false,
+                        },
+                    },
+                    '34040 2025 Spring': {
+                        term: '2025 Spring',
+                        sectionCode: '34040',
+                        notificationStatus: {
+                            openStatus: true,
+                            waitlistStatus: false,
+                            fullStatus: false,
+                            restrictionStatus: false,
+                        },
+                    },
+                    '34041 2025 Spring': {
+                        term: '2025 Spring',
+                        sectionCode: '34041',
+                        notificationStatus: {
+                            openStatus: true,
+                            waitlistStatus: false,
+                            fullStatus: false,
+                            restrictionStatus: false,
+                        },
+                    },
+                    '34130 2025 Spring': {
+                        term: '2025 Spring',
+                        sectionCode: '34130',
+                        notificationStatus: {
+                            openStatus: true,
+                            waitlistStatus: false,
+                            fullStatus: false,
+                            restrictionStatus: false,
+                        },
+                    },
+                    '34131 2025 Spring': {
+                        term: '2025 Spring',
+                        sectionCode: '34131',
+                        notificationStatus: {
+                            openStatus: true,
+                            waitlistStatus: false,
+                            fullStatus: false,
+                            restrictionStatus: false,
+                        },
                     },
                 });
             }
