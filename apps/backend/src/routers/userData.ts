@@ -1,22 +1,21 @@
-import { type } from 'arktype';
-
 import { UserSchema } from '@packages/antalmanac-types';
-import { OAuth2Client } from 'google-auth-library';
-
-import { db } from 'src/db';
-import { mangleDupliateScheduleNames } from 'src/lib/formatting';
-import { RDS } from 'src/lib/rds';
 import { TRPCError } from '@trpc/server';
-import { procedure, router } from '../trpc';
+import { type } from 'arktype';
+import { OAuth2Client } from 'google-auth-library';
 import { z } from 'zod';
 
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
-const REDIRECT_URI = 'http://localhost:5173';
+import { procedure, router } from '../trpc';
+
+import { db } from 'src/db';
+import { googleOAuthEnvSchema } from 'src/env';
+import { mangleDupliateScheduleNames } from 'src/lib/formatting';
+import { RDS } from 'src/lib/rds';
+
+const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } = googleOAuthEnvSchema.parse(process.env);
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
 
-const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, REDIRECT_URI);
+const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI);
 
 const saveInputSchema = type({
     /**
