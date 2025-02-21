@@ -157,6 +157,12 @@ export async function autoSaveSchedule(userID: string) {
     }
 }
 
+/**
+ * Combines the incoming schedule with the existing schedules.
+ * If there are any duplicate schedule names, the incoming schedule will be renamed.
+ * @param schedules
+ * @param incomingSchedule
+ */
 const mergeSchedules = (schedules: ShortCourseSchedule[], incomingSchedule: ShortCourseSchedule[]) => {
     const existingScheduleNames = new Set(schedules.map((s: ShortCourseSchedule) => s.scheduleName));
     const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
