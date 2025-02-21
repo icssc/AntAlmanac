@@ -90,16 +90,28 @@ const userDataRouter = router({
      */
     handleGoogleCallback: procedure
         .input(z.object({ code: z.string(), token: z.string() }))
-        .query(async ({ input }) => {
+        .mutation(async ({ input }) => {
             const { tokens } = await oauth2Client.getToken({ code: input.code });
+            if (!tokens || !tokens.id_token) {
+                throw new TRPCError({
+                    code: 'UNAUTHORIZED',
+                    message: 'Invalid token',
+                });
+            }
             oauth2Client.setCredentials(tokens);
 
             const ticket = await oauth2Client.verifyIdToken({
-                idToken: tokens.id_token!,
+                idToken: tokens.id_token ?? '',
                 audience: GOOGLE_CLIENT_ID,
             });
 
-            const payload = ticket.getPayload()!;
+            const payload = ticket.getPayload();
+            if (!payload) {
+                throw new TRPCError({
+                    code: 'UNAUTHORIZED',
+                    message: 'Invalid ID token',
+                });
+            }
 
             const account = await RDS.registerUserAccount(
                 db,

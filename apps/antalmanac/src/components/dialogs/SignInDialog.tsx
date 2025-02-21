@@ -19,7 +19,7 @@ interface SignInDialogProps {
 export function SignInDialog(props: SignInDialogProps) {
     const { onClose, isDark, open } = props;
 
-    const { session, setSession } = useSessionStore();
+    const { session, updateSession: setSession } = useSessionStore();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
@@ -51,7 +51,7 @@ export function SignInDialog(props: SignInDialogProps) {
         try {
             const code = searchParams.get('code');
             if (code) {
-                const newSession = await trpc.userData.handleGoogleCallback.query({
+                const newSession = await trpc.userData.handleGoogleCallback.mutate({
                     code: code,
                     token: session ?? '',
                 });
@@ -61,6 +61,7 @@ export function SignInDialog(props: SignInDialogProps) {
             }
         } catch (error) {
             console.error('Error during authentication', error);
+            alert('Error during authentication');
         } finally {
             setIsProcessing(false);
         }

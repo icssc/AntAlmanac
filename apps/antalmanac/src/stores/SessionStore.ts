@@ -6,7 +6,7 @@ import { getLocalStorageSessionId, removeLocalStorageSessionId, setLocalStorageS
 interface SessionState {
     session: string | null;
     validSession: boolean;
-    setSession: (session: string | null) => Promise<void>;
+    updateSession: (session: string | null) => Promise<void>;
     clearSession: () => Promise<void>;
 }
 
@@ -15,7 +15,7 @@ export const useSessionStore = create<SessionState>((set) => {
     return {
         session: localSessionId,
         validSession: false,
-        setSession: async (session) => {
+        updateSession: async (session) => {
             if (session) {
                 const validSession: boolean = await trpc.auth.validateSession.query({ token: session });
                 if (validSession) {

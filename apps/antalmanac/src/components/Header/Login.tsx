@@ -23,7 +23,7 @@ function Login() {
         navigate('/');
     };
 
-    const { session, setSession, validSession } = useSessionStore();
+    const { session, updateSession: setSession, validSession } = useSessionStore();
     const isDark = useThemeStore((store) => store.isDark);
 
     const open = Boolean(anchorEl);
