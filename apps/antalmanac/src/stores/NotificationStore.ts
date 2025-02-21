@@ -48,7 +48,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                 return {
                     notifications: {
                         ...notifications,
-                        notification,
+                        [key]: notification,
                     },
                 };
             });
