@@ -18,7 +18,7 @@ const LoadCacheDialog = (props: LoadCacheDialogProps) => {
     const { open, onConfirm, onClose } = props;
 
     return (
-        <InputDialog title="Save your progress?" open={open}>
+        <InputDialog title="Looks like you already have some schedule(s)" open={open}>
             <Stack spacing={2} alignItems="center">
                 <Button
                     startIcon={<SaveAlt />}
