@@ -1,5 +1,6 @@
 import { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { and, eq } from 'drizzle-orm';
+
 import { type Database } from '$db/index';
 import {
     schedules,
@@ -176,9 +177,9 @@ export class RDS {
      */
     static async upsertUserData(db: DatabaseOrTransaction, userData: User): Promise<string> {
         return db.transaction(async (tx) => {
-            let userId = userData.id;
+            const userId = userData.id;
 
-            let user = await this.getUserById(db, userId);
+            const user = await this.getUserById(db, userId);
             if (!user) {
                 throw new Error(`Failed to create user`);
             }

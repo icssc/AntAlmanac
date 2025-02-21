@@ -1,5 +1,7 @@
-import { procedure, router } from '../trpc';
 import { z } from 'zod';
+
+import { procedure, router } from '../trpc';
+
 import { db } from 'src/db';
 import { RDS } from 'src/lib/rds';
 
@@ -8,7 +10,7 @@ const authRouter = router({
         const account = await RDS.registerUserAccount(db, input.name, input.name, 'GUEST');
 
         if (account.userId.length > 0) {
-            let session = await RDS.upsertSession(db, account.userId);
+            const session = await RDS.upsertSession(db, account.userId);
             return session?.refreshToken;
         }
         return null;

@@ -113,7 +113,7 @@ const userDataRouter = router({
             const userId: string = account.userId;
 
             if (userId.length > 0) {
-                let session = await RDS.upsertSession(db, userId, input.token);
+                const session = await RDS.upsertSession(db, userId, input.token);
                 return session?.refreshToken;
             }
             return null;
@@ -125,7 +125,7 @@ const userDataRouter = router({
         const account = await RDS.registerUserAccount(db, input.name, input.name, 'GUEST');
 
         if (account.userId.length > 0) {
-            let session = await RDS.upsertSession(db, account.userId);
+            const session = await RDS.upsertSession(db, account.userId);
             return session?.refreshToken;
         }
         return null;
