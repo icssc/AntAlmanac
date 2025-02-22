@@ -1,5 +1,5 @@
 import { NotificationAdd, NotificationAddOutlined } from '@mui/icons-material';
-import { IconButton, Menu, MenuItem } from '@mui/material';
+import { IconButton, ListItem, Menu, MenuItem, Typography } from '@mui/material';
 import { useState, useCallback } from 'react';
 
 import { NotificationStatus, useNotificationStore } from '$stores/NotificationStore';
@@ -11,13 +11,13 @@ const MENU_ITEMS: { status: keyof NotificationStatus; label: string }[] = [
     { status: 'restrictionStatus', label: 'Restriction Codes have Changed' },
 ];
 
-interface NotificationMenuProps {
+interface NotificationsMenuProps {
     sectionCode: string;
     term: string;
     notificationStatus?: NotificationStatus;
 }
 
-export function NotificationMenu({ sectionCode, term, notificationStatus }: NotificationMenuProps) {
+export function NotificationsMenu({ sectionCode, term, notificationStatus }: NotificationsMenuProps) {
     const { setNotifications } = useNotificationStore();
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement>();
@@ -41,6 +41,7 @@ export function NotificationMenu({ sectionCode, term, notificationStatus }: Noti
             <IconButton onClick={handleNotificationClick}>
                 {hasNotifications ? <NotificationAdd fontSize="small" /> : <NotificationAddOutlined fontSize="small" />}
             </IconButton>
+
             <Menu
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
@@ -54,6 +55,12 @@ export function NotificationMenu({ sectionCode, term, notificationStatus }: Noti
                     horizontal: 'left',
                 }}
             >
+                <ListItem
+                    disabled={true}
+                    style={{ opacity: 1 }} // Using style over sx to override disabled styles
+                >
+                    <Typography sx={{ fontWeight: 600 }}>Set Notifications For</Typography>
+                </ListItem>
                 {MENU_ITEMS.map((item) => (
                     <MenuItem
                         key={item.status}

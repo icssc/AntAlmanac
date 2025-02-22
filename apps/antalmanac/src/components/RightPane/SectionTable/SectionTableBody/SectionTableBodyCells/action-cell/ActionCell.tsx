@@ -6,7 +6,7 @@ import { useCallback } from 'react';
 
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { NotificationMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationMenu';
+import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { MOBILE_BREAKPOINT } from '$src/globals';
 import AppStore from '$stores/AppStore';
@@ -74,7 +74,7 @@ function DeleteAndNotifications({ section, term, notificationStatus }: ActionPro
                 <Delete fontSize="small" />
             </IconButton>
 
-            <NotificationMenu sectionCode={section.sectionCode} term={term} notificationStatus={notificationStatus} />
+            <NotificationsMenu sectionCode={section.sectionCode} term={term} notificationStatus={notificationStatus} />
         </Box>
     );
 }
