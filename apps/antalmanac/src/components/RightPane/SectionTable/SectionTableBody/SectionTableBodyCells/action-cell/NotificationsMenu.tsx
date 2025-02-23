@@ -1,5 +1,5 @@
 import { NotificationAdd, NotificationAddOutlined } from '@mui/icons-material';
-import { IconButton, ListItem, Menu, MenuItem, Typography } from '@mui/material';
+import { IconButton, ListItemButton, Menu, MenuItem, Typography } from '@mui/material';
 import { useState, useCallback } from 'react';
 
 import { NotificationStatus, useNotificationStore } from '$stores/NotificationStore';
@@ -55,12 +55,12 @@ export function NotificationsMenu({ sectionCode, term, notificationStatus }: Not
                     horizontal: 'left',
                 }}
             >
-                <ListItem
+                <ListItemButton
                     disabled={true}
                     style={{ opacity: 1 }} // Using style over sx to override disabled styles
                 >
                     <Typography sx={{ fontWeight: 600 }}>Set Notifications For</Typography>
-                </ListItem>
+                </ListItemButton>
                 {MENU_ITEMS.map((item) => (
                     <MenuItem
                         key={item.status}
