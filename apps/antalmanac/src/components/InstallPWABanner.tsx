@@ -42,7 +42,7 @@ function InstallPWABanner() {
             window.removeEventListener('beforeinstallprompt', beforeInstallHandler);
             window.removeEventListener('appinstalled', disableInstallHandler);
         };
-    }, []);
+    }, [setCanInstall, setInstallPrompt]);
 
     const handleInstall = (e: React.MouseEvent<HTMLButtonElement>) => {
         if (installPrompt) {

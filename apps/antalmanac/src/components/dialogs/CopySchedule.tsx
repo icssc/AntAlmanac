@@ -33,7 +33,7 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
     const handleCopy = useCallback(() => {
         copySchedule(index, name);
         onClose?.({}, 'escapeKeyDown');
-    }, [onClose, name]);
+    }, [index, name, onClose]);
 
     const handleScheduleNamesChange = useCallback(() => {
         setName(`Copy of ${AppStore.getScheduleNames()[index]}`);
