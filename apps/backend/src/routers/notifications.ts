@@ -72,13 +72,13 @@ const notificationsRouter = router({
         // return await RDS
     }),
 
-    set: procedure.input(z.object({ notifications: z.array(NotificationSchema) })).mutation(async ({ input }) => {
-        const { notifications } = input;
+    set: procedure
+        .input(z.object({ id: z.string(), notifications: z.array(NotificationSchema) }))
+        .mutation(async ({ input }) => {
+            const { id, notifications } = input;
 
-        return { success: true };
-
-        // return await RDS
-    }),
+            // return await RDS
+        }),
 });
 
 export default notificationsRouter;

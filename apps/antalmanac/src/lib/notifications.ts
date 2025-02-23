@@ -7,7 +7,7 @@ class _Notifications {
     }
 
     async setNotifications(notifications: Notification[]) {
-        return await trpc.notifications.set.mutate({ notifications });
+        return await trpc.notifications.set.mutate({ id: '123', notifications });
     }
 }
 

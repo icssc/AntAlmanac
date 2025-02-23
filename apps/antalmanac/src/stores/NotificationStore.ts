@@ -1,3 +1,4 @@
+import { debounce } from '@mui/material';
 import { AASection } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
@@ -22,11 +23,19 @@ export interface NotificationStore {
     setNotifications: (sectionCode: AASection['sectionCode'], term: string, status: keyof NotificationStatus) => void;
 }
 
+const debouncedSetNotifications = debounce(async (notifications: Notification[]) => {
+    try {
+        await Notifications.setNotifications(notifications);
+    } catch (error) {
+        console.error(error);
+    }
+}, 500);
+
 export const useNotificationStore = create<NotificationStore>((set) => {
     return {
         initialized: false,
         notifications: {},
-        setNotifications: (sectionCode, term, status) => {
+        setNotifications: async (sectionCode, term, status) => {
             const key = sectionCode + ' ' + term;
 
             set((state) => {
@@ -43,13 +52,17 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                 };
                 notification.notificationStatus[status] = !notification.notificationStatus[status];
 
+                const updatedNotifications = {
+                    ...notifications,
+                    [key]: notification,
+                };
+
                 return {
-                    notifications: {
-                        ...notifications,
-                        [key]: notification,
-                    },
+                    notifications: updatedNotifications,
                 };
             });
+
+            debouncedSetNotifications(Object.values(useNotificationStore.getState().notifications));
         },
     };
 });
