@@ -58,7 +58,7 @@ export function ScheduleManagement() {
         } else {
             setActiveTab('added');
         }
-    }, [setActiveTab]);
+    }, [isMobile, setActiveTab, tab]);
 
     // Restore scroll position if it has been previously saved.
     useEffect(() => {
