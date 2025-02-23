@@ -83,7 +83,7 @@ export function SectionTableBody({ courseDetails, term, scheduleNames, allowHigh
 
                 const notificationStatus = useMemo(
                     () => notifications?.[key]?.notificationStatus,
-                    [notifications?.[key]?.notificationStatus, section.sectionCode, term]
+                    [notifications, notifications?.[key]?.notificationStatus]
                 );
 
                 return (

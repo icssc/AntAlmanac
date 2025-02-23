@@ -1,6 +1,8 @@
 import { AASection } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
+import { Notifications } from '$lib/notifications';
+
 export type NotificationStatus = {
     openStatus: boolean;
     waitlistStatus: boolean;
@@ -15,19 +17,15 @@ export type Notification = {
 };
 
 export interface NotificationStore {
-    notifications: Record<string, Notification> | undefined;
-    initializeNotifications: (notifications: Record<string, Notification>) => void;
+    initialized: boolean;
+    notifications: Record<string, Notification>;
     setNotifications: (sectionCode: AASection['sectionCode'], term: string, status: keyof NotificationStatus) => void;
 }
 
 export const useNotificationStore = create<NotificationStore>((set) => {
     return {
-        notifications: undefined,
-        initializeNotifications: (initialNotifications) => {
-            set(() => ({
-                notifications: initialNotifications,
-            }));
-        },
+        initialized: false,
+        notifications: {},
         setNotifications: (sectionCode, term, status) => {
             const key = sectionCode + ' ' + term;
 
@@ -55,3 +53,9 @@ export const useNotificationStore = create<NotificationStore>((set) => {
         },
     };
 });
+
+Notifications.getNotifications()
+    .then((res) => {
+        useNotificationStore.setState({ notifications: res, initialized: true });
+    })
+    .catch((e) => console.error(e));

@@ -27,7 +27,7 @@ interface SectionTableBodyRowProps {
     allowHighlight: boolean;
     scheduleNames: string[];
     scheduleConflict: boolean;
-    notificationStatus?: NotificationStatus;
+    notificationStatus: NotificationStatus | undefined;
 }
 
 // These components have too varied of types, any is fine here

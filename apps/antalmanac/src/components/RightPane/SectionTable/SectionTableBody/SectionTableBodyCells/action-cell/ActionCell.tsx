@@ -1,5 +1,5 @@
 import { Add, ArrowDropDown, Delete } from '@mui/icons-material';
-import { Box, IconButton, Menu, MenuItem, Tooltip, useMediaQuery, useTheme } from '@mui/material';
+import { Box, CircularProgress, IconButton, Menu, MenuItem, Tooltip, useMediaQuery, useTheme } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { useCallback } from 'react';
@@ -10,7 +10,7 @@ import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTab
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { MOBILE_BREAKPOINT } from '$src/globals';
 import AppStore from '$stores/AppStore';
-import { type NotificationStatus } from '$stores/NotificationStore';
+import { useNotificationStore, type NotificationStatus } from '$stores/NotificationStore';
 
 /**
  * Props received by components that perform actions on a specified section.
@@ -41,13 +41,14 @@ interface ActionProps {
      */
     scheduleConflict: boolean;
 
-    notificationStatus?: NotificationStatus;
+    notificationStatus: NotificationStatus | undefined;
 }
 
 /**
  * Sections added to a schedule, can be recolored or deleted.
  */
 function DeleteAndNotifications({ section, term, notificationStatus }: ActionProps) {
+    const { initialized } = useNotificationStore();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const flexDirection = isMobile ? 'column' : undefined;
@@ -74,7 +75,17 @@ function DeleteAndNotifications({ section, term, notificationStatus }: ActionPro
                 <Delete fontSize="small" />
             </IconButton>
 
-            <NotificationsMenu sectionCode={section.sectionCode} term={term} notificationStatus={notificationStatus} />
+            {initialized ? (
+                <NotificationsMenu
+                    sectionCode={section.sectionCode}
+                    term={term}
+                    notificationStatus={notificationStatus}
+                />
+            ) : (
+                <IconButton disabled>
+                    <CircularProgress size={15} />
+                </IconButton>
+            )}
         </Box>
     );
 }
