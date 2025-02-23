@@ -17,7 +17,6 @@ import { SyllabusCell } from '$components/RightPane/SectionTable/SectionTableBod
 import AppStore from '$stores/AppStore';
 import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
-import { type NotificationStatus } from '$stores/NotificationStore';
 import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
 
 interface SectionTableBodyRowProps {
@@ -27,7 +26,6 @@ interface SectionTableBodyRowProps {
     allowHighlight: boolean;
     scheduleNames: string[];
     scheduleConflict: boolean;
-    notificationStatus: NotificationStatus | undefined;
 }
 
 // These components have too varied of types, any is fine here
@@ -47,7 +45,7 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
 };
 
 export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
-    const { section, courseDetails, term, allowHighlight, scheduleNames, scheduleConflict, notificationStatus } = props;
+    const { section, courseDetails, term, allowHighlight, scheduleNames, scheduleConflict } = props;
 
     const theme = useTheme();
     const isDark = useThemeStore((store) => store.isDark);
@@ -144,7 +142,6 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
                             maxCapacity={parseInt(section.maxCapacity, 10)}
                             units={parseFloat(section.units)}
                             courseName={`${courseDetails.deptCode} ${courseDetails.courseNumber}`}
-                            notificationStatus={notificationStatus}
                             {...courseDetails}
                         />
                     );

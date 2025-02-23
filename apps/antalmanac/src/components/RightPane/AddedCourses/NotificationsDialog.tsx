@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { useCallback, useState } from 'react';
 
-import { useNotificationStore } from '$stores/NotificationStore';
+import { NotificationStatus, useNotificationStore } from '$stores/NotificationStore';
 
 interface NotificationsDialogProps {
     disabled?: boolean;
@@ -26,13 +26,13 @@ interface NotificationsDialogProps {
 }
 
 export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogProps) {
-    const { notifications } = useNotificationStore();
+    const { notifications, setNotifications } = useNotificationStore();
 
     const [open, setOpen] = useState(false);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    const handleChangePage = (event: unknown, newPage: number) => {
+    const handleChangePage = (_: unknown, newPage: number) => {
         setPage(newPage);
     };
 
@@ -85,6 +85,10 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
                                                 const { openStatus, waitlistStatus, fullStatus, restrictionStatus } =
                                                     notificationStatus;
 
+                                                const handleClick = (status: keyof NotificationStatus) => {
+                                                    setNotifications(sectionCode, term, status);
+                                                };
+
                                                 return (
                                                     <TableRow
                                                         key={key}
@@ -94,16 +98,28 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
                                                         <TableCell>{sectionCode}</TableCell>
                                                         <TableCell>{'foobar'}</TableCell>
                                                         <TableCell align="center">
-                                                            <Checkbox checked={openStatus} />
+                                                            <Checkbox
+                                                                checked={openStatus}
+                                                                onClick={() => handleClick('openStatus')}
+                                                            />
                                                         </TableCell>
                                                         <TableCell align="center">
-                                                            <Checkbox checked={waitlistStatus} />
+                                                            <Checkbox
+                                                                checked={waitlistStatus}
+                                                                onClick={() => handleClick('waitlistStatus')}
+                                                            />
                                                         </TableCell>
                                                         <TableCell align="center">
-                                                            <Checkbox checked={fullStatus} />
+                                                            <Checkbox
+                                                                checked={fullStatus}
+                                                                onClick={() => handleClick('fullStatus')}
+                                                            />
                                                         </TableCell>
                                                         <TableCell align="center">
-                                                            <Checkbox checked={restrictionStatus} />
+                                                            <Checkbox
+                                                                checked={restrictionStatus}
+                                                                onClick={() => handleClick('restrictionStatus')}
+                                                            />
                                                         </TableCell>
                                                     </TableRow>
                                                 );
@@ -122,14 +138,8 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
                             />
                         </>
                     ) : (
-                        // Object.entries(notifications).map((notification) => {
-                        //       return <div>fdasfasdfsdaf</div>;
-                        //   })
                         "You haven't added any notifications yet!"
                     )}
-                    {/* <Box padding={1}>
-                        <TextField fullWidth label="Name" onChange={handleNameChange} value={name} />
-                    </Box> */}
                 </DialogContent>
             </Dialog>
         </>

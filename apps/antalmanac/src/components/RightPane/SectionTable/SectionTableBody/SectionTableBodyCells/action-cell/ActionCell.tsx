@@ -1,16 +1,16 @@
-import { Add, ArrowDropDown, Delete } from '@mui/icons-material';
-import { Box, CircularProgress, IconButton, Menu, MenuItem, Tooltip, useMediaQuery, useTheme } from '@mui/material';
+import { Add, ArrowDropDown } from '@mui/icons-material';
+import { Box, IconButton, Menu, MenuItem, Tooltip, useMediaQuery } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
-import { useCallback } from 'react';
+import { memo } from 'react';
 
-import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
+import { addCourse, openSnackbar } from '$actions/AppStoreActions';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
+import { DeleteAndNotifications } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/DeleteAndNotifications';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { MOBILE_BREAKPOINT } from '$src/globals';
 import AppStore from '$stores/AppStore';
-import { useNotificationStore, type NotificationStatus } from '$stores/NotificationStore';
+import { type NotificationStatus } from '$stores/NotificationStore';
 
 /**
  * Props received by components that perform actions on a specified section.
@@ -42,52 +42,6 @@ interface ActionProps {
     scheduleConflict: boolean;
 
     notificationStatus: NotificationStatus | undefined;
-}
-
-/**
- * Sections added to a schedule, can be recolored or deleted.
- */
-function DeleteAndNotifications({ section, term, notificationStatus }: ActionProps) {
-    const { initialized } = useNotificationStore();
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-    const flexDirection = isMobile ? 'column' : undefined;
-
-    const handleClick = useCallback(() => {
-        deleteCourse(section.sectionCode, term, AppStore.getCurrentScheduleIndex());
-
-        logAnalytics({
-            category: analyticsEnum.addedClasses.title,
-            action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
-        });
-    }, []);
-
-    return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: flexDirection,
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}
-        >
-            <IconButton onClick={handleClick}>
-                <Delete fontSize="small" />
-            </IconButton>
-
-            {initialized ? (
-                <NotificationsMenu
-                    sectionCode={section.sectionCode}
-                    term={term}
-                    notificationStatus={notificationStatus}
-                />
-            ) : (
-                <IconButton disabled>
-                    <CircularProgress size={15} />
-                </IconButton>
-            )}
-        </Box>
-    );
 }
 
 /**
@@ -198,10 +152,16 @@ export interface ActionCellProps extends Omit<ActionProps, 'classes'> {
 /**
  * Given a section and schedule information, provides appropriate set of actions.
  */
-export function ActionCell({ addedCourse, ...props }: ActionCellProps) {
+export const ActionCell = memo(({ ...props }: ActionCellProps) => {
     return (
         <TableBodyCellContainer sx={{ width: '8%' }}>
-            {addedCourse ? <DeleteAndNotifications {...props} /> : <ScheduleAddCell {...props} />}
+            {props.addedCourse ? (
+                <DeleteAndNotifications {...props} sectionCode={props.section.sectionCode} />
+            ) : (
+                <ScheduleAddCell {...props} />
+            )}
         </TableBodyCellContainer>
     );
-}
+});
+
+ActionCell.displayName = 'ActionCell';

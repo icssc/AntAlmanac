@@ -20,21 +20,33 @@ export type Notification = {
 export interface NotificationStore {
     initialized: boolean;
     notifications: Record<string, Notification>;
+    getNotification: (sectionCode: AASection['sectionCode'], term: string) => Notification | undefined;
     setNotifications: (sectionCode: AASection['sectionCode'], term: string, status: keyof NotificationStatus) => void;
 }
 
-const debouncedSetNotifications = debounce(async (notifications: Notification[]) => {
+const pendingUpdates: Record<string, Notification> = {};
+
+const debouncedSetNotifications = debounce(async () => {
     try {
-        await Notifications.setNotifications(notifications);
+        const updates = Object.values(pendingUpdates);
+        Object.keys(pendingUpdates).forEach((key) => delete pendingUpdates[key]);
+
+        if (updates.length > 0) {
+            await Notifications.setNotifications(updates);
+        }
     } catch (error) {
         console.error(error);
     }
 }, 500);
 
-export const useNotificationStore = create<NotificationStore>((set) => {
+export const useNotificationStore = create<NotificationStore>((set, get) => {
     return {
         initialized: false,
         notifications: {},
+        getNotification: (sectionCode, term) => {
+            const key = sectionCode + ' ' + term;
+            return get().notifications[key];
+        },
         setNotifications: async (sectionCode, term, status) => {
             const key = sectionCode + ' ' + term;
 
@@ -57,12 +69,13 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                     [key]: notification,
                 };
 
+                pendingUpdates[key] = notification;
+                debouncedSetNotifications();
+
                 return {
                     notifications: updatedNotifications,
                 };
             });
-
-            debouncedSetNotifications(Object.values(useNotificationStore.getState().notifications));
         },
     };
 });

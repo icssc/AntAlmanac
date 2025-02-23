@@ -1,6 +1,6 @@
 import { NotificationAdd, NotificationAddOutlined } from '@mui/icons-material';
 import { IconButton, ListItemButton, Menu, MenuItem, Typography } from '@mui/material';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, memo, useMemo } from 'react';
 
 import { NotificationStatus, useNotificationStore } from '$stores/NotificationStore';
 
@@ -14,19 +14,25 @@ const MENU_ITEMS: { status: keyof NotificationStatus; label: string }[] = [
 interface NotificationsMenuProps {
     sectionCode: string;
     term: string;
-    notificationStatus?: NotificationStatus;
 }
 
-export function NotificationsMenu({ sectionCode, term, notificationStatus }: NotificationsMenuProps) {
-    const { setNotifications } = useNotificationStore();
-
+export const NotificationsMenu = memo(({ sectionCode, term }: NotificationsMenuProps) => {
+    const { getNotification, setNotifications } = useNotificationStore();
     const [anchorEl, setAnchorEl] = useState<HTMLElement>();
+
+    const notificationStatus = useMemo(
+        () => getNotification(sectionCode, term)?.notificationStatus,
+        [getNotification, sectionCode, term]
+    );
 
     const hasNotifications = notificationStatus && Object.values(notificationStatus).some((n) => n);
 
-    const handleClick = useCallback((status: keyof NotificationStatus) => {
-        setNotifications(sectionCode, term, status);
-    }, []);
+    const handleClick = useCallback(
+        (status: keyof NotificationStatus) => {
+            setNotifications(sectionCode, term, status);
+        },
+        [sectionCode, setNotifications, term]
+    );
 
     const handleClose = useCallback(() => {
         setAnchorEl(undefined);
@@ -73,4 +79,6 @@ export function NotificationsMenu({ sectionCode, term, notificationStatus }: Not
             </Menu>
         </>
     );
-}
+});
+
+NotificationsMenu.displayName = 'NotificationsMenu';

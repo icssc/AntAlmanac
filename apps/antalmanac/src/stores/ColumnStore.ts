@@ -61,7 +61,6 @@ export const useColumnStore = create<ColumnStore>((set, _) => {
 
                 setLocalStorageColumnToggles(JSON.stringify(selectedColumns));
 
-                console.log('activeColumns', activeColumns);
                 return { selectedColumns, activeColumns };
             });
             logAnalytics({
