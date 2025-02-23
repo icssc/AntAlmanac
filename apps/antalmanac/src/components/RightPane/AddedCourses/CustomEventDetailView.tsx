@@ -99,7 +99,7 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                     <Tooltip title="Delete">
                         <IconButton
                             onClick={() => {
-                                deleteCustomEvent(customEvent.customEventID);
+                                deleteCustomEvent(customEvent.customEventID, [AppStore.getCurrentScheduleIndex()]);
                             }}
                             size="large"
                         >

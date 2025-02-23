@@ -8,12 +8,12 @@ import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import CustomEventDetailView from './CustomEventDetailView';
 
 import { updateScheduleNote } from '$actions/AppStoreActions';
+import { NotificationsDialog } from '$components/RightPane/AddedCourses/NotificationsDialog';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
-import { NotificationsDialog } from '$components/RightPane/AddedCourses/NotificationsDialog';
 
 /**
  * All the interactive buttons have the same styles.
@@ -192,11 +192,19 @@ function ScheduleNoteBox() {
                 label="Click here to start typing!"
                 onChange={handleNoteChange}
                 value={scheduleNote}
-                inputProps={{ maxLength: NOTE_MAX_LEN }}
+                inputProps={{
+                    maxLength: NOTE_MAX_LEN,
+                    style: { cursor: skeletonMode ? 'not-allowed' : 'text' },
+                }}
                 InputProps={{ disableUnderline: true }}
                 fullWidth
                 multiline
                 disabled={skeletonMode}
+                sx={{
+                    '& .MuiInputBase-root': {
+                        cursor: skeletonMode ? 'not-allowed' : 'text',
+                    },
+                }}
             />
         </Box>
     );
@@ -220,11 +228,14 @@ function SkeletonSchedule() {
     }, []);
 
     const sectionsByTerm: [string, string[]][] = useMemo(() => {
-        const result = skeletonSchedule.courses.reduce((accumulated, course) => {
-            accumulated[course.term] ??= [];
-            accumulated[course.term].push(course.sectionCode);
-            return accumulated;
-        }, {} as Record<string, string[]>);
+        const result = skeletonSchedule.courses.reduce(
+            (accumulated, course) => {
+                accumulated[course.term] ??= [];
+                accumulated[course.term].push(course.sectionCode);
+                return accumulated;
+            },
+            {} as Record<string, string[]>
+        );
 
         return Object.entries(result);
     }, [skeletonSchedule.courses]);

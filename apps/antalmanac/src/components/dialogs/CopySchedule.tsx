@@ -40,6 +40,7 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
     }, [index]);
 
     useEffect(() => {
+        handleScheduleNamesChange();
         AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
         return () => {
             AppStore.off('scheduleNamesChange', handleScheduleNamesChange);

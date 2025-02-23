@@ -54,7 +54,7 @@ function DeleteAndNotifications({ section, term, notificationStatus }: ActionPro
     const flexDirection = isMobile ? 'column' : undefined;
 
     const handleClick = useCallback(() => {
-        deleteCourse(section.sectionCode, term);
+        deleteCourse(section.sectionCode, term, AppStore.getCurrentScheduleIndex());
 
         logAnalytics({
             category: analyticsEnum.addedClasses.title,
