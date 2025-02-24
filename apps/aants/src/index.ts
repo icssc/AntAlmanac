@@ -6,7 +6,6 @@ import { WebsocResponse } from '@icssc/libwebsoc-next';
 
 import {
     getUpdatedClasses,
-    // getUpdatedClassesDummy,
     getSubscriptionSectionCodes,
     updateSubscriptionStatus,
     getLastUpdatedStatus,
@@ -25,7 +24,6 @@ async function main() {
 
                 await Promise.all(
                     batches.map(async (batch) => {
-                        // const response = getUpdatedClassesDummy(quarter, year, batch);
                         const response: WebsocResponse = (await getUpdatedClasses(quarter, year, batch)) || {
                             schools: [],
                         };

@@ -27,54 +27,6 @@ async function getUpdatedClasses(quarter: string, year: string, sections: string
     }
 }
 
-// function getUpdatedClassesDummy(year: string, quarter: string, sections: string[]) {
-//     const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
-//     const now = new Date().toISOString();
-//     url.searchParams.append('quarter', quarter);
-//     url.searchParams.append('year', year);
-//     url.searchParams.append('sections', sections.join(','));
-//     url.searchParams.append('since', now);
-
-//     const response1 = {
-//         ok: true,
-//         data: {
-//             courses: [
-//                 {
-//                     deptCode: 'COMPSCI',
-//                     courseComment: '',
-//                     prerequisiteLink:
-//                         'https://www.reg.uci.edu/cob/prrqcgi?term=202514&dept=COMPSCI&action=view_by_term#161',
-//                     courseNumber: '161',
-//                     courseTitle: 'DES&ANALYS OF ALGOR',
-//                     sections: [
-//                         {
-//                             sectionCode: '34250',
-//                             sectionType: 'Lec',
-//                             sectionNum: 'A',
-//                             units: '4',
-//                             instructors: [Array],
-//                             modality: 'In-Person',
-//                             meetings: [Array],
-//                             finalExam: 'Tue Jun 10 8:00-10:00am',
-//                             maxCapacity: '350',
-//                             numCurrentlyEnrolled: [Object],
-//                             numOnWaitlist: '0',
-//                             numWaitlistCap: '53',
-//                             numRequested: '0',
-//                             numNewOnlyReserved: '0',
-//                             restrictions: 'A',
-//                             status: 'OPEN',
-//                             sectionComment: '',
-//                         },
-//                     ],
-//                 },
-//             ],
-//         },
-//     };
-
-//     return response1;
-// }
-
 async function getSubscriptionSectionCodes() {
     try {
         const result = await db
@@ -300,7 +252,6 @@ async function sendNotification(
 }
 export {
     getUpdatedClasses,
-    // getUpdatedClassesDummy,
     getSubscriptionSectionCodes,
     updateSubscriptionStatus,
     getLastUpdatedStatus,
