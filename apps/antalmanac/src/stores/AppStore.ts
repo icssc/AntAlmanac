@@ -346,15 +346,31 @@ class AppStore extends EventEmitter {
         this.emit('reorderSchedule');
     }
 
-    async loadSchedule(savedSchedule: ScheduleSaveState) {
+    private async loadScheduleFromSaveState(savedSchedule: ScheduleSaveState) {
         try {
             await this.schedule.fromScheduleSaveState(savedSchedule);
         } catch {
             return false;
         }
+    }
+
+    async loadSchedule(savedSchedule: ScheduleSaveState) {
+        await this.loadScheduleFromSaveState(savedSchedule);
         this.unsavedChanges = false;
 
-        await actionTypesStore.loadScheduleFromLocalSave();
+        /**
+         * Attempt to load unsaved actions
+         * On failure, quietly reload from save state (essentially undoing any partially loaded unsaved actions)
+         */
+        try {
+            await actionTypesStore.loadScheduleFromUnsavedActions();
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                console.error('Unsaved actions could not be loaded:', e.message);
+            }
+            await this.loadScheduleFromSaveState(savedSchedule);
+        }
+
         this.schedule.clearPreviousStates();
 
         this.emit('addedCoursesChange');
