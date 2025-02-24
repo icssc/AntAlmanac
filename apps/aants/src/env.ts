@@ -10,7 +10,3 @@ export const rdsEnvSchema = z.object({
     DB_URL: z.string(),
     NODE_ENV: z.string().optional(),
 });
-
-export const aapiKey = z.object({
-    ANTEATER_API_KEY: z.string(),
-});

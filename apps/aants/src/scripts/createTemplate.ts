@@ -1,3 +1,7 @@
+/*
+ *   To run this script, use 'pnpm run template'
+ */
+
 import { SESv2Client, CreateEmailTemplateCommand } from '@aws-sdk/client-sesv2';
 
 const client = new SESv2Client({ region: 'us-east-2' });

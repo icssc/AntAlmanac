@@ -1,3 +1,7 @@
+/*
+ *   To run this script, use 'pnpm run sending'
+ */
+
 import { SESv2Client, SendBulkEmailCommand } from '@aws-sdk/client-sesv2';
 import { request, Term } from '@icssc/libwebsoc-next';
 
@@ -110,7 +114,7 @@ async function sendNotification(
 async function testWebsocRequest() {
     const term: Term = {
         year: '2025',
-        quarter: 'Spring', // or any other valid quarter, like "Spring", "Fall"
+        quarter: 'Spring',
     };
 
     const sectionCodes = ['21150'];
@@ -120,13 +124,11 @@ async function testWebsocRequest() {
         { email: 'isaachn@uci.edu', userName: 'John' },
         { email: 'isaachn@uci.edu', userName: 'Jane' },
         // { email: 'isaachn@uci.edu', userName: 'Alice'},
-        // Add more users here
     ];
 
     const sectionCodesStr = sectionCodes.join(',');
-    request(term, { sectionCodes: sectionCodesStr }) // Pass all section codes in one request
+    request(term, { sectionCodes: sectionCodesStr })
         .then((response) => {
-            // Log all sections from the response
             response.schools.forEach((school) => {
                 school.departments.forEach((department) => {
                     department.courses.forEach((course) => {
@@ -148,8 +150,6 @@ async function testWebsocRequest() {
                                 true,
                                 true
                             );
-                            // console.log(deptCode, courseNumber, courseTitle, sectionCode, instructor, timeSlot, status);  // Log each section
-                            // console.log(course)
                         });
                     });
                 });
@@ -160,5 +160,4 @@ async function testWebsocRequest() {
         });
 }
 
-// Call the test function
 testWebsocRequest();
