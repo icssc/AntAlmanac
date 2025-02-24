@@ -1,24 +1,8 @@
 import { Notifications } from '@mui/icons-material';
-import {
-    Checkbox,
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    IconButton,
-    Paper,
-    SxProps,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TablePagination,
-    TableRow,
-    Tooltip,
-} from '@mui/material';
+import { Dialog, DialogContent, DialogTitle, IconButton, SxProps, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
 
-import { NotificationStatus, useNotificationStore } from '$stores/NotificationStore';
+import { NotificationsTable } from '$components/RightPane/AddedCourses/NotificationsTable';
 
 interface NotificationsDialogProps {
     disabled?: boolean;
@@ -26,20 +10,7 @@ interface NotificationsDialogProps {
 }
 
 export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogProps) {
-    const { notifications, setNotifications } = useNotificationStore();
-
     const [open, setOpen] = useState(false);
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-
-    const handleChangePage = (_: unknown, newPage: number) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setRowsPerPage(+event.target.value);
-        setPage(0);
-    };
 
     const handleOpen = useCallback(() => {
         setOpen(true);
@@ -60,86 +31,9 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
             </Tooltip>
 
             <Dialog open={open} onClose={handleClose} fullWidth>
-                <DialogTitle>Course Notifications</DialogTitle>
+                <DialogTitle>Manage Active Course Notifications</DialogTitle>
                 <DialogContent>
-                    {notifications ? (
-                        <>
-                            <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
-                                <Table stickyHeader sx={{ minWidth: 650 }} size="small">
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Term</TableCell>
-                                            <TableCell>Section Code</TableCell>
-                                            <TableCell>Section Name</TableCell>
-                                            <TableCell align="center">Open</TableCell>
-                                            <TableCell align="center">Waitlist</TableCell>
-                                            <TableCell align="center">Full</TableCell>
-                                            <TableCell align="center">Restrictions</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {Object.entries(notifications)
-                                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                            .map(([key, notification]) => {
-                                                const { term, sectionCode, notificationStatus } = notification;
-                                                const { openStatus, waitlistStatus, fullStatus, restrictionStatus } =
-                                                    notificationStatus;
-
-                                                const handleClick = (status: keyof NotificationStatus) => {
-                                                    setNotifications(sectionCode, term, status);
-                                                };
-
-                                                return (
-                                                    <TableRow
-                                                        key={key}
-                                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                                    >
-                                                        <TableCell>{term}</TableCell>
-                                                        <TableCell>{sectionCode}</TableCell>
-                                                        <TableCell>{'foobar'}</TableCell>
-                                                        <TableCell align="center">
-                                                            <Checkbox
-                                                                checked={openStatus}
-                                                                onClick={() => handleClick('openStatus')}
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell align="center">
-                                                            <Checkbox
-                                                                checked={waitlistStatus}
-                                                                onClick={() => handleClick('waitlistStatus')}
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell align="center">
-                                                            <Checkbox
-                                                                checked={fullStatus}
-                                                                onClick={() => handleClick('fullStatus')}
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell align="center">
-                                                            <Checkbox
-                                                                checked={restrictionStatus}
-                                                                onClick={() => handleClick('restrictionStatus')}
-                                                            />
-                                                        </TableCell>
-                                                    </TableRow>
-                                                );
-                                            })}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                            <TablePagination
-                                rowsPerPageOptions={[10, 25, 100]}
-                                component="div"
-                                count={Object.entries(notifications).length}
-                                rowsPerPage={rowsPerPage}
-                                page={page}
-                                onPageChange={handleChangePage}
-                                onRowsPerPageChange={handleChangeRowsPerPage}
-                            />
-                        </>
-                    ) : (
-                        "You haven't added any notifications yet!"
-                    )}
+                    <NotificationsTable />
                 </DialogContent>
             </Dialog>
         </>

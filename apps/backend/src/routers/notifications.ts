@@ -17,16 +17,6 @@ const NotificationSchema = z.object({
 const notificationsRouter = router({
     get: procedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
         return {
-            '34020 2025 Spring': {
-                term: '2025 Spring',
-                sectionCode: '34020',
-                notificationStatus: {
-                    openStatus: true,
-                    waitlistStatus: false,
-                    fullStatus: false,
-                    restrictionStatus: false,
-                },
-            },
             '34040 2025 Spring': {
                 term: '2025 Spring',
                 sectionCode: '34040',
@@ -60,6 +50,76 @@ const notificationsRouter = router({
             '34131 2025 Spring': {
                 term: '2025 Spring',
                 sectionCode: '34131',
+                notificationStatus: {
+                    openStatus: true,
+                    waitlistStatus: false,
+                    fullStatus: false,
+                    restrictionStatus: false,
+                },
+            },
+            '34132 2025 Spring': {
+                term: '2025 Spring',
+                sectionCode: '34132',
+                notificationStatus: {
+                    openStatus: true,
+                    waitlistStatus: false,
+                    fullStatus: false,
+                    restrictionStatus: false,
+                },
+            },
+            '34133 2025 Spring': {
+                term: '2025 Spring',
+                sectionCode: '34133',
+                notificationStatus: {
+                    openStatus: true,
+                    waitlistStatus: false,
+                    fullStatus: false,
+                    restrictionStatus: false,
+                },
+            },
+            '34134 2025 Spring': {
+                term: '2025 Spring',
+                sectionCode: '34134',
+                notificationStatus: {
+                    openStatus: true,
+                    waitlistStatus: false,
+                    fullStatus: false,
+                    restrictionStatus: false,
+                },
+            },
+            '34135 2025 Spring': {
+                term: '2025 Spring',
+                sectionCode: '34135',
+                notificationStatus: {
+                    openStatus: true,
+                    waitlistStatus: false,
+                    fullStatus: false,
+                    restrictionStatus: false,
+                },
+            },
+            '34136 2025 Spring': {
+                term: '2025 Spring',
+                sectionCode: '34136',
+                notificationStatus: {
+                    openStatus: true,
+                    waitlistStatus: false,
+                    fullStatus: false,
+                    restrictionStatus: false,
+                },
+            },
+            '34137 2025 Spring': {
+                term: '2025 Spring',
+                sectionCode: '34137',
+                notificationStatus: {
+                    openStatus: true,
+                    waitlistStatus: false,
+                    fullStatus: false,
+                    restrictionStatus: false,
+                },
+            },
+            '34020 2025 Spring': {
+                term: '2025 Spring',
+                sectionCode: '34020',
                 notificationStatus: {
                     openStatus: true,
                     waitlistStatus: false,
