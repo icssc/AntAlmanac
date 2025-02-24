@@ -2,7 +2,7 @@ import { Notifications } from '@mui/icons-material';
 import { Dialog, DialogContent, DialogTitle, IconButton, SxProps, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
 
-import { NotificationsTable } from '$components/RightPane/AddedCourses/NotificationsTable';
+import { NotificationsTabs } from '$components/RightPane/AddedCourses/NotificationsTabs';
 
 interface NotificationsDialogProps {
     disabled?: boolean;
@@ -33,7 +33,7 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
             <Dialog open={open} onClose={handleClose} fullWidth>
                 <DialogTitle>Manage Active Course Notifications</DialogTitle>
                 <DialogContent>
-                    <NotificationsTable />
+                    <NotificationsTabs />
                 </DialogContent>
             </Dialog>
         </>

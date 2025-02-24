@@ -14,12 +14,12 @@ export const NotificationTableRow = memo(({ notificationKey }: NotificationTable
         return null;
     }
 
-    const { courseTitle, term, sectionCode } = notification;
+    const { courseTitle, sectionType, term, sectionCode } = notification;
 
     return (
         <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-            <TableCell>{term}</TableCell>
             <TableCell>{sectionCode}</TableCell>
+            <TableCell>{sectionType}</TableCell>
             <TableCell>{courseTitle}</TableCell>
 
             {Object.keys(notification.notificationStatus).map((statusKey) => (
@@ -27,6 +27,7 @@ export const NotificationTableRow = memo(({ notificationKey }: NotificationTable
                     key={statusKey}
                     courseTitle={courseTitle}
                     sectionCode={sectionCode}
+                    sectionType={sectionType}
                     term={term}
                     notificationKey={notificationKey}
                     statusKey={statusKey as keyof NotificationStatus}

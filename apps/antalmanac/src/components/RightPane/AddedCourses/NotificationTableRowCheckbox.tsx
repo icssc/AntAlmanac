@@ -1,27 +1,30 @@
 import { TableCell, Checkbox } from '@mui/material';
-import { AASection, Course } from '@packages/antalmanac-types';
 import { memo, useCallback } from 'react';
 
-import { NotificationStatus, useNotificationStore } from '$stores/NotificationStore';
+import { Notification, NotificationStatus, useNotificationStore } from '$stores/NotificationStore';
 
-interface NotificationTableRowCheckboxProps {
-    courseTitle: Course['title'];
-    sectionCode: AASection['sectionCode'];
-    term: string;
+type NotificationTableRowCheckboxProps = Omit<Notification, 'notificationStatus'> & {
     notificationKey: string;
     statusKey: keyof NotificationStatus;
-}
+};
 
 export const NotificationTableRowCheckbox = memo(
-    ({ courseTitle, sectionCode, term, notificationKey, statusKey }: NotificationTableRowCheckboxProps) => {
+    ({
+        courseTitle,
+        sectionCode,
+        term,
+        sectionType,
+        notificationKey,
+        statusKey,
+    }: NotificationTableRowCheckboxProps) => {
         const status = useNotificationStore(
             (state) => state.notifications[notificationKey]?.notificationStatus[statusKey] ?? false
         );
         const setNotifications = useNotificationStore((state) => state.setNotifications);
 
         const handleClick = useCallback(() => {
-            setNotifications({ courseTitle, sectionCode, term, status: statusKey });
-        }, [setNotifications, courseTitle, sectionCode, term, statusKey]);
+            setNotifications({ courseTitle, sectionCode, sectionType, term, status: statusKey });
+        }, [setNotifications, courseTitle, sectionCode, sectionType, term, statusKey]);
 
         return (
             <TableCell align="center">
