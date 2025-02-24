@@ -1,3 +1,5 @@
+import { SESv2Client, SendBulkEmailCommand } from '@aws-sdk/client-sesv2';
+import { request, Term, Quarter } from '@icssc/libwebsoc-next';
 import { eq, and, or } from 'drizzle-orm';
 
 import { db } from '../../../backend/src/db/index';
@@ -5,73 +7,73 @@ import { users } from '../../../backend/src/db/schema/auth/user';
 import { subscriptions } from '../../../backend/src/db/schema/subscription';
 
 const BATCH_SIZE = 450;
-// const client = new SESv2Client({region: 'us-east-2',});
+const client = new SESv2Client({ region: 'us-east-2' });
 
 type User = {
-    userName: string | null;
+    userName: string;
+    email: string;
 };
 
-// async function getUpdatedClasses(quarter: string, year: string, sections: string[]) {
-//     try {
-//         const term: Term = {
-//             year: year,
-//             quarter: quarter as Quarter
-//         };
-
-//         const response = await request(term, { sectionCodes: sections.join(',') })
-//         return response;
-//     } catch (error: any) {
-//         console.error('Error getting class information:', error.message);
-//     }
-// }
-
-function getUpdatedClassesDummy(year: string, quarter: string, sections: string[]) {
-    const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
-    const now = new Date().toISOString();
-    url.searchParams.append('quarter', quarter);
-    url.searchParams.append('year', year);
-    url.searchParams.append('sections', sections.join(','));
-    url.searchParams.append('since', now);
-
-    const response1 = {
-        ok: true,
-        data: {
-            courses: [
-                {
-                    deptCode: 'COMPSCI',
-                    courseComment: '',
-                    prerequisiteLink:
-                        'https://www.reg.uci.edu/cob/prrqcgi?term=202514&dept=COMPSCI&action=view_by_term#161',
-                    courseNumber: '161',
-                    courseTitle: 'DES&ANALYS OF ALGOR',
-                    sections: [
-                        {
-                            sectionCode: '34250',
-                            sectionType: 'Lec',
-                            sectionNum: 'A',
-                            units: '4',
-                            instructors: [Array],
-                            modality: 'In-Person',
-                            meetings: [Array],
-                            finalExam: 'Tue Jun 10 8:00-10:00am',
-                            maxCapacity: '350',
-                            numCurrentlyEnrolled: [Object],
-                            numOnWaitlist: '0',
-                            numWaitlistCap: '53',
-                            numRequested: '0',
-                            numNewOnlyReserved: '0',
-                            restrictions: 'A',
-                            status: 'OPEN',
-                            sectionComment: '',
-                        },
-                    ],
-                },
-            ],
-        },
-    };
-
-    return response1;
+async function getUpdatedClasses(quarter: string, year: string, sections: string[]) {
+    try {
+        const term: Term = {
+            year: year,
+            quarter: quarter as Quarter,
+        };
+        const response = await request(term, { sectionCodes: sections.join(',') });
+        return response;
+    } catch (error: any) {
+        console.error('Error getting class information:', error.message);
+    }
 }
+
+// function getUpdatedClassesDummy(year: string, quarter: string, sections: string[]) {
+//     const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
+//     const now = new Date().toISOString();
+//     url.searchParams.append('quarter', quarter);
+//     url.searchParams.append('year', year);
+//     url.searchParams.append('sections', sections.join(','));
+//     url.searchParams.append('since', now);
+
+//     const response1 = {
+//         ok: true,
+//         data: {
+//             courses: [
+//                 {
+//                     deptCode: 'COMPSCI',
+//                     courseComment: '',
+//                     prerequisiteLink:
+//                         'https://www.reg.uci.edu/cob/prrqcgi?term=202514&dept=COMPSCI&action=view_by_term#161',
+//                     courseNumber: '161',
+//                     courseTitle: 'DES&ANALYS OF ALGOR',
+//                     sections: [
+//                         {
+//                             sectionCode: '34250',
+//                             sectionType: 'Lec',
+//                             sectionNum: 'A',
+//                             units: '4',
+//                             instructors: [Array],
+//                             modality: 'In-Person',
+//                             meetings: [Array],
+//                             finalExam: 'Tue Jun 10 8:00-10:00am',
+//                             maxCapacity: '350',
+//                             numCurrentlyEnrolled: [Object],
+//                             numOnWaitlist: '0',
+//                             numWaitlistCap: '53',
+//                             numRequested: '0',
+//                             numNewOnlyReserved: '0',
+//                             restrictions: 'A',
+//                             status: 'OPEN',
+//                             sectionComment: '',
+//                         },
+//                     ],
+//                 },
+//             ],
+//         },
+//     };
+
+//     return response1;
+// }
 
 async function getSubscriptionSectionCodes() {
     try {
@@ -90,7 +92,7 @@ async function getSubscriptionSectionCodes() {
                 if (!acc[term]) {
                     acc[term] = [];
                 }
-                acc[term].push({ sectionCode });
+                acc[term].push(sectionCode);
             }
             return acc;
         }, {});
@@ -218,9 +220,10 @@ function getFormattedTime() {
 }
 
 async function sendNotification(
-    year: string,
-    quarter: string,
     sectionCode: number,
+    instructor: string,
+    days: string,
+    hours: string,
     status: string,
     codes: string,
     deptCode: string,
@@ -242,30 +245,62 @@ async function sendNotification(
         notification = notification.replace(/\n/g, '<br>');
 
         const time = getFormattedTime();
-        console.log(
-            'Notification for',
-            deptCode,
-            courseNumber,
-            `(${courseTitle})`,
-            `at ${time}`,
-            sectionCode,
-            'in',
-            year,
-            quarter,
-            '\n',
-            users,
-            '\n',
-            notification,
-            '\n'
-        );
-        // send notification
-    } catch (error: any) {
-        console.error('Error sending notification:', error.message);
+
+        const bulkEmailEntries = users.map((user) => ({
+            Destination: {
+                ToAddresses: [user.email],
+            },
+            ReplacementEmailContent: {
+                ReplacementTemplate: {
+                    ReplacementTemplateData: JSON.stringify({
+                        userName: user.userName,
+                        notification: notification,
+                        deptCode: deptCode,
+                        courseNumber: courseNumber,
+                        courseTitle: courseTitle,
+                        instructor: instructor,
+                        days: days,
+                        hours: hours,
+                        time: time,
+                        sectionCode: sectionCode,
+                    }),
+                },
+            },
+        }));
+
+        const input = {
+            FromEmailAddress: 'icssc@uci.edu',
+            DefaultContent: {
+                Template: {
+                    TemplateName: 'CourseNotification',
+                    TemplateData: JSON.stringify({
+                        name: '',
+                        notification: '',
+                        deptCode: '',
+                        courseNumber: '',
+                        courseTitle: '',
+                        instructor: '',
+                        days: '',
+                        hours: '',
+                        time: '',
+                        sectionCode: '',
+                    }),
+                },
+            },
+            BulkEmailEntries: bulkEmailEntries,
+        };
+
+        const command = new SendBulkEmailCommand(input);
+        const response = await client.send(command);
+        return response;
+    } catch (error) {
+        console.error('Error sending bulk emails:', error);
+        throw error;
     }
 }
-
 export {
-    getUpdatedClassesDummy,
+    getUpdatedClasses,
+    // getUpdatedClassesDummy,
     getSubscriptionSectionCodes,
     updateSubscriptionStatus,
     getLastUpdatedStatus,

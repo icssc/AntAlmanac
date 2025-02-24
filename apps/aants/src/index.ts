@@ -2,8 +2,11 @@
  * To run this script, use 'pnpm run aants'
  */
 
+import { WebsocResponse } from '@icssc/libwebsoc-next';
+
 import {
-    getUpdatedClassesDummy,
+    getUpdatedClasses,
+    // getUpdatedClassesDummy,
     getSubscriptionSectionCodes,
     updateSubscriptionStatus,
     getLastUpdatedStatus,
@@ -22,58 +25,80 @@ async function main() {
 
                 await Promise.all(
                     batches.map(async (batch) => {
-                        const response = getUpdatedClassesDummy(quarter, year, batch);
-                        // const response = await getUpdatedClasses(quarter, year, batch);
+                        // const response = getUpdatedClassesDummy(quarter, year, batch);
+                        const response: WebsocResponse = (await getUpdatedClasses(quarter, year, batch)) || {
+                            schools: [],
+                        };
 
                         await Promise.all(
-                            response.data.courses.map(async (course) => {
-                                const { deptCode, courseNumber, courseTitle } = course;
-
+                            response?.schools?.map(async (school) => {
                                 await Promise.all(
-                                    course.sections.map(async (section) => {
-                                        const sectionCode = Number(section.sectionCode);
-                                        const currentStatus = section.status;
-                                        const currentCodes = section.restrictions;
+                                    school.departments.map(async (department) => {
+                                        await Promise.all(
+                                            department.courses.map(async (course) => {
+                                                const { deptCode, courseNumber, courseTitle } = course;
 
-                                        const previousState = await getLastUpdatedStatus(year, quarter, sectionCode);
-                                        const previousStatus = previousState?.[0]?.lastUpdated || null;
-                                        const previousCodes = previousState?.[0]?.lastCodes || '';
+                                                await Promise.all(
+                                                    course.sections.map(async (section) => {
+                                                        const {
+                                                            sectionCode,
+                                                            instructors,
+                                                            meetings,
+                                                            status,
+                                                            restrictions,
+                                                        } = section;
+                                                        const instructor = instructors.join(', ');
+                                                        const currentStatus = section.status;
+                                                        const currentCodes = section.restrictions;
 
-                                        const statusChanged = previousStatus !== currentStatus;
-                                        const codesChanged = previousCodes !== currentCodes;
+                                                        const previousState = await getLastUpdatedStatus(
+                                                            year,
+                                                            quarter,
+                                                            Number(sectionCode)
+                                                        );
+                                                        const previousStatus = previousState?.[0]?.lastUpdated || null;
+                                                        const previousCodes = previousState?.[0]?.lastCodes || '';
 
-                                        if (!statusChanged && !codesChanged) return;
+                                                        const statusChanged = previousStatus !== currentStatus;
+                                                        const codesChanged = previousCodes !== currentCodes;
 
-                                        const users = await getUsers(
-                                            quarter,
-                                            year,
-                                            sectionCode,
-                                            currentStatus,
-                                            statusChanged,
-                                            codesChanged
-                                        );
+                                                        if (!statusChanged && !codesChanged) return;
 
-                                        if (users && users.length > 0) {
-                                            await sendNotification(
-                                                year,
-                                                quarter,
-                                                sectionCode,
-                                                currentStatus,
-                                                currentCodes,
-                                                deptCode,
-                                                courseNumber,
-                                                courseTitle,
-                                                users,
-                                                changes.statusChanged,
-                                                changes.codesChanged
-                                            );
-                                        }
-                                        await updateSubscriptionStatus(
-                                            year,
-                                            quarter,
-                                            sectionCode,
-                                            currentStatus,
-                                            currentCodes
+                                                        const users = await getUsers(
+                                                            quarter,
+                                                            year,
+                                                            Number(sectionCode),
+                                                            currentStatus,
+                                                            statusChanged,
+                                                            codesChanged
+                                                        );
+
+                                                        if (users && users.length > 0) {
+                                                            await sendNotification(
+                                                                Number(sectionCode),
+                                                                instructor,
+                                                                meetings[0].days,
+                                                                meetings[0].time,
+                                                                status,
+                                                                restrictions,
+                                                                deptCode,
+                                                                courseNumber,
+                                                                courseTitle,
+                                                                users,
+                                                                true,
+                                                                false
+                                                            );
+                                                        }
+                                                        await updateSubscriptionStatus(
+                                                            year,
+                                                            quarter,
+                                                            Number(sectionCode),
+                                                            currentStatus,
+                                                            currentCodes
+                                                        );
+                                                    })
+                                                );
+                                            })
                                         );
                                     })
                                 );

@@ -122,7 +122,7 @@ async function testWebsocRequest() {
 
     const users = [
         { email: 'isaachn@uci.edu', userName: 'John' },
-        { email: 'isaachn@uci.edu', userName: 'Jane' },
+        // { email: 'isaachn@uci.edu', userName: 'Jane' },
         // { email: 'isaachn@uci.edu', userName: 'Alice'},
     ];
 
@@ -148,7 +148,7 @@ async function testWebsocRequest() {
                                 courseTitle,
                                 users,
                                 true,
-                                true
+                                false
                             );
                         });
                     });
