@@ -3,11 +3,10 @@ import { type } from 'arktype';
 import { UserSchema } from '@packages/antalmanac-types';
 
 import { db } from 'src/db';
-import { mangleDupliateScheduleNames } from 'src/lib/formatting';
+import { mangleDuplicateScheduleNames } from 'src/lib/formatting';
 import { RDS } from 'src/lib/rds';
 import { TRPCError } from '@trpc/server';
 import { procedure, router } from '../trpc';
-
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
 
@@ -35,7 +34,7 @@ const usersRouter = router({
             throw new TRPCError({
                 code: 'NOT_IMPLEMENTED',
                 message: 'Google login not implemented',
-            })
+            });
         }
         return await RDS.getGuestUserData(db, input.userId);
     }),
@@ -43,20 +42,16 @@ const usersRouter = router({
     /**
      * Loads schedule data for a user that's logged in.
      */
-    saveUserData: procedure
-        .input(saveInputSchema.assert)
-        .mutation(
-            async ({ input }) => {
-                const data = input.data;
+    saveUserData: procedure.input(saveInputSchema.assert).mutation(async ({ input }) => {
+        const data = input.data;
 
-                // Mangle duplicate schedule names
-                data.userData.schedules = mangleDupliateScheduleNames(data.userData.schedules);
+        // Mangle duplicate schedule names
+        data.userData.schedules = mangleDuplicateScheduleNames(data.userData.schedules);
 
-                return await RDS
-                    .upsertGuestUserData(db, data)
-                    .catch((error) => console.error('RDS Failed to upsert user data:', error));
-            }
-        ),
+        return await RDS.upsertGuestUserData(db, data).catch((error) =>
+            console.error('RDS Failed to upsert user data:', error)
+        );
+    }),
 });
 
 export default usersRouter;
