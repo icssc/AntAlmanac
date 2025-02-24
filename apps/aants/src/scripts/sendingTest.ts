@@ -78,16 +78,6 @@ async function sendNotification(
 
         const input = {
             FromEmailAddress: 'icssc@uci.edu',
-            // DefaultEmailTags: [
-            //     {
-            //         Name: 'System',
-            //         Value: 'CourseNotification'
-            //     },
-            //     {
-            //         Name: 'Department',
-            //         Value: deptCode
-            //     }
-            // ],
             DefaultContent: {
                 Template: {
                     TemplateName: 'CourseNotification',
@@ -108,33 +98,7 @@ async function sendNotification(
             BulkEmailEntries: bulkEmailEntries,
         };
         const command = new SendBulkEmailCommand(input);
-
-        // const input = {
-        //     FromEmailAddress: 'icssc@uci.edu',
-        //     Destination: {
-        //         ToAddresses: [users.email],
-        //     },
-        //     Content: {
-        //         Template: {
-        //         TemplateName: 'CourseNotification',
-        //         TemplateData: JSON.stringify({
-        //             userName: users.userName,
-        //             notification: notification,
-        //             deptCode: deptCode,
-        //             courseNumber: courseNumber,
-        //             courseTitle: courseTitle,
-        //             instructor: instructor,
-        //             days: days,
-        //             hours: hours,
-        //             time: time,
-        //             sectionCode: sectionCode,
-        //         })
-        //     }
-        //     }
-        // };
-        // const command = new SendEmailCommand(input);
         const response = await client.send(command);
-        console.log('Bulk emails sent successfully');
 
         return response;
     } catch (error) {
