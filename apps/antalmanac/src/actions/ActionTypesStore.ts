@@ -150,9 +150,11 @@ class ActionTypesStore extends EventEmitter {
         }
     }
 
-    async loadScheduleFromLocalSave() {
+    async loadScheduleFromUnsavedActions() {
         const unsavedActionsString = getLocalStorageUnsavedActions();
-        if (unsavedActionsString == null) return;
+        if (unsavedActionsString == null) {
+            return;
+        }
         if (!confirm('You have unsaved changes. Would you like to load them?')) {
             removeLocalStorageUnsavedActions();
             return;
