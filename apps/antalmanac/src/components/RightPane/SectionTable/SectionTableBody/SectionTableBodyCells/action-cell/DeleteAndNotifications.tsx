@@ -1,6 +1,6 @@
 import { Delete } from '@mui/icons-material';
 import { useTheme, useMediaQuery, Box, IconButton, CircularProgress } from '@mui/material';
-import { AASection } from '@packages/antalmanac-types';
+import { AASection, Course } from '@packages/antalmanac-types';
 import { memo, useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -11,6 +11,7 @@ import AppStore from '$stores/AppStore';
 import { useNotificationStore } from '$stores/NotificationStore';
 
 interface DeleteAndNotificationsProps {
+    courseTitle: Course['title'];
     sectionCode: AASection['sectionCode'];
     term: string;
 }
@@ -18,7 +19,7 @@ interface DeleteAndNotificationsProps {
 /**
  * Sections added to a schedule, can be recolored or deleted.
  */
-export const DeleteAndNotifications = memo(({ sectionCode, term }: DeleteAndNotificationsProps) => {
+export const DeleteAndNotifications = memo(({ courseTitle, sectionCode, term }: DeleteAndNotificationsProps) => {
     const initialized = useNotificationStore(useShallow((state) => state.initialized));
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -47,7 +48,7 @@ export const DeleteAndNotifications = memo(({ sectionCode, term }: DeleteAndNoti
             </IconButton>
 
             {initialized ? (
-                <NotificationsMenu sectionCode={sectionCode} term={term} />
+                <NotificationsMenu courseTitle={courseTitle} sectionCode={sectionCode} term={term} />
             ) : (
                 <IconButton disabled>
                     <CircularProgress size={15} />

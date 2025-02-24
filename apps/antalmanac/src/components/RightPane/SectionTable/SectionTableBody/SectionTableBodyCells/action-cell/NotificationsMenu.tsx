@@ -1,5 +1,6 @@
 import { NotificationAdd, NotificationAddOutlined } from '@mui/icons-material';
 import { IconButton, ListItemButton, Menu, MenuItem, Typography } from '@mui/material';
+import { AASection, Course } from '@packages/antalmanac-types';
 import { useState, useCallback, memo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -13,11 +14,12 @@ const MENU_ITEMS: { status: keyof NotificationStatus; label: string }[] = [
 ];
 
 interface NotificationsMenuProps {
-    sectionCode: string;
+    courseTitle: Course['title'];
+    sectionCode: AASection['sectionCode'];
     term: string;
 }
 
-export const NotificationsMenu = memo(({ sectionCode, term }: NotificationsMenuProps) => {
+export const NotificationsMenu = memo(({ courseTitle, sectionCode, term }: NotificationsMenuProps) => {
     const key = sectionCode + ' ' + term;
     const [notification, setNotifications] = useNotificationStore(
         useShallow((store) => [store.notifications[key], store.setNotifications])
@@ -30,9 +32,9 @@ export const NotificationsMenu = memo(({ sectionCode, term }: NotificationsMenuP
 
     const handleClick = useCallback(
         (status: keyof NotificationStatus) => {
-            setNotifications(sectionCode, term, status);
+            setNotifications({ courseTitle, sectionCode, term, status });
         },
-        [sectionCode, setNotifications, term]
+        [courseTitle, sectionCode, setNotifications, term]
     );
 
     const handleClose = useCallback(() => {

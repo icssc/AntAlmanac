@@ -8,12 +8,12 @@ import {
     TableBody,
     TablePagination,
 } from '@mui/material';
-import { useCallback, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 
 import { NotificationTableRow } from '$components/RightPane/AddedCourses/NotificationsTableRow';
 import { useNotificationStore } from '$stores/NotificationStore';
 
-export function NotificationsTable() {
+export const NotificationsTable = memo(() => {
     const keys = Object.keys(useNotificationStore.getState().notifications);
 
     const [page, setPage] = useState(0);
@@ -68,4 +68,6 @@ export function NotificationsTable() {
             />
         </>
     );
-}
+});
+
+NotificationsTable.displayName = 'NotificationsTable';

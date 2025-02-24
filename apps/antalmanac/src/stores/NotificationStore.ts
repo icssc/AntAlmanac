@@ -1,5 +1,5 @@
 import { debounce } from '@mui/material';
-import { AASection } from '@packages/antalmanac-types';
+import { AASection, Course } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
 import { Notifications } from '$lib/notifications';
@@ -14,13 +14,24 @@ export type NotificationStatus = {
 export type Notification = {
     term: string;
     sectionCode: AASection['sectionCode'];
+    courseTitle: Course['title'];
     notificationStatus: NotificationStatus;
 };
 
 export interface NotificationStore {
     initialized: boolean;
     notifications: Partial<Record<string, Notification>>;
-    setNotifications: (sectionCode: AASection['sectionCode'], term: string, status: keyof NotificationStatus) => void;
+    setNotifications: ({
+        courseTitle,
+        sectionCode,
+        term,
+        status,
+    }: {
+        courseTitle: Course['title'];
+        sectionCode: AASection['sectionCode'];
+        term: string;
+        status: keyof NotificationStatus;
+    }) => void;
 }
 
 const pendingUpdates: Record<string, Notification> = {};
@@ -42,8 +53,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
     return {
         initialized: false,
         notifications: {},
-
-        setNotifications: async (sectionCode, term, status) => {
+        setNotifications: async ({ courseTitle, sectionCode, term, status }) => {
             const key = sectionCode + ' ' + term;
 
             set((state) => {
@@ -61,6 +71,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                     : {
                           term,
                           sectionCode,
+                          courseTitle,
                           notificationStatus: {
                               openStatus: false,
                               waitlistStatus: false,

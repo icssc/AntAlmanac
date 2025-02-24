@@ -19,6 +19,7 @@ const notificationsRouter = router({
         return {
             '34040 2025 Spring': {
                 term: '2025 Spring',
+                courseTitle: 'foo boo',
                 sectionCode: '34040',
                 notificationStatus: {
                     openStatus: true,
@@ -29,6 +30,7 @@ const notificationsRouter = router({
             },
             '34041 2025 Spring': {
                 term: '2025 Spring',
+                courseTitle: 'foo foo',
                 sectionCode: '34041',
                 notificationStatus: {
                     openStatus: true,
@@ -39,6 +41,7 @@ const notificationsRouter = router({
             },
             '34130 2025 Spring': {
                 term: '2025 Spring',
+                courseTitle: 'foo foo',
                 sectionCode: '34130',
                 notificationStatus: {
                     openStatus: true,
@@ -49,6 +52,7 @@ const notificationsRouter = router({
             },
             '34131 2025 Spring': {
                 term: '2025 Spring',
+                courseTitle: 'foo foo',
                 sectionCode: '34131',
                 notificationStatus: {
                     openStatus: true,
@@ -59,6 +63,7 @@ const notificationsRouter = router({
             },
             '34132 2025 Spring': {
                 term: '2025 Spring',
+                courseTitle: 'foo foo',
                 sectionCode: '34132',
                 notificationStatus: {
                     openStatus: true,
@@ -69,6 +74,7 @@ const notificationsRouter = router({
             },
             '34133 2025 Spring': {
                 term: '2025 Spring',
+                courseTitle: 'foo foo',
                 sectionCode: '34133',
                 notificationStatus: {
                     openStatus: true,
@@ -79,6 +85,7 @@ const notificationsRouter = router({
             },
             '34134 2025 Spring': {
                 term: '2025 Spring',
+                courseTitle: 'foo foo',
                 sectionCode: '34134',
                 notificationStatus: {
                     openStatus: true,
@@ -89,6 +96,7 @@ const notificationsRouter = router({
             },
             '34135 2025 Spring': {
                 term: '2025 Spring',
+                courseTitle: 'foo foo',
                 sectionCode: '34135',
                 notificationStatus: {
                     openStatus: true,
@@ -99,6 +107,7 @@ const notificationsRouter = router({
             },
             '34136 2025 Spring': {
                 term: '2025 Spring',
+                courseTitle: 'foo foo',
                 sectionCode: '34136',
                 notificationStatus: {
                     openStatus: true,
@@ -109,6 +118,7 @@ const notificationsRouter = router({
             },
             '34137 2025 Spring': {
                 term: '2025 Spring',
+                courseTitle: 'foo foo',
                 sectionCode: '34137',
                 notificationStatus: {
                     openStatus: true,
@@ -119,6 +129,7 @@ const notificationsRouter = router({
             },
             '34020 2025 Spring': {
                 term: '2025 Spring',
+                courseTitle: 'foo foo',
                 sectionCode: '34020',
                 notificationStatus: {
                     openStatus: true,
