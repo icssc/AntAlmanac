@@ -19,8 +19,7 @@ export type Notification = {
 
 export interface NotificationStore {
     initialized: boolean;
-    notifications: Record<string, Notification>;
-    getNotification: (sectionCode: AASection['sectionCode'], term: string) => Notification | undefined;
+    notifications: Partial<Record<string, Notification>>;
     setNotifications: (sectionCode: AASection['sectionCode'], term: string, status: keyof NotificationStatus) => void;
 }
 
@@ -39,37 +38,44 @@ const debouncedSetNotifications = debounce(async () => {
     }
 }, 500);
 
-export const useNotificationStore = create<NotificationStore>((set, get) => {
+export const useNotificationStore = create<NotificationStore>((set) => {
     return {
         initialized: false,
         notifications: {},
-        getNotification: (sectionCode, term) => {
-            const key = sectionCode + ' ' + term;
-            return get().notifications[key];
-        },
+
         setNotifications: async (sectionCode, term, status) => {
             const key = sectionCode + ' ' + term;
 
             set((state) => {
-                const notifications = state.notifications ?? {};
-                const notification = notifications[key] ?? {
-                    term,
-                    sectionCode,
-                    notificationStatus: {
-                        openStatus: false,
-                        waitlistStatus: false,
-                        fullStatus: false,
-                        restrictionStatus: false,
-                    },
-                };
-                notification.notificationStatus[status] = !notification.notificationStatus[status];
+                const notifications = state.notifications;
+                const existingNotification = notifications[key];
+
+                const newNotification = existingNotification
+                    ? {
+                          ...existingNotification,
+                          notificationStatus: {
+                              ...existingNotification.notificationStatus,
+                              [status]: !existingNotification.notificationStatus[status],
+                          },
+                      }
+                    : {
+                          term,
+                          sectionCode,
+                          notificationStatus: {
+                              openStatus: false,
+                              waitlistStatus: false,
+                              fullStatus: false,
+                              restrictionStatus: false,
+                              [status]: true, // Toggle the given (now-initialized) status to true
+                          },
+                      };
 
                 const updatedNotifications = {
                     ...notifications,
-                    [key]: notification,
+                    [key]: newNotification,
                 };
 
-                pendingUpdates[key] = notification;
+                pendingUpdates[key] = newNotification;
                 debouncedSetNotifications();
 
                 return {

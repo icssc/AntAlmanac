@@ -1,6 +1,7 @@
 import { NotificationAdd, NotificationAddOutlined } from '@mui/icons-material';
 import { IconButton, ListItemButton, Menu, MenuItem, Typography } from '@mui/material';
-import { useState, useCallback, memo, useMemo } from 'react';
+import { useState, useCallback, memo } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { NotificationStatus, useNotificationStore } from '$stores/NotificationStore';
 
@@ -17,14 +18,14 @@ interface NotificationsMenuProps {
 }
 
 export const NotificationsMenu = memo(({ sectionCode, term }: NotificationsMenuProps) => {
-    const { getNotification, setNotifications } = useNotificationStore();
-    const [anchorEl, setAnchorEl] = useState<HTMLElement>();
-
-    const notificationStatus = useMemo(
-        () => getNotification(sectionCode, term)?.notificationStatus,
-        [getNotification, sectionCode, term]
+    const key = sectionCode + ' ' + term;
+    const [notification, setNotifications] = useNotificationStore(
+        useShallow((store) => [store.notifications[key], store.setNotifications])
     );
 
+    const [anchorEl, setAnchorEl] = useState<HTMLElement>();
+
+    const notificationStatus = notification?.notificationStatus;
     const hasNotifications = notificationStatus && Object.values(notificationStatus).some((n) => n);
 
     const handleClick = useCallback(
