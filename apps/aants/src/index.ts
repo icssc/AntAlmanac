@@ -3,6 +3,7 @@
  */
 
 // import { SES } from 'aws-sdk';
+
 import { eq, and, or } from 'drizzle-orm';
 
 import { db } from '../../backend/src/db/index';
@@ -18,30 +19,15 @@ type User = {
 
 // async function getUpdatedClasses(quarter: string, year: string, sections: string[]) {
 //     try {
-//         // const url = new URL('https://anteaterapi.com/v2/rest/enrollmentChanges');
-//         const url = new URL('https://anteater-api-staging-125.icssc.workers.dev/v2/rest/enrollmentChanges');
-//         const now = new Date().toISOString();
-//         url.searchParams.append('quarter', quarter);
-//         url.searchParams.append('year', year);
-//         url.searchParams.append('sections', sections.join(','));
-//         url.searchParams.append('since', now);
-//         console.log(url.toString());
+//         const term: Term = {
+//             year: year,
+//             quarter: quarter as Quarter
+//         };
 
-//         const response = await fetch(url.toString(), {
-//             method: 'GET',
-//             headers: {
-//                 ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
-//             },
-//         });
-
-//         if (!response.ok) {
-//             throw new Error(`HTTP error! Status: ${response.status}`);
-//         }
-
-//         const data = await response.json();
-//         return data;
+//         const response = await request(term, { sectionCodes: sections.join(',') })
+//         return response;
 //     } catch (error: any) {
-//         console.error('Error calling API:', error.message);
+//         console.error('Error getting class information:', error.message);
 //     }
 // }
 
@@ -58,52 +44,31 @@ function getUpdatedClassesDummy(year: string, quarter: string, sections: string[
         data: {
             courses: [
                 {
-                    id: 'I&CSCI139W',
-                    title: 'CRITICAL WRITING',
-                    department: 'I&C SCI',
-                    courseNumber: '139W',
-                    sections: [
-                        {
-                            sectionCode: '35870',
-                            to: {
-                                maxCapacity: '100',
-                                status: 'WAITLISTED',
-                                numCurrentlyEnrolled: {
-                                    totalEnrolled: '0',
-                                    sectionEnrolled: '',
-                                },
-                                numRequested: '0',
-                                numOnWaitlist: '',
-                                numWaitlistCap: '0',
-                                numNewOnlyReserved: '0',
-                                restrictionCodes: ['A,L'],
-                                updatedAt: '2025-02-19T20:37:36.557Z',
-                            },
-                        },
-                    ],
-                },
-                {
-                    id: 'COMPSCI161',
-                    title: 'DES&ANALYS OF ALGOR',
-                    department: 'COMPSCI',
+                    deptCode: 'COMPSCI',
+                    courseComment: '',
+                    prerequisiteLink:
+                        'https://www.reg.uci.edu/cob/prrqcgi?term=202514&dept=COMPSCI&action=view_by_term#161',
                     courseNumber: '161',
+                    courseTitle: 'DES&ANALYS OF ALGOR',
                     sections: [
                         {
                             sectionCode: '34250',
-                            to: {
-                                maxCapacity: '350',
-                                status: 'OPEN',
-                                numCurrentlyEnrolled: {
-                                    totalEnrolled: '0',
-                                    sectionEnrolled: '',
-                                },
-                                numRequested: '0',
-                                numOnWaitlist: '0',
-                                numWaitlistCap: '53',
-                                numNewOnlyReserved: '0',
-                                restrictionCodes: ['L'],
-                                updatedAt: '2025-02-19T20:37:36.557Z',
-                            },
+                            sectionType: 'Lec',
+                            sectionNum: 'A',
+                            units: '4',
+                            instructors: [Array],
+                            modality: 'In-Person',
+                            meetings: [Array],
+                            finalExam: 'Tue Jun 10 8:00-10:00am',
+                            maxCapacity: '350',
+                            numCurrentlyEnrolled: [Object],
+                            numOnWaitlist: '0',
+                            numWaitlistCap: '53',
+                            numRequested: '0',
+                            numNewOnlyReserved: '0',
+                            restrictions: 'A',
+                            status: 'OPEN',
+                            sectionComment: '',
                         },
                     ],
                 },
@@ -113,31 +78,6 @@ function getUpdatedClassesDummy(year: string, quarter: string, sections: string[
 
     return response1;
 }
-
-// async function getSectionInformation(quarter: string, year: string, sectionCode: string) {
-//     try {
-//         const url = new URL('https://anteaterapi.com/v2/rest/websoc');
-//         url.searchParams.append('quarter', quarter);
-//         url.searchParams.append('year', year);
-//         url.searchParams.append('sectionCodes', sectionCode);
-
-//         const response = await fetch(url.toString(), {
-//             method: 'GET',
-//             headers: {
-//                 ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
-//             },
-//         });
-
-//         if (!response.ok) {
-//             throw new Error(`HTTP error! Status: ${response.status}`);
-//         }
-
-//         const data = await response.json();
-//         return data;
-//     } catch (error: any) {
-//         console.error('Error calling API:', error.message);
-//     }
-// }
 
 async function getSubscriptionSectionCodes() {
     try {
@@ -265,6 +205,24 @@ async function getUsers(
     }
 }
 
+function getFormattedTime() {
+    const now = new Date();
+
+    return (
+        new Intl.DateTimeFormat('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true,
+        }).format(now) +
+        ' on ' +
+        new Intl.DateTimeFormat('en-US', {
+            month: 'numeric',
+            day: 'numeric',
+            year: 'numeric',
+        }).format(now)
+    );
+}
+
 async function sendNotification(
     year: string,
     quarter: string,
@@ -282,25 +240,26 @@ async function sendNotification(
         let notification = ``;
 
         if (statusChanged == true) {
-            notification += ` ${status}`;
+            notification += `- The class is now ${status}`;
         }
         if (codesChanged == true) {
-            notification += ` with restriction codes: ${codes}`;
+            notification += `\n- The class now has restriction codes ${codes}`;
         }
+
+        const time = getFormattedTime();
         console.log(
-            'notification for',
+            'Notification for',
             deptCode,
             courseNumber,
-            '(',
-            courseTitle,
-            ')',
+            `(${courseTitle})`,
+            `at ${time}`,
             sectionCode,
             'in',
             year,
             quarter,
             '\n',
             users,
-            '\nclass is now: ',
+            '\n',
             notification,
             '\n'
         );
@@ -316,7 +275,7 @@ async function main() {
         await Promise.all(
             Object.entries(subscriptions).map(async ([term, sectionCodes]) => {
                 const [quarter, year] = term.split('-');
-                const batches = await batchCourseCodes(sectionCodes);
+                const batches = await batchCourseCodes(sectionCodes as string[]);
 
                 await Promise.all(
                     batches.map(async (batch) => {
