@@ -173,11 +173,12 @@ jobs:
               run: pnpm --filter "antalmanac-backend" build
               env:
                   ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
-                  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-                  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
 
             - name: Deploy backend staging CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" backend-staging deploy
+              env:
+                  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+                  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
 
             - name: Create success deployment
               uses: ./.github/actions/create-deployment
