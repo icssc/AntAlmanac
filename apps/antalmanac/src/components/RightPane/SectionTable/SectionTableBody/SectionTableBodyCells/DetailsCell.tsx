@@ -1,4 +1,4 @@
-import { Box, useMediaQuery } from '@mui/material';
+import { Box, SxProps, useMediaQuery } from '@mui/material';
 import { WebsocSectionType } from '@packages/antalmanac-types';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
@@ -21,24 +21,29 @@ const SECTION_COLORS = {
 
 interface DetailCellProps {
     sectionType: WebsocSectionType;
-    sectionNum: string;
-    units: number;
+    sectionNum: string | undefined;
+    units: number | undefined;
+    sx?: SxProps;
 }
 
-export const DetailsCell = ({ sectionType, sectionNum, units }: DetailCellProps) => {
+export const DetailsCell = ({ sectionType, sectionNum, units, sx }: DetailCellProps) => {
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
 
     return (
-        <TableBodyCellContainer sx={isMobileScreen ? { textAlign: 'center' } : {}}>
+        <TableBodyCellContainer sx={isMobileScreen ? { textAlign: 'center', ...sx } : { ...sx }}>
             <Box sx={SECTION_COLORS[sectionType]}>{sectionType}</Box>
-            <Box>
-                {!isMobileScreen && <>Sec: </>}
-                {sectionNum}
-            </Box>
-            <Box>
-                {!isMobileScreen && <>Units: </>}
-                {units}
-            </Box>
+            {sectionNum ? (
+                <Box>
+                    {!isMobileScreen && <>Sec: </>}
+                    {sectionNum}
+                </Box>
+            ) : null}
+            {units ? (
+                <Box>
+                    {!isMobileScreen && <>Units: </>}
+                    {units}
+                </Box>
+            ) : null}
         </TableBodyCellContainer>
     );
 };
