@@ -156,11 +156,7 @@ export const ActionCell = memo(({ ...props }: ActionCellProps) => {
     return (
         <TableBodyCellContainer sx={{ width: '8%' }}>
             {props.addedCourse ? (
-                <DeleteAndNotifications
-                    {...props}
-                    courseTitle={props.courseDetails.courseTitle}
-                    sectionCode={props.section.sectionCode}
-                />
+                <DeleteAndNotifications {...props} courseTitle={props.courseDetails.courseTitle} />
             ) : (
                 <ScheduleAddCell {...props} />
             )}

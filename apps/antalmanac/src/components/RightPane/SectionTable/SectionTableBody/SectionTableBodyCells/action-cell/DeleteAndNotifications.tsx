@@ -12,27 +12,27 @@ import { useNotificationStore } from '$stores/NotificationStore';
 
 interface DeleteAndNotificationsProps {
     courseTitle: Course['title'];
-    sectionCode: AASection['sectionCode'];
+    section: AASection;
     term: string;
 }
 
 /**
  * Sections added to a schedule, can be recolored or deleted.
  */
-export const DeleteAndNotifications = memo(({ courseTitle, sectionCode, term }: DeleteAndNotificationsProps) => {
+export const DeleteAndNotifications = memo(({ ...props }: DeleteAndNotificationsProps) => {
     const initialized = useNotificationStore(useShallow((state) => state.initialized));
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const flexDirection = isMobile ? 'column' : undefined;
 
     const handleClick = useCallback(() => {
-        deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
+        deleteCourse(props.section.sectionCode, props.term, AppStore.getCurrentScheduleIndex());
 
         logAnalytics({
             category: analyticsEnum.addedClasses.title,
             action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
         });
-    }, [sectionCode, term]);
+    }, [props.term, props.section.sectionCode]);
 
     return (
         <Box
@@ -48,7 +48,7 @@ export const DeleteAndNotifications = memo(({ courseTitle, sectionCode, term }: 
             </IconButton>
 
             {initialized ? (
-                <NotificationsMenu courseTitle={courseTitle} sectionCode={sectionCode} term={term} />
+                <NotificationsMenu {...props} />
             ) : (
                 <IconButton disabled>
                     <CircularProgress size={15} />
