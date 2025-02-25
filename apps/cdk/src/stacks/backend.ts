@@ -8,7 +8,7 @@ import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import type { Construct } from 'constructs';
 import { z } from 'zod';
 
-import { deployEnvSchema } from '../../../backend/src/env';
+import { backendEnvSchema } from '../../../backend/src/env';
 import { zoneName } from '../lib/constants';
 
 export class BackendStack extends Stack {
@@ -27,7 +27,9 @@ export class BackendStack extends Stack {
 
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
-        const env = z.intersection(BackendStack.CDKEnvironment, deployEnvSchema).parse(process.env);
+
+        const cdkEnv = BackendStack.CDKEnvironment.parse(process.env);
+        const backendEnv = backendEnvSchema.parse(process.env);
 
         /**
          * The domain that the backend API will be hosted on.
@@ -35,8 +37,13 @@ export class BackendStack extends Stack {
          * @example "api", "staging-123.api"
          * @example complete domain name: "api.antalmanac.com", "staging-123.api.antalmanac.com"
          */
-        const domain = env.PR_NUM ? `staging-${env.PR_NUM}.api` : env.NODE_ENV === 'production' ? 'api' : 'dev.api';
-        const removalPolicy: RemovalPolicy = env.NODE_ENV === 'staging' ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN;
+        const domain = cdkEnv.PR_NUM
+            ? `staging-${cdkEnv.PR_NUM}.api`
+            : cdkEnv.NODE_ENV === 'production'
+              ? 'api'
+              : 'dev.api';
+        const removalPolicy: RemovalPolicy =
+            cdkEnv.NODE_ENV === 'staging' ? RemovalPolicy.DESTROY : RemovalPolicy.RETAIN;
         const deletionProtection = removalPolicy === RemovalPolicy.RETAIN;
 
         const userDataDDB = new dynamnodb.Table(this, `userdata-ddb`, {
@@ -56,7 +63,7 @@ export class BackendStack extends Stack {
             timeout: Duration.seconds(20),
             memorySize: 256,
             environment: {
-                ...env,
+                ...backendEnv,
                 USERDATA_TABLE_NAME: userDataDDB.tableName,
             },
         });
@@ -66,7 +73,7 @@ export class BackendStack extends Stack {
         const certificate = acm.Certificate.fromCertificateArn(
             this,
             `${id}-api-gateway-certificate`,
-            env.CERTIFICATE_ARN
+            cdkEnv.CERTIFICATE_ARN
         );
 
         const apiGateway = new apigateway.LambdaRestApi(this, `${id}-api-gateway`, {
@@ -81,7 +88,7 @@ export class BackendStack extends Stack {
 
         const zone = route53.HostedZone.fromHostedZoneAttributes(this, `${id}-hosted-zone`, {
             zoneName,
-            hostedZoneId: env.HOSTED_ZONE_ID,
+            hostedZoneId: cdkEnv.HOSTED_ZONE_ID,
         });
 
         const target = new targets.ApiGateway(apiGateway);
