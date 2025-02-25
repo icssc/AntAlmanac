@@ -47,7 +47,7 @@ export function useQuickSearchForClasses() {
             displaySections();
             forceUpdate();
         },
-        [displaySections, forceUpdate, setActiveTab]
+        [displaySections, forceUpdate, navigate, setActiveTab]
     );
 }
 

@@ -126,7 +126,6 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                             Make sure the user ID is unique and secret, or someone else can overwrite your schedule.
                         </DialogContentText>
                         <TextField
-                            // eslint-disable-next-line jsx-a11y/no-autofocus
                             autoFocus
                             margin="dense"
                             label="Unique User ID"
