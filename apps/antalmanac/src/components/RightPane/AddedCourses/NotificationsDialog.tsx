@@ -23,11 +23,9 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
     return (
         <>
             <Tooltip title="Notifications Menu">
-                <span>
-                    <IconButton sx={buttonSx} onClick={handleOpen} size="small" disabled={disabled}>
-                        <Notifications />
-                    </IconButton>
-                </span>
+                <IconButton sx={buttonSx} onClick={handleOpen} size="small" disabled={disabled}>
+                    <Notifications />
+                </IconButton>
             </Tooltip>
 
             <Dialog open={open} onClose={handleClose} fullWidth>

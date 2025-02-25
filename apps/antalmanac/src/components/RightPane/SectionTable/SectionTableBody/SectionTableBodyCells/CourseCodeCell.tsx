@@ -1,4 +1,4 @@
-import { Chip, Tooltip } from '@mui/material';
+import { Chip, SxProps, TableCellProps, Tooltip } from '@mui/material';
 import { useState } from 'react';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
@@ -6,11 +6,12 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { clickToCopy } from '$lib/helpers';
 import { useThemeStore } from '$stores/SettingsStore';
 
-interface CourseCodeCellProps {
+interface CourseCodeCellProps extends TableCellProps {
     sectionCode: string;
+    sx?: SxProps;
 }
 
-export const CourseCodeCell = ({ sectionCode }: CourseCodeCellProps) => {
+export const CourseCodeCell = ({ sectionCode, sx, ...rest }: CourseCodeCellProps) => {
     const isDark = useThemeStore((store) => store.isDark);
     const [isHovered, setIsHovered] = useState(false);
 
@@ -23,7 +24,7 @@ export const CourseCodeCell = ({ sectionCode }: CourseCodeCellProps) => {
     };
 
     return (
-        <TableBodyCellContainer sx={{ width: '8%' }}>
+        <TableBodyCellContainer sx={{ width: '8%', ...sx }} {...rest}>
             <Tooltip title="Click to copy course code" placement="bottom" enterDelay={150}>
                 <Chip
                     onClick={(event) => {

@@ -41,8 +41,8 @@ export const NotificationsTable = memo(({ keys }: NotificationsTableProps) => {
                 <Table stickyHeader sx={{ minWidth: 650 }} size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell>Section Code</TableCell>
-                            <TableCell>Section Type</TableCell>
+                            <TableCell>Code</TableCell>
+                            <TableCell>Type</TableCell>
                             <TableCell>Course Title</TableCell>
                             <TableCell align="center">Open</TableCell>
                             <TableCell align="center">Waitlist</TableCell>

@@ -2,6 +2,8 @@ import { TableRow, TableCell } from '@mui/material';
 import { memo } from 'react';
 
 import { NotificationTableRowCheckbox } from '$components/RightPane/AddedCourses/NotificationTableRowCheckbox';
+import { CourseCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/CourseCodeCell';
+import { DetailsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell';
 import { NotificationStatus, useNotificationStore } from '$stores/NotificationStore';
 
 interface NotificationTableRowProps {
@@ -18,8 +20,15 @@ export const NotificationTableRow = memo(({ notificationKey }: NotificationTable
 
     return (
         <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-            <TableCell>{sectionCode}</TableCell>
-            <TableCell>{sectionType}</TableCell>
+            {/* <TableCell>{sectionCode}</TableCell> */}
+
+            <CourseCodeCell sectionCode={sectionCode} sx={{ width: 'unset', padding: '6px 16px' }} />
+            <DetailsCell
+                sectionType={sectionType}
+                sectionNum={undefined}
+                units={undefined}
+                sx={{ width: 'unset', padding: '6px 16px' }}
+            />
             <TableCell>{courseTitle}</TableCell>
 
             {Object.keys(notification.notificationStatus).map((statusKey) => (

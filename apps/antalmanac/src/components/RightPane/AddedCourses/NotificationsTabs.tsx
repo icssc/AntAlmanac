@@ -1,6 +1,7 @@
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Tab, Paper } from '@mui/material';
 import { useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { NotificationsTable } from '$components/RightPane/AddedCourses/NotificationsTable';
 import { useNotificationStore } from '$stores/NotificationStore';
@@ -18,6 +19,7 @@ function groupNotificationsByTerm(notifications: Record<string, unknown>) {
 }
 
 export function NotificationsTabs() {
+    const initialized = useNotificationStore(useShallow((store) => store.initialized));
     const notifications = useNotificationStore.getState().notifications;
 
     const groups = useMemo(() => groupNotificationsByTerm(notifications), [notifications]);
@@ -30,6 +32,10 @@ export function NotificationsTabs() {
 
     if (!activeTab) {
         return null;
+    }
+
+    if (!initialized) {
+        return 'Loading notifications...';
     }
 
     return (
