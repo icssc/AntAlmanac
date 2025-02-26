@@ -69,5 +69,5 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: Deploy ZotMeet to staging
-              run: pnpm db:migrate && pnpm sst deploy --stage staging-$PR_NUM
+            - name: Deploy AntAlmanac frontend to staging
+              run: pnpm sst deploy --stage staging-$PR_NUM
