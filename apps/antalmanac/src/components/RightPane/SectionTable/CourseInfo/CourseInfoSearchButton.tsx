@@ -3,19 +3,19 @@ import { Button } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { useCallback } from 'react';
 
-import { useQuickSearchForClasses } from '$lib/helpers';
+import { useQuickSearch } from '$src/hooks/useQuickSearch';
 
 /**
  * Routes the user to the corresponding search result
  */
 export function CourseInfoSearchButton({ courseDetails, term }: { courseDetails: AACourse; term: string }) {
-    const quickSearch = useQuickSearchForClasses();
+    const quickSearch = useQuickSearch();
 
     const { deptCode, courseNumber } = courseDetails;
 
     const handleClick = useCallback(() => {
         quickSearch(deptCode, courseNumber, term);
-    }, [courseNumber, deptCode, term]);
+    }, [courseNumber, deptCode, quickSearch, term]);
 
     return (
         <Button

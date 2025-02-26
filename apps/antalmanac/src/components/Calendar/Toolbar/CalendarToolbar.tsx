@@ -37,7 +37,6 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const theme = useTheme();
     const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-    const [skeletonScheduleNames, setSkeletonScheduleNames] = useState(AppStore.getSkeletonScheduleNames());
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('xxs'));
 
     const handleToggleFinals = useCallback(() => {
