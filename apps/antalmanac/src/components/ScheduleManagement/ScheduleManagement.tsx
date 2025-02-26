@@ -58,7 +58,9 @@ export function ScheduleManagement() {
         } else {
             setActiveTab('added');
         }
-    }, [isMobile, setActiveTab, tab]);
+        // NB: We disable exhaustive deps here as `tab` is a dependency, but we only want this effect to run on mount
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isMobile, setActiveTab]);
 
     // Restore scroll position if it has been previously saved.
     useEffect(() => {
