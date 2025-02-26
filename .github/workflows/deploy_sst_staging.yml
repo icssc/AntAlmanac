@@ -1,0 +1,73 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json
+---
+name: Deploy SST for staging
+
+on:
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - unlabeled
+
+permissions:
+    id-token: write
+    contents: read
+    deployments: write
+    pull-requests: write
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+env:
+    # Tooling settings.
+    HUSKY: 0
+    NODE_ENV: staging
+
+    # Application information.
+    MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
+    MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
+    VITE_TILES_ENDPOINT: ${{ secrets.VITE_TILES_ENDPOINT}}
+    GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+    GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+    ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
+
+    # Turborepo credentials.
+    TURBO_API: ${{ vars.TURBO_API }}
+    TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+    TURBO_TEAM: team_antalmanac
+
+    # AWS credentials.
+    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    AWS_DEFAULT_REGION: us-east-1
+
+    DB_URL: ${{ secrets.STAGING_DB_URL }}
+
+    CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
+    PR_NUM: ${{ github.event.pull_request.number }}
+    STAGE: dev
+
+# TODO:
+jobs:
+    deploy:
+        if: (!contains(github.event.pull_request.labels.*.name, 'no deploy'))
+
+        runs-on: ubuntu-latest
+
+        environment:
+            name: staging-${{ github.event.pull_request.number }}
+            url: https://staging-sst-${{ github.event.pull_request.number }}.antalmanac.com
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node.js and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Deploy ZotMeet to staging
+              run: pnpm db:migrate && pnpm sst deploy --stage staging-$PR_NUM
