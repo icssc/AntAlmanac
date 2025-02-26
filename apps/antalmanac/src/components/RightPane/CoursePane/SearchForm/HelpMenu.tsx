@@ -134,7 +134,18 @@ export function HelpMenu() {
                     color="primary"
                     aria-label="Help Menu"
                     onClick={isMobile ? handleToggleClick : undefined}
-                    sx={styles.fab}
+                    sx={{
+                        ...styles.fab,
+                        ...(isMobile ? {} : {
+                            transition: 'none !important',
+                            boxShadow: 'none !important',
+                            '&:hover': { boxShadow: 'none !important' },
+                            '&:active': { boxShadow: 'none !important' }, 
+                            '&:focus': { boxShadow: 'none !important' }, 
+                        }),
+                    }}
+                    disableRipple={!isMobile}
+                    disableFocusRipple={!isMobile}
                 >
                     <LightbulbIcon />
                 </Fab>
