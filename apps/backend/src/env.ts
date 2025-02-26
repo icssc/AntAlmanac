@@ -28,4 +28,6 @@ export const mapboxEnvSchema = z.object({
  */
 export const backendEnvSchema = [
     rdsEnvSchema, mapboxEnvSchema, googleOAuthEnvSchema
-].reduce((acc, schema) => acc.merge(schema), z.object({}));
+].reduce(
+    (acc, schema) => acc.merge(schema), z.object({STAGE: z.string()})
+);
