@@ -8,7 +8,7 @@ import { procedure, router } from '../trpc';
 
 import { db } from 'src/db';
 import { googleOAuthEnvSchema } from 'src/env';
-import { mangleDupliateScheduleNames } from 'src/lib/formatting';
+import { mangleDuplicateScheduleNames } from 'src/lib/formatting';
 import { RDS } from 'src/lib/rds';
 
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } = googleOAuthEnvSchema.parse(process.env);
@@ -149,7 +149,7 @@ const userDataRouter = router({
         const data = input.data;
 
         // Mangle duplicate schedule names
-        data.userData.schedules = mangleDupliateScheduleNames(data.userData.schedules);
+        data.userData.schedules = mangleDuplicateScheduleNames(data.userData.schedules);
 
         return await RDS.upsertUserData(db, data).catch((error) =>
             console.error('RDS Failed to upsert user data:', error)
