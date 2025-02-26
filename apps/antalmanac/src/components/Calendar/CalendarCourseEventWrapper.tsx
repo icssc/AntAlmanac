@@ -32,7 +32,7 @@ export const CalendarCourseEventWrapper = ({ children, ...props }: CalendarCours
                 setSelectedEvent(e, props.event);
             }
         },
-        [props.event, setSelectedEvent]
+        [props.event, quickSearch, setSelectedEvent]
     );
 
     useEffect(() => {
