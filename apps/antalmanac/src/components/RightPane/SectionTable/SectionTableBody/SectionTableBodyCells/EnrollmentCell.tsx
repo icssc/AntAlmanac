@@ -5,7 +5,7 @@ import { TableBodyCellContainer } from '$components/RightPane/SectionTable/Secti
 
 interface EnrollmentCellProps {
     numCurrentlyEnrolled: WebsocSectionEnrollment;
-    maxCapacity: number;
+    maxCapacity: string;
 
     /**
      * This is a string because sometimes it's "n/a"
