@@ -35,6 +35,7 @@ class RightPaneStore extends EventEmitter {
     private urlCourseNumValue: string;
     private urlDeptLabel: string;
     private urlDeptValue: string;
+    private filterTakenCourses: boolean;
 
     constructor() {
         super();
@@ -49,6 +50,7 @@ class RightPaneStore extends EventEmitter {
         this.urlCourseNumValue = search.get('courseNumber') || '';
         this.urlDeptLabel = search.get('deptLabel') || '';
         this.urlDeptValue = search.get('deptValue') || '';
+        this.filterTakenCourses = false;
 
         this.updateFormDataFromURL(search);
     }
@@ -103,6 +105,14 @@ class RightPaneStore extends EventEmitter {
         const { ge, deptValue, sectionCode, instructor } = this.formData;
         return ge !== 'ANY' || deptValue !== 'ALL' || sectionCode !== '' || instructor !== '';
     };
+
+    getFilterTakenClasses = (): boolean => {
+        return this.filterTakenCourses;
+    };
+
+    setFilterTakenClasses = (value: boolean) => {
+        this.filterTakenCourses = value;
+   };
 }
 
 const store = new RightPaneStore();

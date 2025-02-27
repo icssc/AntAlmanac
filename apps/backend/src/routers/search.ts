@@ -23,7 +23,7 @@ const geCategories: Record<GECategoryKey, GESearchResult> = {
     ge8: { type: 'GE_CATEGORY', name: 'International/Global Issues' },
 };
 
-const PETERPORTAL_API_URL = "https://staging-598.peterportal.org/api/trpc/external.roadmaps.getByGoogleID";
+const PETERPORTAL_API_URL = "https://peterportal.org/api/trpc/external.roadmaps.getByGoogleID";
 
 const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
     key.toUpperCase().replace('GE', 'GE-'),
@@ -39,8 +39,6 @@ async function fetchUserCoursesPeterPortal(userId: string): Promise<Set<string>>
     const searchParams = new URLSearchParams({ input: JSON.stringify({ googleUserId: userId }) });
     const url = `${PETERPORTAL_API_URL}?${searchParams.toString()}`;
     try {
-        console.log("Fetching user courses from:", url);
-        
         const response = await fetch(url, {
             method: "GET",
             headers: {
@@ -61,11 +59,8 @@ async function fetchUserCoursesPeterPortal(userId: string): Promise<Set<string>>
                 }
             }
         }
-    
-        console.log("Fetched user courses:", coursesTaken);
         return coursesTaken;
     } catch (error) {
-        console.error("Error fetching user courses:", error);
         return new Set();
     }
 }
@@ -94,12 +89,8 @@ const searchRouter = router({
                 ...matchedDepts.map(x => [x.obj.id, x.obj]),
                 ...matchedCourses.map(x => [x.obj.id, x.obj]),
             ]
-
-            console.log("Initial Search Results:", results.map(([id, obj]) => obj.id));
             
             if (filterTakenClasses && userId) {
-                console.log("Filtering taken classes...");
-                console.log("Pre-Filtered Results:", results.map(([id, obj]) => obj.id));
                 const userCourses = await fetchUserCoursesPeterPortal(userId);
                 results = results.filter(([id, obj]) => {
                     if (obj.type === 'COURSE') {
@@ -107,7 +98,6 @@ const searchRouter = router({
                     }
                     return true;
                 });
-                console.log("Filtered Results:", results.map(([id, obj]) => obj.id));
             }
             return Object.fromEntries(results);
         }),

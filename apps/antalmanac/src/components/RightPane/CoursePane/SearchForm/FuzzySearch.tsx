@@ -40,7 +40,6 @@ interface FuzzySearchState {
     value: string;
     userID: string;
     loading: boolean;
-    filterTakenClasses: boolean;
     requestTimestamp?: number;
     pendingRequest?: number;
 }
@@ -53,7 +52,6 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         value: '',
         userID: '',
         loading: false,
-        filterTakenClasses: false,
         requestTimestamp: undefined,
         pendingRequest: undefined,
     };
@@ -128,7 +126,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
             .query({ 
                 query: this.state.value,
                 userId: this.state.userID,
-                filterTakenClasses: this.state.filterTakenClasses
+                filterTakenClasses: RightPaneStore.getFilterTakenClasses()
             })
             .then((result) => {
                 if (!this.requestIsCurrent(requestTimestamp)) return;
