@@ -1,6 +1,7 @@
 import { PlayLesson } from '@mui/icons-material';
 import { useTour } from '@reactour/tour';
 import { useCallback, useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { stepsFactory, tourShouldRun } from '$lib/TutorialHelpers';
 import { removeSampleClasses } from '$lib/tourExampleGeneration';
@@ -8,12 +9,11 @@ import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
 export function TutorialAction() {
     const { setCurrentStep, setIsOpen, setSteps, isOpen } = useTour();
-    const [displaySearch, disableManualSearch] = useCoursePaneStore((state) => [
-        state.displaySearch,
-        state.disableManualSearch,
-    ]);
+    const [displaySearch, disableManualSearch] = useCoursePaneStore(
+        useShallow((state) => [state.displaySearch, state.disableManualSearch])
+    );
 
-    const startTour = useCallback(() => {
+    const handleClick = useCallback(() => {
         displaySearch();
         disableManualSearch();
         setCurrentStep(0);
@@ -37,5 +37,5 @@ export function TutorialAction() {
         setSteps(stepsFactory(setCurrentStep));
     }, [setCurrentStep, setSteps]);
 
-    return { icon: <PlayLesson />, name: 'Start Tutorial', onClick: startTour };
+    return { icon: <PlayLesson />, name: 'Start Tutorial', onClick: handleClick };
 }
