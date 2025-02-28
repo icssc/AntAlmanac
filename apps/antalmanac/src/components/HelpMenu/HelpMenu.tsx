@@ -1,15 +1,16 @@
-import { Lightbulb, Share } from '@mui/icons-material';
+import { TipsAndUpdates } from '@mui/icons-material';
 import { Backdrop, Box, SpeedDial, SpeedDialAction, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
 
 import { FeedbackAction } from '$components/HelpMenu/actions/FeedbackAction';
 import { HelpBoxAction } from '$components/HelpMenu/actions/HelpBoxAction';
+import { PatchNotesAction } from '$components/HelpMenu/actions/PatchNotesAction';
 import { TutorialAction } from '$components/HelpMenu/actions/TutorialAction';
 
 export function HelpMenu() {
     const [open, setOpen] = useState(false);
 
-    const actions = [HelpBoxAction(), FeedbackAction(), TutorialAction(), { icon: <Share />, name: 'Share' }];
+    const actions = [HelpBoxAction(), FeedbackAction(), TutorialAction(), PatchNotesAction()];
 
     const handleClick = useCallback(() => setOpen((prev) => !prev), []);
     const handleClose = useCallback(() => setOpen(false), []);
@@ -51,7 +52,7 @@ export function HelpMenu() {
                                 height: '100%',
                             }}
                         >
-                            <Lightbulb />
+                            <TipsAndUpdates />
                         </Box>
                     </Tooltip>
                 }
