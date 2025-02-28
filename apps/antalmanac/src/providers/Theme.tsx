@@ -1,11 +1,45 @@
 import { createTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
+import { PaletteOptions } from '@material-ui/core/styles/createPalette';
 import { useEffect } from 'react';
 
+import { BLUE, DODGER_BLUE } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
+
+const lightTheme: PaletteOptions = {
+    primary: {
+        main: '#5191d6',
+    },
+    secondary: {
+        main: '#ffffff',
+    },
+    background: {
+        default: '#fafafa',
+        paper: '#fff',
+    },
+};
+
+const darkTheme: PaletteOptions = {
+    primary: {
+        main: DODGER_BLUE,
+    },
+    secondary: {
+        main: '#ffffff',
+    },
+    background: {
+        default: '#303030',
+        paper: '#424242',
+    },
+};
 
 interface Props {
     children?: React.ReactNode;
+}
+
+declare module '@material-ui/core/styles/createBreakpoints' {
+    interface BreakpointOverrides {
+        xxs: true;
+    }
 }
 
 /**
@@ -33,7 +67,7 @@ export default function AppThemeProvider(props: Props) {
             MuiCssBaseline: {
                 '@global': {
                     a: {
-                        color: appTheme == 'dark' ? 'dodgerBlue' : 'blue',
+                        color: appTheme == 'dark' ? DODGER_BLUE : BLUE,
                     },
                 },
             },
@@ -44,6 +78,7 @@ export default function AppThemeProvider(props: Props) {
              * @see https://tailwindcss.com/docs/screens
              */
             values: {
+                xxs: 400,
                 xs: 640,
                 sm: 768,
                 md: 1024,
@@ -51,25 +86,9 @@ export default function AppThemeProvider(props: Props) {
                 xl: 1536,
             },
         },
-        typography: {
-            htmlFontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10),
-            fontSize:
-                parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
-        },
         palette: {
             type: appTheme == 'dark' ? 'dark' : 'light',
-            primary: {
-                light: '#5191d6',
-                main: '#305db7',
-                dark: '#003a75',
-                contrastText: '#fff',
-            },
-            secondary: {
-                light: '#ffff52',
-                main: '#ffffff',
-                dark: '#c7a100',
-                contrastText: '#000',
-            },
+            ...(appTheme == 'dark' ? darkTheme : lightTheme),
         },
         spacing: 4,
     });

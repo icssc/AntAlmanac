@@ -2,7 +2,6 @@ import { Tab, useMediaQuery, useTheme } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 import { ScheduleManagementTabInfo } from '$components/ScheduleManagement/ScheduleManagementTabs';
-import { useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 
 interface ScheduleManagementTabProps {
@@ -12,7 +11,6 @@ interface ScheduleManagementTabProps {
 
 export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps) => {
     const { setActiveTabValue } = useTabStore();
-    const isDark = useThemeStore((store) => store.isDark);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -28,16 +26,19 @@ export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps
             icon={tab.icon}
             iconPosition={isMobile ? 'top' : 'start'}
             sx={{
-                ...(!isMobile
+                ...(isMobile
                     ? {
+                          minHeight: 'unset',
+                          minWidth: '25%',
+                          height: 56,
+                      }
+                    : {
                           minHeight: 'auto',
                           height: '44px',
                           padding: 3,
                           minWidth: '33%',
-                      }
-                    : { minWidth: '25%' }),
-                display: !isMobile && tab.mobile ? 'none' : 'flex',
-                ...(isDark ? { '&.Mui-selected': { color: 'white' } } : {}),
+                      }),
+                display: isMobile || !tab.mobile ? 'flex' : 'none',
             }}
             label={tab.label}
             onClick={handleClick}

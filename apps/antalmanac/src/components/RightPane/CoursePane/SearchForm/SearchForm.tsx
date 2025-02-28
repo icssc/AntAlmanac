@@ -8,11 +8,11 @@ import RightPaneStore from '../../RightPaneStore';
 
 import FuzzySearch from './FuzzySearch';
 import HelpBox from './HelpBox';
-import LegacySearch from './LegacySearch';
 import PrivacyPolicyBanner from './PrivacyPolicyBanner';
 import TermSelector from './TermSelector';
 import { HelpMenu } from './HelpMenu';
 
+import { LegacySearch } from '$components/RightPane/CoursePane/SearchForm/LegacySearch';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { getLocalStorageHelpBoxDismissalTime, setLocalStorageHelpBoxDismissalTime } from '$lib/localStorage';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -28,11 +28,11 @@ const styles: Styles<Theme, object> = {
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
+        gap: 16,
     },
     searchBar: {
         display: 'flex',
         flexDirection: 'row',
-        marginTop: '1rem',
     },
     margin: {
         borderTop: 'solid 8px transparent',

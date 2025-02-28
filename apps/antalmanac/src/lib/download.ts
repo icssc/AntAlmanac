@@ -7,7 +7,7 @@ import { notNull } from './utils';
 import { openSnackbar } from '$actions/AppStoreActions';
 import { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import buildingCatalogue from '$lib/buildingCatalogue';
+import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { getDefaultTerm, termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 
@@ -223,7 +223,7 @@ export function getTermLength(quarter: string) {
  */
 export function getRRule(bydays: string[], quarter: string) {
     /**
-     * Number of occurences in the quarter
+     * Number of occurrences in the quarter
      */
     let count = getTermLength(quarter) * bydays.length;
 

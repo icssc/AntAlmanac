@@ -1,19 +1,6 @@
-import {
-    Box,
-    Paper,
-    Table,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Tooltip,
-    Typography,
-    useMediaQuery,
-} from '@material-ui/core';
-import { Assessment, Help, RateReview, ShowChart as ShowChartIcon } from '@material-ui/icons';
+import { Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow, useMediaQuery } from '@material-ui/core';
+import { Assessment, RateReview, ShowChart as ShowChartIcon } from '@material-ui/icons';
 import { useMemo } from 'react';
-
-import { MOBILE_BREAKPOINT } from '../../../globals';
 
 import { EnrollmentHistoryPopup } from './EnrollmentHistoryPopup';
 import GradesPopup from './GradesPopup';
@@ -22,8 +9,10 @@ import { SectionTableProps } from './SectionTable.types';
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
+import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import analyticsEnum from '$lib/analytics';
+import { MOBILE_BREAKPOINT } from '$src/globals';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import { useTabStore } from '$stores/TabStore';
 
@@ -77,35 +66,6 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
     },
 };
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
-
-interface EnrollmentColumnHeaderProps {
-    label: string;
-}
-
-function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
-
-    return (
-        <Box display="flex">
-            {props.label}
-            {!isMobileScreen && (
-                <Tooltip
-                    title={
-                        <Typography>
-                            Enrolled/Capacity
-                            <br />
-                            Waitlist
-                            <br />
-                            New-Only Reserved
-                        </Typography>
-                    }
-                >
-                    <Help fontSize="small" />
-                </Tooltip>
-            )}
-        </Box>
-    );
-}
 
 function SectionTable(props: SectionTableProps) {
     const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory } = props;

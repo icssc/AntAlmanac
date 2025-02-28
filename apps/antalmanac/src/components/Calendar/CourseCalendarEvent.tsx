@@ -11,9 +11,10 @@ import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
 import ColorPicker from '$components/ColorPicker';
 import { MapLink } from '$components/buttons/MapLink';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import buildingCatalogue from '$lib/buildingCatalogue';
-import { clickToCopy, useQuickSearchForClasses } from '$lib/helpers';
-import locationIds from '$lib/location_ids';
+import { clickToCopy } from '$lib/helpers';
+import buildingCatalogue from '$lib/locations/buildingCatalogue';
+import locationIds from '$lib/locations/locations';
+import { useQuickSearch } from '$src/hooks/useQuickSearch';
 import AppStore from '$stores/AppStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
@@ -147,7 +148,7 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 
 const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopover }: CourseCalendarEventProps) => {
     const paperRef = useRef<HTMLInputElement>(null);
-    const quickSearch = useQuickSearchForClasses();
+    const quickSearch = useQuickSearch();
     const { isMilitaryTime } = useTimeFormatStore();
 
     useEffect(() => {
@@ -206,7 +207,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                             style={{ textDecoration: 'underline' }}
                             onClick={() => {
                                 closePopover();
-                                deleteCourse(sectionCode, term);
+                                deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
                                     action: analyticsEnum.calendar.actions.DELETE_COURSE,
@@ -309,7 +310,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                         <IconButton
                             onClick={() => {
                                 closePopover();
-                                deleteCustomEvent(customEventID);
+                                deleteCustomEvent(customEventID, [AppStore.getCurrentScheduleIndex()]);
                                 logAnalytics({
                                     category: analyticsEnum.calendar.title,
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,

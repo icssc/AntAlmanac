@@ -1,6 +1,7 @@
 import { createTheme, CssBaseline, ThemeProvider, type PaletteOptions } from '@mui/material';
 import { useEffect, useMemo } from 'react';
 
+import { BLUE, DODGER_BLUE } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 
 const lightTheme: PaletteOptions = {
@@ -18,7 +19,7 @@ const lightTheme: PaletteOptions = {
 
 const darkTheme: PaletteOptions = {
     primary: {
-        main: '#305db7',
+        main: DODGER_BLUE,
     },
     secondary: {
         main: '#ffffff',
@@ -31,6 +32,12 @@ const darkTheme: PaletteOptions = {
 
 interface Props {
     children?: React.ReactNode;
+}
+
+declare module '@mui/material/styles' {
+    interface BreakpointOverrides {
+        xxs: true;
+    }
 }
 
 /**
@@ -60,8 +67,36 @@ export default function AppThemev5Provider(props: Props) {
                     MuiCssBaseline: {
                         styleOverrides: {
                             a: {
-                                color: appTheme === 'dark' ? 'dodgerblue' : 'blue',
+                                color: appTheme === 'dark' ? DODGER_BLUE : BLUE,
                             },
+                        },
+                    },
+                    // https://github.com/mui/material-ui/issues/43683#issuecomment-2492787970
+                    MuiDialog: {
+                        styleOverrides: {
+                            paper: {
+                                backgroundImage: 'none',
+                            },
+                        },
+                    },
+                    MuiAppBar: {
+                        styleOverrides: {
+                            root: {
+                                backgroundImage: 'none',
+                            },
+                        },
+                    },
+                    MuiButton: {
+                        styleOverrides: {
+                            root: ({ ownerState }) => ({
+                                ...(ownerState.variant === 'contained' &&
+                                    ownerState.color === 'primary' && {
+                                        backgroundColor: BLUE,
+                                        ':hover': {
+                                            backgroundColor: '#003A75',
+                                        },
+                                    }),
+                            }),
                         },
                     },
                 },
@@ -71,6 +106,7 @@ export default function AppThemev5Provider(props: Props) {
                      * @see https://tailwindcss.com/docs/screens
                      */
                     values: {
+                        xxs: 400,
                         xs: 640,
                         sm: 768,
                         md: 1024,
@@ -79,8 +115,8 @@ export default function AppThemev5Provider(props: Props) {
                     },
                 },
                 palette: {
-                    mode: appTheme == 'dark' ? 'dark' : 'light',
-                    ...(appTheme == 'dark' ? darkTheme : lightTheme),
+                    mode: appTheme === 'dark' ? 'dark' : 'light',
+                    ...(appTheme === 'dark' ? darkTheme : lightTheme),
                 },
             }),
         [appTheme]
