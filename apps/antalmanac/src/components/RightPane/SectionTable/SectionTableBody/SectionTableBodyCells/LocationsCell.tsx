@@ -4,7 +4,7 @@ import { Fragment } from 'react';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { MapLink } from '$components/buttons/MapLink';
-import locationIds from '$lib/location_ids';
+import locationIds from '$lib/locations/locations';
 
 interface LocationsCellProps {
     meetings: WebsocSectionMeeting[];

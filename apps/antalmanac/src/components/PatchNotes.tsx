@@ -38,7 +38,7 @@ function PatchNotesBackdrop(props: BackdropProps) {
  * PatchNotes follows structure/layout of AboutPage.tsx
  */
 function PatchNotes() {
-    const [open, setOpen] = useState(isOutdated());
+    const [open, setOpen] = useState(() => isOutdated());
 
     const handleClose = useCallback(() => {
         setLocalStoragePatchNotesKey(latestPatchNotesUpdate);
@@ -60,7 +60,7 @@ function PatchNotes() {
                 <ul>
                     <li>
                         Added column linking to course syllabi (thanks to the ASUCI{' '}
-                        <a href="https://asuci.uci.edu/academicvp/" target="_blank">
+                        <a href="https://asuci.uci.edu/academicvp/" target="_blank" rel="noreferrer">
                             AAVP
                         </a>
                         !).

@@ -29,6 +29,7 @@ class Term {
  * Months are 0-indexed
  */
 const termData = [
+    new Term('2025 Spring', '2025 Spring Quarter', [2025, 2, 31], [2025, 5, 7]),
     new Term('2025 Winter', '2025 Winter Quarter', [2025, 0, 6], [2025, 2, 15]),
     new Term('2024 Fall', '2024 Fall Quarter', [2024, 8, 26], [2024, 11, 7]),
     new Term('2024 Summer2', '2024 Summer Session 2', [2024, 7, 5], [2024, 8, 10]),

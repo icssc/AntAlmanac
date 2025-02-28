@@ -68,7 +68,7 @@ jobs:
               run: pnpm --filter "antalmanac" build
 
             - name: Upload built artifacts
-              uses: actions/upload-pages-artifact@v2
+              uses: actions/upload-pages-artifact@v3
               with:
                   path: apps/antalmanac/build
 
@@ -91,7 +91,7 @@ jobs:
         steps:
             - name: Deploy to GitHub Pages
               id: deployment
-              uses: actions/deploy-pages@v2
+              uses: actions/deploy-pages@v4
 
     # Production backend used by the live production website.
     deploy_production_backend:

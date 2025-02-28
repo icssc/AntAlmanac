@@ -191,11 +191,19 @@ function ScheduleNoteBox() {
                 label="Click here to start typing!"
                 onChange={handleNoteChange}
                 value={scheduleNote}
-                inputProps={{ maxLength: NOTE_MAX_LEN }}
+                inputProps={{
+                    maxLength: NOTE_MAX_LEN,
+                    style: { cursor: skeletonMode ? 'not-allowed' : 'text' },
+                }}
                 InputProps={{ disableUnderline: true }}
                 fullWidth
                 multiline
                 disabled={skeletonMode}
+                sx={{
+                    '& .MuiInputBase-root': {
+                        cursor: skeletonMode ? 'not-allowed' : 'text',
+                    },
+                }}
             />
         </Box>
     );
@@ -330,13 +338,13 @@ function AddedSectionsGrid() {
     );
 
     return (
-        <Box display="flex" flexDirection="column" gap={1} marginX={0.5}>
+        <Box display="flex" flexDirection="column" gap={1}>
             <Box display="flex" width={1} position="absolute" zIndex="2">
                 <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
                 <ClearScheduleButton buttonSx={buttonSx} />
                 <ColumnToggleDropdown />
             </Box>
-            <Box style={{ marginTop: 50 }}>
+            <Box style={{ marginTop: 56 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
                 {courses.length < 1 ? NoCoursesBox : null}
                 <Box display="flex" flexDirection="column" gap={1}>

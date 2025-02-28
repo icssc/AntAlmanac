@@ -3,9 +3,9 @@
 This is the dedicated backend for [AntAlmanac](https://antalmanac.com),
 which is primarily responsible for managing user data and internal information.
 
-This is **_NOT_** for retrieving enrollment data from UCI;
-[Anteater API](https://docs.icssc.club/developer/anteaterapi) is a separate ICSSC project dedicated
-to providing us this information.
+This is **_NOT_** for retrieving course, enrollment, or similar data from UCI;
+[Anteater API](https://docs.icssc.club/docs/developer/anteaterapi), a separate ICSSC project,
+provides this information.
 
 # Setup
 
@@ -17,9 +17,8 @@ to providing us this information.
 - Populate the keys following the instructions below.
     - Note that the Mapbox API key can be left blank, which will cause the app to default to OSM's tiles.
 
-## AnteaterAPI Key
-- The key is required to send course information requests to AnteaterAPI.
-- It can be acquired from the [AnteaterAPI Dashboard](https://dashboard.anteaterapi.com).
+## Anteater API Key
+- An Anteater API key is required to send course information requests to Anteater API. You can obtain one on the [Anteater API Dashboard](https://dashboard.anteaterapi.com).
 
 ## Local Database
 - Install PostgreSQL and pgAdmin.

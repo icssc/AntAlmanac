@@ -1,13 +1,11 @@
 import { Button, Popover, useMediaQuery } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
-import { MOBILE_BREAKPOINT } from '../../../../../globals';
-
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { Grades } from '$lib/grades';
-import { useThemeStore } from '$stores/SettingsStore';
-
+import { MOBILE_BREAKPOINT } from '$src/globals';
+import { usePrimaryColor } from '$src/hooks/usePrimaryColor';
 
 async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
     const namedInstructors = instructors.filter((instructor) => instructor !== 'STAFF');
@@ -33,12 +31,12 @@ interface GpaCellProps {
 }
 
 export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) => {
-    const isDark = useThemeStore((store) => store.isDark);
     const isMobile = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
     const [gpa, setGpa] = useState('');
     const [instructor, setInstructor] = useState('');
     const [anchorEl, setAnchorEl] = useState<Element>();
+    const primaryColor = usePrimaryColor();
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl((currentAnchorEl) => (currentAnchorEl ? undefined : event.currentTarget));
@@ -62,12 +60,13 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
     return (
         <TableBodyCellContainer>
             <Button
-                style={{
-                    color: isDark ? 'dodgerblue' : 'blue',
-                    padding: 0,
+                sx={{
+                    paddingX: 1,
+                    paddingY: 0,
                     minWidth: 0,
                     fontWeight: 400,
                     fontSize: '1rem',
+                    color: primaryColor,
                 }}
                 onClick={handleClick}
                 variant="text"
@@ -79,8 +78,6 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
                 onClose={hideDistribution}
                 anchorEl={anchorEl}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                disableRestoreFocus
             >
                 <GradesPopup
                     deptCode={deptCode}
