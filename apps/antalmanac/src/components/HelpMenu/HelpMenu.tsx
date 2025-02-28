@@ -1,7 +1,8 @@
-import { Print, Save, Share } from '@mui/icons-material';
-import { Backdrop, SpeedDial, SpeedDialAction, SpeedDialIcon, Tooltip } from '@mui/material';
+import { Lightbulb, Print, Share } from '@mui/icons-material';
+import { Backdrop, Box, SpeedDial, SpeedDialAction, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
 
+import { FeedbackAction } from '$components/HelpMenu/actions/FeedbackAction';
 import { HelpBoxAction } from '$components/HelpMenu/actions/HelpBoxAction';
 
 export function HelpMenu() {
@@ -9,7 +10,7 @@ export function HelpMenu() {
 
     const actions = [
         HelpBoxAction(),
-        { icon: <Save />, name: 'Save' },
+        FeedbackAction(),
         { icon: <Print />, name: 'Print' },
         { icon: <Share />, name: 'Share' },
     ];
@@ -39,7 +40,7 @@ export function HelpMenu() {
                 }}
                 icon={
                     <Tooltip title="Help Menu" placement="left">
-                        <SpeedDialIcon
+                        <Box
                             sx={{
                                 display: 'flex',
                                 justifyContent: 'center',
@@ -47,7 +48,9 @@ export function HelpMenu() {
                                 width: '100%',
                                 height: '100%',
                             }}
-                        />
+                        >
+                            <Lightbulb />
+                        </Box>
                     </Tooltip>
                 }
                 onClick={handleClick}
@@ -66,6 +69,9 @@ export function HelpMenu() {
                             handleClickAction(e, action.onClick);
                         }}
                         sx={{ whiteSpace: 'nowrap' }}
+                        FabProps={{
+                            sx: { margin: '6px' },
+                        }}
                     />
                 ))}
             </SpeedDial>
