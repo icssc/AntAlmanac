@@ -1,19 +1,30 @@
-import { FileCopy, Print, Save, Share } from '@mui/icons-material';
+import { Print, Save, Share } from '@mui/icons-material';
 import { Backdrop, SpeedDial, SpeedDialAction, SpeedDialIcon, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
 
-const actions = [
-    { icon: <FileCopy />, name: 'Copy' },
-    { icon: <Save />, name: 'Save' },
-    { icon: <Print />, name: 'Print' },
-    { icon: <Share />, name: 'Share' },
-];
+import { HelpBoxAction } from '$components/HelpMenu/actions/HelpBoxAction';
 
 export function HelpMenu() {
     const [open, setOpen] = useState(false);
 
+    const actions = [
+        HelpBoxAction(),
+        { icon: <Save />, name: 'Save' },
+        { icon: <Print />, name: 'Print' },
+        { icon: <Share />, name: 'Share' },
+    ];
+
     const handleClick = useCallback(() => setOpen((prev) => !prev), []);
     const handleClose = useCallback(() => setOpen(false), []);
+
+    const handleClickAction = useCallback(
+        (e: React.MouseEvent, action: VoidFunction) => {
+            e.stopPropagation();
+            handleClose();
+            action();
+        },
+        [handleClose]
+    );
 
     return (
         <>
@@ -51,7 +62,10 @@ export function HelpMenu() {
                         icon={action.icon}
                         tooltipTitle={action.name}
                         tooltipOpen
-                        onClick={handleClose}
+                        onClick={(e) => {
+                            handleClickAction(e, action.onClick);
+                        }}
+                        sx={{ whiteSpace: 'nowrap' }}
                     />
                 ))}
             </SpeedDial>

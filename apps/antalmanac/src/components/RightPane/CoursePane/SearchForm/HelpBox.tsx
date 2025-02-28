@@ -1,6 +1,4 @@
 import { Close } from '@mui/icons-material';
-import RightPaneStore from '../../RightPaneStore';
-import { useState, useEffect } from 'react';
 import {
     Paper,
     ImageList,
@@ -13,6 +11,11 @@ import {
     Box,
     IconButton,
 } from '@mui/material';
+import { useCallback } from 'react';
+import { useShallow } from 'zustand/react/shallow';
+
+import { setLocalStorageHelpBoxDismissalTime } from '$lib/localStorage';
+import { useHelpMenuStore } from '$stores/HelpMenuStore';
 
 const images = [
     {
@@ -29,26 +32,23 @@ const images = [
     },
 ];
 
-interface HelpBoxProps {
-    onDismiss: () => void;
-}
+export function HelpBox() {
+    const [showHelpBox, setShowHelpBox] = useHelpMenuStore(
+        useShallow((store) => [store.showHelpBox, store.setShowHelpBox])
+    );
 
-function HelpBox({ onDismiss }: HelpBoxProps) {
-    const [isVisible, setIsVisible] = useState(true);
-
-    useEffect(() => {
-        const handleVisibilityChange = (newVisibility: boolean) => {
-            setIsVisible(newVisibility);
-        };
-
-        RightPaneStore.on('helpBoxChange', handleVisibilityChange);
-
-        return () => {
-            RightPaneStore.off('helpBoxChange', handleVisibilityChange);
-        };
+    const dismissHelpBox = useCallback(() => {
+        setLocalStorageHelpBoxDismissalTime(Date.now().toString());
     }, []);
 
-    if (!isVisible) return null;
+    const handleClick = useCallback(() => {
+        setShowHelpBox(false);
+        dismissHelpBox();
+    }, [dismissHelpBox, setShowHelpBox]);
+
+    if (!showHelpBox) {
+        return null;
+    }
 
     return (
         <Paper variant="outlined" sx={{ padding: 2, marginBottom: '10px', marginRight: '5px' }}>
@@ -56,18 +56,9 @@ function HelpBox({ onDismiss }: HelpBoxProps) {
                 <Typography variant="h5" fontWeight="bold">
                     Need help planning your schedule?
                 </Typography>
-                <IconButton
-                    aria-label="close"
-                    size="large"
-                    color="inherit"
-                    onClick={() => {
-                        setIsVisible(false);
-                        RightPaneStore.hideHelpBox();
-                        onDismiss();
-                    }}
-                >
+                <IconButton aria-label="close" size="large" color="inherit" onClick={handleClick}>
                     <Close fontSize="inherit" />
-                </IconButton>  
+                </IconButton>
             </Box>
 
             <List component="ol" sx={{ listStyle: 'decimal', pl: 2, pb: 0 }}>
@@ -106,5 +97,3 @@ function HelpBox({ onDismiss }: HelpBoxProps) {
         </Paper>
     );
 }
-
-export default HelpBox;
