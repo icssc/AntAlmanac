@@ -87,9 +87,6 @@ export function HelpMenu() {
                                 handleClickAction(e, action.onClick);
                             }}
                             sx={{ whiteSpace: 'nowrap' }}
-                            FabProps={{
-                                sx: { margin: '6px' },
-                            }}
                         />
                     ))}
             </SpeedDial>

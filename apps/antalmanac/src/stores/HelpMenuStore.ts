@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 
+import { tourShouldRun } from '$lib/TutorialHelpers';
 import { getLocalStorageHelpBoxDismissalTime, getLocalStoragePatchNotesKey } from '$lib/localStorage';
 
 /**
@@ -29,18 +30,19 @@ export const useHelpMenuStore = create<HelpMenuStoreProps>((set) => {
     const helpBoxDismissalTime = getLocalStorageHelpBoxDismissalTime();
     const dismissedRecently =
         helpBoxDismissalTime !== null && Date.now() - parseInt(helpBoxDismissalTime) < 30 * 24 * 3600 * 1000;
-    const shouldShow = !dismissedRecently && !!HELP_BOX_ACTIVE_MONTH_INDICES.at(currentMonthIndex);
+    const shouldShowHelpBox = !dismissedRecently && !!HELP_BOX_ACTIVE_MONTH_INDICES.at(currentMonthIndex);
 
     const isPatchNotesOutdated = getLocalStoragePatchNotesKey() !== LATEST_PATCH_NOTES_UPDATE;
+    const shouldShowPatchNotes = isPatchNotesOutdated && !tourShouldRun();
 
     return {
-        showHelpBox: shouldShow,
+        showHelpBox: shouldShowHelpBox,
         setShowHelpBox: (value) =>
             set((state) => ({
                 showHelpBox: typeof value === 'function' ? value(state.showHelpBox) : value,
             })),
 
-        showPatchNotes: isPatchNotesOutdated,
+        showPatchNotes: shouldShowPatchNotes,
         setShowPatchNotes: (value) =>
             set((state) => ({
                 showPatchNotes: typeof value === 'function' ? value(state.showPatchNotes) : value,
