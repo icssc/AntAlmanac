@@ -1,20 +1,20 @@
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { useMediaQuery, useTheme, Stack } from '@mui/material';
+import { useTour } from '@reactour/tour';
 import { useCallback, useEffect, useRef } from 'react';
 import Split from 'react-split';
-import { useTour } from '@reactour/tour';
 
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { Header } from '$components/Header/Header';
+import { HelpMenu } from '$components/HelpMenu';
 import InstallPWABanner from '$components/InstallPWABanner';
 import NotificationSnackbar from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
-import { Tutorial } from '$components/Tutorial';
+import { tourShouldRun, stepsFactory } from '$lib/TutorialHelpers';
 import { BLUE } from '$src/globals';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
-import { tourShouldRun, stepsFactory } from '$lib/TutorialHelpers';
 
 function MobileHome() {
     return (
@@ -110,6 +110,7 @@ export default function Home() {
             {isMobileScreen ? <MobileHome /> : <DesktopHome />}
 
             <NotificationSnackbar />
+            <HelpMenu />
         </MuiPickersUtilsProvider>
     );
 }
