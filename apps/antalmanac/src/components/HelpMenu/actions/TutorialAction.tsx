@@ -3,11 +3,12 @@ import { useTour } from '@reactour/tour';
 import { useCallback, useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
+import { HelpMenuAction } from '$components/HelpMenu/HelpMenu';
 import { stepsFactory, tourShouldRun } from '$lib/TutorialHelpers';
 import { removeSampleClasses } from '$lib/tourExampleGeneration';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
-export function TutorialAction() {
+export function TutorialAction(): HelpMenuAction {
     const { setCurrentStep, setIsOpen, setSteps, isOpen } = useTour();
     const [displaySearch, disableManualSearch] = useCoursePaneStore(
         useShallow((state) => [state.displaySearch, state.disableManualSearch])
@@ -37,5 +38,5 @@ export function TutorialAction() {
         setSteps(stepsFactory(setCurrentStep));
     }, [setCurrentStep, setSteps]);
 
-    return { icon: <PlayLesson />, name: 'Start Tutorial', onClick: handleClick };
+    return { icon: <PlayLesson />, name: 'Start Tutorial', disableOnMobile: true, onClick: handleClick };
 }

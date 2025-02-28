@@ -6,11 +6,20 @@ import { FeedbackAction } from '$components/HelpMenu/actions/FeedbackAction';
 import { HelpBoxAction } from '$components/HelpMenu/actions/HelpBoxAction';
 import { PatchNotesAction } from '$components/HelpMenu/actions/PatchNotesAction';
 import { TutorialAction } from '$components/HelpMenu/actions/TutorialAction';
+import { useIsMobile } from '$hooks/useIsMobile';
+
+export interface HelpMenuAction {
+    icon: React.ReactNode;
+    name: string;
+    disableOnMobile?: boolean;
+    onClick: VoidFunction;
+}
 
 export function HelpMenu() {
+    const isMobile = useIsMobile();
     const [open, setOpen] = useState(false);
 
-    const actions = [HelpBoxAction(), FeedbackAction(), TutorialAction(), PatchNotesAction()];
+    const actions: HelpMenuAction[] = [HelpBoxAction(), FeedbackAction(), TutorialAction(), PatchNotesAction()];
 
     const handleClick = useCallback(() => setOpen((prev) => !prev), []);
     const handleClose = useCallback(() => setOpen(false), []);
@@ -62,21 +71,23 @@ export function HelpMenu() {
                     size: 'medium',
                 }}
             >
-                {actions.map((action) => (
-                    <SpeedDialAction
-                        key={action.name}
-                        icon={action.icon}
-                        tooltipTitle={action.name}
-                        tooltipOpen
-                        onClick={(e) => {
-                            handleClickAction(e, action.onClick);
-                        }}
-                        sx={{ whiteSpace: 'nowrap' }}
-                        FabProps={{
-                            sx: { margin: '6px' },
-                        }}
-                    />
-                ))}
+                {actions
+                    .filter((action) => !isMobile || !action.disableOnMobile)
+                    .map((action) => (
+                        <SpeedDialAction
+                            key={action.name}
+                            icon={action.icon}
+                            tooltipTitle={action.name}
+                            tooltipOpen
+                            onClick={(e) => {
+                                handleClickAction(e, action.onClick);
+                            }}
+                            sx={{ whiteSpace: 'nowrap' }}
+                            FabProps={{
+                                sx: { margin: '6px' },
+                            }}
+                        />
+                    ))}
             </SpeedDial>
         </>
     );
