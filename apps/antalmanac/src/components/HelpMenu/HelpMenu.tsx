@@ -1,4 +1,4 @@
-import { TipsAndUpdates } from '@mui/icons-material';
+import { Close, TipsAndUpdates } from '@mui/icons-material';
 import { Backdrop, Box, SpeedDial, SpeedDialAction, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
 
@@ -62,7 +62,7 @@ export function HelpMenu() {
                                 height: '100%',
                             }}
                         >
-                            <TipsAndUpdates />
+                            {open ? <Close /> : <TipsAndUpdates />}
                         </Box>
                     </Tooltip>
                 }

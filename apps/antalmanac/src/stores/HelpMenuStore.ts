@@ -43,7 +43,7 @@ export const useHelpMenuStore = create<HelpMenuStoreProps>((set) => {
         showPatchNotes: isPatchNotesOutdated,
         setShowPatchNotes: (value) =>
             set((state) => ({
-                showPatchNotes: typeof value === 'function' ? value(state.showHelpBox) : value,
+                showPatchNotes: typeof value === 'function' ? value(state.showPatchNotes) : value,
             })),
     };
 });
