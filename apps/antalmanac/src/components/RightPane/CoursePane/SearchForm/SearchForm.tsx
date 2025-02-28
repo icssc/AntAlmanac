@@ -75,11 +75,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                     </div>
 
                     {!manualSearchEnabled ? (
-                        <div className={classes.container}>
-                            <div className={classes.searchBar} id="searchBar">
-                                <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleManualSearch} />
-                            </div>
-                        </div>
+                        <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleManualSearch} />
                     ) : (
                         <LegacySearch
                             onSubmit={() => {

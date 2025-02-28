@@ -1,19 +1,15 @@
-import { Lightbulb, Print, Share } from '@mui/icons-material';
+import { Lightbulb, Share } from '@mui/icons-material';
 import { Backdrop, Box, SpeedDial, SpeedDialAction, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
 
 import { FeedbackAction } from '$components/HelpMenu/actions/FeedbackAction';
 import { HelpBoxAction } from '$components/HelpMenu/actions/HelpBoxAction';
+import { TutorialAction } from '$components/HelpMenu/actions/TutorialAction';
 
 export function HelpMenu() {
     const [open, setOpen] = useState(false);
 
-    const actions = [
-        HelpBoxAction(),
-        FeedbackAction(),
-        { icon: <Print />, name: 'Print' },
-        { icon: <Share />, name: 'Share' },
-    ];
+    const actions = [HelpBoxAction(), FeedbackAction(), TutorialAction(), { icon: <Share />, name: 'Share' }];
 
     const handleClick = useCallback(() => setOpen((prev) => !prev), []);
     const handleClose = useCallback(() => setOpen(false), []);
@@ -29,7 +25,13 @@ export function HelpMenu() {
 
     return (
         <>
-            <Backdrop open={open} onClick={handleClose} />
+            <Backdrop
+                sx={{
+                    zIndex: 1000, // If there's a higher zIndex than this, then that other zIndex is the real problem
+                }}
+                open={open}
+                onClick={handleClose}
+            />
 
             <SpeedDial
                 ariaLabel="Help Menu"
