@@ -7,6 +7,7 @@ import { HelpBoxAction } from '$components/HelpMenu/actions/HelpBoxAction';
 import { PatchNotesAction } from '$components/HelpMenu/actions/PatchNotesAction';
 import { TutorialAction } from '$components/HelpMenu/actions/TutorialAction';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { BLUE } from '$src/globals';
 
 export interface HelpMenuAction {
     icon: React.ReactNode;
@@ -47,7 +48,7 @@ export function HelpMenu() {
                 ariaLabel="Help Menu"
                 sx={{
                     position: 'fixed',
-                    bottom: 8,
+                    bottom: isMobile ? 65 : 16, // Magic number
                     right: 8,
                 }}
                 icon={
@@ -69,6 +70,9 @@ export function HelpMenu() {
                 open={open}
                 FabProps={{
                     size: 'medium',
+                    sx: {
+                        backgroundColor: BLUE,
+                    },
                 }}
             >
                 {actions
