@@ -34,11 +34,11 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
     },
     instructors: {
         label: 'Instructors',
-        width: '13%',
+        width: '15%',
     },
     gpa: {
         label: 'GPA',
-        width: '6%',
+        width: '5%',
     },
     dayAndTime: {
         label: 'Times',
@@ -81,11 +81,11 @@ function SectionTable(props: SectionTableProps) {
     /**
      * Limit table width to force side scrolling.
      */
+    const width = 780;
     const tableMinWidth = useMemo(() => {
-        const width = isMobileScreen ? 600 : 780;
         const numActiveColumns = activeColumns.length;
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
-    }, [isMobileScreen, activeColumns]);
+    }, [activeColumns]);
 
     return (
         <>
@@ -136,12 +136,23 @@ function SectionTable(props: SectionTableProps) {
                 />
             </Box>
 
-            <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
-                <Table size="small" style={{ minWidth: `${tableMinWidth}px` }}>
+            <TableContainer
+                component={Paper}
+                style={{ margin: '8px 0px 8px 0px', width: '100%' }}
+                elevation={0}
+                variant="outlined"
+            >
+                <Table
+                    size="small"
+                    style={{
+                        minWidth: `${tableMinWidth}px`,
+                        width: '100%',
+                        tableLayout: 'fixed',
+                    }}
+                >
                     <TableHead>
                         <TableRow>
-                            <TableCell padding="none" />
-
+                            <TableCell padding="none" width={isMobileScreen ? '6%' : '8%'} />
                             {tableHeaderColumnEntries
                                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
                                 .map(([column, { label, width }]) => (
@@ -149,7 +160,10 @@ function SectionTable(props: SectionTableProps) {
                                         key={column}
                                         padding="none"
                                         width={width}
-                                        style={{ paddingRight: 0.5, paddingLeft: 0.5 }}
+                                        style={{
+                                            paddingRight: 0.5,
+                                            paddingLeft: 0.5,
+                                        }}
                                     >
                                         {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
                                     </TableCell>
