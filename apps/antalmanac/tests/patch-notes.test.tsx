@@ -1,13 +1,9 @@
 import { render, screen, act } from '@testing-library/react';
 import { describe, expect, test } from 'vitest';
 
-import PatchNotes, {
-    latestPatchNotesUpdate,
-    closeButtonTestId,
-    dialogTestId,
-    backdropTestId,
-} from '$components/PatchNotes';
+import PatchNotes, { closeButtonTestId, dialogTestId, backdropTestId } from '$components/PatchNotes';
 import { getLocalStoragePatchNotesKey, setLocalStoragePatchNotesKey } from '$lib/localStorage';
+import { LATEST_PATCH_NOTES_UPDATE } from '$stores/HelpMenuStore';
 
 describe('patch notes', () => {
     /**
@@ -25,7 +21,7 @@ describe('patch notes', () => {
         });
 
         test('no display when latest patch notes is up to date', () => {
-            setLocalStoragePatchNotesKey(latestPatchNotesUpdate);
+            setLocalStoragePatchNotesKey(LATEST_PATCH_NOTES_UPDATE);
 
             render(<PatchNotes />);
 
@@ -55,7 +51,7 @@ describe('patch notes', () => {
                 screen.getByTestId(closeButtonTestId).click();
             });
 
-            expect(getLocalStoragePatchNotesKey()).toEqual(latestPatchNotesUpdate);
+            expect(getLocalStoragePatchNotesKey()).toEqual(LATEST_PATCH_NOTES_UPDATE);
         });
     });
 
@@ -83,7 +79,7 @@ describe('patch notes', () => {
                 screen.getByTestId(backdropTestId).click();
             });
 
-            expect(getLocalStoragePatchNotesKey()).toEqual(latestPatchNotesUpdate);
+            expect(getLocalStoragePatchNotesKey()).toEqual(LATEST_PATCH_NOTES_UPDATE);
         });
     });
 });
