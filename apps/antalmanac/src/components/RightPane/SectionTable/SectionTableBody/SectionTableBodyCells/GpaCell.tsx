@@ -61,7 +61,7 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
         <TableBodyCellContainer>
             <Button
                 sx={{
-                    paddingX: 1,
+                    paddingX: 0,
                     paddingY: 0,
                     minWidth: 0,
                     fontWeight: 400,

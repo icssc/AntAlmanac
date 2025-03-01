@@ -1,5 +1,5 @@
-import { Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow, useMediaQuery } from '@material-ui/core';
-import { Assessment, RateReview, ShowChart as ShowChartIcon } from '@material-ui/icons';
+import { Assessment, RateReview, ShowChart as ShowChartIcon } from '@mui/icons-material';
+import { Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow, useMediaQuery } from '@mui/material';
 import { useMemo } from 'react';
 
 import { EnrollmentHistoryPopup } from './EnrollmentHistoryPopup';
@@ -34,11 +34,11 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
     },
     instructors: {
         label: 'Instructors',
-        width: '13%',
+        width: '15%',
     },
     gpa: {
         label: 'GPA',
-        width: '6%',
+        width: '5%',
     },
     dayAndTime: {
         label: 'Times',
@@ -81,15 +81,22 @@ function SectionTable(props: SectionTableProps) {
     /**
      * Limit table width to force side scrolling.
      */
+    const width = 780;
     const tableMinWidth = useMemo(() => {
-        const width = isMobileScreen ? 600 : 780;
         const numActiveColumns = activeColumns.length;
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
-    }, [isMobileScreen, activeColumns]);
+    }, [activeColumns]);
 
     return (
         <>
-            <Box style={{ display: 'flex', gap: 4, marginTop: 4, marginBottom: 8 }}>
+            <Box
+                sx={{
+                    display: 'flex',
+                    gap: '4px',
+                    marginBottom: '8px',
+                    marginTop: '4px',
+                }}
+            >
                 <CourseInfoBar
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
@@ -136,20 +143,37 @@ function SectionTable(props: SectionTableProps) {
                 />
             </Box>
 
-            <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
-                <Table size="small" style={{ minWidth: `${tableMinWidth}px` }}>
+            <TableContainer
+                component={Paper}
+                sx={{ margin: '8px 0px 8px 0px', width: '100%' }}
+                elevation={0}
+                variant="outlined"
+            >
+                <Table
+                    size="small"
+                    sx={{
+                        minWidth: `${tableMinWidth}px`,
+                        width: '100%',
+                        tableLayout: 'fixed',
+                    }}
+                >
                     <TableHead>
                         <TableRow>
-                            <TableCell padding="none" />
-
+                            <TableCell
+                                sx={{
+                                    padding: 0,
+                                    width: isMobileScreen ? '6%' : '8%',
+                                }}
+                            />
                             {tableHeaderColumnEntries
                                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
                                 .map(([column, { label, width }]) => (
                                     <TableCell
                                         key={column}
-                                        padding="none"
-                                        width={width}
-                                        style={{ paddingRight: 0.5, paddingLeft: 0.5 }}
+                                        sx={{
+                                            width: width,
+                                            padding: 0,
+                                        }}
                                     >
                                         {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
                                     </TableCell>
