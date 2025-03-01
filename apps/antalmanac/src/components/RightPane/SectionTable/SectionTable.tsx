@@ -1,5 +1,5 @@
-import { Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow, useMediaQuery } from '@material-ui/core';
 import { Assessment, RateReview, ShowChart as ShowChartIcon } from '@material-ui/icons';
+import { Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow, useMediaQuery } from '@mui/material';
 import { useMemo } from 'react';
 
 import { EnrollmentHistoryPopup } from './EnrollmentHistoryPopup';
@@ -89,7 +89,14 @@ function SectionTable(props: SectionTableProps) {
 
     return (
         <>
-            <Box style={{ display: 'flex', gap: 4, marginTop: 4, marginBottom: 8 }}>
+            <Box
+                sx={{
+                    display: 'flex',
+                    gap: '4px',
+                    mb: '8px',
+                    mt: '4px',
+                }}
+            >
                 <CourseInfoBar
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
@@ -138,13 +145,13 @@ function SectionTable(props: SectionTableProps) {
 
             <TableContainer
                 component={Paper}
-                style={{ margin: '8px 0px 8px 0px', width: '100%' }}
+                sx={{ margin: '8px 0px 8px 0px', width: '100%' }}
                 elevation={0}
                 variant="outlined"
             >
                 <Table
                     size="small"
-                    style={{
+                    sx={{
                         minWidth: `${tableMinWidth}px`,
                         width: '100%',
                         tableLayout: 'fixed',
@@ -152,15 +159,20 @@ function SectionTable(props: SectionTableProps) {
                 >
                     <TableHead>
                         <TableRow>
-                            <TableCell padding="none" width={isMobileScreen ? '6%' : '8%'} />
+                            <TableCell
+                                sx={{
+                                    padding: 0,
+                                    width: isMobileScreen ? '6%' : '8%',
+                                }}
+                            />
                             {tableHeaderColumnEntries
                                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
                                 .map(([column, { label, width }]) => (
                                     <TableCell
                                         key={column}
-                                        padding="none"
-                                        width={width}
-                                        style={{
+                                        sx={{
+                                            padding: 0,
+                                            width: width,
                                             paddingRight: 0.5,
                                             paddingLeft: 0.5,
                                         }}
