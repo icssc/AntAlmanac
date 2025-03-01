@@ -171,10 +171,8 @@ function SectionTable(props: SectionTableProps) {
                                     <TableCell
                                         key={column}
                                         sx={{
-                                            padding: 0,
                                             width: width,
-                                            paddingRight: 0.5,
-                                            paddingLeft: 0.5,
+                                            padding: 0,
                                         }}
                                     >
                                         {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
