@@ -21,6 +21,8 @@ export const InstructorsCell = ({ instructors }: InstructorsCellProps) => {
                         overflow: 'hidden',
                         whiteSpace: 'nowrap',
                         textOverflow: 'ellipsis',
+                        fontSize: '0.875rem',
+                        lineHeight: '1.43',
                     }}
                 >
                     <Link
