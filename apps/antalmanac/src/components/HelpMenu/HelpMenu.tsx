@@ -1,5 +1,5 @@
 import { Close, TipsAndUpdates } from '@mui/icons-material';
-import { Backdrop, Box, SpeedDial, SpeedDialAction, Tooltip } from '@mui/material';
+import { Backdrop, Box, SpeedDial, SpeedDialAction, type SvgIconProps, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
 
 import { FeedbackAction } from '$components/HelpMenu/actions/FeedbackAction';
@@ -10,7 +10,7 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import { BLUE } from '$src/globals';
 
 export interface HelpMenuAction {
-    icon: React.ReactNode;
+    icon: React.ReactElement<SvgIconProps>;
     name: string;
     disableOnMobile?: boolean;
     onClick: VoidFunction;
