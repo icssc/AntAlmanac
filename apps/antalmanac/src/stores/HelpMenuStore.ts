@@ -25,15 +25,16 @@ export interface HelpMenuStoreProps {
     setShowPatchNotes: (value: boolean | ((prev: boolean) => boolean)) => void;
 }
 
+export function shouldShowPatchNotes() {
+    return getLocalStoragePatchNotesKey() !== LATEST_PATCH_NOTES_UPDATE && !tourShouldRun();
+}
+
 export const useHelpMenuStore = create<HelpMenuStoreProps>((set) => {
     const currentMonthIndex = new Date().getMonth();
     const helpBoxDismissalTime = getLocalStorageHelpBoxDismissalTime();
     const dismissedRecently =
         helpBoxDismissalTime !== null && Date.now() - parseInt(helpBoxDismissalTime) < 30 * 24 * 3600 * 1000;
     const shouldShowHelpBox = !dismissedRecently && !!HELP_BOX_ACTIVE_MONTH_INDICES.at(currentMonthIndex);
-
-    const isPatchNotesOutdated = getLocalStoragePatchNotesKey() !== LATEST_PATCH_NOTES_UPDATE;
-    const shouldShowPatchNotes = isPatchNotesOutdated && !tourShouldRun();
 
     return {
         showHelpBox: shouldShowHelpBox,
@@ -42,7 +43,7 @@ export const useHelpMenuStore = create<HelpMenuStoreProps>((set) => {
                 showHelpBox: typeof value === 'function' ? value(state.showHelpBox) : value,
             })),
 
-        showPatchNotes: shouldShowPatchNotes,
+        showPatchNotes: shouldShowPatchNotes(),
         setShowPatchNotes: (value) =>
             set((state) => ({
                 showPatchNotes: typeof value === 'function' ? value(state.showPatchNotes) : value,
