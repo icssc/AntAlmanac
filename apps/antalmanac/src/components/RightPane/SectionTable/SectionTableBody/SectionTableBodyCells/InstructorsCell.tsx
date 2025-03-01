@@ -17,12 +17,11 @@ export const InstructorsCell = ({ instructors }: InstructorsCellProps) => {
         return (
             <Box key={profName}>
                 <Typography
+                    variant="body2"
                     sx={{
                         overflow: 'hidden',
                         whiteSpace: 'nowrap',
                         textOverflow: 'ellipsis',
-                        fontSize: '0.875rem',
-                        lineHeight: '1.43',
                     }}
                 >
                     <Link

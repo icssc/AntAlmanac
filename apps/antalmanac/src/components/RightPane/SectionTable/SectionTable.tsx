@@ -1,4 +1,4 @@
-import { Assessment, RateReview, ShowChart as ShowChartIcon } from '@material-ui/icons';
+import { Assessment, RateReview, ShowChart as ShowChartIcon } from '@mui/icons-material';
 import { Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow, useMediaQuery } from '@mui/material';
 import { useMemo } from 'react';
 
@@ -93,8 +93,8 @@ function SectionTable(props: SectionTableProps) {
                 sx={{
                     display: 'flex',
                     gap: '4px',
-                    mb: '8px',
-                    mt: '4px',
+                    marginBottom: '8px',
+                    marginTop: '4px',
                 }}
             >
                 <CourseInfoBar
