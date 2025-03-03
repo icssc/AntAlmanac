@@ -36,6 +36,7 @@ class RightPaneStore extends EventEmitter {
     private urlDeptLabel: string;
     private urlDeptValue: string;
     private filterTakenCourses: boolean;
+    private userTakenCourses: Set<string> = new Set();
 
     constructor() {
         super();
@@ -112,7 +113,17 @@ class RightPaneStore extends EventEmitter {
 
     setFilterTakenClasses = (value: boolean) => {
         this.filterTakenCourses = value;
+        this.emit('formDataChange');
    };
+
+    getUserTakenCourses = (): Set<string> => {
+        return this.userTakenCourses;
+    };
+
+    setUserTakenCourses = (courses: Set<string>) => {
+        this.userTakenCourses = courses;
+        this.emit('formDataChange');
+    };
 }
 
 const store = new RightPaneStore();

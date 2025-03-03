@@ -67,13 +67,9 @@ async function fetchUserCoursesPeterPortal(userId: string): Promise<Set<string>>
 
 const searchRouter = router({
     doSearch: procedure
-        .input(z.object({ 
-            query: z.string(),
-            userId: z.string().optional(),
-            filterTakenClasses: z.boolean().optional()
-        }))
+        .input(z.object({ query: z.string() }))
         .query(async ({ input }): Promise<Record<string, SearchResult>> => {
-            const { query, userId, filterTakenClasses } = input;
+            const { query } = input;
             const u = new uFuzzy();
             const matchedGEs = u.search(toMutable(geCategoryKeys), query)[0]?.map((i) => geCategoryKeys[i]) ?? [];
             if (matchedGEs.length) return Object.fromEntries(matchedGEs.map(toGESearchResult));
@@ -89,17 +85,14 @@ const searchRouter = router({
                 ...matchedDepts.map(x => [x.obj.id, x.obj]),
                 ...matchedCourses.map(x => [x.obj.id, x.obj]),
             ]
-            
-            if (filterTakenClasses && userId) {
-                const userCourses = await fetchUserCoursesPeterPortal(userId);
-                results = results.filter(([id, obj]) => {
-                    if (obj.type === 'COURSE') {
-                        return !userCourses.has(obj.id);
-                    }
-                    return true;
-                });
-            }
+
             return Object.fromEntries(results);
+        }),
+
+        fetchUserCoursesPeterPortal: procedure
+        .input(z.object({ userId: z.string() }))
+        .query(async ({ input }) => {
+            return await fetchUserCoursesPeterPortal(input.userId);
         }),
 });
 
