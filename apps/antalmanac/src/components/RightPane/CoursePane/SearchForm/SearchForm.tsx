@@ -2,7 +2,9 @@ import { IconButton, Theme, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Tune } from '@material-ui/icons';
-import { FormEvent, useState } from 'react';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
+import { FormEvent, useState, useEffect } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
 
@@ -54,10 +56,29 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
     const { classes, toggleSearch } = props;
     const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
     const [helpBoxVisibility, setHelpBoxVisibility] = useState(true);
+    const [filterCourses, setFilterCourses] = useState(RightPaneStore.getFilterTakenClasses());
 
     const onFormSubmit = (event: FormEvent) => {
         event.preventDefault();
         toggleSearch();
+    };
+
+    useEffect(() => {
+        const handleStoreUpdate = () => {
+            setFilterCourses(RightPaneStore.getFilterTakenClasses());
+        };
+
+        RightPaneStore.on('formDataChange', handleStoreUpdate);
+
+        return () => {
+            RightPaneStore.off('formDataChange', handleStoreUpdate);
+        };
+    }, []);
+
+    const toggleFilterCourses = () => {
+        const newFilterState = !filterCourses;
+        RightPaneStore.setFilterTakenClasses(newFilterState);
+        setFilterCourses(newFilterState);
     };
 
     const currentMonthIndex = new Date().getMonth(); // 0=Jan
@@ -97,6 +118,13 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                         <div className={classes.container}>
                             <div className={classes.searchBar} id="searchBar">
                                 <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleManualSearch} />
+                                <Tooltip arrow
+                                    title={ <div style={{ fontSize: '0.8rem' }}> Filter Taken Courses <br/> (Data from PeterPortal.org) </div>
+                                    }>
+                                    <IconButton onClick={toggleFilterCourses}>
+                                        {filterCourses ? <FilterAltIcon/> : <FilterAltOffIcon/>}
+                                    </IconButton>
+                                </Tooltip>
                             </div>
                         </div>
                     ) : (
