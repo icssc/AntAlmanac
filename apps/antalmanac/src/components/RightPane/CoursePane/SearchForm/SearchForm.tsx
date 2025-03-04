@@ -56,17 +56,30 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
     const { classes, toggleSearch } = props;
     const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
     const [helpBoxVisibility, setHelpBoxVisibility] = useState(true);
-    const [filterCourses, setFilterCourses] = useState(false);
+    const [filterCourses, setFilterCourses] = useState(RightPaneStore.getFilterTakenClasses());
 
     const onFormSubmit = (event: FormEvent) => {
         event.preventDefault();
         toggleSearch();
     };
 
+    useEffect(() => {
+        const handleStoreUpdate = () => {
+            setFilterCourses(RightPaneStore.getFilterTakenClasses());
+        };
+
+        RightPaneStore.on('formDataChange', handleStoreUpdate);
+
+        return () => {
+            RightPaneStore.off('formDataChange', handleStoreUpdate);
+        };
+    }, []);
+
     const toggleFilterCourses = () => {
-        setFilterCourses((prev) => !prev);
-        RightPaneStore.setFilterTakenClasses(!filterCourses);
-    }
+        const newFilterState = !filterCourses;
+        RightPaneStore.setFilterTakenClasses(newFilterState);
+        setFilterCourses(newFilterState);
+    };
 
     const currentMonthIndex = new Date().getMonth(); // 0=Jan
     // Active months: February/March for Spring planning, May/June for Fall planning, July/August for Summer planning,
@@ -106,7 +119,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                             <div className={classes.searchBar} id="searchBar">
                                 <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleManualSearch} />
                                 <Tooltip arrow
-                                    title={ <div> Toggle Filter Courses <br/> (Data from PeterPortal.org) </div>
+                                    title={ <div style={{ fontSize: '0.8rem' }}> Filter Taken Courses <br/> (Data from PeterPortal.org) </div>
                                     }>
                                     <IconButton onClick={toggleFilterCourses}>
                                         {filterCourses ? <FilterAltIcon/> : <FilterAltOffIcon/>}
