@@ -42,6 +42,8 @@ interface ActionProps {
     scheduleConflict: boolean;
 
     notificationStatus: NotificationStatus | undefined;
+    lastUpdated: string;
+    lastCodes: string;
 }
 
 /**

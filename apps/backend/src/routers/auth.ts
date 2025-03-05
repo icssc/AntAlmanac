@@ -1,7 +1,8 @@
-import { procedure, router } from '../trpc';
+
 import { z } from 'zod';
 import { db } from 'src/db';
 import { RDS } from 'src/lib/rds';
+import { procedure, router } from '../trpc';
 
 const authRouter = router({
     handleGuestSession: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {

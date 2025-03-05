@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent, Notification } from '@packages/antalmanac-types';
 import { and, eq } from 'drizzle-orm';
 import { type Database } from '$db/index';
 import {
@@ -15,6 +15,7 @@ import {
     Account,
     accounts,
     Session,
+    subscriptions,
 } from '$db/schema';
 
 type DatabaseOrTransaction = Omit<Database, '$client'>;
@@ -470,4 +471,48 @@ export class RDS {
         if (currentSession) return currentSession;
         return await RDS.createSession(db, userId);
     }
+
+    /**
+     * Retrieves notifications associated with a specified user
+     *
+     * @param db - The database or transaction object to use for the operation.
+     * @param userId - The ID of the user for whom we're retrieving notifications.
+     * @returns A promise that resolves to the notifications associated with a userId, or an empty array if not found.
+     */
+    static async retrieveNotifications(db: DatabaseOrTransaction, userId: string) {
+        return db.transaction((tx) =>
+            tx
+                .select()
+                .from(subscriptions)
+                .where(eq(subscriptions.userId, userId))
+        );
+    }
+
+     /**
+     * Upserts notification for a specified user
+     *
+     * @param db - The database or transaction object to use for the operation.
+     * @param userId - The ID of the user for whom we're retrieving notifications.
+     * @returns A promise that updates the notifications associated with a userId.
+     */
+     static async updateNotification(db: DatabaseOrTransaction, userId: string, notification: Notification) {
+        return db.transaction((tx) =>
+            tx
+                .insert(subscriptions)
+                .values({
+                    userId,
+                    sectionCode: notification.sectionCode,
+                    year: notification.term.split(" ")[0],  // Assuming term is formatted like "2024 Fall"
+                    quarter: notification.term.split(" ")[1], // Assuming term is formatted like "2024 Fall"
+                    openStatus: notification.notificationStatus.openStatus,
+                    waitlistStatus: notification.notificationStatus.waitlistStatus,
+                    fullStatus: notification.notificationStatus.fullStatus,
+                    restrictionStatus: notification.notificationStatus.restrictionStatus,
+                    lastUpdated: new Date().toISOString(), // You can customize this value as needed
+                    lastCodes: "", // Assuming you have a logic to determine the last restriction codes
+                })
+                
+        );
+    }
 }
+

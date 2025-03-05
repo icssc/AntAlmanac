@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { procedure, router } from '../trpc';
+import { db } from 'src/db';
+import { RDS } from 'src/lib/rds';
 
 const NotificationStatusSchema = z.object({
     openStatus: z.boolean(),
@@ -27,6 +29,8 @@ const notificationsRouter = router({
                 restrictionStatus: false,
             },
         ];
+
+        return await RDS.retrieveNotifications(db, input.id);
 
         // return {
         //     '34040 2025 Spring': {
@@ -159,6 +163,11 @@ const notificationsRouter = router({
         .input(z.object({ id: z.string(), notifications: z.array(NotificationSchema) }))
         .mutation(async ({ input }) => {
             const { id, notifications } = input;
+            console.log('id', id);
+            console.log('notifications', notifications);
+            for (const notification of notifications){
+                console.log('notification', notification);
+            }
 
             // return await RDS
         }),

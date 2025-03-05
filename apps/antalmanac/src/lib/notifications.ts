@@ -1,13 +1,30 @@
 import trpc from '$lib/api/trpc';
+import { getLocalStorageSessionId } from '$lib/localStorage';
 import { Notification } from '$stores/NotificationStore';
 
 class _Notifications {
     async getNotifications() {
-        return await trpc.notifications.get.query({ id: '123' });
+        const currentSession = getLocalStorageSessionId();
+        if (currentSession) {
+            const userId = await trpc.auth.getSessionUserId.query({ token: currentSession ?? '' });
+            if (userId) {
+                return await trpc.notifications.get.query({ id: userId });
+            }
+        } else {
+            return [];
+        }
     }
 
     async setNotifications(notifications: Notification[]) {
-        return await trpc.notifications.set.mutate({ id: '123', notifications });
+        const currentSession = getLocalStorageSessionId();
+        if (currentSession) {
+            const userId = await trpc.auth.getSessionUserId.query({ token: currentSession ?? '' });
+            if (userId) {
+                return await trpc.notifications.set.mutate({ id: userId, notifications });
+            }
+        } else {
+            return;
+        }
     }
 }
 

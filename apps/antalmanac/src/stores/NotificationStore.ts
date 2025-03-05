@@ -18,6 +18,8 @@ export type Notification = {
     courseTitle: Course['title'];
     sectionType: AASection['sectionType'];
     notificationStatus: NotificationStatus;
+    lastUpdated: string;
+    lastCodes: string;
 };
 
 export interface NotificationStore {
@@ -47,12 +49,15 @@ export const useNotificationStore = create<NotificationStore>((set) => {
     return {
         initialized: false,
         notifications: {},
-        setNotifications: async ({ courseTitle, sectionCode, term, sectionType, status }) => {
+        setNotifications: async ({ courseTitle, sectionCode, term, sectionType, status, lastUpdated, lastCodes }) => {
             const key = sectionCode + ' ' + term;
 
             set((state) => {
                 const notifications = state.notifications;
                 const existingNotification = notifications[key];
+                if (lastUpdated === 'Waitl') {
+                    lastUpdated = 'WAITLISTED';
+                }
 
                 const newNotification = existingNotification
                     ? {
@@ -74,6 +79,8 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                               restrictionStatus: false,
                               [status]: true, // Toggle the given (now-initialized) status to true
                           },
+                          lastUpdated,
+                          lastCodes,
                       };
 
                 const updatedNotifications = {
@@ -82,8 +89,8 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                 };
 
                 pendingUpdates[key] = newNotification;
-                debouncedSetNotifications();
 
+                debouncedSetNotifications();
                 return {
                     notifications: updatedNotifications,
                 };
@@ -135,10 +142,11 @@ Notifications.getNotifications()
                         fullStatus: false,
                         restrictionStatus: false,
                     },
+                    lastUpdated: course.section.status,
+                    lastCodes: course.section.restrictions,
                 };
             }
         }
-
         useNotificationStore.setState({ notifications, initialized: true });
     })
     .catch((e) => console.error(e));

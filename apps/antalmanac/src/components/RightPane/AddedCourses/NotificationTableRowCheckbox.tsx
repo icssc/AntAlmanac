@@ -16,6 +16,8 @@ export const NotificationTableRowCheckbox = memo(
         sectionType,
         notificationKey,
         statusKey,
+        lastUpdated,
+        lastCodes,
     }: NotificationTableRowCheckboxProps) => {
         const status = useNotificationStore(
             (state) => state.notifications[notificationKey]?.notificationStatus[statusKey] ?? false
@@ -23,8 +25,16 @@ export const NotificationTableRowCheckbox = memo(
         const setNotifications = useNotificationStore((state) => state.setNotifications);
 
         const handleClick = useCallback(() => {
-            setNotifications({ courseTitle, sectionCode, sectionType, term, status: statusKey });
-        }, [setNotifications, courseTitle, sectionCode, sectionType, term, statusKey]);
+            setNotifications({
+                courseTitle,
+                sectionCode,
+                sectionType,
+                term,
+                status: statusKey,
+                lastUpdated,
+                lastCodes,
+            });
+        }, [setNotifications, courseTitle, sectionCode, sectionType, term, statusKey, lastUpdated, lastCodes]);
 
         return (
             <TableCell align="center">

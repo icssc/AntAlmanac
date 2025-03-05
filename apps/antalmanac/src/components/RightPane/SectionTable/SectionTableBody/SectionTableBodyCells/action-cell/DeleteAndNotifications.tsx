@@ -14,6 +14,8 @@ interface DeleteAndNotificationsProps {
     courseTitle: Course['title'];
     section: AASection;
     term: string;
+    lastUpdated: string;
+    lastCodes: string;
 }
 
 /**
