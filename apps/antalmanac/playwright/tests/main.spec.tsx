@@ -1,17 +1,32 @@
 import { test as base, expect } from '@playwright/test';
 
 import { closePopups } from './testTools';
-import { AddCoursePage } from './test_pages/addCoursePage';
+import { AddedCoursesPage } from './test_pages/addedCoursesPage';
+import { CalendarPopupPage } from './test_pages/calendarPopupPage';
+import { CoursePage } from './test_pages/coursePage';
 import { SchedulePage } from './test_pages/schedulePage';
 
-const test = base.extend<{ addCoursePage: AddCoursePage; schedulePage: SchedulePage }>({
-    addCoursePage: async ({ page }, use) => {
-        const addCoursePage = new AddCoursePage(page);
-        await use(addCoursePage);
+const test = base.extend<{
+    coursePage: CoursePage;
+    schedulePage: SchedulePage;
+    calendarPopupPage: CalendarPopupPage;
+    addedCoursesPage: AddedCoursesPage;
+}>({
+    coursePage: async ({ page }, use) => {
+        const coursePage = new CoursePage(page);
+        await use(coursePage);
     },
     schedulePage: async ({ page }, use) => {
         const schedulePage = new SchedulePage(page);
         await use(schedulePage);
+    },
+    calendarPopupPage: async ({ page }, use) => {
+        const calendarPopupPage = new CalendarPopupPage(page);
+        await use(calendarPopupPage);
+    },
+    addedCoursesPage: async ({ page }, use) => {
+        const addedCoursesPage = new AddedCoursesPage(page);
+        await use(addedCoursesPage);
     },
 });
 
@@ -23,38 +38,129 @@ test.describe('Home Page', () => {
 });
 
 test.describe('Search course and add to calendar', () => {
-    test.beforeEach(async ({ addCoursePage }) => {
-        await addCoursePage.page.goto('/');
-        await closePopups(addCoursePage.page);
-        await addCoursePage.searchForCourse();
-        await addCoursePage.addCourseToCalendar();
+    test.beforeEach(async ({ coursePage }) => {
+        await coursePage.page.goto('/');
+        await closePopups(coursePage.page);
+        await coursePage.searchForCourse();
+        await coursePage.addCourseToCalendar();
     });
-    test('course row changes upon adding section', async ({ addCoursePage }) => {
-        await addCoursePage.verifyCourseRowHighlighted();
-        await addCoursePage.deleteCourseFromCalendar();
+    test('course row changes upon adding section', async ({ coursePage }) => {
+        await coursePage.verifyCourseRowHighlighted();
     });
-    test('added course has correct info in calendar', async ({ addCoursePage }) => {
-        await addCoursePage.verifyCalendarEventInfo();
+    test('added course has correct info in calendar', async ({ coursePage }) => {
+        await coursePage.verifyCalendarEventInfo();
     });
-    test('course calendar event popup shows course info', async ({ addCoursePage }) => {
-        await addCoursePage.verifyCalendarEventPopup();
+});
+
+test.describe('Calendar course popup', () => {
+    test.beforeEach(async ({ coursePage, calendarPopupPage }) => {
+        await coursePage.page.goto('/');
+        await calendarPopupPage.page.goto('/');
+        // Closes initial popups
+        await closePopups(coursePage.page);
+        // Set up adding courses
+        await coursePage.searchForCourse();
+        await coursePage.addCourseToCalendar();
+        // Set up popup
+        await calendarPopupPage.verifyCalendarEventPopup();
+    });
+    test('popup class location opens on Map', async ({ calendarPopupPage }) => {
+        await calendarPopupPage.popupOpenClassLocation();
+    });
+    test('popup quick search redirects to course page', async ({ calendarPopupPage }) => {
+        await calendarPopupPage.popupQuickSearch();
+    });
+    test('popup deletes course from calendar', async ({ calendarPopupPage, schedulePage }) => {
+        await calendarPopupPage.popupDeleteCourse();
+        await schedulePage.verifyCalendarEventCount(0);
     });
 });
 
 test.describe('Modify schedules', () => {
-    test.beforeEach(async ({ addCoursePage, schedulePage }) => {
-        await addCoursePage.page.goto('/');
+    test.beforeEach(async ({ coursePage, schedulePage }) => {
+        await coursePage.page.goto('/');
         await schedulePage.page.goto('/');
         // Closes initial popups
-        await closePopups(addCoursePage.page);
+        await closePopups(coursePage.page);
         // Set up adding courses
-        await addCoursePage.searchForCourse();
-        await addCoursePage.addCourseToCalendar();
+        await coursePage.searchForCourse();
+        await coursePage.addCourseToCalendar();
         // Set up schedules
         await schedulePage.verifyScheduleLocators();
     });
 
     test('current schedule name is editable', async ({ schedulePage }) => {
         await schedulePage.editScheduleName();
+    });
+
+    test('add a new schedule', async ({ schedulePage }) => {
+        await schedulePage.addSchedule();
+    });
+
+    test('change schedules', async ({ schedulePage }) => {
+        await schedulePage.editScheduleName();
+        await schedulePage.addSchedule();
+        await schedulePage.changeSchedule();
+    });
+
+    test('copy schedules', async ({ schedulePage }) => {
+        await schedulePage.copySchedule();
+    });
+
+    test('delete schedules', async ({ schedulePage }) => {
+        await schedulePage.addSchedule();
+        await schedulePage.deleteSchedule();
+    });
+});
+
+test.describe('Schedule toolbar', () => {
+    test.beforeEach(async ({ coursePage, schedulePage }) => {
+        await coursePage.page.goto('/');
+        await schedulePage.page.goto('/');
+        // Closes initial popups
+        await closePopups(coursePage.page);
+        // Set up adding courses
+        await coursePage.searchForCourse();
+        await coursePage.addCourseToCalendar();
+    });
+
+    test('toggle finals schedule', async ({ schedulePage }) => {
+        await schedulePage.toggleFinals();
+    });
+
+    test('screenshot schedule prompts download', async ({ schedulePage }) => {
+        await schedulePage.screenshotSchedule();
+    });
+
+    test('undo schedule action', async ({ schedulePage }) => {
+        await schedulePage.undoScheduleAction();
+    });
+});
+
+test.describe('added course pane', () => {
+    test.beforeEach(async ({ coursePage, addedCoursesPage }) => {
+        await coursePage.page.goto('/');
+        await addedCoursesPage.page.goto('/');
+        // Closes initial popups
+        await closePopups(coursePage.page);
+        // Set up adding courses
+        await coursePage.searchForCourse();
+        await coursePage.addCourseToCalendar();
+
+        // set up added courses pane
+        await addedCoursesPage.goToAddedCourses();
+    });
+
+    test('added courses pane shows all added courses', async ({ addedCoursesPage, coursePage }) => {
+        await addedCoursesPage.verifyAddedCourses();
+        await coursePage.verifyCalendarEventInfo();
+    });
+
+    test('copy schedule button in added courses pane', async ({ addedCoursesPage, schedulePage }) => {
+        await addedCoursesPage.addedCoursesCopySchedule(schedulePage);
+    });
+
+    test('clear schedule button in added courses pane', async ({ addedCoursesPage, schedulePage }) => {
+        await addedCoursesPage.addedCoursesClearSchedule(schedulePage);
     });
 });

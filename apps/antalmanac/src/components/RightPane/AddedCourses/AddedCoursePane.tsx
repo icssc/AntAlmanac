@@ -331,7 +331,7 @@ function AddedSectionsGrid() {
 
     return (
         <Box display="flex" flexDirection="column" gap={1}>
-            <Box display="flex" width={1} position="absolute" zIndex="2">
+            <Box display="flex" width={1} position="absolute" zIndex="2" data-testid="added-course-actions">
                 <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
                 <ClearScheduleButton buttonSx={buttonSx} />
                 <ColumnToggleDropdown />

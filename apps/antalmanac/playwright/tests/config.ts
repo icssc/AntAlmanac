@@ -1,6 +1,7 @@
 export const search = {
     courseName: 'I&C SCI 33',
     school: 'Donald Bren School of Information and Computer Sciences',
+    classesPerWk: 2,
 };
 
 export const user = {

@@ -108,7 +108,7 @@ export function SelectSchedulePopover(props: { scheduleNames: string[] }) {
             >
                 <Box padding={1}>
                     {props.scheduleNames.map((name, index) => (
-                        <Box key={index} display="flex" alignItems="center" gap={1}>
+                        <Box key={index} display="flex" alignItems="center" gap={1} data-testid="schedule-row">
                             <Box flexGrow={1}>
                                 <Tooltip title={name} enterDelay={200} disableInteractive>
                                     <Button
