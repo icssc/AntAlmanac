@@ -1,11 +1,10 @@
 import { Button, Popover, useMediaQuery } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
-import { MOBILE_BREAKPOINT } from '../../../../../globals';
-
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { Grades } from '$lib/grades';
+import { BLUE, DODGER_BLUE, MOBILE_BREAKPOINT } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 
 async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
@@ -61,12 +60,14 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
     return (
         <TableBodyCellContainer>
             <Button
-                style={{
-                    color: isDark ? 'dodgerblue' : 'blue',
-                    padding: 0,
+                sx={{
+                    paddingX: 1,
+                    paddingY: 0,
                     minWidth: 0,
                     fontWeight: 400,
                     fontSize: '1rem',
+                    // one-off styling as GPA Button is clickable (but not a link)
+                    color: isDark ? DODGER_BLUE : BLUE,
                 }}
                 onClick={handleClick}
                 variant="text"
@@ -78,8 +79,6 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
                 onClose={hideDistribution}
                 anchorEl={anchorEl}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                disableRestoreFocus
             >
                 <GradesPopup
                     deptCode={deptCode}

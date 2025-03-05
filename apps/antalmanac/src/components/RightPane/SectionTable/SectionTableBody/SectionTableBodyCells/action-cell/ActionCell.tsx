@@ -1,14 +1,16 @@
-import { Add, ArrowDropDown, Delete } from '@mui/icons-material';
-import { Box, IconButton, Menu, MenuItem, TableCell, Tooltip, useMediaQuery } from '@mui/material';
+import { Add, ArrowDropDown } from '@mui/icons-material';
+import { Box, IconButton, Menu, MenuItem, Tooltip, useMediaQuery } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
+import { memo } from 'react';
 
-import { MOBILE_BREAKPOINT } from '../../../../../globals';
-
-import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
-import ColorPicker from '$components/ColorPicker';
+import { addCourse, openSnackbar } from '$actions/AppStoreActions';
+import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { DeleteAndNotifications } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/DeleteAndNotifications';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { MOBILE_BREAKPOINT } from '$src/globals';
 import AppStore from '$stores/AppStore';
+import { type NotificationStatus } from '$stores/NotificationStore';
 
 /**
  * Props received by components that perform actions on a specified section.
@@ -38,43 +40,8 @@ interface ActionProps {
      * Whether the section has a schedule conflict with another event in the calendar.
      */
     scheduleConflict: boolean;
-}
 
-/**
- * Sections added to a schedule, can be recolored or deleted.
- */
-export function ColorAndDelete(props: ActionProps) {
-    const { section, term } = props;
-
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
-
-    const flexDirection = isMobileScreen ? 'column' : undefined;
-
-    const handleClick = () => {
-        deleteCourse(section.sectionCode, term);
-
-        logAnalytics({
-            category: analyticsEnum.addedClasses.title,
-            action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
-        });
-    };
-
-    return (
-        <Box flexDirection={flexDirection} display="flex" justifyContent="space-evenly">
-            <IconButton onClick={handleClick}>
-                <Delete fontSize="small" />
-            </IconButton>
-
-            <ColorPicker
-                key={AppStore.getCurrentScheduleIndex()}
-                color={section.color}
-                isCustomEvent={false}
-                sectionCode={section.sectionCode}
-                term={term}
-                analyticsCategory={analyticsEnum.addedClasses.title}
-            />
-        </Box>
-    );
+    notificationStatus: NotificationStatus | undefined;
 }
 
 /**
@@ -138,7 +105,14 @@ export function ScheduleAddCell(props: ActionProps) {
     };
 
     return (
-        <Box flexDirection={flexDirection} display="flex" justifyContent="space-evenly">
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: flexDirection,
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+        >
             {scheduleConflict ? (
                 <Tooltip title="This course overlaps with another event in your calendar!" arrow>
                     <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
@@ -178,10 +152,16 @@ export interface ActionCellProps extends Omit<ActionProps, 'classes'> {
 /**
  * Given a section and schedule information, provides appropriate set of actions.
  */
-export function ActionCell(props: ActionCellProps) {
+export const ActionCell = memo(({ ...props }: ActionCellProps) => {
     return (
-        <TableCell padding="none" sx={{ width: '8%' }}>
-            {props.addedCourse ? <ColorAndDelete {...props} /> : <ScheduleAddCell {...props} />}
-        </TableCell>
+        <TableBodyCellContainer sx={{ width: '8%' }}>
+            {props.addedCourse ? (
+                <DeleteAndNotifications {...props} courseTitle={props.courseDetails.courseTitle} />
+            ) : (
+                <ScheduleAddCell {...props} />
+            )}
+        </TableBodyCellContainer>
     );
-}
+});
+
+ActionCell.displayName = 'ActionCell';

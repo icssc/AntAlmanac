@@ -1,6 +1,6 @@
 import { Save, SaveAlt } from '@material-ui/icons';
 import { Button, Stack } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
 import { InputDialog } from '$components/dialogs/InputDialog';
@@ -60,11 +60,11 @@ const LoadSaveScheduleFunctionality = () => {
         }
     };
 
-    const loadScheduleData = async () => {
+    const loadScheduleData = useCallback(async () => {
         if (validSession) {
             await loadSchedule();
         }
-    };
+    }, [validSession]);
 
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
@@ -74,7 +74,7 @@ const LoadSaveScheduleFunctionality = () => {
                 loadScheduleData();
             }
         }
-    }, [session, validSession]);
+    }, [loadScheduleData, session, validSession]);
 
     return (
         <Stack direction="row">

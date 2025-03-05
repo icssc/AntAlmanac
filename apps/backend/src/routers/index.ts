@@ -7,11 +7,13 @@ import gradesRouter from './grades';
 import enrollHistRouter from './enrollHist';
 import searchRouter from './search';
 import authRouter from './auth';
+import notificationsRouter from './notifications';
 
 const appRouter = router({
     course: courseRouter,
     enrollHist: enrollHistRouter,
     grades: gradesRouter,
+    notifications: notificationsRouter,
     search: searchRouter,
     auth: authRouter,
     userData: userDataRouter,

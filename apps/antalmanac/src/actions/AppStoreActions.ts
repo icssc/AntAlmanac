@@ -223,12 +223,12 @@ export const loadSchedule = async (loadCache = false) => {
     }
 };
 
-export const deleteCourse = (sectionCode: string, term: string) => {
-    AppStore.deleteCourse(sectionCode, term);
+export const deleteCourse = (sectionCode: string, term: string, scheduleIndex: number) => {
+    AppStore.deleteCourse(sectionCode, term, scheduleIndex);
 };
 
-export const deleteCustomEvent = (customEventID: number) => {
-    AppStore.deleteCustomEvent(customEventID);
+export const deleteCustomEvent = (customEventID: number, scheduleIndices: number[]) => {
+    AppStore.deleteCustomEvent(customEventID, scheduleIndices);
 };
 
 export const editCustomEvent = (editedCustomEvent: RepeatingCustomEvent, newScheduleIndices: number[]) => {
