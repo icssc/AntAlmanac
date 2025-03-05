@@ -1,6 +1,5 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { LoadingButton } from '@mui/lab';
 import { Button, Menu, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
 import { useEffect, useState } from 'react';
@@ -56,19 +55,17 @@ function Login() {
         <div id="load-save-container">
             {validSession ? (
                 <>
-                    <LoadingButton
+                    <Button
                         aria-controls={open ? 'basic-menu' : undefined}
                         color="inherit"
                         aria-haspopup="true"
                         aria-expanded={open ? 'true' : undefined}
                         onClick={handleClick}
                         startIcon={<AccountCircleIcon />}
-                        loading={user === null}
-                        loadingPosition="start"
                         sx={{ maxWidth: '9rem', minWidth: '5rem' }}
                     >
                         {user?.name && user?.name.length > 6 ? `${user?.name.substring(0, 6)}...` : user?.name}
-                    </LoadingButton>
+                    </Button>
                     <Menu
                         id="basic-menu"
                         anchorEl={anchorEl}
