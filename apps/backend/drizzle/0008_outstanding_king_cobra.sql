@@ -1,0 +1,2 @@
+ALTER TABLE "subscriptions" DROP CONSTRAINT "subscriptions_userId_sectionCode_pk";--> statement-breakpoint
+ALTER TABLE "subscriptions" ADD CONSTRAINT "subscriptions_userId_sectionCode_year_quarter_pk" PRIMARY KEY("userId","sectionCode","year","quarter");

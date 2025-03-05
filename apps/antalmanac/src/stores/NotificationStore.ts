@@ -58,6 +58,11 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                 if (lastUpdated === 'Waitl') {
                     lastUpdated = 'WAITLISTED';
                 }
+                let previousLastUpdated = existingNotification?.lastUpdated ?? null;
+                if (previousLastUpdated === 'Waitl') {
+                    previousLastUpdated = 'WAITLISTED';
+                }
+                const previousLastCodes = existingNotification?.lastCodes ?? null;
 
                 const newNotification = existingNotification
                     ? {
@@ -66,6 +71,8 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                               ...existingNotification.notificationStatus,
                               [status]: !existingNotification.notificationStatus[status],
                           },
+                          lastUpdated,
+                          lastCodes,
                       }
                     : {
                           term,
@@ -87,6 +94,12 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                     ...notifications,
                     [key]: newNotification,
                 };
+                if (
+                    previousLastUpdated !== newNotification.lastUpdated ||
+                    previousLastCodes !== newNotification.lastCodes
+                ) {
+                    Notifications.updateNotifications(newNotification);
+                }
 
                 pendingUpdates[key] = newNotification;
 
@@ -100,17 +113,17 @@ export const useNotificationStore = create<NotificationStore>((set) => {
 });
 
 Notifications.getNotifications()
-    .then(async (res) => {
+    .then(async (existingNotifications) => {
         const courseDict: { [key: string]: Set<string> } = {};
 
-        for (const notification of res) {
+        for (const notification of existingNotifications) {
             const { year, quarter, sectionCode } = notification;
             const term = year + ' ' + quarter;
 
             if (term in courseDict) {
-                courseDict[term].add(sectionCode);
+                courseDict[term].add(sectionCode.toString());
             } else {
-                courseDict[term] = new Set([sectionCode]);
+                courseDict[term] = new Set([sectionCode.toString()]);
             }
         }
 
@@ -121,15 +134,22 @@ Notifications.getNotifications()
             courseInfoDict.set(term, courseInfo);
         });
 
-        return Promise.all(websocRequests).then(() => courseInfoDict);
+        return Promise.all(websocRequests).then(() => ({ existingNotifications, courseInfoDict }));
     })
-    .then((res) => {
+    .then(({ existingNotifications, courseInfoDict }) => {
         const notifications: Partial<Record<string, Notification>> = {};
 
-        for (const [term, courseInfo] of res.entries()) {
+        for (const [term, courseInfo] of courseInfoDict.entries()) {
             for (const sectionCode in courseInfo) {
                 const course = courseInfo[sectionCode];
                 const key = sectionCode + ' ' + term;
+
+                const existingNotification = existingNotifications.find(
+                    (notification) =>
+                        notification.sectionCode === parseInt(sectionCode) &&
+                        notification.year === term.split(' ')[0] &&
+                        notification.quarter === term.split(' ')[1]
+                );
 
                 notifications[key] = {
                     term,
@@ -137,13 +157,13 @@ Notifications.getNotifications()
                     courseTitle: course.courseDetails.courseTitle,
                     sectionType: course.section.sectionType,
                     notificationStatus: {
-                        openStatus: false,
-                        waitlistStatus: false,
-                        fullStatus: false,
-                        restrictionStatus: false,
+                        openStatus: existingNotification?.openStatus ?? false,
+                        waitlistStatus: existingNotification?.waitlistStatus ?? false,
+                        fullStatus: existingNotification?.fullStatus ?? false,
+                        restrictionStatus: existingNotification?.restrictionStatus ?? false,
                     },
-                    lastUpdated: course.section.status,
-                    lastCodes: course.section.restrictions,
+                    lastUpdated: existingNotification.lastUpdated ?? course.section.status,
+                    lastCodes: existingNotification.lastCodes ?? course.section.restrictions,
                 };
             }
         }

@@ -26,6 +26,10 @@ class _Notifications {
             return;
         }
     }
+
+    async updateNotifications(notification: Notification) {
+        return await trpc.notifications.updateNotifications.mutate({ notification: notification });
+    }
 }
 
 export const Notifications = new _Notifications();

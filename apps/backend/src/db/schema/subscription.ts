@@ -67,7 +67,7 @@ export const subscriptions = pgTable(
     },
     (table) => [
         primaryKey({
-            columns: [table.userId, table.sectionCode],
+            columns: [table.userId, table.sectionCode, table.year, table.quarter],
         }),
     ]
 );

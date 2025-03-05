@@ -492,26 +492,61 @@ export class RDS {
      * Upserts notification for a specified user
      *
      * @param db - The database or transaction object to use for the operation.
-     * @param userId - The ID of the user for whom we're retrieving notifications.
-     * @returns A promise that updates the notifications associated with a userId.
+     * @param userId - The ID of the user for whom we're upserting a notification.
+     * @param notification - The notification object to upsert.
+     * @returns A promise that upserts the notification associated with a userId.
      */
-     static async updateNotification(db: DatabaseOrTransaction, userId: string, notification: Notification) {
+     static async upsertNotification(db: DatabaseOrTransaction, userId: string, notification: Notification) {
         return db.transaction((tx) =>
             tx
                 .insert(subscriptions)
                 .values({
                     userId,
-                    sectionCode: notification.sectionCode,
-                    year: notification.term.split(" ")[0],  // Assuming term is formatted like "2024 Fall"
-                    quarter: notification.term.split(" ")[1], // Assuming term is formatted like "2024 Fall"
+                    sectionCode: Number(notification.sectionCode),
+                    year: notification.term.split(" ")[0],  
+                    quarter: notification.term.split(" ")[1], 
                     openStatus: notification.notificationStatus.openStatus,
                     waitlistStatus: notification.notificationStatus.waitlistStatus,
                     fullStatus: notification.notificationStatus.fullStatus,
                     restrictionStatus: notification.notificationStatus.restrictionStatus,
-                    lastUpdated: new Date().toISOString(), // You can customize this value as needed
-                    lastCodes: "", // Assuming you have a logic to determine the last restriction codes
+                    lastUpdated: notification.lastUpdated, 
+                    lastCodes: notification.lastCodes, 
                 })
-                
+                .onConflictDoUpdate({
+                    target: [subscriptions.userId, subscriptions.year, subscriptions.quarter, subscriptions.sectionCode],
+                    set: {
+                      openStatus: notification.notificationStatus.openStatus,
+                      waitlistStatus: notification.notificationStatus.waitlistStatus,
+                      fullStatus: notification.notificationStatus.fullStatus,
+                      restrictionStatus: notification.notificationStatus.restrictionStatus,
+                      lastUpdated: notification.lastUpdated,
+                      lastCodes: notification.lastCodes,
+                },
+            })
+        );
+    }
+
+     /**
+     * Updates lastUpdated and lastCodes of ALL notifications with a shared sectionCode, year, and quarter
+     *
+     * @param db - The database or transaction object to use for the operation.
+     * @param notification - The notification object type we are updating.
+     * @returns A promise that updates ALL notifications with a shared sectionCode, year, and quarter.
+     */
+    static async updateAllNotifications(db: DatabaseOrTransaction, notification: Notification) {
+        return db.transaction((tx) =>
+            tx
+                .update(subscriptions)
+                .set({ lastUpdated: notification.lastUpdated,
+                    lastCodes: notification.lastCodes
+                 })
+                .where(
+                    and(
+                        eq(subscriptions.sectionCode, Number(notification.sectionCode)),
+                        eq(subscriptions.year, notification.term.split(" ")[0]),
+                        eq(subscriptions.quarter, notification.term.split(" ")[1])
+                    )
+                )
         );
     }
 }
