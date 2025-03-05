@@ -549,5 +549,28 @@ export class RDS {
                 )
         );
     }
+
+    /**
+     * Deletes a notification for a specified user
+     *
+     * @param db - The database or transaction object to use for the operation.
+     * @param notification - The notification object type we are deleting.
+     * @param userId - The ID of the user for whom we're deleting a notification.
+     * @returns A promise that deletes a user's notification.
+     */
+      static async deleteNotification(db: DatabaseOrTransaction, notification: Notification, userId: string) {
+        return db.transaction((tx) =>
+            tx
+                .delete(subscriptions)
+                .where(
+                    and(
+                        eq(subscriptions.userId, userId),
+                        eq(subscriptions.sectionCode, Number(notification.sectionCode)),
+                        eq(subscriptions.year, notification.term.split(" ")[0]),
+                        eq(subscriptions.quarter, notification.term.split(" ")[1])
+                    )
+                )
+        );
+    }
 }
 

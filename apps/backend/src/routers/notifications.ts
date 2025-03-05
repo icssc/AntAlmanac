@@ -42,6 +42,13 @@ const notificationsRouter = router({
         .mutation(async ({ input }) => {
             await RDS.updateAllNotifications(db, input.notification);
         }),
+
+    deleteNotification: procedure
+        .input(z.object({ id: z.string(), notification: NotificationSchema }))
+        .mutation(async ({ input }) => {
+            await RDS.deleteNotification(db, input.notification, input.id);
+        }
+    ),
 });
 
 export default notificationsRouter;

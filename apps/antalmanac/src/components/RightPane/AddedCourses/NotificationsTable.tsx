@@ -11,12 +11,12 @@ import {
 import { memo, useCallback, useState } from 'react';
 
 import { NotificationTableRow } from '$components/RightPane/AddedCourses/NotificationsTableRow';
+import { useNotificationStore } from '$stores/NotificationStore';
 
-interface NotificationsTableProps {
-    keys: string[];
-}
+export const NotificationsTable = memo(() => {
+    const notifications = useNotificationStore((state) => state.notifications);
+    const keys = Object.keys(notifications);
 
-export const NotificationsTable = memo(({ keys }: NotificationsTableProps) => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -41,6 +41,7 @@ export const NotificationsTable = memo(({ keys }: NotificationsTableProps) => {
                 <Table stickyHeader sx={{ minWidth: 650 }} size="small">
                     <TableHead>
                         <TableRow>
+                            <TableCell></TableCell>
                             <TableCell>Code</TableCell>
                             <TableCell>Type</TableCell>
                             <TableCell>Course Title</TableCell>

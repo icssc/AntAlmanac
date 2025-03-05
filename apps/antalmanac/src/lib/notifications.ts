@@ -30,6 +30,18 @@ class _Notifications {
     async updateNotifications(notification: Notification) {
         return await trpc.notifications.updateNotifications.mutate({ notification: notification });
     }
+
+    async deleteNotification(notification: Notification) {
+        const currentSession = getLocalStorageSessionId();
+        if (currentSession) {
+            const userId = await trpc.auth.getSessionUserId.query({ token: currentSession ?? '' });
+            if (userId) {
+                return await trpc.notifications.deleteNotification.mutate({ id: userId, notification });
+            }
+        } else {
+            return;
+        }
+    }
 }
 
 export const Notifications = new _Notifications();

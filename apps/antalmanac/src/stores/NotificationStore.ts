@@ -28,6 +28,7 @@ export interface NotificationStore {
     setNotifications: (
         notification: Omit<Notification, 'notificationStatus'> & { status: keyof NotificationStatus }
     ) => void;
+    deleteNotification: (notificationKey: string) => void;
 }
 
 const pendingUpdates: Record<string, Notification> = {};
@@ -104,6 +105,22 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                 pendingUpdates[key] = newNotification;
 
                 debouncedSetNotifications();
+                return {
+                    notifications: updatedNotifications,
+                };
+            });
+        },
+        deleteNotification: (notificationKey) => {
+            set((state) => {
+                const updatedNotifications = { ...state.notifications };
+                const notificationToDelete = updatedNotifications[notificationKey];
+
+                delete updatedNotifications[notificationKey];
+
+                if (notificationToDelete) {
+                    Notifications.deleteNotification(notificationToDelete);
+                }
+
                 return {
                     notifications: updatedNotifications,
                 };
