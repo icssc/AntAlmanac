@@ -1,10 +1,11 @@
 import { Add, ArrowDropDown, Delete } from '@mui/icons-material';
-import { Box, IconButton, Menu, MenuItem, TableCell, Tooltip, useMediaQuery } from '@mui/material';
+import { Box, IconButton, Menu, MenuItem, Tooltip, useMediaQuery } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
+import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { MOBILE_BREAKPOINT } from '$src/globals';
 import AppStore from '$stores/AppStore';
@@ -59,7 +60,14 @@ export function ColorAndDelete(props: ActionProps) {
     };
 
     return (
-        <Box flexDirection={flexDirection} display="flex" justifyContent="space-evenly">
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: flexDirection,
+                justifyContent: 'space-evenly',
+                alignItems: 'center',
+            }}
+        >
             <IconButton onClick={handleClick}>
                 <Delete fontSize="small" />
             </IconButton>
@@ -137,7 +145,14 @@ export function ScheduleAddCell(props: ActionProps) {
     };
 
     return (
-        <Box flexDirection={flexDirection} display="flex" justifyContent="space-evenly">
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: flexDirection,
+                justifyContent: 'space-evenly',
+                alignItems: 'center',
+            }}
+        >
             {scheduleConflict ? (
                 <Tooltip title="This course overlaps with another event in your calendar!" arrow>
                     <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
@@ -179,8 +194,8 @@ export interface ActionCellProps extends Omit<ActionProps, 'classes'> {
  */
 export function ActionCell(props: ActionCellProps) {
     return (
-        <TableCell padding="none" sx={{ width: '8%' }}>
+        <TableBodyCellContainer>
             {props.addedCourse ? <ColorAndDelete {...props} /> : <ScheduleAddCell {...props} />}
-        </TableCell>
+        </TableBodyCellContainer>
     );
 }
