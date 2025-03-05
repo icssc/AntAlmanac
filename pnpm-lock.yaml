@@ -8,18 +8,6 @@ importers:
 
   .:
     devDependencies:
-<<<<<<< HEAD
-      '@eslint/compat':
-        specifier: ^1.2.4
-        version: 1.2.5(eslint@9.17.0)
-      '@eslint/eslintrc':
-        specifier: ^3.2.0
-        version: 3.2.0
-      '@eslint/js':
-        specifier: ^9.17.0
-        version: 9.17.0
-=======
->>>>>>> kwu/aants-frontend
       '@types/eslint':
         specifier: ^8.56.5
         version: 8.56.12
@@ -31,14 +19,7 @@ importers:
         version: 7.0.3
       eslint-import-resolver-typescript:
         specifier: ^3.6.1
-<<<<<<< HEAD
         version: 3.6.3(eslint-plugin-import@2.31.0)(eslint@9.17.0)
-      globals:
-        specifier: ^15.14.0
-        version: 15.14.0
-=======
-        version: 3.6.3(eslint-plugin-import@2.31.0)(eslint@9.15.0)
->>>>>>> kwu/aants-frontend
       husky:
         specifier: ^8.0.3
         version: 8.0.3
@@ -1555,18 +1536,6 @@ packages:
     resolution: {integrity: sha512-CCZCDJuduB9OUkFkY2IgppNZMi2lBQgD2qzwXkEia16cge2pijY/aXi96CJMquDMn3nJdlPV1A5KrJEXwfLNzQ==}
     engines: {node: ^12.0.0 || ^14.0.0 || >=16.0.0}
 
-<<<<<<< HEAD
-  '@eslint/compat@1.2.5':
-    resolution: {integrity: sha512-5iuG/StT+7OfvhoBHPlmxkPA9om6aDUFgmD4+mWKAGsYt4vCe8rypneG03AuseyRHBmcCLXQtIH5S26tIoggLg==}
-    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-    peerDependencies:
-      eslint: ^9.10.0
-    peerDependenciesMeta:
-      eslint:
-        optional: true
-
-=======
->>>>>>> kwu/aants-frontend
   '@eslint/config-array@0.19.0':
     resolution: {integrity: sha512-zdHg2FPIFNKPdcHWtiNT+jEFCHYVplAXRDlQDyqy0zGx/q2parwh7brGJSiTxRk/TSMkbM//zt/f5CHgyTyaSQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -1587,13 +1556,8 @@ packages:
     resolution: {integrity: sha512-d9zaMRSTIKDLhctzH12MtXvJKSSUhaHcjV+2Z+GK+EEY7XKpP5yR4x+N3TAcHTcu963nIr+TMcCb4DBCYX1z6Q==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
 
-<<<<<<< HEAD
   '@eslint/js@9.17.0':
     resolution: {integrity: sha512-Sxc4hqcs1kTu0iID3kcZDW3JHq2a77HO9P8CP6YEA/FpH3Ll8UXE2r/86Rz9YJLKme39S9vU5OWNjC6Xl0Cr3w==}
-=======
-  '@eslint/js@9.15.0':
-    resolution: {integrity: sha512-tMTqrY+EzbXmKJR5ToI8lxu7jaN5EdmrBFJpQk5JmSlyLsx6o4t27r883K5xsLuCYCpfKBCGswMSWXsM+jB7lg==}
->>>>>>> kwu/aants-frontend
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@eslint/object-schema@2.1.4':
@@ -7170,13 +7134,6 @@ snapshots:
 
   '@eslint-community/regexpp@4.12.1': {}
 
-<<<<<<< HEAD
-  '@eslint/compat@1.2.5(eslint@9.17.0)':
-    optionalDependencies:
-      eslint: 9.17.0
-
-=======
->>>>>>> kwu/aants-frontend
   '@eslint/config-array@0.19.0':
     dependencies:
       '@eslint/object-schema': 2.1.4
@@ -7217,11 +7174,7 @@ snapshots:
 
   '@eslint/js@8.57.1': {}
 
-<<<<<<< HEAD
   '@eslint/js@9.17.0': {}
-=======
-  '@eslint/js@9.15.0': {}
->>>>>>> kwu/aants-frontend
 
   '@eslint/object-schema@2.1.4': {}
 

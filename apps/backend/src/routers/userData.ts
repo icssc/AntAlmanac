@@ -4,11 +4,11 @@ import { UserSchema } from '@packages/antalmanac-types';
 import { OAuth2Client } from 'google-auth-library';
 
 import { db } from 'src/db';
-import { mangleDupliateScheduleNames } from 'src/lib/formatting';
+import { z } from 'zod';
+import { mangleDuplicateScheduleNames } from 'src/lib/formatting';
 import { RDS } from 'src/lib/rds';
 import { TRPCError } from '@trpc/server';
 import { procedure, router } from '../trpc';
-import { z } from 'zod';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
@@ -138,7 +138,7 @@ const userDataRouter = router({
         const data = input.data;
 
         // Mangle duplicate schedule names
-        data.userData.schedules = mangleDupliateScheduleNames(data.userData.schedules);
+        data.userData.schedules = mangleDuplicateScheduleNames(data.userData.schedules);
 
         return await RDS.upsertUserData(db, data).catch((error) =>
             console.error('RDS Failed to upsert user data:', error)

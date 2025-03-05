@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { and, eq } from 'drizzle-orm';
 import { type Database } from '$db/index';
