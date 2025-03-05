@@ -9,7 +9,9 @@ import { useTabStore } from '$stores/TabStore';
 
 export function HelpBoxAction(): HelpMenuAction {
     const setActiveTab = useTabStore(useShallow((store) => store.setActiveTab));
-    const setShowHelpBox = useHelpMenuStore(useShallow((store) => store.setShowHelpBox));
+    const [showHelpBox, setShowHelpBox] = useHelpMenuStore(
+        useShallow((store) => [store.showHelpBox, store.setShowHelpBox])
+    );
     const [displaySearch, disableManualSearch] = useCoursePaneStore(
         useShallow((store) => [store.displaySearch, store.disableManualSearch])
     );
@@ -21,5 +23,5 @@ export function HelpBoxAction(): HelpMenuAction {
         disableManualSearch();
     }, [disableManualSearch, displaySearch, setActiveTab, setShowHelpBox]);
 
-    return { icon: <Help />, name: 'Show Helpful Info', onClick: handleClick };
+    return showHelpBox ? null : { icon: <Help />, name: 'Show Helpful Info', onClick: handleClick };
 }

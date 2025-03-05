@@ -9,18 +9,21 @@ import { TutorialAction } from '$components/HelpMenu/actions/TutorialAction';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { BLUE } from '$src/globals';
 
-export interface HelpMenuAction {
+export type HelpMenuAction = {
     icon: React.ReactElement<SvgIconProps>;
     name: string;
     disableOnMobile?: boolean;
     onClick: VoidFunction;
-}
+} | null;
 
 export function HelpMenu() {
     const isMobile = useIsMobile();
     const [open, setOpen] = useState(false);
 
-    const actions: HelpMenuAction[] = [HelpBoxAction(), FeedbackAction(), TutorialAction(), PatchNotesAction()];
+    const actions = [HelpBoxAction(), FeedbackAction(), TutorialAction(), PatchNotesAction()]
+        // Two passes to help Typescript infer type
+        .filter((action) => !!action)
+        .filter((action) => !isMobile || !action.disableOnMobile) satisfies NonNullable<HelpMenuAction>[];
 
     const handleClick = useCallback(() => setOpen((prev) => !prev), []);
     const handleClose = useCallback(() => setOpen(false), []);
@@ -75,20 +78,18 @@ export function HelpMenu() {
                     },
                 }}
             >
-                {actions
-                    .filter((action) => !isMobile || !action.disableOnMobile)
-                    .map((action) => (
-                        <SpeedDialAction
-                            key={action.name}
-                            icon={action.icon}
-                            tooltipTitle={action.name}
-                            tooltipOpen
-                            onClick={(e) => {
-                                handleClickAction(e, action.onClick);
-                            }}
-                            sx={{ whiteSpace: 'nowrap' }}
-                        />
-                    ))}
+                {actions.map((action) => (
+                    <SpeedDialAction
+                        key={action.name}
+                        icon={action.icon}
+                        tooltipTitle={action.name}
+                        tooltipOpen
+                        onClick={(e) => {
+                            handleClickAction(e, action.onClick);
+                        }}
+                        sx={{ whiteSpace: 'nowrap' }}
+                    />
+                ))}
             </SpeedDial>
         </>
     );
