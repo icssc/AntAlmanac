@@ -20,7 +20,7 @@ function groupNotificationsByTerm(notifications: Record<string, unknown>) {
 
 export function NotificationsTabs() {
     const initialized = useNotificationStore(useShallow((store) => store.initialized));
-    const notifications = useNotificationStore.getState().notifications;
+    const notifications = useNotificationStore(useShallow((store) => store.notifications));
 
     const groups = useMemo(() => groupNotificationsByTerm(notifications), [notifications]);
     const sortedTerms = useMemo(() => Object.keys(groups).sort(), [groups]);
