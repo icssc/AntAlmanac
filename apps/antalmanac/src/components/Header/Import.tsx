@@ -21,13 +21,14 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '../RightPane/RightPaneStore';
 
-import { addCustomEvent, openSnackbar, addCourse } from '$actions/AppStoreActions';
+import { addCustomEvent, openSnackbar, addCourse, importScheduleWithUsername } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import AppStore from '$stores/AppStore';
+import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 function Import() {
@@ -36,8 +37,11 @@ function Import() {
     const [importSource, setImportSource] = useState('studylist');
     const [studyListText, setStudyListText] = useState('');
     const [zotcourseScheduleName, setZotcourseScheduleName] = useState('');
+    const [aaUsername, setAAUsername] = useState('');
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+
+    const { sessionIsValid } = useSessionStore();
 
     const { isDark } = useThemeStore();
 
@@ -49,75 +53,99 @@ function Import() {
         setOpen(false);
     }, []);
 
+    const ZOT_COURSE_IMPORT = 'zotcourse';
+    const STUDY_LIST_IMPORT = 'studylist';
+    const AA_USERNAME_IMPORT = 'username';
+
     const handleSubmit = async () => {
         const currentSchedule = AppStore.getCurrentScheduleIndex();
 
-        const isZotcourseImport = importSource === 'zotcourse';
         let sectionCodes: string[] | null = null;
 
-        if (isZotcourseImport) {
-            try {
-                const zotcourseImport: ZotcourseResponse = await queryZotcourse(zotcourseScheduleName);
-                sectionCodes = zotcourseImport.codes;
-                for (const event of zotcourseImport.customEvents) {
-                    addCustomEvent(event, [currentSchedule]);
+        switch (importSource) {
+            case ZOT_COURSE_IMPORT:
+                try {
+                    const zotcourseImport: ZotcourseResponse = await queryZotcourse(zotcourseScheduleName);
+                    sectionCodes = zotcourseImport.codes;
+                    for (const event of zotcourseImport.customEvents) {
+                        addCustomEvent(event, [currentSchedule]);
+                    }
+                } catch (e) {
+                    if (e instanceof QueryZotcourseError) {
+                        openSnackbar('error', e.message);
+                    } else {
+                        openSnackbar('error', 'Could not import from Zotcourse.');
+                    }
+                    console.error(e);
+                    handleClose();
+                    return;
                 }
-            } catch (e) {
-                if (e instanceof QueryZotcourseError) {
-                    openSnackbar('error', e.message);
-                } else {
-                    openSnackbar('error', 'Could not import from Zotcourse.');
+                break;
+            case STUDY_LIST_IMPORT:
+                sectionCodes = studyListText.match(/\d{5}/g);
+
+                if (!sectionCodes || sectionCodes.length === 0) break;
+
+                try {
+                    const sectionsAdded = addCoursesMultiple(
+                        await WebSOC.getCourseInfo({
+                            term: term,
+                            sectionCodes: sectionCodes.join(','),
+                        }),
+                        term,
+                        currentSchedule
+                    );
+
+                    logAnalytics({
+                        category: analyticsEnum.nav.title,
+                        action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
+                        value: sectionsAdded / (sectionCodes.length || 1),
+                    });
+
+                    if (sectionsAdded === sectionCodes.length) {
+                        openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
+                    } else if (sectionsAdded !== 0) {
+                        openSnackbar(
+                            'warning',
+                            `Only successfully imported ${sectionsAdded} of ${sectionCodes.length} classes. 
+                        Please make sure that you selected the correct term and that none of your classes are missing.`
+                        );
+                    } else {
+                        openSnackbar(
+                            'error',
+                            'Failed to import any classes! Please make sure that you pasted the correct Study List.'
+                        );
+                    }
+                } catch (e) {
+                    openSnackbar('error', 'An error occurred while trying to import the Study List.');
+                    console.error(e);
                 }
-                console.error(e);
+                break;
+            case AA_USERNAME_IMPORT:
+                try {
+                    importScheduleWithUsername(aaUsername);
+                } catch (e) {
+                    openSnackbar(
+                        'error',
+                        `An error occurred while trying to import schedule with the name ${aaUsername}`
+                    );
+                    console.error(e);
+                }
+                break;
+            default:
+                openSnackbar('error', 'Invalid import source.');
                 handleClose();
                 return;
-            }
-        } else {
-            // Is importing from Study List
-            sectionCodes = studyListText.match(/\d{5}/g);
         }
 
-        if (!sectionCodes) {
-            openSnackbar('error', `Cannot import an empty ${isZotcourseImport ? 'Zotcourse' : 'Study List'}.`);
+        if (!sectionCodes && importSource !== AA_USERNAME_IMPORT) {
+            openSnackbar(
+                'error',
+                `Cannot import an empty ${importSource === ZOT_COURSE_IMPORT ? 'Zotcourse' : 'Study List'}.`
+            );
             handleClose();
             return;
         }
-
-        try {
-            const sectionsAdded = addCoursesMultiple(
-                await WebSOC.getCourseInfo({
-                    term: term,
-                    sectionCodes: sectionCodes.join(','),
-                }),
-                term,
-                currentSchedule
-            );
-
-            logAnalytics({
-                category: analyticsEnum.nav.title,
-                action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
-                value: sectionsAdded / (sectionCodes.length || 1),
-            });
-
-            if (sectionsAdded === sectionCodes.length) {
-                openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
-            } else if (sectionsAdded !== 0) {
-                openSnackbar(
-                    'warning',
-                    `Only successfully imported ${sectionsAdded} of ${sectionCodes.length} classes. 
-                        Please make sure that you selected the correct term and that none of your classes are missing.`
-                );
-            } else {
-                openSnackbar(
-                    'error',
-                    'Failed to import any classes! Please make sure that you pasted the correct Study List.'
-                );
-            }
-        } catch (e) {
-            openSnackbar('error', 'An error occurred while trying to import the Study List.');
-            console.error(e);
-        }
-
         setStudyListText('');
         handleClose();
     };
@@ -149,6 +177,10 @@ function Import() {
 
     const handleZotcourseScheduleNameChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setZotcourseScheduleName(event.currentTarget.value);
+    }, []);
+
+    const handleAAUsernameChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setAAUsername(event.currentTarget.value);
     }, []);
 
     useEffect(() => {
@@ -188,18 +220,26 @@ function Import() {
                             onChange={handleImportSourceChange}
                         >
                             <FormControlLabel
-                                value="studylist"
+                                value={STUDY_LIST_IMPORT}
                                 control={<Radio color="primary" />}
                                 label="From Study List"
                             />
                             <FormControlLabel
-                                value="zotcourse"
+                                value={ZOT_COURSE_IMPORT}
                                 control={<Radio color="primary" />}
                                 label="From Zotcourse"
                             />
+                            <Tooltip title="Import from your AntAlamanc schedule(s)" placement="right">
+                                <FormControlLabel
+                                    value={AA_USERNAME_IMPORT}
+                                    control={<Radio color="primary" />}
+                                    label="From AntAlmanac schedule name"
+                                    disabled={!sessionIsValid}
+                                />
+                            </Tooltip>
                         </RadioGroup>
                     </FormControl>
-                    {importSource === 'studylist' ? (
+                    {importSource === STUDY_LIST_IMPORT && (
                         <Box>
                             <DialogContentText>
                                 Paste the contents of your Study List below to import it into AntAlmanac.
@@ -222,7 +262,8 @@ function Import() {
                             />
                             <br />
                         </Box>
-                    ) : (
+                    )}
+                    {importSource === ZOT_COURSE_IMPORT && (
                         <Box>
                             <DialogContentText>
                                 Paste your Zotcourse schedule name below to import it into AntAlmanac.
@@ -240,9 +281,31 @@ function Import() {
                             <br />
                         </Box>
                     )}
+                    {importSource === AA_USERNAME_IMPORT && (
+                        <Box>
+                            <DialogContentText>
+                                Paste your AntAlmanac schedule name below to import it into AntAlmanac.
+                            </DialogContentText>
+                            <InputLabel style={{ fontSize: '9px' }}>AntAlmanac Schedule Name</InputLabel>
+                            <TextField
+                                fullWidth
+                                multiline
+                                margin="dense"
+                                type="text"
+                                placeholder="Paste here"
+                                value={aaUsername}
+                                onChange={handleAAUsernameChange}
+                            />
+                            <br />
+                        </Box>
+                    )}
 
-                    <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
-                    <TermSelector changeTerm={setTerm} fieldName={'selectedTerm'} />
+                    {importSource !== AA_USERNAME_IMPORT && (
+                        <>
+                            <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
+                            <TermSelector changeTerm={setTerm} fieldName={'selectedTerm'} />
+                        </>
+                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>

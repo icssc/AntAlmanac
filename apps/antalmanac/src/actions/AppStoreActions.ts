@@ -163,7 +163,11 @@ export async function autoSaveSchedule(userID: string) {
  * @param schedules
  * @param incomingSchedule
  */
-const mergeSchedules = (schedules: ShortCourseSchedule[], incomingSchedule: ShortCourseSchedule[]) => {
+const mergeSchedules = (
+    schedules: ShortCourseSchedule[],
+    incomingSchedule: ShortCourseSchedule[],
+    importMessage = 'RESTORED'
+) => {
     const existingScheduleNames = new Set(schedules.map((s: ShortCourseSchedule) => s.scheduleName));
     const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
         let scheduleName = schedule.scheduleName;
@@ -172,10 +176,42 @@ const mergeSchedules = (schedules: ShortCourseSchedule[], incomingSchedule: Shor
         }
         return {
             ...schedule,
-            scheduleName: '(RESTORED)-' + scheduleName,
+            scheduleName: `(${importMessage})-` + scheduleName,
         };
     });
     schedules.push(...cacheSchedule);
+};
+
+export const importScheduleWithUsername = async (username: string) => {
+    try {
+        const session = useSessionStore.getState();
+        if (!session.sessionIsValid) {
+            throw new Error("Invalid session: User isn't logged in.");
+        }
+
+        const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
+            token: session.session ?? '',
+        });
+        const incomingUser = await trpc.userData.getGuestUserByName.query({ name: username });
+
+        if (!incomingUser || !incomingUser.users) {
+            throw new Error(`Couldn't find user with username "${username}".`);
+        }
+        const incomingData: User = await trpc.userData.getUserData.query({ userId: incomingUser.users.id });
+        const scheduleSaveState = incomingData && 'userData' in incomingData ? incomingData.userData : incomingData;
+
+        const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
+
+        if (scheduleSaveState.schedules) {
+            mergeSchedules(currentSchedules.schedules, scheduleSaveState.schedules, 'IMPORTED');
+            if (await AppStore.loadSchedule(currentSchedules)) {
+                await saveSchedule(users.id, accounts.AccountType);
+            }
+        }
+    } catch (e) {
+        console.error(e);
+        openSnackbar('error', `Failed to import schedule with name "${username}".`);
+    }
 };
 
 export const loadSchedule = async (loadCache = false) => {

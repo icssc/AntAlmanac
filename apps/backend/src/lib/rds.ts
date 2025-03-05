@@ -56,7 +56,19 @@ export class RDS {
                 })
         );
     }
-
+    static async getGuestAccountAndUserByName(db: DatabaseOrTransaction, name: string) {
+        return db.transaction((tx) =>
+            tx
+                .select()
+                .from(accounts)
+                .innerJoin(users, eq(accounts.userId, users.id))
+                .where(and(eq(users.name, name), eq(accounts.accountType, 'GUEST')))
+                .execute()
+                .then((res) => {
+                    return { users: res[0].users, accounts: res[0].accounts };
+                })
+        );
+    }
     /**
      * Creates a new user and an associated account with the specified provider ID.
      *

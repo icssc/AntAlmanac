@@ -74,6 +74,9 @@ const userDataRouter = router({
         }
     }),
 
+    getGuestUserByName: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
+        return RDS.getGuestAccountAndUserByName(db, input.name);
+    }),
     /**
      * Retrieves Google authentication URL for login/sign up.
      * Retrieves Google auth url to login/sign up
