@@ -1,4 +1,4 @@
-import { AppBar, Box } from '@mui/material';
+import { AppBar, Box, Stack } from '@mui/material';
 
 import Import from './Import';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
@@ -29,12 +29,12 @@ export function Header() {
             >
                 <Logo />
 
-                <Box style={{ display: 'flex', flexDirection: 'row' }}>
+                <Stack direction="row">
                     <LoadSaveScheduleFunctionality />
                     <Import key="studylist" />
                     <Login />
                     <AppDrawer key="settings" />
-                </Box>
+                </Stack>
             </Box>
         </AppBar>
     );
