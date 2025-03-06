@@ -1,9 +1,8 @@
 import GoogleIcon from '@mui/icons-material/Google';
-import { Button, TextField, Stack, Divider, Snackbar, Alert } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Button, TextField, Stack, Divider } from '@mui/material';
+import { useState } from 'react';
 
-import { isEmptySchedule } from '$actions/AppStoreActions';
+import { isEmptySchedule, openSnackbar } from '$actions/AppStoreActions';
 import { InputDialog } from '$components/dialogs/InputDialog';
 import trpc from '$lib/api/trpc';
 import { setLocalStorageDataCache } from '$lib/localStorage';
@@ -18,14 +17,10 @@ interface SignInDialogProps {
 
 export function SignInDialog(props: SignInDialogProps) {
     const { onClose, isDark, open } = props;
-    const [openAlert, setOpenAlert] = useState(false);
 
-    const { session, updateSession: setSession } = useSessionStore();
-    const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
+    const { updateSession: setSession } = useSessionStore();
 
     const [userName, setUserName] = useState('');
-    const [isProcessing, setIsProcessing] = useState(false);
 
     const cacheSchedule = () => {
         const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState().schedules;
@@ -43,29 +38,7 @@ export function SignInDialog(props: SignInDialogProps) {
             }
         } catch (error) {
             console.error('Error during login initiation', error);
-            setOpenAlert(true);
-        }
-    };
-
-    const handleCallback = async () => {
-        if (isProcessing) return;
-        setIsProcessing(true);
-        try {
-            const code = searchParams.get('code');
-            if (code) {
-                const newSession = await trpc.userData.handleGoogleCallback.mutate({
-                    code: code,
-                    token: session ?? '',
-                });
-
-                setSession(newSession);
-                navigate('/');
-            }
-        } catch (error) {
-            console.error('Error during authentication', error);
-            setOpenAlert(true);
-        } finally {
-            setIsProcessing(false);
+            openSnackbar('error', 'Error during login initiation. Please Try Again.');
         }
     };
 
@@ -78,10 +51,6 @@ export function SignInDialog(props: SignInDialogProps) {
             onClose();
         }
     };
-
-    useEffect(() => {
-        handleCallback();
-    }, [searchParams]);
 
     const handleClose = () => {
         onClose();
@@ -133,11 +102,6 @@ export function SignInDialog(props: SignInDialogProps) {
                     </form>
                 </Stack>
             </InputDialog>
-            <Snackbar open={openAlert} autoHideDuration={6000} onClose={() => setOpenAlert(false)}>
-                <Alert onClose={handleClose} severity="error" variant="filled" sx={{ width: '100%' }}>
-                    Error during authentication. Please try again.
-                </Alert>
-            </Snackbar>
         </>
     );
 }

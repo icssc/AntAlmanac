@@ -121,8 +121,6 @@ export class RDS {
         email?: string,
         avatar?: string
     ) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
         const existingAccount = await this.getAccountByProviderId(db, accountType, providerId);
         if (!existingAccount) {
             const { userId } = await db
