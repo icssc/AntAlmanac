@@ -69,43 +69,6 @@ export class RDS {
                 })
         );
     }
-    /**
-     * Creates a new user and an associated account with the specified provider ID.
-     *
-     * @param db - The database or transaction object.
-     * @param providerId - The provider account ID for the new account.
-     * @returns A promise that resolves to the newly created account object.
-     */
-    static async registerUserAccount(
-        db: DatabaseOrTransaction,
-        providerId: string,
-        name: string,
-        accountType: Account['accountType'],
-        email?: string,
-        avatar?: string
-    ) {
-        const existingAccount = await this.getAccountByProviderId(db, accountType, providerId);
-        if (!existingAccount) {
-            const { userId } = await db
-                .insert(users)
-                .values({
-                    avatar: avatar ?? '',
-                    name: name,
-                    email: email ?? '',
-                })
-                .returning({ userId: users.id })
-                .then((res) => res[0]);
-
-            const account = await db
-                .insert(accounts)
-                .values({ userId: userId, providerAccountId: providerId, accountType: accountType })
-                .returning()
-                .then((res) => res[0]);
-
-            return account;
-        }
-        return existingAccount;
-    }
 
     /**
      * Retrieves a user by their ID from the database.
@@ -132,6 +95,56 @@ export class RDS {
                 .where(eq(accounts.userId, userId))
                 .then((res) => res[0])
         );
+    }
+
+    static async getUserByEmail(db: DatabaseOrTransaction, email: string) {
+        return db.transaction((tx) =>
+            tx
+                .select()
+                .from(users)
+                .where(eq(users.email, email))
+                .then((res) => res[0])
+        );
+    }
+    /**
+     * Creates a new user and an associated account with the specified provider ID.
+     *
+     * @param db - The database or transaction object.
+     * @param providerId - The provider account ID for the new account.
+     * @returns A promise that resolves to the newly created account object.
+     */
+    static async registerUserAccount(
+        db: DatabaseOrTransaction,
+        providerId: string,
+        name: string,
+        accountType: Account['accountType'],
+        email?: string,
+        avatar?: string
+    ) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        const existingAccount = await this.getAccountByProviderId(db, accountType, providerId);
+        if (!existingAccount) {
+            const { userId } = await db
+                .insert(users)
+                .values({
+                    avatar: avatar ?? '',
+                    name: name,
+                    email: email ?? '',
+                })
+                .returning({ userId: users.id })
+                .then((res) => res[0]);
+
+            const account = await db
+                .insert(accounts)
+                .values({ userId: userId, providerAccountId: providerId, accountType: accountType })
+                .returning()
+                .then((res) => res[0]);
+
+            return account;
+        }
+
+        return existingAccount;
     }
 
     /**

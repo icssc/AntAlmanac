@@ -12,7 +12,7 @@ const authRouter = router({
     handleGuestSession: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
         const account = await RDS.registerUserAccount(db, input.name, input.name, 'GUEST');
 
-        if (account.userId.length > 0) {
+        if (account && account.userId.length > 0) {
             const session = await RDS.upsertSession(db, account.userId);
             return session?.refreshToken;
         }
