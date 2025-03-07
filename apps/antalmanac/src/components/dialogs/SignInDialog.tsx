@@ -45,7 +45,6 @@ export function SignInDialog(props: SignInDialogProps) {
     const handleUserNameLogin = async () => {
         if (userName.length > 0) {
             const sessionId = await trpc.auth.handleGuestSession.query({ name: userName });
-
             cacheSchedule();
             setSession(sessionId);
             onClose();

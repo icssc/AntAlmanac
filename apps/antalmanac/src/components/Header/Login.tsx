@@ -55,10 +55,12 @@ function Login() {
     useEffect(() => {
         setSession(session);
         handleUser();
-        if (reLogin && !validSession && currentSession.current) {
-            setOpenSignIn(true);
-            setRelogin(false);
-        }
+        setTimeout(() => {
+            if (reLogin && !validSession && currentSession.current) {
+                setOpenSignIn(true);
+                setRelogin(false);
+            }
+        }, 1000);
     }, [session, validSession, user, openSignIn]);
 
     return (
