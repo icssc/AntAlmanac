@@ -235,11 +235,14 @@ export const loadSchedule = async (loadCache = false) => {
         const res: User = await trpc.userData.getUserData.query({ userId: users.id });
         const scheduleSaveState = res && 'userData' in res ? res.userData : res;
 
-        if (isEmptySchedule(scheduleSaveState.schedules)) return;
         if (loadCache && shortCourseSchedules) {
-            mergeSchedules(scheduleSaveState.schedules, shortCourseSchedules);
+            if (isEmptySchedule(scheduleSaveState.schedules)) {
+                scheduleSaveState.schedules = shortCourseSchedules;
+            } else {
+                mergeSchedules(scheduleSaveState.schedules, shortCourseSchedules);
+            }
         }
-
+        if (isEmptySchedule(scheduleSaveState.schedules)) return;
         if (scheduleSaveState == null && !session.sessionIsValid) {
             openSnackbar('error', `Couldn't find schedules :(`);
         } else if (await AppStore.loadSchedule(scheduleSaveState)) {
