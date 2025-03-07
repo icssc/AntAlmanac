@@ -25,7 +25,7 @@ export function InputDialog(props: InputDialogProps) {
                 padding: '1rem',
             }}
         >
-            <DialogTitle fontSize={'large'}>{title}</DialogTitle>
+            <DialogTitle fontSize={'medium'}>{title}</DialogTitle>
             <DialogContent sx={{ width: '100%' }}>{children}</DialogContent>
         </Dialog>
     );

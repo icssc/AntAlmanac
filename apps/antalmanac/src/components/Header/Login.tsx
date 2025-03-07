@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import trpc from '$lib/api/trpc';
+import { getLocalStorageSessionId, removeLocalStorageSessionId } from '$lib/localStorage';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
@@ -14,7 +15,7 @@ function Login() {
     const [openSignIn, setOpenSignIn] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<null | User>(null);
-
+    const [reLogin, setRelogin] = useState(true);
     const { clearSession } = useSessionStore();
     const navigate = useNavigate();
 
@@ -35,6 +36,9 @@ function Login() {
     };
 
     const handleClickSignIn = () => {
+        if (!validSession && getLocalStorageSessionId()) {
+            removeLocalStorageSessionId();
+        }
         setOpenSignIn(!openSignIn);
     };
 
@@ -50,7 +54,12 @@ function Login() {
     useEffect(() => {
         setSession(session); // called validate the local session
         handleUser();
-    }, [session, validSession, user]);
+        if (reLogin && !validSession && getLocalStorageSessionId()) {
+            setOpenSignIn(true);
+            setRelogin(false);
+        }
+    }, [session, validSession, user, openSignIn]);
+
     return (
         <div id="load-save-container">
             {validSession ? (
