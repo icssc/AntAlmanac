@@ -2,7 +2,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Avatar, Button, Menu, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { SignInDialog } from '$components/dialogs/SignInDialog';
@@ -15,6 +15,7 @@ function Login() {
     const [openSignIn, setOpenSignIn] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<null | User>(null);
+    const currentSession = useRef<string | null>(getLocalStorageSessionId());
     const [reLogin, setRelogin] = useState(true);
     const { clearSession } = useSessionStore();
     const navigate = useNavigate();
@@ -52,14 +53,12 @@ function Login() {
     };
 
     useEffect(() => {
-        setSession(session); // called validate the local session
+        setSession(session);
         handleUser();
-        setTimeout(() => {
-            if (reLogin && !validSession && getLocalStorageSessionId()) {
-                setOpenSignIn(true);
-                setRelogin(false);
-            }
-        }, 2000);
+        if (reLogin && !validSession && currentSession.current) {
+            setOpenSignIn(true);
+            setRelogin(false);
+        }
     }, [session, validSession, user, openSignIn]);
 
     return (
