@@ -54,10 +54,12 @@ function Login() {
     useEffect(() => {
         setSession(session); // called validate the local session
         handleUser();
-        if (reLogin && !validSession && getLocalStorageSessionId()) {
-            setOpenSignIn(true);
-            setRelogin(false);
-        }
+        setTimeout(() => {
+            if (reLogin && !validSession && getLocalStorageSessionId()) {
+                setOpenSignIn(true);
+                setRelogin(false);
+            }
+        }, 2000);
     }, [session, validSession, user, openSignIn]);
 
     return (
