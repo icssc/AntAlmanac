@@ -225,6 +225,7 @@ export default function CourseRenderPane(props: { id?: number }) {
         setLoading(true);
 
         const formData = RightPaneStore.getFormData();
+        const userTakenCourses = RightPaneStore.getUserTakenCourses(); 
 
         const websocQueryParams = {
             department: formData.deptValue,
@@ -265,7 +266,17 @@ export default function CourseRenderPane(props: { id?: number }) {
 
             setError(false);
             setWebsocResp(websocJsonResp);
-            setCourseData(flattenSOCObject(websocJsonResp));
+            setCourseData(
+                flattenSOCObject(websocJsonResp).filter(course => {
+                    if (!RightPaneStore.getFilterTakenClasses()) return true;
+            
+                    if ("sections" in course && "deptCode" in course && "courseNumber" in course) {
+                        const courseKey = `${course.deptCode}${course.courseNumber}`.replace(/\s+/g, '');
+                        return !userTakenCourses.has(courseKey);
+                    }
+                    return true; 
+                })
+            );
         } catch (error) {
             console.error(error);
             setError(true);
