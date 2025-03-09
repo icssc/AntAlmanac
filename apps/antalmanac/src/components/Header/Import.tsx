@@ -237,7 +237,7 @@ function Import() {
                                 <FormControlLabel
                                     value={ImportSource.AA_USERNAME_IMPORT}
                                     control={<Radio color="primary" />}
-                                    label="From AntAlmanac schedule name"
+                                    label="From Guest Username"
                                     disabled={!sessionIsValid}
                                 />
                             </Tooltip>
@@ -288,7 +288,7 @@ function Import() {
                     {importSource === ImportSource.AA_USERNAME_IMPORT && (
                         <Box>
                             <DialogContentText>
-                                Paste your AntAlmanac schedule name below to import it into AntAlmanac.
+                                Enter your guest username to import its data into your account.
                             </DialogContentText>
                             <InputLabel style={{ fontSize: '9px' }}>AntAlmanac Schedule Name</InputLabel>
                             <TextField
