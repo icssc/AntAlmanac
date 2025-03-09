@@ -1,5 +1,5 @@
 import { AppBar, Box, Stack } from '@mui/material';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import Import from './Import';
@@ -16,7 +16,7 @@ export function Header() {
     const { session, updateSession: setSession } = useSessionStore();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    const handleCallback = async () => {
+    const handleSearchParamsChange = useCallback(async () => {
         try {
             const code = searchParams.get('code');
             if (code) {
@@ -31,11 +31,11 @@ export function Header() {
         } catch (error) {
             console.error('Error during authentication', error);
         }
-    };
+    }, [searchParams, session, setSession, navigate]);
 
     useEffect(() => {
-        handleCallback();
-    }, [searchParams]);
+        handleSearchParamsChange();
+    }, [handleSearchParamsChange]);
     return (
         <AppBar
             position="static"

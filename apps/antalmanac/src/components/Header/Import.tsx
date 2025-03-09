@@ -21,6 +21,8 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '../RightPane/RightPaneStore';
 
+import { ImportSource } from './constants';
+
 import { addCustomEvent, openSnackbar, addCourse, importScheduleWithUsername } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import { QueryZotcourseError } from '$lib/customErrors';
@@ -53,17 +55,13 @@ function Import() {
         setOpen(false);
     }, []);
 
-    const ZOT_COURSE_IMPORT = 'zotcourse';
-    const STUDY_LIST_IMPORT = 'studylist';
-    const AA_USERNAME_IMPORT = 'username';
-
     const handleSubmit = async () => {
         const currentSchedule = AppStore.getCurrentScheduleIndex();
 
         let sectionCodes: string[] | null = null;
 
         switch (importSource) {
-            case ZOT_COURSE_IMPORT:
+            case ImportSource.ZOT_COURSE_IMPORT:
                 try {
                     const zotcourseImport: ZotcourseResponse = await queryZotcourse(zotcourseScheduleName);
                     sectionCodes = zotcourseImport.codes;
@@ -81,7 +79,7 @@ function Import() {
                     return;
                 }
                 break;
-            case STUDY_LIST_IMPORT:
+            case ImportSource.STUDY_LIST_IMPORT:
                 sectionCodes = studyListText.match(/\d{5}/g);
 
                 if (!sectionCodes || sectionCodes.length === 0) break;
@@ -121,7 +119,7 @@ function Import() {
                     console.error(e);
                 }
                 break;
-            case AA_USERNAME_IMPORT:
+            case ImportSource.AA_USERNAME_IMPORT:
                 try {
                     importScheduleWithUsername(aaUsername);
                 } catch (e) {
@@ -138,10 +136,12 @@ function Import() {
                 return;
         }
 
-        if (!sectionCodes && importSource !== AA_USERNAME_IMPORT) {
+        if (!sectionCodes && importSource !== ImportSource.AA_USERNAME_IMPORT) {
             openSnackbar(
                 'error',
-                `Cannot import an empty ${importSource === ZOT_COURSE_IMPORT ? 'Zotcourse' : 'Study List'}.`
+                `Cannot import an empty ${
+                    importSource === ImportSource.ZOT_COURSE_IMPORT ? 'Zotcourse' : 'Study List'
+                }.`
             );
             handleClose();
             return;
@@ -220,18 +220,18 @@ function Import() {
                             onChange={handleImportSourceChange}
                         >
                             <FormControlLabel
-                                value={STUDY_LIST_IMPORT}
+                                value={ImportSource.STUDY_LIST_IMPORT}
                                 control={<Radio color="primary" />}
                                 label="From Study List"
                             />
                             <FormControlLabel
-                                value={ZOT_COURSE_IMPORT}
+                                value={ImportSource.ZOT_COURSE_IMPORT}
                                 control={<Radio color="primary" />}
                                 label="From Zotcourse"
                             />
                             <Tooltip title="Import from your AntAlamanc schedule(s)" placement="right">
                                 <FormControlLabel
-                                    value={AA_USERNAME_IMPORT}
+                                    value={ImportSource.AA_USERNAME_IMPORT}
                                     control={<Radio color="primary" />}
                                     label="From AntAlmanac schedule name"
                                     disabled={!sessionIsValid}
@@ -239,7 +239,7 @@ function Import() {
                             </Tooltip>
                         </RadioGroup>
                     </FormControl>
-                    {importSource === STUDY_LIST_IMPORT && (
+                    {importSource === ImportSource.STUDY_LIST_IMPORT && (
                         <Box>
                             <DialogContentText>
                                 Paste the contents of your Study List below to import it into AntAlmanac.
@@ -263,7 +263,7 @@ function Import() {
                             <br />
                         </Box>
                     )}
-                    {importSource === ZOT_COURSE_IMPORT && (
+                    {importSource === ImportSource.ZOT_COURSE_IMPORT && (
                         <Box>
                             <DialogContentText>
                                 Paste your Zotcourse schedule name below to import it into AntAlmanac.
@@ -281,7 +281,7 @@ function Import() {
                             <br />
                         </Box>
                     )}
-                    {importSource === AA_USERNAME_IMPORT && (
+                    {importSource === ImportSource.AA_USERNAME_IMPORT && (
                         <Box>
                             <DialogContentText>
                                 Paste your AntAlmanac schedule name below to import it into AntAlmanac.
@@ -300,7 +300,7 @@ function Import() {
                         </Box>
                     )}
 
-                    {importSource !== AA_USERNAME_IMPORT && (
+                    {importSource !== ImportSource.AA_USERNAME_IMPORT && (
                         <>
                             <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
                             <TermSelector changeTerm={setTerm} fieldName={'selectedTerm'} />

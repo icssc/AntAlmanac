@@ -2,7 +2,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Avatar, Button, Menu, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { SignInDialog } from '$components/dialogs/SignInDialog';
@@ -16,7 +16,7 @@ function Login() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<null | User>(null);
     const currentSession = useRef<string | null>(getLocalStorageSessionId());
-    const [reLogin, setRelogin] = useState(true);
+    const [reLoginFlag, setReloginFlag] = useState(true);
     const { clearSession } = useSessionStore();
     const navigate = useNavigate();
 
@@ -43,25 +43,25 @@ function Login() {
         setOpenSignIn(!openSignIn);
     };
 
-    const handleUser = async () => {
+    const handleAuthChange = useCallback(async () => {
+        setSession(session);
         if (validSession) {
             const userId = await trpc.auth.getSessionUserId.query({ token: session ?? '' });
             if (userId) {
                 setUser(await trpc.userData.getUserByUid.query({ userId: userId }));
             }
         }
-    };
+    }, [session, setSession, validSession]);
 
     useEffect(() => {
-        setSession(session);
-        handleUser();
+        handleAuthChange();
         setTimeout(() => {
-            if (reLogin && !validSession && currentSession.current) {
+            if (reLoginFlag && !validSession && currentSession.current) {
                 setOpenSignIn(true);
-                setRelogin(false);
+                setReloginFlag(false);
             }
         }, 1000);
-    }, [session, validSession, user, openSignIn]);
+    }, [handleAuthChange, reLoginFlag, validSession]);
 
     return (
         <div id="load-save-container">
