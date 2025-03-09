@@ -237,7 +237,7 @@ function Import() {
                                 <FormControlLabel
                                     value={ImportSource.AA_USERNAME_IMPORT}
                                     control={<Radio color="primary" />}
-                                    label="From AntAlmanac schedule name"
+                                    label="From Guest Username"
                                     disabled={!sessionIsValid}
                                 />
                             </Tooltip>
