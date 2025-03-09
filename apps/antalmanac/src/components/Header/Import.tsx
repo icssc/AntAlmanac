@@ -68,6 +68,7 @@ function Import() {
                     for (const event of zotcourseImport.customEvents) {
                         addCustomEvent(event, [currentSchedule]);
                     }
+                    uploadSectionCodes(sectionCodes, term, currentSchedule);
                 } catch (e) {
                     if (e instanceof QueryZotcourseError) {
                         openSnackbar('error', e.message);
@@ -83,41 +84,7 @@ function Import() {
                 sectionCodes = studyListText.match(/\d{5}/g);
 
                 if (!sectionCodes || sectionCodes.length === 0) break;
-
-                try {
-                    const sectionsAdded = addCoursesMultiple(
-                        await WebSOC.getCourseInfo({
-                            term: term,
-                            sectionCodes: sectionCodes.join(','),
-                        }),
-                        term,
-                        currentSchedule
-                    );
-
-                    logAnalytics({
-                        category: analyticsEnum.nav.title,
-                        action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
-                        value: sectionsAdded / (sectionCodes.length || 1),
-                    });
-
-                    if (sectionsAdded === sectionCodes.length) {
-                        openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
-                    } else if (sectionsAdded !== 0) {
-                        openSnackbar(
-                            'warning',
-                            `Only successfully imported ${sectionsAdded} of ${sectionCodes.length} classes. 
-                        Please make sure that you selected the correct term and that none of your classes are missing.`
-                        );
-                    } else {
-                        openSnackbar(
-                            'error',
-                            'Failed to import any classes! Please make sure that you pasted the correct Study List.'
-                        );
-                    }
-                } catch (e) {
-                    openSnackbar('error', 'An error occurred while trying to import the Study List.');
-                    console.error(e);
-                }
+                uploadSectionCodes(sectionCodes, term, currentSchedule);
                 break;
             case ImportSource.AA_USERNAME_IMPORT:
                 try {
@@ -148,6 +115,43 @@ function Import() {
         }
         setStudyListText('');
         handleClose();
+    };
+
+    const uploadSectionCodes = async (sectionCodes: string[], term: string, currentSchedule: number) => {
+        try {
+            const sectionsAdded = addCoursesMultiple(
+                await WebSOC.getCourseInfo({
+                    term: term,
+                    sectionCodes: sectionCodes.join(','),
+                }),
+                term,
+                currentSchedule
+            );
+
+            logAnalytics({
+                category: analyticsEnum.nav.title,
+                action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
+                value: sectionsAdded / (sectionCodes.length || 1),
+            });
+
+            if (sectionsAdded === sectionCodes.length) {
+                openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
+            } else if (sectionsAdded !== 0) {
+                openSnackbar(
+                    'warning',
+                    `Only successfully imported ${sectionsAdded} of ${sectionCodes.length} classes. 
+                        Please make sure that you selected the correct term and that none of your classes are missing.`
+                );
+            } else {
+                openSnackbar(
+                    'error',
+                    'Failed to import any classes! Please make sure that you pasted the correct Study List.'
+                );
+            }
+        } catch (e) {
+            openSnackbar('error', 'An error occurred while trying to import the Study List.');
+            console.error(e);
+        }
     };
 
     const addCoursesMultiple = (
