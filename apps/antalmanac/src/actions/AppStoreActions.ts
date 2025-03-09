@@ -86,7 +86,7 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
     return true;
 }
 
-export const saveSchedule = async (userID: string, accountType: 'GOOGLE' | 'GUEST') => {
+export const saveSchedule = async (userID: string, accountType: 'GOOGLE' | 'GUEST', toggleAlert = true) => {
     if (userID != null && userID.length > 0) {
         logAnalytics({
             category: analyticsEnum.nav.title,
@@ -115,7 +115,9 @@ export const saveSchedule = async (userID: string, accountType: 'GOOGLE' | 'GUES
                 },
             });
 
-            openSnackbar('success', `Schedule saved! Don't forget to sign up for classes on WebReg!`);
+            if (toggleAlert) {
+                openSnackbar('success', `Schedule saved! Don't forget to sign up for classes on WebReg!`);
+            }
             AppStore.saveSchedule();
         } catch (e) {
             if (e instanceof TRPCError) {
@@ -166,7 +168,7 @@ export async function autoSaveSchedule(userID: string) {
 const mergeSchedules = (
     schedules: ShortCourseSchedule[],
     incomingSchedule: ShortCourseSchedule[],
-    importMessage = 'RESTORED'
+    importMessage = '(RESTORED)-'
 ) => {
     const existingScheduleNames = new Set(schedules.map((s: ShortCourseSchedule) => s.scheduleName));
     const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
@@ -176,13 +178,13 @@ const mergeSchedules = (
         }
         return {
             ...schedule,
-            scheduleName: `${scheduleName}-(${importMessage})`,
+            scheduleName: `${scheduleName}${importMessage}`,
         };
     });
     schedules.push(...cacheSchedule);
 };
 
-export const importScheduleWithUsername = async (username: string) => {
+export const importScheduleWithUsername = async (username: string, importTag = '-(IMPORT)') => {
     try {
         const session = useSessionStore.getState();
         if (!session.sessionIsValid) {
@@ -203,9 +205,10 @@ export const importScheduleWithUsername = async (username: string) => {
         const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
 
         if (scheduleSaveState.schedules) {
-            mergeSchedules(currentSchedules.schedules, scheduleSaveState.schedules, 'IMPORTED');
+            mergeSchedules(currentSchedules.schedules, scheduleSaveState.schedules, importTag);
             if (await AppStore.loadSchedule(currentSchedules)) {
                 await saveSchedule(users.id, accounts.AccountType);
+                openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
             }
         }
     } catch (e) {
@@ -247,7 +250,7 @@ export const loadSchedule = async (loadCache = false) => {
             openSnackbar('error', `Couldn't find schedules :(`);
         } else if (await AppStore.loadSchedule(scheduleSaveState)) {
             openSnackbar('success', `Schedule loaded successfully!`);
-            await saveSchedule(users.id, accounts.AccountType);
+            await saveSchedule(users.id, accounts.AccountType, loadCache);
         } else {
             AppStore.loadSkeletonSchedule(scheduleSaveState);
             openSnackbar(
