@@ -176,7 +176,7 @@ const mergeSchedules = (
         }
         return {
             ...schedule,
-            scheduleName: `(${importMessage})-` + scheduleName,
+            scheduleName: `${scheduleName}-(${importMessage})`,
         };
     });
     schedules.push(...cacheSchedule);
