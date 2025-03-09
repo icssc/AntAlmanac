@@ -1,6 +1,7 @@
 import { Save, SaveAlt } from '@material-ui/icons';
+import { LoadingButton } from '@mui/lab';
 import { Button, Stack } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
 import { InputDialog } from '$components/dialogs/InputDialog';
@@ -43,6 +44,7 @@ const LoadSaveScheduleFunctionality = () => {
     const { session, sessionIsValid: validSession } = useSessionStore();
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [openLoadCacheDialog, setOpenLoadCacheDialog] = useState(false);
+    const [saving, setSaving] = useState(false);
 
     const handleClickSignIn = () => {
         setOpenSignInDialog(!openSignInDialog);
@@ -56,15 +58,17 @@ const LoadSaveScheduleFunctionality = () => {
     const saveScheduleData = async () => {
         if (validSession && session) {
             const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({ token: session });
+            setSaving(true);
             await saveSchedule(users.id, accounts.AccountType);
+            setSaving(false);
         }
     };
 
-    const loadScheduleData = async () => {
+    const loadScheduleData = useCallback(async () => {
         if (validSession) {
             await loadSchedule();
         }
-    };
+    }, [validSession]);
 
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
@@ -74,13 +78,19 @@ const LoadSaveScheduleFunctionality = () => {
                 loadScheduleData();
             }
         }
-    }, [session, validSession]);
+    }, [session, validSession, loadScheduleData]);
 
     return (
         <Stack direction="row">
-            <Button color="inherit" startIcon={<Save />} onClick={validSession ? saveScheduleData : handleClickSignIn}>
+            <LoadingButton
+                color="inherit"
+                startIcon={<Save />}
+                onClick={validSession ? saveScheduleData : handleClickSignIn}
+                disabled={saving}
+                loading={saving}
+            >
                 Save
-            </Button>
+            </LoadingButton>
 
             <SignInDialog isDark={isDark} open={openSignInDialog} onClose={handleClickSignIn} />
 
