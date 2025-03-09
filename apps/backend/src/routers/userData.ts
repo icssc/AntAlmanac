@@ -4,12 +4,12 @@ import { type } from 'arktype';
 import { OAuth2Client } from 'google-auth-library';
 import { z } from 'zod';
 
-import { procedure, router } from '../trpc';
 
 import { db } from 'src/db';
 import { googleOAuthEnvSchema } from 'src/env';
 import { mangleDuplicateScheduleNames } from 'src/lib/formatting';
 import { RDS } from 'src/lib/rds';
+import { procedure, router } from '../trpc';
 
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } = googleOAuthEnvSchema.parse(process.env);
 

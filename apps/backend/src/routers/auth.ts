@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
-import { procedure, router } from '../trpc';
 
 import { db } from 'src/db';
 import { RDS } from 'src/lib/rds';
+import { procedure, router } from '../trpc';
 
 const authRouter = router({
     /**
