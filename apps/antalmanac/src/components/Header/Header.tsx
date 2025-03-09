@@ -1,13 +1,41 @@
-import { AppBar, Box } from '@mui/material';
+import { AppBar, Box, Stack } from '@mui/material';
+import { useEffect, useCallback } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import Import from './Import';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
+import Login from './Login';
 import { Logo } from './Logo';
 import AppDrawer from './SettingsMenu';
 
+import trpc from '$lib/api/trpc';
 import { BLUE } from '$src/globals';
+import { useSessionStore } from '$stores/SessionStore';
 
 export function Header() {
+    const { session, updateSession: setSession } = useSessionStore();
+    const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
+    const handleSearchParamsChange = useCallback(async () => {
+        try {
+            const code = searchParams.get('code');
+            if (code) {
+                const newSession = await trpc.userData.handleGoogleCallback.mutate({
+                    code: code,
+                    token: session ?? '',
+                });
+
+                setSession(newSession);
+                navigate('/');
+            }
+        } catch (error) {
+            console.error('Error during authentication', error);
+        }
+    }, [searchParams, session, setSession, navigate]);
+
+    useEffect(() => {
+        handleSearchParamsChange();
+    }, [handleSearchParamsChange]);
     return (
         <AppBar
             position="static"
@@ -28,11 +56,12 @@ export function Header() {
             >
                 <Logo />
 
-                <Box style={{ display: 'flex', flexDirection: 'row' }}>
+                <Stack direction="row">
                     <LoadSaveScheduleFunctionality />
                     <Import key="studylist" />
+                    <Login />
                     <AppDrawer key="settings" />
-                </Box>
+                </Stack>
             </Box>
         </AppBar>
     );
