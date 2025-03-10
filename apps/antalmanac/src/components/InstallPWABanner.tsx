@@ -7,7 +7,6 @@ import { shallow } from 'zustand/shallow';
 
 import { getLocalStoragePWADismissalTime, setLocalStoragePWADismissalTime } from '$lib/localStorage';
 import { BeforeInstallPromptEvent, usePWAStore } from '$stores/PWAStore';
-import { useThemeStore } from '$stores/SettingsStore';
 
 function InstallPWABanner() {
     const [setInstallPrompt, setCanInstall, canInstall, installPrompt] = usePWAStore(
@@ -16,7 +15,6 @@ function InstallPWABanner() {
     );
 
     const [bannerVisibility, setBannerVisibility] = useState(false);
-    const isDark = useThemeStore((store) => store.isDark);
 
     useEffect(() => {
         const timeoutIn = setTimeout(() => {
@@ -73,14 +71,16 @@ function InstallPWABanner() {
                 <Alert
                     icon={false}
                     severity="info"
-                    style={{
-                        color: isDark ? '#ece6e6' : '#2e2e2e',
-                        backgroundColor: isDark ? '#2e2e2e' : '#ece6e6',
+                    sx={{
+                        color: 'text.primary',
+                        bgcolor: 'background.paper',
+                        boxShadow: 1,
+                        borderRadius: 1,
                     }}
                     action={
                         <IconButton
                             aria-label="close"
-                            size="small"
+                            size="large"
                             color="inherit"
                             onClick={() => {
                                 setLocalStoragePWADismissalTime(Date.now().toString());
@@ -92,7 +92,7 @@ function InstallPWABanner() {
                     }
                 >
                     <Button id="install-pwa-button" startIcon={<BrowserUpdatedIcon />} onClick={handleInstall}>
-                        Install AntAlmanac app
+                        Install
                     </Button>
                 </Alert>
             </Slide>
