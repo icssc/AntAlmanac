@@ -76,18 +76,17 @@ function Login() {
                         sx={{ maxWidth: '9rem', minWidth: '3rem' }}
                         startIcon={!user?.avatar && <AccountCircleIcon />}
                     >
-                        {/* {user?.name && user?.name.length > 6 ? `${user?.name.substring(0, 6)}...` : user?.name} */}
-
                         {user?.avatar ? (
                             <Avatar
                                 sx={{ width: '2.2rem', height: '2.2rem' }}
                                 src={`${user?.avatar}`}
                                 alt={`${user?.name}-photo`}
                             />
-                        ) : user?.name && window.innerWidth < 600 ? (
-                            `${user?.name.substring(0, 6)}...`
                         ) : (
-                            user?.name
+                            <>
+                                {' '}
+                                {user?.name && user?.name.length > 6 ? `${user?.name.substring(0, 6)}...` : user?.name}
+                            </>
                         )}
                     </Button>
                     <Menu
@@ -103,6 +102,7 @@ function Login() {
                             <ListItemIcon>
                                 <LogoutIcon />
                             </ListItemIcon>
+
                             <ListItemText>Log out</ListItemText>
                         </MenuItem>
                     </Menu>
