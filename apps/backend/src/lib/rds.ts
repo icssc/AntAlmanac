@@ -96,16 +96,16 @@ export class RDS {
                 .then((res) => res[0])
         );
     }
-
-    static async getUserByEmail(db: DatabaseOrTransaction, email: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(users)
-                .where(eq(users.email, email))
-                .then((res) => res[0])
-        );
-    }
+    
+    // static async getUserByEmail(db: DatabaseOrTransaction, email: string) {
+    //     return db.transaction((tx) =>
+    //         tx
+    //             .select()
+    //             .from(users)
+    //             .where(eq(users.email, email))
+    //             .then((res) => res[0])
+    //     );
+    // }
     /**
      * Creates a new user and an associated account with the specified provider ID.
      *
@@ -128,7 +128,7 @@ export class RDS {
                 .values({
                     avatar: avatar ?? '',
                     name: name,
-                    email: email ?? '',
+                    // email: email ?? '',
                 })
                 .returning({ userId: users.id })
                 .then((res) => res[0]);
