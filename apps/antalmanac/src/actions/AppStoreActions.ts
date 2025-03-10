@@ -250,7 +250,8 @@ export const loadSchedule = async (loadCache = false) => {
             openSnackbar('error', `Couldn't find schedules :(`);
         } else if (await AppStore.loadSchedule(scheduleSaveState)) {
             openSnackbar('success', `Schedule loaded successfully!`);
-            await saveSchedule(users.id, accounts.AccountType, loadCache);
+            // See if this fixes things
+            // await saveSchedule(users.id, accounts.AccountType, loadCache);
         } else {
             AppStore.loadSkeletonSchedule(scheduleSaveState);
             openSnackbar(

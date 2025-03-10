@@ -29,6 +29,13 @@
             "when": 1737598788794,
             "tag": "0003_watery_nekra",
             "breakpoints": true
+        },
+        {
+            "idx": 4,
+            "version": "7",
+            "when": 1741580702375,
+            "tag": "0004_goofy_harpoon",
+            "breakpoints": true
         }
     ]
 }
