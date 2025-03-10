@@ -76,8 +76,6 @@ function Login() {
                         sx={{ maxWidth: '9rem', minWidth: '3rem' }}
                         startIcon={!user?.avatar && <AccountCircleIcon />}
                     >
-                        {/* {user?.name && user?.name.length > 6 ? `${user?.name.substring(0, 6)}...` : user?.name} */}
-
                         {user?.avatar ? (
                             <Avatar
                                 sx={{ width: '2.2rem', height: '2.2rem' }}
@@ -85,7 +83,10 @@ function Login() {
                                 alt={`${user?.name}-photo`}
                             />
                         ) : (
-                            <>Account</>
+                            <>
+                                {' '}
+                                {user?.name && user?.name.length > 6 ? `${user?.name.substring(0, 6)}...` : user?.name}
+                            </>
                         )}
                     </Button>
                     <Menu
@@ -97,14 +98,6 @@ function Login() {
                             'aria-labelledby': 'basic-button',
                         }}
                     >
-                        <MenuItem>
-                            <ListItemIcon>User:</ListItemIcon>
-                            <ListItemText>
-                                {user?.name && user?.name.length > 12
-                                    ? `${user?.name.substring(0, 12)}...`
-                                    : user?.name}
-                            </ListItemText>
-                        </MenuItem>
                         <MenuItem onClick={handleLogout}>
                             <ListItemIcon>
                                 <LogoutIcon />
