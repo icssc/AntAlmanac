@@ -2,7 +2,7 @@ import { IconButton, Theme, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Tune } from '@material-ui/icons';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useState, useEffect } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
 
@@ -10,6 +10,7 @@ import FuzzySearch from './FuzzySearch';
 import HelpBox from './HelpBox';
 import PrivacyPolicyBanner from './PrivacyPolicyBanner';
 import TermSelector from './TermSelector';
+import { HelpMenu } from './HelpMenu';
 
 import { LegacySearch } from '$components/RightPane/CoursePane/SearchForm/LegacySearch';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
@@ -53,7 +54,8 @@ const styles: Styles<Theme, object> = {
 const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) => {
     const { classes, toggleSearch } = props;
     const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
-    const [helpBoxVisibility, setHelpBoxVisibility] = useState(true);
+    const [helpBoxVisibility, setHelpBoxVisibility] = useState(false);
+    const [isHelpBox, setIsHelpBox] = useState(RightPaneStore.getHelpBoxVisible());
 
     const onFormSubmit = (event: FormEvent) => {
         event.preventDefault();
@@ -71,11 +73,29 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
     const dismissedRecently =
         helpBoxDismissalTime !== null && Date.now() - parseInt(helpBoxDismissalTime) < 30 * 24 * 3600 * 1000;
     const displayHelpBox = helpBoxVisibility && !dismissedRecently && activeMonthIndices[currentMonthIndex];
+    const toggleHelpBox = isHelpBox;
 
     const onHelpBoxDismiss = () => {
         setLocalStorageHelpBoxDismissalTime(Date.now().toString());
-        setHelpBoxVisibility(false);
+        setIsHelpBox(false);
+        RightPaneStore.hideHelpBox();
     };
+
+    useEffect(() => {
+        const handleHelpBoxChange = (newVisibility: boolean) => {
+            setIsHelpBox(newVisibility);
+        };
+
+        RightPaneStore.on('helpBoxChange', handleHelpBoxChange);
+
+        if (!dismissedRecently && activeMonthIndices[currentMonthIndex]) {
+            RightPaneStore.showHelpBox();
+        }
+
+        return () => {
+            RightPaneStore.off('helpBoxChange', handleHelpBoxChange);
+        };
+    }, []);
 
     return (
         <div className={classes.rightPane}>
@@ -113,8 +133,9 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                 </div>
             </form>
 
-            {displayHelpBox && <HelpBox onDismiss={onHelpBoxDismiss} />}
+            {(displayHelpBox || toggleHelpBox) && <HelpBox onDismiss={() => onHelpBoxDismiss} />}
             <PrivacyPolicyBanner />
+            <HelpMenu />
         </div>
     );
 };
