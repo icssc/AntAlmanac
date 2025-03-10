@@ -15,37 +15,11 @@ enum LocalStorageKeys {
     helpBoxDismissalTime = 'helpBoxDismissalTime',
     columnToggles = 'columnToggles',
     pwaDismissalTime = 'pwaDismissalTime',
-    sessionId = 'sessionId',
-    dataCache = 'dataCache',
-    newUser = 'newUser',
 }
 
 const LSK = LocalStorageKeys;
 
-export function setLocalStorageOnFirstSignin(value: string) {
-    window.localStorage.setItem(LSK.newUser, value);
-}
-
-export function getLocalStorageOnFirstSignin() {
-    return window.localStorage.getItem(LSK.newUser);
-}
-
-export function removeLocalStorageOnFirstSignin() {
-    window.localStorage.removeItem(LSK.newUser);
-}
-
-export function setLocalStorageDataCache(value: string) {
-    window.localStorage.setItem(LSK.dataCache, value);
-}
-
-export function getLocalStorageDataCache() {
-    return window.localStorage.getItem(LSK.dataCache);
-}
-
-export function removeLocalStorageDataCache() {
-    window.localStorage.removeItem(LSK.dataCache);
-}
-
+// Helper functions for userId
 export function setLocalStorageUserId(value: string) {
     window.localStorage.setItem(LSK.userId, value);
 }
@@ -58,17 +32,6 @@ export function removeLocalStorageUserId() {
     window.localStorage.removeItem(LSK.userId);
 }
 
-export function setLocalStorageSessionId(value: string) {
-    window.localStorage.setItem(LSK.sessionId, value);
-}
-
-export function getLocalStorageSessionId() {
-    return window.localStorage.getItem(LSK.sessionId);
-}
-
-export function removeLocalStorageSessionId() {
-    window.localStorage.removeItem(LSK.sessionId);
-}
 // Helper functions for patchNotesKey
 export function setLocalStoragePatchNotesKey(value: string) {
     window.localStorage.setItem(LSK.patchNotesKey, value);
