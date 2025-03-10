@@ -22,7 +22,7 @@ export const OutagePage = () => {
                 <Stack spacing={2}>
                     <Typography variant="h5" component="p" sx={{ textWrap: 'balance' }}>
                         We apologize for the inconvenience and are working to get AntAlmanac back on online. Check out
-                        the <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">ICSSC Projects server</Link> for updates.
+                        the <Link to="https://discord.gg/KqJq8huuBB">ICSSC Projects server</Link> for updates.
                     </Typography>
                 </Stack>
             </Stack>
