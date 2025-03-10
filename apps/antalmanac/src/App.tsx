@@ -10,11 +10,18 @@ import { undoDelete } from './actions/AppStoreActions';
 import AppQueryProvider from './providers/Query';
 import AppThemeProvider from './providers/Theme';
 import AppThemev5Provider from './providers/Themev5';
-import { ErrorPage } from './routes/ErrorPage';
-import Feedback from './routes/Feedback';
-import Home from './routes/Home';
 
-const BrowserRouter = createBrowserRouter([
+import { ErrorPage } from '$routes/ErrorPage';
+import Feedback from '$routes/Feedback';
+import Home from '$routes/Home';
+import { OutagePage } from '$routes/OutagePage';
+
+/**
+ * Do not edit this unless you know what you're doing.
+ */
+const OUTAGE = false;
+
+const BROWSER_ROUTER = createBrowserRouter([
     {
         path: '/',
         element: <Home />,
@@ -35,6 +42,20 @@ const BrowserRouter = createBrowserRouter([
         element: <Navigate to="/" replace />,
     },
 ]);
+
+const OUTAGE_ROUTER = createBrowserRouter([
+    {
+        path: '/outage',
+        element: <OutagePage />,
+        errorElement: <ErrorPage />,
+    },
+    {
+        path: '*',
+        element: <Navigate to="/outage" replace />,
+    },
+]);
+
+const ROUTER = OUTAGE ? OUTAGE_ROUTER : BROWSER_ROUTER;
 
 /**
  * Renders the single page application.
@@ -57,18 +78,15 @@ export default function App() {
                         steps={[] /** Will be populated by Tutorial component */}
                         padding={5}
                         styles={{
-                            maskArea: (base, _) => ({
-                                // The highlighted area
+                            maskArea: (base) => ({
                                 ...base,
                                 rx: 5,
                             }),
-                            maskWrapper: (base, _) => ({
-                                // The background/overlay
+                            maskWrapper: (base) => ({
                                 ...base,
                                 color: 'rgba(0, 0, 0, 0.3)',
                             }),
-                            popover: (base, _) => ({
-                                // The text box
+                            popover: (base) => ({
                                 ...base,
                                 background: '#fff',
                                 color: 'black',
@@ -79,7 +97,7 @@ export default function App() {
                         }}
                     >
                         <SnackbarProvider>
-                            <RouterProvider router={BrowserRouter} />
+                            <RouterProvider router={ROUTER} />
                         </SnackbarProvider>
                     </TourProvider>
                 </AppThemev5Provider>
