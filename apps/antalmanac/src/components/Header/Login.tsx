@@ -84,10 +84,8 @@ function Login() {
                                 src={`${user?.avatar}`}
                                 alt={`${user?.name}-photo`}
                             />
-                        ) : user?.name && window.innerWidth < 600 ? (
-                            `${user?.name.substring(0, 6)}...`
                         ) : (
-                            user?.name
+                            <>Account</>
                         )}
                     </Button>
                     <Menu
@@ -99,10 +97,19 @@ function Login() {
                             'aria-labelledby': 'basic-button',
                         }}
                     >
+                        <MenuItem>
+                            <ListItemIcon>User:</ListItemIcon>
+                            <ListItemText>
+                                {user?.name && user?.name.length > 12
+                                    ? `${user?.name.substring(0, 12)}...`
+                                    : user?.name}
+                            </ListItemText>
+                        </MenuItem>
                         <MenuItem onClick={handleLogout}>
                             <ListItemIcon>
                                 <LogoutIcon />
                             </ListItemIcon>
+
                             <ListItemText>Log out</ListItemText>
                         </MenuItem>
                     </Menu>
