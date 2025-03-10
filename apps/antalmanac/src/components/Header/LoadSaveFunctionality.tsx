@@ -1,105 +1,240 @@
-import { Save, SaveAlt } from '@material-ui/icons';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    TextField,
+    CircularProgress,
+    Checkbox,
+    FormControlLabel,
+} from '@material-ui/core';
+import { CloudDownload, Save } from '@material-ui/icons';
 import { LoadingButton } from '@mui/lab';
-import { Button, Stack } from '@mui/material';
-import { useEffect, useState, useCallback } from 'react';
+import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
 
+import actionTypesStore from '$actions/ActionTypesStore';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
-import { InputDialog } from '$components/dialogs/InputDialog';
-import { SignInDialog } from '$components/dialogs/SignInDialog';
-import trpc from '$lib/api/trpc';
-import { getLocalStorageDataCache } from '$lib/localStorage';
-import { useSessionStore } from '$stores/SessionStore';
+import { getLocalStorageUserId } from '$lib/localStorage';
+import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
-interface LoadCacheDialogProps {
-    open: boolean;
-    onClose: () => void;
-    onConfirm: () => void;
-}
-const LoadCacheDialog = (props: LoadCacheDialogProps) => {
-    const { open, onConfirm, onClose } = props;
 
-    return (
-        <InputDialog title="Would you like to save your most recent change(s)" open={open}>
-            <Stack spacing={2} alignItems="center">
-                <Button
-                    startIcon={<SaveAlt />}
-                    onClick={onConfirm}
-                    size="large"
-                    color="primary"
-                    variant="contained"
-                    sx={{ width: '20rem' }}
-                >
-                    Yes keep all changes
-                </Button>
-                <Button onClick={onClose} size="large" color="secondary" variant="outlined" sx={{ width: '20rem' }}>
-                    Cancel changes
-                </Button>
-            </Stack>
-        </InputDialog>
+interface LoadSaveButtonBaseProps {
+    action: typeof saveSchedule;
+    actionName: 'Save' | 'Load';
+    disabled: boolean;
+    loading: boolean;
+    colorType: 'primary' | 'secondary';
+    id?: string;
+}
+
+interface LoadSaveButtonBaseState {
+    isOpen: boolean;
+    userID: string;
+    rememberMe: boolean;
+}
+
+interface SaveLoadIconProps {
+    loading: boolean;
+    actionName: 'Save' | 'Load';
+}
+
+function SaveLoadIcon(props: SaveLoadIconProps) {
+    return props.loading ? (
+        <CircularProgress size={20} color="inherit" />
+    ) : props.actionName === 'Save' ? (
+        <Save />
+    ) : (
+        <CloudDownload />
     );
-};
+}
+
+class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSaveButtonBaseState> {
+    state: LoadSaveButtonBaseState = {
+        isOpen: false,
+        userID: '',
+        rememberMe: true,
+    };
+
+    handleOpen = () => {
+        this.setState({ isOpen: true });
+        if (typeof Storage !== 'undefined') {
+            const userID = getLocalStorageUserId();
+            if (userID !== null) {
+                this.setState({ userID: userID });
+            }
+        }
+    };
+
+    handleClose = (wasCancelled: boolean) => {
+        if (wasCancelled)
+            this.setState({ isOpen: false }, () => {
+                document.removeEventListener('keydown', this.enterEvent, false);
+                this.setState({ userID: '' });
+            });
+        else
+            this.setState({ isOpen: false }, () => {
+                document.removeEventListener('keydown', this.enterEvent, false);
+                // this `void` is for eslint "no floating promises"
+                void this.props.action(this.state.userID, this.state.rememberMe);
+                this.setState({ userID: '' });
+            });
+    };
+
+    handleToggleRememberMe = (event: ChangeEvent<HTMLInputElement>) => {
+        this.setState({ rememberMe: event.target.checked });
+    };
+
+    componentDidUpdate(_prevProps: unknown, prevState: LoadSaveButtonBaseState) {
+        if (!prevState.isOpen && this.state.isOpen) document.addEventListener('keydown', this.enterEvent, false);
+        else if (prevState.isOpen && !this.state.isOpen)
+            document.removeEventListener('keydown', this.enterEvent, false);
+    }
+
+    enterEvent = (event: KeyboardEvent) => {
+        const charCode = event.which ? event.which : event.keyCode;
+
+        if (charCode === 13 || charCode === 10) {
+            event.preventDefault();
+            this.handleClose(false);
+
+            return false;
+        }
+    };
+
+    render() {
+        return (
+            <>
+                <LoadingButton
+                    id={this.props.id}
+                    onClick={this.handleOpen}
+                    color="inherit"
+                    startIcon={<SaveLoadIcon loading={this.props.loading} actionName={this.props.actionName} />}
+                    disabled={this.props.disabled}
+                    loading={false}
+                >
+                    {this.props.actionName}
+                </LoadingButton>
+                <Dialog open={this.state.isOpen} onClose={this.handleClose}>
+                    <DialogTitle>{this.props.actionName}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Enter your unique user ID here to {this.props.actionName.toLowerCase()} your schedule.
+                        </DialogContentText>
+                        <DialogContentText style={{ color: 'red' }}>
+                            Make sure the user ID is unique and secret, or someone else can overwrite your schedule.
+                        </DialogContentText>
+                        <TextField
+                            // eslint-disable-next-line jsx-a11y/no-autofocus
+                            autoFocus
+                            margin="dense"
+                            label="Unique User ID"
+                            type="text"
+                            fullWidth
+                            placeholder="Enter here"
+                            value={this.state.userID}
+                            onChange={(event) => this.setState({ userID: event.target.value })}
+                        />
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={this.state.rememberMe}
+                                    onChange={this.handleToggleRememberMe}
+                                    color="primary"
+                                />
+                            }
+                            label="Remember Me (Uncheck on shared computers)"
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => this.handleClose(true)} color={this.props.colorType}>
+                            {'Cancel'}
+                        </Button>
+                        <Button onClick={() => this.handleClose(false)} color={this.props.colorType}>
+                            {this.props.actionName}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </>
+        );
+    }
+}
 
 const LoadSaveScheduleFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
-    const { session, sessionIsValid: validSession } = useSessionStore();
-    const [openSignInDialog, setOpenSignInDialog] = useState(false);
-    const [openLoadCacheDialog, setOpenLoadCacheDialog] = useState(false);
+
+    const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    const handleClickSignIn = () => {
-        setOpenSignInDialog(!openSignInDialog);
+    const loadScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
+        setLoading(true);
+        await loadSchedule(userID, rememberMe);
+        setLoading(false);
     };
 
-    const closeLoadCacheDialog = async (loadCache: boolean) => {
-        setOpenLoadCacheDialog(false);
-        await loadSchedule(loadCache);
+    const saveScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
+        setSaving(true);
+        await saveSchedule(userID, rememberMe);
+        setSaving(false);
     };
 
-    const saveScheduleData = async () => {
-        if (validSession && session) {
-            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({ token: session });
-            setSaving(true);
-            await saveSchedule(users.id, accounts.AccountType, true);
-            setSaving(false);
-        }
-    };
+    useEffect(() => {
+        const handleSkeletonModeChange = () => {
+            setSkeletonMode(AppStore.getSkeletonMode());
+        };
 
-    const loadScheduleData = useCallback(async () => {
-        if (validSession) {
-            await loadSchedule();
-        }
-    }, [validSession]);
+        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+
+        return () => {
+            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+        };
+    }, []);
 
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
-            if (getLocalStorageDataCache()) {
-                setOpenLoadCacheDialog(validSession);
-            } else {
-                loadScheduleData();
+            const savedUserID = getLocalStorageUserId();
+
+            if (savedUserID != null) {
+                // this `void` is for eslint "no floating promises"
+                void loadScheduleAndSetLoading(savedUserID, true);
             }
         }
-    }, [session, validSession, loadScheduleData]);
+    }, []);
+
+    useEffect(() => {
+        const handleAutoSaveStart = () => setSaving(true);
+        const handleAutoSaveEnd = () => setSaving(false);
+
+        actionTypesStore.on('autoSaveStart', handleAutoSaveStart);
+        actionTypesStore.on('autoSaveEnd', handleAutoSaveEnd);
+
+        return () => {
+            actionTypesStore.off('autoSaveStart', handleAutoSaveStart);
+            actionTypesStore.off('autoSaveEnd', handleAutoSaveEnd);
+        };
+    }, []);
 
     return (
-        <Stack direction="row">
-            <LoadingButton
-                color="inherit"
-                startIcon={<Save />}
-                onClick={validSession ? saveScheduleData : handleClickSignIn}
-                disabled={saving}
+        <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
+            <LoadSaveButtonBase
+                id="save-button"
+                actionName={'Save'}
+                action={saveScheduleAndSetLoading}
+                disabled={loading}
                 loading={saving}
-            >
-                Save
-            </LoadingButton>
-
-            <SignInDialog isDark={isDark} open={openSignInDialog} onClose={handleClickSignIn} />
-
-            <LoadCacheDialog
-                open={openLoadCacheDialog}
-                onClose={() => closeLoadCacheDialog(false)}
-                onConfirm={() => closeLoadCacheDialog(true)}
+                colorType={isDark ? 'secondary' : 'primary'}
             />
-        </Stack>
+            <LoadSaveButtonBase
+                id="load-button"
+                actionName={'Load'}
+                action={loadScheduleAndSetLoading}
+                disabled={skeletonMode}
+                loading={loading}
+                colorType={isDark ? 'secondary' : 'primary'}
+            />
+        </div>
     );
 };
 

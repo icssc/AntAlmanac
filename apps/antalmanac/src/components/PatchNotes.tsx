@@ -18,7 +18,7 @@ import { getLocalStoragePatchNotesKey, setLocalStoragePatchNotesKey } from '$lib
  *
  * @example '20230819'
  */
-export const latestPatchNotesUpdate = '20250309';
+export const latestPatchNotesUpdate = '20250121';
 
 /**
  * Whether the user's last visited patch notes is outdated.
@@ -53,35 +53,24 @@ function PatchNotes() {
             data-testid={dialogTestId}
             slots={{ backdrop: PatchNotesBackdrop }}
         >
-            <DialogTitle>{"What's New - March 2025"}</DialogTitle>
+            <DialogTitle>{"What's New - January 2025"}</DialogTitle>
 
             <DialogContent>
                 <Typography>Features</Typography>
                 <ul>
-                    <li>Log in with Google OAuth❗</li>
-                    <ul>
-                        <li>
-                            Import your old schedules by clicking on the import button &#40;top&#41; and selecting
-                            &quot;From Guest Username&quot;.
-                        </li>
-                        <li>Precursor to exciting features!</li>
-                        <li>
-                            Please submit{' '}
-                            <a href="https://form.asana.com/?k=fZ3SGnuGknDmzTYdocgIUg&d=1208267282546207">Feedback</a>{' '}
-                            if you run into any issues.
-                        </li>
-                    </ul>
-                    <li>Spring and Summer 2025 data.</li>
-                    <li>Compact calendar header on mobile.</li>
+                    <li>
+                        Added column linking to course syllabi (thanks to the ASUCI{' '}
+                        <a href="https://asuci.uci.edu/academicvp/" target="_blank" rel="noreferrer">
+                            AAVP
+                        </a>
+                        !).
+                    </li>
+                    <li>Direct course search buttons in calendar pop-up and course header.</li>
+                    <li>Search caching for faster results on repeated queries.</li>
                 </ul>
                 <Typography>Bug Fixes</Typography>
                 <ul>
-                    <li>Undo disabled for first state after load.</li>
-                    <li>Off-by-one-error in enrollment graph dates.</li>
-                    <li>Quick search failing to reset search fields.</li>
-                    <li>Unsightly section table text wrapping.</li>
-                    <li>Temporary fixes for some load/save issues.</li>
-                    <li>Other deployment fixes.</li>
+                    <li>Loading schedules with BIO SCI classes. Thank you for your feedback and patience!</li>
                 </ul>
             </DialogContent>
 

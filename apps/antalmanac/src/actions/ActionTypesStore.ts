@@ -3,15 +3,14 @@ import { EventEmitter } from 'events';
 import { RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
 
 import { autoSaveSchedule } from '$actions/AppStoreActions';
-import trpc from '$lib/api/trpc';
 import {
     getLocalStorageAutoSave,
     getLocalStorageUnsavedActions,
+    getLocalStorageUserId,
     removeLocalStorageUnsavedActions,
     setLocalStorageUnsavedActions,
 } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
-import { useSessionStore } from '$stores/SessionStore';
 
 const MAX_UNSAVED_ACTIONS = 1000;
 
@@ -125,17 +124,13 @@ class ActionTypesStore extends EventEmitter {
     }
 
     async autoSaveSchedule(action: ActionType) {
-        const sessionStore = useSessionStore.getState();
         const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() == 'true';
-
-        if (!sessionStore.sessionIsValid || !sessionStore.session) return;
-
         if (autoSave) {
-            const userId = await trpc.auth.getSessionUserId.query({ token: sessionStore.session });
+            const savedUserID = getLocalStorageUserId();
 
-            if (userId) {
+            if (savedUserID) {
                 this.emit('autoSaveStart');
-                await autoSaveSchedule(userId);
+                await autoSaveSchedule(savedUserID);
                 AppStore.unsavedChanges = false;
                 this.emit('autoSaveEnd');
             }
