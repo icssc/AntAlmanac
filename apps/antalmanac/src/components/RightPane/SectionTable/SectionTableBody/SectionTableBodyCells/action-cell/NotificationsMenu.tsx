@@ -1,10 +1,13 @@
 import { Check, EditNotifications, NotificationAddOutlined } from '@mui/icons-material';
 import { IconButton, ListItemButton, Menu, MenuItem, Typography } from '@mui/material';
 import { AASection, Course } from '@packages/antalmanac-types';
-import { useState, useCallback, memo } from 'react';
+import { useState, useCallback, memo, useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
+import { SignInDialog } from '$components/dialogs/SignInDialog';
+import trpc from '$lib/api/trpc';
 import { NotificationStatus, useNotificationStore } from '$stores/NotificationStore';
+import { useSessionStore } from '$stores/SessionStore';
 
 const MENU_ITEMS: { status: keyof NotificationStatus; label: string }[] = [
     { status: 'openStatus', label: 'Section is OPEN' },
@@ -25,7 +28,30 @@ export const NotificationsMenu = memo(({ section, term, courseTitle }: Notificat
         useShallow((store) => [store.notifications[notificationKey], store.setNotifications])
     );
 
-    const [anchorEl, setAnchorEl] = useState<HTMLElement>();
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const [signInOpen, setSignInOpen] = useState(false);
+    const session = useSessionStore.getState();
+    const [isSignedIn, setIsSignedIn] = useState(false);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            if (!session.session) return;
+
+            try {
+                const { users } = await trpc.userData.getUserAndAccountBySessionToken.query({
+                    token: session.session ?? '',
+                });
+
+                if (users.email) {
+                    setIsSignedIn(true);
+                }
+            } catch (error) {
+                console.error('Failed to fetch user data:', error);
+            }
+        };
+
+        fetchUser();
+    }, [session.session]);
 
     const notificationStatus = notification?.notificationStatus;
     const hasNotifications = notificationStatus && Object.values(notificationStatus).some((n) => n);
@@ -44,24 +70,39 @@ export const NotificationsMenu = memo(({ section, term, courseTitle }: Notificat
                 lastCodes: restrictions,
             });
         },
-        [courseTitle, section, setNotifications, term]
+        [courseTitle, section, setNotifications, term, isSignedIn]
     );
 
     const handleClose = useCallback(() => {
-        setAnchorEl(undefined);
+        setAnchorEl(null);
     }, []);
 
-    const handleNotificationClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
+    const handleNotificationClick = useCallback(
+        (event: React.MouseEvent<HTMLButtonElement>) => {
+            if (!isSignedIn) {
+                setSignInOpen(true);
+                return;
+            }
+            setAnchorEl(event.currentTarget);
+        },
+        [isSignedIn]
+    );
+
+    const handleSignInClose = useCallback(() => {
+        setSignInOpen(false);
     }, []);
 
     return (
         <>
             <IconButton onClick={handleNotificationClick}>
-                {hasNotifications ? (
-                    <EditNotifications fontSize="small" />
+                {isSignedIn ? (
+                    hasNotifications ? (
+                        <EditNotifications fontSize="small" />
+                    ) : (
+                        <NotificationAddOutlined fontSize="small" />
+                    )
                 ) : (
-                    <NotificationAddOutlined fontSize="small" />
+                    <NotificationAddOutlined fontSize="small" sx={{ opacity: 0.5 }} />
                 )}
             </IconButton>
 
@@ -78,10 +119,7 @@ export const NotificationsMenu = memo(({ section, term, courseTitle }: Notificat
                     horizontal: 'left',
                 }}
             >
-                <ListItemButton
-                    disabled={true}
-                    style={{ opacity: 1 }} // Using style over sx to override disabled styles
-                >
+                <ListItemButton disabled={true} style={{ opacity: 1 }}>
                     <Typography sx={{ fontWeight: 600 }}>Notify When</Typography>
                 </ListItemButton>
                 {MENU_ITEMS.map((item) => {
@@ -99,6 +137,8 @@ export const NotificationsMenu = memo(({ section, term, courseTitle }: Notificat
                     );
                 })}
             </Menu>
+
+            <SignInDialog open={signInOpen} onClose={handleSignInClose} isDark={false} />
         </>
     );
 });

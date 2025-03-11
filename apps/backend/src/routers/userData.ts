@@ -102,6 +102,15 @@ const userDataRouter = router({
 
             const payload = ticket.getPayload()!;
 
+            try {
+                const existingSession = await RDS.getAccountAndUserByToken(db, input.token);
+                if (existingSession && existingSession.accounts && existingSession.accounts.accountType === 'GUEST') {
+                    await RDS.removeSession(db, existingSession.users.id, input.token);
+                }
+            } catch (error) {
+                console.log("No existing guest session found or error occurred", error);
+            }
+
             const account = await RDS.registerUserAccount(
                 db,
                 payload.sub,
