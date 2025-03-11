@@ -5,7 +5,6 @@ import { useState, useCallback, memo, useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import trpc from '$lib/api/trpc';
 import { NotificationStatus, useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
 
@@ -24,34 +23,31 @@ interface NotificationsMenuProps {
 
 export const NotificationsMenu = memo(({ section, term, courseTitle }: NotificationsMenuProps) => {
     const notificationKey = section.sectionCode + ' ' + term;
+    const loadNotifications = useNotificationStore(useShallow((store) => store.loadNotifications));
     const [notification, setNotifications] = useNotificationStore(
         useShallow((store) => [store.notifications[notificationKey], store.setNotifications])
     );
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [signInOpen, setSignInOpen] = useState(false);
-    const session = useSessionStore.getState();
-    const [isSignedIn, setIsSignedIn] = useState(false);
+
+    const { session, isGoogleUser, fetchUserData } = useSessionStore(
+        useShallow((state) => ({
+            session: state.session,
+            isGoogleUser: state.isGoogleUser,
+            fetchUserData: state.fetchUserData,
+        }))
+    );
 
     useEffect(() => {
-        const fetchUser = async () => {
-            if (!session.session) return;
+        if (isGoogleUser) {
+            loadNotifications();
+        }
+    }, [isGoogleUser, loadNotifications]);
 
-            try {
-                const { users } = await trpc.userData.getUserAndAccountBySessionToken.query({
-                    token: session.session ?? '',
-                });
-
-                if (users.email) {
-                    setIsSignedIn(true);
-                }
-            } catch (error) {
-                console.error('Failed to fetch user data:', error);
-            }
-        };
-
-        fetchUser();
-    }, [session.session]);
+    useEffect(() => {
+        fetchUserData(session);
+    }, [session, fetchUserData]);
 
     const notificationStatus = notification?.notificationStatus;
     const hasNotifications = notificationStatus && Object.values(notificationStatus).some((n) => n);
@@ -70,7 +66,7 @@ export const NotificationsMenu = memo(({ section, term, courseTitle }: Notificat
                 lastCodes: restrictions,
             });
         },
-        [courseTitle, section, setNotifications, term, isSignedIn]
+        [courseTitle, section, setNotifications, term]
     );
 
     const handleClose = useCallback(() => {
@@ -79,13 +75,13 @@ export const NotificationsMenu = memo(({ section, term, courseTitle }: Notificat
 
     const handleNotificationClick = useCallback(
         (event: React.MouseEvent<HTMLButtonElement>) => {
-            if (!isSignedIn) {
+            if (!isGoogleUser) {
                 setSignInOpen(true);
                 return;
             }
             setAnchorEl(event.currentTarget);
         },
-        [isSignedIn]
+        [isGoogleUser]
     );
 
     const handleSignInClose = useCallback(() => {
@@ -95,7 +91,7 @@ export const NotificationsMenu = memo(({ section, term, courseTitle }: Notificat
     return (
         <>
             <IconButton onClick={handleNotificationClick}>
-                {isSignedIn ? (
+                {isGoogleUser ? (
                     hasNotifications ? (
                         <EditNotifications fontSize="small" />
                     ) : (

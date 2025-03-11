@@ -4,6 +4,7 @@ import { create } from 'zustand';
 
 import { Notifications } from '$lib/notifications';
 import { WebSOC } from '$lib/websoc';
+import { useSessionStore } from '$stores/SessionStore';
 
 export type NotificationStatus = {
     openStatus: boolean;
@@ -29,6 +30,7 @@ export interface NotificationStore {
         notification: Omit<Notification, 'notificationStatus'> & { status: keyof NotificationStatus }
     ) => void;
     deleteNotification: (notificationKey: string) => void;
+    loadNotifications: () => Promise<void>;
 }
 
 const pendingUpdates: Record<string, Notification> = {};
@@ -126,64 +128,78 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                 };
             });
         },
+        loadNotifications: async () => {
+            const { isGoogleUser } = useSessionStore.getState();
+            if (!isGoogleUser) {
+                set({ notifications: {}, initialized: true });
+                return;
+            }
+
+            try {
+                const existingNotifications = await Notifications.getNotifications();
+                const courseDict: { [key: string]: Set<string> } = {};
+
+                for (const notification of existingNotifications) {
+                    const { year, quarter, sectionCode } = notification;
+                    const term = year + ' ' + quarter;
+
+                    if (term in courseDict) {
+                        courseDict[term].add(sectionCode.toString());
+                    } else {
+                        courseDict[term] = new Set([sectionCode.toString()]);
+                    }
+                }
+
+                const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
+                const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
+                    const sectionCodes = Array.from(courseSet).join(',');
+                    const courseInfo = await WebSOC.getCourseInfo({ term, sectionCodes });
+                    courseInfoDict.set(term, courseInfo);
+                });
+
+                await Promise.all(websocRequests);
+
+                const notifications: Partial<Record<string, Notification>> = {};
+
+                for (const [term, courseInfo] of courseInfoDict.entries()) {
+                    for (const sectionCode in courseInfo) {
+                        const course = courseInfo[sectionCode];
+                        const key = sectionCode + ' ' + term;
+
+                        const existingNotification = existingNotifications.find(
+                            (notification) =>
+                                notification.sectionCode === parseInt(sectionCode) &&
+                                notification.year === term.split(' ')[0] &&
+                                notification.quarter === term.split(' ')[1]
+                        );
+
+                        if (existingNotification) {
+                            notifications[key] = {
+                                term,
+                                sectionCode,
+                                courseTitle: course.courseDetails.courseTitle,
+                                sectionType: course.section.sectionType,
+                                notificationStatus: {
+                                    openStatus: existingNotification.openStatus ?? false,
+                                    waitlistStatus: existingNotification.waitlistStatus ?? false,
+                                    fullStatus: existingNotification.fullStatus ?? false,
+                                    restrictionStatus: existingNotification.restrictionStatus ?? false,
+                                },
+                                lastUpdated: existingNotification.lastUpdated ?? course.section.status,
+                                lastCodes: existingNotification.lastCodes ?? course.section.restrictions,
+                            };
+                        }
+                    }
+                }
+
+                set({ notifications, initialized: true });
+            } catch (error) {
+                console.error('Failed to load notifications:', error);
+                set({ initialized: true });
+            }
+        },
     };
 });
 
-Notifications.getNotifications()
-    .then(async (existingNotifications) => {
-        const courseDict: { [key: string]: Set<string> } = {};
-
-        for (const notification of existingNotifications) {
-            const { year, quarter, sectionCode } = notification;
-            const term = year + ' ' + quarter;
-
-            if (term in courseDict) {
-                courseDict[term].add(sectionCode.toString());
-            } else {
-                courseDict[term] = new Set([sectionCode.toString()]);
-            }
-        }
-
-        const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
-        const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
-            const sectionCodes = Array.from(courseSet).join(',');
-            const courseInfo = await WebSOC.getCourseInfo({ term, sectionCodes });
-            courseInfoDict.set(term, courseInfo);
-        });
-
-        return Promise.all(websocRequests).then(() => ({ existingNotifications, courseInfoDict }));
-    })
-    .then(({ existingNotifications, courseInfoDict }) => {
-        const notifications: Partial<Record<string, Notification>> = {};
-
-        for (const [term, courseInfo] of courseInfoDict.entries()) {
-            for (const sectionCode in courseInfo) {
-                const course = courseInfo[sectionCode];
-                const key = sectionCode + ' ' + term;
-
-                const existingNotification = existingNotifications.find(
-                    (notification) =>
-                        notification.sectionCode === parseInt(sectionCode) &&
-                        notification.year === term.split(' ')[0] &&
-                        notification.quarter === term.split(' ')[1]
-                );
-
-                notifications[key] = {
-                    term,
-                    sectionCode,
-                    courseTitle: course.courseDetails.courseTitle,
-                    sectionType: course.section.sectionType,
-                    notificationStatus: {
-                        openStatus: existingNotification?.openStatus ?? false,
-                        waitlistStatus: existingNotification?.waitlistStatus ?? false,
-                        fullStatus: existingNotification?.fullStatus ?? false,
-                        restrictionStatus: existingNotification?.restrictionStatus ?? false,
-                    },
-                    lastUpdated: existingNotification.lastUpdated ?? course.section.status,
-                    lastCodes: existingNotification.lastCodes ?? course.section.restrictions,
-                };
-            }
-        }
-        useNotificationStore.setState({ notifications, initialized: true });
-    })
-    .catch((e) => console.error(e));
+// Initial load of notifications
+useNotificationStore.getState().loadNotifications();

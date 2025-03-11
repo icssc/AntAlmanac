@@ -1,10 +1,11 @@
 import { Notifications } from '@mui/icons-material';
 import { Dialog, DialogContent, DialogTitle, IconButton, SxProps, Tooltip } from '@mui/material';
 import { useCallback, useState, useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { NotificationsTabs } from '$components/RightPane/AddedCourses/NotificationsTabs';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import trpc from '$lib/api/trpc';
+import { useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
@@ -16,39 +17,34 @@ interface NotificationsDialogProps {
 export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogProps) {
     const [open, setOpen] = useState(false);
     const [signInOpen, setSignInOpen] = useState<boolean>(false);
-    const [googleUser, setGoogleUser] = useState<boolean>(false);
-    const session = useSessionStore.getState();
+    const loadNotifications = useNotificationStore(useShallow((store) => store.loadNotifications));
     const isDark = useThemeStore((store) => store.isDark);
 
+    const { session, isGoogleUser, fetchUserData } = useSessionStore(
+        useShallow((state) => ({
+            session: state.session,
+            isGoogleUser: state.isGoogleUser,
+            fetchUserData: state.fetchUserData,
+        }))
+    );
+
     useEffect(() => {
-        const fetchUser = async () => {
-            if (!session.session) {
-                return;
-            }
+        if (isGoogleUser) {
+            loadNotifications();
+        }
+    }, [isGoogleUser, loadNotifications]);
 
-            try {
-                const { users } = await trpc.userData.getUserAndAccountBySessionToken.query({
-                    token: session.session ?? '',
-                });
-
-                if (users.email) {
-                    setGoogleUser(true);
-                }
-            } catch (error) {
-                console.error('Failed to fetch user data:', error);
-            }
-        };
-
-        fetchUser();
-    }, [session.session]);
+    useEffect(() => {
+        fetchUserData(session);
+    }, [session, fetchUserData]);
 
     const handleOpen = useCallback(() => {
-        if (googleUser) {
+        if (isGoogleUser) {
             setOpen(true);
         } else {
             setSignInOpen(true);
         }
-    }, [googleUser]);
+    }, [isGoogleUser]);
 
     const handleClose = useCallback(() => {
         setOpen(false);
@@ -60,11 +56,11 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
 
     return (
         <>
-            <Tooltip title={googleUser ? 'Notifications Menu' : 'Sign in to access notifications'}>
+            <Tooltip title={isGoogleUser ? 'Notifications Menu' : 'Sign in to access notifications'}>
                 <IconButton
                     sx={{
                         ...buttonSx,
-                        opacity: googleUser ? 1 : 0.5,
+                        opacity: isGoogleUser ? 1 : 0.5,
                     }}
                     onClick={handleOpen}
                     size="small"
