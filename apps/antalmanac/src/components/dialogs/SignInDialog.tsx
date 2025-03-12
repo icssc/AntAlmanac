@@ -84,7 +84,7 @@ export function SignInDialog(props: SignInDialogProps) {
     };
 
     return (
-        <InputDialog open={open} onClose={handleClose} title={'Sign in to Save'}>
+        <InputDialog open={open} onClose={handleClose} title={'Sign in'}>
             <Stack spacing={2} alignItems="center">
                 <Button
                     onClick={handleLogin}

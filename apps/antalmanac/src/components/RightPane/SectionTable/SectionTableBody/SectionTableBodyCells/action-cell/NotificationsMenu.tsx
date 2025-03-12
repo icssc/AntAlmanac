@@ -1,5 +1,5 @@
 import { Check, EditNotifications, NotificationAddOutlined } from '@mui/icons-material';
-import { IconButton, ListItemButton, Menu, MenuItem, Typography } from '@mui/material';
+import { IconButton, ListItemButton, Menu, MenuItem, Typography, Tooltip } from '@mui/material';
 import { AASection, Course } from '@packages/antalmanac-types';
 import { useState, useCallback, memo, useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -98,7 +98,9 @@ export const NotificationsMenu = memo(({ section, term, courseTitle }: Notificat
                         <NotificationAddOutlined fontSize="small" />
                     )
                 ) : (
-                    <NotificationAddOutlined fontSize="small" sx={{ opacity: 0.5 }} />
+                    <Tooltip title="Sign in to access notifications">
+                        <NotificationAddOutlined fontSize="small" sx={{ opacity: 0.5 }} />
+                    </Tooltip>
                 )}
             </IconButton>
 
