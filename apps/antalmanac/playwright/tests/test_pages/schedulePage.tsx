@@ -52,10 +52,9 @@ export class SchedulePage {
     async addScheduleAction() {
         // general add schedule action, can be used to test multiple copy buttons
         await inputDialog(this.page, 'Add Schedule', schedule[1].name);
-        const schedulesCount = await this.scheduleRows.count();
 
         // Ensure schedule gets added
-        await expect(schedulesCount).toBe(2);
+        await expect(this.scheduleRows).toHaveCount(2);
         await expect(await this.scheduleRows.nth(1)).toContainText(schedule[1].name);
 
         // Ensure schedule switches to new schedule
@@ -93,10 +92,8 @@ export class SchedulePage {
             await this.verifyScheduleLocators();
         }
 
-        const schedulesCount = await this.scheduleRows.count();
-
         // Ensure schedule gets added
-        await expect(schedulesCount).toBe(2);
+        await expect(this.scheduleRows).toHaveCount(2);
         await expect(await this.scheduleRows.nth(1)).toContainText(schedule[1].name);
 
         // Switch to new schedule
@@ -143,7 +140,7 @@ export class SchedulePage {
             await this.verifyScheduleLocators();
         }
 
-        await expect(await this.scheduleRows.count()).toBe(scheduleCount - 1);
+        await expect(await this.scheduleRows).toHaveCount(scheduleCount - 1);
         await this.verifyHiddenDeleteButton(scheduleCount - 1);
     }
 

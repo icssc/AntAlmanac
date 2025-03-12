@@ -42,7 +42,7 @@ export class CoursePage {
     async verifyCalendarEventInfo() {
         const classRow = await this.page.getByTestId('class-table-row').nth(0);
         const classRowInfo = await classRow.locator('td');
-        await expect(await classRowInfo.count()).toBe(11);
+        await expect(await classRowInfo).toHaveCount(11);
 
         const classDayTime = await classRowInfo.nth(5).allInnerTexts();
         const classTime = getCalendarEventTime(classDayTime[0].split(' '));

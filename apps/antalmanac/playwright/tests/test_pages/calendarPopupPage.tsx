@@ -25,8 +25,7 @@ export class CalendarPopupPage {
 
         // Expect 6 rows of course information in popup
         this.coursePopupRows = await this.courseCalendarPopup.locator('tbody tr');
-        const rowCount = await this.coursePopupRows.count();
-        await expect(rowCount).toBe(6);
+        await expect(this.coursePopupRows).toHaveCount(6);
     }
 
     async popupOpenClassLocation() {

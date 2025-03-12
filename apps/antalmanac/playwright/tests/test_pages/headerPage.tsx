@@ -27,18 +27,16 @@ export class HeaderPage {
     }
 
     async handleLoadDialog() {
-        let dismissAlert = false;
-        let acceptAlert = false;
-        this.page.on('dialog', async (alert) => {
-            if (!dismissAlert && alert.message() == 'You have unsaved changes. Would you like to load them?') {
-                await alert.dismiss();
-                dismissAlert = true;
-            } else if (!acceptAlert) {
-                console.log(acceptAlert);
+        const handledAlerts = new Set<string>();
 
-                await alert.accept();
-                acceptAlert = true;
-                console.log(acceptAlert);
+        this.page.on('dialog', async (alert) => {
+            if (!handledAlerts.has(alert.message())) {
+                if (alert.message() == 'You have unsaved changes. Would you like to load them?') {
+                    await alert.dismiss();
+                } else {
+                    await alert.accept();
+                }
+                handledAlerts.add(alert.message());
             }
         });
     }
