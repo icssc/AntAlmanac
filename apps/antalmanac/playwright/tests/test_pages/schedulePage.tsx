@@ -2,6 +2,7 @@ import { expect } from '@playwright/test';
 import type { Page, Locator } from '@playwright/test';
 
 import { schedule, search } from '../config';
+import { clickIconButton, inputDialog } from '../testTools';
 
 export class SchedulePage {
     private scheduleButton: Locator;
@@ -17,26 +18,6 @@ export class SchedulePage {
         this.calendarToolbar = this.page.getByTestId('calendar-toolbar');
     }
 
-    async inputDialog(dialogName: string, input: string) {
-        const dialog = await this.page.getByRole('dialog');
-        const heading = await dialog.getByRole('heading');
-        await expect(heading).toHaveText(dialogName);
-
-        const inputBox = await dialog.getByRole('textbox');
-        await expect(inputBox).toBeVisible();
-        await inputBox.fill(input);
-
-        const enterButton = await dialog.getByRole('button').nth(1);
-        await enterButton.click();
-        // await this.page.keyboard.press('Enter');
-    }
-
-    async clickIconButton(locator: Locator, iconName: string) {
-        const button = await locator.getByTestId(iconName);
-        await expect(button).toBeVisible();
-        await button.click();
-    }
-
     async verifyScheduleLocators() {
         this.scheduleButton = await this.page.getByTestId('schedule-select-button');
         await expect(this.scheduleButton).toBeVisible();
@@ -46,8 +27,8 @@ export class SchedulePage {
     }
 
     async verifyCalendarEventCount(event_count: number) {
-        const calendarEventCount = await this.page.getByTestId('course-event').count();
-        await expect(calendarEventCount).toBe(event_count);
+        const calendarEvent = await this.page.getByTestId('course-event');
+        await expect(calendarEvent).toHaveCount(event_count);
     }
 
     async verifyCalendarCorrectCourse() {
@@ -59,9 +40,9 @@ export class SchedulePage {
     }
 
     async editScheduleName() {
-        await this.clickIconButton(this.schedulePopup, 'EditIcon');
+        await clickIconButton(this.schedulePopup, 'EditIcon');
 
-        await this.inputDialog('Rename Schedule', schedule[0].name);
+        await inputDialog(this.page, 'Rename Schedule', schedule[0].name);
 
         // Ensure edited schedule name is saved
         await expect(this.scheduleButton).toContainText(schedule[0].name);
@@ -70,7 +51,7 @@ export class SchedulePage {
 
     async addScheduleAction() {
         // general add schedule action, can be used to test multiple copy buttons
-        await this.inputDialog('Add Schedule', schedule[1].name);
+        await inputDialog(this.page, 'Add Schedule', schedule[1].name);
         const schedulesCount = await this.scheduleRows.count();
 
         // Ensure schedule gets added
@@ -85,13 +66,13 @@ export class SchedulePage {
     }
 
     async addSchedule() {
-        await this.clickIconButton(this.schedulePopup, 'AddIcon');
+        await clickIconButton(this.schedulePopup, 'AddIcon');
         await this.addScheduleAction();
     }
 
     async switchCurrentSchedule(name: string) {
         const switchScheduleButton = await this.scheduleRows.getByText(name);
-        expect(switchScheduleButton).toBeVisible();
+        await expect(switchScheduleButton).toBeVisible();
         await switchScheduleButton.click();
     }
 
@@ -106,7 +87,7 @@ export class SchedulePage {
 
     async copyScheduleAction(otherPage: boolean) {
         // general copy schedule action
-        await this.inputDialog('Copy Schedule', schedule[1].name);
+        await inputDialog(this.page, 'Copy Schedule', schedule[1].name);
 
         if (otherPage) {
             await this.verifyScheduleLocators();
@@ -126,7 +107,7 @@ export class SchedulePage {
     }
 
     async copySchedule() {
-        await this.clickIconButton(this.schedulePopup, 'ContentCopyIcon');
+        await clickIconButton(this.schedulePopup, 'ContentCopyIcon');
         await this.copyScheduleAction(false);
     }
 
@@ -137,7 +118,16 @@ export class SchedulePage {
         await finalsButton.click();
         await this.verifyCalendarEventCount(1);
         const finalsEvent = await this.page.getByTestId('course-event');
-        expect(finalsEvent).toContainText(search.courseName);
+        await expect(finalsEvent).toContainText(search.courseName);
+    }
+
+    async verifyHiddenDeleteButton(scheduleCount: number) {
+        if (scheduleCount == 1) {
+            // Ensure you can't delete if there's only 1 schedule
+            const deleteButtonIconFirst = await this.page.getByTestId('ClearIcon');
+            const deleteButton = await this.schedulePopup.getByRole('button').filter({ has: deleteButtonIconFirst });
+            await expect(deleteButton).toBeDisabled();
+        }
     }
 
     async deleteScheduleAction(otherPage: boolean) {
@@ -154,32 +144,30 @@ export class SchedulePage {
         }
 
         await expect(await this.scheduleRows.count()).toBe(scheduleCount - 1);
-        if (scheduleCount - 1 == 1) {
-            // Ensure you can't delete if there's only 1 schedule
-            const deleteButtonIconFirst = await this.page.getByTestId('ClearIcon');
-            const deleteButton = await this.schedulePopup.getByRole('button').filter({ has: deleteButtonIconFirst });
-            await expect(deleteButton).toBeDisabled();
-        }
+        await this.verifyHiddenDeleteButton(scheduleCount - 1);
     }
 
     async deleteSchedule() {
-        await this.clickIconButton(this.scheduleRows.nth(1), 'ClearIcon');
+        await clickIconButton(this.scheduleRows.nth(1), 'ClearIcon');
         await this.deleteScheduleAction(false);
     }
 
     async screenshotSchedule() {
-        await this.clickIconButton(this.calendarToolbar, 'PanoramaIcon');
+        await clickIconButton(this.calendarToolbar, 'PanoramaIcon');
         const download = await this.page.waitForEvent('download');
-        expect(download).toBeTruthy();
+        await expect(download).toBeTruthy();
     }
 
     async undoScheduleAction() {
-        await this.clickIconButton(this.calendarToolbar, 'UndoIcon');
+        await clickIconButton(this.calendarToolbar, 'UndoIcon');
         await this.verifyCalendarEventCount(0);
     }
 
     async clearSchedule() {
-        await this.clickIconButton(this.calendarToolbar, 'DeleteOutlineIcon');
+        this.page.on('dialog', async (alert) => {
+            await alert.accept();
+        });
+        await clickIconButton(this.calendarToolbar, 'DeleteOutlineIcon');
         await this.verifyCalendarEventCount(0);
     }
 }

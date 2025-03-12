@@ -4,6 +4,7 @@ import { closePopups } from './testTools';
 import { AddedCoursesPage } from './test_pages/addedCoursesPage';
 import { CalendarPopupPage } from './test_pages/calendarPopupPage';
 import { CoursePage } from './test_pages/coursePage';
+import { HeaderPage } from './test_pages/headerPage';
 import { SchedulePage } from './test_pages/schedulePage';
 
 const test = base.extend<{
@@ -11,6 +12,7 @@ const test = base.extend<{
     schedulePage: SchedulePage;
     calendarPopupPage: CalendarPopupPage;
     addedCoursesPage: AddedCoursesPage;
+    headerPage: HeaderPage;
 }>({
     coursePage: async ({ page }, use) => {
         const coursePage = new CoursePage(page);
@@ -27,6 +29,10 @@ const test = base.extend<{
     addedCoursesPage: async ({ page }, use) => {
         const addedCoursesPage = new AddedCoursesPage(page);
         await use(addedCoursesPage);
+    },
+    headerPage: async ({ page }, use) => {
+        const headerPage = new HeaderPage(page);
+        await use(headerPage);
     },
 });
 
@@ -135,6 +141,9 @@ test.describe('Schedule toolbar', () => {
     test('undo schedule action', async ({ schedulePage }) => {
         await schedulePage.undoScheduleAction();
     });
+    test('clear schedule', async ({ schedulePage }) => {
+        await schedulePage.clearSchedule();
+    });
 });
 
 test.describe('added course pane', () => {
@@ -162,5 +171,28 @@ test.describe('added course pane', () => {
 
     test('clear schedule button in added courses pane', async ({ addedCoursesPage, schedulePage }) => {
         await addedCoursesPage.addedCoursesClearSchedule(schedulePage);
+    });
+    test('search button above added class redirects to search page', async ({ addedCoursesPage, coursePage }) => {
+        await addedCoursesPage.addedCoursesSearchPage(coursePage);
+    });
+});
+
+test.describe('header actions', () => {
+    test.beforeEach(async ({ coursePage, headerPage }) => {
+        await coursePage.page.goto('/');
+        await headerPage.page.goto('/');
+        // Closes initial popups
+        await closePopups(coursePage.page);
+        // Set up adding courses
+        await coursePage.searchForCourse();
+        await coursePage.addCourseToCalendar();
+
+        await headerPage.initializeHeaderPage();
+    });
+
+    test('saves schedule, clears, and loads saved schedule in properly', async ({ headerPage, schedulePage }) => {
+        await headerPage.saveSchedule();
+        await schedulePage.clearSchedule();
+        await headerPage.loadSchedule(schedulePage);
     });
 });

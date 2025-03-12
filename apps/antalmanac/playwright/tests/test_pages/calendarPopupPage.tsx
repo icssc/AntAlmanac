@@ -24,7 +24,7 @@ export class CalendarPopupPage {
         await expect(this.courseCalendarPopup).toBeVisible();
 
         // Expect 6 rows of course information in popup
-        this.coursePopupRows = this.courseCalendarPopup.locator('tbody tr');
+        this.coursePopupRows = await this.courseCalendarPopup.locator('tbody tr');
         const rowCount = await this.coursePopupRows.count();
         await expect(rowCount).toBe(6);
     }
@@ -48,7 +48,7 @@ export class CalendarPopupPage {
         await quickSearchButton.click();
         const coursePane = await this.page.getByTestId('course-pane-box');
         await expect(coursePane).toBeVisible(); // Ensure course pane is shown
-        const deptCard = this.page.getByTestId('school-name');
+        const deptCard = await this.page.getByTestId('school-name');
         await expect(deptCard).toHaveText(search.school); // Ensure right school is displayed
     }
 

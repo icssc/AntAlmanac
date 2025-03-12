@@ -28,7 +28,7 @@ export function Header() {
             >
                 <Logo />
 
-                <Box style={{ display: 'flex', flexDirection: 'row' }}>
+                <Box style={{ display: 'flex', flexDirection: 'row' }} data-testid="header-actions">
                     <LoadSaveScheduleFunctionality />
                     <Import key="studylist" />
                     <AppDrawer key="settings" />

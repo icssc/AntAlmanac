@@ -15,15 +15,15 @@ export class CoursePage {
         await searchBar.fill(search.courseName);
 
         const option = await this.page.locator('#fuzzy-search-popup');
-        await expect(option).toBeInViewport();
+        await expect(option).toBeVisible();
         await this.page.keyboard.press('Enter');
 
-        const deptCard = this.page.getByTestId('school-name');
+        const deptCard = await this.page.getByTestId('school-name');
         await expect(deptCard).toHaveText(search.school);
     }
 
     async addCourseToCalendar() {
-        const addIcon = this.page.getByTestId('AddIcon').nth(1);
+        const addIcon = await this.page.getByTestId('AddIcon').nth(1);
         await addIcon.click();
     }
 
@@ -56,7 +56,7 @@ export class CoursePage {
         await expect(courseCodeContainer).toBeVisible();
         const courseCode = await courseCodeContainer.allInnerTexts();
 
-        const calendarEvent = this.page.getByTestId('course-event').first();
+        const calendarEvent = await this.page.getByTestId('course-event').first();
         await expect(calendarEvent).toBeVisible();
         await expect(calendarEvent).toContainText(search.courseName);
         await expect(calendarEvent).toContainText(courseCode);

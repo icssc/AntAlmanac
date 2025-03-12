@@ -1,6 +1,9 @@
 import { expect } from '@playwright/test';
 import type { Page, Locator } from '@playwright/test';
 
+import { clickIconButton } from '../testTools';
+
+import { CoursePage } from './coursePage';
 import { SchedulePage } from './schedulePage';
 
 export class AddedCoursesPage {
@@ -34,10 +37,10 @@ export class AddedCoursesPage {
     }
 
     async addedCoursesCopySchedule(schedulePage: SchedulePage) {
-        // await schedulePage.verifyScheduleLocators();
-        await schedulePage.clickIconButton(this.addedActions, 'ContentCopyIcon');
+        await clickIconButton(this.addedActions, 'ContentCopyIcon');
         await schedulePage.copyScheduleAction(true);
     }
+
     async addedCoursesClearSchedule(schedulePage: SchedulePage) {
         let dialogShown = false;
         this.page.on('dialog', async (alert) => {
@@ -45,7 +48,13 @@ export class AddedCoursesPage {
             await alert.accept();
             await schedulePage.verifyCalendarEventCount(0);
         });
-        await schedulePage.clickIconButton(this.addedActions, 'DeleteOutlineIcon');
-        expect(dialogShown).toBeTruthy();
+        await clickIconButton(this.addedActions, 'DeleteOutlineIcon');
+        await expect(dialogShown).toBeTruthy();
+    }
+
+    async addedCoursesSearchPage(coursePage: CoursePage) {
+        await clickIconButton(this.addedPane, 'SearchIcon');
+        await coursePage.verifyCourseRowHighlighted();
+        await coursePage.verifyCalendarEventInfo();
     }
 }
