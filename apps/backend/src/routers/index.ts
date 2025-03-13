@@ -1,18 +1,21 @@
 import { router } from '../trpc';
-import usersRouter from './users';
-import zotcourseRouter from './zotcours';
+
+import authRouter from './auth';
 import courseRouter from './course';
-import websocRouter from './websoc';
-import gradesRouter from './grades';
 import enrollHistRouter from './enrollHist';
-import searchRouter from "./search";
+import gradesRouter from './grades';
+import searchRouter from './search';
+import userDataRouter from './userData';
+import websocRouter from './websoc';
+import zotcourseRouter from './zotcours';
 
 const appRouter = router({
     course: courseRouter,
     enrollHist: enrollHistRouter,
     grades: gradesRouter,
     search: searchRouter,
-    users: usersRouter,
+    auth: authRouter,
+    userData: userDataRouter,
     websoc: websocRouter,
     zotcourse: zotcourseRouter,
 });

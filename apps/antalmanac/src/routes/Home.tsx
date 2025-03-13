@@ -6,6 +6,7 @@ import Split from 'react-split';
 
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { Header } from '$components/Header/Header';
+import InstallPWABanner from '$components/InstallPWABanner';
 import NotificationSnackbar from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
@@ -93,6 +94,7 @@ export default function Home() {
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <PatchNotes />
+            <InstallPWABanner />
 
             {isMobileScreen ? <MobileHome /> : <DesktopHome />}
 

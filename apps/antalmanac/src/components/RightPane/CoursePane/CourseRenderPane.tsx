@@ -19,6 +19,7 @@ import analyticsEnum from '$lib/analytics';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
+import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -162,8 +163,7 @@ const LoadingMessage = () => {
 };
 
 const ErrorMessage = () => {
-    const theme = useTheme();
-    const isDark = useThemeStore((store) => store.isDark);
+    const { isDark } = useThemeStore();
 
     const formData = RightPaneStore.getFormData();
     const deptValue = formData.deptValue.replace(' ', '').toUpperCase() || null;
@@ -188,7 +188,7 @@ const ErrorMessage = () => {
                             display: 'flex',
                             alignItems: 'center',
                             fontSize: 14,
-                            backgroundColor: theme.palette.primary.main,
+                            backgroundColor: BLUE,
                             color: 'white',
                         }}
                     >

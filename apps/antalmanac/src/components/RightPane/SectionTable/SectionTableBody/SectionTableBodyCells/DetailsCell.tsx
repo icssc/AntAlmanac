@@ -1,8 +1,7 @@
-import { Box, useMediaQuery } from '@mui/material';
+import { Box } from '@mui/material';
 import { WebsocSectionType } from '@packages/antalmanac-types';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { MOBILE_BREAKPOINT } from '$src/globals';
 
 const SECTION_COLORS = {
     Act: { color: '#c87137' },
@@ -26,19 +25,11 @@ interface DetailCellProps {
 }
 
 export const DetailsCell = ({ sectionType, sectionNum, units }: DetailCellProps) => {
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
-
     return (
-        <TableBodyCellContainer sx={isMobileScreen ? { textAlign: 'center' } : {}}>
+        <TableBodyCellContainer>
             <Box sx={SECTION_COLORS[sectionType]}>{sectionType}</Box>
-            <Box>
-                {!isMobileScreen && <>Sec: </>}
-                {sectionNum}
-            </Box>
-            <Box>
-                {!isMobileScreen && <>Units: </>}
-                {units}
-            </Box>
+            <Box>Sec: {sectionNum}</Box>
+            <Box>Units:{units}</Box>
         </TableBodyCellContainer>
     );
 };
