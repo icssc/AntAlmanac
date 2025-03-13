@@ -11,6 +11,7 @@ export const deployEnvSchema = z.object({
     DB_URL: z.string(),
     STAGE: z.string(),
     MAPBOX_ACCESS_TOKEN: z.string(),
+    PETERPORTAL_CLIENT_API_KEY: z.string(),
 })
 
 export const googleOAuthEnvSchema = z.object({
