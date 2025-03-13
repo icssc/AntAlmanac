@@ -1,9 +1,10 @@
-import { IconButton, Theme, Tooltip } from '@material-ui/core';
+import { IconButton, Theme, Tooltip, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Tune } from '@material-ui/icons';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
+import PPLogo from '$assets/peterportal-shortform-logo.svg'
 import { FormEvent, useState, useEffect } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
@@ -119,10 +120,14 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                             <div className={classes.searchBar} id="searchBar">
                                 <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleManualSearch} />
                                 <Tooltip arrow
-                                    title={ <div style={{ fontSize: '0.8rem' }}> Filter Taken Courses <br/> (Data from PeterPortal.org) </div>
-                                    }>
-                                    <IconButton onClick={toggleFilterCourses}>
-                                        {filterCourses ? <FilterAltIcon/> : <FilterAltOffIcon/>}
+                                    title={ <div style={{ fontSize: '0.8rem' }}> Filter Taken Courses <br/> (Data from PeterPortal.org) </div> }>
+                                    <IconButton onClick={toggleFilterCourses} style={{ position: 'relative' }}>
+                                        <img 
+                                            src={PPLogo} 
+                                            alt="Brand" 
+                                            style={{ position: 'absolute', top: '60%', left: '5%', width: '35%', height: '35%' }} 
+                                        />
+                                        {filterCourses ? <FilterAltIcon /> : <FilterAltOffIcon />}
                                     </IconButton>
                                 </Tooltip>
                             </div>
