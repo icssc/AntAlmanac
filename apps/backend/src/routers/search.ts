@@ -35,7 +35,7 @@ const toMutable = <T>(arr: readonly T[]): T[] => arr as T[];
 async function fetchUserCoursesPeterPortal(userId: string): Promise<Set<string>> {
     const env = backendEnvSchema.parse(process.env);
     const apiKey = env.PETERPORTAL_CLIENT_API_KEY;
-    if (!apiKey) throw new Error("PETERPORTAL_API_KEY is required");
+    if (!apiKey) throw new Error("PETERPORTAL_CLIENT_API_KEY is required");
     const searchParams = new URLSearchParams({ input: JSON.stringify({ googleUserId: userId }) });
     const url = `${PETERPORTAL_API_URL}?${searchParams.toString()}`;
     try {

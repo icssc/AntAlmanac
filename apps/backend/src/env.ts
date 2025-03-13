@@ -35,17 +35,10 @@ export const mapboxEnvSchema = z.object({
 });
 
 /**
- * Environment variables required by the backend to connect to the PeterPortal API.
- */
-export const peterPortalSchema = z.object({
-    PETERPORTAL_API_KEY: z.string(),
-});
-
-/**
  * Environment variables required by the backend during runtime.
  */
 export const backendEnvSchema = [
-    rdsEnvSchema, mapboxEnvSchema, googleOAuthEnvSchema, peterPortalSchema
+    rdsEnvSchema, deployEnvSchema, mapboxEnvSchema, googleOAuthEnvSchema
 ].reduce(
     (acc, schema) => acc.merge(schema), z.object({STAGE: z.string()})
 );

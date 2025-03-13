@@ -229,12 +229,3 @@ export function setLocalStoragePWADismissalTime(value: string) {
 export function getLocalStoragePWADismissalTime() {
     return window.localStorage.getItem(LSK.pwaDismissalTime);
 }
-
-// Helper functions for pwaDismissalTime
-export function setLocalStoragePWADismissalTime(value: string) {
-    window.localStorage.setItem(LSK.pwaDismissalTime, value);
-}
-
-export function getLocalStoragePWADismissalTime() {
-    return window.localStorage.getItem(LSK.pwaDismissalTime);
-}

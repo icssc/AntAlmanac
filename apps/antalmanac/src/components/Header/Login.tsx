@@ -10,6 +10,7 @@ import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, removeLocalStorageSessionId } from '$lib/localStorage';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 function Login() {
     const [openSignIn, setOpenSignIn] = useState(false);
@@ -49,6 +50,7 @@ function Login() {
             const userId = await trpc.auth.getSessionUserId.query({ token: session ?? '' });
             if (userId) {
                 setUser(await trpc.userData.getUserByUid.query({ userId: userId }));
+                RightPaneStore.setUserID(userId);
             }
         }
     }, [session, setSession, validSession]);

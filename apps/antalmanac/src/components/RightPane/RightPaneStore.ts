@@ -35,8 +35,9 @@ class RightPaneStore extends EventEmitter {
     private urlCourseNumValue: string;
     private urlDeptLabel: string;
     private urlDeptValue: string;
+    private aaUserId: string;
     private filterTakenCourses: boolean;
-    private userTakenCourses: Set<string> = new Set();
+    private userTakenCourses: Set<string>;
 
     constructor() {
         super();
@@ -51,6 +52,8 @@ class RightPaneStore extends EventEmitter {
         this.urlCourseNumValue = search.get('courseNumber') || '';
         this.urlDeptLabel = search.get('deptLabel') || '';
         this.urlDeptValue = search.get('deptValue') || '';
+        this.aaUserId = '';
+        this.userTakenCourses = new Set();
         this.filterTakenCourses = false;
 
         this.updateFormDataFromURL(search);
@@ -105,6 +108,15 @@ class RightPaneStore extends EventEmitter {
     formDataIsValid = () => {
         const { ge, deptValue, sectionCode, instructor } = this.formData;
         return ge !== 'ANY' || deptValue !== 'ALL' || sectionCode !== '' || instructor !== '';
+    };
+
+    getUserID = (): string => {
+        return this.aaUserId;
+    };
+    
+    setUserID = (userID: string) => {
+        this.aaUserId = userID;
+        this.emit('formDataChange');
     };
 
     getFilterTakenClasses = (): boolean => {

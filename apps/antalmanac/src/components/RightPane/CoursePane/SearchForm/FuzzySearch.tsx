@@ -50,7 +50,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         open: false,
         results: {},
         value: '',
-        userID: '',
+        userID: RightPaneStore.getUserID(),
         loading: false,
         requestTimestamp: undefined,
         pendingRequest: undefined,
