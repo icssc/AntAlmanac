@@ -16,7 +16,7 @@ import {
 import InputLabel from '@material-ui/core/InputLabel';
 import { PostAdd } from '@material-ui/icons';
 import { CourseInfo } from '@packages/antalmanac-types';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState, useRef } from 'react';
 
 import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '../RightPane/RightPaneStore';
@@ -25,8 +25,14 @@ import { ImportSource } from './constants';
 
 import { addCustomEvent, openSnackbar, addCourse, importScheduleWithUsername } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import trpc from '$lib/api/trpc';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
+import {
+    getLocalStorageDataCache,
+    getLocalStorageOnFirstSignin,
+    setLocalStorageOnFirstSignin,
+} from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import AppStore from '$stores/AppStore';
@@ -43,7 +49,9 @@ function Import() {
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    const { sessionIsValid } = useSessionStore();
+    const { session, sessionIsValid } = useSessionStore();
+
+    const firstTimeUserFlag = useRef(true);
 
     const { isDark } = useThemeStore();
 
@@ -88,7 +96,7 @@ function Import() {
                 break;
             case ImportSource.AA_USERNAME_IMPORT:
                 try {
-                    importScheduleWithUsername(aaUsername);
+                    importScheduleWithUsername(aaUsername, firstTimeUserFlag.current ? '' : '-(IMPORT)');
                 } catch (e) {
                     openSnackbar(
                         'error',
@@ -187,17 +195,33 @@ function Import() {
         setAAUsername(event.currentTarget.value);
     }, []);
 
+    const handleFirstTimeSignin = useCallback(async () => {
+        const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({ token: session ?? '' });
+
+        if (!users.currentScheduleId && accounts.accountType === 'GOOGLE') {
+            if (getLocalStorageOnFirstSignin() === null || getLocalStorageOnFirstSignin() !== users.email) {
+                setLocalStorageOnFirstSignin(users.email);
+                handleOpen();
+                setImportSource(ImportSource.AA_USERNAME_IMPORT);
+            } else {
+                firstTimeUserFlag.current = false;
+            }
+        }
+    }, [session, handleOpen]);
+
     useEffect(() => {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
         };
-
+        if (sessionIsValid && getLocalStorageDataCache() === null) {
+            handleFirstTimeSignin();
+        }
         AppStore.on('skeletonModeChange', handleSkeletonModeChange);
 
         return () => {
             AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
-    }, []);
+    }, [handleFirstTimeSignin, sessionIsValid]);
 
     return (
         <>
