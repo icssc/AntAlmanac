@@ -3,13 +3,15 @@ import { useState, useCallback, useEffect } from 'react';
 
 import { updateScheduleNote } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 
 const NOTE_MAX_LEN = 5000;
 
 export function ScheduleNote() {
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const { fallback } = useFallbackStore();
+
     const [scheduleNote, setScheduleNote] = useState(
-        skeletonMode ? AppStore.getCurrentSkeletonSchedule().scheduleNote : AppStore.getCurrentScheduleNote()
+        fallback ? AppStore.getCurrentSkeletonSchedule().scheduleNote : AppStore.getCurrentScheduleNote()
     );
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
 
@@ -20,18 +22,6 @@ export function ScheduleNote() {
         },
         [scheduleIndex]
     );
-
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
 
     useEffect(() => {
         const handleScheduleNoteChange = () => {
@@ -63,15 +53,15 @@ export function ScheduleNote() {
                 value={scheduleNote}
                 inputProps={{
                     maxLength: NOTE_MAX_LEN,
-                    style: { cursor: skeletonMode ? 'not-allowed' : 'text' },
+                    style: { cursor: fallback ? 'not-allowed' : 'text' },
                 }}
                 InputProps={{ disableUnderline: true }}
                 fullWidth
                 multiline
-                disabled={skeletonMode}
+                disabled={fallback}
                 sx={{
                     '& .MuiInputBase-root': {
-                        cursor: skeletonMode ? 'not-allowed' : 'text',
+                        cursor: fallback ? 'not-allowed' : 'text',
                     },
                 }}
             />
