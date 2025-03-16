@@ -341,7 +341,7 @@ function AddedSectionsGrid() {
         <Box display="flex" flexDirection="column" gap={1}>
             <Box display="flex" width={1} position="absolute" zIndex="2">
                 <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
-                <ClearScheduleButton buttonSx={buttonSx} />
+                <ClearScheduleButton sx={buttonSx} />
                 <ColumnToggleDropdown />
             </Box>
             <Box style={{ marginTop: 56 }}>
