@@ -16,7 +16,7 @@ import {
 import InputLabel from '@material-ui/core/InputLabel';
 import { PostAdd } from '@material-ui/icons';
 import { CourseInfo } from '@packages/antalmanac-types';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useState } from 'react';
 
 import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '../RightPane/RightPaneStore';
@@ -28,18 +28,18 @@ import { warnMultipleTerms } from '$lib/helpers';
 import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
-function Import() {
+export function Import() {
+    const { isDark } = useThemeStore();
+    const { fallback } = useFallbackStore();
+
     const [open, setOpen] = useState(false);
     const [term, setTerm] = useState(RightPaneStore.getFormData().term);
     const [importSource, setImportSource] = useState('studylist');
     const [studyListText, setStudyListText] = useState('');
     const [zotcourseScheduleName, setZotcourseScheduleName] = useState('');
-
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-
-    const { isDark } = useThemeStore();
 
     const handleOpen = useCallback(() => {
         setOpen(true);
@@ -151,18 +151,6 @@ function Import() {
         setZotcourseScheduleName(event.currentTarget.value);
     }, []);
 
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
-
     return (
         <>
             {/* TODO after mui v5 migration: change icon to ContentPasteGo */}
@@ -171,7 +159,7 @@ function Import() {
                     onClick={handleOpen}
                     color="inherit"
                     startIcon={<PostAdd />}
-                    disabled={skeletonMode}
+                    disabled={fallback}
                     id="import-button"
                 >
                     Import
@@ -256,5 +244,3 @@ function Import() {
         </>
     );
 }
-
-export default Import;
