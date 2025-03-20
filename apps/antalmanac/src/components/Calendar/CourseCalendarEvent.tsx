@@ -189,7 +189,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
         }
 
         const handleQuickSearch = () => {
-            quickSearch(deptValue, courseNumber, term);
+            quickSearch(deptValue, courseNumber, term, sectionCode);
         };
 
         return (
