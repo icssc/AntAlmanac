@@ -37,29 +37,27 @@ export class RDS {
      * @returns The new/existing user's ID
      */
     static async createGuestUserOptional(db: DatabaseOrTransaction, name: string) {
-        return db.transaction(async (tx) => {
-            const maybeUserId = await RDS.guestUserIdWithNameOrNull(tx, name);
+        const maybeUserId = await RDS.guestUserIdWithNameOrNull(db, name);
 
-            const userId = maybeUserId
-                ? maybeUserId
-                : await tx
-                      .insert(users)
-                      .values({ name })
-                      .returning({ id: users.id })
-                      .then((users) => users[0].id);
+        const userId = maybeUserId
+            ? maybeUserId
+            : await db
+                  .insert(users)
+                  .values({ name })
+                  .returning({ id: users.id })
+                  .then((users) => users[0].id);
 
-            if (userId === undefined) {
-                throw new Error(`Failed to create guest user for ${name}`);
-            }
+        if (userId === undefined) {
+            throw new Error(`Failed to create guest user for ${name}`);
+        }
 
-            await tx
-                .insert(accounts)
-                .values({ userId, accountType: 'GUEST', providerAccountId: name })
-                .onConflictDoNothing()
-                .execute();
+        await db
+            .insert(accounts)
+            .values({ userId, accountType: 'GUEST', providerAccountId: name })
+            .onConflictDoNothing()
+            .execute();
 
-            return userId;
-        });
+        return userId;
     }
 
     /**
@@ -84,7 +82,9 @@ export class RDS {
         };
 
         const scheduleResult = await db
-            .transaction((tx) => tx.insert(schedules).values(dbSchedule).returning({ id: schedules.id }))
+            .insert(schedules)
+            .values(dbSchedule)
+            .returning({ id: schedules.id })
             .catch((error) => {
                 throw new Error(`Failed to insert schedule for ${userId} (${schedule.scheduleName}): ${error}`);
             });
@@ -171,8 +171,6 @@ export class RDS {
      * deduplicating by section code and term.
      * */
     private static async upsertCourses(db: DatabaseOrTransaction, scheduleId: string, courses: ShortCourse[]) {
-        await db.transaction((tx) => tx.delete(coursesInSchedule).where(eq(coursesInSchedule.scheduleId, scheduleId)));
-
         if (courses.length === 0) {
             return;
         }
@@ -196,7 +194,7 @@ export class RDS {
             return true;
         });
 
-        await db.transaction((tx) => tx.insert(coursesInSchedule).values(dbCoursesUnique));
+        await db.insert(coursesInSchedule).values(dbCoursesUnique);
     }
 
     private static async upsertCustomEvents(
@@ -204,10 +202,6 @@ export class RDS {
         scheduleId: string,
         repeatingCustomEvents: RepeatingCustomEvent[]
     ) {
-        await db.transaction(
-            async (tx) => await tx.delete(customEvents).where(eq(customEvents.scheduleId, scheduleId))
-        );
-
         if (repeatingCustomEvents.length === 0) {
             return;
         }
@@ -223,7 +217,7 @@ export class RDS {
             lastUpdated: new Date(),
         }));
 
-        await db.transaction(async (tx) => await tx.insert(customEvents).values(dbCustomEvents));
+        await db.insert(customEvents).values(dbCustomEvents);
     }
 
     static async getGuestUserData(db: DatabaseOrTransaction, guestId: string): Promise<User | null> {
