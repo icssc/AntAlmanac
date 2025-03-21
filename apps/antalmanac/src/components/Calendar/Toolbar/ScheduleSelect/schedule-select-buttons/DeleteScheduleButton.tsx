@@ -1,5 +1,5 @@
 import { Clear as ClearIcon } from '@mui/icons-material';
-import { Box, IconButton, Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
 
 import DeleteScheduleDialog from '$components/dialogs/DeleteSchedule';
@@ -22,8 +22,8 @@ export function DeleteScheduleButton({ index, disabled }: DeleteScheduleButtonPr
     }, []);
 
     return (
-        <Box>
-            <Tooltip title="Delete Schedule">
+        <>
+            <Tooltip title="Delete Schedule" disableInteractive>
                 <span>
                     <IconButton
                         onClick={handleOpen}
@@ -35,6 +35,6 @@ export function DeleteScheduleButton({ index, disabled }: DeleteScheduleButtonPr
                 </span>
             </Tooltip>
             <DeleteScheduleDialog fullWidth open={open} index={index} onClose={handleClose} />
-        </Box>
+        </>
     );
 }
