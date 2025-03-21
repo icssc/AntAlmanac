@@ -29,6 +29,7 @@ class RightPaneStore extends EventEmitter {
     private formData: Record<string, string>;
     private doDisplaySearch: boolean;
     private openSpotAlertPopoverActive: boolean;
+    private isHelpBoxVisible: boolean;
     private urlCourseCodeValue: string;
     private urlTermValue: string;
     private urlGEValue: string;
@@ -42,6 +43,7 @@ class RightPaneStore extends EventEmitter {
         this.formData = structuredClone(defaultFormValues);
         this.doDisplaySearch = true;
         this.openSpotAlertPopoverActive = false;
+        this.isHelpBoxVisible = false;
         const search = new URLSearchParams(window.location.search);
         this.urlCourseCodeValue = search.get('courseCode') || '';
         this.urlTermValue = search.get('term') || '';
@@ -72,6 +74,25 @@ class RightPaneStore extends EventEmitter {
 
     getDefaultFormData = () => {
         return defaultFormValues;
+    };
+
+    toggleHelpBox = () => {
+        this.isHelpBoxVisible = !this.isHelpBoxVisible;
+        this.emit('helpBoxChange', this.isHelpBoxVisible);
+    };
+
+    showHelpBox = () => {
+        this.isHelpBoxVisible = true;
+        this.emit('helpBoxChange', this.isHelpBoxVisible);
+    };
+
+    hideHelpBox = () => {
+        this.isHelpBoxVisible = false;
+        this.emit('helpBoxChange', this.isHelpBoxVisible);
+    };
+
+    getHelpBoxVisible = () => {
+        return this.isHelpBoxVisible;
     };
 
     getOpenSpotAlertPopoverActive = () => {
