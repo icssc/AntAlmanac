@@ -20,7 +20,7 @@ export function HelpMenu() {
     const isMobile = useIsMobile();
     const [open, setOpen] = useState(false);
 
-    const actions = [HelpBoxAction(), FeedbackAction(), TutorialAction(), PatchNotesAction()]
+    const actions = [FeedbackAction(), TutorialAction(), PatchNotesAction(), HelpBoxAction()]
         // Two passes to help Typescript infer type
         .filter((action) => !!action)
         .filter((action) => !isMobile || !action.disableOnMobile) satisfies NonNullable<HelpMenuAction>[];
