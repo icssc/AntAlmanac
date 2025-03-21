@@ -42,7 +42,7 @@ export const UserSchema = type({
 
     'name?': 'string',
     'email?': 'string',
-    'picture?': 'string',
+    'avatar?': 'string',
 });
 
 export type User = typeof UserSchema.infer;
