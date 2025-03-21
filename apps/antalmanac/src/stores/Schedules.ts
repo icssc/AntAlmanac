@@ -325,7 +325,7 @@ export class Schedules {
     /**
      * Get a reference ito the custom event that matches the ID.
      */
-    getExistingCustomEvent(customEventId: number) {
+    getExistingCustomEvent(customEventId: string | number) {
         for (const customEvent of this.getAllCustomEvents()) {
             if (customEvent.customEventID === customEventId) {
                 return customEvent;
@@ -337,7 +337,7 @@ export class Schedules {
     /**
      * Get indices of schedules that contain the custom event.
      */
-    getIndexesOfCustomEvent(customEventId: number) {
+    getIndexesOfCustomEvent(customEventId: string | number) {
         const indices: number[] = [];
         for (const scheduleIndex of this.schedules.keys()) {
             if (this.doesCustomEventExistInSchedule(customEventId, scheduleIndex)) {
@@ -372,7 +372,7 @@ export class Schedules {
      * Deletes custom event from the given indices.
      * @param scheduleIndices The schedule indices to delete the custom event from.
      */
-    deleteCustomEvent(customEventId: number, scheduleIndices = [this.getCurrentScheduleIndex()]) {
+    deleteCustomEvent(customEventId: string | number, scheduleIndices = [this.getCurrentScheduleIndex()]) {
         this.addUndoState();
         for (const scheduleIndex of scheduleIndices) {
             const customEvents = this.schedules[scheduleIndex].customEvents;
@@ -424,7 +424,7 @@ export class Schedules {
     /**
      * Checks if a schedule contains the custom event ID
      */
-    doesCustomEventExistInSchedule(customEventId: number, scheduleIndex: number) {
+    doesCustomEventExistInSchedule(customEventId: string | number, scheduleIndex: number) {
         for (const customEvent of this.schedules[scheduleIndex].customEvents) {
             if (customEvent.customEventID === customEventId) {
                 return true;
