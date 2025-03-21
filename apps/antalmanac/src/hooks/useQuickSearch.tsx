@@ -22,7 +22,9 @@ export function useQuickSearch() {
 
             if ((!termValue || !deptValue || !courseNumber) && sectionCode.length > 0) {
                 const course: ScheduleCourse = (AppStore.getAddedCourses() as unknown as ScheduleCourse[]).filter(
-                    (course) => 'sectionCode' in course && course.sectionCode === sectionCode
+                    (course) =>
+                        ('sectionCode' in course && course.sectionCode === sectionCode) ||
+                        ('section' in course && course.section.sectionCode === sectionCode)
                 )[0];
                 termValue = course.term;
                 deptValue = course.deptCode;
