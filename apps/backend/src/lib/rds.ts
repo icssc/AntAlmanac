@@ -1,6 +1,7 @@
 import { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent } from '@packages/antalmanac-types';
 
-import { and, eq } from 'drizzle-orm';
+import { and, eq, ExtractTablesWithRelations } from 'drizzle-orm';
+import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 import type { Database } from '$db/index';
 import {
     schedules,
@@ -13,8 +14,10 @@ import {
     CourseInSchedule,
     CustomEvent,
 } from '$db/schema';
+import * as schema from '$db/schema';
 
-type DatabaseOrTransaction = Omit<Database, '$client'>;
+type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
+type DatabaseOrTransaction = Omit<Database, '$client'> | Transaction;
 
 export class RDS {
     /**
@@ -66,8 +69,8 @@ export class RDS {
      *
      * @returns The ID of the new/existing schedule
      */
-    static async upsertScheduleAndContents(
-        db: DatabaseOrTransaction,
+    private static async upsertScheduleAndContents(
+        db: Transaction,
         userId: string,
         schedule: ShortCourseSchedule,
         index: number
@@ -154,15 +157,15 @@ export class RDS {
 
     /** Deletes and recreates all of the user's schedules and contents */
     private static async upsertSchedulesAndContents(
-        db: DatabaseOrTransaction,
+        tx: Transaction,
         userId: string,
         scheduleArray: ShortCourseSchedule[]
     ): Promise<string[]> {
         // Drop all schedules, which will cascade to courses and custom events
-        await db.delete(schedules).where(eq(schedules.userId, userId));
+        await tx.delete(schedules).where(eq(schedules.userId, userId));
 
         return Promise.all(
-            scheduleArray.map((schedule, index) => this.upsertScheduleAndContents(db, userId, schedule, index))
+            scheduleArray.map((schedule, index) => this.upsertScheduleAndContents(tx, userId, schedule, index))
         );
     }
 
@@ -170,7 +173,7 @@ export class RDS {
      * Drops all courses in the schedule and re-add them,
      * deduplicating by section code and term.
      * */
-    private static async upsertCourses(db: DatabaseOrTransaction, scheduleId: string, courses: ShortCourse[]) {
+    private static async upsertCourses(tx: Transaction, scheduleId: string, courses: ShortCourse[]) {
         if (courses.length === 0) {
             return;
         }
@@ -194,11 +197,11 @@ export class RDS {
             return true;
         });
 
-        await db.insert(coursesInSchedule).values(dbCoursesUnique);
+        await tx.insert(coursesInSchedule).values(dbCoursesUnique);
     }
 
     private static async upsertCustomEvents(
-        db: DatabaseOrTransaction,
+        tx: Transaction,
         scheduleId: string,
         repeatingCustomEvents: RepeatingCustomEvent[]
     ) {
@@ -217,7 +220,7 @@ export class RDS {
             lastUpdated: new Date(),
         }));
 
-        await db.insert(customEvents).values(dbCustomEvents);
+        await tx.insert(customEvents).values(dbCustomEvents);
     }
 
     static async getGuestUserData(db: DatabaseOrTransaction, guestId: string): Promise<User | null> {
