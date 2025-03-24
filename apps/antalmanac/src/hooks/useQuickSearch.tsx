@@ -21,11 +21,16 @@ export function useQuickSearch() {
             };
 
             if ((!termValue || !deptValue || !courseNumber) && sectionCode.length > 0) {
-                const course: ScheduleCourse = (AppStore.getAddedCourses() as unknown as ScheduleCourse[]).filter(
+                const course = (AppStore.getAddedCourses() as ScheduleCourse[]).find(
                     (course) =>
                         ('sectionCode' in course && course.sectionCode === sectionCode) ||
                         ('section' in course && course.section.sectionCode === sectionCode)
-                )[0];
+                );
+
+                if (!course) {
+                    console.warn(`Course with section code ${sectionCode} not found.`);
+                    return;
+                }
                 termValue = course.term;
                 deptValue = course.deptCode;
                 courseNumber = course.courseNumber;
