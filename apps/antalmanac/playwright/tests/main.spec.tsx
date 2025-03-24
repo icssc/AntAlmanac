@@ -5,6 +5,7 @@ import { AddedCoursesPage } from './test_pages/addedCoursesPage';
 import { CalendarPopupPage } from './test_pages/calendarPopupPage';
 import { CourseDataPage } from './test_pages/courseDataPage';
 import { CoursePage } from './test_pages/coursePage';
+import { CourseRowPage } from './test_pages/courseRowPage';
 import { HeaderPage } from './test_pages/headerPage';
 import { SchedulePage } from './test_pages/schedulePage';
 
@@ -15,6 +16,7 @@ const test = base.extend<{
     addedCoursesPage: AddedCoursesPage;
     headerPage: HeaderPage;
     courseDataPage: CourseDataPage;
+    courseRowPage: CourseRowPage;
 }>({
     coursePage: async ({ page }, use) => {
         const coursePage = new CoursePage(page);
@@ -40,6 +42,10 @@ const test = base.extend<{
         const courseDataPage = new CourseDataPage(page);
         await use(courseDataPage);
     },
+    courseRowPage: async ({ page }, use) => {
+        const courseRowPage = new CourseRowPage(page);
+        await use(courseRowPage);
+    },
 });
 
 test.describe('Home Page', () => {
@@ -50,20 +56,25 @@ test.describe('Home Page', () => {
 });
 
 test.describe('Search course and add to calendar', () => {
-    test.beforeEach(async ({ coursePage }) => {
+    test.beforeEach(async ({ coursePage, courseRowPage }) => {
         await coursePage.page.goto('/');
         await closePopups(coursePage.page);
         await coursePage.searchForCourse();
         await coursePage.addCourseToCalendar();
+        await courseRowPage.initCourseRow();
     });
     test('course row changes upon adding section', async ({ coursePage }) => {
         await coursePage.verifyCourseRowHighlighted();
     });
-    test('added course has correct info in calendar', async ({ coursePage }) => {
-        await coursePage.verifyCalendarEventInfo();
+    test('added course has correct info in calendar', async ({ coursePage, courseRowPage }) => {
+        await coursePage.verifyCalendarEventInfo(courseRowPage);
     });
     test('course data buttons', async ({ courseDataPage }) => {
         await courseDataPage.runCourseDataTests();
+    });
+    test('course row info', async ({ courseRowPage }) => {
+        await courseRowPage.initCourseRow();
+        console.log(courseRowPage.getCourseFreq());
     });
 });
 
@@ -156,7 +167,7 @@ test.describe('Schedule toolbar', () => {
 });
 
 test.describe('added course pane', () => {
-    test.beforeEach(async ({ coursePage, addedCoursesPage }) => {
+    test.beforeEach(async ({ coursePage, addedCoursesPage, courseRowPage }) => {
         await coursePage.page.goto('/');
         await addedCoursesPage.page.goto('/');
         // Closes initial popups
@@ -164,14 +175,15 @@ test.describe('added course pane', () => {
         // Set up adding courses
         await coursePage.searchForCourse();
         await coursePage.addCourseToCalendar();
+        await courseRowPage.initCourseRow();
 
         // set up added courses pane
         await addedCoursesPage.goToAddedCourses();
     });
 
-    test('added courses pane shows all added courses', async ({ addedCoursesPage, coursePage }) => {
-        await addedCoursesPage.verifyAddedCourses();
-        await coursePage.verifyCalendarEventInfo();
+    test('added courses pane shows all added courses', async ({ addedCoursesPage, coursePage, courseRowPage }) => {
+        await addedCoursesPage.verifyAddedCourses(courseRowPage);
+        await coursePage.verifyCalendarEventInfo(courseRowPage);
     });
 
     test('copy schedule button in added courses pane', async ({ addedCoursesPage, schedulePage }) => {
@@ -181,8 +193,12 @@ test.describe('added course pane', () => {
     test('clear schedule button in added courses pane', async ({ addedCoursesPage, schedulePage }) => {
         await addedCoursesPage.addedCoursesClearSchedule(schedulePage);
     });
-    test('search button above added class redirects to search page', async ({ addedCoursesPage, coursePage }) => {
-        await addedCoursesPage.addedCoursesSearchPage(coursePage);
+    test('search button above added class redirects to search page', async ({
+        addedCoursesPage,
+        coursePage,
+        courseRowPage,
+    }) => {
+        await addedCoursesPage.addedCoursesSearchPage(coursePage, courseRowPage);
     });
     test('added course data buttons', async ({ courseDataPage }) => {
         await courseDataPage.runCourseDataTests();

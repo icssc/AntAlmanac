@@ -1,10 +1,10 @@
 import { expect } from '@playwright/test';
 import type { Page, Locator } from '@playwright/test';
 
-import { search } from '../config';
 import { clickIconButton } from '../testTools';
 
 import { CoursePage } from './coursePage';
+import { CourseRowPage } from './courseRowPage';
 import { SchedulePage } from './schedulePage';
 
 export class AddedCoursesPage {
@@ -26,15 +26,24 @@ export class AddedCoursesPage {
         await expect(this.addedActions).toBeVisible();
     }
 
-    async verifyAddedCourses() {
-        // matches current schedule
-        const title = await this.addedPane.getByRole('heading').first();
-        const currentSchedule = await this.page.getByTestId('schedule-select-button').allInnerTexts();
-        await expect(title).toHaveText(`${currentSchedule} (${search.units} Units)`);
-
+    async verifyAddedCourseRows(courseRowPage: CourseRowPage) {
         // has added class
         const classRows = await this.addedPane.getByTestId('class-table-row');
         await expect(classRows).toHaveCount(1);
+
+        const classRowInfo = await classRows.nth(0).locator('td');
+        const classRowInfoStr = await classRowInfo.allInnerTexts();
+        await expect(classRowInfoStr).toContain(courseRowPage.getCourseCode());
+        await expect(classRowInfoStr).toContain(courseRowPage.getCourseLoc());
+        await expect(classRowInfoStr).toContain(courseRowPage.getCourseDayTime());
+    }
+
+    async verifyAddedCourses(courseRowPage: CourseRowPage) {
+        // matches current schedule
+        const title = await this.addedPane.getByRole('heading').first();
+        const currentSchedule = await this.page.getByTestId('schedule-select-button').allInnerTexts();
+        await expect(title).toHaveText(`${currentSchedule} (${courseRowPage.getCourseUnits()} Units)`);
+        await this.verifyAddedCourseRows(courseRowPage);
     }
 
     async addedCoursesCopySchedule(schedulePage: SchedulePage) {
@@ -53,9 +62,9 @@ export class AddedCoursesPage {
         await expect(dialogShown).toBeTruthy();
     }
 
-    async addedCoursesSearchPage(coursePage: CoursePage) {
+    async addedCoursesSearchPage(coursePage: CoursePage, courseRowPage: CourseRowPage) {
         await clickIconButton(this.addedPane, 'SearchIcon');
         await coursePage.verifyCourseRowHighlighted();
-        await coursePage.verifyCalendarEventInfo();
+        await coursePage.verifyCalendarEventInfo(courseRowPage);
     }
 }

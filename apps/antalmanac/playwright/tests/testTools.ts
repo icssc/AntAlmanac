@@ -10,6 +10,11 @@ export const getCalendarEventTime = (classTimeArr: string[]) => {
     return classTime;
 };
 
+export const getEventFreq = (classDays: string) => {
+    const days = classDays.split(/(?=[A-Z])/); // split by uppercase letters
+    return days.length;
+};
+
 export const closePopups = async (page: Page) => {
     await page.getByTestId('patch-notes-close').click();
     await page.locator("button[aria-label='Close Tour']").click();

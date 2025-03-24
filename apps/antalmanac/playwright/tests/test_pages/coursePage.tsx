@@ -4,6 +4,8 @@ import type { Page } from '@playwright/test';
 import { search } from '../config';
 import { getCalendarEventTime } from '../testTools';
 
+import { CourseRowPage } from './courseRowPage';
+
 export class CoursePage {
     constructor(public readonly page: Page) {
         this.page = page;
@@ -37,28 +39,15 @@ export class CoursePage {
         await deleteButton.click();
     }
 
-    async verifyCalendarEventInfo() {
-        const classRow = await this.page.getByTestId('class-table-row').nth(0);
-        const classRowInfo = await classRow.locator('td');
-        await expect(classRowInfo).toHaveCount(11);
-
-        const classDayTime = await classRowInfo.nth(5).allInnerTexts();
-        const classTime = getCalendarEventTime(classDayTime[0].split(' '));
-
+    async verifyCalendarEventInfo(courseRowPage: CourseRowPage) {
         const calendarEventTime = await this.page.locator('.rbc-event-label').first();
-
-        const place = await classRowInfo.nth(6).allInnerTexts();
-
-        // Fetch course code of first result
-        const courseCodeContainer = await this.page.locator("div[aria-label='Click to copy course code']").first();
-        await expect(courseCodeContainer).toBeVisible();
-        const courseCode = await courseCodeContainer.allInnerTexts();
-
         const calendarEvent = await this.page.getByTestId('course-event').first();
+        const time = getCalendarEventTime(courseRowPage.getCourseDayTime().split(' '));
+
         await expect(calendarEvent).toBeVisible();
         await expect(calendarEvent).toContainText(search.courseName);
-        await expect(calendarEvent).toContainText(courseCode);
-        await expect(calendarEvent).toContainText(place);
-        await expect(calendarEventTime).toContainText(classTime);
+        await expect(calendarEvent).toContainText(courseRowPage.getCourseCode());
+        await expect(calendarEvent).toContainText(courseRowPage.getCourseLoc());
+        await expect(calendarEventTime).toContainText(time);
     }
 }
