@@ -16,8 +16,6 @@ export class CalendarPopupPage {
     async verifyCalendarEventPopup() {
         // Ensure section exists in calendar view with correct code
         const calendarEvent = this.page.getByTestId('course-event').first();
-        await expect(calendarEvent).toBeVisible();
-
         await calendarEvent.click();
 
         this.courseCalendarPopup = await this.page.getByTestId('course-calendar-event');
@@ -54,7 +52,6 @@ export class CalendarPopupPage {
     async popupDeleteCourse() {
         // Delete course from calendar using popup
         const deleteButton = await this.courseCalendarPopup.getByTitle('Delete');
-        await expect(deleteButton).toBeVisible();
         await deleteButton.click();
     }
 }

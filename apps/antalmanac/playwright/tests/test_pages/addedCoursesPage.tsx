@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import type { Page, Locator } from '@playwright/test';
 
+import { search } from '../config';
 import { clickIconButton } from '../testTools';
 
 import { CoursePage } from './coursePage';
@@ -29,11 +30,11 @@ export class AddedCoursesPage {
         // matches current schedule
         const title = await this.addedPane.getByRole('heading').first();
         const currentSchedule = await this.page.getByTestId('schedule-select-button').allInnerTexts();
-        await expect(title).toHaveText(`${currentSchedule} (4 Units)`);
+        await expect(title).toHaveText(`${currentSchedule} (${search.units} Units)`);
 
         // has added class
         const classRows = await this.addedPane.getByTestId('class-table-row');
-        await expect(await classRows.count()).toBe(1);
+        await expect(classRows).toHaveCount(1);
     }
 
     async addedCoursesCopySchedule(schedulePage: SchedulePage) {

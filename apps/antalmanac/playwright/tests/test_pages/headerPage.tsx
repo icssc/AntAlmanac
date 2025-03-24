@@ -21,7 +21,6 @@ export class HeaderPage {
 
     async saveSchedule() {
         const saveButton = await this.headerActions.locator('#save-button');
-        await expect(saveButton).toBeVisible();
         await saveButton.click();
         await inputDialog(this.page, 'Save', user.id);
     }
@@ -45,9 +44,7 @@ export class HeaderPage {
         const loadButton = await this.headerActions.locator('#load-button');
         await loadButton.click();
         await inputDialog(this.page, 'Load', user.id);
-
         await this.handleLoadDialog();
-
         await schedulePage.verifyCalendarCorrectCourse();
     }
 }

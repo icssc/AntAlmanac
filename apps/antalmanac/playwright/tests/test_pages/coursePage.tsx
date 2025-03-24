@@ -11,7 +11,6 @@ export class CoursePage {
 
     async searchForCourse() {
         const searchBar = await this.page.locator('#searchBar').getByLabel('Search');
-        await expect(searchBar).toBeVisible();
         await searchBar.fill(search.courseName);
 
         const option = await this.page.locator('#fuzzy-search-popup');
@@ -35,14 +34,13 @@ export class CoursePage {
 
     async deleteCourseFromCalendar() {
         const deleteButton = await this.page.getByTestId('class-table-row').nth(0).getByTestId('DeleteIcon');
-        await expect(deleteButton).toBeVisible();
         await deleteButton.click();
     }
 
     async verifyCalendarEventInfo() {
         const classRow = await this.page.getByTestId('class-table-row').nth(0);
         const classRowInfo = await classRow.locator('td');
-        await expect(await classRowInfo).toHaveCount(11);
+        await expect(classRowInfo).toHaveCount(11);
 
         const classDayTime = await classRowInfo.nth(5).allInnerTexts();
         const classTime = getCalendarEventTime(classDayTime[0].split(' '));

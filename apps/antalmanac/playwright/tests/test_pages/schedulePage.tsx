@@ -71,7 +71,6 @@ export class SchedulePage {
 
     async switchCurrentSchedule(name: string) {
         const switchScheduleButton = await this.scheduleRows.getByText(name);
-        await expect(switchScheduleButton).toBeVisible();
         await switchScheduleButton.click();
     }
 
@@ -79,7 +78,6 @@ export class SchedulePage {
         await this.switchCurrentSchedule(schedule[0].name);
         // Schedule button text changes to changed schedule's name
         await expect(this.scheduleButton).toContainText(schedule[0].name);
-
         // Verify calendar shows correct courses
         await this.verifyCalendarCorrectCourse();
     }
@@ -110,9 +108,10 @@ export class SchedulePage {
 
     async toggleFinals() {
         await this.page.mouse.click(0, 0); // Dismiss schedule popover
-        const finalsButton = await this.page.getByTestId('finals-button');
 
+        const finalsButton = await this.page.getByTestId('finals-button');
         await finalsButton.click();
+
         await this.verifyCalendarEventCount(1);
         const finalsEvent = await this.page.getByTestId('course-event');
         await expect(finalsEvent).toContainText(search.courseName);
