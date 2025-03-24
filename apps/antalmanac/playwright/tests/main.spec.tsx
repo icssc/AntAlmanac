@@ -3,6 +3,7 @@ import { test as base, expect } from '@playwright/test';
 import { closePopups } from './testTools';
 import { AddedCoursesPage } from './test_pages/addedCoursesPage';
 import { CalendarPopupPage } from './test_pages/calendarPopupPage';
+import { CourseDataPage } from './test_pages/courseDataPage';
 import { CoursePage } from './test_pages/coursePage';
 import { HeaderPage } from './test_pages/headerPage';
 import { SchedulePage } from './test_pages/schedulePage';
@@ -13,6 +14,7 @@ const test = base.extend<{
     calendarPopupPage: CalendarPopupPage;
     addedCoursesPage: AddedCoursesPage;
     headerPage: HeaderPage;
+    courseDataPage: CourseDataPage;
 }>({
     coursePage: async ({ page }, use) => {
         const coursePage = new CoursePage(page);
@@ -33,6 +35,10 @@ const test = base.extend<{
     headerPage: async ({ page }, use) => {
         const headerPage = new HeaderPage(page);
         await use(headerPage);
+    },
+    courseDataPage: async ({ page }, use) => {
+        const courseDataPage = new CourseDataPage(page);
+        await use(courseDataPage);
     },
 });
 
@@ -55,6 +61,9 @@ test.describe('Search course and add to calendar', () => {
     });
     test('added course has correct info in calendar', async ({ coursePage }) => {
         await coursePage.verifyCalendarEventInfo();
+    });
+    test('course data buttons', async ({ courseDataPage }) => {
+        await courseDataPage.runCourseDataTests();
     });
 });
 
@@ -174,6 +183,9 @@ test.describe('added course pane', () => {
     });
     test('search button above added class redirects to search page', async ({ addedCoursesPage, coursePage }) => {
         await addedCoursesPage.addedCoursesSearchPage(coursePage);
+    });
+    test('added course data buttons', async ({ courseDataPage }) => {
+        await courseDataPage.runCourseDataTests();
     });
 });
 

@@ -15,10 +15,15 @@ export const closePopups = async (page: Page) => {
     await page.locator("button[aria-label='Close Tour']").click();
 };
 
-export const clickIconButton = async (locator: Locator, iconName: string) => {
+export const clickIconButton = async (locator: Locator | Page, iconName: string) => {
     const button = await locator.getByTestId(iconName);
     await expect(button).toBeVisible();
     await button.click();
+};
+
+export const clickTextButton = async (locator: Locator | Page, text: string) => {
+    const textButton = await locator.getByRole('button').getByText(text);
+    await textButton.click();
 };
 
 export const inputDialog = async (page: Page, dialogName: string, input: string) => {
@@ -32,5 +37,14 @@ export const inputDialog = async (page: Page, dialogName: string, input: string)
 
     const enterButton = await dialog.getByRole('button').nth(1);
     await enterButton.click();
-    // await this.page.keyboard.press('Enter');
+};
+
+export const verifyNewTabUrl = async (page: Page, url: string, action: () => Promise<void>) => {
+    const newTabPromise = page.waitForEvent('popup');
+
+    await action();
+
+    const newTab = await newTabPromise;
+    await newTab.waitForLoadState();
+    await expect(newTab).toHaveURL(url);
 };

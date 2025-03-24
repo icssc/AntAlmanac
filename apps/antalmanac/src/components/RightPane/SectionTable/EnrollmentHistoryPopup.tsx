@@ -125,7 +125,7 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
 
     if (loading) {
         return (
-            <Box padding={1}>
+            <Box padding={1} data-testid="enrollment-history-popup">
                 <Skeleton variant="text" animation="wave" height={graphHeight} width={graphWidth} />
             </Box>
         );
@@ -133,7 +133,7 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
 
     if (enrollmentHistory == null) {
         return (
-            <Box padding={1}>
+            <Box padding={1} data-testid="enrollment-history-popup">
                 <Typography variant="body1" align="center">
                     {popupTitle}
                 </Typography>
@@ -144,7 +144,7 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
     const lineChartData = enrollmentHistory[graphIndex].days;
 
     return (
-        <Box sx={{ padding: 0.5 }}>
+        <Box sx={{ padding: 0.5 }} data-testid="enrollment-history-popup">
             <PopupHeader
                 graphWidth={graphWidth}
                 graphIndex={graphIndex}
