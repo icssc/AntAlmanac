@@ -2,7 +2,7 @@ import { expect } from '@playwright/test';
 import type { Page, Locator } from '@playwright/test';
 
 import { mapSearch, search } from '../config';
-import { verifyNewTabDomain } from '../testTools';
+import { closePopups, verifyNewTabDomain } from '../testTools';
 
 import { CourseRowPage } from './courseRowPage';
 
@@ -14,6 +14,12 @@ export class MapPage {
         this.page = page;
         this.mapContainer = this.page.getByTestId('map-pane');
         this.mapPopup = this.mapContainer.locator('.leaflet-popup');
+    }
+
+    async setUp() {
+        await this.page.goto('/');
+        await closePopups(this.page);
+        await this.goToMapPage();
     }
 
     async goToMapPage() {

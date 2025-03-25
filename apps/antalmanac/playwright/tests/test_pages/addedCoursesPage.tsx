@@ -46,9 +46,9 @@ export class AddedCoursesPage {
         await this.verifyAddedCourseRows(courseRowPage);
     }
 
-    async addedCoursesCopySchedule(schedulePage: SchedulePage) {
+    async addedCoursesCopySchedule(schedulePage: SchedulePage, courseRowPage: CourseRowPage) {
         await clickIconButton(this.addedActions, 'ContentCopyIcon');
-        await schedulePage.copyScheduleAction(true);
+        await schedulePage.copyScheduleAction(true, courseRowPage);
     }
 
     async addedCoursesClearSchedule(schedulePage: SchedulePage) {

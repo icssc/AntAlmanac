@@ -33,6 +33,7 @@ export const clickTextButton = async (locator: Locator | Page, text: string) => 
 
 export const inputDialog = async (page: Page, dialogName: string, input: string) => {
     const dialog = await page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
     const heading = await dialog.getByRole('heading');
     await expect(heading).toHaveText(dialogName);
 
@@ -41,6 +42,8 @@ export const inputDialog = async (page: Page, dialogName: string, input: string)
     await inputBox.fill(input);
 
     const enterButton = await dialog.getByRole('button').nth(1);
+    await page.waitForLoadState();
+    await expect(enterButton).toBeEnabled();
     await enterButton.click();
 };
 

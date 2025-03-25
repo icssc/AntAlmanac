@@ -2,13 +2,20 @@ import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
 import { search } from '../config';
-import { getCalendarEventTime } from '../testTools';
+import { closePopups, getCalendarEventTime } from '../testTools';
 
 import { CourseRowPage } from './courseRowPage';
 
 export class CoursePage {
     constructor(public readonly page: Page) {
         this.page = page;
+    }
+
+    async setUp() {
+        await this.page.goto('/');
+        await closePopups(this.page);
+        await this.searchForCourse();
+        await this.addCourseToCalendar();
     }
 
     async searchForCourse() {

@@ -4,6 +4,8 @@ import type { Page, Locator } from '@playwright/test';
 import { schedule, search } from '../config';
 import { clickIconButton, inputDialog } from '../testTools';
 
+import { CourseRowPage } from './courseRowPage';
+
 export class SchedulePage {
     private scheduleButton: Locator;
     private schedulePopup: Locator;
@@ -31,9 +33,9 @@ export class SchedulePage {
         await expect(calendarEvent).toHaveCount(event_count);
     }
 
-    async verifyCalendarCorrectCourse() {
+    async verifyCalendarCorrectCourse(courseRowPage: CourseRowPage) {
         // Verify calendar shows courses in current schedule
-        await this.verifyCalendarEventCount(search.classesPerWk);
+        await this.verifyCalendarEventCount(courseRowPage.getCourseFreq());
         // Verify courses have same class name
         const firstCalendarEvent = await this.page.getByTestId('course-event').first();
         await expect(firstCalendarEvent).toContainText(search.courseName);
@@ -74,15 +76,15 @@ export class SchedulePage {
         await switchScheduleButton.click();
     }
 
-    async changeSchedule() {
+    async changeSchedule(courseRowPage: CourseRowPage) {
         await this.switchCurrentSchedule(schedule[0].name);
         // Schedule button text changes to changed schedule's name
         await expect(this.scheduleButton).toContainText(schedule[0].name);
         // Verify calendar shows correct courses
-        await this.verifyCalendarCorrectCourse();
+        await this.verifyCalendarCorrectCourse(courseRowPage);
     }
 
-    async copyScheduleAction(otherPage: boolean) {
+    async copyScheduleAction(otherPage: boolean, courseRowPage: CourseRowPage) {
         // general copy schedule action
         await inputDialog(this.page, 'Copy Schedule', schedule[1].name);
 
@@ -98,12 +100,12 @@ export class SchedulePage {
         await this.switchCurrentSchedule(schedule[1].name);
 
         // Ensure new schedule has original schedules' courses
-        await this.verifyCalendarCorrectCourse();
+        await this.verifyCalendarCorrectCourse(courseRowPage);
     }
 
-    async copySchedule() {
+    async copySchedule(courseRowPage: CourseRowPage) {
         await clickIconButton(this.schedulePopup, 'ContentCopyIcon');
-        await this.copyScheduleAction(false);
+        await this.copyScheduleAction(false, courseRowPage);
     }
 
     async toggleFinals() {
