@@ -5,6 +5,10 @@ export const search = {
     units: 4,
 };
 
+export const mapSearch = {
+    location: 'ART',
+};
+
 export const user = {
     id: 'Testing123456789',
 };

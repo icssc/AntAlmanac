@@ -52,4 +52,17 @@ export const verifyNewTabUrl = async (page: Page, url: string, action: () => Pro
     const newTab = await newTabPromise;
     await newTab.waitForLoadState();
     await expect(newTab).toHaveURL(url);
+    await newTab.close();
+};
+
+export const verifyNewTabDomain = async (page: Page, domain: string, action: () => Promise<void>) => {
+    const newTabPromise = page.waitForEvent('popup');
+
+    await action();
+
+    const newTab = await newTabPromise;
+    await newTab.waitForLoadState();
+    const url = await newTab.url();
+    await expect(url).toContain(domain);
+    await newTab.close();
 };

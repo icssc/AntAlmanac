@@ -7,6 +7,7 @@ import { CourseDataPage } from './test_pages/courseDataPage';
 import { CoursePage } from './test_pages/coursePage';
 import { CourseRowPage } from './test_pages/courseRowPage';
 import { HeaderPage } from './test_pages/headerPage';
+import { MapPage } from './test_pages/mapPage';
 import { SchedulePage } from './test_pages/schedulePage';
 
 const test = base.extend<{
@@ -17,6 +18,7 @@ const test = base.extend<{
     headerPage: HeaderPage;
     courseDataPage: CourseDataPage;
     courseRowPage: CourseRowPage;
+    mapPage: MapPage;
 }>({
     coursePage: async ({ page }, use) => {
         const coursePage = new CoursePage(page);
@@ -45,6 +47,10 @@ const test = base.extend<{
     courseRowPage: async ({ page }, use) => {
         const courseRowPage = new CourseRowPage(page);
         await use(courseRowPage);
+    },
+    mapPage: async ({ page }, use) => {
+        const mapPage = new MapPage(page);
+        await use(mapPage);
     },
 });
 
@@ -222,5 +228,32 @@ test.describe('header actions', () => {
         await headerPage.saveSchedule();
         await schedulePage.clearSchedule();
         await headerPage.loadSchedule(schedulePage);
+    });
+});
+
+test.describe('map', () => {
+    test.beforeEach(async ({ mapPage }) => {
+        await mapPage.page.goto('/');
+        await closePopups(mapPage.page);
+        await mapPage.goToMapPage();
+    });
+
+    test('Map shows course location marker and popup', async ({ mapPage, coursePage, courseRowPage }) => {
+        await coursePage.page.goto('/');
+        await closePopups(coursePage.page);
+        await coursePage.searchForCourse();
+        await coursePage.addCourseToCalendar();
+        await courseRowPage.initCourseRow();
+
+        await mapPage.verifyLocMarker();
+        await mapPage.verifyCourseLocPopup(courseRowPage);
+        await mapPage.verifyPopupDirections();
+    });
+
+    test('Searching for building shows location on map', async ({ mapPage }) => {
+        await mapPage.searchMapLocation();
+        await mapPage.verifyLocMarker();
+        await mapPage.verifyLocPopup();
+        await mapPage.verifyPopupDirections();
     });
 });
