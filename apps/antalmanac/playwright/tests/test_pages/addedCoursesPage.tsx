@@ -3,8 +3,8 @@ import type { Page, Locator } from '@playwright/test';
 
 import { clickIconButton } from '../testTools';
 
-import { CoursePage } from './coursePage';
 import { CourseRowPage } from './courseRowPage';
+import { CourseSearchPage } from './courseSearchPage';
 import { SchedulePage } from './schedulePage';
 
 export class AddedCoursesPage {
@@ -62,9 +62,9 @@ export class AddedCoursesPage {
         await expect(dialogShown).toBeTruthy();
     }
 
-    async addedCoursesSearchPage(coursePage: CoursePage, courseRowPage: CourseRowPage) {
+    async addedCoursesSearchPage(courseSearchPage: CourseSearchPage, courseRowPage: CourseRowPage) {
         await clickIconButton(this.addedPane, 'SearchIcon');
-        await coursePage.verifyCourseRowHighlighted();
-        await coursePage.verifyCalendarEventInfo(courseRowPage);
+        await courseSearchPage.verifyCourseRowHighlighted();
+        await courseSearchPage.verifyCalendarEventInfo(courseRowPage);
     }
 }

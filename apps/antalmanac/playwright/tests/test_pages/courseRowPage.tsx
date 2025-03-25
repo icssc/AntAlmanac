@@ -4,6 +4,7 @@ import type { Page, Locator } from '@playwright/test';
 import { getEventFreq } from '../testTools';
 
 export class CourseRowPage {
+    // Extracts and stores data about selected course
     private courseRow: Locator;
     private courseRowInfo: Locator;
     private courseDetails: {

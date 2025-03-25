@@ -6,7 +6,7 @@ import { closePopups, getCalendarEventTime } from '../testTools';
 
 import { CourseRowPage } from './courseRowPage';
 
-export class CoursePage {
+export class CourseSearchPage {
     constructor(public readonly page: Page) {
         this.page = page;
     }

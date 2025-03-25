@@ -3,14 +3,14 @@ import { test as base, expect } from '@playwright/test';
 import { AddedCoursesPage } from './test_pages/addedCoursesPage';
 import { CalendarPopupPage } from './test_pages/calendarPopupPage';
 import { CourseDataPage } from './test_pages/courseDataPage';
-import { CoursePage } from './test_pages/coursePage';
 import { CourseRowPage } from './test_pages/courseRowPage';
+import { CourseSearchPage } from './test_pages/courseSearchPage';
 import { HeaderPage } from './test_pages/headerPage';
 import { MapPage } from './test_pages/mapPage';
 import { SchedulePage } from './test_pages/schedulePage';
 
 const test = base.extend<{
-    coursePage: CoursePage;
+    courseSearchPage: CourseSearchPage;
     schedulePage: SchedulePage;
     calendarPopupPage: CalendarPopupPage;
     addedCoursesPage: AddedCoursesPage;
@@ -19,9 +19,9 @@ const test = base.extend<{
     courseRowPage: CourseRowPage;
     mapPage: MapPage;
 }>({
-    coursePage: async ({ page }, use) => {
-        const coursePage = new CoursePage(page);
-        await use(coursePage);
+    courseSearchPage: async ({ page }, use) => {
+        const courseSearchPage = new CourseSearchPage(page);
+        await use(courseSearchPage);
     },
     schedulePage: async ({ page }, use) => {
         const schedulePage = new SchedulePage(page);
@@ -61,28 +61,25 @@ test.describe('Home Page', () => {
 });
 
 test.describe('Search course and add to calendar', () => {
-    test.beforeEach(async ({ coursePage, courseRowPage }) => {
-        await coursePage.setUp();
+    test.beforeEach(async ({ courseSearchPage, courseRowPage }) => {
+        await courseSearchPage.setUp();
         await courseRowPage.initCourseRow();
     });
-    test('course row changes upon adding section', async ({ coursePage }) => {
-        await coursePage.verifyCourseRowHighlighted();
+    test('course row changes upon adding section', async ({ courseSearchPage }) => {
+        await courseSearchPage.verifyCourseRowHighlighted();
     });
-    test('added course has correct info in calendar', async ({ coursePage, courseRowPage }) => {
-        await coursePage.verifyCalendarEventInfo(courseRowPage);
+    test('added course has correct info in calendar', async ({ courseSearchPage, courseRowPage }) => {
+        await courseSearchPage.verifyCalendarEventInfo(courseRowPage);
     });
     test('course data buttons', async ({ courseDataPage }) => {
         await courseDataPage.runCourseDataTests();
     });
-    test('course row info', async ({ courseRowPage }) => {
-        await courseRowPage.initCourseRow();
-    });
 });
 
 test.describe('Calendar course popup', () => {
-    test.beforeEach(async ({ coursePage, calendarPopupPage }) => {
+    test.beforeEach(async ({ courseSearchPage, calendarPopupPage }) => {
         await calendarPopupPage.page.goto('/');
-        await coursePage.setUp();
+        await courseSearchPage.setUp();
         await calendarPopupPage.verifyCalendarEventPopup();
     });
     test('popup class location opens on Map', async ({ calendarPopupPage }) => {
@@ -98,9 +95,9 @@ test.describe('Calendar course popup', () => {
 });
 
 test.describe.serial('Modify schedules', () => {
-    test.beforeEach(async ({ coursePage, schedulePage, courseRowPage }) => {
+    test.beforeEach(async ({ courseSearchPage, schedulePage, courseRowPage }) => {
         await schedulePage.page.goto('/');
-        await coursePage.setUp();
+        await courseSearchPage.setUp();
         await courseRowPage.initCourseRow();
         await schedulePage.verifyScheduleLocators();
     });
@@ -130,8 +127,8 @@ test.describe.serial('Modify schedules', () => {
 });
 
 test.describe('Schedule toolbar', () => {
-    test.beforeEach(async ({ coursePage }) => {
-        await coursePage.setUp();
+    test.beforeEach(async ({ courseSearchPage }) => {
+        await courseSearchPage.setUp();
     });
 
     test('toggle finals schedule', async ({ schedulePage }) => {
@@ -151,15 +148,19 @@ test.describe('Schedule toolbar', () => {
 });
 
 test.describe('added course pane', () => {
-    test.beforeEach(async ({ coursePage, addedCoursesPage, courseRowPage }) => {
-        await coursePage.setUp();
+    test.beforeEach(async ({ courseSearchPage, addedCoursesPage, courseRowPage }) => {
+        await courseSearchPage.setUp();
         await courseRowPage.initCourseRow();
         await addedCoursesPage.goToAddedCourses();
     });
 
-    test('added courses pane shows all added courses', async ({ addedCoursesPage, coursePage, courseRowPage }) => {
+    test('added courses pane shows all added courses', async ({
+        addedCoursesPage,
+        courseSearchPage,
+        courseRowPage,
+    }) => {
         await addedCoursesPage.verifyAddedCourses(courseRowPage);
-        await coursePage.verifyCalendarEventInfo(courseRowPage);
+        await courseSearchPage.verifyCalendarEventInfo(courseRowPage);
     });
 
     test('copy schedule button in added courses pane', async ({ addedCoursesPage, schedulePage, courseRowPage }) => {
@@ -171,10 +172,10 @@ test.describe('added course pane', () => {
     });
     test('search button above added class redirects to search page', async ({
         addedCoursesPage,
-        coursePage,
+        courseSearchPage,
         courseRowPage,
     }) => {
-        await addedCoursesPage.addedCoursesSearchPage(coursePage, courseRowPage);
+        await addedCoursesPage.addedCoursesSearchPage(courseSearchPage, courseRowPage);
     });
     test('added course data buttons', async ({ courseDataPage }) => {
         await courseDataPage.runCourseDataTests();
@@ -182,8 +183,8 @@ test.describe('added course pane', () => {
 });
 
 test.describe('header actions', () => {
-    test.beforeEach(async ({ coursePage, headerPage, courseRowPage }) => {
-        await coursePage.setUp();
+    test.beforeEach(async ({ courseSearchPage, headerPage, courseRowPage }) => {
+        await courseSearchPage.setUp();
         await courseRowPage.initCourseRow();
         await headerPage.page.goto('/');
         await headerPage.initializeHeaderPage();
@@ -201,8 +202,8 @@ test.describe('header actions', () => {
 });
 
 test.describe('map', () => {
-    test('Map shows course location marker and popup', async ({ mapPage, coursePage, courseRowPage }) => {
-        await coursePage.setUp();
+    test('Map shows course location marker and popup', async ({ mapPage, courseSearchPage, courseRowPage }) => {
+        await courseSearchPage.setUp();
         await courseRowPage.initCourseRow();
         await mapPage.goToMapPage();
         await mapPage.verifyLocMarker();
