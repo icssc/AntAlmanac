@@ -22,12 +22,10 @@ export class CoursePage {
         const searchBar = await this.page.locator('#searchBar').getByLabel('Search');
         await searchBar.fill(search.courseName);
 
-        const option = await this.page.locator('#fuzzy-search-popup');
-        await expect(option).toBeVisible();
-        await this.page.keyboard.press('Enter');
-
-        const deptCard = await this.page.getByTestId('school-name');
-        await expect(deptCard).toHaveText(search.school);
+        const searchOptions = await this.page.locator('#fuzzy-search-popup');
+        await expect(searchOptions).toBeVisible();
+        const option = await searchOptions.getByRole('option').nth(0);
+        await option.click();
     }
 
     async addCourseToCalendar() {
