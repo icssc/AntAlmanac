@@ -81,8 +81,8 @@ test.describe('Search course and add to calendar', () => {
 
 test.describe('Calendar course popup', () => {
     test.beforeEach(async ({ coursePage, calendarPopupPage }) => {
-        await coursePage.setUp();
         await calendarPopupPage.page.goto('/');
+        await coursePage.setUp();
         await calendarPopupPage.verifyCalendarEventPopup();
     });
     test('popup class location opens on Map', async ({ calendarPopupPage }) => {

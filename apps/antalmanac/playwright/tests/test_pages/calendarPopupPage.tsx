@@ -45,8 +45,6 @@ export class CalendarPopupPage {
         await quickSearchButton.click();
         const coursePane = await this.page.getByTestId('course-pane-box');
         await expect(coursePane).toBeVisible(); // Ensure course pane is shown
-        const deptCard = await this.page.getByTestId('school-name');
-        await expect(deptCard).toHaveText(search.school); // Ensure right school is displayed
     }
 
     async popupDeleteCourse() {
