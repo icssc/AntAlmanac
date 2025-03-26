@@ -20,7 +20,7 @@ interface CopyScheduleDialogProps extends DialogProps {
 function CopyScheduleDialog(props: CopyScheduleDialogProps) {
     const { index } = props;
     const { onClose } = props; // destructured separately for memoization.
-    const [name, setName] = useState<string>(`Copy of ${AppStore.getScheduleNames()[index]}`);
+    const [name, setName] = useState<string>(`Duplicate of ${AppStore.getScheduleNames()[index]}`);
 
     const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setName(event.target.value);
@@ -36,7 +36,7 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
     }, [index, name, onClose]);
 
     const handleScheduleNamesChange = useCallback(() => {
-        setName(`Copy of ${AppStore.getScheduleNames()[index]}`);
+        setName(`Duplicate of ${AppStore.getScheduleNames()[index]}`);
     }, [index]);
 
     useEffect(() => {
@@ -49,7 +49,7 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
 
     return (
         <Dialog onClose={onClose} {...props}>
-            <DialogTitle>Copy Schedule</DialogTitle>
+            <DialogTitle>Duplicate Schedule</DialogTitle>
             <DialogContent>
                 <Box padding={1}>
                     <TextField fullWidth label="Name" onChange={handleNameChange} value={name} />
@@ -60,7 +60,7 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
                     Cancel
                 </Button>
                 <Button onClick={handleCopy} variant="contained" color="primary" disabled={name?.trim() === ''}>
-                    Make a Copy
+                    Make a Duplicate
                 </Button>
             </DialogActions>
         </Dialog>
