@@ -1,6 +1,6 @@
-export const FEEDBACK_LINK = 'https://form.asana.com/?k=fZ3SGnuGknDmzTYdocgIUg&d=1208267282546207';
+import { FEEDBACK_LINK } from '$src/globals';
 
 export default function Feedback() {
-    window.open(FEEDBACK_LINK, '_blank');
+    window.location.replace(FEEDBACK_LINK);
     return null;
 }

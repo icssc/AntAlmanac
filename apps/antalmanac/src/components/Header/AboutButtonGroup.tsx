@@ -14,10 +14,10 @@ import { ButtonGroup } from '@mui/material';
 import { useCallback, useState } from 'react';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { FEEDBACK_LINK } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 
 const DONATION_LINK = 'https://venmo.com/u/ICSSC';
-const FEEDBACK_LINK = '/feedback';
 
 const About = () => {
     const [open, setOpen] = useState(false);
@@ -95,11 +95,9 @@ const About = () => {
 const Feedback = () => {
     return (
         <Tooltip title="Give Us Feedback!">
-            <Link href={FEEDBACK_LINK} target="_blank" color="inherit" underline="none">
-                <Button color="inherit" startIcon={<Assignment />} size="large">
-                    Feedback
-                </Button>
-            </Link>
+            <Button color="inherit" startIcon={<Assignment />} size="large" href={FEEDBACK_LINK} target="_blank">
+                Feedback
+            </Button>
         </Tooltip>
     );
 };
@@ -108,13 +106,11 @@ const Donate = () => {
     return (
         <Tooltip title="Help us pay for the servers!">
             <Button
-                onClick={() => {
-                    window.open(DONATION_LINK, '_blank');
-                }}
                 color="inherit"
                 startIcon={<FavoriteRoundedIcon />}
                 size="large"
                 href={DONATION_LINK}
+                target="_blank"
             >
                 Donate
             </Button>
