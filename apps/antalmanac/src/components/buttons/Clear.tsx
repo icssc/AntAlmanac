@@ -1,5 +1,5 @@
 import { DeleteOutline } from '@mui/icons-material';
-import { IconButton, SxProps, Tooltip } from '@mui/material';
+import { IconButton, IconButtonProps, IconProps, Tooltip } from '@mui/material';
 
 import { clearSchedules } from '$actions/AppStoreActions';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
@@ -14,17 +14,14 @@ function handleClearSchedule() {
     }
 }
 
-interface ClearScheduleButtonProps {
-    skeletonMode?: boolean;
-    buttonSx?: SxProps;
-    size?: 'small' | 'medium' | 'large' | undefined;
-    fontSize?: 'small' | 'medium' | 'large' | 'inherit' | undefined;
+interface ClearScheduleButtonProps extends IconButtonProps {
+    fontSize?: IconProps['fontSize'];
 }
 
-export function ClearScheduleButton({ skeletonMode, buttonSx, size, fontSize }: ClearScheduleButtonProps) {
+export function ClearScheduleButton({ disabled = false, sx, fontSize = 'small' }: ClearScheduleButtonProps) {
     return (
         <Tooltip title="Clear schedule">
-            <IconButton sx={buttonSx} onClick={handleClearSchedule} size={size} disabled={skeletonMode}>
+            <IconButton sx={sx} onClick={handleClearSchedule} disabled={disabled}>
                 <DeleteOutline fontSize={fontSize} />
             </IconButton>
         </Tooltip>

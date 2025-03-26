@@ -13,11 +13,12 @@ import {
 import { CloudDownload, Save } from '@material-ui/icons';
 import { LoadingButton } from '@mui/lab';
 import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
 import { getLocalStorageUserId } from '$lib/localStorage';
-import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface LoadSaveButtonBaseProps {
@@ -162,11 +163,11 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
 }
 
 const LoadSaveScheduleFunctionality = () => {
-    const isDark = useThemeStore((store) => store.isDark);
+    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const { fallback } = useFallbackStore();
 
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const loadScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
         setLoading(true);
@@ -179,18 +180,6 @@ const LoadSaveScheduleFunctionality = () => {
         await saveSchedule(userID, rememberMe);
         setSaving(false);
     };
-
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
 
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
@@ -222,7 +211,7 @@ const LoadSaveScheduleFunctionality = () => {
                 id="save-button"
                 actionName={'Save'}
                 action={saveScheduleAndSetLoading}
-                disabled={loading}
+                disabled={loading || fallback}
                 loading={saving}
                 colorType={isDark ? 'secondary' : 'primary'}
             />
@@ -230,7 +219,7 @@ const LoadSaveScheduleFunctionality = () => {
                 id="load-button"
                 actionName={'Load'}
                 action={loadScheduleAndSetLoading}
-                disabled={skeletonMode}
+                disabled={fallback}
                 loading={loading}
                 colorType={isDark ? 'secondary' : 'primary'}
             />
