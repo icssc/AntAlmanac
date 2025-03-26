@@ -154,7 +154,7 @@ export function ScheduleAddCell(props: ActionProps) {
             }}
         >
             {scheduleConflict ? (
-                <Tooltip title="This course overlaps with another event in your calendar!" arrow>
+                <Tooltip title="This course overlaps with another event in your calendar!" arrow disableInteractive>
                     <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
                         <Add fontSize="small" />
                     </IconButton>
