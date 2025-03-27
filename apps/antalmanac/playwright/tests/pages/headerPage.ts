@@ -23,25 +23,20 @@ export class HeaderPage {
         await inputDialog(this.page, 'Save', user.id);
     }
 
-    async handleLoadDialog() {
+    async loadSchedule() {
         const handledAlerts = new Set<string>();
 
         this.page.on('dialog', async (alert) => {
             if (!handledAlerts.has(alert.message())) {
                 if (alert.message() == 'You have unsaved changes. Would you like to load them?') {
                     await alert.dismiss();
-                } else {
-                    await alert.accept();
                 }
                 handledAlerts.add(alert.message());
             }
         });
-    }
 
-    async loadSchedule() {
         const loadButton = await this.headerActions.locator('#load-button');
         await loadButton.click();
         await inputDialog(this.page, 'Load', user.id);
-        await this.handleLoadDialog();
     }
 }

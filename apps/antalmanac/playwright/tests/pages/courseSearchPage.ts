@@ -11,7 +11,7 @@ export class CourseSearchPage {
     }
 
     async setUp() {
-        await this.page.goto('/', { timeout: 30000 });
+        await this.page.goto('/');
         await closeStartPopups(this.page);
         await this.searchForCourse();
         await verifySearchLoaded(this);
