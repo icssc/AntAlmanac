@@ -2,6 +2,7 @@ import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import svgr from 'vite-plugin-svgr';
+import { configDefaults } from 'vitest/dist/config';
 
 export default defineConfig({
     plugins: [react(), svgr()],
@@ -29,5 +30,6 @@ export default defineConfig({
     test: {
         environment: 'jsdom',
         setupFiles: [resolve(__dirname, 'tests/setup/setup.ts')],
+        exclude: [...configDefaults.exclude, '**/playwright/**'],
     },
 });

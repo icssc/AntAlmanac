@@ -304,6 +304,7 @@ export default function CourseMap() {
         <Box
             sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}
             id="map-pane"
+            data-testid="map-pane"
         >
             <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
                 {/* Menu floats above the map. */}

@@ -16,7 +16,8 @@
         "deploy:aa": "turbo deploy --filter=antalmanac",
         "deploy:cdk": "turbo deploy --filter=cdk",
         "deploy": "turbo deploy",
-        "test": "vitest"
+        "test": "vitest",
+        "test:e2e": "pnpm test --filter=antalmanac"
     },
     "devDependencies": {
         "@types/eslint": "^8.56.5",

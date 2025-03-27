@@ -18,7 +18,8 @@
         "predeploy": "npm run build",
         "deploy": "gh-pages -d build",
         "format": "prettier --write src",
-        "lint": "eslint src"
+        "lint": "eslint src",
+        "test": "playwright test -c playwright.config.ts"
     },
     "dependencies": {
         "@babel/runtime": "^7.26.0",
@@ -77,6 +78,7 @@
     "devDependencies": {
         "@babel/core": "^7.20.12",
         "@packages/antalmanac-types": "workspace:^",
+        "@playwright/test": "^1.50.1",
         "@testing-library/react": "^14.0.0",
         "@types/eslint": "^8.56.5",
         "@types/file-saver": "^2.0.5",

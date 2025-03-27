@@ -140,6 +140,7 @@ export function SelectSchedulePopover() {
                     variant="outlined"
                     onClick={handleClick}
                     sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
+                    data-testid="schedule-select-button"
                 >
                     <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
                         {scheduleMappingToUse[currentScheduleIndex]?.name || null}
@@ -153,6 +154,7 @@ export function SelectSchedulePopover() {
                 anchorEl={anchorEl}
                 onClose={handleClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                data-testid="schedule-popover"
             >
                 <Box padding={1}>
                     <SortableList
@@ -170,6 +172,7 @@ export function SelectSchedulePopover() {
                                             alignItems: 'center',
                                             flexGrow: 1,
                                         }}
+                                        data-testid="schedule-row"
                                     >
                                         <SortableList.DragHandle disabled={skeletonMode} />
                                         <Box flexGrow={1}>
