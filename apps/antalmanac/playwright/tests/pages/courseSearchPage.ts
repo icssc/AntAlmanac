@@ -30,6 +30,7 @@ export class CourseSearchPage {
 
     async addCourseToCalendar() {
         const addIcon = await this.page.getByTestId('AddIcon').nth(1);
+        await addIcon.waitFor();
         await expect(addIcon).toBeEnabled();
         await addIcon.click();
     }
