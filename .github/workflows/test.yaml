@@ -71,5 +71,12 @@ jobs:
             - name: Test
               run: pnpm test run
 
-            - name: E2E Tests
+            - name: E2E Playwright Tests
               run: pnpm test:e2e
+
+            - name: Upload Playwright Report
+              if: always()
+              uses: actions/upload-artifact@v3
+              with:
+                  name: playwright-report
+                  path: apps/antalmanac/playwright-report
