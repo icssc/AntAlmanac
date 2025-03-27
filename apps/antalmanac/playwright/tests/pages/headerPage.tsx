@@ -1,11 +1,8 @@
 import { expect } from '@playwright/test';
 import type { Page, Locator } from '@playwright/test';
 
-import { user } from '../config';
-import { inputDialog } from '../testTools';
-
-import { CourseRowPage } from './courseRowPage';
-import { SchedulePage } from './schedulePage';
+import { user } from '../testConfig';
+import { inputDialog } from '../utils/helpers';
 
 export class HeaderPage {
     private headerActions: Locator;
@@ -41,11 +38,10 @@ export class HeaderPage {
         });
     }
 
-    async loadSchedule(schedulePage: SchedulePage, courseRowPage: CourseRowPage) {
+    async loadSchedule() {
         const loadButton = await this.headerActions.locator('#load-button');
         await loadButton.click();
         await inputDialog(this.page, 'Load', user.id);
         await this.handleLoadDialog();
-        await schedulePage.verifyCalendarCorrectCourse(courseRowPage);
     }
 }

@@ -1,10 +1,8 @@
 import { expect } from '@playwright/test';
 import type { Page, Locator } from '@playwright/test';
 
-import { mapSearch, search } from '../config';
-import { closePopups, verifyNewTabDomain } from '../testTools';
-
-import { CourseRowPage } from './courseRowPage';
+import { mapSearch } from '../testConfig';
+import { closeStartPopups, getNewTab } from '../utils/helpers';
 
 export class MapPage {
     private mapContainer: Locator;
@@ -18,7 +16,7 @@ export class MapPage {
 
     async setUp() {
         await this.page.goto('/');
-        await closePopups(this.page);
+        await closeStartPopups(this.page);
         await this.goToMapPage();
     }
 
@@ -26,41 +24,28 @@ export class MapPage {
         const mapTab = await this.page.locator('#map-tab');
         await mapTab.click();
         this.mapContainer = await this.page.getByTestId('map-pane');
-        await this.verifyOnMapPage();
-    }
-
-    async verifyOnMapPage() {
         await expect(this.mapContainer).toBeVisible();
     }
 
-    async verifyLocMarker() {
-        const marker = await this.mapContainer.locator('.leaflet-marker-icon');
-        await expect(marker).toHaveCount(1);
-        await marker.click();
+    async getLocMarker() {
+        const marker = this.mapContainer.locator('.leaflet-marker-icon');
+        return marker;
     }
 
-    async verifyCourseLocPopup(courseRowPage: CourseRowPage) {
+    async getLocPopupText() {
         this.mapPopup = await this.mapContainer.locator('.leaflet-popup');
         await expect(this.mapPopup).toBeVisible();
         const popupInfo = await this.mapPopup.allInnerTexts();
-        const popupText = popupInfo[0];
-        await expect(popupText).toContain(search.courseName);
-        await expect(popupText).toContain(courseRowPage.getCourseLoc());
+        return popupInfo.join('');
     }
 
-    async verifyLocPopup() {
-        this.mapPopup = await this.mapContainer.locator('.leaflet-popup');
-        await expect(this.mapPopup).toBeVisible();
-        const popupText = await this.mapPopup.allInnerTexts();
-        await expect(popupText.join('')).toContain(mapSearch.location);
-    }
-
-    async verifyPopupDirections() {
+    async getPopupDirections() {
         const action = async () => {
             const directionButton = this.mapPopup.getByText('Directions');
             await directionButton.click();
         };
-        await verifyNewTabDomain(this.page, 'https://www.google.com/maps', action);
+        const newTab = getNewTab(this.page, action);
+        return newTab;
     }
 
     async searchMapLocation() {

@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test';
 import type { Page, Locator } from '@playwright/test';
 
-import { getEventFreq } from '../testTools';
+import { getEventFreq } from '../utils/helpers';
 
 export class CourseRowPage {
     // Extracts and stores data about selected course
@@ -32,7 +32,7 @@ export class CourseRowPage {
 
     async verifyCourseRowInfoCount() {
         this.courseRow = await this.page.getByTestId('class-table-row').nth(0);
-        this.courseRow = await this.courseRow.locator('td');
+        this.courseRowInfo = await this.courseRow.locator('td');
         await expect(this.courseRowInfo).toHaveCount(11);
     }
 
@@ -67,6 +67,10 @@ export class CourseRowPage {
         await this.initCourseRowLoc();
         await this.initCourseRowCode();
         await this.initCourseRowUnits();
+    }
+
+    async getCourseRow() {
+        return this.courseRow;
     }
 
     getCourseTime() {

@@ -1,9 +1,9 @@
 import { expect } from '@playwright/test';
 import type { Locator, Page } from '@playwright/test';
 
-import { search } from '../config';
+import { search } from '../testConfig';
 
-export class CalendarPopupPage {
+export class CalendarPage {
     private courseCalendarPopup: Locator;
     private coursePopupRows: Locator;
 
@@ -13,7 +13,22 @@ export class CalendarPopupPage {
         this.coursePopupRows = this.courseCalendarPopup.locator('tbody tr');
     }
 
-    async verifyCalendarEventPopup() {
+    async getCalendarEvent() {
+        const calendarEvent = await this.page.getByTestId('course-event').first();
+        return calendarEvent;
+    }
+
+    async getCalendarEventTime() {
+        const calendarEventTime = await this.page.locator('.rbc-event-label').first();
+        return calendarEventTime;
+    }
+
+    async getCalendarEventCount() {
+        const calendarEvent = await this.page.getByTestId('course-event');
+        return await calendarEvent.count();
+    }
+
+    async initCalendarEventPopup() {
         // Ensure section exists in calendar view with correct code
         const calendarEvent = this.page.getByTestId('course-event').first();
         await calendarEvent.click();
@@ -30,11 +45,6 @@ export class CalendarPopupPage {
         // Expect going to class location opens map
         const locationLink = await this.coursePopupRows.nth(3).locator('td div a');
         await locationLink.click();
-
-        const mapPane = await this.page.getByTestId('map-pane');
-        await expect(mapPane).toBeVisible();
-        const mapPopup = await mapPane.locator('.leaflet-popup');
-        await expect(mapPopup).toBeVisible();
     }
 
     async popupQuickSearch() {
@@ -43,8 +53,6 @@ export class CalendarPopupPage {
         await expect(quickSearchButton).toBeVisible();
         await expect(quickSearchButton).toContainText(search.courseName);
         await quickSearchButton.click();
-        const coursePane = await this.page.getByTestId('course-pane-box');
-        await expect(coursePane).toBeVisible(); // Ensure course pane is shown
     }
 
     async popupDeleteCourse() {

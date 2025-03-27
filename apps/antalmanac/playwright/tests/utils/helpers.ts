@@ -15,7 +15,7 @@ export const getEventFreq = (classDays: string) => {
     return days.length;
 };
 
-export const closePopups = async (page: Page) => {
+export const closeStartPopups = async (page: Page) => {
     await page.getByTestId('patch-notes-close').click();
     await page.locator("button[aria-label='Close Tour']").click();
 };
@@ -27,7 +27,8 @@ export const clickIconButton = async (locator: Locator | Page, iconName: string)
 };
 
 export const clickTextButton = async (locator: Locator | Page, text: string) => {
-    const textButton = await locator.getByRole('button').getByText(text);
+    const textButton = await locator.getByRole('button', { name: text });
+    await expect(textButton).toBeEnabled();
     await textButton.click();
 };
 
@@ -47,25 +48,10 @@ export const inputDialog = async (page: Page, dialogName: string, input: string)
     await enterButton.click();
 };
 
-export const verifyNewTabUrl = async (page: Page, url: string, action: () => Promise<void>) => {
+export const getNewTab = async (page: Page, action: () => Promise<void>) => {
     const newTabPromise = page.waitForEvent('popup');
-
     await action();
-
     const newTab = await newTabPromise;
     await newTab.waitForLoadState();
-    await expect(newTab).toHaveURL(url);
-    await newTab.close();
-};
-
-export const verifyNewTabDomain = async (page: Page, domain: string, action: () => Promise<void>) => {
-    const newTabPromise = page.waitForEvent('popup');
-
-    await action();
-
-    const newTab = await newTabPromise;
-    await newTab.waitForLoadState();
-    const url = await newTab.url();
-    await expect(url).toContain(domain);
-    await newTab.close();
+    return newTab;
 };

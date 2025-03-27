@@ -1,3 +1,5 @@
+export const baseURL = 'http://localhost:5173';
+
 export const search = {
     courseName: 'I&C SCI 33',
 };

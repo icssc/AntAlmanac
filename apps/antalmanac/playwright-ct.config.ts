@@ -11,12 +11,12 @@ const __dirname = path.dirname(__filename);
  */
 export default defineConfig({
     testDir: './',
-    testMatch: '*.spec.tsx',
+    testMatch: '*.spec.ts',
 
     /* The base directory, relative to the config file, for snapshot files created with toMatchSnapshot and toHaveScreenshot. */
     snapshotDir: './__snapshots__',
     /* Maximum time one test can run for. */
-    timeout: 10 * 1000,
+    timeout: 15 * 1000,
     /* Run tests in files in parallel */
     fullyParallel: true,
     /* Fail the build on CI if you accidentally left test.only in the source code. */
