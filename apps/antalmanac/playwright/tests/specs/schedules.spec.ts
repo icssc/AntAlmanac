@@ -73,7 +73,7 @@ test.describe('Modifying schedules tests', () => {
     });
 });
 
-test.describe.serial('Schedule toolbar tests', () => {
+test.describe('Schedule toolbar tests', () => {
     test.beforeEach(async ({ courseSearchPage, schedulePage, courseRowPage }) => {
         await courseSearchPage.setUp();
         await courseRowPage.initCourseRow();

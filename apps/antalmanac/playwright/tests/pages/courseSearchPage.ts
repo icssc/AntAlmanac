@@ -2,6 +2,7 @@ import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 
 import { search } from '../testConfig';
+import { verifySearchLoaded } from '../utils/courseSearchHelper';
 import { closeStartPopups } from '../utils/helpers';
 
 export class CourseSearchPage {
@@ -10,9 +11,10 @@ export class CourseSearchPage {
     }
 
     async setUp() {
-        await this.page.goto('/');
+        await this.page.goto('/', { timeout: 30000 });
         await closeStartPopups(this.page);
         await this.searchForCourse();
+        await verifySearchLoaded(this);
         await this.addCourseToCalendar();
     }
 

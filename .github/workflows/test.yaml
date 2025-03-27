@@ -70,3 +70,6 @@ jobs:
 
             - name: Test
               run: pnpm test run
+
+            - name: E2E Tests
+              run: pnpm test:e2e

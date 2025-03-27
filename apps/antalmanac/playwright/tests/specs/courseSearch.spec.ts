@@ -5,8 +5,7 @@ import { verifyPastEnrollmentButton, verifyReviewsButton, verifyZotisticsButton 
 import { verifyCourseInfoInCalendar } from '../utils/courseSearchHelper';
 
 test.describe('Search course page tests', () => {
-    test.beforeEach(async ({ courseSearchPage, courseRowPage, courseDataPage }) => {
-        await courseDataPage.page.goto('/');
+    test.beforeEach(async ({ courseSearchPage, courseRowPage }) => {
         await courseSearchPage.setUp();
         await courseRowPage.initCourseRow();
     });
