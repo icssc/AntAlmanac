@@ -1,10 +1,4 @@
-import { defineConfig, devices } from '@playwright/experimental-ct-react';
-import { resolve } from 'node:path';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { defineConfig, devices } from '@playwright/test';
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -32,26 +26,7 @@ export default defineConfig({
         /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
         trace: 'on-first-retry',
 
-        /* Port to use for Playwright component endpoint. */
-        ctPort: 3100,
-
         baseURL: 'http://localhost:5173',
-
-        ctViteConfig: {
-            resolve: {
-                alias: {
-                    $assets: resolve(__dirname, './src/assets'),
-                    $actions: resolve(__dirname, './src/actions'),
-                    $api: resolve(__dirname, './src/api'),
-                    $components: resolve(__dirname, './src/components'),
-                    $lib: resolve(__dirname, './src/lib'),
-                    $providers: resolve(__dirname, './src/providers'),
-                    $routes: resolve(__dirname, './src/routes'),
-                    $src: resolve(__dirname, './src'),
-                    $stores: resolve(__dirname, './src/stores'),
-                },
-            },
-        },
     },
 
     /* Configure projects for major browsers */

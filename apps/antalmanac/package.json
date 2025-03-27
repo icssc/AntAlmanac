@@ -74,7 +74,6 @@
   "devDependencies": {
     "@babel/core": "^7.20.12",
     "@packages/antalmanac-types": "workspace:^",
-    "@playwright/experimental-ct-react": "^1.50.1",
     "@playwright/test": "^1.50.1",
     "@testing-library/react": "^14.0.0",
     "@types/eslint": "^8.56.5",

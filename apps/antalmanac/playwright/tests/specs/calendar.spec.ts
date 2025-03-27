@@ -4,7 +4,6 @@ import { test } from '../fixtures';
 
 test.describe('Calendar course popup', () => {
     test.beforeEach(async ({ courseSearchPage, calendarPage }) => {
-        await calendarPage.page.goto('/');
         await courseSearchPage.setUp();
         await calendarPage.initCalendarEventPopup();
     });
