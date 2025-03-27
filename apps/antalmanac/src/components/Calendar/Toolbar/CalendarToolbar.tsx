@@ -1,5 +1,9 @@
-import { Undo as UndoIcon } from '@mui/icons-material';
-import { Box, Button, IconButton, Paper, Tooltip } from '@mui/material';
+import {
+    Undo as UndoIcon,
+    Description as DescriptionIcon,
+    DescriptionOutlined as DescriptionOutlinedIcon,
+} from '@mui/icons-material';
+import { useTheme, useMediaQuery, Box, Button, IconButton, Paper, Tooltip } from '@mui/material';
 import { useState, useCallback, useEffect, memo } from 'react';
 
 import { undoDelete } from '$actions/AppStoreActions';
@@ -30,10 +34,10 @@ export interface CalendarPaneToolbarProps {
  * The root toolbar will pass down the schedule names to its children.
  */
 export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
+    const theme = useTheme();
     const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
-    const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-    const [skeletonScheduleNames, setSkeletonScheduleNames] = useState(AppStore.getSkeletonScheduleNames());
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('xxs'));
 
     const handleToggleFinals = useCallback(() => {
         logAnalytics({
@@ -43,14 +47,9 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
         toggleDisplayFinalsSchedule();
     }, [toggleDisplayFinalsSchedule]);
 
-    const handleScheduleNamesChange = useCallback(() => {
-        setScheduleNames(AppStore.getScheduleNames());
-    }, []);
-
     useEffect(() => {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
-            setSkeletonScheduleNames(AppStore.getSkeletonScheduleNames());
         };
 
         AppStore.on('skeletonModeChange', handleSkeletonModeChange);
@@ -59,14 +58,6 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
     }, []);
-
-    useEffect(() => {
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-
-        return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-        };
-    }, [handleScheduleNamesChange]);
 
     return (
         <Paper
@@ -83,22 +74,39 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             data-testid="calendar-toolbar"
         >
             <Box gap={1} display="flex" alignItems="center">
-                <SelectSchedulePopover scheduleNames={skeletonMode ? skeletonScheduleNames : scheduleNames} />
+                <SelectSchedulePopover />
                 <Tooltip title="Toggle showing finals schedule">
-                    <Button
-                        color={showFinalsSchedule ? 'primary' : 'inherit'}
-                        variant={showFinalsSchedule ? 'contained' : 'outlined'}
-                        onClick={handleToggleFinals}
-                        size="small"
-                        id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
-                        disabled={skeletonMode}
-                        data-testid="finals-button"
-                    >
-                        Finals
-                    </Button>
+                    {isSmallScreen ? (
+                        <IconButton
+                            color={showFinalsSchedule ? 'primary' : 'inherit'}
+                            onClick={handleToggleFinals}
+                            id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
+                            disabled={skeletonMode}
+                            size="small"
+                            sx={{
+                                border: '1px solid',
+                                borderColor: showFinalsSchedule ? 'primary' : 'inherit',
+                                borderRadius: '4px',
+                                padding: '3px',
+                            }}
+                        >
+                            {showFinalsSchedule ? <DescriptionIcon /> : <DescriptionOutlinedIcon />}
+                        </IconButton>
+                    ) : (
+                        <Button
+                            color={showFinalsSchedule ? 'primary' : 'inherit'}
+                            variant={showFinalsSchedule ? 'contained' : 'outlined'}
+                            onClick={handleToggleFinals}
+                            size="small"
+                            id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
+                            disabled={skeletonMode}
+                            data-testid="finals-button"
+                        >
+                            Finals
+                        </Button>
+                    )}
                 </Tooltip>
             </Box>
-
             <Box flexGrow={1} />
 
             <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>

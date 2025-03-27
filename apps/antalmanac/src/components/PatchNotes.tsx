@@ -8,24 +8,11 @@ import {
     DialogTitle,
     Typography,
 } from '@mui/material';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
-import { getLocalStoragePatchNotesKey, setLocalStoragePatchNotesKey } from '$lib/localStorage';
-
-/**
- * Show modal only if the current patch notes haven't been shown.
- * This is denoted by a date string YYYYMMDD
- *
- * @example '20230819'
- */
-export const latestPatchNotesUpdate = '20250121';
-
-/**
- * Whether the user's last visited patch notes is outdated.
- */
-function isOutdated() {
-    return getLocalStoragePatchNotesKey() != latestPatchNotesUpdate;
-}
+import { setLocalStoragePatchNotesKey } from '$lib/localStorage';
+import { LATEST_PATCH_NOTES_UPDATE, useHelpMenuStore } from '$stores/HelpMenuStore';
 
 /**
  * Custom backdrop that can be tested via a test ID.
@@ -38,18 +25,20 @@ function PatchNotesBackdrop(props: BackdropProps) {
  * PatchNotes follows structure/layout of AboutPage.tsx
  */
 function PatchNotes() {
-    const [open, setOpen] = useState(() => isOutdated());
+    const [showPatchNotes, setShowPatchNotes] = useHelpMenuStore(
+        useShallow((store) => [store.showPatchNotes, store.setShowPatchNotes])
+    );
 
     const handleClose = useCallback(() => {
-        setLocalStoragePatchNotesKey(latestPatchNotesUpdate);
-        setOpen(false);
-    }, []);
+        setLocalStoragePatchNotesKey(LATEST_PATCH_NOTES_UPDATE);
+        setShowPatchNotes(false);
+    }, [setShowPatchNotes]);
 
     return (
         <Dialog
             fullWidth={true}
             onClose={handleClose}
-            open={open}
+            open={showPatchNotes}
             data-testid={dialogTestId}
             slots={{ backdrop: PatchNotesBackdrop }}
         >
@@ -60,7 +49,7 @@ function PatchNotes() {
                 <ul>
                     <li>
                         Added column linking to course syllabi (thanks to the ASUCI{' '}
-                        <a href="https://asuci.uci.edu/academicvp/" target="_blank">
+                        <a href="https://asuci.uci.edu/academicvp/" target="_blank" rel="noreferrer">
                             AAVP
                         </a>
                         !).

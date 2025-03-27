@@ -16,6 +16,7 @@ export default defineConfig({
             $routes: resolve(__dirname, './src/routes'),
             $src: resolve(__dirname, './src'),
             $stores: resolve(__dirname, './src/stores'),
+            $hooks: resolve(__dirname, './src/hooks'),
         },
     },
     build: {
