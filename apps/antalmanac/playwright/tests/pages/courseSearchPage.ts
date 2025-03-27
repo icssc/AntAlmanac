@@ -17,7 +17,8 @@ export class CourseSearchPage {
     }
 
     async searchForCourse() {
-        const searchBar = await this.page.locator('#searchBar').getByLabel('Search');
+        const searchBar = await this.page.locator('#fuzzy-search');
+        await searchBar.waitFor();
         await searchBar.fill(search.courseName);
 
         const searchOptions = await this.page.locator('#fuzzy-search-popup');

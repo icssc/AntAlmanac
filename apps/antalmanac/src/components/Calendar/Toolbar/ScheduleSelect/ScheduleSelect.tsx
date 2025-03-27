@@ -163,7 +163,7 @@ export function SelectSchedulePopover() {
                         renderItem={(item) => {
                             const index = scheduleMappingToUse.indexOf(item);
                             return (
-                                <SortableList.Item id={item.id} data-testid="schedule-row">
+                                <SortableList.Item id={item.id}>
                                     <Box
                                         sx={{
                                             display: 'flex',
@@ -172,6 +172,7 @@ export function SelectSchedulePopover() {
                                             alignItems: 'center',
                                             flexGrow: 1,
                                         }}
+                                        data-testid="schedule-row"
                                     >
                                         <SortableList.DragHandle disabled={skeletonMode} />
                                         <Box flexGrow={1}>

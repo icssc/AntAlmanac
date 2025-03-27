@@ -58,7 +58,7 @@ export class CourseRowPage {
         const courseType = await this.courseRowInfo.nth(2);
         const courseUnitRow = await courseType.locator('div').nth(2);
         const courseUnits = (await courseUnitRow.allInnerTexts()).join('');
-        this.courseDetails.units = courseUnits.replace('Units: ', '');
+        this.courseDetails.units = courseUnits.replace('Units:', '');
     }
 
     async initCourseRow() {

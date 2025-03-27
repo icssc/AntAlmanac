@@ -16,7 +16,10 @@ export const getEventFreq = (classDays: string) => {
 };
 
 export const closeStartPopups = async (page: Page) => {
-    await page.getByTestId('patch-notes-close').click();
+    const patchNotes = page.getByTestId('patch-notes-close');
+    if (await patchNotes.isVisible()) {
+        await patchNotes.click();
+    }
     await page.locator("button[aria-label='Close Tour']").click();
 };
 

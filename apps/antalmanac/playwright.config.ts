@@ -1,10 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
+import { baseURL } from 'playwright/tests/testConfig';
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-    testDir: './',
+    testDir: './playwright',
     testMatch: '*.spec.ts',
 
     /* The base directory, relative to the config file, for snapshot files created with toMatchSnapshot and toHaveScreenshot. */
@@ -26,7 +27,7 @@ export default defineConfig({
         /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
         trace: 'on-first-retry',
 
-        baseURL: 'http://localhost:5173',
+        baseURL: baseURL,
     },
 
     /* Configure projects for major browsers */
