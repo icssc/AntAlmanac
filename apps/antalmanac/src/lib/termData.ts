@@ -73,7 +73,6 @@ function getFinalsStartDateForTerm(term: string) {
     const finalsStartDate = new Date(termThatMatches.finalsStartDate);
 
     finalsStartDate.setDate(finalsStartDate.getDate());
-    console.log(`Finals start date for ${term}: ${finalsStartDate}`);
     return finalsStartDate;
 }
 
