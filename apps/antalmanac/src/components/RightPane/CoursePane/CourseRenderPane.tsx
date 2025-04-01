@@ -241,6 +241,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             room: formData.room,
             division: formData.division,
             excludeRestrictionCodes: formData.excludeRestrictionCodes.split('').join(','), // comma delimited string (e.g. ABC -> A,B,C)
+            days: formData.days.split(/(?=[A-Z])/).join(','), // split on capital letters (e.g. MTuF -> M,Tu,F)
         };
 
         const gradesQueryParams = {
