@@ -216,11 +216,9 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 renderInput={(params) => (
                     <TextField
                         {...params}
-                        inputRef={(input: HTMLInputElement | null) => {
-                            if (input && !isMobile()) {
-                                input.focus();
-                            }
-                        }}
+                        // eslint-disable-next-line jsx-a11y/no-autofocus
+                        autoFocus={!isMobile()}
+                        focused
                         fullWidth
                         label={'Search'}
                         placeholder="Search for courses, departments, GEs..."

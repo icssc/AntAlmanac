@@ -10,13 +10,12 @@ import { FormEvent, useState, useEffect } from 'react';
 import RightPaneStore from '../../RightPaneStore';
 
 import FuzzySearch from './FuzzySearch';
-import HelpBox from './HelpBox';
 import PrivacyPolicyBanner from './PrivacyPolicyBanner';
 import TermSelector from './TermSelector';
 
+import { HelpBox } from '$components/RightPane/CoursePane/SearchForm/HelpBox';
 import { LegacySearch } from '$components/RightPane/CoursePane/SearchForm/LegacySearch';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { getLocalStorageHelpBoxDismissalTime, setLocalStorageHelpBoxDismissalTime } from '$lib/localStorage';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
 const styles: Styles<Theme, object> = {
@@ -98,7 +97,6 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
         setLocalStorageHelpBoxDismissalTime(Date.now().toString());
         setHelpBoxVisibility(false);
     };
-
     return (
         <div className={classes.rightPane}>
             <form onSubmit={onFormSubmit} className={classes.form}>
@@ -146,7 +144,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                 </div>
             </form>
 
-            {displayHelpBox && <HelpBox onDismiss={onHelpBoxDismiss} />}
+            <HelpBox />
             <PrivacyPolicyBanner />
         </div>
     );
