@@ -75,7 +75,11 @@ async function main() {
         return dateB - dateA;
     });
 
-    const termEntries = calendarTerms.map(serializeTerm).join(',\n');
+    // Save only the last 10 years of terms
+    const currentYear = new Date().getFullYear();
+    const filteredTerms = calendarTerms.filter((term) => Number(term.year) >= currentYear - 9);
+
+    const termEntries = filteredTerms.map(serializeTerm).join(',\n');
     const fileContent = `import type { Term } from '$lib/termData';
 
 export const terms: Term[] = [
