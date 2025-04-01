@@ -24,7 +24,6 @@ function paramsAreInURL() {
     const searchParams = [
         'courseCode',
         'courseNumber',
-        'deptLabel',
         'ge',
         'deptValue',
         'term',
@@ -52,7 +51,7 @@ function requiredParamsAreInURL() {
 
 export const useCoursePaneStore = create<CoursePaneStore>((set) => {
     return {
-        searchIsDisplayed: requiredParamsAreInURL() ? false : true,
+        searchIsDisplayed: requiredParamsAreInURL(),
         displaySearch: () => {
             set({ searchIsDisplayed: true });
         },

@@ -1,175 +1,77 @@
-import { TextField } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { Autocomplete } from '@material-ui/lab';
-import { ChangeEvent, PureComponent } from 'react';
+import { Autocomplete, Box, TextField } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
 
-import RightPaneStore from '../../../RightPaneStore';
-
-import depts from './depts';
-
+import { DEPARTMENT_MAP } from '$components/RightPane/CoursePane/SearchForm/DeptSearchBar/constants';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { getLocalStorageFavorites, setLocalStorageFavorites } from '$lib/localStorage';
 
-const style = {
-    formControl: {
-        flexGrow: 1,
-        width: '50%',
-    },
-};
+const options = Object.keys(DEPARTMENT_MAP);
 
-const options = depts.map((dept) => {
-    return {
-        ...dept,
-        isFavorite: false,
-    };
-});
+export function DepartmentSearchBar() {
+    const [value, setValue] = useState(() => RightPaneStore.getFormData().deptValue);
+    const [favorites, setFavorites] = useState<typeof options>(() => JSON.parse(getLocalStorageFavorites() ?? '[]'));
 
-interface DeptSearchBarProps {
-    classes: ClassNameMap;
-}
+    const resetField = useCallback(() => {
+        setValue(() => RightPaneStore.getFormData().deptValue);
+    }, []);
 
-interface Department {
-    deptLabel: string;
-    deptValue: string;
-    isFavorite: boolean;
-}
+    const handleChange = useCallback(
+        (_: unknown, option: string | null) => {
+            const newValue = option ?? options[0]; // options[0] corresponds to `ALL`
 
-interface DeptSearchBarState {
-    value: Department;
-    favorites: Department[];
-}
+            setValue(newValue);
+            RightPaneStore.updateFormValue('deptValue', newValue);
 
-class DeptSearchBar extends PureComponent<DeptSearchBarProps, DeptSearchBarState> {
-    updatedeptLabelAndGetFormData() {
-        RightPaneStore.updateFormValue('deptLabel', RightPaneStore.getUrlDeptLabel());
-        RightPaneStore.updateFormValue('deptValue', RightPaneStore.getUrlDeptValue());
-        return RightPaneStore.getFormData().deptLabel;
-    }
+            const stateObj = { url: 'url' };
+            const url = new URL(window.location.href);
+            const urlParam = new URLSearchParams(url.search);
 
-    updatedeptValueAndGetFormData() {
-        RightPaneStore.updateFormValue('deptValue', RightPaneStore.getUrlDeptValue());
-        return RightPaneStore.getFormData().deptValue;
-    }
+            urlParam.delete('deptValue');
 
-    getDeptValue() {
-        return RightPaneStore.getUrlDeptValue().trim()
-            ? this.updatedeptValueAndGetFormData()
-            : RightPaneStore.getFormData().deptValue;
-    }
+            if (newValue && newValue != 'ALL') {
+                urlParam.append('deptValue', newValue);
+            }
+            const param = urlParam.toString();
+            const new_url = `${param.trim() ? '?' : ''}${param}`;
+            history.replaceState(stateObj, 'url', '/' + new_url);
 
-    getDeptLabel() {
-        return RightPaneStore.getUrlDeptLabel().trim()
-            ? this.updatedeptLabelAndGetFormData()
-            : RightPaneStore.getFormData().deptLabel;
-    }
+            if (newValue == null || newValue === 'ALL') return;
 
-    constructor(props: DeptSearchBarProps) {
-        super(props);
+            favorites.includes(newValue)
+                ? setFavorites((prev) =>
+                      prev.sort((a, b) => {
+                          return a === newValue ? -1 : b === newValue ? 1 : 0;
+                      })
+                  )
+                : setFavorites((prev) => [newValue, ...prev].slice(0, 5));
 
-        let favorites: Department[] = [];
-        if (typeof Storage !== 'undefined') {
-            const locallyStoredFavorites = getLocalStorageFavorites();
-            favorites = locallyStoredFavorites != null ? JSON.parse(locallyStoredFavorites) : [];
-        }
-        this.state = {
-            value: {
-                deptValue: this.getDeptValue(),
-                deptLabel: this.getDeptLabel(),
-                isFavorite: false,
-            },
-            favorites: favorites,
+            setLocalStorageFavorites(JSON.stringify(favorites));
+        },
+        [favorites]
+    );
+
+    useEffect(() => {
+        RightPaneStore.on('formReset', resetField);
+
+        return () => {
+            RightPaneStore.off('formReset', resetField);
         };
-    }
+    }, [resetField]);
 
-    componentDidMount() {
-        RightPaneStore.on('formReset', this.resetField);
-    }
-
-    componentWillUnmount() {
-        RightPaneStore.removeListener('formReset', this.resetField);
-    }
-
-    resetField = () => {
-        const formData = RightPaneStore.getFormData();
-
-        this.setState({
-            value: {
-                deptValue: formData.deptValue,
-                deptLabel: formData.deptLabel,
-                isFavorite: false,
-            },
-        });
-    };
-
-    compareValues = (option: Department, value: Department) => {
-        return option.deptValue === value.deptValue;
-    };
-
-    handleSetDept = (event: ChangeEvent<unknown>, newDept: Department | null) => {
-        const setDeptValue = newDept === null ? options[0] : newDept;
-
-        this.setState({ value: setDeptValue });
-        RightPaneStore.updateFormValue('deptValue', setDeptValue.deptValue);
-        RightPaneStore.updateFormValue('deptLabel', setDeptValue.deptLabel);
-
-        const stateObj = { url: 'url' };
-        const url = new URL(window.location.href);
-        const urlParam = new URLSearchParams(url.search);
-        urlParam.delete('deptLabel');
-        urlParam.delete('deptValue');
-        if (
-            setDeptValue.deptValue &&
-            setDeptValue.deptValue != 'ALL' &&
-            setDeptValue.deptLabel &&
-            setDeptValue.deptLabel != 'ALL: Include All Departments'
-        ) {
-            urlParam.append('deptLabel', setDeptValue.deptLabel);
-            urlParam.append('deptValue', setDeptValue.deptValue);
-        }
-        const param = urlParam.toString();
-        const new_url = `${param.trim() ? '?' : ''}${param}`;
-        history.replaceState(stateObj, 'url', '/' + new_url);
-
-        if (newDept == null || newDept.deptValue === 'ALL') return;
-
-        const favorites = this.state.favorites;
-        let updatedFavorites = [...favorites];
-
-        if (favorites.filter((favorite) => newDept.deptValue === favorite.deptValue).length > 0) {
-            updatedFavorites.sort((a, b) => {
-                return a.deptValue === newDept.deptValue ? -1 : b.deptValue === newDept.deptValue ? 1 : 0;
-            });
-        } else {
-            updatedFavorites = [{ ...newDept, isFavorite: true }].concat(favorites);
-            if (updatedFavorites.length > 5) updatedFavorites.pop();
-        }
-        this.setState({ favorites: updatedFavorites });
-        setLocalStorageFavorites(JSON.stringify(updatedFavorites));
-    };
-
-    render() {
-        const { classes } = this.props;
-
-        return (
-            <div className={classes.formControl}>
-                <Autocomplete
-                    value={this.state.value}
-                    options={this.state.favorites.concat(options)}
-                    autoHighlight={true}
-                    openOnFocus={true}
-                    getOptionSelected={this.compareValues}
-                    getOptionLabel={(option) => option.deptLabel}
-                    onChange={this.handleSetDept}
-                    includeInputInList={true}
-                    noOptionsText="No departments match the search"
-                    groupBy={(dept) => (dept.isFavorite ? 'Recent Departments' : 'Departments')}
-                    renderInput={(params) => (
-                        <TextField {...params} label="Department" type="search" InputLabelProps={{ shrink: true }} />
-                    )}
-                />
-            </div>
-        );
-    }
+    return (
+        <Box sx={{ flexGrow: 1, width: '50%' }}>
+            <Autocomplete
+                value={value}
+                options={Array.from(new Set<string>([...favorites, ...options]))}
+                autoHighlight={true}
+                openOnFocus={true}
+                getOptionLabel={(option) => DEPARTMENT_MAP[option as keyof typeof DEPARTMENT_MAP]}
+                onChange={handleChange}
+                includeInputInList={true}
+                noOptionsText="No departments match the search"
+                groupBy={(option) => (favorites.includes(option) ? 'Recently Searched' : 'Departments')}
+                renderInput={(params) => <TextField {...params} label="Department" variant="standard" />}
+            />
+        </Box>
+    );
 }
-
-export default withStyles(style)(DeptSearchBar);

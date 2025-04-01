@@ -4,7 +4,6 @@ import { getDefaultTerm } from '$lib/termData';
 
 const defaultFormValues: Record<string, string> = {
     deptValue: 'ALL',
-    deptLabel: 'ALL: Include All Departments',
     ge: 'ANY',
     term: getDefaultTerm().shortName,
     courseNumber: '',
@@ -33,7 +32,6 @@ class RightPaneStore extends EventEmitter {
     private urlTermValue: string;
     private urlGEValue: string;
     private urlCourseNumValue: string;
-    private urlDeptLabel: string;
     private urlDeptValue: string;
 
     constructor() {
@@ -47,7 +45,6 @@ class RightPaneStore extends EventEmitter {
         this.urlTermValue = search.get('term') || '';
         this.urlGEValue = search.get('ge') || '';
         this.urlCourseNumValue = search.get('courseNumber') || '';
-        this.urlDeptLabel = search.get('deptLabel') || '';
         this.urlDeptValue = search.get('deptValue') || '';
 
         this.updateFormDataFromURL(search);
@@ -82,7 +79,6 @@ class RightPaneStore extends EventEmitter {
     getUrlTermValue = () => this.urlTermValue;
     getUrlGEValue = () => this.urlGEValue;
     getUrlCourseNumValue = () => this.urlCourseNumValue;
-    getUrlDeptLabel = () => this.urlDeptLabel;
     getUrlDeptValue = () => this.urlDeptValue;
 
     updateFormValue = (field: string, value: string) => {

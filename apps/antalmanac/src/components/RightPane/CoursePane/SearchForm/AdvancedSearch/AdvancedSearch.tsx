@@ -43,7 +43,7 @@ class AdvancedSearch extends PureComponent<AdvancedSearchProps, AdvancedSearchSt
         const formData = RightPaneStore.getFormData();
         const defaultFormData = RightPaneStore.getDefaultFormData();
         for (const [key, value] of Object.entries(formData)) {
-            if (key === 'deptLabel' || key === 'deptValue') {
+            if (key === 'deptValue') {
                 continue;
             }
 
@@ -69,7 +69,7 @@ class AdvancedSearch extends PureComponent<AdvancedSearchProps, AdvancedSearchSt
 
         const formData = RightPaneStore.getFormData();
         for (const key of Object.keys(formData)) {
-            if (key === 'deptLabel' || key === 'deptValue') {
+            if (key === 'deptValue') {
                 continue;
             }
 
