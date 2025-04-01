@@ -102,16 +102,21 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
         <div className={classes.rightPane}>
             <form onSubmit={onFormSubmit} className={classes.form}>
                 <div className={classes.container}>
-                    <div className={classes.margin}>
-                        <TermSelector
-                            changeTerm={(field: string, value: string) => RightPaneStore.updateFormValue(field, value)}
-                            fieldName={'term'}
-                        />
-                        <Tooltip title="Toggle Manual Search">
-                            <IconButton onClick={toggleManualSearch}>
-                                <Tune />
-                            </IconButton>
-                        </Tooltip>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <div className={classes.margin} style={{ flexGrow: 1 }}>
+                            <TermSelector
+                                changeTerm={(field: string, value: string) => RightPaneStore.updateFormValue(field, value)}
+                                fieldName={'term'}
+                            />
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
+                            <span style={{ fontSize: '0.75rem', color: 'gray', marginBottom: '-4px' }}>Advanced Search</span>
+                            <Tooltip title="Toggle Manual Search">
+                                <IconButton onClick={toggleManualSearch} style={{marginBottom: '-14px'}}>
+                                    <Tune />
+                                </IconButton>
+                            </Tooltip>
+                        </div>
                     </div>
 
                     {!manualSearchEnabled ? (
