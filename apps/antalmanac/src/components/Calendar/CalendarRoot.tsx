@@ -1,10 +1,11 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
 
-import { Box } from '@material-ui/core';
+import { Box, useTheme } from '@mui/material';
 import moment from 'moment';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
+import { useShallow } from 'zustand/react/shallow';
 import { shallow } from 'zustand/shallow';
 
 import { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
@@ -16,7 +17,7 @@ import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
-import { useTimeFormatStore } from '$stores/SettingsStore';
+import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 
 /*
  * Always start week on Saturday for finals potentially on weekends.
@@ -44,11 +45,13 @@ export const ScheduleCalendar = memo(() => {
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
 
+    const theme = useTheme();
     const { isMilitaryTime } = useTimeFormatStore();
     const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
         (state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal],
         shallow
     );
+    const isDark = useThemeStore(useShallow((store) => store.isDark));
 
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
         if (showFinalsSchedule)
@@ -91,6 +94,24 @@ export const ScheduleCalendar = memo(() => {
 
         return { style };
     }, []);
+
+    /**
+     * This prop getter overrides `react-big-calendar`'s built-in `.rbc-today` style which applies a light blue coloring on both light and dark mode.
+     */
+    const dayStyleGetter = useCallback(
+        (date: Date) => {
+            if (date.toLocaleDateString() !== new Date().toLocaleDateString()) {
+                return {};
+            }
+
+            const style = {
+                backgroundColor: isDark ? theme.palette.background.paper : '',
+            };
+
+            return { style };
+        },
+        [isDark, theme]
+    );
 
     const colorContrastSufficient = (bg: string) => {
         // This equation is taken from w3c, does not use the colour difference part
@@ -205,6 +226,7 @@ export const ScheduleCalendar = memo(() => {
                     max={CALENDAR_MAX_DATE}
                     events={events}
                     eventPropGetter={eventStyleGetter}
+                    dayPropGetter={dayStyleGetter}
                     showMultiDayTimes={false}
                     components={CALENDAR_COMPONENTS}
                 />

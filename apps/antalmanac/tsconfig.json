@@ -22,6 +22,7 @@
             "$components/*": ["src/components/*"],
             "$generated/*": ["src/generated/*"],
             "$lib/*": ["src/lib/*"],
+            "$hooks/*": ["src/hooks/*"],
             "$providers/*": ["src/providers/*"],
             "$routes/*": ["src/routes/*"],
             "$stores/*": ["src/stores/*"],
