@@ -36,6 +36,13 @@
             "when": 1741580702375,
             "tag": "0004_goofy_harpoon",
             "breakpoints": true
+        },
+        {
+            "idx": 5,
+            "version": "7",
+            "when": 1742329643606,
+            "tag": "0005_typical_justice",
+            "breakpoints": true
         }
     ]
 }

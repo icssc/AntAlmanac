@@ -17,9 +17,22 @@ enum LocalStorageKeys {
     pwaDismissalTime = 'pwaDismissalTime',
     sessionId = 'sessionId',
     dataCache = 'dataCache',
+    newUser = 'newUser',
 }
 
 const LSK = LocalStorageKeys;
+
+export function setLocalStorageOnFirstSignin(value: string) {
+    window.localStorage.setItem(LSK.newUser, value);
+}
+
+export function getLocalStorageOnFirstSignin() {
+    return window.localStorage.getItem(LSK.newUser);
+}
+
+export function removeLocalStorageOnFirstSignin() {
+    window.localStorage.removeItem(LSK.newUser);
+}
 
 export function setLocalStorageDataCache(value: string) {
     window.localStorage.setItem(LSK.dataCache, value);
