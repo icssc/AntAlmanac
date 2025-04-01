@@ -74,24 +74,51 @@ jobs:
 
     # Deploy the built website to GitHub Pages.
     deploy_production_frontend:
-        name: Deploy built frontend to GitHub Pages
+        name: Deploy frontend production CloudFormation stack and environment
 
         needs: build_production_frontend
 
         runs-on: ubuntu-latest
 
-        permissions:
-            pages: write
-            id-token: write
-
         environment:
             name: frontend-production
-            url: ${{ steps.deployment.outputs.page_url }}
+            url: https://antalmanac.com
 
         steps:
-            - name: Deploy to GitHub Pages
-              id: deployment
-              uses: actions/deploy-pages@v4
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Setup Node.js and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Build production frontend
+              run: pnpm --filter "antalmanac" build
+
+            - name: Deploy frontend production CloudFormation stack
+              run: pnpm --filter "antalmanac-cdk" frontend-production deploy
+
+            - name: Create success deployment
+              if: ${{ success() }}
+              uses: ./.github/actions/create-deployment
+              with:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  environment: frontend-production
+                  name: production-frontend
+                  url: https://www.antalmanac.com
+                  status: success
+
+            - name: Create failure deployment
+              if: ${{ failure() }}
+              uses: ./.github/actions/create-deployment
+              with:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  environment: frontend-production
+                  name: production-frontend
+                  url: https://www.antalmanac.com
+                  status: failure
 
     # Production backend used by the live production website.
     deploy_production_backend:
