@@ -4,21 +4,26 @@ import { terms } from '$generated/termData';
 // The index of the default term in termData, as per WebSOC
 const defaultTerm = 0;
 
-export type Term = {
-    shortName: `${string} ${string}`;
-    longName: string;
-    startDate?: Date;
-    finalsStartDate?: Date;
-};
-
 /**
  * Quarterly Academic Calendar {@link https://www.reg.uci.edu/calendars/quarterly/2023-2024/quarterly23-24.html}
  * Quick Reference Ten Year Calendar {@link https://www.reg.uci.edu/calendars/academic/tenyr-19-29.html}
  * The `startDate`, if available, should correspond to the __instruction start date__ (not the quarter start date)
  * The `finalsStartDate`, if available, should correspond to the __final exams__ first date (should be a Saturday)
- * Months are 0-indexed
  */
-const termData = terms;
+export type Term = {
+    shortName: `${string} ${string}`;
+    longName: string;
+    startDate?: Date;
+    finalsStartDate?: Date;
+    socAvailable?: Date;
+};
+
+/**
+ * Only include terms that have a SOC available.
+ */
+const termData = terms.filter((term) => {
+    return term.socAvailable && term.socAvailable <= new Date();
+});
 
 /**
  * Get the default term.

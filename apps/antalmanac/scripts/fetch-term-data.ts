@@ -49,7 +49,7 @@ function toLocalDateCode(dateString: string): string {
 }
 
 function serializeTerm(term: CalendarTerm): string {
-    const { year, quarter, instructionStart, finalsStart } = term;
+    const { year, quarter, instructionStart, finalsStart, socAvailable } = term;
     const shortName = `${year} ${quarter}`;
     const longName = sanitizeTermName(year, quarter);
 
@@ -58,6 +58,7 @@ function serializeTerm(term: CalendarTerm): string {
         longName: ${JSON.stringify(longName)},
         ${instructionStart ? `startDate: ${toLocalDateCode(instructionStart)},` : ''}
         ${finalsStart ? `finalsStartDate: ${toLocalDateCode(finalsStart)},` : ''}
+        ${socAvailable ? `socAvailable: ${toLocalDateCode(socAvailable)},` : ''}
     }`;
 }
 
