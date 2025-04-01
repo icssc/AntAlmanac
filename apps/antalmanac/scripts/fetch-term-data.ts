@@ -52,6 +52,7 @@ function serializeTerm(term: CalendarTerm): string {
     const { year, quarter, instructionStart, finalsStart, socAvailable } = term;
     const shortName = `${year} ${quarter}`;
     const longName = sanitizeTermName(year, quarter);
+    const isSummerTerm = quarter.toLowerCase().includes('summer');
 
     return `    {
         shortName: ${JSON.stringify(shortName)},
@@ -59,6 +60,7 @@ function serializeTerm(term: CalendarTerm): string {
         ${instructionStart ? `startDate: ${toLocalDateCode(instructionStart)},` : ''}
         ${finalsStart ? `finalsStartDate: ${toLocalDateCode(finalsStart)},` : ''}
         ${socAvailable ? `socAvailable: ${toLocalDateCode(socAvailable)},` : ''}
+        isSummerTerm: ${isSummerTerm},
     }`;
 }
 
