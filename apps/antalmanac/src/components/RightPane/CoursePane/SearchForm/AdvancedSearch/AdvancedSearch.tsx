@@ -1,7 +1,6 @@
 import { Button, Collapse, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import { PureComponent } from 'react';
 
 import RightPaneStore from '../../../RightPaneStore';
@@ -34,7 +33,7 @@ class AdvancedSearch extends PureComponent<AdvancedSearchProps, AdvancedSearchSt
     constructor(props: AdvancedSearchProps) {
         super(props);
 
-        let advanced = false;
+        let advanced = true;
 
         if (typeof Storage !== 'undefined') {
             advanced = getLocalStorageAdvanced() === 'expanded';
@@ -52,10 +51,6 @@ class AdvancedSearch extends PureComponent<AdvancedSearchProps, AdvancedSearchSt
                 break;
             }
         }
-
-        this.state = {
-            expandAdvanced: advanced,
-        };
     }
 
     componentDidMount() {
@@ -81,29 +76,15 @@ class AdvancedSearch extends PureComponent<AdvancedSearchProps, AdvancedSearchSt
         history.replaceState(stateObj, 'url', '/' + new_url);
     }
 
-    handleExpand = () => {
-        const nextExpansionState = !this.state.expandAdvanced;
-        setLocalStorageAdvanced(nextExpansionState ? 'expanded' : 'notexpanded');
-        this.setState({ expandAdvanced: nextExpansionState });
-    };
-
     render() {
         return (
             <>
-                <Button
-                    onClick={this.handleExpand}
-                    style={{ textTransform: 'none', width: 'auto', display: 'flex', justifyContent: 'start' }}
-                >
-                    <div>
-                        <Typography noWrap variant="body1">
-                            Advanced Search Options
-                        </Typography>
-                    </div>
-                    {this.state.expandAdvanced ? <ExpandLess /> : <ExpandMore />}
-                </Button>
-                <Collapse in={this.state.expandAdvanced}>
-                    <AdvancedSearchTextFields />
-                </Collapse>
+                <div style={{ textTransform: 'none', width: 'auto', display: 'flex', justifyContent: 'start' }}>
+                    <Typography noWrap variant="body1">
+                        Advanced Search Options
+                    </Typography>
+                </div>
+                <AdvancedSearchTextFields />
             </>
         );
     }

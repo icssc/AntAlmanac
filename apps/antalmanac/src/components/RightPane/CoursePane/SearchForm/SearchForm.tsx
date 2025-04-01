@@ -1,4 +1,4 @@
-import { IconButton, Theme, Tooltip, Typography } from '@material-ui/core';
+import { IconButton, Theme, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Tune } from '@material-ui/icons';
@@ -16,6 +16,7 @@ import TermSelector from './TermSelector';
 import { HelpBox } from '$components/RightPane/CoursePane/SearchForm/HelpBox';
 import { LegacySearch } from '$components/RightPane/CoursePane/SearchForm/LegacySearch';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { getLocalStorageHelpBoxDismissalTime, setLocalStorageHelpBoxDismissalTime } from '$lib/localStorage';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
 const styles: Styles<Theme, object> = {
