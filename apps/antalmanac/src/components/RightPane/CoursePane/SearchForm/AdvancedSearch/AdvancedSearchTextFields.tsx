@@ -5,7 +5,6 @@ import { useState, useEffect, useCallback } from 'react';
 import {
     EXCLUDE_RESTRICTION_CODES_OPTIONS,
     DAYS_OPTIONS,
-    DAY_ORDER,
 } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
@@ -21,11 +20,7 @@ export function AdvancedSearchTextFields() {
     const [excludeRestrictionCodes, setExcludeRestrictionCodes] = useState(
         RightPaneStore.getFormData().excludeRestrictionCodes
     );
-    const [days, setDays] = useState(() => {
-        const daysString = RightPaneStore.getFormData().days;
-        const daysArray = daysString ? daysString.split(/(?=[A-Z])/) : [];
-        return daysArray.sort((a, b) => DAY_ORDER.indexOf(a) - DAY_ORDER.indexOf(b));
-    });
+    const [days, setDays] = useState(RightPaneStore.getFormData().days);
 
     const resetField = useCallback(() => {
         const formData = RightPaneStore.getFormData();
@@ -38,7 +33,7 @@ export function AdvancedSearchTextFields() {
         setRoom(formData.room);
         setDivision(formData.division);
         setExcludeRestrictionCodes(formData.excludeRestrictionCodes);
-        setDays([]);
+        setDays(formData.days);
     }, []);
 
     useEffect(() => {
@@ -108,13 +103,7 @@ export function AdvancedSearchTextFields() {
                         setExcludeRestrictionCodes(stringValue);
                         break;
                     case 'days': {
-                        const daysArray = Array.isArray(value) ? value : [value];
-                        const orderedDaysArray = daysArray.sort((a, b) => {
-                            return DAY_ORDER.indexOf(a) - DAY_ORDER.indexOf(b);
-                        });
-
-                        setDays(orderedDaysArray);
-                        RightPaneStore.updateFormValue('days', orderedDaysArray.join(''));
+                        setDays(stringValue);
                         break;
                     }
                     default:
@@ -315,9 +304,17 @@ export function AdvancedSearchTextFields() {
                 <Select
                     multiple
                     labelId="days-label"
-                    value={days}
+                    value={days ? days.split(/(?=[A-Z])/) : []}
                     onChange={handleChange('days')}
-                    renderValue={(selected) => (selected as string[]).join(', ')}
+                    renderValue={(selected) =>
+                        (selected as string[])
+                            .sort((a, b) => {
+                                const orderA = DAYS_OPTIONS.find((day) => day.value === a)?.order ?? Infinity;
+                                const orderB = DAYS_OPTIONS.find((day) => day.value === b)?.order ?? Infinity;
+                                return orderA - orderB;
+                            })
+                            .join(', ')
+                    }
                 >
                     {DAYS_OPTIONS.map((option) => (
                         <MenuItem
