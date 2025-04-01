@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { EXCLUDE_RESTRICTION_CODES_OPTIONS } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+import PPLogo from '$assets/peterportal-shortform-logo.svg'
+
 
 export function AdvancedSearchTextFields() {
     const [instructor, setInstructor] = useState(RightPaneStore.getFormData().instructor);
@@ -17,6 +19,7 @@ export function AdvancedSearchTextFields() {
     const [excludeRestrictionCodes, setExcludeRestrictionCodes] = useState(
         RightPaneStore.getFormData().excludeRestrictionCodes
     );
+    const [filterCourses, setFilterCourses] = useState(RightPaneStore.getFilterTakenClasses());
 
     const resetField = useCallback(() => {
         const formData = RightPaneStore.getFormData();
@@ -66,6 +69,10 @@ export function AdvancedSearchTextFields() {
                     urlParam.delete('building');
                     urlParam.delete('room');
                 }
+            } else if (name === 'filterTakenClasses') {
+                const newFilterState = !filterCourses;
+                RightPaneStore.setFilterTakenClasses(newFilterState);
+                setFilterCourses(newFilterState);
             } else {
                 const stringValue = Array.isArray(value) ? value.join('') : value;
 
@@ -234,6 +241,28 @@ export function AdvancedSearchTextFields() {
                     {endsBeforeMenuItems}
                 </Select>
             </FormControl>
+
+            <FormControlLabel
+                control={
+                    <Switch
+                        onChange={handleChange('filterTakenClasses')}
+                        color="primary"
+                        checked={filterCourses}
+                    />
+                }
+                label={
+                    <Box display="flex" alignItems="center">
+                        <img
+                            src={PPLogo}
+                            alt="PeterPortal Logo"
+                            style={{ height: '1.4rem', marginTop: '-0.2rem' }}
+                        />
+                        <span>Filter Taken Courses</span>
+                    </Box>
+                }
+                labelPlacement="top"
+                style={{ margin: 0, justifyContent: 'flex-end' }}
+            />
 
             <FormControlLabel
                 control={
