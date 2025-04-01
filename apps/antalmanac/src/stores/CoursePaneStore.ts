@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 interface CoursePaneStore {
     /** Whether the search form is displayed (or the classes view) */
-    searchIsDisplayed: boolean;
+    searchFormIsDisplayed: boolean;
     /** Switch to the course search form */
     displaySearch: () => void;
     /** Switch to the classes view */
@@ -51,12 +51,12 @@ function requiredParamsAreInURL() {
 
 export const useCoursePaneStore = create<CoursePaneStore>((set) => {
     return {
-        searchIsDisplayed: requiredParamsAreInURL(),
+        searchFormIsDisplayed: !requiredParamsAreInURL(),
         displaySearch: () => {
-            set({ searchIsDisplayed: true });
+            set({ searchFormIsDisplayed: true });
         },
         displaySections: () => {
-            set({ searchIsDisplayed: false });
+            set({ searchFormIsDisplayed: false });
         },
 
         manualSearchEnabled: paramsAreInURL(),

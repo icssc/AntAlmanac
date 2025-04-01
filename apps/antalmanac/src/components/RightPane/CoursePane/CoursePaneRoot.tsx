@@ -14,7 +14,7 @@ import { WebSOC } from '$lib/websoc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
 export function CoursePaneRoot() {
-    const { key, forceUpdate, searchIsDisplayed, displaySearch, displaySections } = useCoursePaneStore();
+    const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections } = useCoursePaneStore();
 
     const handleSearch = useCallback(() => {
         if (RightPaneStore.formDataIsValid()) {
@@ -56,11 +56,15 @@ export function CoursePaneRoot() {
     return (
         <Box height={'0px'} flexGrow={1}>
             <CoursePaneButtonRow
-                showSearch={!searchIsDisplayed}
+                showSearch={!searchFormIsDisplayed}
                 onDismissSearchResults={displaySearch}
                 onRefreshSearch={refreshSearch}
             />
-            {searchIsDisplayed ? <SearchForm toggleSearch={handleSearch} /> : <CourseRenderPane key={key} id={key} />}
+            {searchFormIsDisplayed ? (
+                <SearchForm toggleSearch={handleSearch} />
+            ) : (
+                <CourseRenderPane key={key} id={key} />
+            )}
         </Box>
     );
 }
