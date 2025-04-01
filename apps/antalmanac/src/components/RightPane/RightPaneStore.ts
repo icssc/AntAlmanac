@@ -18,6 +18,7 @@ const defaultFormValues: Record<string, string> = {
     room: '',
     division: '',
     excludeRestrictionCodes: '',
+    days: '',
 };
 
 export interface BuildingFocusInfo {
@@ -58,6 +59,7 @@ class RightPaneStore extends EventEmitter {
 
         formFields.forEach((field) => {
             const paramValue = search.get(field) || search.get(field.toUpperCase());
+
             if (paramValue !== null) {
                 this.formData[field] = paramValue;
             }

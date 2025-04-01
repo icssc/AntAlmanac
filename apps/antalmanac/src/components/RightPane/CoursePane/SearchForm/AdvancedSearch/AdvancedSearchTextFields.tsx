@@ -2,7 +2,11 @@ import { TextField, Box, FormControl, InputLabel, Select, Switch, FormControlLab
 import { MenuItem } from '@mui/material';
 import { useState, useEffect, useCallback } from 'react';
 
-import { EXCLUDE_RESTRICTION_CODES_OPTIONS } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
+import {
+    EXCLUDE_RESTRICTION_CODES_OPTIONS,
+    DAYS_OPTIONS,
+    DAY_ORDER,
+} from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 export function AdvancedSearchTextFields() {
@@ -17,6 +21,11 @@ export function AdvancedSearchTextFields() {
     const [excludeRestrictionCodes, setExcludeRestrictionCodes] = useState(
         RightPaneStore.getFormData().excludeRestrictionCodes
     );
+    const [days, setDays] = useState(() => {
+        const daysString = RightPaneStore.getFormData().days;
+        const daysArray = daysString ? daysString.split(/(?=[A-Z])/) : [];
+        return daysArray.sort((a, b) => DAY_ORDER.indexOf(a) - DAY_ORDER.indexOf(b));
+    });
 
     const resetField = useCallback(() => {
         const formData = RightPaneStore.getFormData();
@@ -29,6 +38,7 @@ export function AdvancedSearchTextFields() {
         setRoom(formData.room);
         setDivision(formData.division);
         setExcludeRestrictionCodes(formData.excludeRestrictionCodes);
+        setDays([]);
     }, []);
 
     useEffect(() => {
@@ -97,6 +107,16 @@ export function AdvancedSearchTextFields() {
                     case 'excludeRestrictionCodes':
                         setExcludeRestrictionCodes(stringValue);
                         break;
+                    case 'days': {
+                        const daysArray = Array.isArray(value) ? value : [value];
+                        const orderedDaysArray = daysArray.sort((a, b) => {
+                            return DAY_ORDER.indexOf(a) - DAY_ORDER.indexOf(b);
+                        });
+
+                        setDays(orderedDaysArray);
+                        RightPaneStore.updateFormValue('days', orderedDaysArray.join(''));
+                        break;
+                    }
                     default:
                         break;
                 }
@@ -269,6 +289,37 @@ export function AdvancedSearchTextFields() {
                     renderValue={(selected) => (selected as string[]).join(', ')}
                 >
                     {EXCLUDE_RESTRICTION_CODES_OPTIONS.map((option) => (
+                        <MenuItem
+                            key={option.value}
+                            value={option.value}
+                            style={{
+                                maxWidth: 240,
+                            }}
+                        >
+                            <span
+                                style={{
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                }}
+                            >
+                                {option.label}
+                            </span>
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+
+            <FormControl style={{ minWidth: 150 }}>
+                <InputLabel id="days-label">Days</InputLabel>
+                <Select
+                    multiple
+                    labelId="days-label"
+                    value={days}
+                    onChange={handleChange('days')}
+                    renderValue={(selected) => (selected as string[]).join(', ')}
+                >
+                    {DAYS_OPTIONS.map((option) => (
                         <MenuItem
                             key={option.value}
                             value={option.value}
