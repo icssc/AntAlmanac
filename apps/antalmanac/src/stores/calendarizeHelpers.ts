@@ -144,8 +144,6 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                     term: course.term,
                     title: `${course.deptCode} ${course.courseNumber}`,
                     courseTitle: course.courseTitle,
-                    deptValue: course.deptCode,
-                    courseNumber: course.courseNumber,
                     locations: locationsWithNoDays.map((location: Location) => {
                         return {
                             ...location,
