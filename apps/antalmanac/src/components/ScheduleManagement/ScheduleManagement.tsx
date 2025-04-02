@@ -52,7 +52,7 @@ export function ScheduleManagement() {
         const userId = getLocalStorageUserId();
 
         // Change the tab to the "added classes" tab if the user was previously logged in
-        // or if a  search parameter is in the URL
+        // or if a search parameter is in the URL
         if (userId === null || paramsAreInURL()) {
             setActiveTab('search');
         } else if (isMobile) {
