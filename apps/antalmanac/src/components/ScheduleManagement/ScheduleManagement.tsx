@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { getLocalStorageUserId } from '$lib/localStorage';
+import { paramsAreInURL } from '$stores/CoursePaneStore';
 import { useTabStore } from '$stores/TabStore';
 
 /**
@@ -34,7 +35,6 @@ export function ScheduleManagement() {
         });
     };
 
-    // Change the tab to the "added classes" tab if the user was previously logged in.
     useEffect(() => {
         if (tab) {
             switch (tab) {
@@ -51,7 +51,9 @@ export function ScheduleManagement() {
 
         const userId = getLocalStorageUserId();
 
-        if (userId === null) {
+        // Change the tab to the "added classes" tab if the user was previously logged in
+        // or if a  search parameter is in the URL
+        if (userId === null || paramsAreInURL()) {
             setActiveTab('search');
         } else if (isMobile) {
             setActiveTab('calendar');

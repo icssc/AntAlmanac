@@ -17,7 +17,7 @@ interface CoursePaneStore {
     forceUpdate: () => void;
 }
 
-function paramsAreInURL() {
+export function paramsAreInURL() {
     const search = new URLSearchParams(window.location.search);
 
     // TODO: This should be standardized
@@ -41,7 +41,7 @@ function paramsAreInURL() {
     return searchParams.some((param) => search.get(param) !== null);
 }
 
-function requiredParamsAreInURL() {
+export function requiredParamsAreInURL() {
     const search = new URLSearchParams(window.location.search);
 
     const searchParams = ['courseCode', 'courseNumber', 'ge', 'deptValue'];
