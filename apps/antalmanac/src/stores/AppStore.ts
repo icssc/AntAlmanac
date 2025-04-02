@@ -15,6 +15,7 @@ import type {
     CopyScheduleAction,
     RenameScheduleAction,
     DeleteScheduleAction,
+    ReorderScheduleAction,
     ChangeCourseColorAction,
     UndoAction,
     AddScheduleAction,
@@ -198,20 +199,23 @@ class AppStore extends EventEmitter {
         }
     }
 
-    deleteCourse(sectionCode: string, term: string, triggerUnsavedWarning = true) {
-        this.schedule.deleteCourse(sectionCode, term);
+    deleteCourse(sectionCode: string, term: string, scheduleIndex: number, triggerUnsavedWarning = true) {
+        this.schedule.deleteCourse(sectionCode, term, scheduleIndex);
         this.unsavedChanges = triggerUnsavedWarning;
         const action: DeleteCourseAction = {
             type: 'deleteCourse',
             sectionCode: sectionCode,
             term: term,
+            scheduleIndex: this.schedule.getCurrentScheduleIndex(),
         };
         actionTypesStore.autoSaveSchedule(action);
         this.emit('addedCoursesChange');
     }
 
-    deleteCourses(sectionCodes: string[], term: string, triggerUnsavedWarning = true) {
-        sectionCodes.forEach((sectionCode) => this.deleteCourse(sectionCode, term, triggerUnsavedWarning));
+    deleteCourses(sectionCodes: string[], term: string, scheduleIndex: number, triggerUnsavedWarning = true) {
+        sectionCodes.forEach((sectionCode) =>
+            this.deleteCourse(sectionCode, term, scheduleIndex, triggerUnsavedWarning)
+        );
         this.emit('addedCoursesChange');
     }
 
@@ -254,12 +258,13 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    deleteCustomEvent(customEventId: number) {
-        this.schedule.deleteCustomEvent(customEventId);
+    deleteCustomEvent(customEventId: number, scheduleIndices: number[]) {
+        this.schedule.deleteCustomEvent(customEventId, scheduleIndices);
         this.unsavedChanges = true;
         const action: DeleteCustomEventAction = {
             type: 'deleteCustomEvent',
             customEventId: customEventId,
+            scheduleIndices: scheduleIndices,
         };
         actionTypesStore.autoSaveSchedule(action);
         this.emit('customEventsChange');
@@ -327,15 +332,45 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    async loadSchedule(savedSchedule: ScheduleSaveState) {
+    reorderSchedule(from: number, to: number) {
+        this.schedule.reorderSchedule(from, to);
+        this.unsavedChanges = true;
+        const action: ReorderScheduleAction = {
+            type: 'reorderSchedule',
+            from: from,
+            to: to,
+        };
+        actionTypesStore.autoSaveSchedule(action);
+        this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNamesChange', { triggeredBy: 'reorder' });
+        this.emit('reorderSchedule');
+    }
+
+    private async loadScheduleFromSaveState(savedSchedule: ScheduleSaveState) {
         try {
             await this.schedule.fromScheduleSaveState(savedSchedule);
         } catch {
             return false;
         }
+    }
+
+    async loadSchedule(savedSchedule: ScheduleSaveState) {
+        await this.loadScheduleFromSaveState(savedSchedule);
         this.unsavedChanges = false;
 
-        await actionTypesStore.loadScheduleFromLocalSave();
+        /**
+         * Attempt to load unsaved actions
+         * On failure, quietly reload from save state (essentially undoing any partially loaded unsaved actions)
+         */
+        try {
+            await actionTypesStore.loadScheduleFromUnsavedActions();
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                console.error('Unsaved actions could not be loaded:', e.message);
+            }
+            await this.loadScheduleFromSaveState(savedSchedule);
+        }
+
         this.schedule.clearPreviousStates();
 
         this.emit('addedCoursesChange');
