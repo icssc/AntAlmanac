@@ -26,7 +26,7 @@ const parseLocalStorageFavorites = (): string[] => {
 
         return [];
     } catch (e) {
-        console.error('An error occurred, returning empty array', e);
+        console.error('An error occurred:', e);
         return [];
     }
 };
