@@ -38,7 +38,7 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - name: Install Playwright Browsers
-              run: pnpm exec playwright install --with-deps
+              run: pnpm --filter=antalmanac exec playwright install --with-deps
 
             - name: Build
               env:
