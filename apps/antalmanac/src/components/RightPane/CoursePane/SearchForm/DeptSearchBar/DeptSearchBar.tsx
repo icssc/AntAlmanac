@@ -7,9 +7,33 @@ import { getLocalStorageFavorites, setLocalStorageFavorites } from '$lib/localSt
 
 const options = Object.keys(DEPARTMENT_MAP);
 
+// This helper handles parsing the current and prior formats of localStorageFavorites
+const parseLocalStorageFavorites = (): string[] => {
+    try {
+        const data = JSON.parse(getLocalStorageFavorites() ?? '[]');
+
+        if (!Array.isArray(data)) {
+            return [];
+        }
+
+        if (data.every((x) => typeof x === 'string')) {
+            return data;
+        }
+
+        if (data.every((x) => typeof x === 'object' && x !== null && 'deptValue' in x)) {
+            return data.map((x) => x.deptValue);
+        }
+
+        return [];
+    } catch (e) {
+        console.error('An error occurred, returning empty array', e);
+        return [];
+    }
+};
+
 export function DepartmentSearchBar() {
     const [value, setValue] = useState(() => RightPaneStore.getFormData().deptValue);
-    const [favorites, setFavorites] = useState<typeof options>(() => JSON.parse(getLocalStorageFavorites() ?? '[]'));
+    const [favorites, setFavorites] = useState<typeof options>(() => parseLocalStorageFavorites());
 
     const resetField = useCallback(() => {
         setValue(() => RightPaneStore.getFormData().deptValue);
