@@ -309,8 +309,8 @@ export function AdvancedSearchTextFields() {
                     renderValue={(selected) =>
                         (selected as string[])
                             .sort((a, b) => {
-                                const orderA = DAYS_OPTIONS.find((day) => day.value === a)?.order ?? Infinity;
-                                const orderB = DAYS_OPTIONS.find((day) => day.value === b)?.order ?? Infinity;
+                                const orderA = DAYS_OPTIONS.findIndex((day) => day.value === a);
+                                const orderB = DAYS_OPTIONS.findIndex((day) => day.value === b);
                                 return orderA - orderB;
                             })
                             .join(', ')
