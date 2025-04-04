@@ -50,7 +50,9 @@ function Login() {
             const userId = await trpc.auth.getSessionUserId.query({ token: session ?? '' });
             if (userId) {
                 setUser(await trpc.userData.getUserByUid.query({ userId: userId }));
-                RightPaneStore.setUserID(userId);
+                const googleId = await trpc.userData.getGoogleIdByUserId.query({ userId: userId });
+                RightPaneStore.setGoogleID(googleId ?? '');
+
             }
         }
     }, [session, setSession, validSession]);

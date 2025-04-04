@@ -106,6 +106,17 @@ export class RDS {
                 .then((res) => res[0])
         );
     }
+
+    static async getGoogleIdByUserId(db: DatabaseOrTransaction, userId: string): Promise<string | null> {
+        const result = await db
+            .select({ providerAccountId: accounts.providerAccountId })
+            .from(accounts)
+            .where(and(eq(accounts.userId, userId), eq(accounts.accountType, 'GOOGLE')))
+            .limit(1);
+    
+        return result.length > 0 ? result[0].providerAccountId : null;
+    }
+    
     /**
      * Creates a new user and an associated account with the specified provider ID.
      *

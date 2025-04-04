@@ -109,14 +109,11 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                                 fieldName={'term'}
                             />
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0 }}>
-                            <span style={{ fontSize: '0.75rem', color: 'gray', marginBottom: '-4px' }}>Advanced Search</span>
-                            <Tooltip title="Toggle Manual Search">
-                                <IconButton onClick={toggleManualSearch} style={{marginBottom: '-14px'}}>
-                                    <Tune />
-                                </IconButton>
-                            </Tooltip>
-                        </div>
+                        <Tooltip title="Toggle Manual Search">
+                            <IconButton onClick={toggleManualSearch} style={{marginBottom: '-14px'}}>
+                                <Tune />
+                            </IconButton>
+                        </Tooltip>
                     </div>
 
                     {!manualSearchEnabled ? (

@@ -35,7 +35,7 @@ class RightPaneStore extends EventEmitter {
     private urlCourseNumValue: string;
     private urlDeptLabel: string;
     private urlDeptValue: string;
-    private aaUserId: string;
+    private aaGoogleId: string;
     private filterTakenCourses: boolean;
     private userTakenCourses: Set<string>;
 
@@ -52,7 +52,7 @@ class RightPaneStore extends EventEmitter {
         this.urlCourseNumValue = search.get('courseNumber') || '';
         this.urlDeptLabel = search.get('deptLabel') || '';
         this.urlDeptValue = search.get('deptValue') || '';
-        this.aaUserId = '';
+        this.aaGoogleId = '';
         this.userTakenCourses = new Set();
         this.filterTakenCourses = false;
 
@@ -110,12 +110,12 @@ class RightPaneStore extends EventEmitter {
         return ge !== 'ANY' || deptValue !== 'ALL' || sectionCode !== '' || instructor !== '';
     };
 
-    getUserID = (): string => {
-        return this.aaUserId;
+    getGoogleID = (): string => {
+        return this.aaGoogleId;
     };
     
-    setUserID = (userID: string) => {
-        this.aaUserId = userID;
+    setGoogleID = (userID: string) => {
+        this.aaGoogleId = userID;
         this.emit('formDataChange');
     };
 
