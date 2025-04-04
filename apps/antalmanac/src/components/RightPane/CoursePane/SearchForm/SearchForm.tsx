@@ -2,7 +2,10 @@ import { IconButton, Theme, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Tune } from '@material-ui/icons';
-import type { FormEvent } from 'react';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
+import PPLogo from '$assets/peterportal-shortform-logo.svg'
+import { FormEvent, useState, useEffect } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
 
@@ -13,6 +16,7 @@ import TermSelector from './TermSelector';
 import { HelpBox } from '$components/RightPane/CoursePane/SearchForm/HelpBox';
 import { LegacySearch } from '$components/RightPane/CoursePane/SearchForm/LegacySearch';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { getLocalStorageHelpBoxDismissalTime, setLocalStorageHelpBoxDismissalTime } from '$lib/localStorage';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
 const styles: Styles<Theme, object> = {
@@ -52,30 +56,83 @@ const styles: Styles<Theme, object> = {
 const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) => {
     const { classes, toggleSearch } = props;
     const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
+    const [helpBoxVisibility, setHelpBoxVisibility] = useState(true);
+    const [filterCourses, setFilterCourses] = useState(RightPaneStore.getFilterTakenClasses());
 
     const onFormSubmit = (event: FormEvent) => {
         event.preventDefault();
         toggleSearch();
     };
 
+    useEffect(() => {
+        const handleStoreUpdate = () => {
+            setFilterCourses(RightPaneStore.getFilterTakenClasses());
+        };
+
+        RightPaneStore.on('formDataChange', handleStoreUpdate);
+
+        return () => {
+            RightPaneStore.off('formDataChange', handleStoreUpdate);
+        };
+    }, []);
+
+    const toggleFilterCourses = () => {
+        const newFilterState = !filterCourses;
+        RightPaneStore.setFilterTakenClasses(newFilterState);
+        setFilterCourses(newFilterState);
+    };
+
+    const currentMonthIndex = new Date().getMonth(); // 0=Jan
+    // Active months: February/March for Spring planning, May/June for Fall planning, July/August for Summer planning,
+    // and November/December for Winter planning
+    const activeMonthIndices = [false, true, true, false, true, true, true, true, false, false, true, true];
+
+    // Display the help box only if more than 30 days has passed since the last dismissal and
+    // the current month is an active month
+    const helpBoxDismissalTime = getLocalStorageHelpBoxDismissalTime();
+    const dismissedRecently =
+        helpBoxDismissalTime !== null && Date.now() - parseInt(helpBoxDismissalTime) < 30 * 24 * 3600 * 1000;
+    const displayHelpBox = helpBoxVisibility && !dismissedRecently && activeMonthIndices[currentMonthIndex];
+
+    const onHelpBoxDismiss = () => {
+        setLocalStorageHelpBoxDismissalTime(Date.now().toString());
+        setHelpBoxVisibility(false);
+    };
     return (
         <div className={classes.rightPane}>
             <form onSubmit={onFormSubmit} className={classes.form}>
                 <div className={classes.container}>
-                    <div className={classes.margin}>
-                        <TermSelector
-                            changeTerm={(field: string, value: string) => RightPaneStore.updateFormValue(field, value)}
-                            fieldName={'term'}
-                        />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <div className={classes.margin} style={{ flexGrow: 1 }}>
+                            <TermSelector
+                                changeTerm={(field: string, value: string) => RightPaneStore.updateFormValue(field, value)}
+                                fieldName={'term'}
+                            />
+                        </div>
                         <Tooltip title="Toggle Manual Search">
-                            <IconButton onClick={toggleManualSearch}>
+                            <IconButton onClick={toggleManualSearch} style={{marginBottom: '-14px'}}>
                                 <Tune />
                             </IconButton>
                         </Tooltip>
                     </div>
 
                     {!manualSearchEnabled ? (
-                        <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleManualSearch} />
+                        <div className={classes.container}>
+                            <div className={classes.searchBar} id="searchBar">
+                                <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleManualSearch} />
+                                <Tooltip arrow
+                                    title={ <div style={{ fontSize: '0.8rem' }}> Filter Taken Courses <br/> (Data from PeterPortal.org) </div> }>
+                                    <IconButton onClick={toggleFilterCourses} style={{ position: 'relative' }}>
+                                        <img 
+                                            src={PPLogo} 
+                                            alt="Brand" 
+                                            style={{ position: 'absolute', top: '60%', left: '5%', width: '35%', height: '35%' }} 
+                                        />
+                                        {filterCourses ? <FilterAltIcon /> : <FilterAltOffIcon />}
+                                    </IconButton>
+                                </Tooltip>
+                            </div>
+                        </div>
                     ) : (
                         <LegacySearch
                             onSubmit={() => {

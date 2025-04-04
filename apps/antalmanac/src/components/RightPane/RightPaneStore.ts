@@ -35,6 +35,9 @@ class RightPaneStore extends EventEmitter {
     private urlCourseNumValue: string;
     private urlDeptLabel: string;
     private urlDeptValue: string;
+    private aaGoogleId: string;
+    private filterTakenCourses: boolean;
+    private userTakenCourses: Set<string>;
 
     constructor() {
         super();
@@ -49,6 +52,9 @@ class RightPaneStore extends EventEmitter {
         this.urlCourseNumValue = search.get('courseNumber') || '';
         this.urlDeptLabel = search.get('deptLabel') || '';
         this.urlDeptValue = search.get('deptValue') || '';
+        this.aaGoogleId = '';
+        this.userTakenCourses = new Set();
+        this.filterTakenCourses = false;
 
         this.updateFormDataFromURL(search);
     }
@@ -102,6 +108,33 @@ class RightPaneStore extends EventEmitter {
     formDataIsValid = () => {
         const { ge, deptValue, sectionCode, instructor } = this.formData;
         return ge !== 'ANY' || deptValue !== 'ALL' || sectionCode !== '' || instructor !== '';
+    };
+
+    getGoogleID = (): string => {
+        return this.aaGoogleId;
+    };
+    
+    setGoogleID = (userID: string) => {
+        this.aaGoogleId = userID;
+        this.emit('formDataChange');
+    };
+
+    getFilterTakenClasses = (): boolean => {
+        return this.filterTakenCourses;
+    };
+
+    setFilterTakenClasses = (value: boolean) => {
+        this.filterTakenCourses = value;
+        this.emit('formDataChange');
+   };
+
+    getUserTakenCourses = (): Set<string> => {
+        return this.userTakenCourses;
+    };
+
+    setUserTakenCourses = (courses: Set<string>) => {
+        this.userTakenCourses = courses;
+        this.emit('formDataChange');
     };
 }
 
