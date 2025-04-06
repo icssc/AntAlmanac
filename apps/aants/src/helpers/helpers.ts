@@ -12,6 +12,7 @@ const client = new SESv2Client({ region: 'us-east-2' });
 type User = {
     userName: string;
     email: string;
+    userId: string;
 };
 
 async function getUpdatedClasses(quarter: string, year: string, sections: string[]) {
@@ -127,7 +128,7 @@ async function getUsers(
         const statusColumn = statusColumnMap[status];
 
         let query = db
-            .select({ userName: users.name, email: users.email })
+            .select({ userName: users.name, email: users.email, userId: users.id })
             .from(subscriptions)
             .innerJoin(users, eq(subscriptions.userId, users.id))
             .where(
@@ -183,7 +184,8 @@ async function sendNotification(
     courseTitle: string,
     users: User[],
     statusChanged: boolean,
-    codesChanged: boolean
+    codesChanged: boolean,
+    quarter: string
 ) {
     try {
         let notification = ``;
@@ -215,6 +217,11 @@ async function sendNotification(
                         hours: hours,
                         time: time,
                         sectionCode: sectionCode,
+                        userId: user.userId,
+                        quarter: quarter,
+                        status: status,
+                        codesChanged: codesChanged,
+                        statusChanged: statusChanged,
                     }),
                 },
             },
@@ -236,6 +243,11 @@ async function sendNotification(
                         hours: '',
                         time: '',
                         sectionCode: '',
+                        userId: '',
+                        quarter: '',
+                        status: '',
+                        codesChanged: '',
+                        statusChanged: '',
                     }),
                 },
             },

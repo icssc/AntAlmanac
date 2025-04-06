@@ -83,8 +83,9 @@ async function main() {
                                                                 courseNumber,
                                                                 courseTitle,
                                                                 users,
-                                                                true,
-                                                                false
+                                                                statusChanged,
+                                                                codesChanged,
+                                                                quarter
                                                             );
                                                         }
                                                         await updateSubscriptionStatus(
