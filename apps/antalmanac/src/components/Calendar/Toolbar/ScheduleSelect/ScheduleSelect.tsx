@@ -97,7 +97,7 @@ export function SelectSchedulePopover() {
                 return;
             }
 
-            setScheduleMapping(scheduleItems);
+            setScheduleMapping(getScheduleItems(fallback));
         };
 
         AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
@@ -105,7 +105,7 @@ export function SelectSchedulePopover() {
         return () => {
             AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
         };
-    }, [scheduleItems]);
+    }, [fallback, scheduleItems]);
 
     return (
         <Box>
