@@ -23,12 +23,18 @@ export class HeaderPage {
     }
 
     async loadSchedule() {
-        this.page.once('dialog', async (alert) => {
+        this.page.on('dialog', async (alert) => {
             if (alert.message() == 'You have unsaved changes. Would you like to load them?') {
                 try {
                     await alert.dismiss();
                 } catch (e) {
-                    console.warn('Dialog already handled: ', alert.message());
+                    console.warn('Dialog already dismissed: ', alert.message());
+                }
+            } else {
+                try {
+                    await alert.accept();
+                } catch (e) {
+                    console.warn('Dialog already accepted: ', alert.message());
                 }
             }
         });

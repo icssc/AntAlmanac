@@ -55,3 +55,12 @@ export const getNewTab = async (page: Page, action: () => Promise<void>) => {
     await newTab.waitForLoadState();
     return newTab;
 };
+
+export const getSnackbar = async (page: Page) => {
+    const snackbar = page.locator('#notistack-snackbar').last();
+    await snackbar.waitFor();
+    const snackbarResult = snackbar;
+    const exitBtn = await page.locator('.SnackbarItem-action').getByRole('button');
+    await exitBtn.click(); // closes the snackbar after getting it
+    return snackbarResult;
+};

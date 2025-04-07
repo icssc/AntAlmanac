@@ -2,6 +2,7 @@ import { expect } from '@playwright/test';
 
 import { test } from '../fixtures';
 import { verifyCourseInfoInCalendar } from '../utils/courseSearchHelper';
+import { getSnackbar } from '../utils/helpers';
 
 test.describe('Header actions tests', () => {
     test.beforeEach(async ({ courseSearchPage, headerPage, courseRowPage }) => {
@@ -23,6 +24,8 @@ test.describe('Header actions tests', () => {
         expect(await calendarPage.getCalendarEventCount()).toBe(0);
 
         await headerPage.loadSchedule();
+        const snackbar = await getSnackbar(headerPage.page);
+        await expect(snackbar).toHaveText(/loaded/i);
 
         await verifyCourseInfoInCalendar(calendarPage, courseRowPage);
     });
