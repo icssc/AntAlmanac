@@ -3,21 +3,22 @@ import type { Page, Locator } from '@playwright/test';
 
 import { getEventFreq } from '../utils/helpers';
 
+interface CourseDetails {
+    time: string;
+    dayTime: string;
+    location: string;
+    code: string;
+    units: string;
+    frequency: number;
+}
+
 export class CourseRowPage {
     // Extracts and stores data about selected course
     private courseRow: Locator;
     private courseRowInfo: Locator;
-    private courseDetails: {
-        time: string;
-        dayTime: string;
-        location: string;
-        code: string;
-        units: string;
-        frequency: number;
-    };
+    private courseDetails: CourseDetails;
 
     constructor(public readonly page: Page) {
-        this.page = page;
         this.courseRow = this.page.getByTestId('class-table-row').nth(0);
         this.courseRowInfo = this.courseRow.locator('td');
         this.courseDetails = {
@@ -31,8 +32,6 @@ export class CourseRowPage {
     }
 
     async verifyCourseRowInfoCount() {
-        this.courseRow = await this.page.getByTestId('class-table-row').nth(0);
-        this.courseRowInfo = await this.courseRow.locator('td');
         await expect(this.courseRowInfo).toHaveCount(11);
     }
 
@@ -73,27 +72,27 @@ export class CourseRowPage {
         return this.courseRow;
     }
 
-    getCourseTime() {
+    getCourseTime(): string {
         return this.courseDetails.time;
     }
 
-    getCourseDayTime() {
+    getCourseDayTime(): string {
         return this.courseDetails.dayTime;
     }
 
-    getCourseLoc() {
+    getCourseLoc(): string {
         return this.courseDetails.location;
     }
 
-    getCourseCode() {
+    getCourseCode(): string {
         return this.courseDetails.code;
     }
 
-    getCourseUnits() {
+    getCourseUnits(): string {
         return this.courseDetails.units;
     }
 
-    getCourseFreq() {
+    getCourseFreq(): number {
         return this.courseDetails.frequency;
     }
 }

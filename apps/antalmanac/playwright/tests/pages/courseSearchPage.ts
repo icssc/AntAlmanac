@@ -6,9 +6,7 @@ import { verifySearchLoaded } from '../utils/courseSearchHelper';
 import { closeStartPopups } from '../utils/helpers';
 
 export class CourseSearchPage {
-    constructor(public readonly page: Page) {
-        this.page = page;
-    }
+    constructor(public readonly page: Page) {}
 
     async setUp() {
         await this.page.goto('/');
@@ -19,11 +17,11 @@ export class CourseSearchPage {
     }
 
     async searchForCourse() {
-        const searchBar = await this.page.locator('#fuzzy-search');
+        const searchBar = this.page.locator('#fuzzy-search');
         await searchBar.waitFor();
         await searchBar.fill(search.courseName);
 
-        const searchOptions = await this.page.locator('#fuzzy-search-popup');
+        const searchOptions = this.page.locator('#fuzzy-search-popup');
         await searchOptions.waitFor();
         await expect(searchOptions).toBeVisible();
         const option = await searchOptions.getByRole('option').nth(0);
@@ -31,14 +29,14 @@ export class CourseSearchPage {
     }
 
     async addCourseToCalendar() {
-        const addIcon = await this.page.getByTestId('AddIcon').nth(1);
+        const addIcon = this.page.getByTestId('AddIcon').nth(1);
         await addIcon.waitFor();
         await expect(addIcon).toBeEnabled();
         await addIcon.click();
     }
 
     async deleteCourseFromCalendar() {
-        const deleteButton = await this.page.getByTestId('class-table-row').nth(0).getByTestId('DeleteIcon');
+        const deleteButton = this.page.getByTestId('class-table-row').nth(0).getByTestId('DeleteIcon');
         await deleteButton.click();
     }
 }

@@ -16,14 +16,14 @@ test.describe('Added course pane tests', () => {
         const courseRows = await addedCoursesPage.getAddedCourseRows();
         await expect(courseRows).toHaveCount(1);
         // Added classes row contains correct information
-        const classRowInfo = await courseRows.nth(0).locator('td');
+        const classRowInfo = courseRows.nth(0).locator('td');
         const courseRowInfoStr = await classRowInfo.allInnerTexts();
-        await expect(courseRowInfoStr).toContain(courseRowPage.getCourseCode());
-        await expect(courseRowInfoStr).toContain(courseRowPage.getCourseLoc());
-        await expect(courseRowInfoStr).toContain(courseRowPage.getCourseDayTime());
+        expect(courseRowInfoStr).toContain(courseRowPage.getCourseCode());
+        expect(courseRowInfoStr).toContain(courseRowPage.getCourseLoc());
+        expect(courseRowInfoStr).toContain(courseRowPage.getCourseDayTime());
         // Added classes schedule matches current schedule
         const addedPane = await addedCoursesPage.getAddedPane();
-        const title = await addedPane.getByRole('heading').first();
+        const title = addedPane.getByRole('heading').first();
         const currentSchedule = await addedCoursesPage.page.getByTestId('schedule-select-button').allInnerTexts();
         await expect(title).toHaveText(`${currentSchedule} (${courseRowPage.getCourseUnits()} Units)`);
     });
@@ -40,7 +40,7 @@ test.describe('Added course pane tests', () => {
 
     test('clear schedule button in added courses pane', async ({ addedCoursesPage, calendarPage }) => {
         await addedCoursesPage.addedCoursesClearSchedule();
-        await expect(await calendarPage.getCalendarEventCount()).toBe(0);
+        expect(await calendarPage.getCalendarEventCount()).toBe(0);
     });
     test('search button above added class redirects to search page', async ({
         addedCoursesPage,

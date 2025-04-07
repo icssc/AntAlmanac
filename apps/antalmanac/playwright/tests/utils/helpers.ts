@@ -24,8 +24,8 @@ export const closeStartPopups = async (page: Page) => {
 };
 
 export const clickIconButton = async (locator: Locator | Page, iconName: string) => {
-    const button = await locator.getByTestId(iconName);
-    await expect(button).toBeVisible();
+    const button = locator.getByTestId(iconName);
+    await expect(button).toBeEnabled();
     await button.click();
 };
 
@@ -36,17 +36,16 @@ export const clickTextButton = async (locator: Locator | Page, text: string) => 
 };
 
 export const inputDialog = async (page: Page, dialogName: string, input: string) => {
-    const dialog = await page.getByRole('dialog');
+    const dialog = page.getByRole('dialog');
     await expect(dialog).toBeVisible();
-    const heading = await dialog.getByRole('heading');
+    const heading = dialog.getByRole('heading');
     await expect(heading).toHaveText(dialogName);
 
-    const inputBox = await dialog.getByRole('textbox');
+    const inputBox = dialog.getByRole('textbox');
     await expect(inputBox).toBeVisible();
     await inputBox.fill(input);
 
-    const enterButton = await dialog.getByRole('button').nth(1);
-    await page.waitForLoadState();
+    const enterButton = dialog.getByRole('button').nth(1);
     await expect(enterButton).toBeEnabled();
     await enterButton.click();
 };

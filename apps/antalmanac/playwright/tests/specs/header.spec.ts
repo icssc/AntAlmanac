@@ -20,7 +20,7 @@ test.describe('Header actions tests', () => {
         await headerPage.saveSchedule();
 
         await schedulePage.clearSchedule();
-        await expect(await calendarPage.getCalendarEventCount()).toBe(0);
+        expect(await calendarPage.getCalendarEventCount()).toBe(0);
 
         await headerPage.loadSchedule();
 

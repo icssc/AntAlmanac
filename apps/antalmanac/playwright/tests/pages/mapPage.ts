@@ -9,7 +9,6 @@ export class MapPage {
     private mapPopup: Locator;
 
     constructor(public readonly page: Page) {
-        this.page = page;
         this.mapContainer = this.page.getByTestId('map-pane');
         this.mapPopup = this.mapContainer.locator('.leaflet-popup');
     }
@@ -21,9 +20,8 @@ export class MapPage {
     }
 
     async goToMapPage() {
-        const mapTab = await this.page.locator('#map-tab');
+        const mapTab = this.page.locator('#map-tab');
         await mapTab.click();
-        this.mapContainer = await this.page.getByTestId('map-pane');
         await expect(this.mapContainer).toBeVisible();
     }
 
@@ -33,7 +31,6 @@ export class MapPage {
     }
 
     async getLocPopupText() {
-        this.mapPopup = await this.mapContainer.locator('.leaflet-popup');
         await expect(this.mapPopup).toBeVisible();
         const popupInfo = await this.mapPopup.allInnerTexts();
         return popupInfo.join('');
@@ -49,12 +46,12 @@ export class MapPage {
     }
 
     async searchMapLocation() {
-        const searchBox = await this.mapContainer.getByRole('combobox');
+        const searchBox = this.mapContainer.getByRole('combobox');
         await expect(searchBox).toBeVisible();
 
         await searchBox.fill(mapSearch.location);
-        const autofillOptions = await this.page.getByRole('listbox');
-        const option = await autofillOptions.getByRole('option').nth(0);
+        const autofillOptions = this.page.getByRole('listbox');
+        const option = autofillOptions.getByRole('option').nth(0);
         await option.click();
     }
 }

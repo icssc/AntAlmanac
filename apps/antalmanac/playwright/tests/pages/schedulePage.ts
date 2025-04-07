@@ -11,7 +11,6 @@ export class SchedulePage {
     private calendarToolbar: Locator;
 
     constructor(public readonly page: Page) {
-        this.page = page;
         this.scheduleButton = this.page.getByTestId('schedule-select-button');
         this.schedulePopup = this.page.getByTestId('schedule-popover');
         this.scheduleRows = this.schedulePopup.getByTestId('schedule-row');
@@ -31,10 +30,8 @@ export class SchedulePage {
     }
 
     async initScheduleLocators() {
-        this.scheduleButton = await this.page.getByTestId('schedule-select-button');
         await expect(this.scheduleButton).toBeVisible();
         await this.scheduleButton.click();
-        this.schedulePopup = await this.page.getByTestId('schedule-popover');
         await expect(this.schedulePopup).toBeVisible();
     }
 
@@ -49,7 +46,7 @@ export class SchedulePage {
     }
 
     async switchCurrentSchedule(name: string) {
-        const switchScheduleButton = await this.scheduleRows.getByText(name);
+        const switchScheduleButton = this.scheduleRows.getByText(name);
         await switchScheduleButton.click();
     }
 
@@ -71,16 +68,16 @@ export class SchedulePage {
     }
 
     async toggleFinals() {
-        const finalsButton = await this.page.getByTestId('finals-button');
+        const finalsButton = this.page.getByTestId('finals-button');
         await finalsButton.click();
     }
 
     async deleteScheduleAction(otherPage: boolean) {
         // generic delete schedule action
-        const dialog = await this.page.getByRole('dialog');
-        const heading = await dialog.getByRole('heading');
+        const dialog = this.page.getByRole('dialog');
+        const heading = dialog.getByRole('heading');
         await expect(heading).toHaveText('Delete Schedule');
-        const enterButton = await dialog.getByRole('button').nth(1);
+        const enterButton = dialog.getByRole('button').nth(1);
         await enterButton.click();
 
         if (otherPage) {

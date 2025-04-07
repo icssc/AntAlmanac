@@ -17,7 +17,7 @@ test.describe('Modifying schedules tests', () => {
         const scheduleButton = await schedulePage.getScheduleButton();
         const scheduleRows = await schedulePage.getScheduleRows();
         await expect(scheduleButton).toContainText(schedule[0].name);
-        await expect(await scheduleRows.nth(0)).toContainText(schedule[0].name);
+        await expect(scheduleRows.nth(0)).toContainText(schedule[0].name);
     });
 
     test('add a new schedule', async ({ schedulePage, calendarPage }) => {
@@ -26,7 +26,7 @@ test.describe('Modifying schedules tests', () => {
         const scheduleButton = await schedulePage.getScheduleButton();
         const scheduleRows = await schedulePage.getScheduleRows();
         await expect(scheduleRows).toHaveCount(2);
-        await expect(await scheduleRows.nth(1)).toContainText(schedule[1].name);
+        await expect(scheduleRows.nth(1)).toContainText(schedule[1].name);
 
         // Ensure schedule switches to new schedule
         await expect(scheduleButton).toContainText(schedule[1].name);
@@ -44,9 +44,9 @@ test.describe('Modifying schedules tests', () => {
         // Schedule button text changes to changed schedule's name
         await expect(scheduleButton).toContainText(schedule[0].name);
         // Verify calendar shows courses in current schedule
-        await expect(await calendarPage.getCalendarEventCount()).toBe(courseRowPage.getCourseFreq());
+        expect(await calendarPage.getCalendarEventCount()).toBe(courseRowPage.getCourseFreq());
         // Verify courses have same class name
-        const firstCalendarEvent = await schedulePage.page.getByTestId('course-event').first();
+        const firstCalendarEvent = schedulePage.page.getByTestId('course-event').first();
         await expect(firstCalendarEvent).toContainText(search.courseName);
     });
 
@@ -66,8 +66,8 @@ test.describe('Modifying schedules tests', () => {
         if (scheduleCount == 1) {
             // Ensure you can't delete if there's only 1 schedule
             const schedulePopup = await schedulePage.getSchedulePopup();
-            const deleteButtonIconFirst = await schedulePage.page.getByTestId('ClearIcon');
-            const deleteButton = await schedulePopup.getByRole('button').filter({ has: deleteButtonIconFirst });
+            const deleteButtonIconFirst = schedulePage.page.getByTestId('ClearIcon');
+            const deleteButton = schedulePopup.getByRole('button').filter({ has: deleteButtonIconFirst });
             await expect(deleteButton).toBeDisabled();
         }
     });
@@ -83,21 +83,21 @@ test.describe('Schedule toolbar tests', () => {
 
     test('toggle finals schedule', async ({ schedulePage }) => {
         await schedulePage.toggleFinals();
-        const finalsEvent = await schedulePage.page.getByTestId('course-event');
+        const finalsEvent = schedulePage.page.getByTestId('course-event');
         await expect(finalsEvent).toContainText(search.courseName);
     });
 
     test('screenshot schedule prompts download', async ({ schedulePage }) => {
         const download = await schedulePage.screenshotSchedule();
-        await expect(download).toBeTruthy();
+        expect(download).toBeTruthy();
     });
 
     test('undo schedule action reverses course add', async ({ schedulePage, calendarPage }) => {
         await schedulePage.undoScheduleAction();
-        await expect(await calendarPage.getCalendarEventCount()).toBe(0);
+        expect(await calendarPage.getCalendarEventCount()).toBe(0);
     });
     test('clear schedule', async ({ schedulePage, calendarPage }) => {
         await schedulePage.clearSchedule();
-        await expect(await calendarPage.getCalendarEventCount()).toBe(0);
+        expect(await calendarPage.getCalendarEventCount()).toBe(0);
     });
 });

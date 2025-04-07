@@ -11,6 +11,6 @@ export const verifyLocMarker = async (mapPage: MapPage) => {
 export const verifyPopupDirections = async (mapPage: MapPage) => {
     const newTab = await mapPage.getPopupDirections();
     const url = newTab.url();
-    await expect(url).toContain('https://www.google.com/maps');
+    expect(url).toContain('https://www.google.com/maps');
     await newTab.close();
 };

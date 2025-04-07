@@ -3,9 +3,7 @@ import type { Page } from '@playwright/test';
 import { clickTextButton, getNewTab } from '../utils/helpers';
 
 export class CourseDataPage {
-    constructor(public readonly page: Page) {
-        this.page = page;
-    }
+    constructor(public readonly page: Page) {}
 
     async openCourseReviews() {
         const action = async () => {

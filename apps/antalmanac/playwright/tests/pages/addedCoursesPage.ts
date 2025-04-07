@@ -10,7 +10,6 @@ export class AddedCoursesPage {
     private addedActions: Locator;
 
     constructor(public readonly page: Page) {
-        this.page = page;
         this.addedPane = this.page.getByTestId('course-pane-box');
         this.addedActions = this.page.getByTestId('added-course-actions');
     }
@@ -24,10 +23,8 @@ export class AddedCoursesPage {
     }
 
     async goToAddedCourses() {
-        const addedTab = await this.page.locator('#added-courses-tab');
+        const addedTab = this.page.locator('#added-courses-tab');
         await addedTab.click();
-        this.addedPane = this.page.getByTestId('course-pane-box');
-        this.addedActions = this.page.getByTestId('added-course-actions');
         await expect(this.addedPane).toBeVisible();
         await expect(this.addedActions).toBeVisible();
     }
@@ -49,7 +46,7 @@ export class AddedCoursesPage {
             await alert.accept();
         });
         await clickIconButton(this.addedActions, 'DeleteOutlineIcon');
-        await expect(dialogShown).toBeTruthy();
+        expect(dialogShown).toBeTruthy();
     }
 
     async addedCoursesSearchPage() {

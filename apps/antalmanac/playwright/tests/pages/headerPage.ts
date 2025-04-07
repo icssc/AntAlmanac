@@ -8,7 +8,6 @@ export class HeaderPage {
     private headerActions: Locator;
 
     constructor(public readonly page: Page) {
-        this.page = page;
         this.headerActions = this.page.getByTestId('header-actions');
     }
 

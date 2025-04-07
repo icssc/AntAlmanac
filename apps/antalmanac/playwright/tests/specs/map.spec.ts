@@ -13,8 +13,8 @@ test.describe('Map pane tests', () => {
         await verifyLocMarker(mapPage);
 
         const popupText = await mapPage.getLocPopupText();
-        await expect(popupText).toContain(search.courseName);
-        await expect(popupText).toContain(courseRowPage.getCourseLoc());
+        expect(popupText).toContain(search.courseName);
+        expect(popupText).toContain(courseRowPage.getCourseLoc());
 
         await verifyPopupDirections(mapPage);
     });
@@ -26,7 +26,7 @@ test.describe('Map pane tests', () => {
         await verifyLocMarker(mapPage);
 
         const popupText = await mapPage.getLocPopupText();
-        await expect(popupText).toContain(mapSearch.location);
+        expect(popupText).toContain(mapSearch.location);
 
         await verifyPopupDirections(mapPage);
     });

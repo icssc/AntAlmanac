@@ -13,10 +13,10 @@ export const verifyScheduleCopied = async (
     const scheduleRows = await schedulePage.getScheduleRows();
     // Ensure schedule gets added
     await expect(scheduleRows).toHaveCount(2);
-    await expect(await scheduleRows.nth(1)).toContainText(schedule[1].name);
+    await expect(scheduleRows.nth(1)).toContainText(schedule[1].name);
     // Verify calendar shows courses in current schedule
-    await expect(await calendarPage.getCalendarEventCount()).toBe(courseRowPage.getCourseFreq());
+    expect(await calendarPage.getCalendarEventCount()).toBe(courseRowPage.getCourseFreq());
     // Verify courses have same class name
-    const firstCalendarEvent = await schedulePage.page.getByTestId('course-event').first();
+    const firstCalendarEvent = schedulePage.page.getByTestId('course-event').first();
     await expect(firstCalendarEvent).toContainText(search.courseName);
 };
