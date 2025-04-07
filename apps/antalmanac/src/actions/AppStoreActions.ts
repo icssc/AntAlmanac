@@ -196,14 +196,18 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
 
                 if (scheduleSaveState == null) {
                     openSnackbar('error', `Couldn't find schedules for username "${userId}".`);
-                } else if (await AppStore.loadSchedule(scheduleSaveState)) {
+                    return;
+                }
+
+                try {
+                    await AppStore.loadSchedule(scheduleSaveState);
                     openSnackbar('success', `Schedule for username "${userId}" loaded.`);
-                } else {
+                } catch {
                     AppStore.loadFallbackSchedules(scheduleSaveState);
                     openSnackbar(
                         'error',
-                        `Network error loading course information for "${userId}". 	              
-                        If this continues to happen, please submit a feedback form.`
+                        `Could only load fallback schedules for "${userId}". 	              
+                            If this continues to happen, please submit a feedback form.`
                     );
                 }
             } catch (e) {

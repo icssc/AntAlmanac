@@ -21,8 +21,13 @@ type ScheduleItem = {
     name: string;
 };
 
-function getScheduleItems(fallback: boolean): ScheduleItem[] {
-    const scheduleNames: string[] = fallback ? AppStore.getSkeletonScheduleNames() : AppStore.getScheduleNames();
+function getScheduleItems(): ScheduleItem[] {
+    const { fallback, fallbackSchedules } = useFallbackStore.getState();
+
+    const scheduleNames: string[] = fallback
+        ? fallbackSchedules.map((s) => s.scheduleName)
+        : AppStore.getScheduleNames();
+
     return scheduleNames.map((name, index) => ({ id: index, name }));
 }
 
@@ -52,10 +57,8 @@ export function SelectSchedulePopover() {
     const theme = useTheme();
     const { fallback } = useFallbackStore();
 
-    const scheduleItems = getScheduleItems(fallback);
-
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
-    const [scheduleMapping, setScheduleMapping] = useState(scheduleItems);
+    const [scheduleMapping, setScheduleMapping] = useState(() => getScheduleItems());
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement>();
 
@@ -97,7 +100,7 @@ export function SelectSchedulePopover() {
                 return;
             }
 
-            setScheduleMapping(getScheduleItems(fallback));
+            setScheduleMapping(() => getScheduleItems());
         };
 
         AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
@@ -105,7 +108,7 @@ export function SelectSchedulePopover() {
         return () => {
             AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
         };
-    }, [fallback, scheduleItems]);
+    }, [fallback]);
 
     return (
         <Box>

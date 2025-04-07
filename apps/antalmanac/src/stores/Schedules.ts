@@ -24,8 +24,6 @@ export class Schedules {
 
     private previousStates: ScheduleUndoState[];
 
-    private skeletonSchedules: ShortCourseSchedule[];
-
     /**
      * We do not want schedule notes to be undone; to avoid this,
      * we keep track of every schedule note in an object where each key
@@ -47,7 +45,6 @@ export class Schedules {
         this.currentScheduleIndex = 0;
         this.previousStates = [];
         this.scheduleNoteMap = { [scheduleNoteId]: '' };
-        this.skeletonSchedules = [];
     }
 
     getNextScheduleName(scheduleIndex: number, newScheduleName: string) {
@@ -617,17 +614,5 @@ export class Schedules {
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
         const scheduleNoteId = this.schedules[scheduleIndex].scheduleNoteId;
         this.scheduleNoteMap[scheduleNoteId] = newScheduleNote;
-    }
-
-    getCurrentSkeletonSchedule(): ShortCourseSchedule {
-        return this.skeletonSchedules[this.currentScheduleIndex];
-    }
-
-    getSkeletonScheduleNames(): string[] {
-        return this.skeletonSchedules.map((schedule) => schedule.scheduleName);
-    }
-
-    setSkeletonSchedules(skeletonSchedules: ShortCourseSchedule[]) {
-        this.skeletonSchedules = skeletonSchedules;
     }
 }

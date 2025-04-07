@@ -97,14 +97,6 @@ class AppStore extends EventEmitter {
         return this.schedule.getAllCustomEvents();
     }
 
-    getCurrentSkeletonSchedule() {
-        return this.schedule.getCurrentSkeletonSchedule();
-    }
-
-    getSkeletonScheduleNames() {
-        return this.schedule.getSkeletonScheduleNames();
-    }
-
     addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
         let addedCourse: ScheduleCourse;
         if (scheduleIndex === this.schedule.getNumberOfSchedules()) {
@@ -341,11 +333,7 @@ class AppStore extends EventEmitter {
     }
 
     private async loadScheduleFromSaveState(savedSchedule: ScheduleSaveState) {
-        try {
-            await this.schedule.fromScheduleSaveState(savedSchedule);
-        } catch {
-            return false;
-        }
+        await this.schedule.fromScheduleSaveState(savedSchedule);
     }
 
     async loadSchedule(savedSchedule: ScheduleSaveState) {
@@ -377,7 +365,7 @@ class AppStore extends EventEmitter {
     }
 
     loadFallbackSchedules(savedSchedule: ScheduleSaveState) {
-        this.schedule.setSkeletonSchedules(savedSchedule.schedules);
+        useFallbackStore.setState({ fallback: true, fallbackSchedules: savedSchedule.schedules });
 
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
@@ -387,7 +375,6 @@ class AppStore extends EventEmitter {
 
         // Switch to added courses tab since Anteater API can't be reached anyway
         useTabStore.getState().setActiveTab('added');
-        useFallbackStore.setState({ fallback: true });
     }
 
     changeCurrentSchedule(newScheduleIndex: number) {

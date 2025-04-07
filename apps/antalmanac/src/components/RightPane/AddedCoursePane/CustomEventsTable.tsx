@@ -6,10 +6,12 @@ import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 
 export function CustomEventsTable() {
-    const { fallback } = useFallbackStore();
+    const { fallback, fallbackSchedules } = useFallbackStore();
 
     const [customEvents, setCustomEvents] = useState(
-        fallback ? AppStore.getCurrentSkeletonSchedule().customEvents : AppStore.schedule.getCurrentCustomEvents()
+        fallback
+            ? fallbackSchedules.at(AppStore.getCurrentScheduleIndex())?.customEvents
+            : AppStore.schedule.getCurrentCustomEvents()
     );
 
     useEffect(() => {
@@ -26,7 +28,7 @@ export function CustomEventsTable() {
         };
     }, []);
 
-    if (customEvents.length <= 0) {
+    if (!customEvents?.length) {
         return null;
     }
 

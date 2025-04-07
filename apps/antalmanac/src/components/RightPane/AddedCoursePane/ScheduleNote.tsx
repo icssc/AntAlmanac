@@ -8,10 +8,12 @@ import { useFallbackStore } from '$stores/FallbackStore';
 const NOTE_MAX_LEN = 5000;
 
 export function ScheduleNote() {
-    const { fallback } = useFallbackStore();
+    const { fallback, fallbackSchedules } = useFallbackStore();
 
     const [scheduleNote, setScheduleNote] = useState(
-        fallback ? AppStore.getCurrentSkeletonSchedule().scheduleNote : AppStore.getCurrentScheduleNote()
+        fallback
+            ? fallbackSchedules.at(AppStore.getCurrentScheduleIndex())?.scheduleNote
+            : AppStore.getCurrentScheduleNote()
     );
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
 
