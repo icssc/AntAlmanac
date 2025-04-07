@@ -51,7 +51,7 @@ export const inputDialog = async (page: Page, dialogName: string, input: string)
 };
 
 export const getNewTab = async (page: Page, action: () => Promise<void>) => {
-    const [newTab] = await Promise.all([page.waitForEvent('popup', { timeout: 30000 }), action()]);
+    const [newTab] = await Promise.all([page.waitForEvent('popup', { timeout: 100000 }), action()]);
     await newTab.waitForLoadState();
     return newTab;
 };

@@ -23,14 +23,13 @@ export class HeaderPage {
     }
 
     async loadSchedule() {
-        const handledAlerts = new Set<string>();
-
-        this.page.on('dialog', async (alert) => {
-            if (!handledAlerts.has(alert.message())) {
-                if (alert.message() == 'You have unsaved changes. Would you like to load them?') {
+        this.page.once('dialog', async (alert) => {
+            if (alert.message() == 'You have unsaved changes. Would you like to load them?') {
+                try {
                     await alert.dismiss();
+                } catch (e) {
+                    console.warn('Dialog already handled: ', alert.message());
                 }
-                handledAlerts.add(alert.message());
             }
         });
 
