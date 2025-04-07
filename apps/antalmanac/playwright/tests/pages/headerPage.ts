@@ -23,7 +23,7 @@ export class HeaderPage {
     }
 
     async loadSchedule() {
-        this.page.on('dialog', async (alert) => {
+        this.page.once('dialog', async (alert) => {
             if (alert.message() == 'You have unsaved changes. Would you like to load them?') {
                 try {
                     await alert.dismiss();

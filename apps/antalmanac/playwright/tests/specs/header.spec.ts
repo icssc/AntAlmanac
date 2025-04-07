@@ -6,7 +6,6 @@ import { getSnackbar } from '../utils/helpers';
 
 test.describe('Header actions tests', () => {
     test.beforeEach(async ({ courseSearchPage, headerPage, courseRowPage }) => {
-        await headerPage.page.goto('/');
         await courseSearchPage.setUp();
         await courseRowPage.initCourseRow();
         await headerPage.initializeHeaderPage();
