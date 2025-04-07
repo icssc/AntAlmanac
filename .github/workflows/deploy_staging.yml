@@ -140,6 +140,21 @@ jobs:
                   url: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
                   status: failure
 
+            - name: Install Playwright Browsers
+              run: pnpm --filter=antalmanac exec playwright install --with-deps
+
+            - name: E2E Playwright Tests
+              run: pnpm test:e2e
+              env:
+                  PLAYWRIGHT_TEST_BASE_URL: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
+
+            - name: Upload Playwright Report
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: playwright-report
+                  path: apps/antalmanac/playwright-report/
+
     deploy_staging_backend:
         name: Deploy backend staging CloudFormation stack and environment
 

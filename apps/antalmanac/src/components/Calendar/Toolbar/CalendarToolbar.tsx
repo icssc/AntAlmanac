@@ -71,6 +71,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                 padding: 1,
                 borderRadius: '4px 4px 0 0',
             }}
+            data-testid="calendar-toolbar"
         >
             <Box gap={1} display="flex" alignItems="center">
                 <SelectSchedulePopover />
@@ -99,6 +100,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             size="small"
                             id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
                             disabled={skeletonMode}
+                            data-testid="finals-button"
                         >
                             Finals
                         </Button>

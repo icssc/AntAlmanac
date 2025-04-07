@@ -18,7 +18,7 @@ export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) =>
 
     if (event.isCustomEvent) {
         return (
-            <Box onClick={handleClick}>
+            <Box onClick={handleClick} data-testid="custom-event">
                 <Box
                     style={{
                         display: 'flex',
@@ -39,7 +39,7 @@ export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) =>
     }
 
     return (
-        <Box onClick={handleClick}>
+        <Box onClick={handleClick} data-testid="course-event">
             <Box
                 style={{
                     display: 'flex',

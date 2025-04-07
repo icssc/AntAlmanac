@@ -99,7 +99,7 @@ function GradesPopup(props: GradesPopupProps) {
 
     if (loading) {
         return (
-            <Box padding={1}>
+            <Box padding={1} data-testid="grades-popup">
                 <Skeleton variant="text" animation="wave" height={height} width={width} />
             </Box>
         );
@@ -107,7 +107,7 @@ function GradesPopup(props: GradesPopupProps) {
 
     if (!gradeData) {
         return (
-            <Box padding={1}>
+            <Box padding={1} data-testid="grades-popup">
                 <Typography variant="body1" align="center">
                     No data available.
                 </Typography>
@@ -119,7 +119,7 @@ function GradesPopup(props: GradesPopupProps) {
     const axisColor = isDark ? '#fff' : '#000';
 
     return (
-        <Box sx={{ padding: '4px' }}>
+        <Box sx={{ padding: '4px' }} data-testid="grades-popup">
             <Typography
                 sx={{
                     marginTop: '.5rem',
