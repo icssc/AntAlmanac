@@ -4,7 +4,7 @@ import darkModeLoadingGif from '../RightPane/CoursePane/SearchForm/Gifs/dark-loa
 import loadingGif from '../RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
-import { AddedCoursePane } from '$components/RightPane/AddedCourses/AddedCoursePane';
+import { AddedCoursePane } from '$components/RightPane/AddedCoursePane';
 import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
 import { useThemeStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
