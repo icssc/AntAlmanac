@@ -199,7 +199,7 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
                 } else if (await AppStore.loadSchedule(scheduleSaveState)) {
                     openSnackbar('success', `Schedule for username "${userId}" loaded.`);
                 } else {
-                    AppStore.loadSkeletonSchedule(scheduleSaveState);
+                    AppStore.loadFallbackSchedules(scheduleSaveState);
                     openSnackbar(
                         'error',
                         `Network error loading course information for "${userId}". 	              

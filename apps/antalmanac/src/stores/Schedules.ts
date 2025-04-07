@@ -605,7 +605,7 @@ export class Schedules {
     }
 
     getCurrentScheduleNote() {
-        const scheduleNoteId = this.schedules[this.currentScheduleIndex]?.scheduleNoteId;
+        const scheduleNoteId = this.schedules.at(this.currentScheduleIndex)?.scheduleNoteId;
 
         if (scheduleNoteId == null) {
             return '';

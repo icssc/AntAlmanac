@@ -22,6 +22,7 @@ import type {
 } from '$actions/ActionTypesStore';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { SnackbarPosition } from '$components/NotificationSnackbar';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
 
@@ -48,8 +49,6 @@ class AppStore extends EventEmitter {
 
     unsavedChanges: boolean;
 
-    skeletonMode: boolean;
-
     constructor() {
         super();
         this.setMaxListeners(300);
@@ -64,7 +63,6 @@ class AppStore extends EventEmitter {
         this.eventsInCalendar = [];
         this.finalsEventsInCalendar = [];
         this.unsavedChanges = false;
-        this.skeletonMode = false;
 
         if (typeof window !== 'undefined') {
             window.addEventListener('beforeunload', (event) => {
@@ -171,10 +169,6 @@ class AppStore extends EventEmitter {
 
     getCurrentScheduleNote() {
         return this.schedule.getCurrentScheduleNote();
-    }
-
-    getSkeletonMode() {
-        return this.skeletonMode;
     }
 
     hasUnsavedChanges() {
@@ -382,9 +376,8 @@ class AppStore extends EventEmitter {
         return true;
     }
 
-    loadSkeletonSchedule(savedSchedule: ScheduleSaveState) {
+    loadFallbackSchedules(savedSchedule: ScheduleSaveState) {
         this.schedule.setSkeletonSchedules(savedSchedule.schedules);
-        this.skeletonMode = true;
 
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
@@ -392,10 +385,9 @@ class AppStore extends EventEmitter {
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNotesChange');
 
-        this.emit('skeletonModeChange');
-
         // Switch to added courses tab since Anteater API can't be reached anyway
         useTabStore.getState().setActiveTab('added');
+        useFallbackStore.setState({ fallback: true });
     }
 
     changeCurrentSchedule(newScheduleIndex: number) {

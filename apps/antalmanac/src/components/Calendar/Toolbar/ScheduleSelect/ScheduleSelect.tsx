@@ -10,6 +10,7 @@ import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelec
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 
 type EventContext = {
     triggeredBy?: string;
@@ -20,8 +21,8 @@ type ScheduleItem = {
     name: string;
 };
 
-function getScheduleItems(items?: string[]): ScheduleItem[] {
-    const scheduleNames: string[] = items || AppStore.getScheduleNames();
+function getScheduleItems(fallback: boolean): ScheduleItem[] {
+    const scheduleNames: string[] = fallback ? AppStore.getSkeletonScheduleNames() : AppStore.getScheduleNames();
     return scheduleNames.map((name, index) => ({ id: index, name }));
 }
 
@@ -49,13 +50,12 @@ function createScheduleSelector(index: number) {
  */
 export function SelectSchedulePopover() {
     const theme = useTheme();
+    const { fallback } = useFallbackStore();
+
+    const scheduleItems = getScheduleItems(fallback);
 
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
-    const [scheduleMapping, setScheduleMapping] = useState(getScheduleItems());
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-    const [skeletonScheduleMapping, setSkeletonScheduleMapping] = useState(
-        getScheduleItems(AppStore.getSkeletonScheduleNames())
-    );
+    const [scheduleMapping, setScheduleMapping] = useState(scheduleItems);
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement>();
 
@@ -96,28 +96,21 @@ export function SelectSchedulePopover() {
             if (context?.triggeredBy === 'reorder') {
                 return;
             }
-            setScheduleMapping(getScheduleItems());
-        };
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-            setSkeletonScheduleMapping(getScheduleItems(AppStore.getSkeletonScheduleNames()));
+
+            setScheduleMapping(scheduleItems);
         };
 
         AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
 
         return () => {
             AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
-    }, []);
-
-    const scheduleMappingToUse = skeletonMode ? skeletonScheduleMapping : scheduleMapping;
+    }, [scheduleItems]);
 
     return (
         <Box>
             <Tooltip
-                title={scheduleMappingToUse[currentScheduleIndex]?.name}
+                title={scheduleMapping.at(currentScheduleIndex)?.name}
                 enterDelay={200}
                 slotProps={{
                     popper: {
@@ -142,7 +135,7 @@ export function SelectSchedulePopover() {
                     sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
                 >
                     <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
-                        {scheduleMappingToUse[currentScheduleIndex]?.name || null}
+                        {scheduleMapping.at(currentScheduleIndex)?.name || null}
                     </Typography>
                     <ArrowDropDownIcon />
                 </Button>
@@ -156,10 +149,10 @@ export function SelectSchedulePopover() {
             >
                 <Box padding={1}>
                     <SortableList
-                        items={scheduleMappingToUse}
+                        items={scheduleMapping}
                         onChange={setScheduleMapping}
                         renderItem={(item) => {
-                            const index = scheduleMappingToUse.indexOf(item);
+                            const index = scheduleMapping.indexOf(item);
                             return (
                                 <SortableList.Item id={item.id}>
                                     <Box
@@ -171,7 +164,7 @@ export function SelectSchedulePopover() {
                                             flexGrow: 1,
                                         }}
                                     >
-                                        <SortableList.DragHandle disabled={skeletonMode} />
+                                        <SortableList.DragHandle disabled={fallback} />
                                         <Box flexGrow={1}>
                                             <Tooltip
                                                 title={item.name}
@@ -219,9 +212,9 @@ export function SelectSchedulePopover() {
                                         </Box>
 
                                         <Box display="flex" alignItems="center" gap={0.5}>
-                                            <CopyScheduleButton index={index} disabled={skeletonMode} />
-                                            <RenameScheduleButton index={index} disabled={skeletonMode} />
-                                            <DeleteScheduleButton index={index} disabled={skeletonMode} />
+                                            <CopyScheduleButton index={index} disabled={fallback} />
+                                            <RenameScheduleButton index={index} disabled={fallback} />
+                                            <DeleteScheduleButton index={index} disabled={fallback} />
                                         </Box>
                                     </Box>
                                 </SortableList.Item>
@@ -229,7 +222,7 @@ export function SelectSchedulePopover() {
                         }}
                     />
                     <Box marginY={1} />
-                    <AddScheduleButton disabled={skeletonMode} />
+                    <AddScheduleButton disabled={fallback} />
                 </Box>
             </Popover>
         </Box>
