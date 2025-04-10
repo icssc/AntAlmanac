@@ -70,8 +70,8 @@ async function main() {
     console.log(`Fetched ${calendarTerms?.length} calendar terms.`);
 
     calendarTerms.sort((a, b) => {
-        const dateA = new Date(a.instructionStart ?? a.finalsStart ?? 0).getTime();
-        const dateB = new Date(b.instructionStart ?? b.finalsStart ?? 0).getTime();
+        const dateA = new Date(a.instructionStart).getTime();
+        const dateB = new Date(b.instructionStart).getTime();
         return dateB - dateA;
     });
 
