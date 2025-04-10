@@ -13,17 +13,17 @@ const OUTPUT_FILE = join(OUTPUT_DIR, 'termData.ts');
 const API_URL = 'https://anteaterapi.com/v2/rest/calendar/all';
 const ORIGIN = 'https://antalmanac.com';
 
-const QUARTER_MAP: Record<string, string> = {
+const QUARTER_MAP = {
     Summer1: 'Summer Session 1',
     Summer10wk: '10-wk Summer',
     Summer2: 'Summer Session 2',
     Fall: 'Fall Quarter',
     Winter: 'Winter Quarter',
     Spring: 'Spring Quarter',
-};
+} as const;
 
-function sanitizeTermName(year: string, quarter: string): `${string} ${string}` {
-    return `${year} ${QUARTER_MAP[quarter] ?? quarter}`;
+function sanitizeTermName(year: string, quarter: keyof typeof QUARTER_MAP): `${string} ${string}` {
+    return `${year} ${QUARTER_MAP[quarter]}`;
 }
 
 async function fetchCalendarTerms(): Promise<CalendarTerm[]> {
