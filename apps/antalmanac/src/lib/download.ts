@@ -11,9 +11,7 @@ import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { getDefaultTerm, termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 
-export const quarterStartDates = Object.fromEntries(
-    termData.filter((term) => term.startDate !== undefined).map((term) => [term.shortName, term.startDate as Date])
-);
+export const quarterStartDates = Object.fromEntries(termData.map((term) => [term.shortName, term.startDate]));
 
 export const months: Record<string, number> = { Mar: 3, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Dec: 12 };
 

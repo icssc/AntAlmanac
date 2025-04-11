@@ -127,8 +127,7 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
              * Fallback to January 2018 if no finals start date is available.
              * finalsDay is handled later by day since it varies by day.
              */
-            const originalStart = getFinalsStartDateForTerm(course.term);
-            const finalsStartDate = originalStart ?? new Date(2018, 0, 1);
+            const finalsStartDate = getFinalsStartDateForTerm(course.term);
 
             return dayIndicesOccurring.map((dayIndex) => {
                 const startDate = new Date(finalsStartDate);

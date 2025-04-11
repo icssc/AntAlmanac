@@ -10,9 +10,9 @@ import { terms } from '$generated/termData';
 export type Term = {
     shortName: `${string} ${string}`;
     longName: string;
-    startDate?: Date;
-    finalsStartDate?: Date;
-    socAvailable?: Date;
+    startDate: Date;
+    finalsStartDate: Date;
+    socAvailable: Date;
     isSummerTerm: boolean;
 };
 
@@ -20,7 +20,7 @@ export type Term = {
  * Only include terms that have a SOC available.
  */
 const termData = terms.filter((term) => {
-    return term.socAvailable && term.socAvailable <= new Date();
+    return term.socAvailable <= new Date();
 });
 
 // The index of the default term in termData, as per WebSOC
@@ -49,15 +49,7 @@ function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): Term {
 }
 
 function getDefaultFinalsStartDate() {
-    const defaultFinalsDate = termData[defaultTerm]?.finalsStartDate;
-
-    if (!defaultFinalsDate) {
-        return undefined;
-    }
-
-    const offsetDate = new Date(defaultFinalsDate);
-    offsetDate.setDate(offsetDate.getDate());
-    return offsetDate;
+    return new Date(termData[defaultTerm].finalsStartDate);
 }
 
 function getFinalsStartDateForTerm(term: string) {
@@ -66,14 +58,8 @@ function getFinalsStartDateForTerm(term: string) {
         console.warn(`No matching term for ${term}`);
         return getDefaultFinalsStartDate();
     }
-    if (termThatMatches.finalsStartDate === undefined) {
-        return undefined;
-    }
 
-    const finalsStartDate = new Date(termThatMatches.finalsStartDate);
-
-    finalsStartDate.setDate(finalsStartDate.getDate());
-    return finalsStartDate;
+    return new Date(termThatMatches.finalsStartDate);
 }
 
 export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStartDate, getFinalsStartDateForTerm };

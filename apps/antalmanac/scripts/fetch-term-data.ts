@@ -50,6 +50,11 @@ function toLocalDateCode(dateString: string): string {
 
 function serializeTerm(term: CalendarTerm): string {
     const { year, quarter, instructionStart, finalsStart, socAvailable } = term;
+
+    if (!instructionStart || !finalsStart || !socAvailable) {
+        throw new Error(`Term ${year} ${quarter} is missing required date fields`);
+    }
+
     const shortName = `${year} ${quarter}`;
     const longName = sanitizeTermName(year, quarter);
     const isSummerTerm = quarter.toLowerCase().includes('summer');
@@ -57,9 +62,9 @@ function serializeTerm(term: CalendarTerm): string {
     return `    {
         shortName: ${JSON.stringify(shortName)},
         longName: ${JSON.stringify(longName)},
-        ${instructionStart ? `startDate: ${toLocalDateCode(instructionStart)},` : ''}
-        ${finalsStart ? `finalsStartDate: ${toLocalDateCode(finalsStart)},` : ''}
-        ${socAvailable ? `socAvailable: ${toLocalDateCode(socAvailable)},` : ''}
+        startDate: ${toLocalDateCode(instructionStart)},
+        finalsStartDate: ${toLocalDateCode(finalsStart)},
+        socAvailable: ${toLocalDateCode(socAvailable)},
         isSummerTerm: ${isSummerTerm},
     }`;
 }

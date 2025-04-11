@@ -148,8 +148,8 @@ export const ScheduleCalendar = memo(() => {
           ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
           : getDefaultFinalsStartDate();
 
-    const finalsDateFormat = finalsDate ? 'ddd MM/DD' : 'ddd';
-    const date = showFinalsSchedule && finalsDate ? finalsDate : new Date(2018, 0, 1);
+    const finalsDateFormat = 'ddd MM/DD';
+    const date = showFinalsSchedule ? finalsDate : new Date(2018, 0, 1);
 
     const formats = useMemo(
         () => ({
