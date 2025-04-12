@@ -20,11 +20,11 @@ export const EXCLUDE_RESTRICTION_CODES_OPTIONS = [
 ];
 
 export const DAYS_OPTIONS = [
-    { value: 'Su', label: 'Su: Sunday', order: 0 },
-    { value: 'M', label: 'M: Monday', order: 1 },
-    { value: 'Tu', label: 'Tu: Tuesday', order: 2 },
-    { value: 'W', label: 'W: Wednesday', order: 3 },
-    { value: 'Th', label: 'Th: Thursday', order: 4 },
-    { value: 'F', label: 'F: Friday', order: 5 },
-    { value: 'Sa', label: 'Sa: Saturday', order: 6 },
+    { value: 'Su', label: 'Su: Sunday' },
+    { value: 'M', label: 'M: Monday' },
+    { value: 'Tu', label: 'Tu: Tuesday' },
+    { value: 'W', label: 'W: Wednesday' },
+    { value: 'Th', label: 'Th: Thursday' },
+    { value: 'F', label: 'F: Friday' },
+    { value: 'Sa', label: 'Sa: Saturday' },
 ];
