@@ -91,7 +91,7 @@ export function DepartmentSearchBar() {
                 options={Array.from(new Set<string>([...recentSearches, ...options]))}
                 autoHighlight={true}
                 openOnFocus={true}
-                getOptionLabel={(option) => DEPARTMENT_MAP[option as keyof typeof DEPARTMENT_MAP]}
+                getOptionLabel={(option) => DEPARTMENT_MAP[option.toUpperCase() as keyof typeof DEPARTMENT_MAP]}
                 onChange={handleChange}
                 includeInputInList={true}
                 noOptionsText="No departments match the search"
