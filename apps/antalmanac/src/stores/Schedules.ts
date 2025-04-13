@@ -10,7 +10,7 @@ import type {
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 
-import { termData } from '$lib/termData';
+import { getDefaultTerm } from '$lib/termData';
 import { WebSOC } from '$lib/websoc';
 import { getColorForNewSection } from '$stores/scheduleHelpers';
 
@@ -38,7 +38,7 @@ export class Schedules {
 
         this.schedules = [
             {
-                scheduleName: `${termData[0].shortName.replaceAll(' ', '-')}`,
+                scheduleName: `${getDefaultTerm().shortName.replaceAll(' ', '-')}`,
                 courses: [],
                 customEvents: [],
                 scheduleNoteId: scheduleNoteId,
@@ -63,7 +63,7 @@ export class Schedules {
     }
 
     getDefaultScheduleName() {
-        return termData[0].shortName.replaceAll(' ', '-');
+        return getDefaultTerm().shortName.replaceAll(' ', '-');
     }
 
     getCurrentScheduleIndex() {
