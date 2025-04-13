@@ -33,7 +33,7 @@ const parseLocalStorageFavorites = (): string[] => {
 
 export function DepartmentSearchBar() {
     const [value, setValue] = useState(() => RightPaneStore.getFormData().deptValue);
-    const [favorites, setFavorites] = useState<typeof options>(() => parseLocalStorageFavorites());
+    const [recentSearches, setRecentSearches] = useState<typeof options>(() => parseLocalStorageFavorites());
 
     const resetField = useCallback(() => {
         setValue(() => RightPaneStore.getFormData().deptValue);
@@ -52,26 +52,24 @@ export function DepartmentSearchBar() {
 
             urlParam.delete('deptValue');
 
-            if (newValue && newValue != 'ALL') {
+            if (newValue != 'ALL') {
                 urlParam.append('deptValue', newValue);
             }
             const param = urlParam.toString();
             const new_url = `${param.trim() ? '?' : ''}${param}`;
             history.replaceState(stateObj, 'url', '/' + new_url);
 
-            if (newValue == null || newValue === 'ALL') return;
+            if (newValue === 'ALL') return;
 
-            favorites.includes(newValue)
-                ? setFavorites((prev) =>
+            recentSearches.includes(newValue)
+                ? setRecentSearches((prev) =>
                       prev.sort((a, b) => {
                           return a === newValue ? -1 : b === newValue ? 1 : 0;
                       })
                   )
-                : setFavorites((prev) => [newValue, ...prev].slice(0, 5));
-
-            setLocalStorageFavorites(JSON.stringify(favorites));
+                : setRecentSearches((prev) => [newValue, ...prev].slice(0, 5));
         },
-        [favorites]
+        [recentSearches]
     );
 
     useEffect(() => {
@@ -82,18 +80,22 @@ export function DepartmentSearchBar() {
         };
     }, [resetField]);
 
+    useEffect(() => {
+        setLocalStorageFavorites(JSON.stringify(recentSearches));
+    }, [recentSearches]);
+
     return (
         <Box sx={{ flexGrow: 1, width: '50%' }}>
             <Autocomplete
                 value={value}
-                options={Array.from(new Set<string>([...favorites, ...options]))}
+                options={Array.from(new Set<string>([...recentSearches, ...options]))}
                 autoHighlight={true}
                 openOnFocus={true}
                 getOptionLabel={(option) => DEPARTMENT_MAP[option as keyof typeof DEPARTMENT_MAP]}
                 onChange={handleChange}
                 includeInputInList={true}
                 noOptionsText="No departments match the search"
-                groupBy={(option) => (favorites.includes(option) ? 'Recently Searched' : 'Departments')}
+                groupBy={(option) => (recentSearches.includes(option) ? 'Recently Searched' : 'Departments')}
                 renderInput={(params) => <TextField {...params} label="Department" variant="standard" />}
             />
         </Box>

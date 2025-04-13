@@ -2,7 +2,7 @@ import { Box, Button } from '@mui/material';
 
 import AdvancedSearch from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearch';
 import CourseNumberSearchBar from '$components/RightPane/CoursePane/SearchForm/CourseNumberSearchBar';
-import { DepartmentSearchBar } from '$components/RightPane/CoursePane/SearchForm/DeptSearchBar/DeptSearchBar';
+import { DepartmentSearchBar } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/DepartmentSearchBar';
 import GESelector from '$components/RightPane/CoursePane/SearchForm/GESelector';
 import SectionCodeSearchBar from '$components/RightPane/CoursePane/SearchForm/SectionCodeSearchBar';
 

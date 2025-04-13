@@ -41,7 +41,7 @@ export function paramsAreInURL() {
     return searchParams.some((param) => search.get(param) !== null);
 }
 
-export function requiredParamsAreInURL() {
+function requiredParamsAreInURL() {
     const search = new URLSearchParams(window.location.search);
 
     const searchParams = ['courseCode', 'courseNumber', 'ge', 'deptValue'];
