@@ -1,7 +1,7 @@
 import { Autocomplete, Box, TextField } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
-import { DEPARTMENT_MAP } from '$components/RightPane/CoursePane/SearchForm/DeptSearchBar/constants';
+import { DEPARTMENT_MAP } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { getLocalStorageFavorites, setLocalStorageFavorites } from '$lib/localStorage';
 
