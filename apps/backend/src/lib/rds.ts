@@ -572,5 +572,20 @@ export class RDS {
                 )
         );
     }
+
+     /**
+     * Deletes ALL notifications for a specified user
+     *
+     * @param db - The database or transaction object to use for the operation.
+     * @param userId - The ID of the user for whom we're deleting all notifications.
+     * @returns A promise that deletes all of a user's notifications.
+     */
+    static async deleteAllNotifications(db: DatabaseOrTransaction, userId: string) {
+        return db.transaction((tx) =>
+            tx
+                .delete(subscriptions)
+                .where(eq(subscriptions.userId, userId))
+        );
+
 }
 

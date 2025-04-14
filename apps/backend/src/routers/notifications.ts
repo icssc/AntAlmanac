@@ -12,7 +12,7 @@ const NotificationStatusSchema = z.object({
 
 const NotificationSchema = z.object({
     term: z.string(),
-    sectionCode: z.string(),
+    sectionCode: z.number(),
     courseTitle: z.string(),
     sectionType: z.string(),
     lastUpdated: z.string(),
@@ -49,6 +49,12 @@ const notificationsRouter = router({
             await RDS.deleteNotification(db, input.notification, input.id);
         }
     ),
+
+    deleteAllNotifications: procedure
+        .input(z.object({ id: z.string() }))
+        .mutation(async ({ input }) => {
+            await RDS.deleteAllNotifications(db, input.id);
+        }),
 });
 
 export default notificationsRouter;

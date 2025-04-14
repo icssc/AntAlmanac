@@ -13,11 +13,17 @@ import AppThemev5Provider from './providers/Themev5';
 import { ErrorPage } from './routes/ErrorPage';
 import Feedback from './routes/Feedback';
 import Home from './routes/Home';
+import { Unsubscribe } from './routes/UnsubscribePage';
 
 const BrowserRouter = createBrowserRouter([
     {
         path: '/',
         element: <Home />,
+        errorElement: <ErrorPage />,
+    },
+    {
+        path: '/unsubscribe/:userId',
+        element: <Unsubscribe />,
         errorElement: <ErrorPage />,
     },
     {
