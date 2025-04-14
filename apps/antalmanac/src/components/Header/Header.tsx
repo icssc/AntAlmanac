@@ -3,7 +3,8 @@ import { useEffect, useCallback, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import Import from './Import';
-import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
+// import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
+import LoadSaveScheduleFunctionalityButton from './LoadSaveFunctionalityButton';
 import Login from './Login';
 import { Logo } from './Logo';
 import AppDrawer from './SettingsMenu';
@@ -60,7 +61,8 @@ export function Header() {
                 <Logo />
 
                 <Stack direction="row">
-                    <LoadSaveScheduleFunctionality />
+                    {/* <LoadSaveScheduleFunctionality /> */}
+                    <LoadSaveScheduleFunctionalityButton />
                     <Import key="studylist" />
                     <Login />
                     <AppDrawer key="settings" />

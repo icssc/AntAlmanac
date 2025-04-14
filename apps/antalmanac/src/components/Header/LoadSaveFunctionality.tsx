@@ -51,22 +51,25 @@ const LoadSaveScheduleFunctionality = () => {
     };
 
     const closeLoadCacheDialog = async (loadCache: boolean) => {
-        setOpenLoadCacheDialog(false);
-        await loadSchedule(loadCache);
+        setOpenLoadCacheDialog(loadCache);
+        // await loadSchedule(loadCache);
     };
 
     const saveScheduleData = async () => {
         if (validSession && session) {
-            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({ token: session });
+            const { users, _ } = await trpc.userData.getUserAndAccountBySessionToken.query({ token: session });
             setSaving(true);
-            await saveSchedule(users.id, accounts.AccountType, true);
+            await saveSchedule(users.id, true);
+            // await saveSchedule(users.id, accounts.AccountType, true);
             setSaving(false);
         }
     };
 
     const loadScheduleData = useCallback(async () => {
         if (validSession) {
-            await loadSchedule();
+            const userId: string = getLocalStorageDataCache() ?? '';
+            await loadSchedule(userId, true);
+            // await loadSchedule();
         }
     }, [validSession]);
 

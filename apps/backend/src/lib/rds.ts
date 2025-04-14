@@ -202,7 +202,7 @@ export class RDS {
         return db.transaction(async (tx) => {
             const userId = userData.id;
 
-            const user = await this.getUserById(db, userId);
+            const user = await this.registerUserAccount(db, userId, userId, 'GUEST');
             if (!user) {
                 throw new Error(`Failed to create user`);
             }
