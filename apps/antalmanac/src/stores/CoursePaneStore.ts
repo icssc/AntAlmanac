@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 interface CoursePaneStore {
     /** Whether the search form is displayed (or the classes view) */
     searchFormIsDisplayed: boolean;
@@ -51,7 +52,7 @@ function requiredParamsAreInURL() {
 
 export const useCoursePaneStore = create<CoursePaneStore>((set) => {
     return {
-        searchFormIsDisplayed: !requiredParamsAreInURL(),
+        searchFormIsDisplayed: !requiredParamsAreInURL() || !RightPaneStore.formDataIsValid(),
         displaySearch: () => {
             set({ searchFormIsDisplayed: true });
         },

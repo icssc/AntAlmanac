@@ -97,7 +97,9 @@ class RightPaneStore extends EventEmitter {
 
     formDataIsValid = () => {
         const { ge, deptValue, sectionCode, instructor } = this.formData;
-        return ge !== 'ANY' || deptValue !== 'ALL' || sectionCode !== '' || instructor !== '';
+        return (
+            ge.toUpperCase() !== 'ANY' || deptValue.toUpperCase() !== 'ALL' || sectionCode !== '' || instructor !== ''
+        );
     };
 }
 
