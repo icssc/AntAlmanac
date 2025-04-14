@@ -3,14 +3,13 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { DEPARTMENT_MAP } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { getLocalStorageFavorites, setLocalStorageFavorites } from '$lib/localStorage';
+import { getLocalStorageRecentlySearched, setLocalStorageRecentlySearched } from '$lib/localStorage';
 
 const options = Object.keys(DEPARTMENT_MAP);
 
-// This helper handles parsing the current and prior formats of localStorageFavorites
-const parseLocalStorageFavorites = (): string[] => {
+const parseLocalStorageRecentlySearched = (): string[] => {
     try {
-        const data = JSON.parse(getLocalStorageFavorites() ?? '[]');
+        const data = JSON.parse(getLocalStorageRecentlySearched() ?? '[]');
 
         if (!Array.isArray(data)) {
             return [];
@@ -18,10 +17,6 @@ const parseLocalStorageFavorites = (): string[] => {
 
         if (data.every((x) => typeof x === 'string')) {
             return data;
-        }
-
-        if (data.every((x) => typeof x === 'object' && x !== null && 'deptValue' in x)) {
-            return data.map((x) => x.deptValue);
         }
 
         return [];
@@ -33,7 +28,7 @@ const parseLocalStorageFavorites = (): string[] => {
 
 export function DepartmentSearchBar() {
     const [value, setValue] = useState(() => RightPaneStore.getFormData().deptValue);
-    const [recentSearches, setRecentSearches] = useState<typeof options>(() => parseLocalStorageFavorites());
+    const [recentSearches, setRecentSearches] = useState<typeof options>(() => parseLocalStorageRecentlySearched());
 
     const resetField = useCallback(() => {
         setValue(() => RightPaneStore.getFormData().deptValue);
@@ -81,7 +76,7 @@ export function DepartmentSearchBar() {
     }, [resetField]);
 
     useEffect(() => {
-        setLocalStorageFavorites(JSON.stringify(recentSearches));
+        setLocalStorageRecentlySearched(JSON.stringify(recentSearches));
     }, [recentSearches]);
 
     return (
