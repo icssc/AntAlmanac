@@ -115,12 +115,12 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
                 return;
             }
 
-            const user = await trpc.userData.getGuestUserByName.query({ name: userID });
+            console.log(scheduleSaveState);
             try {
                 await trpc.userData.saveUserData.mutate({
                     id: userID,
                     data: {
-                        id: user.users.id,
+                        id: userID,
                         userData: scheduleSaveState,
                     },
                 });
