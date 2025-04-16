@@ -2,16 +2,15 @@ import { Delete } from '@mui/icons-material';
 import { Box, Card, CardActions, CardHeader, IconButton, Tooltip } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import moment from 'moment';
-import { useEffect, useState } from 'react';
-
-import ColorPicker from '../../ColorPicker';
 
 import { deleteCustomEvent } from '$actions/AppStoreActions';
 import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
+import ColorPicker from '$components/ColorPicker';
 import { MapLink } from '$components/buttons/MapLink';
 import analyticsEnum from '$lib/analytics';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 
 interface CustomEventDetailViewProps {
@@ -22,20 +21,7 @@ interface CustomEventDetailViewProps {
 const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
     const { customEvent } = props;
     const { isMilitaryTime } = useTimeFormatStore();
-
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
+    const { fallback } = useFallbackStore();
 
     const readableDateAndTimeFormat = (start: string, end: string, days: boolean[]) => {
         const startTime = moment({
@@ -62,9 +48,7 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                 titleTypographyProps={{ variant: 'subtitle1' }}
                 title={customEvent.title}
                 subheader={readableDateAndTimeFormat(customEvent.start, customEvent.end, customEvent.days)}
-                style={{
-                    padding: !skeletonMode ? '8px 8px 0 8px' : 8,
-                }}
+                sx={{ padding: !fallback ? '8px 8px 0 8px' : 8 }}
             />
             <Box sx={{ margin: '0.75rem', color: '#bbbbbb', fontSize: '1rem' }}>
                 <MapLink
@@ -73,7 +57,7 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                 />
             </Box>
 
-            {!skeletonMode && (
+            {!fallback && (
                 <CardActions disableSpacing={true} style={{ padding: 0 }}>
                     <Box
                         sx={{

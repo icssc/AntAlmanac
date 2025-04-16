@@ -11,7 +11,8 @@ import {
     Tooltip,
 } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import DaySelector from './DaySelector';
 import ScheduleSelector from './ScheduleSelector';
@@ -20,6 +21,7 @@ import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
 import analyticsEnum, { logAnalytics } from '$lib/analytics';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface CustomEventDialogProps {
@@ -38,7 +40,8 @@ const defaultCustomEventValues: RepeatingCustomEvent = {
 };
 
 function CustomEventDialogs(props: CustomEventDialogProps) {
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const { fallback } = useFallbackStore();
 
     const [open, setOpen] = useState(false);
     const [scheduleIndices, setScheduleIndices] = useState<number[]>([]);
@@ -126,20 +129,6 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
             : addCustomEvent(newCustomEvent, scheduleIndices);
     };
 
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
-
-    const isDark = useThemeStore.getState().isDark;
-
     return (
         <>
             {props.customEvent ? (
@@ -162,7 +151,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                 </Tooltip>
             ) : (
                 <Tooltip title="Add custom events">
-                    <IconButton onClick={handleOpen} size="medium" disabled={skeletonMode}>
+                    <IconButton onClick={handleOpen} size="medium" disabled={fallback}>
                         <Add fontSize="small" />
                     </IconButton>
                 </Tooltip>

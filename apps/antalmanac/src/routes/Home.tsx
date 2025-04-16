@@ -92,7 +92,7 @@ export default function Home() {
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <PatchNotes />
-            <InstallPWABanner />
+            {/* <InstallPWABanner /> */}
 
             {isMobileScreen ? <MobileHome /> : <DesktopHome />}
 
