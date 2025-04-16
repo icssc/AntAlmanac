@@ -23,8 +23,8 @@ export class RDS {
     /**
      * If a guest user with the specified name exists, return their ID, otherwise return null.
      */
-    static async guestUserIdWithNameOrNull(db: DatabaseOrTransaction, name: string): Promise<string | null> {
-        return db
+    private static async guestUserIdWithNameOrNull(tx: Transaction, name: string): Promise<string | null> {
+        return tx
             .select({ id: accounts.userId })
             .from(accounts)
             .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.providerAccountId, name)))
@@ -35,16 +35,16 @@ export class RDS {
     /**
      * Creates a guest user if they don't already exist.
      *
-     * @param db Database or transaction object
+     * @param tx Database or transaction object
      * @param name Guest user's name, to be used as providerAccountID and username
      * @returns The new/existing user's ID
      */
-    static async createGuestUserOptional(db: DatabaseOrTransaction, name: string) {
-        const maybeUserId = await RDS.guestUserIdWithNameOrNull(db, name);
+    private static async createGuestUserOptional(tx: Transaction, name: string) {
+        const maybeUserId = await RDS.guestUserIdWithNameOrNull(tx, name);
 
         const userId = maybeUserId
             ? maybeUserId
-            : await db
+            : await tx
                   .insert(users)
                   .values({ name })
                   .returning({ id: users.id })
@@ -54,7 +54,7 @@ export class RDS {
             throw new Error(`Failed to create guest user for ${name}`);
         }
 
-        await db
+        await tx
             .insert(accounts)
             .values({ userId, accountType: 'GUEST', providerAccountId: name })
             .onConflictDoNothing()
@@ -70,7 +70,7 @@ export class RDS {
      * @returns The ID of the new/existing schedule
      */
     private static async upsertScheduleAndContents(
-        db: Transaction,
+        tx: Transaction,
         userId: string,
         schedule: ShortCourseSchedule,
         index: number
@@ -84,7 +84,7 @@ export class RDS {
             lastUpdated: new Date(),
         };
 
-        const scheduleResult = await db
+        const scheduleResult = await tx
             .insert(schedules)
             .values(dbSchedule)
             .returning({ id: schedules.id })
@@ -99,11 +99,11 @@ export class RDS {
 
         // Add courses and custom events
         await Promise.all([
-            this.upsertCourses(db, scheduleId, schedule.courses).catch((error) => {
+            this.upsertCourses(tx, scheduleId, schedule.courses).catch((error) => {
                 throw new Error(`Failed to insert courses for ${schedule.scheduleName}: ${error}`);
             }),
 
-            this.upsertCustomEvents(db, scheduleId, schedule.customEvents).catch((error) => {
+            this.upsertCustomEvents(tx, scheduleId, schedule.customEvents).catch((error) => {
                 throw new Error(`Failed to insert custom events for ${schedule.scheduleName}: ${error}`);
             }),
         ]);
