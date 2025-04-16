@@ -2,7 +2,10 @@ import { TextField, Box, FormControl, InputLabel, Select, Switch, FormControlLab
 import { MenuItem } from '@mui/material';
 import { useState, useEffect, useCallback } from 'react';
 
-import { EXCLUDE_RESTRICTION_CODES_OPTIONS } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
+import {
+    EXCLUDE_RESTRICTION_CODES_OPTIONS,
+    DAYS_OPTIONS,
+} from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 export function AdvancedSearchTextFields() {
@@ -17,6 +20,7 @@ export function AdvancedSearchTextFields() {
     const [excludeRestrictionCodes, setExcludeRestrictionCodes] = useState(
         RightPaneStore.getFormData().excludeRestrictionCodes
     );
+    const [days, setDays] = useState(RightPaneStore.getFormData().days);
 
     const resetField = useCallback(() => {
         const formData = RightPaneStore.getFormData();
@@ -29,6 +33,7 @@ export function AdvancedSearchTextFields() {
         setRoom(formData.room);
         setDivision(formData.division);
         setExcludeRestrictionCodes(formData.excludeRestrictionCodes);
+        setDays(formData.days);
     }, []);
 
     useEffect(() => {
@@ -97,6 +102,10 @@ export function AdvancedSearchTextFields() {
                     case 'excludeRestrictionCodes':
                         setExcludeRestrictionCodes(stringValue);
                         break;
+                    case 'days': {
+                        setDays(stringValue);
+                        break;
+                    }
                     default:
                         break;
                 }
@@ -269,6 +278,45 @@ export function AdvancedSearchTextFields() {
                     renderValue={(selected) => (selected as string[]).join(', ')}
                 >
                     {EXCLUDE_RESTRICTION_CODES_OPTIONS.map((option) => (
+                        <MenuItem
+                            key={option.value}
+                            value={option.value}
+                            style={{
+                                maxWidth: 240,
+                            }}
+                        >
+                            <span
+                                style={{
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                }}
+                            >
+                                {option.label}
+                            </span>
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+
+            <FormControl style={{ minWidth: 150 }}>
+                <InputLabel id="days-label">Days</InputLabel>
+                <Select
+                    multiple
+                    labelId="days-label"
+                    value={days ? days.split(/(?=[A-Z])/) : []}
+                    onChange={handleChange('days')}
+                    renderValue={(selected) =>
+                        (selected as string[])
+                            .sort((a, b) => {
+                                const orderA = DAYS_OPTIONS.findIndex((day) => day.value === a);
+                                const orderB = DAYS_OPTIONS.findIndex((day) => day.value === b);
+                                return orderA - orderB;
+                            })
+                            .join(', ')
+                    }
+                >
+                    {DAYS_OPTIONS.map((option) => (
                         <MenuItem
                             key={option.value}
                             value={option.value}
