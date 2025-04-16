@@ -61,6 +61,7 @@
         "moment": "^2.29.4",
         "moment-timezone": "^0.5.43",
         "notistack": "^2.0.8",
+        "posthog-js": "^1.236.1",
         "react": "^18.2.0",
         "react-big-calendar": "^1.6.4",
         "react-chartjs-2": "^5.2.0",

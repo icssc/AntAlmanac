@@ -13,7 +13,7 @@ import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
 import { ButtonGroup } from '@mui/material';
 import { useCallback, useState } from 'react';
 
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { FEEDBACK_LINK } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 

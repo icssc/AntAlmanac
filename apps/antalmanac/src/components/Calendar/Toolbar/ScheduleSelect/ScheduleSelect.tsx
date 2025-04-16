@@ -8,7 +8,7 @@ import { AddScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/s
 import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/DeleteScheduleButton';
 import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
 import { CopyScheduleButton } from '$components/buttons/Copy';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 
 type EventContext = {

@@ -8,7 +8,7 @@ import CourseRenderPane from './CourseRenderPane';
 import SearchForm from './SearchForm/SearchForm';
 
 import { openSnackbar } from '$actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { WebSOC } from '$lib/websoc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
