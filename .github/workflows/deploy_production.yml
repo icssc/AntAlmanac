@@ -30,6 +30,8 @@ env:
     GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
     DB_URL: ${{ secrets.PROD_DB_URL }}
     ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
+    VITE_PUBLIC_POSTHOG_HOST: ${{ vars.VITE_PUBLIC_POSTHOG_HOST}}
+    VITE_PUBLIC_POSTHOG_KEY: ${{ vars.VITE_PUBLIC_POSTHOG_KEY}}
 
     # Turborepo credentials.
     TURBO_API: ${{ vars.TURBO_API }}
