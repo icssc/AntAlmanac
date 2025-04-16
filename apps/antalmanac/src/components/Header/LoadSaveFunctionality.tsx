@@ -3,7 +3,7 @@ import { LoadingButton } from '@mui/lab';
 import { Button, Stack } from '@mui/material';
 import { useEffect, useState, useCallback } from 'react';
 
-import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
+import { authSaveSchedule, authLoadSchedule } from '$actions/AppStoreActions';
 import { InputDialog } from '$components/dialogs/InputDialog';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import trpc from '$lib/api/trpc';
@@ -57,19 +57,19 @@ const LoadSaveScheduleFunctionality = () => {
 
     const saveScheduleData = async () => {
         if (validSession && session) {
-            const { users, _ } = await trpc.userData.getUserAndAccountBySessionToken.query({ token: session });
+            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({ token: session });
             setSaving(true);
-            await saveSchedule(users.id, true);
-            // await saveSchedule(users.id, accounts.AccountType, true);
+            // await saveSchedule(users.id, true);
+            await authSaveSchedule(users.id, accounts.AccountType, true);
             setSaving(false);
         }
     };
 
     const loadScheduleData = useCallback(async () => {
         if (validSession) {
-            const userId: string = getLocalStorageDataCache() ?? '';
-            await loadSchedule(userId, true);
-            // await loadSchedule();
+            // const userId: string = getLocalStorageDataCache() ?? '';
+            // await loadSchedule(userId, true);
+            authLoadSchedule();
         }
     }, [validSession]);
 

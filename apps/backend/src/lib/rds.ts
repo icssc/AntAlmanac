@@ -244,9 +244,9 @@ export class RDS {
      */
     static async upsertUserData(db: DatabaseOrTransaction, userData: User): Promise<string> {
         return db.transaction(async (tx) => {
-            // const user = await this.registerUserAccount(db, userId, userId, 'GUEST');
-            const userId = await this.createGuestUserOptional(db, userData.id);
-            if (!userId) {
+            const account = await this.registerUserAccount(db, userData.id, userData.id, 'GUEST');
+            const userId = account.userId;
+            if (!account) {
                 throw new Error(`Failed to create user`);
             }
 
