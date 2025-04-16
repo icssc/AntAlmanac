@@ -6,7 +6,7 @@ import { notNull } from './utils';
 
 import { openSnackbar } from '$actions/AppStoreActions';
 import { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { getDefaultTerm, termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import {
     getLocalStorageAutoSave,
     getLocalStoragePreviewMode,

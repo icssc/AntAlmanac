@@ -15,7 +15,7 @@ import darkNoNothing from './static/dark-no_results.png';
 import noNothing from './static/no_results.png';
 
 import { openSnackbar } from '$actions/AppStoreActions';
-import analyticsEnum from '$lib/analytics';
+import analyticsEnum from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
