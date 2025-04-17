@@ -4,6 +4,7 @@ import { Close, DarkMode, Help, LightMode, SettingsBrightness } from '@mui/icons
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import { Divider, Stack, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 
 import { AboutButtonGroup } from './AboutButtonGroup';
@@ -151,6 +152,8 @@ function ExperimentalMenu() {
     const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
     const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
 
+    const posthog = usePostHog();
+
     const handlePreviewChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPreviewMode(event.target.checked);
     };
@@ -164,7 +167,7 @@ function ExperimentalMenu() {
 
         if (!savedUserID) return;
         actionTypesStore.emit('autoSaveStart');
-        await autoSaveSchedule(savedUserID);
+        await autoSaveSchedule(savedUserID, posthog);
         appStore.unsavedChanges = false;
         actionTypesStore.emit('autoSaveEnd');
     };

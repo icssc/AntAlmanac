@@ -16,6 +16,7 @@ import {
 import InputLabel from '@material-ui/core/InputLabel';
 import { PostAdd } from '@material-ui/icons';
 import { CourseInfo } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
@@ -40,6 +41,8 @@ function Import() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const { isDark } = useThemeStore();
+
+    const posthog = usePostHog();
 
     const handleOpen = useCallback(() => {
         setOpen(true);
@@ -93,7 +96,7 @@ function Import() {
                 currentSchedule
             );
 
-            logAnalytics({
+            logAnalytics(posthog, {
                 category: analyticsEnum.nav.title,
                 action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
                 value: sectionsAdded / (sectionCodes.length || 1),
@@ -128,7 +131,7 @@ function Import() {
         scheduleIndex: number
     ) => {
         for (const section of Object.values(courseInfo)) {
-            addCourse(section.section, section.courseDetails, term, scheduleIndex, true);
+            addCourse(section.section, section.courseDetails, term, scheduleIndex, true, posthog);
         }
 
         const terms = AppStore.termsInSchedule(term);

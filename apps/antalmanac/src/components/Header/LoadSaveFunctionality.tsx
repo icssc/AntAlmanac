@@ -12,6 +12,7 @@ import {
 } from '@material-ui/core';
 import { CloudDownload, Save } from '@material-ui/icons';
 import { LoadingButton } from '@mui/lab';
+import { usePostHog } from 'posthog-js/react';
 import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
 
 import actionTypesStore from '$actions/ActionTypesStore';
@@ -168,15 +169,17 @@ const LoadSaveScheduleFunctionality = () => {
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
+    const posthog = usePostHog();
+
     const loadScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
         setLoading(true);
-        await loadSchedule(userID, rememberMe);
+        await loadSchedule(userID, rememberMe, posthog);
         setLoading(false);
     };
 
     const saveScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
         setSaving(true);
-        await saveSchedule(userID, rememberMe);
+        await saveSchedule(userID, rememberMe, posthog);
         setSaving(false);
     };
 
