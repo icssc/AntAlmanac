@@ -256,8 +256,8 @@ function SkeletonSchedule() {
                                         onClick={(event) => {
                                             clickToCopy(event, section);
                                             logAnalytics(postHog, {
-                                                category: analyticsEnum.classSearch.title,
-                                                action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
+                                                category: analyticsEnum.addedClasses.title,
+                                                action: analyticsEnum.addedClasses.actions.COPY_COURSE_CODE,
                                             });
                                         }}
                                         label={section}

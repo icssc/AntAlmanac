@@ -72,6 +72,7 @@ const analyticsEnum: AnalyticsEnum = {
             COPY_SCHEDULE: 'Copy Schedule',
             CLEAR_SCHEDULE: 'Clear Schedule',
             CHANGE_COURSE_COLOR: 'Change Course Color',
+            COPY_COURSE_CODE: 'Copy Course Code',
         },
     },
     map: {

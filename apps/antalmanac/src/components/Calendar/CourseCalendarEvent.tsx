@@ -231,8 +231,8 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                                         onClick={(event) => {
                                             clickToCopy(event, sectionCode);
                                             logAnalytics(postHog, {
-                                                category: analyticsEnum.classSearch.title,
-                                                action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
+                                                category: analyticsEnum.calendar.title,
+                                                action: analyticsEnum.calendar.actions.COPY_COURSE_CODE,
                                             });
                                         }}
                                         className={classes.sectionCode}

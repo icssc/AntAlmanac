@@ -1,4 +1,5 @@
 import { Chip, Tooltip } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
@@ -14,6 +15,8 @@ export const CourseCodeCell = ({ sectionCode }: CourseCodeCellProps) => {
     const isDark = useThemeStore((store) => store.isDark);
     const [isHovered, setIsHovered] = useState(false);
 
+    const postHog = usePostHog();
+
     const handleMouseEnter = () => {
         setIsHovered(true);
     };
@@ -28,7 +31,7 @@ export const CourseCodeCell = ({ sectionCode }: CourseCodeCellProps) => {
                 <Chip
                     onClick={(event) => {
                         clickToCopy(event, sectionCode);
-                        logAnalytics({
+                        logAnalytics(postHog, {
                             category: analyticsEnum.classSearch.title,
                             action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
                         });
