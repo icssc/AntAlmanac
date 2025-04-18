@@ -3,6 +3,7 @@ import { Theme, withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Delete, Search } from '@material-ui/icons';
 import { WebsocSectionFinalExam } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
 import { useEffect, useRef } from 'react';
 import { Event } from 'react-big-calendar';
 
@@ -151,6 +152,8 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
     const quickSearch = useQuickSearch();
     const { isMilitaryTime } = useTimeFormatStore();
 
+    const posthog = usePostHog();
+
     useEffect(() => {
         const handleKeyDown = (event: { keyCode: number }) => {
             // event.keyCode === 27 reads for the "escape" key
@@ -208,7 +211,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                             onClick={() => {
                                 closePopover();
                                 deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
-                                logAnalytics({
+                                logAnalytics(posthog, {
                                     category: analyticsEnum.calendar.title,
                                     action: analyticsEnum.calendar.actions.DELETE_COURSE,
                                 });
@@ -227,7 +230,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                                     <Chip
                                         onClick={(event) => {
                                             clickToCopy(event, sectionCode);
-                                            logAnalytics({
+                                            logAnalytics(posthog, {
                                                 category: analyticsEnum.classSearch.title,
                                                 action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
                                             });
@@ -272,7 +275,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                                     isCustomEvent={selectedEvent.isCustomEvent}
                                     sectionCode={selectedEvent.sectionCode}
                                     term={selectedEvent.term}
-                                    analyticsCategory={analyticsEnum.calendar.title}
+                                    analyticsCategory={analyticsEnum.calendar}
                                 />
                             </td>
                         </tr>
@@ -297,7 +300,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                             color={selectedEvent.color}
                             isCustomEvent={true}
                             customEventID={selectedEvent.customEventID}
-                            analyticsCategory={analyticsEnum.calendar.title}
+                            analyticsCategory={analyticsEnum.calendar}
                         />
                     </div>
                     <CustomEventDialog
@@ -311,7 +314,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                             onClick={() => {
                                 closePopover();
                                 deleteCustomEvent(customEventID, [AppStore.getCurrentScheduleIndex()]);
-                                logAnalytics({
+                                logAnalytics(posthog, {
                                     category: analyticsEnum.calendar.title,
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
                                 });

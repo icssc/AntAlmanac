@@ -81,7 +81,7 @@ export function ColorAndDelete(props: ActionProps) {
                 isCustomEvent={false}
                 sectionCode={section.sectionCode}
                 term={term}
-                analyticsCategory={analyticsEnum.addedClasses.title}
+                analyticsCategory={analyticsEnum.addedClasses}
             />
         </Box>
     );

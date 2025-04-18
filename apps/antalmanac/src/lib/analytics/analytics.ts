@@ -3,7 +3,20 @@ import { PostHog } from 'posthog-js/react';
  * This is an enum that stores all the
  * possible category names and associated actions
  */
-const analyticsEnum = {
+export interface AnalyticsCategory {
+    title: string;
+    actions: Record<string, string>;
+}
+
+export interface AnalyticsEnum {
+    calendar: AnalyticsCategory;
+    nav: AnalyticsCategory;
+    classSearch: AnalyticsCategory;
+    addedClasses: AnalyticsCategory;
+    map: AnalyticsCategory;
+}
+
+const analyticsEnum: AnalyticsEnum = {
     calendar: {
         title: 'Calendar Pane',
         actions: {
@@ -58,6 +71,7 @@ const analyticsEnum = {
             OPEN: 'Open Added Classes',
             COPY_SCHEDULE: 'Copy Schedule',
             CLEAR_SCHEDULE: 'Clear Schedule',
+            CHANGE_COURSE_COLOR: 'Change Course Color',
         },
     },
     map: {
