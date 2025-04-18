@@ -27,9 +27,9 @@ export const addCourse = (
     term: string,
     scheduleIndex: number,
     quiet?: boolean,
-    posthog?: PostHog
+    postHog?: PostHog
 ) => {
-    logAnalytics(posthog, {
+    logAnalytics(postHog, {
         category: analyticsEnum.classSearch.title,
         action: analyticsEnum.classSearch.actions.ADD_COURSE,
         label: courseDetails.deptCode,
@@ -87,8 +87,8 @@ function isEmptySchedule(schedules: ShortCourseSchedule[]) {
     return true;
 }
 
-export const saveSchedule = async (userID: string, rememberMe: boolean, posthog?: PostHog) => {
-    logAnalytics(posthog, {
+export const saveSchedule = async (userID: string, rememberMe: boolean, postHog?: PostHog) => {
+    logAnalytics(postHog, {
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
         label: userID,
@@ -141,8 +141,8 @@ export const saveSchedule = async (userID: string, rememberMe: boolean, posthog?
     }
 };
 
-export async function autoSaveSchedule(userID: string, posthog?: PostHog) {
-    logAnalytics(posthog, {
+export async function autoSaveSchedule(userID: string, postHog?: PostHog) {
+    logAnalytics(postHog, {
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
         label: userID,
@@ -172,8 +172,8 @@ export async function autoSaveSchedule(userID: string, posthog?: PostHog) {
     }
 }
 
-export const loadSchedule = async (userId: string, rememberMe: boolean, posthog?: PostHog) => {
-    logAnalytics(posthog, {
+export const loadSchedule = async (userId: string, rememberMe: boolean, postHog?: PostHog) => {
+    logAnalytics(postHog, {
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
         label: userId,
@@ -261,9 +261,9 @@ export const copySchedule = (
     scheduleIndex: number,
     newScheduleName: string,
     options?: CopyScheduleOptions,
-    posthog?: PostHog
+    postHog?: PostHog
 ) => {
-    logAnalytics(posthog, {
+    logAnalytics(postHog, {
         category: analyticsEnum.addedClasses.title,
         action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
     });

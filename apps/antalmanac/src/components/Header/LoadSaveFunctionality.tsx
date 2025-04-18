@@ -169,17 +169,17 @@ const LoadSaveScheduleFunctionality = () => {
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    const posthog = usePostHog();
+    const postHog = usePostHog();
 
     const loadScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
         setLoading(true);
-        await loadSchedule(userID, rememberMe, posthog);
+        await loadSchedule(userID, rememberMe, postHog);
         setLoading(false);
     };
 
     const saveScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
         setSaving(true);
-        await saveSchedule(userID, rememberMe, posthog);
+        await saveSchedule(userID, rememberMe, postHog);
         setSaving(false);
     };
 

@@ -39,10 +39,11 @@ function ThemeMenu() {
         store.setAppTheme,
     ]);
     const { forceUpdate } = useCoursePaneStore();
+    const postHog = usePostHog();
 
     const handleThemeChange = (event: React.MouseEvent<HTMLButtonElement>) => {
         forceUpdate();
-        setTheme(event.currentTarget.value as 'light' | 'dark' | 'system');
+        setTheme(event.currentTarget.value as 'light' | 'dark' | 'system', postHog);
     };
 
     return (

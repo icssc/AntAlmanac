@@ -32,7 +32,7 @@ const ColorPicker = memo(function ColorPicker({
     const [anchorEl, setAnchorEl] = useState<Element | ((element: Element) => Element) | null>(null);
     const [currColor, setCurrColor] = useState(color);
 
-    const posthog = usePostHog();
+    const postHog = usePostHog();
 
     useEffect(() => {
         let colorPickerId;
@@ -46,12 +46,12 @@ const ColorPicker = memo(function ColorPicker({
         };
     }, [isCustomEvent, customEventID, sectionCode]);
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, posthog?: PostHog) => {
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, postHog?: PostHog) => {
         event.stopPropagation();
 
         setAnchorEl(event.currentTarget);
 
-        logAnalytics(posthog, {
+        logAnalytics(postHog, {
             category: analyticsCategory.title,
             action: analyticsCategory.actions.CHANGE_COURSE_COLOR,
         });
@@ -80,7 +80,7 @@ const ColorPicker = memo(function ColorPicker({
                 <IconButton
                     style={{ color: currColor, padding: 8 }}
                     onClick={(e) => {
-                        handleClick(e, posthog);
+                        handleClick(e, postHog);
                     }}
                 >
                     <ColorLens fontSize="small" />

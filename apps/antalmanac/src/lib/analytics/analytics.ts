@@ -95,8 +95,8 @@ interface AnalyticsProps {
 /**
  * Logs event to PostHog instance
  */
-export function logAnalytics(posthog: PostHog | undefined, { category, action, label, value }: AnalyticsProps) {
-    posthog?.capture(action, {
+export function logAnalytics(postHog: PostHog | undefined, { category, action, label, value }: AnalyticsProps) {
+    postHog?.capture(action, {
         category,
         label,
         value,

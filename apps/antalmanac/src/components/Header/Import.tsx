@@ -42,7 +42,7 @@ function Import() {
 
     const { isDark } = useThemeStore();
 
-    const posthog = usePostHog();
+    const postHog = usePostHog();
 
     const handleOpen = useCallback(() => {
         setOpen(true);
@@ -96,7 +96,7 @@ function Import() {
                 currentSchedule
             );
 
-            logAnalytics(posthog, {
+            logAnalytics(postHog, {
                 category: analyticsEnum.nav.title,
                 action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
                 value: sectionsAdded / (sectionCodes.length || 1),
@@ -131,7 +131,7 @@ function Import() {
         scheduleIndex: number
     ) => {
         for (const section of Object.values(courseInfo)) {
-            addCourse(section.section, section.courseDetails, term, scheduleIndex, true, posthog);
+            addCourse(section.section, section.courseDetails, term, scheduleIndex, true, postHog);
         }
 
         const terms = AppStore.termsInSchedule(term);

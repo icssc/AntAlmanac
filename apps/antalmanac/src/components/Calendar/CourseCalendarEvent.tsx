@@ -152,7 +152,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
     const quickSearch = useQuickSearch();
     const { isMilitaryTime } = useTimeFormatStore();
 
-    const posthog = usePostHog();
+    const postHog = usePostHog();
 
     useEffect(() => {
         const handleKeyDown = (event: { keyCode: number }) => {
@@ -211,7 +211,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                             onClick={() => {
                                 closePopover();
                                 deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
-                                logAnalytics(posthog, {
+                                logAnalytics(postHog, {
                                     category: analyticsEnum.calendar.title,
                                     action: analyticsEnum.calendar.actions.DELETE_COURSE,
                                 });
@@ -230,7 +230,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                                     <Chip
                                         onClick={(event) => {
                                             clickToCopy(event, sectionCode);
-                                            logAnalytics(posthog, {
+                                            logAnalytics(postHog, {
                                                 category: analyticsEnum.classSearch.title,
                                                 action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
                                             });
@@ -314,7 +314,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                             onClick={() => {
                                 closePopover();
                                 deleteCustomEvent(customEventID, [AppStore.getCurrentScheduleIndex()]);
-                                logAnalytics(posthog, {
+                                logAnalytics(postHog, {
                                     category: analyticsEnum.calendar.title,
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
                                 });

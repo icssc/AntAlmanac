@@ -23,7 +23,7 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
     const { onClose } = props; // destructured separately for memoization.
     const [name, setName] = useState<string>(`Copy of ${AppStore.getScheduleNames()[index]}`);
 
-    const posthog = usePostHog();
+    const postHog = usePostHog();
 
     const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setName(event.target.value);
@@ -34,7 +34,7 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
     }, [onClose]);
 
     const handleCopy = useCallback(() => {
-        copySchedule(index, name, undefined, posthog);
+        copySchedule(index, name, undefined, postHog);
         onClose?.({}, 'escapeKeyDown');
     }, [index, name, onClose]);
 

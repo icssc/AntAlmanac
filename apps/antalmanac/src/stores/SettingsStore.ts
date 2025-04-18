@@ -1,3 +1,4 @@
+import { PostHog } from 'posthog-js/react';
 import { create } from 'zustand';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -25,7 +26,7 @@ export interface ThemeStore {
     appTheme: 'light' | 'dark';
     isDark: boolean;
 
-    setAppTheme: (themeSetting: ThemeSetting) => void;
+    setAppTheme: (themeSetting: ThemeSetting, postHog?: PostHog) => void;
 }
 
 function themeShouldBeDark(themeSetting: ThemeSetting) {
@@ -42,7 +43,7 @@ export const useThemeStore = create<ThemeStore>((set) => {
         appTheme: isDark ? 'dark' : 'light',
         isDark: isDark,
 
-        setAppTheme: (themeSetting) => {
+        setAppTheme: (themeSetting, postHog) => {
             setLocalStorageTheme(themeSetting);
 
             const isDark = themeShouldBeDark(themeSetting);
@@ -50,7 +51,7 @@ export const useThemeStore = create<ThemeStore>((set) => {
 
             set({ appTheme, themeSetting, isDark });
 
-            logAnalytics({
+            logAnalytics(postHog, {
                 category: analyticsEnum.nav.title,
                 action: analyticsEnum.nav.actions.CHANGE_THEME,
                 label: themeSetting,

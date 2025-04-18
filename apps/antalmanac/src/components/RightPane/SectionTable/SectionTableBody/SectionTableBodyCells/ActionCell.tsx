@@ -51,12 +51,12 @@ export function ColorAndDelete(props: ActionProps) {
 
     const flexDirection = isMobileScreen ? 'column' : undefined;
 
-    const posthog = usePostHog();
+    const postHog = usePostHog();
 
     const handleClick = () => {
         deleteCourse(section.sectionCode, term, AppStore.getCurrentScheduleIndex());
 
-        logAnalytics(posthog, {
+        logAnalytics(postHog, {
             category: analyticsEnum.addedClasses.title,
             action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
         });
@@ -104,7 +104,7 @@ export function ScheduleAddCell(props: ActionProps) {
 
     const flexDirection = isMobileScreen ? 'column' : undefined;
 
-    const posthog = usePostHog();
+    const postHog = usePostHog();
 
     const closeAndAddCourse = (scheduleIndex: number, specificSchedule?: boolean) => {
         popupState.close();
@@ -118,7 +118,7 @@ export function ScheduleAddCell(props: ActionProps) {
         }
 
         if (specificSchedule) {
-            logAnalytics(posthog, {
+            logAnalytics(postHog, {
                 category: analyticsEnum.classSearch.title,
                 action: analyticsEnum.classSearch.actions.ADD_SPECIFIC,
             });
