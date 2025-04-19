@@ -11,6 +11,7 @@ import {
 import { Assignment, Info } from '@material-ui/icons';
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
 import { ButtonGroup } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -21,12 +22,12 @@ const DONATION_LINK = 'https://venmo.com/u/ICSSC';
 
 const About = () => {
     const [open, setOpen] = useState(false);
-
     const { isDark } = useThemeStore();
+    const postHog = usePostHog();
 
     const handleOpen = useCallback(() => {
         setOpen(true);
-        logAnalytics({
+        logAnalytics(postHog, {
             category: analyticsEnum.nav.title,
             action: analyticsEnum.nav.actions.CLICK_ABOUT,
         });
