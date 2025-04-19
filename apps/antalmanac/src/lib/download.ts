@@ -1,6 +1,7 @@
 import type { HourMinute } from '@packages/antalmanac-types';
 import { saveAs } from 'file-saver';
 import { createEvents, type EventAttributes } from 'ics';
+import { PostHog } from 'posthog-js/react';
 
 import { notNull } from './utils';
 
@@ -338,13 +339,13 @@ export function getEventsFromCourses(
     return calendarEvents;
 }
 
-export function exportCalendar() {
+export function exportCalendar(posthog?: PostHog) {
     const events = getEventsFromCourses();
 
     // Convert the events into a vcalendar.
     // Callback function triggers a download of the .ics file
     createEvents(events, (error, value) => {
-        logAnalytics({
+        logAnalytics(posthog, {
             category: 'Calendar Pane',
             action: analyticsEnum.calendar.actions.DOWNLOAD,
         });
