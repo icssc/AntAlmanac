@@ -1,7 +1,7 @@
 import { Box, Button, Paper, Popover, useMediaQuery, useTheme } from '@mui/material';
 import { useCallback, useState } from 'react';
 
-import { logAnalytics } from '$lib/analytics/analytics';
+import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
 interface CourseInfoButtonProps {
@@ -10,7 +10,7 @@ interface CourseInfoButtonProps {
     redirectLink?: string;
     popupContent?: React.ReactElement;
     analyticsAction: string;
-    analyticsCategory: string;
+    analyticsCategory: AnalyticsCategory;
 }
 
 export const CourseInfoButton = ({

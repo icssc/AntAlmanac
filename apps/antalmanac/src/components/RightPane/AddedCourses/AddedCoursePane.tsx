@@ -357,7 +357,7 @@ function AddedSectionsGrid() {
                                     courseDetails={course}
                                     term={course.term}
                                     allowHighlight={false}
-                                    analyticsCategory={analyticsEnum.addedClasses.title}
+                                    analyticsCategory={analyticsEnum.addedClasses}
                                     scheduleNames={scheduleNames}
                                 />
                             </Box>
