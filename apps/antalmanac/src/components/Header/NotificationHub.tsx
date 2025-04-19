@@ -8,7 +8,8 @@ import {
     Tooltip,
 } from '@material-ui/core';
 import { Notifications } from '@material-ui/icons';
-import { PureComponent } from 'react';
+import { usePostHog } from 'posthog-js/react';
+import { memo, useState } from 'react';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '$lib/api/endpoints';
@@ -23,20 +24,14 @@ interface NotificationAPIResponse {
     smsNotificationList: NotificationItem[];
 }
 
-interface NotificationHubState {
-    open: boolean;
-    phoneNumber: string;
-    smsNotificationList: NotificationItem[];
-}
+const NotificationHub = memo(function NotificationHub() {
+    const [open, setOpen] = useState<boolean>(false);
+    const [phoneNumber, setPhoneNumber] = useState<string>('');
+    const [smsNotificationList, setSmsNotificationList] = useState<NotificationItem[]>([]);
 
-class NotificationHub extends PureComponent {
-    state: NotificationHubState = {
-        open: false,
-        phoneNumber: '',
-        smsNotificationList: [],
-    };
+    const postHog = usePostHog();
 
-    getNotificationLists = async () => {
+    const getNotificationLists = async () => {
         let storedPhoneNumber;
 
         if (typeof Storage !== 'undefined') {
@@ -52,76 +47,72 @@ class NotificationHub extends PureComponent {
 
             const jsonResp = (await response.json()) as NotificationAPIResponse;
 
-            this.setState({
-                phoneNumber: storedPhoneNumber,
-                smsNotificationList: jsonResp.smsNotificationList,
-            });
+            setPhoneNumber(storedPhoneNumber);
+            setSmsNotificationList(jsonResp.smsNotificationList);
         }
     };
 
-    render() {
-        return (
-            <>
-                <Tooltip title="Notifications Registered">
+    return (
+        <>
+            <Tooltip title="Notifications Registered">
+                <Button
+                    onClick={() => {
+                        setOpen(true);
+                        void getNotificationLists();
+                        logAnalytics(postHog, {
+                            category: analyticsEnum.nav.title,
+                            action: analyticsEnum.nav.actions.CLICK_NOTIFICATIONS,
+                        });
+                    }}
+                    color="inherit"
+                    startIcon={<Notifications />}
+                >
+                    Notifications
+                </Button>
+            </Tooltip>
+
+            <Dialog
+                open={open}
+                onClose={() => {
+                    setOpen(false);
+                }}
+                scroll="paper"
+            >
+                <DialogTitle>Notifications You&apos;ve Registered For</DialogTitle>
+
+                <DialogContent dividers={true}>
+                    <DialogContentText>
+                        {phoneNumber ? (
+                            <div>
+                                Watchlist for {phoneNumber}:
+                                <ul>
+                                    {smsNotificationList.map((section, index) => {
+                                        return (
+                                            <li key={index}>
+                                                {section.courseTitle}: {section.sectionCode}
+                                            </li>
+                                        );
+                                    })}
+                                </ul>
+                            </div>
+                        ) : (
+                            'You have not registered for SMS notifications on this PC!'
+                        )}
+                    </DialogContentText>
+                </DialogContent>
+
+                <DialogActions>
                     <Button
                         onClick={() => {
-                            this.setState({ open: true });
-                            void this.getNotificationLists();
-                            logAnalytics({
-                                category: analyticsEnum.nav.title,
-                                action: analyticsEnum.nav.actions.CLICK_NOTIFICATIONS,
-                            });
+                            setOpen(false);
                         }}
-                        color="inherit"
-                        startIcon={<Notifications />}
                     >
-                        Notifications
+                        Close
                     </Button>
-                </Tooltip>
-
-                <Dialog
-                    open={this.state.open}
-                    onClose={() => {
-                        this.setState({ open: false });
-                    }}
-                    scroll="paper"
-                >
-                    <DialogTitle>Notifications You&apos;ve Registered For</DialogTitle>
-
-                    <DialogContent dividers={true}>
-                        <DialogContentText>
-                            {this.state.phoneNumber ? (
-                                <div>
-                                    Watchlist for {this.state.phoneNumber}:
-                                    <ul>
-                                        {this.state.smsNotificationList.map((section, index) => {
-                                            return (
-                                                <li key={index}>
-                                                    {section.courseTitle}: {section.sectionCode}
-                                                </li>
-                                            );
-                                        })}
-                                    </ul>
-                                </div>
-                            ) : (
-                                'You have not registered for SMS notifications on this PC!'
-                            )}
-                        </DialogContentText>
-                    </DialogContent>
-
-                    <DialogActions>
-                        <Button
-                            onClick={() => {
-                                this.setState({ open: false });
-                            }}
-                        >
-                            Close
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </>
-        );
-    }
-}
+                </DialogActions>
+            </Dialog>
+        </>
+    );
+});
 
 export default NotificationHub;
