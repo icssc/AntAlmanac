@@ -4,18 +4,18 @@ import { PostHog, usePostHog } from 'posthog-js/react';
 
 import { exportCalendar } from '$lib/download';
 
-const exportCalendarEvent = (posthog?: PostHog) => {
+const exportCalendarEvent = (postHog?: PostHog) => {
     return () => {
-        exportCalendar(posthog);
+        exportCalendar(postHog);
     };
 };
 
 const DownloadButton = () => {
-    const posthog = usePostHog();
+    const postHog = usePostHog();
 
     return (
         <Tooltip title="Download Calendar as a .ics file. You can import this file to Google or Apple calendars.">
-            <IconButton onClick={exportCalendarEvent(posthog)} size="medium">
+            <IconButton onClick={exportCalendarEvent(postHog)} size="medium">
                 <Download fontSize="small" />
             </IconButton>
         </Tooltip>

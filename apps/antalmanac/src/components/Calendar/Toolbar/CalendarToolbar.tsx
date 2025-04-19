@@ -16,9 +16,9 @@ import ScreenshotButton from '$components/buttons/Screenshot';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 
-function handleUndo(posthog?: PostHog) {
+function handleUndo(postHog?: PostHog) {
     return () => {
-        logAnalytics(posthog, {
+        logAnalytics(postHog, {
             category: analyticsEnum.calendar.title,
             action: analyticsEnum.calendar.actions.UNDO,
         });
@@ -42,11 +42,11 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('xxs'));
 
-    const posthog = usePostHog();
+    const postHog = usePostHog();
 
     const handleToggleFinals = useCallback(() => {
         if (!showFinalsSchedule) {
-            logAnalytics(posthog, {
+            logAnalytics(postHog, {
                 category: analyticsEnum.calendar.title,
                 action: analyticsEnum.calendar.actions.DISPLAY_FINALS,
             });
@@ -120,7 +120,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                 <DownloadButton />
 
                 <Tooltip title="Undo last action">
-                    <IconButton onClick={handleUndo(posthog)} size="medium" disabled={skeletonMode}>
+                    <IconButton onClick={handleUndo(postHog)} size="medium" disabled={skeletonMode}>
                         <UndoIcon fontSize="small" />
                     </IconButton>
                 </Tooltip>

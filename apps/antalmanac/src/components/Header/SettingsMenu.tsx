@@ -153,7 +153,7 @@ function ExperimentalMenu() {
     const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
     const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
 
-    const posthog = usePostHog();
+    const postHog = usePostHog();
 
     const handlePreviewChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPreviewMode(event.target.checked);
@@ -168,7 +168,7 @@ function ExperimentalMenu() {
 
         if (!savedUserID) return;
         actionTypesStore.emit('autoSaveStart');
-        await autoSaveSchedule(savedUserID, posthog);
+        await autoSaveSchedule(savedUserID, postHog);
         appStore.unsavedChanges = false;
         actionTypesStore.emit('autoSaveEnd');
     };

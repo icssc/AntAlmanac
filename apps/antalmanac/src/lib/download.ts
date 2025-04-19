@@ -339,13 +339,13 @@ export function getEventsFromCourses(
     return calendarEvents;
 }
 
-export function exportCalendar(posthog?: PostHog) {
+export function exportCalendar(postHog?: PostHog) {
     const events = getEventsFromCourses();
 
     // Convert the events into a vcalendar.
     // Callback function triggers a download of the .ics file
     createEvents(events, (error, value) => {
-        logAnalytics(posthog, {
+        logAnalytics(postHog, {
             category: 'Calendar Pane',
             action: analyticsEnum.calendar.actions.DOWNLOAD,
         });
