@@ -50,7 +50,10 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
                 for (const section of course.sections) {
                     (section as AASection).color = courseColors[section.sectionCode];
                 }
-                accumulator.push(course as AACourse);
+                const courseWithUpdatedAt = course as AACourse;
+                courseWithUpdatedAt.updatedAt = course.updatedAt;
+
+                accumulator.push(courseWithUpdatedAt);
             });
         });
 
@@ -113,9 +116,12 @@ const RecruitmentBanner = () => {
  */
 const SectionTableWrapped = (
     index: number,
-    data: { scheduleNames: string[]; courseData: (WebsocSchool | WebsocDepartment | AACourse)[] }
+    data: { 
+        scheduleNames: string[]; 
+        courseData: (WebsocSchool | WebsocDepartment | AACourse)[] 
+        course: AACourse; }
 ) => {
-    const { courseData, scheduleNames } = data;
+    const { courseData, scheduleNames, course} = data;
     const formData = RightPaneStore.getFormData();
 
     let component;
@@ -146,6 +152,7 @@ const SectionTableWrapped = (
                 allowHighlight={true}
                 scheduleNames={scheduleNames}
                 analyticsCategory={analyticsEnum.classSearch}
+                updatedAt={course.updatedAt ?? undefined}
             />
         );
     }
@@ -336,6 +343,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                                     {SectionTableWrapped(index, {
                                         courseData: courseData,
                                         scheduleNames: scheduleNames,
+                                        course: courseData[index] as AACourse,
                                     })}
                                 </LazyLoad>
                             );
