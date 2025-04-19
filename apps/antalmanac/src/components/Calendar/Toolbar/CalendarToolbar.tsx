@@ -45,10 +45,12 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const posthog = usePostHog();
 
     const handleToggleFinals = useCallback(() => {
-        logAnalytics(posthog, {
-            category: analyticsEnum.calendar.title,
-            action: analyticsEnum.calendar.actions.DISPLAY_FINALS,
-        });
+        if (!showFinalsSchedule) {
+            logAnalytics(posthog, {
+                category: analyticsEnum.calendar.title,
+                action: analyticsEnum.calendar.actions.DISPLAY_FINALS,
+            });
+        }
         toggleDisplayFinalsSchedule();
     }, [toggleDisplayFinalsSchedule]);
 
