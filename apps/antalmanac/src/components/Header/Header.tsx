@@ -1,40 +1,68 @@
 import { AppBar, Box, Stack, Dialog, DialogContent, LinearProgress } from '@mui/material';
 import { useEffect, useCallback, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 import Import from './Import';
-import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
+import LoadSaveScheduleFunctionalityButton from './Load';
 import Login from './Login';
 import { Logo } from './Logo';
+import SaveFunctionality from './Save';
 import AppDrawer from './SettingsMenu';
 
+import { isEmptySchedule } from '$actions/AppStoreActions';
 import trpc from '$lib/api/trpc';
+import { getLocalStorageDataCache, getLocalStorageUserId } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
+import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 
 export function Header() {
     const { session, updateSession: setSession } = useSessionStore();
     const [progress, setProgress] = useState(false);
     const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
     const handleSearchParamsChange = useCallback(async () => {
         try {
             const code = searchParams.get('code');
             if (code) {
-                const newSession = await trpc.userData.handleGoogleCallback.mutate({
+                const { sessionToken, userId, providerId } = await trpc.userData.handleGoogleCallback.mutate({
                     code: code,
                     token: session ?? '',
                 });
+                if (sessionToken && providerId) {
+                    setProgress(true);
+                    await setSession(sessionToken);
+                    const savedUserId = getLocalStorageUserId();
+                    const savedData = getLocalStorageDataCache();
 
-                setProgress(true);
-                await setSession(newSession);
-                setProgress(false);
-                navigate('/');
+                    const userData = await trpc.userData.getUserData.query({ userId: userId });
+                    if (isEmptySchedule(userData.userData.schedules)) {
+                        if (savedUserId !== null && savedData) {
+                            console.log('guest');
+                        } else if (savedData && savedUserId === null) {
+                            console.log('google');
+                        }
+                        if (savedData) {
+                            const data = JSON.parse(savedData);
+                            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+                            scheduleSaveState.schedules = data;
+                            await trpc.userData.saveUserData.mutate({
+                                id: providerId,
+                                data: {
+                                    id: providerId,
+                                    userData: scheduleSaveState,
+                                },
+                            });
+                        }
+                    }
+
+                    setProgress(false);
+                    window.location.href = '/';
+                }
             }
         } catch (error) {
             console.error('Error during authentication', error);
         }
-    }, [searchParams, session, setSession, navigate]);
+    }, [searchParams, session, setSession]);
 
     useEffect(() => {
         handleSearchParamsChange();
@@ -60,7 +88,8 @@ export function Header() {
                 <Logo />
 
                 <Stack direction="row">
-                    <LoadSaveScheduleFunctionality />
+                    <SaveFunctionality />
+                    <LoadSaveScheduleFunctionalityButton />
                     <Import key="studylist" />
                     <Login />
                     <AppDrawer key="settings" />

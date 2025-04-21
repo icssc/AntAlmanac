@@ -21,6 +21,50 @@ type DatabaseOrTransaction = Omit<Database, '$client'>;
 
 export class RDS {
     /**
+     * If a guest user with the specified name exists, return their ID, otherwise return null.
+     */
+    static async guestUserIdWithNameOrNull(db: DatabaseOrTransaction, name: string): Promise<string | null> {
+        return db
+            .select({ id: accounts.userId })
+            .from(accounts)
+            .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.providerAccountId, name)))
+            .limit(1)
+            .then((xs) => xs[0]?.id ?? null);
+    }
+
+    /**
+     * Creates a guest user if they don't already exist.
+     *
+     * @param db Database or transaction object
+     * @param name Guest user's name, to be used as providerAccountID and username
+     * @returns The new/existing user's ID
+     */
+    static async createGuestUserOptional(db: DatabaseOrTransaction, name: string) {
+        return db.transaction(async (tx) => {
+            const maybeUserId = await RDS.guestUserIdWithNameOrNull(tx, name);
+
+            const userId = maybeUserId
+                ? maybeUserId
+                : await tx
+                      .insert(users)
+                      .values({ name })
+                      .returning({ id: users.id })
+                      .then((users) => users[0].id);
+
+            if (userId === undefined) {
+                throw new Error(`Failed to create guest user for ${name}`);
+            }
+
+            await tx
+                .insert(accounts)
+                .values({ userId, accountType: 'GUEST', providerAccountId: name })
+                .onConflictDoNothing()
+                .execute();
+
+            return userId;
+        });
+    }
+    /**
      * Retrieves an account with the specified user ID and account type.
      *
      * @param db - The database or transaction object.
@@ -200,10 +244,9 @@ export class RDS {
      */
     static async upsertUserData(db: DatabaseOrTransaction, userData: User): Promise<string> {
         return db.transaction(async (tx) => {
-            const userId = userData.id;
-
-            const user = await this.getUserById(db, userId);
-            if (!user) {
+            const account = await this.registerUserAccount(db, userData.id, userData.id, 'GOOGLE');
+            const userId = account.userId;
+            if (!account) {
                 throw new Error(`Failed to create user`);
             }
 

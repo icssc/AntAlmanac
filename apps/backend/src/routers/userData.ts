@@ -1,9 +1,8 @@
-import { UserSchema } from '@packages/antalmanac-types';
+import { UserSchema, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
 import { TRPCError } from '@trpc/server';
 import { type } from 'arktype';
 import { OAuth2Client } from 'google-auth-library';
 import { z } from 'zod';
-
 
 import { db } from 'src/db';
 import { googleOAuthEnvSchema } from 'src/env';
@@ -30,6 +29,11 @@ const saveInputSchema = type({
      * i.e. if the user is editing and saving another user's schedule.
      */
     data: UserSchema,
+});
+
+const saveGoogleSchema = type({
+    code: 'string',
+    token: 'string',
 });
 
 const userDataRouter = router({
@@ -73,10 +77,14 @@ const userDataRouter = router({
             });
         }
     }),
-
     getGuestUserByName: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
         return RDS.getGuestAccountAndUserByName(db, input.name);
     }),
+    getUserByProviderId: procedure
+        .input(z.object({ accountType: z.enum(['GOOGLE', 'GUEST']), providerId: z.string() }))
+        .query(async ({ input }) => {
+            return RDS.getAccountByProviderId(db, input.accountType, input.providerId);
+        }),
     /**
      * Retrieves Google authentication URL for login/sign up.
      * Retrieves Google auth url to login/sign up
@@ -91,48 +99,46 @@ const userDataRouter = router({
     /**
      * Logs in or signs up a user and creates user's session
      */
-    handleGoogleCallback: procedure
-        .input(z.object({ code: z.string(), token: z.string() }))
-        .mutation(async ({ input }) => {
-            const { tokens } = await oauth2Client.getToken({ code: input.code });
-            if (!tokens || !tokens.id_token) {
-                throw new TRPCError({
-                    code: 'UNAUTHORIZED',
-                    message: 'Invalid token',
-                });
-            }
-            oauth2Client.setCredentials(tokens);
-
-            const ticket = await oauth2Client.verifyIdToken({
-                idToken: tokens.id_token ?? '',
-                audience: GOOGLE_CLIENT_ID,
+    handleGoogleCallback: procedure.input(saveGoogleSchema.assert).mutation(async ({ input }) => {
+        const { tokens } = await oauth2Client.getToken({ code: input.code });
+        if (!tokens || !tokens.id_token) {
+            throw new TRPCError({
+                code: 'UNAUTHORIZED',
+                message: 'Invalid token',
             });
+        }
+        oauth2Client.setCredentials(tokens);
 
-            const payload = ticket.getPayload();
-            if (!payload) {
-                throw new TRPCError({
-                    code: 'UNAUTHORIZED',
-                    message: 'Invalid ID token',
-                });
-            }
+        const ticket = await oauth2Client.verifyIdToken({
+            idToken: tokens.id_token ?? '',
+            audience: GOOGLE_CLIENT_ID,
+        });
 
-            const account = await RDS.registerUserAccount(
-                db,
-                payload.sub,
-                payload.name ?? '',
-                'GOOGLE',
-                payload.email ?? '',
-                payload.picture ?? ''
-            );
+        const payload = ticket.getPayload();
+        if (!payload) {
+            throw new TRPCError({
+                code: 'UNAUTHORIZED',
+                message: 'Invalid ID token',
+            });
+        }
 
-            const userId: string = account.userId;
+        const account = await RDS.registerUserAccount(
+            db,
+            payload.sub,
+            payload.name ?? '',
+            'GOOGLE',
+            payload.email ?? '',
+            payload.picture ?? ''
+        );
 
-            if (userId.length > 0) {
-                const session = await RDS.upsertSession(db, userId, input.token);
-                return session?.refreshToken;
-            }
-            return null;
-        }),
+        const userId: string = account.userId;
+
+        if (userId.length > 0) {
+            const session = await RDS.upsertSession(db, userId, input.token);
+            return { sessionToken: session?.refreshToken, userId: userId, providerId: payload.sub };
+        }
+        return { sessionToken: null, userId: null, providerId: null };
+    }),
     /**
      * Logs in or signs up existing user
      */
