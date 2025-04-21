@@ -52,7 +52,7 @@ export const useThemeStore = create<ThemeStore>((set) => {
             set({ appTheme, themeSetting, isDark });
 
             logAnalytics(postHog, {
-                category: analyticsEnum.nav.title,
+                category: analyticsEnum.nav,
                 action: analyticsEnum.nav.actions.CHANGE_THEME,
                 label: themeSetting,
             });

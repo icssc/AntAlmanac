@@ -28,7 +28,7 @@ function getScheduleItems(items?: string[]): ScheduleItem[] {
 
 function handleScheduleChange(index: number, postHog?: PostHog) {
     logAnalytics(postHog, {
-        category: analyticsEnum.calendar.title,
+        category: analyticsEnum.calendar,
         action: analyticsEnum.calendar.actions.CHANGE_SCHEDULE,
     });
     changeCurrentSchedule(index);

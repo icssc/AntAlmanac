@@ -52,7 +52,7 @@ const ColorPicker = memo(function ColorPicker({
         setAnchorEl(event.currentTarget);
 
         logAnalytics(postHog, {
-            category: analyticsCategory.title,
+            category: analyticsCategory,
             action: analyticsCategory.actions.CHANGE_COURSE_COLOR,
         });
     };

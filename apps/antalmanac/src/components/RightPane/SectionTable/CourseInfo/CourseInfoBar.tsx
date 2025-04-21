@@ -140,7 +140,7 @@ export const CourseInfoBar = withStyles(styles)((props: CourseInfoBarProps) => {
                             <a
                                 onClick={() => {
                                     logAnalytics(postHog, {
-                                        category: analyticsCategory.title,
+                                        category: analyticsCategory,
                                         action: analyticsEnum.classSearch.actions.CLICK_PREREQUISITES,
                                     });
                                 }}
@@ -181,7 +181,7 @@ export const CourseInfoBar = withStyles(styles)((props: CourseInfoBarProps) => {
                 size="small"
                 onClick={(event) => {
                     logAnalytics(postHog, {
-                        category: analyticsCategory.title,
+                        category: analyticsCategory,
                         action: analyticsEnum.classSearch.actions.CLICK_INFO,
                     });
                     const currentTarget = event.currentTarget;

@@ -30,7 +30,7 @@ export const addCourse = (
     postHog?: PostHog
 ) => {
     logAnalytics(postHog, {
-        category: analyticsEnum.classSearch.title,
+        category: analyticsEnum.classSearch,
         action: analyticsEnum.classSearch.actions.ADD_COURSE,
         label: courseDetails.deptCode,
         value: courseNumAsDecimal(courseDetails.courseNumber),
@@ -89,7 +89,7 @@ function isEmptySchedule(schedules: ShortCourseSchedule[]) {
 
 export const saveSchedule = async (userID: string, rememberMe: boolean, postHog?: PostHog) => {
     logAnalytics(postHog, {
-        category: analyticsEnum.nav.title,
+        category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
         label: userID,
         value: rememberMe ? 1 : 0,
@@ -143,7 +143,7 @@ export const saveSchedule = async (userID: string, rememberMe: boolean, postHog?
 
 export async function autoSaveSchedule(userID: string, postHog?: PostHog) {
     logAnalytics(postHog, {
-        category: analyticsEnum.nav.title,
+        category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
         label: userID,
     });
@@ -174,7 +174,7 @@ export async function autoSaveSchedule(userID: string, postHog?: PostHog) {
 
 export const loadSchedule = async (userId: string, rememberMe: boolean, postHog?: PostHog) => {
     logAnalytics(postHog, {
-        category: analyticsEnum.nav.title,
+        category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
         label: userId,
         value: rememberMe ? 1 : 0,
@@ -264,7 +264,7 @@ export const copySchedule = (
     postHog?: PostHog
 ) => {
     logAnalytics(postHog, {
-        category: analyticsEnum.addedClasses.title,
+        category: analyticsEnum.addedClasses,
         action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
     });
 

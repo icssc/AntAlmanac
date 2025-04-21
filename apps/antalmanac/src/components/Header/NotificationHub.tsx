@@ -60,7 +60,7 @@ const NotificationHub = memo(function NotificationHub() {
                         setOpen(true);
                         void getNotificationLists();
                         logAnalytics(postHog, {
-                            category: analyticsEnum.nav.title,
+                            category: analyticsEnum.nav,
                             action: analyticsEnum.nav.actions.CLICK_NOTIFICATIONS,
                         });
                     }}

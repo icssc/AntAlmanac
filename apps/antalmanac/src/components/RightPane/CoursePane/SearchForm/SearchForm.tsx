@@ -86,7 +86,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                         <LegacySearch
                             onSubmit={() => {
                                 logAnalytics(postHog, {
-                                    category: analyticsEnum.classSearch.title,
+                                    category: analyticsEnum.classSearch,
                                     action: analyticsEnum.classSearch.actions.MANUAL_SEARCH,
                                 });
                             }}

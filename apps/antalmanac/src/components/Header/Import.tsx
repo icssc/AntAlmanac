@@ -97,7 +97,7 @@ function Import() {
             );
 
             logAnalytics(postHog, {
-                category: analyticsEnum.nav.title,
+                category: analyticsEnum.nav,
                 action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
                 value: sectionsAdded / (sectionCodes.length || 1),
             });

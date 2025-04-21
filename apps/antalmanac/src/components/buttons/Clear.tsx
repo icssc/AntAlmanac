@@ -11,7 +11,7 @@ function handleClearSchedule(postHog?: PostHog, analyticsCategory?: AnalyticsCat
             analyticsCategory = analyticsCategory || analyticsEnum.calendar;
 
             logAnalytics(postHog, {
-                category: analyticsCategory.title,
+                category: analyticsCategory,
                 action: analyticsCategory.actions.CLEAR_SCHEDULE,
             });
 

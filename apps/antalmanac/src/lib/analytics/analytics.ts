@@ -87,7 +87,7 @@ const analyticsEnum: AnalyticsEnum = {
 export default analyticsEnum;
 
 interface AnalyticsProps {
-    category: string;
+    category: AnalyticsCategory;
     action: string;
     label?: string;
     value?: number;
@@ -98,7 +98,7 @@ interface AnalyticsProps {
  */
 export function logAnalytics(postHog: PostHog | undefined, { category, action, label, value }: AnalyticsProps) {
     postHog?.capture(action, {
-        category,
+        category: category.title,
         label,
         value,
     });

@@ -57,7 +57,7 @@ export function ColorAndDelete(props: ActionProps) {
         deleteCourse(section.sectionCode, term, AppStore.getCurrentScheduleIndex());
 
         logAnalytics(postHog, {
-            category: analyticsEnum.addedClasses.title,
+            category: analyticsEnum.addedClasses,
             action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
         });
     };
@@ -119,7 +119,7 @@ export function ScheduleAddCell(props: ActionProps) {
 
         if (specificSchedule) {
             logAnalytics(postHog, {
-                category: analyticsEnum.classSearch.title,
+                category: analyticsEnum.classSearch,
                 action: analyticsEnum.classSearch.actions.ADD_SPECIFIC,
             });
         }

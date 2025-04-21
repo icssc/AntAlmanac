@@ -33,7 +33,7 @@ export const CourseCodeCell = ({ sectionCode, analyticsCategory }: CourseCodeCel
                     onClick={(event) => {
                         clickToCopy(event, sectionCode);
                         logAnalytics(postHog, {
-                            category: analyticsCategory.title,
+                            category: analyticsCategory,
                             action: analyticsCategory.actions.COPY_COURSE_CODE,
                         });
                     }}

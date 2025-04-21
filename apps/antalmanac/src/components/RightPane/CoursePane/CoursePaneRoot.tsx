@@ -32,7 +32,7 @@ export function CoursePaneRoot() {
 
     const refreshSearch = useCallback(() => {
         logAnalytics(postHog, {
-            category: analyticsEnum.classSearch.title,
+            category: analyticsEnum.classSearch,
             action: analyticsEnum.classSearch.actions.REFRESH,
         });
         WebSOC.clearCache();

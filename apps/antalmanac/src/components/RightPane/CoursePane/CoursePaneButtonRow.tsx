@@ -79,7 +79,7 @@ export function ColumnToggleDropdown() {
     const handleChange = useCallback(
         (e: SelectChangeEvent<SectionTableColumn[]>) => {
             logAnalytics(postHog, {
-                category: analyticsEnum.classSearch.title,
+                category: analyticsEnum.classSearch,
                 action: analyticsEnum.classSearch.actions.TOGGLE_COLUMNS,
             });
             if (typeof e.target.value !== 'string') {

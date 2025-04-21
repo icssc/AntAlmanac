@@ -34,7 +34,7 @@ export const CourseInfoButton = ({
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
         logAnalytics(postHog, {
-            category: analyticsCategory.title,
+            category: analyticsCategory,
             action: analyticsAction,
         });
 

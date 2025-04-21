@@ -66,7 +66,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
         handleAddToCalendar();
 
         logAnalytics(postHog, {
-            category: analyticsEnum.calendar.title,
+            category: analyticsEnum.calendar,
             action: analyticsEnum.calendar.actions.ADD_CUSTOM_EVENT,
         });
     };
@@ -76,7 +76,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
         setScheduleIndices([AppStore.schedule.getCurrentScheduleIndex()]);
 
         logAnalytics(postHog, {
-            category: analyticsEnum.calendar.title,
+            category: analyticsEnum.calendar,
             action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT,
         });
     }, []);

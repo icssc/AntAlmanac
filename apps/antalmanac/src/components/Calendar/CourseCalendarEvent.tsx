@@ -212,7 +212,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                                 closePopover();
                                 deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
                                 logAnalytics(postHog, {
-                                    category: analyticsEnum.calendar.title,
+                                    category: analyticsEnum.calendar,
                                     action: analyticsEnum.calendar.actions.DELETE_COURSE,
                                 });
                             }}
@@ -231,7 +231,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                                         onClick={(event) => {
                                             clickToCopy(event, sectionCode);
                                             logAnalytics(postHog, {
-                                                category: analyticsEnum.calendar.title,
+                                                category: analyticsEnum.calendar,
                                                 action: analyticsEnum.calendar.actions.COPY_COURSE_CODE,
                                             });
                                         }}
@@ -315,7 +315,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                                 closePopover();
                                 deleteCustomEvent(customEventID, [AppStore.getCurrentScheduleIndex()]);
                                 logAnalytics(postHog, {
-                                    category: analyticsEnum.calendar.title,
+                                    category: analyticsEnum.calendar,
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
                                 });
                             }}

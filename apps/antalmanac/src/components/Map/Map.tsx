@@ -166,7 +166,7 @@ export default function CourseMap() {
         };
 
         logAnalytics(postHog, {
-            category: analyticsEnum.map.title,
+            category: analyticsEnum.map,
             action: analyticsEnum.map.actions.OPEN,
         });
 

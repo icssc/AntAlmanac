@@ -84,7 +84,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         }
         this.props.toggleSearch();
         logAnalytics(this.props.postHog, {
-            category: analyticsEnum.classSearch.title,
+            category: analyticsEnum.classSearch,
             action: analyticsEnum.classSearch.actions.FUZZY_SEARCH,
         });
     };

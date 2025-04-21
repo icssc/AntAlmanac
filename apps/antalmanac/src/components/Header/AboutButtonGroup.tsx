@@ -28,7 +28,7 @@ const About = () => {
     const handleOpen = useCallback(() => {
         setOpen(true);
         logAnalytics(postHog, {
-            category: analyticsEnum.nav.title,
+            category: analyticsEnum.nav,
             action: analyticsEnum.nav.actions.CLICK_ABOUT,
         });
     }, []);

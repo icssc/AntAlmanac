@@ -19,7 +19,7 @@ import AppStore from '$stores/AppStore';
 function handleUndo(postHog?: PostHog) {
     return () => {
         logAnalytics(postHog, {
-            category: analyticsEnum.calendar.title,
+            category: analyticsEnum.calendar,
             action: analyticsEnum.calendar.actions.UNDO,
         });
         undoDelete(null);
@@ -47,7 +47,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const handleToggleFinals = useCallback(() => {
         if (!showFinalsSchedule) {
             logAnalytics(postHog, {
-                category: analyticsEnum.calendar.title,
+                category: analyticsEnum.calendar,
                 action: analyticsEnum.calendar.actions.DISPLAY_FINALS,
             });
         }

@@ -13,7 +13,7 @@ const ScreenshotButton = () => {
 
     const handleClick = () => {
         logAnalytics(postHog, {
-            category: analyticsEnum.calendar.title,
+            category: analyticsEnum.calendar,
             action: analyticsEnum.calendar.actions.SCREENSHOT,
         });
 

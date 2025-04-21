@@ -256,7 +256,7 @@ function SkeletonSchedule() {
                                         onClick={(event) => {
                                             clickToCopy(event, section);
                                             logAnalytics(postHog, {
-                                                category: analyticsEnum.addedClasses.title,
+                                                category: analyticsEnum.addedClasses,
                                                 action: analyticsEnum.addedClasses.actions.COPY_COURSE_CODE,
                                             });
                                         }}
@@ -375,11 +375,19 @@ function AddedSectionsGrid() {
 
 export function AddedCoursePane() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const postHog = usePostHog();
 
     useEffect(() => {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
         };
+
+        console.log('Opened added ourse');
+
+        logAnalytics(postHog, {
+            category: analyticsEnum.addedClasses,
+            action: analyticsEnum.addedClasses.actions.OPEN,
+        });
 
         AppStore.on('skeletonModeChange', handleSkeletonModeChange);
 
