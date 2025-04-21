@@ -128,14 +128,22 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
                     },
                 });
 
-                openSnackbar(
-                    'success',
-                    `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
-                );
+                if (useSessionStore.getState().sessionIsValid) {
+                    openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
+                } else {
+                    openSnackbar(
+                        'success',
+                        `Schedule saved under username "${userID}". Don't forget to sign up for classes on WebReg!`
+                    );
+                }
                 AppStore.saveSchedule();
             } catch (e) {
                 if (e instanceof TRPCError) {
-                    openSnackbar('error', `Schedule could not be saved under username "${userID}`);
+                    if (useSessionStore.getState().sessionIsValid) {
+                        openSnackbar('error', `Schedule could not be saved`);
+                    } else {
+                        openSnackbar('error', `Schedule could not be saved under username "${userID}`);
+                    }
                 } else {
                     openSnackbar('error', 'Network error or server is down.');
                 }
@@ -274,7 +282,7 @@ export const importScheduleWithUsername = async (username: string, importTag = '
         openSnackbar('error', `Failed to import schedule with name "${username}".`);
     }
 };
-export const loadSchedule = async (userId: string, rememberMe: boolean) => {
+export const loadSchedule = async (userId: string, rememberMe: boolean, accountType: 'GOOGLE' | 'GUEST') => {
     logAnalytics({
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
@@ -295,15 +303,22 @@ export const loadSchedule = async (userId: string, rememberMe: boolean) => {
             }
 
             try {
-                const user = await trpc.userData.getGuestUserByName.query({ name: userId });
-                const res = await trpc.userData.getUserData.query({ userId: user.users.id });
-                console.log(res);
+                const account = await trpc.userData.getUserByProviderId.query({
+                    accountType: accountType,
+                    providerId: userId,
+                });
+
+                const res = await trpc.userData.getUserData.query({ userId: account.userId });
                 const scheduleSaveState = res && 'userData' in res ? res.userData : res;
 
                 if (scheduleSaveState == null) {
                     openSnackbar('error', `Couldn't find schedules for username "${userId}".`);
                 } else if (await AppStore.loadSchedule(scheduleSaveState)) {
-                    openSnackbar('success', `Schedule for username "${userId}" loaded.`);
+                    if (useSessionStore.getState().sessionIsValid) {
+                        openSnackbar('success', `Schedule loaded.`);
+                    } else {
+                        openSnackbar('success', `Schedule for username "${userId}" loaded.`);
+                    }
                 } else {
                     AppStore.loadSkeletonSchedule(scheduleSaveState);
                     openSnackbar(

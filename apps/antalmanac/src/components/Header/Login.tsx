@@ -2,7 +2,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Avatar, Button, Menu, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { SignInDialog } from '$components/dialogs/SignInDialog';
@@ -15,8 +15,7 @@ function Login() {
     const [openSignIn, setOpenSignIn] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<null | User>(null);
-    const currentSession = useRef<string | null>(getLocalStorageSessionId());
-    const [reLoginFlag, setReloginFlag] = useState(true);
+    // const currentSession = useRef<string | null>(getLocalStorageSessionId());
     const { clearSession } = useSessionStore();
     const navigate = useNavigate();
 
@@ -55,13 +54,7 @@ function Login() {
 
     useEffect(() => {
         handleAuthChange();
-        setTimeout(() => {
-            if (reLoginFlag && !validSession && currentSession.current) {
-                setOpenSignIn(true);
-                setReloginFlag(false);
-            }
-        }, 1000);
-    }, [handleAuthChange, reLoginFlag, validSession]);
+    }, [handleAuthChange]);
 
     return (
         <div id="load-save-container">
@@ -112,7 +105,7 @@ function Login() {
                     <Button onClick={handleClickSignIn} startIcon={<AccountCircleIcon />} color="inherit">
                         Sign in
                     </Button>
-                    <SignInDialog isDark={isDark} open={openSignIn} onClose={handleClickSignIn} />
+                    <SignInDialog isDark={isDark} open={openSignIn} onClose={handleClickSignIn} action="Load" />
                 </>
             )}
         </div>

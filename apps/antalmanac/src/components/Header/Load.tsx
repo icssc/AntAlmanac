@@ -11,13 +11,16 @@ import {
     FormControlLabel,
 } from '@material-ui/core';
 import { CloudDownload, Save } from '@material-ui/icons';
+// import GoogleIcon from '@mui/icons-material/Google';
 import { LoadingButton } from '@mui/lab';
-import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
+import { ChangeEvent, PureComponent, useEffect, useState, useCallback } from 'react';
 
-import actionTypesStore from '$actions/ActionTypesStore';
+// import actionTypesStore from '$actions/ActionTypesStore';
 import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
-import { getLocalStorageUserId } from '$lib/localStorage';
+import trpc from '$lib/api/trpc';
+import { getLocalStorageSessionId, getLocalStorageUserId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
+import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface LoadSaveButtonBaseProps {
@@ -161,24 +164,37 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
     }
 }
 
-const LoadSaveScheduleFunctionality = () => {
+const LoadFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
+    const { updateSession, sessionIsValid } = useSessionStore();
 
     const [loading, setLoading] = useState(false);
-    const [saving, setSaving] = useState(false);
+    // const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    const loadScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
+    const loadScheduleAndSetLoading = useCallback(async (userID: string, rememberMe: boolean) => {
         setLoading(true);
-        await loadSchedule(userID, rememberMe);
+        await loadSchedule(userID, rememberMe, 'GUEST');
         setLoading(false);
-    };
+    }, []);
 
-    const saveScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
-        setSaving(true);
-        await saveSchedule(userID, rememberMe);
-        setSaving(false);
-    };
+    const loadScheduleAndSetLoadingAuth = useCallback(
+        async (userID: string, rememberMe: boolean) => {
+            setLoading(true);
+            const sessionToken: string = getLocalStorageSessionId() ?? '';
+            updateSession(sessionToken);
+            if (sessionIsValid) {
+                const { _, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
+                    token: sessionToken,
+                });
+                await loadSchedule(accounts.providerAccountId, rememberMe, 'GOOGLE');
+            } else if (sessionToken === '') {
+                await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
+            }
+            setLoading(false);
+        },
+        [sessionIsValid, updateSession]
+    );
 
     useEffect(() => {
         const handleSkeletonModeChange = () => {
@@ -195,37 +211,32 @@ const LoadSaveScheduleFunctionality = () => {
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
             const savedUserID = getLocalStorageUserId();
+            const sessionID = getLocalStorageSessionId();
 
-            if (savedUserID != null) {
-                // this `void` is for eslint "no floating promises"
-                void loadScheduleAndSetLoading(savedUserID, true);
+            if (savedUserID != null || sessionID !== null) {
+                void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
             }
         }
-    }, []);
+    }, [loadScheduleAndSetLoading, loadScheduleAndSetLoadingAuth]);
 
-    useEffect(() => {
-        const handleAutoSaveStart = () => setSaving(true);
-        const handleAutoSaveEnd = () => setSaving(false);
+    //     useEffect(() => {
+    //         const handleAutoSaveStart = () => setSaving(true);
+    //         const handleAutoSaveEnd = () => setSaving(false);
+    //
+    //         actionTypesStore.on('autoSaveStart', handleAutoSaveStart);
+    //         actionTypesStore.on('autoSaveEnd', handleAutoSaveEnd);
+    //
+    //         return () => {
+    //             actionTypesStore.off('autoSaveStart', handleAutoSaveStart);
+    //             actionTypesStore.off('autoSaveEnd', handleAutoSaveEnd);
+    //         };
+    //     }, []);
 
-        actionTypesStore.on('autoSaveStart', handleAutoSaveStart);
-        actionTypesStore.on('autoSaveEnd', handleAutoSaveEnd);
-
-        return () => {
-            actionTypesStore.off('autoSaveStart', handleAutoSaveStart);
-            actionTypesStore.off('autoSaveEnd', handleAutoSaveEnd);
-        };
-    }, []);
-
+    if (sessionIsValid) {
+        return;
+    }
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
-            <LoadSaveButtonBase
-                id="save-button"
-                actionName={'Save'}
-                action={saveScheduleAndSetLoading}
-                disabled={loading}
-                loading={saving}
-                colorType={isDark ? 'secondary' : 'primary'}
-            />
             <LoadSaveButtonBase
                 id="load-button"
                 actionName={'Load'}
@@ -238,4 +249,4 @@ const LoadSaveScheduleFunctionality = () => {
     );
 };
 
-export default LoadSaveScheduleFunctionality;
+export default LoadFunctionality;
