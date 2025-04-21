@@ -44,7 +44,13 @@ const input = {
 
         <p><a href="https://www.reg.uci.edu/registrar/soc/webreg.html?page=startUp&call=">Click here to go to WebReg to enroll</a></p>
 
-        <p>Do you no longer want to receive notifications for this course? <a href="https://antalmanac.com/unsubscribe/{{userId}}/{{sectionCode}}/{{quarter}}/{{status}}/{{codesChanged}}/{{statusChanged}}">Click here to manage your notification subscriptions</a></p>
+        <p><a href="https://antalmanac.com/unsubscribe/{{userId}}?sectionCode={{sectionCode}}&quarter={{quarter}}&year={{year}}&deptCode={{deptCode}}&courseNumber={{courseNumber}}&instructor={{instructor}}">
+            Click here to unsubscribe from this course
+        </a></p>
+
+        <p><a href="https://antalmanac.com/unsubscribe/{{userId}}?sectionCode={{sectionCode}}&quarter={{quarter}}&year={{year}}&unsubscribeAll=true">
+            Click here to unsubscribe from ALL courses
+        </a></p>
 
         <p>Best,<br>
         The AntAlmanac Team</p>

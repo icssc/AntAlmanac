@@ -185,7 +185,8 @@ async function sendNotification(
     users: User[],
     statusChanged: boolean,
     codesChanged: boolean,
-    quarter: string
+    quarter: string,
+    year: string
 ) {
     try {
         let notification = ``;
@@ -219,9 +220,7 @@ async function sendNotification(
                         sectionCode: sectionCode,
                         userId: user.userId,
                         quarter: quarter,
-                        status: status,
-                        codesChanged: codesChanged,
-                        statusChanged: statusChanged,
+                        year: year,
                     }),
                 },
             },
@@ -245,9 +244,7 @@ async function sendNotification(
                         sectionCode: '',
                         userId: '',
                         quarter: '',
-                        status: '',
-                        codesChanged: '',
-                        statusChanged: '',
+                        year: '',
                     }),
                 },
             },

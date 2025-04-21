@@ -27,7 +27,6 @@ async function main() {
                         const response: WebsocResponse = (await getUpdatedClasses(quarter, year, batch)) || {
                             schools: [],
                         };
-
                         await Promise.all(
                             response?.schools?.map(async (school) => {
                                 await Promise.all(
@@ -85,7 +84,8 @@ async function main() {
                                                                 users,
                                                                 statusChanged,
                                                                 codesChanged,
-                                                                quarter
+                                                                quarter,
+                                                                year
                                                             );
                                                         }
                                                         await updateSubscriptionStatus(
