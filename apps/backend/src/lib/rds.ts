@@ -586,6 +586,6 @@ export class RDS {
                 .delete(subscriptions)
                 .where(eq(subscriptions.userId, userId))
         );
-
+    }
 }
 

@@ -1,10 +1,9 @@
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { Notification } from '@packages/antalmanac-types';
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 
 import trpc from '$lib/api/trpc';
-
 
 export const Unsubscribe = () => {
     const { userId } = useParams();
@@ -13,16 +12,21 @@ export const Unsubscribe = () => {
     const sectionCode = searchParams.get('sectionCode');
     const quarter = searchParams.get('quarter');
     const year = searchParams.get('year');
+    const deptCode = searchParams.get('deptCode');
+    const courseNumber = searchParams.get('courseNumber');
+    const instructor = searchParams.get('instructor');
     const unsubscribeAll = searchParams.get('unsubscribeAll');
 
-    useEffect(() => {
-        if (!userId || !sectionCode || !quarter || !year) return;
+    const [done, setDone] = useState(false);
 
-        const term = `${year} ${quarter}`;
+    const term = `${year} ${quarter}`;
+
+    const handleUnsubscribe = async () => {
+        if (!userId || !sectionCode || !quarter || !year) return;
 
         const notification: Notification = {
             term,
-            sectionCode: Number(sectionCode),
+            sectionCode,
             courseTitle: '',
             sectionType: '',
             notificationStatus: {
@@ -35,24 +39,41 @@ export const Unsubscribe = () => {
             lastCodes: '',
         };
 
-        const runUnsubscribe = async () => {
-            try {
+        try {
+            if (unsubscribeAll === 'true') {
+                await trpc.notifications.deleteAllNotifications.mutate({ id: userId });
+            } else {
                 await trpc.notifications.deleteNotification.mutate({ id: userId, notification });
-            } catch (err) {
-                console.error('Error unsubscribing:', err);
             }
-        };
-        runUnsubscribe();
-    }, [userId, sectionCode, quarter, year]);
+            setDone(true);
+        } catch (err) {
+            console.error('Error unsubscribing:', err);
+        }
+    };
 
     return (
-        <Box sx={{ height: '100dvh', overflowY: 'auto' }}>
-            <h1>Unsubscribe Page</h1>
-            <p>User ID: {userId}</p>
-            <p>Section Code: {sectionCode}</p>
-            <p>Quarter: {quarter}</p>
-            <p>Year: {year}</p>
-            <p>Unsubscribe All: {unsubscribeAll}</p>
+        <Box
+            sx={{
+                height: '100dvh',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
+                px: 2,
+            }}
+        >
+            <h2>Hello, would you like to unsubscribe from notifications for</h2>
+            <h2>{unsubscribeAll === 'true' ? 'ALL courses' : `${deptCode} ${courseNumber} (${instructor})`}</h2>
+            {!done ? (
+                <Button variant="contained" color="error" sx={{ mt: 2 }} onClick={handleUnsubscribe}>
+                    Confirm Unsubscribe
+                </Button>
+            ) : (
+                <>
+                    <p>You have been unsubscribed.</p>
+                    <a href="https://antalmanac.com/">Click here to return to AntAlmanac</a>
+                </>
+            )}
         </Box>
     );
 };

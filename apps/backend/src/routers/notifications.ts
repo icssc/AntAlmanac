@@ -12,7 +12,7 @@ const NotificationStatusSchema = z.object({
 
 const NotificationSchema = z.object({
     term: z.string(),
-    sectionCode: z.number(),
+    sectionCode: z.string(),
     courseTitle: z.string(),
     sectionType: z.string(),
     lastUpdated: z.string(),
