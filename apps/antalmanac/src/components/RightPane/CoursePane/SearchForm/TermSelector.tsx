@@ -1,5 +1,5 @@
-import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import { useEffect, useState } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
 
@@ -25,8 +25,8 @@ function TermSelector(props: TermSelectorProps) {
 
     const [term, setTerm] = useState(getTerm());
 
-    const handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
-        const newValue = event.target.value as string;
+    const handleChange = (event: SelectChangeEvent<string>) => {
+        const newValue = event.target.value;
 
         setTerm(newValue);
         changeTerm(fieldName, newValue);
