@@ -2,6 +2,7 @@ import { IconButton, Theme, Tooltip } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
 import { Tune } from '@material-ui/icons';
+import { usePostHog } from 'posthog-js/react';
 import type { FormEvent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
@@ -52,6 +53,7 @@ const styles: Styles<Theme, object> = {
 const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) => {
     const { classes, toggleSearch } = props;
     const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
+    const postHog = usePostHog();
 
     const onFormSubmit = (event: FormEvent) => {
         event.preventDefault();
@@ -75,11 +77,15 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                     </div>
 
                     {!manualSearchEnabled ? (
-                        <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleManualSearch} />
+                        <FuzzySearch
+                            toggleSearch={toggleSearch}
+                            toggleShowLegacySearch={toggleManualSearch}
+                            postHog={postHog}
+                        />
                     ) : (
                         <LegacySearch
                             onSubmit={() => {
-                                logAnalytics({
+                                logAnalytics(postHog, {
                                     category: analyticsEnum.classSearch.title,
                                     action: analyticsEnum.classSearch.actions.MANUAL_SEARCH,
                                 });

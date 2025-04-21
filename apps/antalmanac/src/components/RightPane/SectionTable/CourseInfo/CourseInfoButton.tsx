@@ -1,4 +1,5 @@
 import { Box, Button, Paper, Popover, useMediaQuery, useTheme } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 
 import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
@@ -21,6 +22,7 @@ export const CourseInfoButton = ({
     analyticsAction,
     analyticsCategory,
 }: CourseInfoButtonProps) => {
+    const postHog = usePostHog();
     const theme = useTheme();
     const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -31,8 +33,8 @@ export const CourseInfoButton = ({
         isMobileScreen || (scheduleManagementWidth && scheduleManagementWidth < theme.breakpoints.values.xs);
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
-        logAnalytics({
-            category: analyticsCategory,
+        logAnalytics(postHog, {
+            category: analyticsCategory.title,
             action: analyticsAction,
         });
 

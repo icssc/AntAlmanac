@@ -4,6 +4,7 @@ import { ClassNameMap } from '@material-ui/core/styles/withStyles';
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import { Skeleton } from '@material-ui/lab';
 import type { PrerequisiteTree } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 
 import PrereqTree from '$components/RightPane/SectionTable/PrereqTree';
@@ -71,6 +72,8 @@ export const CourseInfoBar = withStyles(styles)((props: CourseInfoBarProps) => {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [courseInfo, setCourseInfo] = useState<CourseInfo | null>(null);
 
+    const postHog = usePostHog();
+
     const togglePopover = async (currentTarget: HTMLElement | null) => {
         if (anchorEl) {
             setAnchorEl(null);
@@ -136,8 +139,8 @@ export const CourseInfoBar = withStyles(styles)((props: CourseInfoBarProps) => {
                         <p>
                             <a
                                 onClick={() => {
-                                    logAnalytics({
-                                        category: analyticsCategory,
+                                    logAnalytics(postHog, {
+                                        category: analyticsCategory.title,
                                         action: analyticsEnum.classSearch.actions.CLICK_PREREQUISITES,
                                     });
                                 }}
@@ -177,8 +180,8 @@ export const CourseInfoBar = withStyles(styles)((props: CourseInfoBarProps) => {
                 startIcon={!isMobileScreen && <InfoOutlinedIcon />}
                 size="small"
                 onClick={(event) => {
-                    logAnalytics({
-                        category: analyticsCategory,
+                    logAnalytics(postHog, {
+                        category: analyticsCategory.title,
                         action: analyticsEnum.classSearch.actions.CLICK_INFO,
                     });
                     const currentTarget = event.currentTarget;
