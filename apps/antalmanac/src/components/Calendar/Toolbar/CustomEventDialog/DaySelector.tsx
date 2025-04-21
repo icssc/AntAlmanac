@@ -1,4 +1,4 @@
-import { Button, Box } from '@material-ui/core';
+import { Button, Box } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 const normal_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -37,7 +37,6 @@ const DaySelector = ({ days = [false, false, false, false, false, false, false],
                     size="small"
                     fullWidth
                     onClick={() => handleChange(index)}
-                    color={'default'}
                     style={{
                         display: 'block',
                         aspectRatio: 1 / 1,
