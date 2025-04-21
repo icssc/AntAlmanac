@@ -1,12 +1,10 @@
 import GoogleIcon from '@mui/icons-material/Google';
 import { Button, Stack, Dialog, DialogTitle, DialogContent } from '@mui/material';
-// import { useState } from 'react';
 
 import { isEmptySchedule, openSnackbar } from '$actions/AppStoreActions';
 import trpc from '$lib/api/trpc';
 import { setLocalStorageDataCache } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
-// import { useSessionStore } from '$stores/SessionStore';
 
 interface SignInDialogProps {
     open: boolean;
