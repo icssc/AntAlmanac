@@ -97,12 +97,13 @@ function SectionTable(props: SectionTableProps) {
             <Box
             sx={{
                 display: 'flex',
+                flexDirection: 'column',
                 gap: '4px',
                 marginBottom: '8px',
                 marginTop: '4px',
-            }}
+              }}
         >
-            <Box sx={{ display: 'flex', gap: '4px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <Box sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start', alignItems: 'center'}}>
                 <CourseInfoBar
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
@@ -157,7 +158,14 @@ function SectionTable(props: SectionTableProps) {
             </Box>
 
             {courseDetails.updatedAt && (
-                <Box sx={{ fontSize: '0.75rem', color: '#888', marginLeft: 'auto', marginRight: '1rem', alignContent: 'center' }}>
+                <Box sx={{
+                    fontSize: '0.75rem',
+                    color: '#888',
+                    alignSelf: { xs: 'flex-start', md: 'flex-end' },
+                    paddingRight: { sm: '0.5rem' },
+                    textAlign: { xs: 'left', md: 'right' },
+                    marginTop: { xs: 0, md: '-2rem' }
+                  }}>
                     Status last updated {new Date(courseDetails.updatedAt).toLocaleTimeString()}
                 </Box>
             )}
