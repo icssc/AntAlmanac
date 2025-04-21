@@ -1,13 +1,11 @@
 import type { HourMinute } from '@packages/antalmanac-types';
 import { saveAs } from 'file-saver';
 import { createEvents, type EventAttributes } from 'ics';
-import { PostHog } from 'posthog-js/react';
 
 import { notNull } from './utils';
 
 import { openSnackbar } from '$actions/AppStoreActions';
 import { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { getDefaultTerm, termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
@@ -339,17 +337,12 @@ export function getEventsFromCourses(
     return calendarEvents;
 }
 
-export function exportCalendar(postHog?: PostHog) {
+export function exportCalendar() {
     const events = getEventsFromCourses();
 
     // Convert the events into a vcalendar.
     // Callback function triggers a download of the .ics file
     createEvents(events, (error, value) => {
-        logAnalytics(postHog, {
-            category: 'Calendar Pane',
-            action: analyticsEnum.calendar.actions.DOWNLOAD,
-        });
-
         if (error) {
             openSnackbar('error', 'Something went wrong! Unable to download schedule.', 5);
             console.log(error);

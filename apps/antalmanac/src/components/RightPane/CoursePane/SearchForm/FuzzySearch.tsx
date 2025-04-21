@@ -32,7 +32,7 @@ const isIpad = () => {
 interface FuzzySearchProps {
     toggleSearch: () => void;
     toggleShowLegacySearch: () => void;
-    postHog: PostHog;
+    postHog?: PostHog;
 }
 
 interface FuzzySearchState {

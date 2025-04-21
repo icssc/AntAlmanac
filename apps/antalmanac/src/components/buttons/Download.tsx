@@ -2,11 +2,16 @@ import { Download } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
 
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { exportCalendar } from '$lib/download';
 
 const exportCalendarEvent = (postHog?: PostHog) => {
     return () => {
-        exportCalendar(postHog);
+        logAnalytics(postHog, {
+            category: 'Calendar Pane',
+            action: analyticsEnum.calendar.actions.DOWNLOAD,
+        });
+        exportCalendar();
     };
 };
 
