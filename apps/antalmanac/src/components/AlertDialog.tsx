@@ -11,7 +11,7 @@ interface AlertDialogProps {
 export const AlertDialog = ({ open, title, children, severity = 'info', onClose }: AlertDialogProps) => {
     return (
         <Dialog open={open} onClose={onClose}>
-            <Alert severity={severity} variant="outlined">
+            <Alert severity={severity}>
                 <DialogTitle>{title}</DialogTitle>
                 <DialogContent>
                     {children}

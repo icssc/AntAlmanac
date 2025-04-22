@@ -24,6 +24,7 @@ import RightPaneStore from '../RightPane/RightPaneStore';
 import { ImportSource } from './constants';
 
 import { addCustomEvent, openSnackbar, addCourse, importScheduleWithUsername } from '$actions/AppStoreActions';
+import { AlertDialog } from '$components/AlertDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { QueryZotcourseError } from '$lib/customErrors';
@@ -42,6 +43,8 @@ import { useThemeStore } from '$stores/SettingsStore';
 function Import() {
     const [open, setOpen] = useState(false);
     const [term, setTerm] = useState(RightPaneStore.getFormData().term);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertDialog, setAlertDialog] = useState(false);
     const [importSource, setImportSource] = useState('studylist');
     const [studyListText, setStudyListText] = useState('');
     const [zotcourseScheduleName, setZotcourseScheduleName] = useState('');
@@ -94,17 +97,17 @@ function Import() {
                 if (!sectionCodes || sectionCodes.length === 0) break;
                 uploadSectionCodes(sectionCodes, term, currentSchedule);
                 break;
-            case ImportSource.AA_USERNAME_IMPORT:
-                try {
-                    importScheduleWithUsername(aaUsername, firstTimeUserFlag.current ? '' : '-(IMPORT)');
-                } catch (e) {
-                    openSnackbar(
-                        'error',
-                        `An error occurred while trying to import schedule with the name ${aaUsername}`
-                    );
-                    console.error(e);
+            case ImportSource.AA_USERNAME_IMPORT: {
+                const importStatus = await importScheduleWithUsername(
+                    aaUsername,
+                    firstTimeUserFlag.current ? '' : '-(IMPORT)'
+                );
+                if (importStatus && (typeof importStatus === 'string' || importStatus instanceof Error)) {
+                    setAlertDialog(true);
+                    setAlertMessage(typeof importStatus === 'string' ? importStatus : importStatus.message);
                 }
                 break;
+            }
             default:
                 openSnackbar('error', 'Invalid import source.');
                 handleClose();
@@ -125,6 +128,9 @@ function Import() {
         handleClose();
     };
 
+    const handleCloseAlertDialog = () => {
+        setAlertDialog(false);
+    };
     const uploadSectionCodes = async (sectionCodes: string[], term: string, currentSchedule: number) => {
         try {
             const sectionsAdded = addCoursesMultiple(
@@ -344,6 +350,10 @@ function Import() {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            <AlertDialog title={alertMessage} open={alertDialog} onClose={handleCloseAlertDialog} severity="error">
+                If this is a problem contact
+            </AlertDialog>
         </>
     );
 }

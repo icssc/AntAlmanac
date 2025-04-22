@@ -19,6 +19,8 @@ import {
     getLocalStorageUserId,
     removeLocalStorageUserId,
     removeLocalStorageImportedUser,
+    removeLocalStorageDataCache,
+    getLocalStorageImportedUser,
 } from '$lib/localStorage';
 // import { getLocalStorageDataCache, getLocalStorageUserId } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
@@ -56,6 +58,7 @@ export function Header() {
                             }
                             setLocalStorageImportedUser(savedUserId);
                             removeLocalStorageUserId();
+                            removeLocalStorageDataCache();
                             const data = JSON.parse(savedData);
                             const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
                             scheduleSaveState.schedules = data;
@@ -67,7 +70,10 @@ export function Header() {
                                 },
                             });
                             await loadSchedule(providerId, true, 'GOOGLE');
-                            setAlertDialog(true);
+                            const importedUser = getLocalStorageImportedUser();
+                            if (importedUser && importedUser !== '') {
+                                setAlertDialog(true);
+                            }
                         }
                     }
                     navigate('/');

@@ -206,12 +206,17 @@ export const importScheduleWithUsername = async (username: string, importTag = '
         const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
             token: session.session ?? '',
         });
-        const incomingUser = await trpc.userData.getGuestAccountAndUserByName.query({ name: username });
+        const incomingUser = await trpc.userData.getGuestAccountAndUserByName
+            .query({ name: username })
+            .then((res) => res.users);
 
-        if (!incomingUser || !incomingUser.users) {
+        if (!incomingUser) {
             throw new Error(`Couldn't find user with username "${username}".`);
+        } else if (incomingUser.imported) {
+            throw new Error(`Schedule with name "${username}" has already been imported.`);
         }
-        const incomingData: User = await trpc.userData.getUserData.query({ userId: incomingUser.users.id });
+
+        const incomingData: User = await trpc.userData.getUserData.query({ userId: incomingUser.id });
         const scheduleSaveState = incomingData && 'userData' in incomingData ? incomingData.userData : incomingData;
 
         const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
@@ -220,12 +225,16 @@ export const importScheduleWithUsername = async (username: string, importTag = '
             mergeSchedules(currentSchedules.schedules, scheduleSaveState.schedules, importTag);
             if (await AppStore.loadSchedule(currentSchedules)) {
                 await saveSchedule(users.id, accounts.AccountType);
+                await trpc.userData.flagImportedSchedule.mutate({
+                    providerId: username,
+                });
                 openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
             }
         }
+        return 'Idk if this is right';
     } catch (e) {
-        console.error(e);
-        openSnackbar('error', `Failed to import schedule with name "${username}".`);
+        console.log(e);
+        return e;
     }
 };
 

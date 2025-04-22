@@ -166,7 +166,7 @@ const userDataRouter = router({
     }),
 
     flagImportedSchedule: procedure.input(z.object({ providerId: z.string() })).mutation(async ({ input }) => {
-        await RDS.flagImportedUser(db, input.providerId);
+        return await RDS.flagImportedUser(db, input.providerId);
     }),
 });
 

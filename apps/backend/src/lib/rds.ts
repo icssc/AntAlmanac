@@ -532,9 +532,18 @@ export class RDS {
     }
 
     static async flagImportedUser(db: DatabaseOrTransaction, providerId: string) {
-        const accounts = (await this.getGuestAccountAndUserByName(db, providerId)).accounts;
-        await db.transaction((tx) =>
-            tx.update(users).set({ imported: true }).where(eq(users.id, accounts.userId)).execute()
-        );
+        try {
+            const { users: user, accounts } = await this.getGuestAccountAndUserByName(db, providerId);
+            if (user.imported) {
+                return false;
+            }
+
+            await db.transaction((tx) =>
+                tx.update(users).set({ imported: true }).where(eq(users.id, accounts.userId)).execute()
+            );
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 }
