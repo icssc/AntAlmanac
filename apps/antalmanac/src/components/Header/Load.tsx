@@ -11,7 +11,6 @@ import {
     FormControlLabel,
 } from '@material-ui/core';
 import { CloudDownload, Save } from '@material-ui/icons';
-// import GoogleIcon from '@mui/icons-material/Google';
 import { LoadingButton } from '@mui/lab';
 import { ChangeEvent, PureComponent, useEffect, useState, useCallback } from 'react';
 
@@ -188,7 +187,7 @@ const LoadFunctionality = () => {
                     token: sessionToken,
                 });
                 await loadSchedule(accounts.providerAccountId, rememberMe, 'GOOGLE');
-            } else if (sessionToken === '') {
+            } else if (sessionToken === '' && userID && userID !== '') {
                 await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
             }
             setLoading(false);

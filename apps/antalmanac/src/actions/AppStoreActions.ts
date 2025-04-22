@@ -296,10 +296,8 @@ export const loadSchedule = async (userId: string, rememberMe: boolean, accountT
     ) {
         userId = userId.replace(/\s+/g, '');
         if (userId.length > 0) {
-            if (rememberMe) {
+            if (rememberMe && accountType === 'GUEST') {
                 setLocalStorageUserId(userId);
-            } else {
-                removeLocalStorageUserId();
             }
 
             try {

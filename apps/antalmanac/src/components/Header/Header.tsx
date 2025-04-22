@@ -1,6 +1,6 @@
-import { AppBar, Box, Stack, Dialog, DialogContent, LinearProgress } from '@mui/material';
+import { AppBar, Box, Stack } from '@mui/material';
 import { useEffect, useCallback, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 import Import from './Import';
 import LoadSaveScheduleFunctionalityButton from './Load';
@@ -9,9 +9,11 @@ import { Logo } from './Logo';
 import SaveFunctionality from './Save';
 import AppDrawer from './SettingsMenu';
 
-import { isEmptySchedule } from '$actions/AppStoreActions';
+import { isEmptySchedule, loadSchedule } from '$actions/AppStoreActions';
+import { LoadingScreen } from '$components/LoadingScreen';
 import trpc from '$lib/api/trpc';
-import { getLocalStorageDataCache, getLocalStorageUserId } from '$lib/localStorage';
+import { getLocalStorageDataCache } from '$lib/localStorage';
+// import { getLocalStorageDataCache, getLocalStorageUserId } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -20,6 +22,7 @@ export function Header() {
     const { session, updateSession: setSession } = useSessionStore();
     const [progress, setProgress] = useState(false);
     const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
     const handleSearchParamsChange = useCallback(async () => {
         try {
             const code = searchParams.get('code');
@@ -28,19 +31,15 @@ export function Header() {
                     code: code,
                     token: session ?? '',
                 });
+
                 if (sessionToken && providerId) {
                     setProgress(true);
                     await setSession(sessionToken);
-                    const savedUserId = getLocalStorageUserId();
+                    // const savedUserId = getLocalStorageUserId();
                     const savedData = getLocalStorageDataCache();
 
                     const userData = await trpc.userData.getUserData.query({ userId: userId });
                     if (isEmptySchedule(userData.userData.schedules)) {
-                        if (savedUserId !== null && savedData) {
-                            console.log('guest');
-                        } else if (savedData && savedUserId === null) {
-                            console.log('google');
-                        }
                         if (savedData) {
                             const data = JSON.parse(savedData);
                             const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
@@ -52,17 +51,18 @@ export function Header() {
                                     userData: scheduleSaveState,
                                 },
                             });
+                            await loadSchedule(providerId, true, 'GOOGLE');
                         }
                     }
 
+                    navigate('/');
                     setProgress(false);
-                    window.location.href = '/';
                 }
             }
         } catch (error) {
             console.error('Error during authentication', error);
         }
-    }, [searchParams, session, setSession]);
+    }, [searchParams, session, setSession, navigate]);
 
     useEffect(() => {
         handleSearchParamsChange();
@@ -96,21 +96,7 @@ export function Header() {
                 </Stack>
             </Box>
 
-            <Dialog fullScreen open={progress}>
-                {/* <img src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading courses" /> */}
-                <DialogContent
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        height: '100%',
-                    }}
-                >
-                    <Logo />
-                    <LinearProgress sx={{ width: '25%', marginTop: 2 }} />
-                </DialogContent>
-            </Dialog>
+            <LoadingScreen open={progress} />
         </AppBar>
     );
 }
