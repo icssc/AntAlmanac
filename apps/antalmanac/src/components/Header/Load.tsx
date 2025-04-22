@@ -11,7 +11,7 @@ import {
 import { CloudDownload, Save } from '@material-ui/icons';
 import GoogleIcon from '@mui/icons-material/Google';
 import { LoadingButton } from '@mui/lab';
-import { Divider } from '@mui/material';
+import { Divider, Alert } from '@mui/material';
 import { ChangeEvent, PureComponent, useEffect, useState, useCallback } from 'react';
 
 import { loadSchedule, saveSchedule, isEmptySchedule } from '$actions/AppStoreActions';
@@ -174,11 +174,17 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
     }
 }
 
+interface AlertDialogProps {
+    open: boolean;
+    onClose: () => void;
+}
+
 const LoadFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
     const { updateSession, sessionIsValid } = useSessionStore();
 
     const [loading, setLoading] = useState(false);
+    const [openAlert, setOpenalert] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     // const toggleLoadOptionsDialog = () => {
@@ -192,7 +198,7 @@ const LoadFunctionality = () => {
                 })
                 .then((res) => res.users.imported);
             if (res) {
-                alert('imported');
+                setOpenalert(true);
             }
             return res;
         } catch (error) {
@@ -248,6 +254,34 @@ const LoadFunctionality = () => {
             console.error('Error during login initiation', error);
         }
     };
+
+    const AlertDialog = ({ open, onClose }: AlertDialogProps) => {
+        return (
+            <Dialog open={open} onClose={onClose}>
+                <Alert severity="warning" variant="outlined">
+                    <DialogTitle>This schedule seems to have already been imported!</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>To access your schedule sign in with the Google account</DialogContentText>
+                        <LoadingButton
+                            color="primary"
+                            variant="contained"
+                            startIcon={<GoogleIcon />}
+                            fullWidth
+                            onClick={handleLogin}
+                        >
+                            Sign in with Google
+                        </LoadingButton>
+                        <DialogActions>
+                            <Button onClick={onClose} color="inherit">
+                                Cancel
+                            </Button>
+                        </DialogActions>
+                    </DialogContent>
+                </Alert>
+            </Dialog>
+        );
+    };
+
     useEffect(() => {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
@@ -285,6 +319,8 @@ const LoadFunctionality = () => {
                 loading={loading}
                 colorType={isDark ? 'secondary' : 'primary'}
             />
+
+            <AlertDialog open={openAlert} onClose={() => setOpenalert(false)} />
         </div>
     );
 };
