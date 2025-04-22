@@ -12,7 +12,7 @@ import AppDrawer from './SettingsMenu';
 import { isEmptySchedule, loadSchedule } from '$actions/AppStoreActions';
 import { LoadingScreen } from '$components/LoadingScreen';
 import trpc from '$lib/api/trpc';
-import { getLocalStorageDataCache } from '$lib/localStorage';
+import { getLocalStorageDataCache, removeLocalStorageUserId } from '$lib/localStorage';
 // import { getLocalStorageDataCache, getLocalStorageUserId } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
@@ -36,6 +36,7 @@ export function Header() {
                     setProgress(true);
                     await setSession(sessionToken);
                     // const savedUserId = getLocalStorageUserId();
+                    removeLocalStorageUserId();
                     const savedData = getLocalStorageDataCache();
 
                     const userData = await trpc.userData.getUserData.query({ userId: userId });
@@ -54,7 +55,6 @@ export function Header() {
                             await loadSchedule(providerId, true, 'GOOGLE');
                         }
                     }
-
                     navigate('/');
                     setProgress(false);
                 }

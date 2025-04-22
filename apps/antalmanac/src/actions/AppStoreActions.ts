@@ -13,12 +13,7 @@ import { SnackbarPosition } from '$components/NotificationSnackbar';
 import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
-import {
-    setLocalStorageUserId,
-    removeLocalStorageUserId,
-    getLocalStorageDataCache,
-    removeLocalStorageDataCache,
-} from '$lib/localStorage';
+import { setLocalStorageUserId, getLocalStorageDataCache, removeLocalStorageDataCache } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 export interface CopyScheduleOptions {
@@ -102,12 +97,6 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
         userID = userID.replace(/\s+/g, '');
 
         if (userID.length > 0) {
-            if (rememberMe) {
-                setLocalStorageUserId(userID);
-            } else {
-                removeLocalStorageUserId();
-            }
-
             const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
             if (
