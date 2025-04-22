@@ -332,20 +332,8 @@ export class RDS {
         await tx.insert(customEvents).values(dbCustomEvents);
     }
 
-    // static async getGuestUserData(db: DatabaseOrTransaction, guestId: string): Promise<User | null> {
-    //     const userAndAccount = await RDS.getUserAndAccount(db, 'GUEST', guestId);
-    //     if (!userAndAccount) {
-    //         return null;
-    //     }
-    //
-    // }
-
     private static async fetchUserData(db: DatabaseOrTransaction, user: any) {
         const userId = user.id;
-        const userAndAccount = await RDS.getUserAndAccount(db, 'GUEST', userId);
-        if (!userAndAccount) {
-            return null;
-        }
 
         const sectionResults = await db
             .select()
@@ -361,8 +349,8 @@ export class RDS {
 
         const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
 
-        const scheduleIndex = userAndAccount.user.currentScheduleId
-            ? userSchedules.findIndex((schedule) => schedule.id === userAndAccount.user.currentScheduleId)
+        const scheduleIndex = user.currentScheduleId
+            ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
             : userSchedules.length;
 
         return {
