@@ -24,7 +24,7 @@ import RightPaneStore from '../RightPane/RightPaneStore';
 import { ImportSource } from './constants';
 
 import { addCustomEvent, openSnackbar, addCourse, importScheduleWithUsername } from '$actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';

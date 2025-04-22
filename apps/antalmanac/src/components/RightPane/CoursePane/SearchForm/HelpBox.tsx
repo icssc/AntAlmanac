@@ -11,6 +11,11 @@ import {
     Box,
     IconButton,
 } from '@mui/material';
+import { useCallback } from 'react';
+import { useShallow } from 'zustand/react/shallow';
+
+import { setLocalStorageHelpBoxDismissalTime } from '$lib/localStorage';
+import { useHelpMenuStore } from '$stores/HelpMenuStore';
 
 const images = [
     {
@@ -27,18 +32,31 @@ const images = [
     },
 ];
 
-interface HelpBoxProps {
-    onDismiss: () => void;
-}
+export function HelpBox() {
+    const [showHelpBox, setShowHelpBox] = useHelpMenuStore(
+        useShallow((store) => [store.showHelpBox, store.setShowHelpBox])
+    );
 
-function HelpBox({ onDismiss }: HelpBoxProps) {
+    const dismissHelpBox = useCallback(() => {
+        setLocalStorageHelpBoxDismissalTime(Date.now().toString());
+    }, []);
+
+    const handleClick = useCallback(() => {
+        setShowHelpBox(false);
+        dismissHelpBox();
+    }, [dismissHelpBox, setShowHelpBox]);
+
+    if (!showHelpBox) {
+        return null;
+    }
+
     return (
         <Paper variant="outlined" sx={{ padding: 2, marginBottom: '10px', marginRight: '5px' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="h5" fontWeight="bold">
                     Need help planning your schedule?
                 </Typography>
-                <IconButton aria-label="close" size="large" color="inherit" onClick={onDismiss}>
+                <IconButton aria-label="close" size="large" color="inherit" onClick={handleClick}>
                     <Close fontSize="inherit" />
                 </IconButton>
             </Box>
@@ -79,5 +97,3 @@ function HelpBox({ onDismiss }: HelpBoxProps) {
         </Paper>
     );
 }
-
-export default HelpBox;

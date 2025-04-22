@@ -7,7 +7,7 @@ import type { PrerequisiteTree } from '@packages/antalmanac-types';
 import { useState } from 'react';
 
 import PrereqTree from '$components/RightPane/SectionTable/PrereqTree';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { MOBILE_BREAKPOINT } from '$src/globals';
 

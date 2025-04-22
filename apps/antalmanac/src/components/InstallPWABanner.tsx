@@ -59,6 +59,8 @@ function InstallPWABanner() {
 
     const displayPWABanner = bannerVisibility && !dismissedRecently && canInstall;
 
+    return null;
+
     return (
         <Box
             sx={{

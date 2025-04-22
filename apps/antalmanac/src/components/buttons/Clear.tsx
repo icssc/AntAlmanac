@@ -2,7 +2,7 @@ import { DeleteOutline } from '@mui/icons-material';
 import { IconButton, SxProps, Tooltip } from '@mui/material';
 
 import { clearSchedules } from '$actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 
 function handleClearSchedule() {
     if (window.confirm('Are you sure you want to clear this schedule?')) {

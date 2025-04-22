@@ -51,7 +51,7 @@ function TermSelector(props: TermSelectorProps) {
     return (
         <FormControl fullWidth>
             <InputLabel>Term</InputLabel>
-            <Select value={term} onChange={handleChange}>
+            <Select value={term} onChange={handleChange} fullWidth>
                 {termData.map((term, index) => (
                     <MenuItem key={index} value={term.shortName}>
                         {term.longName}

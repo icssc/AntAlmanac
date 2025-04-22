@@ -1,10 +1,11 @@
 import { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { and, eq } from 'drizzle-orm';
-
-import { type Database } from '$db/index';
+import { and, eq, ExtractTablesWithRelations } from 'drizzle-orm';
+import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
+import type { Database } from '$db/index';
 import {
     schedules,
     users,
+    accounts,
     coursesInSchedule,
     customEvents,
     AccountType,
@@ -13,18 +14,19 @@ import {
     CustomEvent,
     sessions,
     Account,
-    accounts,
     Session,
 } from '$db/schema';
+import * as schema from '$db/schema';
 
-type DatabaseOrTransaction = Omit<Database, '$client'>;
+type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
+type DatabaseOrTransaction = Omit<Database, '$client'> | Transaction;
 
 export class RDS {
     /**
      * If a guest user with the specified name exists, return their ID, otherwise return null.
      */
-    static async guestUserIdWithNameOrNull(db: DatabaseOrTransaction, name: string): Promise<string | null> {
-        return db
+    private static async guestUserIdWithNameOrNull(tx: Transaction, name: string): Promise<string | null> {
+        return tx
             .select({ id: accounts.userId })
             .from(accounts)
             .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.providerAccountId, name)))
@@ -35,34 +37,32 @@ export class RDS {
     /**
      * Creates a guest user if they don't already exist.
      *
-     * @param db Database or transaction object
+     * @param tx Database or transaction object
      * @param name Guest user's name, to be used as providerAccountID and username
      * @returns The new/existing user's ID
      */
-    static async createGuestUserOptional(db: DatabaseOrTransaction, name: string) {
-        return db.transaction(async (tx) => {
-            const maybeUserId = await RDS.guestUserIdWithNameOrNull(tx, name);
+    private static async createGuestUserOptional(tx: Transaction, name: string) {
+        const maybeUserId = await RDS.guestUserIdWithNameOrNull(tx, name);
 
-            const userId = maybeUserId
-                ? maybeUserId
-                : await tx
-                      .insert(users)
-                      .values({ name })
-                      .returning({ id: users.id })
-                      .then((users) => users[0].id);
+        const userId = maybeUserId
+            ? maybeUserId
+            : await tx
+                  .insert(users)
+                  .values({ name })
+                  .returning({ id: users.id })
+                  .then((users) => users[0].id);
 
-            if (userId === undefined) {
-                throw new Error(`Failed to create guest user for ${name}`);
-            }
+        if (userId === undefined) {
+            throw new Error(`Failed to create guest user for ${name}`);
+        }
 
-            await tx
-                .insert(accounts)
-                .values({ userId, accountType: 'GUEST', providerAccountId: name })
-                .onConflictDoNothing()
-                .execute();
+        await tx
+            .insert(accounts)
+            .values({ userId, accountType: 'GUEST', providerAccountId: name })
+            .onConflictDoNothing()
+            .execute();
 
-            return userId;
-        });
+        return userId;
     }
     /**
      * Retrieves an account with the specified user ID and account type.
@@ -193,10 +193,11 @@ export class RDS {
      * Creates a new schedule if one with its name doesn't already exist
      * and replaces its courses and custom events with the ones provided.
      *
+     *
      * @returns The ID of the new/existing schedule
      */
-    static async upsertScheduleAndContents(
-        db: DatabaseOrTransaction,
+    private static async upsertScheduleAndContents(
+        tx: Transaction,
         userId: string,
         schedule: ShortCourseSchedule,
         index: number
@@ -210,11 +211,7 @@ export class RDS {
             lastUpdated: new Date(),
         };
 
-        const scheduleResult = await db
-            .transaction((tx) => tx.insert(schedules).values(dbSchedule).returning({ id: schedules.id }))
-            .catch((error) => {
-                throw new Error(`Failed to insert schedule for ${userId} (${schedule.scheduleName}): ${error}`);
-            });
+        const scheduleResult = await tx.insert(schedules).values(dbSchedule).returning({ id: schedules.id });
 
         const scheduleId = scheduleResult[0].id;
         if (scheduleId === undefined) {
@@ -223,11 +220,11 @@ export class RDS {
 
         // Add courses and custom events
         await Promise.all([
-            this.upsertCourses(db, scheduleId, schedule.courses).catch((error) => {
+            this.upsertCourses(tx, scheduleId, schedule.courses).catch((error) => {
                 throw new Error(`Failed to insert courses for ${schedule.scheduleName}: ${error}`);
             }),
 
-            this.upsertCustomEvents(db, scheduleId, schedule.customEvents).catch((error) => {
+            this.upsertCustomEvents(tx, scheduleId, schedule.customEvents).catch((error) => {
                 throw new Error(`Failed to insert custom events for ${schedule.scheduleName}: ${error}`);
             }),
         ]);
@@ -269,15 +266,15 @@ export class RDS {
 
     /** Deletes and recreates all of the user's schedules and contents */
     private static async upsertSchedulesAndContents(
-        db: DatabaseOrTransaction,
+        tx: Transaction,
         userId: string,
         scheduleArray: ShortCourseSchedule[]
     ): Promise<string[]> {
         // Drop all schedules, which will cascade to courses and custom events
-        await db.delete(schedules).where(eq(schedules.userId, userId));
+        await tx.delete(schedules).where(eq(schedules.userId, userId));
 
         return Promise.all(
-            scheduleArray.map((schedule, index) => this.upsertScheduleAndContents(db, userId, schedule, index))
+            scheduleArray.map((schedule, index) => this.upsertScheduleAndContents(tx, userId, schedule, index))
         );
     }
 
@@ -285,9 +282,7 @@ export class RDS {
      * Drops all courses in the schedule and re-add them,
      * deduplicating by section code and term.
      * */
-    private static async upsertCourses(db: DatabaseOrTransaction, scheduleId: string, courses: ShortCourse[]) {
-        await db.transaction((tx) => tx.delete(coursesInSchedule).where(eq(coursesInSchedule.scheduleId, scheduleId)));
-
+    private static async upsertCourses(tx: Transaction, scheduleId: string, courses: ShortCourse[]) {
         if (courses.length === 0) {
             return;
         }
@@ -311,18 +306,14 @@ export class RDS {
             return true;
         });
 
-        await db.transaction((tx) => tx.insert(coursesInSchedule).values(dbCoursesUnique));
+        await tx.insert(coursesInSchedule).values(dbCoursesUnique);
     }
 
     private static async upsertCustomEvents(
-        db: DatabaseOrTransaction,
+        tx: Transaction,
         scheduleId: string,
         repeatingCustomEvents: RepeatingCustomEvent[]
     ) {
-        await db.transaction(
-            async (tx) => await tx.delete(customEvents).where(eq(customEvents.scheduleId, scheduleId))
-        );
-
         if (repeatingCustomEvents.length === 0) {
             return;
         }
@@ -338,11 +329,24 @@ export class RDS {
             lastUpdated: new Date(),
         }));
 
-        await db.transaction(async (tx) => await tx.insert(customEvents).values(dbCustomEvents));
+        await tx.insert(customEvents).values(dbCustomEvents);
     }
+
+    // static async getGuestUserData(db: DatabaseOrTransaction, guestId: string): Promise<User | null> {
+    //     const userAndAccount = await RDS.getUserAndAccount(db, 'GUEST', guestId);
+    //     if (!userAndAccount) {
+    //         return null;
+    //     }
+    //
+    // }
 
     private static async fetchUserData(db: DatabaseOrTransaction, user: any) {
         const userId = user.id;
+        const userAndAccount = await RDS.getUserAndAccount(db, 'GUEST', userId);
+        if (!userAndAccount) {
+            return null;
+        }
+
         const sectionResults = await db
             .select()
             .from(schedules)
@@ -357,8 +361,8 @@ export class RDS {
 
         const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
 
-        const scheduleIndex = user.currentScheduleId
-            ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
+        const scheduleIndex = userAndAccount.user.currentScheduleId
+            ? userSchedules.findIndex((schedule) => schedule.id === userAndAccount.user.currentScheduleId)
             : userSchedules.length;
 
         return {
@@ -369,6 +373,7 @@ export class RDS {
             },
         };
     }
+
     /**
      * Retrieves user data by user ID, including schedules and custom events.
      *

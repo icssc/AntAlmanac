@@ -6,7 +6,7 @@ import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/ho
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { MOBILE_BREAKPOINT } from '$src/globals';
 import AppStore from '$stores/AppStore';
 
@@ -88,7 +88,7 @@ export function ColorAndDelete(props: ActionProps) {
  * Copying a specific class's link will only copy its course code.
  * If there is random value let in the url, it will interfere with the generated url.
  */
-const fieldsToReset = ['courseCode', 'courseNumber', 'deptLabel', 'deptValue', 'ge', 'term'];
+const fieldsToReset = ['courseCode', 'courseNumber', 'deptValue', 'ge', 'term'];
 
 /**
  * Sections that have not been added to a schedule can be added to a schedule.
@@ -154,7 +154,7 @@ export function ScheduleAddCell(props: ActionProps) {
             }}
         >
             {scheduleConflict ? (
-                <Tooltip title="This course overlaps with another event in your calendar!" arrow>
+                <Tooltip title="This course overlaps with another event in your calendar!" arrow disableInteractive>
                     <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
                         <Add fontSize="small" />
                     </IconButton>
