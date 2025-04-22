@@ -36,8 +36,8 @@ export function Header() {
                     setProgress(true);
                     await setSession(sessionToken);
                     const savedUserId = getLocalStorageUserId() ?? '';
-                    removeLocalStorageUserId();
                     const savedData = getLocalStorageDataCache();
+                    removeLocalStorageUserId();
 
                     const userData = await trpc.userData.getUserData.query({ userId: userId });
                     if (isEmptySchedule(userData.userData.schedules)) {

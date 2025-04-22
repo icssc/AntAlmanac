@@ -77,10 +77,10 @@ const userDataRouter = router({
             });
         }
     }),
-    getGuestUserByName: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
+    getGuestAccountAndUserByName: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
         return RDS.getGuestAccountAndUserByName(db, input.name);
     }),
-    getUserByProviderId: procedure
+    getAccountByProviderId: procedure
         .input(z.object({ accountType: z.enum(['GOOGLE', 'GUEST']), providerId: z.string() }))
         .query(async ({ input }) => {
             return RDS.getAccountByProviderId(db, input.accountType, input.providerId);

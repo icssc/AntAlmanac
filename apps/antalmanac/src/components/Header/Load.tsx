@@ -11,13 +11,14 @@ import {
     FormControlLabel,
 } from '@material-ui/core';
 import { CloudDownload, Save } from '@material-ui/icons';
+import GoogleIcon from '@mui/icons-material/Google';
 import { LoadingButton } from '@mui/lab';
+import { Divider } from '@mui/material';
 import { ChangeEvent, PureComponent, useEffect, useState, useCallback } from 'react';
 
-// import actionTypesStore from '$actions/ActionTypesStore';
-import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
+import { loadSchedule, saveSchedule, isEmptySchedule } from '$actions/AppStoreActions';
 import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId, getLocalStorageUserId } from '$lib/localStorage';
+import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -35,11 +36,17 @@ interface LoadSaveButtonBaseState {
     isOpen: boolean;
     userID: string;
     rememberMe: boolean;
+    onClose?: () => void;
 }
 
 interface SaveLoadIconProps {
     loading: boolean;
     actionName: 'Save' | 'Load';
+}
+
+interface LoadOptionDialogProps {
+    open: boolean;
+    onClose: () => void;
 }
 
 function SaveLoadIcon(props: SaveLoadIconProps) {
@@ -111,10 +118,12 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                 <LoadingButton
                     id={this.props.id}
                     onClick={this.handleOpen}
-                    color="inherit"
+                    color="primary"
+                    variant="contained"
                     startIcon={<SaveLoadIcon loading={this.props.loading} actionName={this.props.actionName} />}
                     disabled={this.props.disabled}
                     loading={false}
+                    fullWidth
                 >
                     {this.props.actionName}
                 </LoadingButton>
@@ -168,12 +177,34 @@ const LoadFunctionality = () => {
     const { updateSession, sessionIsValid } = useSessionStore();
 
     const [loading, setLoading] = useState(false);
-    // const [saving, setSaving] = useState(false);
+    const [openOptionsDialog, setOpenOptionsDialog] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
+    const toggleLoadOptionsDialog = () => {
+        setOpenOptionsDialog((prev) => !prev);
+    };
+    const validateImportedUser = async (userID: string) => {
+        try {
+            const res = await trpc.userData.getGuestAccountAndUserByName
+                .query({
+                    name: userID,
+                })
+                .then((res) => res.users.imported);
+            if (res) {
+                alert('imported');
+            }
+            return res;
+        } catch (error) {
+            console.error('Error validating imported user:', error);
+            return false;
+        }
+    };
     const loadScheduleAndSetLoading = useCallback(async (userID: string, rememberMe: boolean) => {
         setLoading(true);
-        await loadSchedule(userID, rememberMe, 'GUEST');
+        toggleLoadOptionsDialog();
+        if (!(await validateImportedUser(userID))) {
+            await loadSchedule(userID, rememberMe, 'GUEST');
+        }
         setLoading(false);
     }, []);
 
@@ -183,17 +214,75 @@ const LoadFunctionality = () => {
             const sessionToken: string = getLocalStorageSessionId() ?? '';
             updateSession(sessionToken);
             if (sessionIsValid) {
-                const { _, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
-                    token: sessionToken,
-                });
-                await loadSchedule(accounts.providerAccountId, rememberMe, 'GOOGLE');
+                const account = await trpc.userData.getUserAndAccountBySessionToken
+                    .query({
+                        token: sessionToken,
+                    })
+                    .then((res) => res.accounts);
+                await loadSchedule(account.providerAccountId, rememberMe, 'GOOGLE');
             } else if (sessionToken === '' && userID && userID !== '') {
-                await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
+                if (!(await validateImportedUser(userID))) {
+                    console.log(userID);
+                    await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
+                }
             }
             setLoading(false);
         },
         [sessionIsValid, updateSession]
     );
+
+    const LoadOptionDialog = ({ open, onClose }: LoadOptionDialogProps) => {
+        const cacheSchedule = () => {
+            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState().schedules;
+            if (!isEmptySchedule(scheduleSaveState)) {
+                setLocalStorageDataCache(JSON.stringify(scheduleSaveState));
+            }
+        };
+
+        const handleLogin = async () => {
+            try {
+                const authUrl = await trpc.userData.getGoogleAuthUrl.query();
+                if (authUrl) {
+                    cacheSchedule();
+                    window.location.href = authUrl;
+                }
+            } catch (error) {
+                console.error('Error during login initiation', error);
+            }
+        };
+        return (
+            <Dialog open={open} onClose={onClose} maxWidth="lg" color="inherit">
+                <DialogTitle>Load Schedule</DialogTitle>
+                <DialogContent>
+                    <LoadingButton
+                        onClick={handleLogin}
+                        startIcon={<GoogleIcon />}
+                        color="primary"
+                        variant="contained"
+                        fullWidth
+                    >
+                        Sign in with Google
+                    </LoadingButton>
+
+                    <Divider sx={{ width: '30rem', my: '1rem' }}>or use your schedule user ID</Divider>
+
+                    <LoadSaveButtonBase
+                        id="load-button"
+                        actionName={'Load'}
+                        action={loadScheduleAndSetLoading}
+                        disabled={skeletonMode}
+                        loading={loading}
+                        colorType={isDark ? 'secondary' : 'primary'}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={onClose} color="primary">
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
+    };
 
     useEffect(() => {
         const handleSkeletonModeChange = () => {
@@ -218,32 +307,20 @@ const LoadFunctionality = () => {
         }
     }, [loadScheduleAndSetLoading, loadScheduleAndSetLoadingAuth]);
 
-    //     useEffect(() => {
-    //         const handleAutoSaveStart = () => setSaving(true);
-    //         const handleAutoSaveEnd = () => setSaving(false);
-    //
-    //         actionTypesStore.on('autoSaveStart', handleAutoSaveStart);
-    //         actionTypesStore.on('autoSaveEnd', handleAutoSaveEnd);
-    //
-    //         return () => {
-    //             actionTypesStore.off('autoSaveStart', handleAutoSaveStart);
-    //             actionTypesStore.off('autoSaveEnd', handleAutoSaveEnd);
-    //         };
-    //     }, []);
-
     if (sessionIsValid) {
         return;
     }
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
-            <LoadSaveButtonBase
-                id="load-button"
-                actionName={'Load'}
-                action={loadScheduleAndSetLoading}
-                disabled={skeletonMode}
+            <LoadingButton
+                color="inherit"
+                startIcon={<CloudDownload />}
                 loading={loading}
-                colorType={isDark ? 'secondary' : 'primary'}
-            />
+                onClick={toggleLoadOptionsDialog}
+            >
+                Load
+            </LoadingButton>
+            <LoadOptionDialog open={openOptionsDialog} onClose={toggleLoadOptionsDialog} />
         </div>
     );
 };

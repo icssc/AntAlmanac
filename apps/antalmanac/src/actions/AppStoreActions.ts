@@ -206,7 +206,7 @@ export const importScheduleWithUsername = async (username: string, importTag = '
         const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
             token: session.session ?? '',
         });
-        const incomingUser = await trpc.userData.getGuestUserByName.query({ name: username });
+        const incomingUser = await trpc.userData.getGuestAccountAndUserByName.query({ name: username });
 
         if (!incomingUser || !incomingUser.users) {
             throw new Error(`Couldn't find user with username "${username}".`);
@@ -248,7 +248,7 @@ export const loadSchedule = async (providerId: string, rememberMe: boolean, acco
             }
 
             try {
-                const account = await trpc.userData.getUserByProviderId.query({
+                const account = await trpc.userData.getAccountByProviderId.query({
                     accountType: accountType,
                     providerId: providerId,
                 });
