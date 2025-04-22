@@ -164,6 +164,10 @@ const userDataRouter = router({
             console.error('RDS Failed to upsert user data:', error)
         );
     }),
+
+    flagImportedSchedule: procedure.input(z.object({ providerId: z.string() })).mutation(async ({ input }) => {
+        await RDS.flagImportedUser(db, input.providerId);
+    }),
 });
 
 export default userDataRouter;

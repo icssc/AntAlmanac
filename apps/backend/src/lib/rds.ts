@@ -283,6 +283,8 @@ export class RDS {
      * deduplicating by section code and term.
      * */
     private static async upsertCourses(tx: Transaction, scheduleId: string, courses: ShortCourse[]) {
+        await tx.delete(coursesInSchedule).where(eq(coursesInSchedule.scheduleId, scheduleId));
+
         if (courses.length === 0) {
             return;
         }
@@ -527,5 +529,12 @@ export class RDS {
         const currentSession = await this.getCurrentSession(db, refreshToken ?? '');
         if (currentSession) return currentSession;
         return await RDS.createSession(db, userId);
+    }
+
+    static async flagImportedUser(db: DatabaseOrTransaction, providerId: string) {
+        const accounts = (await this.getGuestAccountAndUserByName(db, providerId)).accounts;
+        await db.transaction((tx) =>
+            tx.update(users).set({ imported: true }).where(eq(users.id, accounts.userId)).execute()
+        );
     }
 }
