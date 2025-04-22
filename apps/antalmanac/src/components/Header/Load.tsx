@@ -7,8 +7,6 @@ import {
     DialogTitle,
     TextField,
     CircularProgress,
-    Checkbox,
-    FormControlLabel,
 } from '@material-ui/core';
 import { CloudDownload, Save } from '@material-ui/icons';
 import GoogleIcon from '@mui/icons-material/Google';
@@ -25,6 +23,7 @@ import { useThemeStore } from '$stores/SettingsStore';
 
 interface LoadSaveButtonBaseProps {
     action: typeof saveSchedule;
+    actionSecondary?: () => void;
     actionName: 'Save' | 'Load';
     disabled: boolean;
     loading: boolean;
@@ -43,12 +42,6 @@ interface SaveLoadIconProps {
     loading: boolean;
     actionName: 'Save' | 'Load';
 }
-
-interface LoadOptionDialogProps {
-    open: boolean;
-    onClose: () => void;
-}
-
 function SaveLoadIcon(props: SaveLoadIconProps) {
     return props.loading ? (
         <CircularProgress size={20} color="inherit" />
@@ -118,8 +111,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                 <LoadingButton
                     id={this.props.id}
                     onClick={this.handleOpen}
-                    color="primary"
-                    variant="contained"
+                    color="inherit"
                     startIcon={<SaveLoadIcon loading={this.props.loading} actionName={this.props.actionName} />}
                     disabled={this.props.disabled}
                     loading={false}
@@ -130,12 +122,22 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                 <Dialog open={this.state.isOpen} onClose={this.handleClose}>
                     <DialogTitle>{this.props.actionName}</DialogTitle>
                     <DialogContent>
+                        <LoadingButton
+                            onClick={this.props.actionSecondary}
+                            color="primary"
+                            variant="contained"
+                            startIcon={<GoogleIcon />}
+                            fullWidth
+                        >
+                            Sign in with Google
+                        </LoadingButton>
+                        <Divider sx={{ my: '1rem', width: '35rem', maxWidth: '100%' }}>or</Divider>
                         <DialogContentText>
                             Enter your unique user ID here to {this.props.actionName.toLowerCase()} your schedule.
                         </DialogContentText>
-                        <DialogContentText style={{ color: 'red' }}>
+                        {/* <DialogContentText style={{ color: 'red' }}>
                             Make sure the user ID is unique and secret, or someone else can overwrite your schedule.
-                        </DialogContentText>
+                        </DialogContentText> */}
                         <TextField
                             // eslint-disable-next-line jsx-a11y/no-autofocus
                             autoFocus
@@ -147,7 +149,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                             value={this.state.userID}
                             onChange={(event) => this.setState({ userID: event.target.value })}
                         />
-                        <FormControlLabel
+                        {/* <FormControlLabel
                             control={
                                 <Checkbox
                                     checked={this.state.rememberMe}
@@ -156,7 +158,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                                 />
                             }
                             label="Remember Me (Uncheck on shared computers)"
-                        />
+                        /> */}
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => this.handleClose(true)} color={this.props.colorType}>
@@ -177,12 +179,11 @@ const LoadFunctionality = () => {
     const { updateSession, sessionIsValid } = useSessionStore();
 
     const [loading, setLoading] = useState(false);
-    const [openOptionsDialog, setOpenOptionsDialog] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    const toggleLoadOptionsDialog = () => {
-        setOpenOptionsDialog((prev) => !prev);
-    };
+    // const toggleLoadOptionsDialog = () => {
+    //     setOpenOptionsDialog((prev) => !prev);
+    // };
     const validateImportedUser = async (userID: string) => {
         try {
             const res = await trpc.userData.getGuestAccountAndUserByName
@@ -201,7 +202,6 @@ const LoadFunctionality = () => {
     };
     const loadScheduleAndSetLoading = useCallback(async (userID: string, rememberMe: boolean) => {
         setLoading(true);
-        toggleLoadOptionsDialog();
         if (!(await validateImportedUser(userID))) {
             await loadSchedule(userID, rememberMe, 'GUEST');
         }
@@ -230,60 +230,24 @@ const LoadFunctionality = () => {
         },
         [sessionIsValid, updateSession]
     );
-
-    const LoadOptionDialog = ({ open, onClose }: LoadOptionDialogProps) => {
-        const cacheSchedule = () => {
-            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState().schedules;
-            if (!isEmptySchedule(scheduleSaveState)) {
-                setLocalStorageDataCache(JSON.stringify(scheduleSaveState));
-            }
-        };
-
-        const handleLogin = async () => {
-            try {
-                const authUrl = await trpc.userData.getGoogleAuthUrl.query();
-                if (authUrl) {
-                    cacheSchedule();
-                    window.location.href = authUrl;
-                }
-            } catch (error) {
-                console.error('Error during login initiation', error);
-            }
-        };
-        return (
-            <Dialog open={open} onClose={onClose} maxWidth="lg" color="inherit">
-                <DialogTitle>Load Schedule</DialogTitle>
-                <DialogContent>
-                    <LoadingButton
-                        onClick={handleLogin}
-                        startIcon={<GoogleIcon />}
-                        color="primary"
-                        variant="contained"
-                        fullWidth
-                    >
-                        Sign in with Google
-                    </LoadingButton>
-
-                    <Divider sx={{ width: '30rem', my: '1rem' }}>or use your schedule user ID</Divider>
-
-                    <LoadSaveButtonBase
-                        id="load-button"
-                        actionName={'Load'}
-                        action={loadScheduleAndSetLoading}
-                        disabled={skeletonMode}
-                        loading={loading}
-                        colorType={isDark ? 'secondary' : 'primary'}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={onClose} color="primary">
-                        Close
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        );
+    const cacheSchedule = () => {
+        const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState().schedules;
+        if (!isEmptySchedule(scheduleSaveState)) {
+            setLocalStorageDataCache(JSON.stringify(scheduleSaveState));
+        }
     };
 
+    const handleLogin = async () => {
+        try {
+            const authUrl = await trpc.userData.getGoogleAuthUrl.query();
+            if (authUrl) {
+                cacheSchedule();
+                window.location.href = authUrl;
+            }
+        } catch (error) {
+            console.error('Error during login initiation', error);
+        }
+    };
     useEffect(() => {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
@@ -312,15 +276,15 @@ const LoadFunctionality = () => {
     }
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
-            <LoadingButton
-                color="inherit"
-                startIcon={<CloudDownload />}
+            <LoadSaveButtonBase
+                id="load-button"
+                actionName={'Load'}
+                action={loadScheduleAndSetLoading}
+                actionSecondary={handleLogin}
+                disabled={skeletonMode}
                 loading={loading}
-                onClick={toggleLoadOptionsDialog}
-            >
-                Load
-            </LoadingButton>
-            <LoadOptionDialog open={openOptionsDialog} onClose={toggleLoadOptionsDialog} />
+                colorType={isDark ? 'secondary' : 'primary'}
+            />
         </div>
     );
 };
