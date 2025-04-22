@@ -11,10 +11,11 @@ import {
 import { CloudDownload, Save } from '@material-ui/icons';
 import GoogleIcon from '@mui/icons-material/Google';
 import { LoadingButton } from '@mui/lab';
-import { Divider, Alert } from '@mui/material';
+import { Divider } from '@mui/material';
 import { ChangeEvent, PureComponent, useEffect, useState, useCallback } from 'react';
 
 import { loadSchedule, saveSchedule, isEmptySchedule } from '$actions/AppStoreActions';
+import { AlertDialog } from '$components/AlertDialog';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
@@ -174,11 +175,6 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
     }
 }
 
-interface AlertDialogProps {
-    open: boolean;
-    onClose: () => void;
-}
-
 const LoadFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
     const { updateSession, sessionIsValid } = useSessionStore();
@@ -255,33 +251,6 @@ const LoadFunctionality = () => {
         }
     };
 
-    const AlertDialog = ({ open, onClose }: AlertDialogProps) => {
-        return (
-            <Dialog open={open} onClose={onClose}>
-                <Alert severity="warning" variant="outlined">
-                    <DialogTitle>This schedule seems to have already been imported!</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText>To access your schedule sign in with the Google account</DialogContentText>
-                        <LoadingButton
-                            color="primary"
-                            variant="contained"
-                            startIcon={<GoogleIcon />}
-                            fullWidth
-                            onClick={handleLogin}
-                        >
-                            Sign in with Google
-                        </LoadingButton>
-                        <DialogActions>
-                            <Button onClick={onClose} color="inherit">
-                                Cancel
-                            </Button>
-                        </DialogActions>
-                    </DialogContent>
-                </Alert>
-            </Dialog>
-        );
-    };
-
     useEffect(() => {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
@@ -320,7 +289,23 @@ const LoadFunctionality = () => {
                 colorType={isDark ? 'secondary' : 'primary'}
             />
 
-            <AlertDialog open={openAlert} onClose={() => setOpenalert(false)} />
+            <AlertDialog
+                open={openAlert}
+                onClose={() => setOpenalert(false)}
+                title="This schedule seems to have already been imported!"
+                severity="warning"
+            >
+                <DialogContentText>To access your schedule sign in with the Google account</DialogContentText>
+                <LoadingButton
+                    color="primary"
+                    variant="contained"
+                    startIcon={<GoogleIcon />}
+                    fullWidth
+                    onClick={handleLogin}
+                >
+                    Sign in with Google
+                </LoadingButton>
+            </AlertDialog>
         </div>
     );
 };

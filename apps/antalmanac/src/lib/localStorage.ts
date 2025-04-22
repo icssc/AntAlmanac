@@ -18,9 +18,21 @@ enum LocalStorageKeys {
     sessionId = 'sessionId',
     dataCache = 'dataCache',
     newUser = 'newUser',
+    importedUser = 'importedUser',
 }
 
 const LSK = LocalStorageKeys;
+export function setLocalStorageImportedUser(value: string) {
+    window.localStorage.setItem(LSK.importedUser, value);
+}
+
+export function getLocalStorageImportedUser() {
+    return window.localStorage.getItem(LSK.importedUser);
+}
+
+export function removeLocalStorageImportedUser() {
+    window.localStorage.removeItem(LSK.importedUser);
+}
 
 export function setLocalStorageOnFirstSignin(value: string) {
     window.localStorage.setItem(LSK.newUser, value);
