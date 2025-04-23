@@ -1,0 +1,1 @@
+ALTER TABLE "users" ALTER COLUMN "imported" SET DEFAULT false;

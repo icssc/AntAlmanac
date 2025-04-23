@@ -1,6 +1,6 @@
 {
-    "id": "294b17e7-824f-4699-b5f6-e4154aa86d6c",
-    "prevId": "50327bb2-2f0c-4f26-a239-9d1279c55a34",
+    "id": "beacc931-0ed2-4a88-80c3-ec17fc44694a",
+    "prevId": "e80ffc07-5f5c-41e3-9332-2c7574707408",
     "version": "7",
     "dialect": "postgresql",
     "tables": {
@@ -129,6 +129,12 @@
                 "email": {
                     "name": "email",
                     "type": "text",
+                    "primaryKey": false,
+                    "notNull": false
+                },
+                "imported": {
+                    "name": "imported",
+                    "type": "boolean",
                     "primaryKey": false,
                     "notNull": false
                 },
@@ -385,60 +391,14 @@
                     "name": "sectionCode",
                     "type": "integer",
                     "primaryKey": false,
-                    "notNull": true
-                },
-                "year": {
-                    "name": "year",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": true
-                },
-                "quarter": {
-                    "name": "quarter",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": true
-                },
-                "lastUpdated": {
-                    "name": "lastUpdated",
-                    "type": "text",
-                    "primaryKey": false,
                     "notNull": false
                 },
-                "lastCodes": {
-                    "name": "lastCodes",
-                    "type": "text",
+                "status": {
+                    "name": "status",
+                    "type": "subscription_target_status",
+                    "typeSchema": "public",
                     "primaryKey": false,
-                    "notNull": false,
-                    "default": "''"
-                },
-                "openStatus": {
-                    "name": "openStatus",
-                    "type": "boolean",
-                    "primaryKey": false,
-                    "notNull": false,
-                    "default": false
-                },
-                "waitlistStatus": {
-                    "name": "waitlistStatus",
-                    "type": "boolean",
-                    "primaryKey": false,
-                    "notNull": false,
-                    "default": false
-                },
-                "fullStatus": {
-                    "name": "fullStatus",
-                    "type": "boolean",
-                    "primaryKey": false,
-                    "notNull": false,
-                    "default": false
-                },
-                "restrictionStatus": {
-                    "name": "restrictionStatus",
-                    "type": "boolean",
-                    "primaryKey": false,
-                    "notNull": false,
-                    "default": false
+                    "notNull": false
                 }
             },
             "indexes": {},
@@ -470,6 +430,11 @@
             "name": "account_type",
             "schema": "public",
             "values": ["GOOGLE", "GUEST"]
+        },
+        "public.subscription_target_status": {
+            "name": "subscription_target_status",
+            "schema": "public",
+            "values": ["OPEN", "WAITLISTED"]
         }
     },
     "schemas": {},

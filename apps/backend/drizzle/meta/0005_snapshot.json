@@ -1,6 +1,6 @@
 {
-    "id": "777c48e4-024f-445a-9f4e-54cc35fa7f6f",
-    "prevId": "188be3a7-137f-4669-8f64-34011f8c4aef",
+    "id": "07be6c13-5ea1-4311-9840-f5403d7524af",
+    "prevId": "d3530ca6-38cc-4080-8af7-42fb63f1a55b",
     "version": "7",
     "dialect": "postgresql",
     "tables": {
@@ -387,45 +387,10 @@
                     "primaryKey": false,
                     "notNull": false
                 },
-                "year": {
-                    "name": "year",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": false
-                },
-                "quarter": {
-                    "name": "quarter",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": false
-                },
-                "lastUpdated": {
-                    "name": "lastUpdated",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": false
-                },
-                "openStatus": {
-                    "name": "openStatus",
-                    "type": "boolean",
-                    "primaryKey": false,
-                    "notNull": false
-                },
-                "waitlistStatus": {
-                    "name": "waitlistStatus",
-                    "type": "boolean",
-                    "primaryKey": false,
-                    "notNull": false
-                },
-                "fullStatus": {
-                    "name": "fullStatus",
-                    "type": "boolean",
-                    "primaryKey": false,
-                    "notNull": false
-                },
-                "restrictionStatus": {
-                    "name": "restrictionStatus",
-                    "type": "boolean",
+                "status": {
+                    "name": "status",
+                    "type": "subscription_target_status",
+                    "typeSchema": "public",
                     "primaryKey": false,
                     "notNull": false
                 }
@@ -459,6 +424,11 @@
             "name": "account_type",
             "schema": "public",
             "values": ["GOOGLE", "GUEST"]
+        },
+        "public.subscription_target_status": {
+            "name": "subscription_target_status",
+            "schema": "public",
+            "values": ["OPEN", "WAITLISTED"]
         }
     },
     "schemas": {},

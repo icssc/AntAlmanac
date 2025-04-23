@@ -5,10 +5,8 @@ import { getLocalStorageSessionId, removeLocalStorageSessionId, setLocalStorageS
 
 interface SessionState {
     session: string | null;
-    validSession: boolean;
-    isGoogleUser: boolean;
-    fetchUserData: (session: string | null) => Promise<void>;
-    setSession: (session: string | null) => Promise<void>;
+    sessionIsValid: boolean;
+    updateSession: (session: string | null) => Promise<void>;
     clearSession: () => Promise<void>;
 }
 
@@ -16,44 +14,24 @@ export const useSessionStore = create<SessionState>((set) => {
     const localSessionId = getLocalStorageSessionId();
     return {
         session: localSessionId,
-        validSession: false,
-        isGoogleUser: false,
-        fetchUserData: async (session) => {
-            if (!session) {
-                return;
-            }
-
-            try {
-                const { users } = await trpc.userData.getUserAndAccountBySessionToken.query({
-                    token: session,
-                });
-
-                const isGoogleUser = Boolean(users.email);
-                set({
-                    isGoogleUser,
-                });
-            } catch (error) {
-                console.error('Failed to fetch user data:', error);
-                set({ isGoogleUser: false });
-            }
-        },
-        setSession: async (session) => {
+        sessionIsValid: false,
+        updateSession: async (session) => {
             if (session) {
-                const validSession: boolean = await trpc.auth.validateSession.query({ token: session });
-                if (validSession) {
+                const sessionIsValid: boolean = await trpc.auth.validateSession.query({ token: session });
+                if (sessionIsValid) {
                     setLocalStorageSessionId(session);
-                    set({ session: session, validSession: true });
+                    set({ session: session, sessionIsValid: true });
                 }
             } else {
-                set({ session: null, validSession: false });
+                set({ session: null, sessionIsValid: false });
             }
         },
         clearSession: async () => {
             const currentSession = getLocalStorageSessionId();
             if (currentSession) {
-                await trpc.auth.removeSession.mutate({ token: currentSession });
+                await trpc.auth.invalidateSession.mutate({ token: currentSession });
                 removeLocalStorageSessionId();
-                set({ session: null, validSession: false });
+                set({ session: null, sessionIsValid: false });
                 window.location.reload();
             }
         },

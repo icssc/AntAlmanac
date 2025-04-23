@@ -1,7 +1,7 @@
 import { Box, Button, Paper, Popover, useMediaQuery, useTheme } from '@mui/material';
 import { useCallback, useState } from 'react';
 
-import { logAnalytics } from '$lib/analytics';
+import { logAnalytics } from '$lib/analytics/analytics';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
 interface CourseInfoButtonProps {

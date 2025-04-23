@@ -1,5 +1,5 @@
 {
-    "id": "188be3a7-137f-4669-8f64-34011f8c4aef",
+    "id": "d3530ca6-38cc-4080-8af7-42fb63f1a55b",
     "prevId": "1ce29958-0c6a-4cc2-947c-147a6c85c0b8",
     "version": "7",
     "dialect": "postgresql",
@@ -387,39 +387,10 @@
                     "primaryKey": false,
                     "notNull": false
                 },
-                "term": {
-                    "name": "term",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": false
-                },
-                "lastUpdated": {
-                    "name": "lastUpdated",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": false
-                },
-                "openStatus": {
-                    "name": "openStatus",
-                    "type": "boolean",
-                    "primaryKey": false,
-                    "notNull": false
-                },
-                "waitlistStatus": {
-                    "name": "waitlistStatus",
-                    "type": "boolean",
-                    "primaryKey": false,
-                    "notNull": false
-                },
-                "fullStatus": {
-                    "name": "fullStatus",
-                    "type": "boolean",
-                    "primaryKey": false,
-                    "notNull": false
-                },
-                "restrictionStatus": {
-                    "name": "restrictionStatus",
-                    "type": "boolean",
+                "status": {
+                    "name": "status",
+                    "type": "subscription_target_status",
+                    "typeSchema": "public",
                     "primaryKey": false,
                     "notNull": false
                 }
