@@ -1,11 +1,13 @@
 import { Save } from '@material-ui/icons';
 import { LoadingButton } from '@mui/lab';
 import { Stack } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
+import actionTypesStore from '$actions/ActionTypesStore';
 import { saveSchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import trpc from '$lib/api/trpc';
+import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
@@ -14,10 +16,22 @@ const SaveFunctionality = () => {
     const { session, sessionIsValid: validSession } = useSessionStore();
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const handleClickSignIn = () => {
         setOpenSignInDialog(!openSignInDialog);
     };
+    useEffect(() => {
+        const handleSkeletonModeChange = () => {
+            setSkeletonMode(AppStore.getSkeletonMode());
+        };
+
+        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+
+        return () => {
+            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+        };
+    }, []);
 
     const saveScheduleData = async () => {
         if (validSession && session) {
@@ -27,13 +41,25 @@ const SaveFunctionality = () => {
             setSaving(false);
         }
     };
+    useEffect(() => {
+        const handleAutoSaveStart = () => setSaving(true);
+        const handleAutoSaveEnd = () => setSaving(false);
+
+        actionTypesStore.on('autoSaveStart', handleAutoSaveStart);
+        actionTypesStore.on('autoSaveEnd', handleAutoSaveEnd);
+
+        return () => {
+            actionTypesStore.off('autoSaveStart', handleAutoSaveStart);
+            actionTypesStore.off('autoSaveEnd', handleAutoSaveEnd);
+        };
+    }, []);
     return (
         <Stack direction="row">
             <LoadingButton
                 color="inherit"
                 startIcon={<Save />}
                 onClick={validSession ? saveScheduleData : handleClickSignIn}
-                disabled={saving}
+                disabled={skeletonMode || saving}
                 loading={saving}
             >
                 Save

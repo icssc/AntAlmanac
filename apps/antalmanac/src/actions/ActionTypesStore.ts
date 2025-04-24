@@ -131,12 +131,15 @@ class ActionTypesStore extends EventEmitter {
         if (!sessionStore.sessionIsValid || !sessionStore.session) return;
 
         if (autoSave) {
-            const userId = await trpc.auth.getSessionUserId.query({ token: sessionStore.session });
-            const user = await trpc.userData.getUserData.query({ userId: userId });
+            const providerId = await trpc.userData.getUserAndAccountBySessionToken
+                .query({
+                    token: sessionStore.session,
+                })
+                .then((res) => res.accounts.providerAccountId);
 
-            if (userId && user) {
+            if (providerId) {
                 this.emit('autoSaveStart');
-                await autoSaveSchedule(user.providerAccountId);
+                await autoSaveSchedule(providerId);
                 AppStore.unsavedChanges = false;
                 this.emit('autoSaveEnd');
             }
