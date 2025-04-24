@@ -10,10 +10,11 @@ import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
 import ColorPicker from '$components/ColorPicker';
 import { MapLink } from '$components/buttons/MapLink';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import { clickToCopy, useQuickSearchForClasses } from '$lib/helpers';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { clickToCopy } from '$lib/helpers';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import locationIds from '$lib/locations/locations';
+import { useQuickSearch } from '$src/hooks/useQuickSearch';
 import AppStore from '$stores/AppStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
@@ -147,7 +148,7 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 
 const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopover }: CourseCalendarEventProps) => {
     const paperRef = useRef<HTMLInputElement>(null);
-    const quickSearch = useQuickSearchForClasses();
+    const quickSearch = useQuickSearch();
     const { isMilitaryTime } = useTimeFormatStore();
 
     useEffect(() => {

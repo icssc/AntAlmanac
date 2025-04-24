@@ -1,22 +1,20 @@
+import { UserSchema, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
+import { TRPCError } from '@trpc/server';
 import { type } from 'arktype';
-
-import { UserSchema } from '@packages/antalmanac-types';
 import { OAuth2Client } from 'google-auth-library';
+import { z } from 'zod';
 
 import { db } from 'src/db';
-import { z } from 'zod';
+import { googleOAuthEnvSchema } from 'src/env';
 import { mangleDuplicateScheduleNames } from 'src/lib/formatting';
 import { RDS } from 'src/lib/rds';
-import { TRPCError } from '@trpc/server';
 import { procedure, router } from '../trpc';
 
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!;
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET!;
-const REDIRECT_URI = 'http://localhost:5173';
+const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } = googleOAuthEnvSchema.parse(process.env);
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
 
-const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, REDIRECT_URI);
+const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI);
 
 const saveInputSchema = type({
     /**
@@ -31,6 +29,11 @@ const saveInputSchema = type({
      * i.e. if the user is editing and saving another user's schedule.
      */
     data: UserSchema,
+});
+
+const saveGoogleSchema = type({
+    code: 'string',
+    token: 'string',
 });
 
 const userDataRouter = router({
@@ -74,7 +77,14 @@ const userDataRouter = router({
             });
         }
     }),
-
+    getGuestAccountAndUserByName: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
+        return RDS.getGuestAccountAndUserByName(db, input.name);
+    }),
+    getAccountByProviderId: procedure
+        .input(z.object({ accountType: z.enum(['GOOGLE', 'GUEST']), providerId: z.string() }))
+        .query(async ({ input }) => {
+            return RDS.getAccountByProviderId(db, input.accountType, input.providerId);
+        }),
     /**
      * Retrieves Google authentication URL for login/sign up.
      * Retrieves Google auth url to login/sign up
@@ -89,45 +99,40 @@ const userDataRouter = router({
     /**
      * Logs in or signs up a user and creates user's session
      */
-    handleGoogleCallback: procedure
-        .input(z.object({ code: z.string(), token: z.string() }))
-        .query(async ({ input }) => {
-            const { tokens } = await oauth2Client.getToken({ code: input.code });
-            oauth2Client.setCredentials(tokens);
-
-            const ticket = await oauth2Client.verifyIdToken({
-                idToken: tokens.id_token!,
-                audience: GOOGLE_CLIENT_ID,
+    handleGoogleCallback: procedure.input(saveGoogleSchema.assert).mutation(async ({ input }) => {
+        const { tokens } = await oauth2Client.getToken({ code: input.code });
+        if (!tokens || !tokens.id_token) {
+            throw new TRPCError({
+                code: 'UNAUTHORIZED',
+                message: 'Invalid token',
             });
+        }
+        oauth2Client.setCredentials(tokens);
 
-            const payload = ticket.getPayload()!;
+        const ticket = await oauth2Client.verifyIdToken({
+            idToken: tokens.id_token ?? '',
+            audience: GOOGLE_CLIENT_ID,
+        });
 
-            try {
-                const existingSession = await RDS.getAccountAndUserByToken(db, input.token);
-                if (existingSession && existingSession.accounts && existingSession.accounts.accountType === 'GUEST') {
-                    await RDS.removeSession(db, existingSession.users.id, input.token);
-                }
-            } catch (error) {
-                console.log("No existing guest session found or error occurred", error);
-            }
+        const payload = ticket.getPayload()!;
 
-            const account = await RDS.registerUserAccount(
-                db,
-                payload.sub,
-                payload.name ?? '',
-                'GOOGLE',
-                payload.email ?? '',
-                payload.picture ?? ''
-            );
+        const account = await RDS.registerUserAccount(
+            db,
+            payload.sub,
+            payload.name ?? '',
+            'GOOGLE',
+            payload.email ?? '',
+            payload.picture ?? ''
+        );
 
-            const userId: string = account.userId;
+        const userId: string = account.userId;
 
-            if (userId.length > 0) {
-                let session = await RDS.upsertSession(db, userId, input.token);
-                return session?.refreshToken;
-            }
-            return null;
-        }),
+        if (userId.length > 0) {
+            const session = await RDS.upsertSession(db, userId, input.token);
+            return { sessionToken: session?.refreshToken, userId: userId, providerId: payload.sub };
+        }
+        return { sessionToken: null, userId: null, providerId: null };
+    }),
     /**
      * Logs in or signs up existing user
      */
@@ -135,7 +140,7 @@ const userDataRouter = router({
         const account = await RDS.registerUserAccount(db, input.name, input.name, 'GUEST');
 
         if (account.userId.length > 0) {
-            let session = await RDS.upsertSession(db, account.userId);
+            const session = await RDS.upsertSession(db, account.userId);
             return session?.refreshToken;
         }
         return null;
@@ -152,6 +157,10 @@ const userDataRouter = router({
         return await RDS.upsertUserData(db, data).catch((error) =>
             console.error('RDS Failed to upsert user data:', error)
         );
+    }),
+
+    flagImportedSchedule: procedure.input(z.object({ providerId: z.string() })).mutation(async ({ input }) => {
+        return await RDS.flagImportedUser(db, input.providerId);
     }),
 });
 

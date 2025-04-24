@@ -1,10 +1,6 @@
-import { MouseEvent, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { MouseEvent } from 'react';
 
 import { openSnackbar } from '$actions/AppStoreActions';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
-import { useTabStore } from '$stores/TabStore';
 
 export const warnMultipleTerms = (terms: Set<string>) => {
     openSnackbar(
@@ -20,35 +16,6 @@ export async function clickToCopy(event: MouseEvent<HTMLElement>, sectionCode: s
     event.stopPropagation();
     await navigator.clipboard.writeText(sectionCode);
     openSnackbar('success', 'WebsocSection code copied to clipboard');
-}
-
-export function useQuickSearchForClasses() {
-    const { displaySections, forceUpdate } = useCoursePaneStore();
-    const { setActiveTab } = useTabStore();
-    const navigate = useNavigate();
-
-    return useCallback(
-        (deptValue: string, courseNumber: string, termValue: string) => {
-            const queryParams = {
-                term: termValue,
-                deptValue: deptValue,
-                courseNumber: courseNumber,
-            };
-
-            const href = `/?${Object.entries(queryParams)
-                .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-                .join('&')}`;
-
-            RightPaneStore.updateFormValue('deptValue', deptValue);
-            RightPaneStore.updateFormValue('courseNumber', courseNumber);
-            RightPaneStore.updateFormValue('term', termValue);
-            navigate(href, { replace: false });
-            setActiveTab('search');
-            displaySections();
-            forceUpdate();
-        },
-        [displaySections, forceUpdate, navigate, setActiveTab]
-    );
 }
 
 export const FAKE_LOCATIONS = ['VRTL REMOTE', 'ON LINE', 'TBA'];

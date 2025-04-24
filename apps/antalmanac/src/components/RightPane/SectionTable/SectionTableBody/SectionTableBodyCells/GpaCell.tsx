@@ -4,8 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { Grades } from '$lib/grades';
-import { BLUE, DODGER_BLUE, MOBILE_BREAKPOINT } from '$src/globals';
-import { useThemeStore } from '$stores/SettingsStore';
+import { MOBILE_BREAKPOINT } from '$src/globals';
+import { usePrimaryColor } from '$src/hooks/usePrimaryColor';
 
 async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
     const namedInstructors = instructors.filter((instructor) => instructor !== 'STAFF');
@@ -31,12 +31,12 @@ interface GpaCellProps {
 }
 
 export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) => {
-    const isDark = useThemeStore((store) => store.isDark);
     const isMobile = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
     const [gpa, setGpa] = useState('');
     const [instructor, setInstructor] = useState('');
     const [anchorEl, setAnchorEl] = useState<Element>();
+    const primaryColor = usePrimaryColor();
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl((currentAnchorEl) => (currentAnchorEl ? undefined : event.currentTarget));
@@ -61,13 +61,12 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
         <TableBodyCellContainer>
             <Button
                 sx={{
-                    paddingX: 1,
+                    paddingX: 0,
                     paddingY: 0,
                     minWidth: 0,
                     fontWeight: 400,
                     fontSize: '1rem',
-                    // one-off styling as GPA Button is clickable (but not a link)
-                    color: isDark ? DODGER_BLUE : BLUE,
+                    color: primaryColor,
                 }}
                 onClick={handleClick}
                 variant="text"

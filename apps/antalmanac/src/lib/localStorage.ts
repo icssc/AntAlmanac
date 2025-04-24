@@ -5,7 +5,7 @@ enum LocalStorageKeys {
     phoneNumber = 'phoneNumber',
     recruitmentDismissalTime = 'recruitmentDismissalTime',
     advanced = 'advanced',
-    favorites = 'favorites',
+    recentlySearched = 'recentlySearched',
     tourHasRun = 'tourHasRun',
     theme = 'theme',
     show24HourTime = 'show24HourTime',
@@ -14,12 +14,37 @@ enum LocalStorageKeys {
     unsavedActions = 'unsavedActions',
     helpBoxDismissalTime = 'helpBoxDismissalTime',
     columnToggles = 'columnToggles',
+    pwaDismissalTime = 'pwaDismissalTime',
     sessionId = 'sessionId',
     dataCache = 'dataCache',
-    pwaDismissalTime = 'pwaDismissalTime',
+    newUser = 'newUser',
+    importedUser = 'importedUser',
 }
 
 const LSK = LocalStorageKeys;
+export function setLocalStorageImportedUser(value: string) {
+    window.localStorage.setItem(LSK.importedUser, value);
+}
+
+export function getLocalStorageImportedUser() {
+    return window.localStorage.getItem(LSK.importedUser);
+}
+
+export function removeLocalStorageImportedUser() {
+    window.localStorage.removeItem(LSK.importedUser);
+}
+
+export function setLocalStorageOnFirstSignin(value: string) {
+    window.localStorage.setItem(LSK.newUser, value);
+}
+
+export function getLocalStorageOnFirstSignin() {
+    return window.localStorage.getItem(LSK.newUser);
+}
+
+export function removeLocalStorageOnFirstSignin() {
+    window.localStorage.removeItem(LSK.newUser);
+}
 
 export function setLocalStorageDataCache(value: string) {
     window.localStorage.setItem(LSK.dataCache, value);
@@ -108,17 +133,17 @@ export function removeLocalStorageAdvanced() {
     window.localStorage.removeItem(LSK.advanced);
 }
 
-// Helper functions for favorites
-export function setLocalStorageFavorites(value: string) {
-    window.localStorage.setItem(LSK.favorites, value);
+// Helper functions for recently searched
+export function setLocalStorageRecentlySearched(value: string) {
+    window.localStorage.setItem(LSK.recentlySearched, value);
 }
 
-export function getLocalStorageFavorites() {
-    return window.localStorage.getItem(LSK.favorites);
+export function getLocalStorageRecentlySearched() {
+    return window.localStorage.getItem(LSK.recentlySearched);
 }
 
-export function removeLocalStorageFavorites() {
-    window.localStorage.removeItem(LSK.favorites);
+export function removeLocalStorageRecentlySearched() {
+    window.localStorage.removeItem(LSK.recentlySearched);
 }
 
 // Helper functions for tourHasRun

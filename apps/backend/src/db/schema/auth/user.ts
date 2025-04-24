@@ -1,5 +1,5 @@
 import { createId } from '@paralleldrive/cuid2';
-import { AnyPgColumn, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { AnyPgColumn, pgTable, text, timestamp, boolean } from 'drizzle-orm/pg-core';
 
 import { schedules } from '../schedule/schedule';
 
@@ -31,6 +31,8 @@ export const users = pgTable('users', {
      * User's email.
      */
     email: text('email'),
+
+    imported: boolean('imported').default(false),
 
     /**
      * Most recently viewed schedule.

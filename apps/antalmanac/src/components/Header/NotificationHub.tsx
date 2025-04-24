@@ -10,7 +10,7 @@ import {
 import { Notifications } from '@material-ui/icons';
 import { PureComponent } from 'react';
 
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LOOKUP_NOTIFICATIONS_ENDPOINT } from '$lib/api/endpoints';
 import { getLocalStoragePhoneNumber } from '$lib/localStorage';
 

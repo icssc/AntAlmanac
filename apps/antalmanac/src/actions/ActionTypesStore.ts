@@ -128,14 +128,15 @@ class ActionTypesStore extends EventEmitter {
         const sessionStore = useSessionStore.getState();
         const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() == 'true';
 
-        if (!sessionStore.validSession || !sessionStore.session) return;
+        if (!sessionStore.sessionIsValid || !sessionStore.session) return;
 
         if (autoSave) {
             const userId = await trpc.auth.getSessionUserId.query({ token: sessionStore.session });
+            const user = await trpc.userData.getUserData.query({ userId: userId });
 
-            if (userId) {
+            if (userId && user) {
                 this.emit('autoSaveStart');
-                await autoSaveSchedule(userId);
+                await autoSaveSchedule(user.providerAccountId);
                 AppStore.unsavedChanges = false;
                 this.emit('autoSaveEnd');
             }
@@ -155,9 +156,11 @@ class ActionTypesStore extends EventEmitter {
         }
     }
 
-    async loadScheduleFromLocalSave() {
+    async loadScheduleFromUnsavedActions() {
         const unsavedActionsString = getLocalStorageUnsavedActions();
-        if (unsavedActionsString == null) return;
+        if (unsavedActionsString == null) {
+            return;
+        }
         if (!confirm('You have unsaved changes. Would you like to load them?')) {
             removeLocalStorageUnsavedActions();
             return;

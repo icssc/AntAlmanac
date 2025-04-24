@@ -23,10 +23,12 @@ export function CopyScheduleButton({ index, disabled, buttonSx }: CopyScheduleBu
 
     return (
         <>
-            <Tooltip title="Copy Schedule">
-                <IconButton sx={buttonSx} onClick={handleOpen} size="small" disabled={disabled}>
-                    <ContentCopy />
-                </IconButton>
+            <Tooltip title="Copy Schedule" disableInteractive>
+                <span>
+                    <IconButton sx={buttonSx} onClick={handleOpen} size="small" disabled={disabled}>
+                        <ContentCopy />
+                    </IconButton>
+                </span>
             </Tooltip>
             <CopyScheduleDialog fullWidth open={open} index={index} onClose={handleClose} />
         </>
