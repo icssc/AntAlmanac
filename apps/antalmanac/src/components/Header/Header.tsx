@@ -1,6 +1,5 @@
-import { AppBar, Box, Stack, DialogContentText } from '@mui/material';
-import { useEffect, useCallback, useState } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { AppBar, Box, Stack, DialogContentText, DialogActions, Button } from '@mui/material';
+import { useEffect, useState } from 'react';
 
 import Import from './Import';
 import LoadSaveScheduleFunctionalityButton from './Load';
@@ -9,93 +8,45 @@ import { Logo } from './Logo';
 import SaveFunctionality from './Save';
 import AppDrawer from './SettingsMenu';
 
-import { isEmptySchedule, loadSchedule } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
-import { LoadingScreen } from '$components/LoadingScreen';
-import trpc from '$lib/api/trpc';
 import {
     getLocalStorageDataCache,
-    setLocalStorageImportedUser,
-    getLocalStorageUserId,
-    removeLocalStorageUserId,
     removeLocalStorageImportedUser,
     removeLocalStorageDataCache,
     getLocalStorageImportedUser,
 } from '$lib/localStorage';
-// import { getLocalStorageDataCache, getLocalStorageUserId } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
-import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 
 export function Header() {
-    const { session, updateSession: setSession } = useSessionStore();
-    const [progress, setProgress] = useState(false);
     const [savedId, setSavedId] = useState('');
-    const [alertDialog, setAlertDialog] = useState(false);
-    const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
-    const handleSearchParamsChange = useCallback(async () => {
-        try {
-            const code = searchParams.get('code');
-            if (code) {
-                const { sessionToken, userId, providerId } = await trpc.userData.handleGoogleCallback.mutate({
-                    code: code,
-                    token: session ?? '',
-                });
-
-                if (sessionToken && providerId) {
-                    setProgress(true);
-                    await setSession(sessionToken);
-                    const savedUserId = getLocalStorageUserId() ?? '';
-                    const savedData = getLocalStorageDataCache();
-                    setSavedId(savedUserId);
-
-                    const userData = await trpc.userData.getUserData.query({ userId: userId });
-                    if (isEmptySchedule(userData.userData.schedules)) {
-                        if (savedData) {
-                            if (savedUserId !== '') {
-                                await trpc.userData.flagImportedSchedule.mutate({ providerId: savedUserId });
-                            }
-                            setLocalStorageImportedUser(savedUserId);
-                            removeLocalStorageUserId();
-                            removeLocalStorageDataCache();
-                            const data = JSON.parse(savedData);
-                            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
-                            scheduleSaveState.schedules = data;
-                            await trpc.userData.saveUserData.mutate({
-                                id: providerId,
-                                data: {
-                                    id: providerId,
-                                    userData: scheduleSaveState,
-                                },
-                            });
-                            await loadSchedule(providerId, true, 'GOOGLE');
-                            const importedUser = getLocalStorageImportedUser();
-                            if (importedUser && importedUser !== '') {
-                                setAlertDialog(true);
-                            }
-                        }
-                    }
-                    navigate('/');
-                    setProgress(false);
-                }
-            }
-        } catch (error) {
-            console.error('Error during authentication', error);
-        }
-    }, [searchParams, session, setSession, navigate]);
+    const { session } = useSessionStore();
+    const [alertDialog, setAlertDialog] = useState({
+        alertImportUser: false,
+        alertImportUnsavedChanges: false,
+    });
 
     const handleCloseAlertDialog = () => {
-        setAlertDialog(false);
+        setAlertDialog((prev) => ({ ...prev, alertImportUser: false, alertImportUnsavedChanges: false }));
         removeLocalStorageImportedUser();
+        removeLocalStorageDataCache();
     };
 
     useEffect(() => {
-        handleSearchParamsChange();
-    }, [handleSearchParamsChange]);
+        const importedUser = getLocalStorageImportedUser();
+        const dataCache = getLocalStorageDataCache();
+
+        if (importedUser && importedUser !== '') {
+            setSavedId(importedUser);
+            setAlertDialog((prev) => ({ ...prev, alertImportUser: true }));
+        } else if (dataCache && dataCache !== '' && session) {
+            setAlertDialog((prev) => ({ ...prev, alertImportUnsavedChanges: true }));
+        }
+    }, [session]);
     return (
         <AppBar
             position="static"
+            color="primary"
             sx={{
                 height: 52,
                 padding: 1,
@@ -122,16 +73,33 @@ export function Header() {
                 </Stack>
             </Box>
 
-            <LoadingScreen open={progress} />
             <AlertDialog
                 title={`Schedule "${savedId}" has been saved into your account!`}
-                open={alertDialog}
+                open={alertDialog.alertImportUser}
+                onClose={handleCloseAlertDialog}
+                severity="info"
+                defaultAction
+            >
+                <DialogContentText>
+                    Note: all changes saved to your schedule will be saved via your Google account
+                </DialogContentText>
+            </AlertDialog>
+
+            <AlertDialog
+                title={`You have saved recent changes to your schedules!`}
+                open={alertDialog.alertImportUnsavedChanges}
                 onClose={handleCloseAlertDialog}
                 severity="info"
             >
                 <DialogContentText>
                     Note: all changes saved to your schedule will be saved via your Google account
                 </DialogContentText>
+
+                <DialogActions>
+                    <Button onClick={handleCloseAlertDialog} variant="contained">
+                        Continue
+                    </Button>
+                </DialogActions>
             </AlertDialog>
         </AppBar>
     );

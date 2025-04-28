@@ -2,6 +2,8 @@ import { Dialog, DialogContent, LinearProgress } from '@mui/material';
 
 import { Logo } from './Header/Logo';
 
+import { BLUE } from '$src/globals';
+
 type LoadingScreenProps = {
     open: boolean;
 };
@@ -15,6 +17,7 @@ export function LoadingScreen(props: LoadingScreenProps) {
                     alignItems: 'center',
                     justifyContent: 'center',
                     height: '100%',
+                    backgroundColor: BLUE,
                 }}
             >
                 <Logo />

@@ -174,15 +174,15 @@ export async function autoSaveSchedule(providerID: string) {
 /**
  * Combines the incoming schedule with the existing schedules.
  * If there are any duplicate schedule names, the incoming schedule will be renamed.
- * @param schedules
+ * @param currentSchedules
  * @param incomingSchedule
  */
-const mergeSchedules = (
-    schedules: ShortCourseSchedule[],
+export const mergeShortCourseSchedules = (
+    currentSchedules: ShortCourseSchedule[],
     incomingSchedule: ShortCourseSchedule[],
-    importMessage = '(RESTORED)-'
+    importMessage = ''
 ) => {
-    const existingScheduleNames = new Set(schedules.map((s: ShortCourseSchedule) => s.scheduleName));
+    const existingScheduleNames = new Set(currentSchedules.map((s: ShortCourseSchedule) => s.scheduleName));
     const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
         let scheduleName = schedule.scheduleName;
         if (existingScheduleNames.has(schedule.scheduleName)) {
@@ -193,7 +193,7 @@ const mergeSchedules = (
             scheduleName: `${scheduleName}${importMessage}`,
         };
     });
-    schedules.push(...cacheSchedule);
+    currentSchedules.push(...cacheSchedule);
 };
 
 export const importScheduleWithUsername = async (username: string, importTag = '-(IMPORT)') => {
@@ -222,7 +222,7 @@ export const importScheduleWithUsername = async (username: string, importTag = '
         const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
 
         if (scheduleSaveState.schedules) {
-            mergeSchedules(currentSchedules.schedules, scheduleSaveState.schedules, importTag);
+            mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, importTag);
             if (await AppStore.loadSchedule(currentSchedules)) {
                 await saveSchedule(users.id, accounts.AccountType);
                 await trpc.userData.flagImportedSchedule.mutate({
@@ -268,11 +268,7 @@ export const loadSchedule = async (providerId: string, rememberMe: boolean, acco
                 if (scheduleSaveState == null) {
                     openSnackbar('error', `Couldn't find schedules for username "${providerId}".`);
                 } else if (await AppStore.loadSchedule(scheduleSaveState)) {
-                    if (useSessionStore.getState().sessionIsValid) {
-                        openSnackbar('success', `Schedule loaded.`);
-                    } else {
-                        openSnackbar('success', `Schedule for username "${providerId}" loaded.`);
-                    }
+                    openSnackbar('success', `Schedule loaded.`);
                 } else {
                     AppStore.loadSkeletonSchedule(scheduleSaveState);
                     openSnackbar(
