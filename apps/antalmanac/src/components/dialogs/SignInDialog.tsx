@@ -19,7 +19,7 @@ export function SignInDialog(props: SignInDialogProps) {
     };
 
     if (isEmptySchedule(AppStore.schedule.getScheduleAsSaveState().schedules) && open && action === 'Save') {
-        openSnackbar('error', 'Please create a schedule before signing in.');
+        openSnackbar('info', 'Please create a schedule before signing in.');
         handleClose();
         return;
     }
