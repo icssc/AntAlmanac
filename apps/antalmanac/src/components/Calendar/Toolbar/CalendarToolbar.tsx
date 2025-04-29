@@ -118,6 +118,12 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                     </IconButton>
                 </Tooltip>
 
+                <Tooltip title="Redo last action">
+                    <IconButton onClick={handleUndo} size="medium" disabled={skeletonMode}>
+                        <UndoIcon fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+
                 <ClearScheduleButton size="medium" fontSize="small" skeletonMode={skeletonMode} />
 
                 <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
