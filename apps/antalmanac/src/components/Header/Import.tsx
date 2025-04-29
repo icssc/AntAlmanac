@@ -17,6 +17,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { PostAdd } from '@material-ui/icons';
 import { CourseInfo } from '@packages/antalmanac-types';
 import { ChangeEvent, useCallback, useEffect, useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '../RightPane/RightPaneStore';
@@ -39,6 +40,7 @@ import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
+import { useToggleStore } from '$stores/ToggleStore';
 
 function Import() {
     const [open, setOpen] = useState(false);
@@ -53,6 +55,7 @@ function Import() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const { session, sessionIsValid } = useSessionStore();
+    const { setOpenScheduleSelect } = useToggleStore();
 
     const firstTimeUserFlag = useRef(true);
 
@@ -102,9 +105,12 @@ function Import() {
                     aaUsername,
                     firstTimeUserFlag.current ? '' : '-(IMPORT)'
                 );
-                if (importStatus && (typeof importStatus === 'string' || importStatus instanceof Error)) {
+                if (importStatus instanceof Error) {
                     setAlertDialog(true);
                     setAlertMessage(typeof importStatus === 'string' ? importStatus : importStatus.message);
+                } else {
+                    setOpenScheduleSelect(true);
+                    setTimeout(() => setOpenScheduleSelect(false), 2000);
                 }
                 break;
             }
@@ -351,8 +357,14 @@ function Import() {
                 </DialogActions>
             </Dialog>
 
-            <AlertDialog title={alertMessage} open={alertDialog} onClose={handleCloseAlertDialog} severity="error">
-                If this is a problem contact
+            <AlertDialog
+                title={alertMessage}
+                open={alertDialog}
+                onClose={handleCloseAlertDialog}
+                severity="error"
+                defaultAction
+            >
+                If you think this is a mistake submit a <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</Link>
             </AlertDialog>
         </>
     );

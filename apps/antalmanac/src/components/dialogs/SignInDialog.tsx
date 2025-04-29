@@ -1,9 +1,7 @@
 import GoogleIcon from '@mui/icons-material/Google';
 import { Button, Stack, Dialog, DialogTitle, DialogContent } from '@mui/material';
 
-import { isEmptySchedule, openSnackbar } from '$actions/AppStoreActions';
-import trpc from '$lib/api/trpc';
-import { setLocalStorageDataCache } from '$lib/localStorage';
+import { isEmptySchedule, openSnackbar, loginUser } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
 
 interface SignInDialogProps {
@@ -15,26 +13,6 @@ interface SignInDialogProps {
 
 export function SignInDialog(props: SignInDialogProps) {
     const { onClose, open, action } = props;
-
-    const cacheSchedule = () => {
-        const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState().schedules;
-        if (!isEmptySchedule(scheduleSaveState)) {
-            setLocalStorageDataCache(JSON.stringify(scheduleSaveState));
-        }
-    };
-
-    const handleLogin = async () => {
-        try {
-            const authUrl = await trpc.userData.getGoogleAuthUrl.query();
-            if (authUrl) {
-                cacheSchedule();
-                window.location.href = authUrl;
-            }
-        } catch (error) {
-            console.error('Error during login initiation', error);
-            openSnackbar('error', 'Error during login initiation. Please Try Again.');
-        }
-    };
 
     const handleClose = () => {
         onClose();
@@ -64,7 +42,7 @@ export function SignInDialog(props: SignInDialogProps) {
             <DialogContent sx={{ width: '100%', height: '6rem' }}>
                 <Stack spacing={2} alignItems="center">
                     <Button
-                        onClick={handleLogin}
+                        onClick={loginUser}
                         startIcon={<GoogleIcon />}
                         size="large"
                         color="primary"

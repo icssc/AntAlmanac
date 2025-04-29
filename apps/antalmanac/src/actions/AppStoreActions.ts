@@ -13,7 +13,7 @@ import { SnackbarPosition } from '$components/NotificationSnackbar';
 import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
-import { setLocalStorageUserId } from '$lib/localStorage';
+import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 export interface CopyScheduleOptions {
@@ -203,12 +203,17 @@ export const importScheduleWithUsername = async (username: string, importTag = '
             throw new Error("Invalid session: User isn't logged in.");
         }
 
-        const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
-            token: session.session ?? '',
-        });
+        const accounts = await trpc.userData.getUserAndAccountBySessionToken
+            .query({ token: session.session ?? '' })
+            .then((res) => res.accounts);
+
         const incomingUser = await trpc.userData.getGuestAccountAndUserByName
             .query({ name: username })
-            .then((res) => res.users);
+            .then((res) => res?.users)
+            .catch((err) => {
+                console.error(err);
+                throw new Error(`Oops! Schedule "${username}" doesn't seem to exist.`);
+            });
 
         if (!incomingUser) {
             throw new Error(`Couldn't find user with username "${username}".`);
@@ -223,15 +228,16 @@ export const importScheduleWithUsername = async (username: string, importTag = '
 
         if (scheduleSaveState.schedules) {
             mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, importTag);
+            currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
             if (await AppStore.loadSchedule(currentSchedules)) {
-                await saveSchedule(users.id, accounts.AccountType);
+                await saveSchedule(accounts.providerAccountId, accounts.AccountType);
                 await trpc.userData.flagImportedSchedule.mutate({
                     providerId: username,
                 });
                 openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
             }
         }
-        return 'Idk if this is right';
+        return '';
     } catch (e) {
         console.log(e);
         return e;
@@ -285,6 +291,26 @@ export const loadSchedule = async (providerId: string, rememberMe: boolean, acco
                 );
             }
         }
+    }
+};
+
+const cacheSchedule = () => {
+    const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState().schedules;
+    if (!isEmptySchedule(scheduleSaveState)) {
+        setLocalStorageDataCache(JSON.stringify(scheduleSaveState));
+    }
+};
+
+export const loginUser = async () => {
+    try {
+        const authUrl = await trpc.userData.getGoogleAuthUrl.query();
+        if (authUrl) {
+            cacheSchedule();
+            window.location.href = authUrl;
+        }
+    } catch (error) {
+        console.error('Error during login initiation', error);
+        openSnackbar('error', 'Error during login initiation. Please Try Again.');
     }
 };
 

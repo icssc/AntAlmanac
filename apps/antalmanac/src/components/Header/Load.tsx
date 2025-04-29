@@ -14,10 +14,10 @@ import { LoadingButton } from '@mui/lab';
 import { Divider } from '@mui/material';
 import { ChangeEvent, PureComponent, useEffect, useState, useCallback } from 'react';
 
-import { loadSchedule, saveSchedule, isEmptySchedule } from '$actions/AppStoreActions';
+import { loadSchedule, saveSchedule, loginUser } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
 import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { getLocalStorageSessionId, getLocalStorageUserId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -217,14 +217,11 @@ const LoadFunctionality = () => {
             updateSession(sessionToken);
             if (sessionIsValid) {
                 const account = await trpc.userData.getUserAndAccountBySessionToken
-                    .query({
-                        token: sessionToken,
-                    })
+                    .query({ token: sessionToken })
                     .then((res) => res.accounts);
                 await loadSchedule(account.providerAccountId, rememberMe, 'GOOGLE');
             } else if (sessionToken === '' && userID && userID !== '') {
                 if (!(await validateImportedUser(userID))) {
-                    console.log(userID);
                     await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
                 }
             }
@@ -232,24 +229,25 @@ const LoadFunctionality = () => {
         },
         [sessionIsValid, updateSession]
     );
-    const cacheSchedule = () => {
-        const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState().schedules;
-        if (!isEmptySchedule(scheduleSaveState)) {
-            setLocalStorageDataCache(JSON.stringify(scheduleSaveState));
-        }
-    };
 
-    const handleLogin = async () => {
-        try {
-            const authUrl = await trpc.userData.getGoogleAuthUrl.query();
-            if (authUrl) {
-                cacheSchedule();
-                window.location.href = authUrl;
-            }
-        } catch (error) {
-            console.error('Error during login initiation', error);
-        }
-    };
+    //     const cacheSchedule = () => {
+    //         const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState().schedules;
+    //         if (!isEmptySchedule(scheduleSaveState)) {
+    //             setLocalStorageDataCache(JSON.stringify(scheduleSaveState));
+    //         }
+    //     };
+    //
+    //     const handleLogin = async () => {
+    //         try {
+    //             const authUrl = await trpc.userData.getGoogleAuthUrl.query();
+    //             if (authUrl) {
+    //                 cacheSchedule();
+    //                 window.location.href = authUrl;
+    //             }
+    //         } catch (error) {
+    //             console.error('Error during login initiation', error);
+    //         }
+    //     };
 
     useEffect(() => {
         const handleSkeletonModeChange = () => {
@@ -283,7 +281,7 @@ const LoadFunctionality = () => {
                 id="load-button"
                 actionName={'Load'}
                 action={loadScheduleAndSetLoading}
-                actionSecondary={handleLogin}
+                actionSecondary={loginUser}
                 disabled={skeletonMode}
                 loading={loading}
                 colorType={isDark ? 'secondary' : 'primary'}
@@ -294,6 +292,7 @@ const LoadFunctionality = () => {
                 onClose={() => setOpenalert(false)}
                 title="This schedule seems to have already been imported!"
                 severity="warning"
+                defaultAction
             >
                 <DialogContentText>To access your schedule sign in with the Google account</DialogContentText>
                 <LoadingButton
@@ -301,7 +300,7 @@ const LoadFunctionality = () => {
                     variant="contained"
                     startIcon={<GoogleIcon />}
                     fullWidth
-                    onClick={handleLogin}
+                    onClick={loginUser}
                 >
                     Sign in with Google
                 </LoadingButton>

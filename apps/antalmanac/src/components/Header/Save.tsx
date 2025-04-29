@@ -35,7 +35,9 @@ const SaveFunctionality = () => {
 
     const saveScheduleData = async () => {
         if (validSession && session) {
-            const { _, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({ token: session });
+            const accounts = await trpc.userData.getUserAndAccountBySessionToken
+                .query({ token: session })
+                .then((res) => res.accounts);
             setSaving(true);
             await saveSchedule(accounts.providerAccountId, true);
             setSaving(false);
