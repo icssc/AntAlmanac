@@ -505,11 +505,8 @@ export class Schedules {
         const state = this.previousStates.pop();
         if (state !== undefined) {
             //saving current state into futureStates for redo
-            const clonedState = structuredClone({
-                schedules: this.schedules,
-                scheduleIndex: this.currentScheduleIndex,
-            });
-            this.futureStates.push(clonedState);
+            const clonedSchedules = JSON.parse(JSON.stringify(this.schedules)) as Schedule[];
+            this.futureStates.push({ schedules: clonedSchedules, scheduleIndex: this.currentScheduleIndex });
             //reverting to previous state
             this.schedules = state.schedules;
             this.currentScheduleIndex = state.scheduleIndex;
@@ -524,11 +521,8 @@ export class Schedules {
         const state = this.futureStates.pop();
         if (state !== undefined) {
             //saving current state into previousStates for undo
-            const clonedState = structuredClone({
-                schedules: this.schedules,
-                scheduleIndex: this.currentScheduleIndex,
-            });
-            this.previousStates.push(clonedState);
+            const clonedSchedules = JSON.parse(JSON.stringify(this.schedules)) as Schedule[];
+            this.previousStates.push({ schedules: clonedSchedules, scheduleIndex: this.currentScheduleIndex });
             //restoring the future state
             this.schedules = state.schedules;
             this.currentScheduleIndex = state.scheduleIndex;

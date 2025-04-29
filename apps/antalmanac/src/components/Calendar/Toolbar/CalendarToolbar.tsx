@@ -24,6 +24,14 @@ function handleUndo() {
     undoDelete(null);
 }
 
+function handleRedo() {
+    logAnalytics({
+        category: analyticsEnum.calendar.title,
+        action: analyticsEnum.calendar.actions.REDO,
+    });
+    redoDelete(null);
+}
+
 export interface CalendarPaneToolbarProps {
     scheduleNames: string[];
     currentScheduleIndex: number;
@@ -120,7 +128,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                 </Tooltip>
 
                 <Tooltip title="Redo last action">
-                    <IconButton onClick={() => redoDelete(null)} size="medium" disabled={skeletonMode}>
+                    <IconButton onClick={handleRedo} size="medium" disabled={skeletonMode}>
                         <RedoIcon fontSize="small" />
                     </IconButton>
                 </Tooltip>
