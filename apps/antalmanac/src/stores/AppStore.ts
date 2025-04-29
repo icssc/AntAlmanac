@@ -234,6 +234,17 @@ class AppStore extends EventEmitter {
         this.emit('scheduleNotesChange');
     }
 
+    redoAction() {
+        this.schedule.redoState();
+        this.unsavedChanges = true;
+        this.emit('addedCoursesChange');
+        this.emit('customEventsChange');
+        this.emit('colorChange', false);
+        this.emit('scheduleNamesChange');
+        this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNotesChange');
+    }
+
     addCustomEvent(customEvent: RepeatingCustomEvent, scheduleIndices: number[]) {
         this.schedule.addCustomEvent(customEvent, scheduleIndices);
         this.unsavedChanges = true;

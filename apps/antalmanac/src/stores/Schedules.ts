@@ -24,6 +24,8 @@ export class Schedules {
 
     private previousStates: ScheduleUndoState[];
 
+    private futureStates: ScheduleUndoState[];
+
     private skeletonSchedules: ShortCourseSchedule[];
 
     /**
@@ -46,6 +48,7 @@ export class Schedules {
         ];
         this.currentScheduleIndex = 0;
         this.previousStates = [];
+        this.futureStates = [];
         this.scheduleNoteMap = { [scheduleNoteId]: '' };
         this.skeletonSchedules = [];
     }
@@ -495,11 +498,38 @@ export class Schedules {
 
     /**
      * Reverts schedule to the last undoState (undoes the last action).
+     * Also saves the current state into futureStates to enable redo.
      * All actions that call `addUndoState()` can be reverted.
      */
     revertState() {
         const state = this.previousStates.pop();
         if (state !== undefined) {
+            //saving current state into futureStates for redo
+            const clonedState = structuredClone({
+                schedules: this.schedules,
+                scheduleIndex: this.currentScheduleIndex,
+            });
+            this.futureStates.push(clonedState);
+            //reverting to previous state
+            this.schedules = state.schedules;
+            this.currentScheduleIndex = state.scheduleIndex;
+        }
+    }
+
+    /**
+     * Reapplies the next state from the futureStates stack (redoes the last undone action).
+     * All actions that called `addUndoState()` and were undone can be redone.
+     */
+    redoState() {
+        const state = this.futureStates.pop();
+        if (state !== undefined) {
+            //saving current state into previousStates for undo
+            const clonedState = structuredClone({
+                schedules: this.schedules,
+                scheduleIndex: this.currentScheduleIndex,
+            });
+            this.previousStates.push(clonedState);
+            //restoring the future state
             this.schedules = state.schedules;
             this.currentScheduleIndex = state.scheduleIndex;
         }
