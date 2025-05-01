@@ -244,7 +244,12 @@ export const importScheduleWithUsername = async (username: string, importTag = '
     }
 };
 
-export const loadSchedule = async (providerId: string, rememberMe: boolean, accountType: 'GOOGLE' | 'GUEST') => {
+export const loadSchedule = async (
+    providerId: string,
+    rememberMe: boolean,
+    accountType: 'GOOGLE' | 'GUEST',
+    userId = ''
+) => {
     logAnalytics({
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
@@ -263,13 +268,18 @@ export const loadSchedule = async (providerId: string, rememberMe: boolean, acco
             }
 
             try {
-                const account = await trpc.userData.getAccountByProviderId.query({
-                    accountType: accountType,
-                    providerId: providerId,
-                });
+                let id = userId;
 
-                const res = await trpc.userData.getUserData.query({ userId: account.userId });
-                const scheduleSaveState = res && 'userData' in res ? res.userData : res;
+                if (id.length === 0) {
+                    const account = await trpc.userData.getAccountByProviderId.query({
+                        accountType,
+                        providerId,
+                    });
+                    id = account.userId;
+                }
+
+                const userDataResponse = await trpc.userData.getUserData.query({ userId: id });
+                const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
 
                 if (scheduleSaveState == null) {
                     openSnackbar('error', `Couldn't find schedules for username "${providerId}".`);

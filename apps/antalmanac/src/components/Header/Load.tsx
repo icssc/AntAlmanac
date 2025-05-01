@@ -21,6 +21,7 @@ import { getLocalStorageSessionId, getLocalStorageUserId } from '$lib/localStora
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
+import { useToggleStore } from '$stores/ToggleStore';
 
 interface LoadSaveButtonBaseProps {
     action: typeof saveSchedule;
@@ -177,15 +178,14 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
 
 const LoadFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
+
     const { updateSession, sessionIsValid } = useSessionStore();
 
-    const [loading, setLoading] = useState(false);
+    const { loadingSchedule, setOpenLoadingSchedule } = useToggleStore();
+
     const [openAlert, setOpenalert] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    // const toggleLoadOptionsDialog = () => {
-    //     setOpenOptionsDialog((prev) => !prev);
-    // };
     const validateImportedUser = async (userID: string) => {
         try {
             const res = await trpc.userData.getGuestAccountAndUserByName
@@ -203,29 +203,29 @@ const LoadFunctionality = () => {
         }
     };
     const loadScheduleAndSetLoading = useCallback(async (userID: string, rememberMe: boolean) => {
-        setLoading(true);
+        setOpenLoadingSchedule(true);
         if (!(await validateImportedUser(userID))) {
             await loadSchedule(userID, rememberMe, 'GUEST');
         }
-        setLoading(false);
+        setOpenLoadingSchedule(false);
     }, []);
 
     const loadScheduleAndSetLoadingAuth = useCallback(
         async (userID: string, rememberMe: boolean) => {
-            setLoading(true);
+            setOpenLoadingSchedule(true);
             const sessionToken: string = getLocalStorageSessionId() ?? '';
-            updateSession(sessionToken);
-            if (sessionIsValid) {
+            if (sessionToken) {
                 const account = await trpc.userData.getUserAndAccountBySessionToken
                     .query({ token: sessionToken })
                     .then((res) => res.accounts);
-                await loadSchedule(account.providerAccountId, rememberMe, 'GOOGLE');
+                // pass in both userId and providerAccountId so the backend does not have to make a redundant request for the userId
+                await loadSchedule(account.providerAccountId, rememberMe, 'GOOGLE', account.userId);
             } else if (sessionToken === '' && userID && userID !== '') {
                 if (!(await validateImportedUser(userID))) {
                     await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
                 }
             }
-            setLoading(false);
+            setOpenLoadingSchedule(false);
         },
         [sessionIsValid, updateSession]
     );
@@ -283,7 +283,7 @@ const LoadFunctionality = () => {
                 action={loadScheduleAndSetLoading}
                 actionSecondary={loginUser}
                 disabled={skeletonMode}
-                loading={loading}
+                loading={loadingSchedule}
                 colorType={isDark ? 'secondary' : 'primary'}
             />
 

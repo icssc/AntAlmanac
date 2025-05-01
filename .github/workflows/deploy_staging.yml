@@ -179,7 +179,7 @@ jobs:
               env:
                   GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
                   GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-                  GOOGLE_REDIRECT_URI: ${{ needs.get_staging_configuration.outputs.frontend_environment_url/auth }}
+                  GOOGLE_REDIRECT_URI: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}
 
             - name: Create success deployment
               uses: ./.github/actions/create-deployment

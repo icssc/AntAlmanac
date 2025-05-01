@@ -38,17 +38,10 @@ export function SignInDialog(props: SignInDialogProps) {
                 padding: '1rem',
             }}
         >
-            <DialogTitle fontSize={'medium'}>Sign in to {action}</DialogTitle>
-            <DialogContent sx={{ width: '100%', height: '6rem' }}>
-                <Stack spacing={2} alignItems="center">
-                    <Button
-                        onClick={loginUser}
-                        startIcon={<GoogleIcon />}
-                        size="large"
-                        color="primary"
-                        variant="contained"
-                        sx={{ width: '75%', height: '4rem' }}
-                    >
+            <DialogTitle>Save to your Google account</DialogTitle>
+            <DialogContent>
+                <Stack>
+                    <Button onClick={loginUser} startIcon={<GoogleIcon />} color="primary" variant="contained">
                         Sign in with Google
                     </Button>
                 </Stack>
