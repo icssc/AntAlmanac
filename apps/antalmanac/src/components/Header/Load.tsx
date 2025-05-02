@@ -7,21 +7,25 @@ import {
     DialogTitle,
     TextField,
     CircularProgress,
-    Checkbox,
-    FormControlLabel,
 } from '@material-ui/core';
 import { CloudDownload, Save } from '@material-ui/icons';
+import GoogleIcon from '@mui/icons-material/Google';
 import { LoadingButton } from '@mui/lab';
-import { ChangeEvent, PureComponent, useEffect, useState } from 'react';
+import { Divider } from '@mui/material';
+import { ChangeEvent, PureComponent, useEffect, useState, useCallback } from 'react';
 
-import actionTypesStore from '$actions/ActionTypesStore';
-import { loadSchedule, saveSchedule } from '$actions/AppStoreActions';
-import { getLocalStorageUserId } from '$lib/localStorage';
+import { loadSchedule, saveSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
+import { AlertDialog } from '$components/AlertDialog';
+import trpc from '$lib/api/trpc';
+import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
+import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
+import { useToggleStore } from '$stores/ToggleStore';
 
 interface LoadSaveButtonBaseProps {
     action: typeof saveSchedule;
+    actionSecondary?: () => void;
     actionName: 'Save' | 'Load';
     disabled: boolean;
     loading: boolean;
@@ -33,13 +37,13 @@ interface LoadSaveButtonBaseState {
     isOpen: boolean;
     userID: string;
     rememberMe: boolean;
+    onClose?: () => void;
 }
 
 interface SaveLoadIconProps {
     loading: boolean;
     actionName: 'Save' | 'Load';
 }
-
 function SaveLoadIcon(props: SaveLoadIconProps) {
     return props.loading ? (
         <CircularProgress size={20} color="inherit" />
@@ -113,18 +117,29 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                     startIcon={<SaveLoadIcon loading={this.props.loading} actionName={this.props.actionName} />}
                     disabled={this.props.disabled}
                     loading={false}
+                    fullWidth
                 >
                     {this.props.actionName}
                 </LoadingButton>
                 <Dialog open={this.state.isOpen} onClose={this.handleClose}>
                     <DialogTitle>{this.props.actionName}</DialogTitle>
                     <DialogContent>
+                        <LoadingButton
+                            onClick={this.props.actionSecondary}
+                            color="primary"
+                            variant="contained"
+                            startIcon={<GoogleIcon />}
+                            fullWidth
+                        >
+                            Sign in with Google
+                        </LoadingButton>
+                        <Divider sx={{ my: '1rem', width: '35rem', maxWidth: '100%' }}>or</Divider>
                         <DialogContentText>
                             Enter your unique user ID here to {this.props.actionName.toLowerCase()} your schedule.
                         </DialogContentText>
-                        <DialogContentText style={{ color: 'red' }}>
+                        {/* <DialogContentText style={{ color: 'red' }}>
                             Make sure the user ID is unique and secret, or someone else can overwrite your schedule.
-                        </DialogContentText>
+                        </DialogContentText> */}
                         <TextField
                             // eslint-disable-next-line jsx-a11y/no-autofocus
                             autoFocus
@@ -136,7 +151,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                             value={this.state.userID}
                             onChange={(event) => this.setState({ userID: event.target.value })}
                         />
-                        <FormControlLabel
+                        {/* <FormControlLabel
                             control={
                                 <Checkbox
                                     checked={this.state.rememberMe}
@@ -145,7 +160,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                                 />
                             }
                             label="Remember Me (Uncheck on shared computers)"
-                        />
+                        /> */}
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => this.handleClose(true)} color={this.props.colorType}>
@@ -161,24 +176,79 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
     }
 }
 
-const LoadSaveScheduleFunctionality = () => {
+const LoadFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
 
-    const [loading, setLoading] = useState(false);
-    const [saving, setSaving] = useState(false);
+    const { updateSession, sessionIsValid } = useSessionStore();
+
+    const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = useToggleStore();
+
+    const [openAlert, setOpenalert] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    const loadScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
-        setLoading(true);
-        await loadSchedule(userID, rememberMe);
-        setLoading(false);
+    const validateImportedUser = async (userID: string) => {
+        try {
+            const res = await trpc.userData.getGuestAccountAndUserByName
+                .query({
+                    name: userID,
+                })
+                .then((res) => res.users.imported);
+            if (res) {
+                setOpenalert(true);
+            }
+            return res;
+        } catch (error) {
+            console.error('Error validating imported user:', error);
+            return false;
+        }
     };
+    const loadScheduleAndSetLoading = useCallback(async (userID: string, rememberMe: boolean) => {
+        setOpenLoadingSchedule(true);
+        if (!(await validateImportedUser(userID))) {
+            await loadSchedule(userID, rememberMe, 'GUEST');
+        }
+        setOpenLoadingSchedule(false);
+    }, []);
 
-    const saveScheduleAndSetLoading = async (userID: string, rememberMe: boolean) => {
-        setSaving(true);
-        await saveSchedule(userID, rememberMe);
-        setSaving(false);
-    };
+    const loadScheduleAndSetLoadingAuth = useCallback(
+        async (userID: string, rememberMe: boolean) => {
+            setOpenLoadingSchedule(true);
+            const sessionToken: string = getLocalStorageSessionId() ?? '';
+            if (sessionToken.length > 0 && (await loadScheduleWithSessionToken())) {
+                // const account = await trpc.userData.getUserAndAccountBySessionToken
+                //     .query({ token: sessionToken })
+                //     .then((res) => res.accounts);
+                // pass in both userId and providerAccountId so the backend does not have to make a redundant request for the userId
+                // await loadSchedule(account.providerAccountId, rememberMe, 'GOOGLE', account.userId);
+                updateSession(sessionToken);
+            } else if (sessionToken === '' && userID && userID !== '') {
+                if (!(await validateImportedUser(userID))) {
+                    await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
+                }
+            }
+            setOpenLoadingSchedule(false);
+        },
+        [updateSession]
+    );
+
+    //     const cacheSchedule = () => {
+    //         const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState().schedules;
+    //         if (!isEmptySchedule(scheduleSaveState)) {
+    //             setLocalStorageDataCache(JSON.stringify(scheduleSaveState));
+    //         }
+    //     };
+    //
+    //     const handleLogin = async () => {
+    //         try {
+    //             const authUrl = await trpc.userData.getGoogleAuthUrl.query();
+    //             if (authUrl) {
+    //                 cacheSchedule();
+    //                 window.location.href = authUrl;
+    //             }
+    //         } catch (error) {
+    //             console.error('Error during login initiation', error);
+    //         }
+    //     };
 
     useEffect(() => {
         const handleSkeletonModeChange = () => {
@@ -195,47 +265,52 @@ const LoadSaveScheduleFunctionality = () => {
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
             const savedUserID = getLocalStorageUserId();
+            const sessionID = getLocalStorageSessionId();
 
-            if (savedUserID != null) {
-                // this `void` is for eslint "no floating promises"
-                void loadScheduleAndSetLoading(savedUserID, true);
+            if (savedUserID != null || sessionID !== null) {
+                void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
             }
         }
-    }, []);
+    }, [loadScheduleAndSetLoadingAuth]);
 
-    useEffect(() => {
-        const handleAutoSaveStart = () => setSaving(true);
-        const handleAutoSaveEnd = () => setSaving(false);
-
-        actionTypesStore.on('autoSaveStart', handleAutoSaveStart);
-        actionTypesStore.on('autoSaveEnd', handleAutoSaveEnd);
-
-        return () => {
-            actionTypesStore.off('autoSaveStart', handleAutoSaveStart);
-            actionTypesStore.off('autoSaveEnd', handleAutoSaveEnd);
-        };
-    }, []);
-
+    if (sessionIsValid) {
+        return;
+    }
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
-            <LoadSaveButtonBase
-                id="save-button"
-                actionName={'Save'}
-                action={saveScheduleAndSetLoading}
-                disabled={loading}
-                loading={saving}
-                colorType={isDark ? 'secondary' : 'primary'}
-            />
             <LoadSaveButtonBase
                 id="load-button"
                 actionName={'Load'}
                 action={loadScheduleAndSetLoading}
+                actionSecondary={() => {
+                    loginUser();
+                    setLocalStorageFromLoading('true');
+                }}
                 disabled={skeletonMode}
-                loading={loading}
+                loading={loadingSchedule}
                 colorType={isDark ? 'secondary' : 'primary'}
             />
+
+            <AlertDialog
+                open={openAlert}
+                onClose={() => setOpenalert(false)}
+                title="This schedule seems to have already been imported!"
+                severity="warning"
+                defaultAction
+            >
+                <DialogContentText>To access your schedule sign in with the Google account</DialogContentText>
+                <LoadingButton
+                    color="primary"
+                    variant="contained"
+                    startIcon={<GoogleIcon />}
+                    fullWidth
+                    onClick={loginUser}
+                >
+                    Sign in with Google
+                </LoadingButton>
+            </AlertDialog>
         </div>
     );
 };
 
-export default LoadSaveScheduleFunctionality;
+export default LoadFunctionality;
