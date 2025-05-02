@@ -235,9 +235,9 @@ export const importScheduleWithUsername = async (username: string, importTag = '
                 openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
                 useToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
                 await saveSchedule(accounts.providerAccountId, accounts.AccountType);
-                // await trpc.userData.flagImportedSchedule.mutate({
-                //     providerId: username,
-                // });
+                await trpc.userData.flagImportedSchedule.mutate({
+                    providerId: username,
+                });
             }
         }
         return '';
