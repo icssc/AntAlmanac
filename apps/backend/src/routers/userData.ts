@@ -43,7 +43,7 @@ const userDataRouter = router({
      * @returns The account and user data associated with the session token.
      */
     getUserAndAccountBySessionToken: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
-        return await RDS.getAccountAndUserByToken(db, input.token);
+        return await RDS.getUserAndAccountBySessionToken(db, input.token);
     }),
 
     /**
@@ -77,6 +77,17 @@ const userDataRouter = router({
             });
         }
     }),
+    getUserDataWithSession: procedure.input(z.object({ sessionToken: z.string() })).query(async ({ input }) => {
+        if ('sessionToken' in input) {
+            return await RDS.fetchUserDataWithSessionToken(db, input.sessionToken);
+        } else {
+            throw new TRPCError({
+                code: 'BAD_REQUEST',
+                message: 'Invalid input: userId is required',
+            });
+        }
+    }),
+
     getGuestAccountAndUserByName: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
         return RDS.getGuestAccountAndUserByName(db, input.name);
     }),
@@ -137,20 +148,21 @@ const userDataRouter = router({
             const session = await RDS.upsertSession(db, userId, input.token);
             return { sessionToken: session?.refreshToken, userId: userId, providerId: payload.sub };
         }
+
         return { sessionToken: null, userId: null, providerId: null };
     }),
     /**
      * Logs in or signs up existing user
      */
-    handleGuestLogin: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
-        const account = await RDS.registerUserAccount(db, input.name, input.name, 'GUEST');
-
-        if (account.userId.length > 0) {
-            const session = await RDS.upsertSession(db, account.userId);
-            return session?.refreshToken;
-        }
-        return null;
-    }),
+    //     handleGuestLogin: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
+    //         const account = await RDS.registerUserAccount(db, input.name, input.name, 'GUEST');
+    //
+    //         if (account.userId.length > 0) {
+    //             const session = await RDS.upsertSession(db, account.userId);
+    //             return session?.refreshToken;
+    //         }
+    //         return null;
+    //     }),
     /**
      * Loads schedule data for a user that's logged in.
      */

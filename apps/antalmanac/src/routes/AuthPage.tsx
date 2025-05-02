@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 
 import { isEmptySchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
 import { LoadingScreen } from '$components/LoadingScreen';
@@ -11,8 +11,8 @@ import {
     removeLocalStorageUserId,
     removeLocalStorageImportedUser,
     removeLocalStorageDataCache,
-    getLocalStorageFromLoading,
     removeLocalStorageFromLoading,
+    setLocalStorageSessionId,
 } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -20,7 +20,7 @@ import { useSessionStore } from '$stores/SessionStore';
 export function AuthPage() {
     const { session, updateSession: setSession } = useSessionStore();
     const [searchParams] = useSearchParams();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const handleSearchParamsChange = useCallback(async () => {
         try {
@@ -39,13 +39,13 @@ export function AuthPage() {
             removeLocalStorageUserId();
 
             if (sessionToken && providerId) {
-                await setSession(sessionToken);
+                // await setSession(sessionToken);
+                setLocalStorageSessionId(sessionToken);
 
                 const dataCache = getLocalStorageDataCache();
-                const fromLoading = getLocalStorageFromLoading();
                 const savedData = getLocalStorageDataCache();
 
-                if (fromLoading && (savedUserId || dataCache)) {
+                if (savedUserId || dataCache) {
                     removeLocalStorageDataCache();
                     removeLocalStorageImportedUser();
                 } else {
@@ -75,8 +75,8 @@ export function AuthPage() {
                     }
                 }
                 removeLocalStorageFromLoading();
-                navigate('/');
-                // window.location.href = '/';
+                // navigate('/');
+                window.location.href = '/';
             }
         } catch (error) {
             console.error('Error during authentication', error);

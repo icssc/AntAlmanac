@@ -1,5 +1,5 @@
 import { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { and, eq, ExtractTablesWithRelations } from 'drizzle-orm';
+import { and, eq, ExtractTablesWithRelations, gt } from 'drizzle-orm';
 import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 import type { Database } from '$db/index';
 import {
@@ -86,20 +86,6 @@ export class RDS {
         );
     }
 
-    static async getAccountAndUserByToken(db: DatabaseOrTransaction, refreshToken: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(sessions)
-                .innerJoin(users, eq(sessions.userId, users.id))
-                .innerJoin(accounts, eq(users.id, accounts.userId))
-                .where(eq(sessions.refreshToken, refreshToken))
-                .execute()
-                .then((res) => {
-                    return { users: res[0].users, accounts: res[0].accounts };
-                })
-        );
-    }
     static async getGuestAccountAndUserByName(db: DatabaseOrTransaction, name: string) {
         return db.transaction((tx) =>
             tx
@@ -334,34 +320,44 @@ export class RDS {
         await tx.insert(customEvents).values(dbCustomEvents);
     }
 
-    private static async fetchUserData(db: DatabaseOrTransaction, user: any) {
-        const userId = user.id;
+    private static async fetchUserData(db: DatabaseOrTransaction, userId: string) {
+        return db.transaction(async (tx) => {
+            const user = await tx
+                .select()
+                .from(users)
+                .where(eq(users.id, userId))
+                .then((res) => res[0]);
 
-        const sectionResults = await db
-            .select()
-            .from(schedules)
-            .where(eq(schedules.userId, userId))
-            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+            if (!user) {
+                return null;
+            }
 
-        const customEventResults = await db
-            .select()
-            .from(schedules)
-            .where(eq(schedules.userId, userId))
-            .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+            const sectionResults = await tx
+                .select()
+                .from(schedules)
+                .where(eq(schedules.userId, userId))
+                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
 
-        const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+            const customEventResults = await tx
+                .select()
+                .from(schedules)
+                .where(eq(schedules.userId, userId))
+                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
 
-        const scheduleIndex = user.currentScheduleId
-            ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
-            : userSchedules.length;
+            const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
 
-        return {
-            id: userId,
-            userData: {
-                schedules: userSchedules,
-                scheduleIndex,
-            },
-        };
+            const scheduleIndex = user.currentScheduleId
+                ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
+                : userSchedules.length;
+
+            return {
+                id: userId,
+                userData: {
+                    schedules: userSchedules,
+                    scheduleIndex,
+                },
+            };
+        });
     }
 
     /**
@@ -372,11 +368,65 @@ export class RDS {
      * @returns A promise that resolves to a User object containing user data and schedules, or null if the user is not found.
      */
     static async getUserDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
-        const user = await RDS.getUserById(db, userId);
-        if (!user) {
+        return await this.fetchUserData(db, userId);
+    }
+
+    private static async getUserDataWithSessionToken(tx: Transaction, sessionToken: string) {
+        return tx
+            .select()
+            .from(users)
+            .leftJoin(sessions, eq(users.id, sessions.userId))
+            .where(and(eq(sessions.refreshToken, sessionToken), gt(sessions.expires, new Date())))
+            .then((res) => res[0].users);
+    }
+
+    static async fetchUserDataWithSessionToken(db: DatabaseOrTransaction, sessionToken: string) {
+        return db.transaction(async (tx) => {
+            const user = await this.getUserDataWithSessionToken(tx, sessionToken);
+
+            if (user) {
+                const sectionResults = await tx
+                    .select()
+                    .from(schedules)
+                    .where(eq(schedules.userId, user.id))
+                    .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+
+                const customEventResults = await tx
+                    .select()
+                    .from(schedules)
+                    .where(eq(schedules.userId, user.id))
+                    .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+
+                const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+
+                const scheduleIndex = user.currentScheduleId
+                    ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
+                    : userSchedules.length;
+                return {
+                    id: user.id,
+                    userData: {
+                        schedules: userSchedules,
+                        scheduleIndex,
+                    },
+                };
+            }
             return null;
-        }
-        return await this.fetchUserData(db, user);
+        });
+    }
+
+    static async getUserAndAccountBySessionToken(db: DatabaseOrTransaction, refreshToken: string) {
+        return db.transaction((tx) =>
+            tx
+                .select()
+                .from(sessions)
+                .innerJoin(users, eq(sessions.userId, users.id))
+                .innerJoin(accounts, eq(users.id, accounts.userId))
+                .where(eq(sessions.refreshToken, refreshToken))
+                .execute()
+                .then((res) => {
+                    return { users: res[0].users, accounts: res[0].accounts };
+                })
+        );
     }
 
     private static async getUserAndAccount(
@@ -485,17 +535,15 @@ export class RDS {
      * @param userID - The ID of the user for whom the session is being created.
      * @returns A promise that resolves to the created session object or null if the creation failed.
      */
-    static async createSession(db: DatabaseOrTransaction, userID: string): Promise<Session | null> {
-        return db.transaction((tx) =>
-            tx
-                .insert(sessions)
-                .values({
-                    userId: userID,
-                    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-                })
-                .returning()
-                .then((res) => res[0] ?? null)
-        );
+    static async createSession(tx: Transaction, userID: string): Promise<Session | null> {
+        return tx
+            .insert(sessions)
+            .values({
+                userId: userID,
+                expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+            })
+            .returning()
+            .then((res) => res[0] ?? null);
     }
 
     /**
@@ -526,9 +574,16 @@ export class RDS {
         userId: string,
         refreshToken?: string
     ): Promise<Session | null> {
-        const currentSession = await this.getCurrentSession(db, refreshToken ?? '');
-        if (currentSession) return currentSession;
-        return await RDS.createSession(db, userId);
+        return db.transaction(async (tx) => {
+            const currentSession = await tx
+                .select()
+                .from(sessions)
+                .where(eq(sessions.refreshToken, refreshToken ?? ''))
+                .then((res) => res[0] ?? null);
+
+            if (currentSession) return currentSession;
+            return await RDS.createSession(tx, userId);
+        });
     }
 
     static async flagImportedUser(db: DatabaseOrTransaction, providerId: string) {

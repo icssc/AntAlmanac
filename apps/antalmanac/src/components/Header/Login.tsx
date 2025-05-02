@@ -14,7 +14,6 @@ function Login() {
     // const [openSignIn, setOpenSignIn] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<null | User>(null);
-    const { clearSession } = useSessionStore();
     const navigate = useNavigate();
 
     const handleLogout = async () => {
@@ -22,7 +21,7 @@ function Login() {
         navigate('/');
     };
 
-    const { session, updateSession: setSession, sessionIsValid: validSession } = useSessionStore();
+    const { session, sessionIsValid, clearSession } = useSessionStore();
     // const isDark = useThemeStore((store) => store.isDark);
 
     const open = Boolean(anchorEl);
@@ -33,28 +32,25 @@ function Login() {
         setAnchorEl(null);
     };
 
-    // const handleClickSignIn = () => {
-    //     if (!validSession && getLocalStorageSessionId()) {
-    //         removeLocalStorageSessionId();
-    //     }
-    //     setOpenSignIn(!openSignIn);
-    // };
-
     const handleAuthChange = useCallback(async () => {
-        setSession(session);
-        if (validSession) {
-            const userId = await trpc.auth.getSessionUserId.query({ token: session ?? '' });
-            if (userId) {
-                setUser(await trpc.userData.getUserByUid.query({ userId: userId }));
-            }
+        if (sessionIsValid) {
+            const user = await trpc.userData.getUserAndAccountBySessionToken
+                .query({ token: session ?? '' })
+                .then((res) => res.users);
+            setUser(user);
         }
-    }, [session, setSession, validSession]);
+    }, [session, sessionIsValid]);
 
     useEffect(() => {
-        handleAuthChange();
+        const unsubscribe = useSessionStore.subscribe((state) => {
+            if (state.sessionIsValid !== sessionIsValid) {
+                handleAuthChange();
+            }
+        });
+        return () => unsubscribe();
     }, [handleAuthChange]);
 
-    if (!validSession) {
+    if (!sessionIsValid) {
         return;
     }
     return (

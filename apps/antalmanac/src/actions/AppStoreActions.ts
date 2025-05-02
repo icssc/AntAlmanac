@@ -304,6 +304,40 @@ export const loadSchedule = async (
     }
 };
 
+export const loadScheduleWithSessionToken = async () => {
+    // logAnalytics({
+    //     category: analyticsEnum.nav.title,
+    //     action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
+    //     label: providerId,
+    //     value: rememberMe ? 1 : 0,
+    // });
+    try {
+        const userDataResponse = await trpc.userData.getUserDataWithSession.query({
+            sessionToken: useSessionStore.getState().session ?? '',
+        });
+        const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
+
+        if (scheduleSaveState == null) {
+            openSnackbar('error', `Couldn't find schedules for this account`);
+        } else if (await AppStore.loadSchedule(scheduleSaveState)) {
+            openSnackbar('success', `Schedule loaded.`);
+            return true;
+        } else {
+            AppStore.loadSkeletonSchedule(scheduleSaveState);
+            openSnackbar(
+                'error',
+                `Network error loading course information". 	              
+                        If this continues to happen, please submit a feedback form.`
+            );
+        }
+        return false;
+    } catch (e) {
+        console.error(e);
+        openSnackbar('error', `Failed to load schedules. If this continues to happen, please submit a feedback form.`);
+        return false;
+    }
+};
+
 const cacheSchedule = () => {
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState().schedules;
     if (!isEmptySchedule(scheduleSaveState)) {

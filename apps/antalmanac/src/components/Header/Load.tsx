@@ -14,10 +14,10 @@ import { LoadingButton } from '@mui/lab';
 import { Divider } from '@mui/material';
 import { ChangeEvent, PureComponent, useEffect, useState, useCallback } from 'react';
 
-import { loadSchedule, saveSchedule, loginUser } from '$actions/AppStoreActions';
+import { loadSchedule, saveSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
 import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId, getLocalStorageUserId } from '$lib/localStorage';
+import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -214,20 +214,19 @@ const LoadFunctionality = () => {
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
             const sessionToken: string = getLocalStorageSessionId() ?? '';
-            if (sessionToken) {
-                const account = await trpc.userData.getUserAndAccountBySessionToken
-                    .query({ token: sessionToken })
-                    .then((res) => res.accounts);
+            if (await loadScheduleWithSessionToken()) {
+                // const account = await trpc.userData.getUserAndAccountBySessionToken
+                //     .query({ token: sessionToken })
+                //     .then((res) => res.accounts);
                 // pass in both userId and providerAccountId so the backend does not have to make a redundant request for the userId
-                await loadSchedule(account.providerAccountId, rememberMe, 'GOOGLE', account.userId);
+                // await loadSchedule(account.providerAccountId, rememberMe, 'GOOGLE', account.userId);
+                updateSession(sessionToken);
             } else if (sessionToken === '' && userID && userID !== '') {
-                if (!(await validateImportedUser(userID))) {
-                    await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
-                }
+                await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
             }
             setOpenLoadingSchedule(false);
         },
-        [sessionIsValid, updateSession]
+        [updateSession]
     );
 
     //     const cacheSchedule = () => {
@@ -270,7 +269,7 @@ const LoadFunctionality = () => {
                 void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
             }
         }
-    }, [loadScheduleAndSetLoading, loadScheduleAndSetLoadingAuth]);
+    }, [loadScheduleAndSetLoadingAuth]);
 
     if (sessionIsValid) {
         return;
@@ -281,7 +280,10 @@ const LoadFunctionality = () => {
                 id="load-button"
                 actionName={'Load'}
                 action={loadScheduleAndSetLoading}
-                actionSecondary={loginUser}
+                actionSecondary={() => {
+                    loginUser();
+                    setLocalStorageFromLoading('true');
+                }}
                 disabled={skeletonMode}
                 loading={loadingSchedule}
                 colorType={isDark ? 'secondary' : 'primary'}

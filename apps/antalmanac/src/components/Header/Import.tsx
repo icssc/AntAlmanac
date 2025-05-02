@@ -109,6 +109,7 @@ function Import() {
                     setAlertDialog(true);
                     setAlertMessage(typeof importStatus === 'string' ? importStatus : importStatus.message);
                 } else {
+                    handleClose();
                     setOpenScheduleSelect(true);
                     setTimeout(() => setOpenScheduleSelect(false), 2000);
                 }
