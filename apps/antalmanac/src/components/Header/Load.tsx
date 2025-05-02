@@ -223,7 +223,9 @@ const LoadFunctionality = () => {
                 // await loadSchedule(account.providerAccountId, rememberMe, 'GOOGLE', account.userId);
                 updateSession(sessionToken);
             } else if (sessionToken === '' && userID && userID !== '') {
-                await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
+                if (!(await validateImportedUser(userID))) {
+                    await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
+                }
             }
             setOpenLoadingSchedule(false);
         },

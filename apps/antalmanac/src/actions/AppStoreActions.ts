@@ -246,12 +246,7 @@ export const importScheduleWithUsername = async (username: string, importTag = '
     }
 };
 
-export const loadSchedule = async (
-    providerId: string,
-    rememberMe: boolean,
-    accountType: 'GOOGLE' | 'GUEST',
-    userId = ''
-) => {
+export const loadSchedule = async (providerId: string, rememberMe: boolean, accountType: 'GOOGLE' | 'GUEST') => {
     logAnalytics({
         category: analyticsEnum.nav.title,
         action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
@@ -270,17 +265,12 @@ export const loadSchedule = async (
             }
 
             try {
-                let id = userId;
+                const account = await trpc.userData.getAccountByProviderId.query({
+                    accountType,
+                    providerId,
+                });
 
-                if (id.length === 0) {
-                    const account = await trpc.userData.getAccountByProviderId.query({
-                        accountType,
-                        providerId,
-                    });
-                    id = account.userId;
-                }
-
-                const userDataResponse = await trpc.userData.getUserData.query({ userId: id });
+                const userDataResponse = await trpc.userData.getUserData.query({ userId: account.userId });
                 const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
 
                 if (scheduleSaveState == null) {
