@@ -214,7 +214,8 @@ const LoadFunctionality = () => {
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
             const sessionToken: string = getLocalStorageSessionId() ?? '';
-            if (await loadScheduleWithSessionToken()) {
+            console.log('sessionToken', sessionToken);
+            if (sessionToken.length > 0 && (await loadScheduleWithSessionToken())) {
                 // const account = await trpc.userData.getUserAndAccountBySessionToken
                 //     .query({ token: sessionToken })
                 //     .then((res) => res.accounts);
