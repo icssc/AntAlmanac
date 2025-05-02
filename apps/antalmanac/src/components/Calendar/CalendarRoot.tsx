@@ -54,7 +54,7 @@ export const ScheduleCalendar = memo(() => {
     );
     const isDark = useThemeStore(useShallow((store) => store.isDark));
 
-    const { loadingSchedule } = useToggleStore();
+    const { openLoadingSchedule: loadingSchedule } = useToggleStore();
 
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
         if (showFinalsSchedule)

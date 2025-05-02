@@ -2,16 +2,18 @@ import { create } from 'zustand';
 
 interface ToggleState {
     openScheduleSelect: boolean;
-    loadingSchedule: boolean;
+    openLoadingSchedule: boolean;
+    openImportDialog: boolean;
     setOpenScheduleSelect: (open: boolean) => void;
     setOpenLoadingSchedule: (open: boolean) => void;
-    toggleScheduleSelect: () => void;
+    setOpenImportDialog: (open: boolean) => void;
 }
 
 export const useToggleStore = create<ToggleState>((set) => ({
     openScheduleSelect: false,
-    loadingSchedule: false,
+    openLoadingSchedule: false,
+    openImportDialog: false,
     setOpenScheduleSelect: (open) => set({ openScheduleSelect: open }),
-    setOpenLoadingSchedule: (open) => set({ loadingSchedule: open }),
-    toggleScheduleSelect: () => set((state) => ({ openScheduleSelect: !state.openScheduleSelect })),
+    setOpenLoadingSchedule: (open) => set({ openLoadingSchedule: open }),
+    setOpenImportDialog: (open) => set({ openImportDialog: open }),
 }));

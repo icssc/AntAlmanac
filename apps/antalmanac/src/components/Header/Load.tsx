@@ -181,7 +181,7 @@ const LoadFunctionality = () => {
 
     const { updateSession, sessionIsValid } = useSessionStore();
 
-    const { loadingSchedule, setOpenLoadingSchedule } = useToggleStore();
+    const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = useToggleStore();
 
     const [openAlert, setOpenalert] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());

@@ -39,31 +39,29 @@ export function AuthPage() {
             removeLocalStorageUserId();
 
             if (sessionToken && providerId) {
-                // await setSession(sessionToken);
                 setLocalStorageSessionId(sessionToken);
 
-                const dataCache = getLocalStorageDataCache();
-                const savedData = getLocalStorageDataCache();
+                const savedData = getLocalStorageDataCache() ?? '';
 
-                if (savedUserId || dataCache) {
+                if (savedUserId === '' && savedData === '') {
                     removeLocalStorageDataCache();
                     removeLocalStorageImportedUser();
                 } else {
                     const userData = await trpc.userData.getUserData.query({ userId: userId });
                     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
-                    if (savedUserId !== '') {
-                        await trpc.userData.flagImportedSchedule.mutate({ providerId: savedUserId });
-                        setLocalStorageImportedUser(savedUserId);
-                    }
-                    if (savedData) {
+
+                    if (savedData !== '') {
+                        if (savedUserId !== '') {
+                            await trpc.userData.flagImportedSchedule.mutate({ providerId: savedUserId });
+                            setLocalStorageImportedUser(savedUserId);
+                        }
+                        const data = JSON.parse(savedData);
                         if (isEmptySchedule(userData.userData.schedules)) {
-                            const data = JSON.parse(savedData);
                             scheduleSaveState.schedules = data;
                         } else {
                             const saveState = userData && 'userData' in userData ? userData.userData : userData;
-                            mergeShortCourseSchedules(saveState.schedules, JSON.parse(savedData));
+                            mergeShortCourseSchedules(saveState.schedules, data);
                             scheduleSaveState.schedules = saveState.schedules;
-                            console.log(scheduleSaveState.schedules);
                         }
                         await trpc.userData.saveUserData.mutate({
                             id: providerId,

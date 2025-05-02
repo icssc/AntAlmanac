@@ -13,9 +13,10 @@ import { SnackbarPosition } from '$components/NotificationSnackbar';
 import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
-import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { setLocalStorageUserId, setLocalStorageDataCache, removeLocalStorageSessionId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { useToggleStore } from '$stores/ToggleStore';
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
     onError: (scheduleName: string) => unknown;
@@ -230,11 +231,12 @@ export const importScheduleWithUsername = async (username: string, importTag = '
             mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, importTag);
             currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
             if (await AppStore.loadSchedule(currentSchedules)) {
+                useToggleStore.setState({ openImportDialog: false, openScheduleSelect: true });
+                openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
                 await saveSchedule(accounts.providerAccountId, accounts.AccountType);
                 await trpc.userData.flagImportedSchedule.mutate({
                     providerId: username,
                 });
-                openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
             }
         }
         return '';
@@ -334,6 +336,7 @@ export const loadScheduleWithSessionToken = async () => {
     } catch (e) {
         console.error(e);
         openSnackbar('error', `Failed to load schedules. If this continues to happen, please submit a feedback form.`);
+        removeLocalStorageSessionId();
         return false;
     }
 };

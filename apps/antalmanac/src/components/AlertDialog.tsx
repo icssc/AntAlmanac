@@ -1,4 +1,4 @@
-import { Alert, Button, Dialog, DialogContent, DialogActions } from '@mui/material';
+import { Alert, Box, Button, Dialog, DialogContent, DialogActions } from '@mui/material';
 
 interface AlertDialogProps {
     open: boolean;
@@ -18,19 +18,23 @@ export const AlertDialog = ({
 }: AlertDialogProps) => {
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogContent>
-                <Alert severity={severity} variant="filled" sx={{ marginBottom: '1rem', alignItems: 'center' }}>
+            <DialogContent sx={{ fontSize: 'small' }}>
+                <Alert
+                    severity={severity}
+                    variant={'filled'}
+                    sx={{ alignItems: 'center', justifyContent: 'center', fontSize: 'medium' }}
+                >
                     {title}
                 </Alert>
-                {children}
-                {defaultAction && (
-                    <DialogActions>
-                        <Button onClick={onClose} color="inherit">
-                            Close
-                        </Button>
-                    </DialogActions>
-                )}
+                <Box paddingY="1.5rem">{children}</Box>
             </DialogContent>
+            {defaultAction && (
+                <DialogActions>
+                    <Button onClick={onClose} color="inherit">
+                        Close
+                    </Button>
+                </DialogActions>
+            )}
         </Dialog>
     );
 };

@@ -60,6 +60,7 @@ const SaveFunctionality = () => {
             <LoadingButton
                 color="inherit"
                 startIcon={<Save />}
+                loadingPosition="start"
                 onClick={validSession ? saveScheduleData : handleClickSignIn}
                 disabled={skeletonMode || saving}
                 loading={saving}

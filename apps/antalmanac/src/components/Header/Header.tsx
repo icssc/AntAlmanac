@@ -74,15 +74,13 @@ export function Header() {
             </Box>
 
             <AlertDialog
-                title={`Schedule "${savedId}" has been saved into your account!`}
+                title={`Schedule "${savedId}" has been saved to your account!`}
                 open={alertDialog.alertImportUser}
                 onClose={handleCloseAlertDialog}
                 severity="info"
                 defaultAction
             >
-                <DialogContentText>
-                    Note: all changes saved to your schedule will be saved via your Google account
-                </DialogContentText>
+                Note: All changes made to your schedule will be saved to your Google account
             </AlertDialog>
 
             <AlertDialog

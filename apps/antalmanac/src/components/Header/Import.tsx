@@ -43,7 +43,6 @@ import { useThemeStore } from '$stores/SettingsStore';
 import { useToggleStore } from '$stores/ToggleStore';
 
 function Import() {
-    const [open, setOpen] = useState(false);
     const [term, setTerm] = useState(RightPaneStore.getFormData().term);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertDialog, setAlertDialog] = useState(false);
@@ -55,18 +54,18 @@ function Import() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const { session, sessionIsValid } = useSessionStore();
-    const { setOpenScheduleSelect } = useToggleStore();
+    const { openImportDialog, setOpenImportDialog, setOpenScheduleSelect } = useToggleStore();
 
     const firstTimeUserFlag = useRef(true);
 
     const { isDark } = useThemeStore();
 
     const handleOpen = useCallback(() => {
-        setOpen(true);
+        setOpenImportDialog(true);
     }, []);
 
     const handleClose = useCallback(() => {
-        setOpen(false);
+        setOpenImportDialog(false);
     }, []);
 
     const handleSubmit = async () => {
@@ -109,8 +108,6 @@ function Import() {
                     setAlertDialog(true);
                     setAlertMessage(typeof importStatus === 'string' ? importStatus : importStatus.message);
                 } else {
-                    handleClose();
-                    setOpenScheduleSelect(true);
                     setTimeout(() => setOpenScheduleSelect(false), 2000);
                 }
                 break;
@@ -250,7 +247,7 @@ function Import() {
                     Import
                 </Button>
             </Tooltip>
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={openImportDialog} onClose={handleClose}>
                 <DialogTitle>Import Schedule</DialogTitle>
                 <DialogContent>
                     <FormControl>
@@ -365,7 +362,8 @@ function Import() {
                 severity="error"
                 defaultAction
             >
-                If you think this is a mistake submit a <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</Link>
+                If you think this is a mistake please submit a{' '}
+                <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</Link>
             </AlertDialog>
         </>
     );
