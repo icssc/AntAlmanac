@@ -34,21 +34,18 @@ function Login() {
 
     const handleAuthChange = useCallback(async () => {
         if (sessionIsValid) {
-            const user = await trpc.userData.getUserAndAccountBySessionToken
+            const userData = await trpc.userData.getUserAndAccountBySessionToken
                 .query({ token: session ?? '' })
                 .then((res) => res.users);
-            setUser(user);
+            setUser(userData);
         }
-    }, [session, sessionIsValid]);
+    }, [session, sessionIsValid, setUser]);
 
     useEffect(() => {
-        const unsubscribe = useSessionStore.subscribe((state) => {
-            if (state.sessionIsValid !== sessionIsValid) {
-                handleAuthChange();
-            }
-        });
-        return () => unsubscribe();
-    }, [handleAuthChange]);
+        if (sessionIsValid) {
+            handleAuthChange();
+        }
+    }, [handleAuthChange, sessionIsValid]);
 
     if (!sessionIsValid) {
         return;

@@ -230,13 +230,14 @@ export const importScheduleWithUsername = async (username: string, importTag = '
         if (scheduleSaveState.schedules) {
             mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, importTag);
             currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
+            useToggleStore.setState({ openImportDialog: false, openLoadingSchedule: true });
             if (await AppStore.loadSchedule(currentSchedules)) {
-                useToggleStore.setState({ openImportDialog: false, openScheduleSelect: true });
                 openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
+                useToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
                 await saveSchedule(accounts.providerAccountId, accounts.AccountType);
-                await trpc.userData.flagImportedSchedule.mutate({
-                    providerId: username,
-                });
+                // await trpc.userData.flagImportedSchedule.mutate({
+                //     providerId: username,
+                // });
             }
         }
         return '';
@@ -308,6 +309,9 @@ export const loadScheduleWithSessionToken = async () => {
             sessionToken: useSessionStore.getState().session ?? '',
         });
         const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
+        if (isEmptySchedule(scheduleSaveState.schedules)) {
+            return true;
+        }
 
         if (scheduleSaveState == null) {
             openSnackbar('error', `Couldn't find schedules for this account`);

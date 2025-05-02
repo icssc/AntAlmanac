@@ -1,4 +1,4 @@
-import { AppBar, Box, Stack, DialogContentText, DialogActions, Button } from '@mui/material';
+import { AppBar, Box, Stack, DialogContentText } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import Import from './Import';
@@ -88,16 +88,11 @@ export function Header() {
                 open={alertDialog.alertImportUnsavedChanges}
                 onClose={handleCloseAlertDialog}
                 severity="info"
+                defaultAction
             >
                 <DialogContentText>
                     Note: all changes saved to your schedule will be saved via your Google account
                 </DialogContentText>
-
-                <DialogActions>
-                    <Button onClick={handleCloseAlertDialog} variant="contained">
-                        Continue
-                    </Button>
-                </DialogActions>
             </AlertDialog>
         </AppBar>
     );
