@@ -64,6 +64,13 @@
             "when": 1741155710788,
             "tag": "0008_outstanding_king_cobra",
             "breakpoints": true
+        },
+        {
+            "idx": 9,
+            "version": "7",
+            "when": 1746137514248,
+            "tag": "0009_panoramic_white_tiger",
+            "breakpoints": true
         }
     ]
 }

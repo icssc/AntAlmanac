@@ -1,5 +1,4 @@
 CREATE TYPE "public"."account_type" AS ENUM('GOOGLE', 'GUEST');--> statement-breakpoint
-CREATE TYPE "public"."subscription_target_status" AS ENUM('OPEN', 'WAITLISTED');--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "accounts" (
 	"user_id" text NOT NULL,
 	"account_type" "account_type" NOT NULL,
@@ -19,6 +18,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"phone" text,
 	"avatar" text,
 	"name" text,
+	"email" text,
 	"current_schedule_id" text,
 	"last_updated" timestamp with time zone DEFAULT now()
 );
@@ -28,8 +28,10 @@ CREATE TABLE IF NOT EXISTS "schedules" (
 	"user_id" text NOT NULL,
 	"name" text,
 	"notes" text,
+	"index" integer NOT NULL,
 	"last_updated" timestamp with time zone NOT NULL,
-	CONSTRAINT "schedules_user_id_name_unique" UNIQUE("user_id","name")
+	CONSTRAINT "schedules_user_id_name_unique" UNIQUE("user_id","name"),
+	CONSTRAINT "schedules_user_id_index_unique" UNIQUE("user_id","index")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "coursesInSchedule" (
@@ -55,9 +57,16 @@ CREATE TABLE IF NOT EXISTS "customEvents" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "subscriptions" (
 	"userId" text,
-	"sectionCode" integer,
-	"status" "subscription_target_status",
-	CONSTRAINT "subscriptions_userId_sectionCode_pk" PRIMARY KEY("userId","sectionCode")
+	"sectionCode" integer NOT NULL,
+	"year" text NOT NULL,
+	"quarter" text NOT NULL,
+	"lastUpdated" text,
+	"lastCodes" text DEFAULT '',
+	"openStatus" boolean DEFAULT false,
+	"waitlistStatus" boolean DEFAULT false,
+	"fullStatus" boolean DEFAULT false,
+	"restrictionStatus" boolean DEFAULT false,
+	CONSTRAINT "subscriptions_userId_sectionCode_year_quarter_pk" PRIMARY KEY("userId","sectionCode","year","quarter")
 );
 --> statement-breakpoint
 DO $$ BEGIN
@@ -73,7 +82,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "users" ADD CONSTRAINT "users_current_schedule_id_schedules_id_fk" FOREIGN KEY ("current_schedule_id") REFERENCES "public"."schedules"("id") ON DELETE no action ON UPDATE no action;
+ ALTER TABLE "users" ADD CONSTRAINT "users_current_schedule_id_schedules_id_fk" FOREIGN KEY ("current_schedule_id") REFERENCES "public"."schedules"("id") ON DELETE set null ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

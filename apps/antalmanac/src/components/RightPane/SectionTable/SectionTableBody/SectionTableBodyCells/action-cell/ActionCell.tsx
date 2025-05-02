@@ -7,7 +7,7 @@ import { memo } from 'react';
 import { addCourse, openSnackbar } from '$actions/AppStoreActions';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { DeleteAndNotifications } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/DeleteAndNotifications';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { MOBILE_BREAKPOINT } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { type NotificationStatus } from '$stores/NotificationStore';
@@ -50,7 +50,7 @@ interface ActionProps {
  * Copying a specific class's link will only copy its course code.
  * If there is random value let in the url, it will interfere with the generated url.
  */
-const fieldsToReset = ['courseCode', 'courseNumber', 'deptLabel', 'deptValue', 'ge', 'term'];
+const fieldsToReset = ['courseCode', 'courseNumber', 'deptValue', 'ge', 'term'];
 
 /**
  * Sections that have not been added to a schedule can be added to a schedule.
@@ -111,12 +111,12 @@ export function ScheduleAddCell(props: ActionProps) {
             sx={{
                 display: 'flex',
                 flexDirection: flexDirection,
-                justifyContent: 'center',
+                justifyContent: 'space-evenly',
                 alignItems: 'center',
             }}
         >
             {scheduleConflict ? (
-                <Tooltip title="This course overlaps with another event in your calendar!" arrow>
+                <Tooltip title="This course overlaps with another event in your calendar!" arrow disableInteractive>
                     <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
                         <Add fontSize="small" />
                     </IconButton>

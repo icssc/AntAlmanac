@@ -15,10 +15,11 @@ import darkNoNothing from './static/dark-no_results.png';
 import noNothing from './static/no_results.png';
 
 import { openSnackbar } from '$actions/AppStoreActions';
-import analyticsEnum from '$lib/analytics';
+import analyticsEnum from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
+import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -162,8 +163,7 @@ const LoadingMessage = () => {
 };
 
 const ErrorMessage = () => {
-    const theme = useTheme();
-    const isDark = useThemeStore((store) => store.isDark);
+    const { isDark } = useThemeStore();
 
     const formData = RightPaneStore.getFormData();
     const deptValue = formData.deptValue.replace(' ', '').toUpperCase() || null;
@@ -188,7 +188,7 @@ const ErrorMessage = () => {
                             display: 'flex',
                             alignItems: 'center',
                             fontSize: 14,
-                            backgroundColor: theme.palette.primary.main,
+                            backgroundColor: BLUE,
                             color: 'white',
                         }}
                     >
@@ -241,6 +241,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             room: formData.room,
             division: formData.division,
             excludeRestrictionCodes: formData.excludeRestrictionCodes.split('').join(','), // comma delimited string (e.g. ABC -> A,B,C)
+            days: formData.days.split(/(?=[A-Z])/).join(','), // split on capital letters (e.g. MTuF -> M,Tu,F)
         };
 
         const gradesQueryParams = {

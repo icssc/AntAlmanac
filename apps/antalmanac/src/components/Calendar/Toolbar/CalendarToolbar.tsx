@@ -12,7 +12,7 @@ import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSele
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import DownloadButton from '$components/buttons/Download';
 import ScreenshotButton from '$components/buttons/Screenshot';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 
 function handleUndo() {

@@ -5,7 +5,7 @@ enum LocalStorageKeys {
     phoneNumber = 'phoneNumber',
     recruitmentDismissalTime = 'recruitmentDismissalTime',
     advanced = 'advanced',
-    favorites = 'favorites',
+    recentlySearched = 'recentlySearched',
     tourHasRun = 'tourHasRun',
     theme = 'theme',
     show24HourTime = 'show24HourTime',
@@ -108,17 +108,17 @@ export function removeLocalStorageAdvanced() {
     window.localStorage.removeItem(LSK.advanced);
 }
 
-// Helper functions for favorites
-export function setLocalStorageFavorites(value: string) {
-    window.localStorage.setItem(LSK.favorites, value);
+// Helper functions for recently searched
+export function setLocalStorageRecentlySearched(value: string) {
+    window.localStorage.setItem(LSK.recentlySearched, value);
 }
 
-export function getLocalStorageFavorites() {
-    return window.localStorage.getItem(LSK.favorites);
+export function getLocalStorageRecentlySearched() {
+    return window.localStorage.getItem(LSK.recentlySearched);
 }
 
-export function removeLocalStorageFavorites() {
-    window.localStorage.removeItem(LSK.favorites);
+export function removeLocalStorageRecentlySearched() {
+    window.localStorage.removeItem(LSK.recentlySearched);
 }
 
 // Helper functions for tourHasRun

@@ -22,8 +22,8 @@ class _WebSOC {
     async query(params: Record<string, string>) {
         const paramsString = JSON.stringify(params);
 
-        // hit cache if data is less than 15 minutes old
-        if (this.cache[paramsString]?.timestamp > Date.now() - 15 * 60 * 1000) {
+        // hit cache if data is less than 5 minutes old
+        if (this.cache[paramsString]?.timestamp > Date.now() - 5 * 60 * 1000) {
             return this.cache[paramsString];
         }
 

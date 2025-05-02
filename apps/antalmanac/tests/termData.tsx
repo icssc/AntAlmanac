@@ -26,6 +26,8 @@ describe('termData', () => {
             sectionType: '',
             term: '',
             color: '',
+            deptValue: '',
+            courseNumber: '',
             start: new Date(0),
             end: new Date(0),
             title: '',

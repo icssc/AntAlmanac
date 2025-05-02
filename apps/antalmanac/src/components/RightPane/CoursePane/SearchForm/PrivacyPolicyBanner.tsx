@@ -5,8 +5,10 @@ import { PureComponent } from 'react';
 const styles = {
     container: {
         padding: 12,
-        marginBottom: '10px',
-        marginRight: '5px',
+        paddingRight: 48, // FIX ME: Magic Number padding for the Help Menu
+        marginBottom: 8,
+        marginRight: 4,
+        textWrap: 'pretty',
     },
 };
 
