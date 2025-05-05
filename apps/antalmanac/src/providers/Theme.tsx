@@ -1,6 +1,7 @@
 import { createTheme } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { PaletteOptions } from '@material-ui/core/styles/createPalette';
+import { usePostHog } from 'posthog-js/react';
 import { useEffect } from 'react';
 
 import { BLUE, DODGER_BLUE } from '$src/globals';
@@ -47,10 +48,11 @@ declare module '@material-ui/core/styles/createBreakpoints' {
  */
 export default function AppThemeProvider(props: Props) {
     const [appTheme, setAppTheme] = useThemeStore((store) => [store.appTheme, store.setAppTheme]);
+    const postHog = usePostHog();
 
     useEffect(() => {
         const onChange = (e: MediaQueryListEvent) => {
-            setAppTheme(e.matches ? 'dark' : 'light');
+            setAppTheme(e.matches ? 'dark' : 'light', postHog);
         };
 
         const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');

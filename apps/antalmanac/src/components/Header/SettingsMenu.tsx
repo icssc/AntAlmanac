@@ -4,6 +4,7 @@ import { Close, DarkMode, Help, LightMode, SettingsBrightness } from '@mui/icons
 import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import { Divider, Stack, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 
 import { AboutButtonGroup } from './AboutButtonGroup';
@@ -38,10 +39,11 @@ function ThemeMenu() {
         store.setAppTheme,
     ]);
     const { forceUpdate } = useCoursePaneStore();
+    const postHog = usePostHog();
 
     const handleThemeChange = (event: React.MouseEvent<HTMLButtonElement>) => {
         forceUpdate();
-        setTheme(event.currentTarget.value as 'light' | 'dark' | 'system');
+        setTheme(event.currentTarget.value as 'light' | 'dark' | 'system', postHog);
     };
 
     return (
@@ -151,6 +153,8 @@ function ExperimentalMenu() {
     const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
     const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
 
+    const postHog = usePostHog();
+
     const handlePreviewChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPreviewMode(event.target.checked);
     };
@@ -164,7 +168,7 @@ function ExperimentalMenu() {
 
         if (!savedUserID) return;
         actionTypesStore.emit('autoSaveStart');
-        await autoSaveSchedule(savedUserID);
+        await autoSaveSchedule(savedUserID, postHog);
         appStore.unsavedChanges = false;
         actionTypesStore.emit('autoSaveEnd');
     };

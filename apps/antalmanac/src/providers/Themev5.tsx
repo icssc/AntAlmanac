@@ -1,4 +1,5 @@
 import { createTheme, CssBaseline, ThemeProvider, type PaletteOptions } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useEffect, useMemo } from 'react';
 
 import { BLUE, DODGER_BLUE } from '$src/globals';
@@ -45,10 +46,11 @@ declare module '@mui/material/styles' {
  */
 export default function AppThemev5Provider(props: Props) {
     const [appTheme, setAppTheme] = useThemeStore((store) => [store.appTheme, store.setAppTheme]);
+    const postHog = usePostHog();
 
     useEffect(() => {
         const onChange = (e: MediaQueryListEvent) => {
-            setAppTheme(e.matches ? 'dark' : 'light');
+            setAppTheme(e.matches ? 'dark' : 'light', postHog);
         };
 
         const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');

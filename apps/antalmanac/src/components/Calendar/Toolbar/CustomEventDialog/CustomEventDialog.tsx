@@ -11,6 +11,7 @@ import {
     Tooltip,
 } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useState } from 'react';
 
 import DaySelector from './DaySelector';
@@ -48,6 +49,8 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
     const [days, setDays] = useState(defaultCustomEventValues.days);
     const [building, setBuilding] = useState<string | undefined>();
 
+    const postHog = usePostHog();
+
     const resetForm = () => {
         setStart(defaultCustomEventValues.start);
         setEnd(defaultCustomEventValues.end);
@@ -62,8 +65,8 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
         handleClose();
         handleAddToCalendar();
 
-        logAnalytics({
-            category: analyticsEnum.calendar.title,
+        logAnalytics(postHog, {
+            category: analyticsEnum.calendar,
             action: analyticsEnum.calendar.actions.ADD_CUSTOM_EVENT,
         });
     };
@@ -72,8 +75,8 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
         setOpen(true);
         setScheduleIndices([AppStore.schedule.getCurrentScheduleIndex()]);
 
-        logAnalytics({
-            category: analyticsEnum.calendar.title,
+        logAnalytics(postHog, {
+            category: analyticsEnum.calendar,
             action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT,
         });
     }, []);

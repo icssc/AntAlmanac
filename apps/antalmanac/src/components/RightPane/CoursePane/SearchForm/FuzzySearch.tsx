@@ -1,6 +1,7 @@
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { AutocompleteInputChangeReason } from '@material-ui/lab/Autocomplete';
 import type { SearchResult } from '@packages/antalmanac-types';
+import { PostHog } from 'posthog-js/react';
 import { PureComponent } from 'react';
 import UAParser from 'ua-parser-js';
 
@@ -31,6 +32,7 @@ const isIpad = () => {
 interface FuzzySearchProps {
     toggleSearch: () => void;
     toggleShowLegacySearch: () => void;
+    postHog?: PostHog;
 }
 
 interface FuzzySearchState {
@@ -81,8 +83,8 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 break;
         }
         this.props.toggleSearch();
-        logAnalytics({
-            category: analyticsEnum.classSearch.title,
+        logAnalytics(this.props.postHog, {
+            category: analyticsEnum.classSearch,
             action: analyticsEnum.classSearch.actions.FUZZY_SEARCH,
         });
     };

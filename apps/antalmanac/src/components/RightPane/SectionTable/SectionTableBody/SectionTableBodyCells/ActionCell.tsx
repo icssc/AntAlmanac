@@ -2,6 +2,7 @@ import { Add, ArrowDropDown, Delete } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, Tooltip, useMediaQuery } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
+import { usePostHog } from 'posthog-js/react';
 
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
@@ -50,11 +51,13 @@ export function ColorAndDelete(props: ActionProps) {
 
     const flexDirection = isMobileScreen ? 'column' : undefined;
 
+    const postHog = usePostHog();
+
     const handleClick = () => {
         deleteCourse(section.sectionCode, term, AppStore.getCurrentScheduleIndex());
 
-        logAnalytics({
-            category: analyticsEnum.addedClasses.title,
+        logAnalytics(postHog, {
+            category: analyticsEnum.addedClasses,
             action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
         });
     };
@@ -78,7 +81,7 @@ export function ColorAndDelete(props: ActionProps) {
                 isCustomEvent={false}
                 sectionCode={section.sectionCode}
                 term={term}
-                analyticsCategory={analyticsEnum.addedClasses.title}
+                analyticsCategory={analyticsEnum.addedClasses}
             />
         </Box>
     );
@@ -101,6 +104,8 @@ export function ScheduleAddCell(props: ActionProps) {
 
     const flexDirection = isMobileScreen ? 'column' : undefined;
 
+    const postHog = usePostHog();
+
     const closeAndAddCourse = (scheduleIndex: number, specificSchedule?: boolean) => {
         popupState.close();
 
@@ -113,8 +118,8 @@ export function ScheduleAddCell(props: ActionProps) {
         }
 
         if (specificSchedule) {
-            logAnalytics({
-                category: analyticsEnum.classSearch.title,
+            logAnalytics(postHog, {
+                category: analyticsEnum.classSearch,
                 action: analyticsEnum.classSearch.actions.ADD_SPECIFIC,
             });
         }

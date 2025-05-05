@@ -7,6 +7,7 @@ import type {
 } from '@packages/antalmanac-types';
 import { TRPCError } from '@trpc/server';
 import { VariantType } from 'notistack';
+import { PostHog } from 'posthog-js/react';
 
 import { SnackbarPosition } from '$components/NotificationSnackbar';
 import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/analytics';
@@ -25,10 +26,11 @@ export const addCourse = (
     courseDetails: CourseDetails,
     term: string,
     scheduleIndex: number,
-    quiet?: boolean
+    quiet?: boolean,
+    postHog?: PostHog
 ) => {
-    logAnalytics({
-        category: analyticsEnum.classSearch.title,
+    logAnalytics(postHog, {
+        category: analyticsEnum.classSearch,
         action: analyticsEnum.classSearch.actions.ADD_COURSE,
         label: courseDetails.deptCode,
         value: courseNumAsDecimal(courseDetails.courseNumber),
@@ -85,9 +87,9 @@ function isEmptySchedule(schedules: ShortCourseSchedule[]) {
     return true;
 }
 
-export const saveSchedule = async (userID: string, rememberMe: boolean) => {
-    logAnalytics({
-        category: analyticsEnum.nav.title,
+export const saveSchedule = async (userID: string, rememberMe: boolean, postHog?: PostHog) => {
+    logAnalytics(postHog, {
+        category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
         label: userID,
         value: rememberMe ? 1 : 0,
@@ -139,9 +141,9 @@ export const saveSchedule = async (userID: string, rememberMe: boolean) => {
     }
 };
 
-export async function autoSaveSchedule(userID: string) {
-    logAnalytics({
-        category: analyticsEnum.nav.title,
+export async function autoSaveSchedule(userID: string, postHog?: PostHog) {
+    logAnalytics(postHog, {
+        category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
         label: userID,
     });
@@ -170,9 +172,9 @@ export async function autoSaveSchedule(userID: string) {
     }
 }
 
-export const loadSchedule = async (userId: string, rememberMe: boolean) => {
-    logAnalytics({
-        category: analyticsEnum.nav.title,
+export const loadSchedule = async (userId: string, rememberMe: boolean, postHog?: PostHog) => {
+    logAnalytics(postHog, {
+        category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
         label: userId,
         value: rememberMe ? 1 : 0,
@@ -255,9 +257,14 @@ export const changeCourseColor = (sectionCode: string, term: string, newColor: s
     AppStore.changeCourseColor(sectionCode, term, newColor);
 };
 
-export const copySchedule = (scheduleIndex: number, newScheduleName: string, options?: CopyScheduleOptions) => {
-    logAnalytics({
-        category: analyticsEnum.addedClasses.title,
+export const copySchedule = (
+    scheduleIndex: number,
+    newScheduleName: string,
+    options?: CopyScheduleOptions,
+    postHog?: PostHog
+) => {
+    logAnalytics(postHog, {
+        category: analyticsEnum.addedClasses,
         action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
     });
 
