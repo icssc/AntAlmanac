@@ -296,7 +296,6 @@ const LoadFunctionality = () => {
                 onClose={() => setOpenalert(false)}
                 title="This schedule seems to have already been imported!"
                 severity="warning"
-                defaultAction
             >
                 <DialogContentText>To access your schedule sign in with the Google account</DialogContentText>
                 <LoadingButton

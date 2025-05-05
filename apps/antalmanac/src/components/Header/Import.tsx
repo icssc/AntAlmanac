@@ -355,13 +355,7 @@ function Import() {
                 </DialogActions>
             </Dialog>
 
-            <AlertDialog
-                title={alertMessage}
-                open={alertDialog}
-                onClose={handleCloseAlertDialog}
-                severity="error"
-                defaultAction
-            >
+            <AlertDialog title={alertMessage} open={alertDialog} onClose={handleCloseAlertDialog} severity="error">
                 If you think this is a mistake please submit a{' '}
                 <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</Link>
             </AlertDialog>

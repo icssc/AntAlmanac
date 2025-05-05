@@ -78,7 +78,6 @@ export function Header() {
                 open={alertDialog.alertImportUser}
                 onClose={handleCloseAlertDialog}
                 severity="info"
-                defaultAction
             >
                 Note: All changes made to your schedule will be saved to your Google account
             </AlertDialog>
@@ -88,7 +87,6 @@ export function Header() {
                 open={alertDialog.alertImportUnsavedChanges}
                 onClose={handleCloseAlertDialog}
                 severity="info"
-                defaultAction
             >
                 <DialogContentText>
                     Note: all changes saved to your schedule will be saved via your Google account

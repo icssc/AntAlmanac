@@ -10,14 +10,7 @@ interface AlertDialogProps {
     defaultAction?: boolean;
     onClose?: () => void;
 }
-export const AlertDialog = ({
-    open,
-    title,
-    children,
-    severity = 'info',
-    onClose,
-    defaultAction = false,
-}: AlertDialogProps) => {
+export const AlertDialog = ({ open, title, children, severity = 'info', onClose }: AlertDialogProps) => {
     const isDark = useThemeStore((store) => store.isDark);
     return (
         <Dialog open={open} onClose={onClose}>
@@ -31,13 +24,11 @@ export const AlertDialog = ({
                 </Alert>
                 <Box paddingY="1.5rem">{children}</Box>
             </DialogContent>
-            {defaultAction && (
-                <DialogActions>
-                    <Button onClick={onClose} color="inherit">
-                        Close
-                    </Button>
-                </DialogActions>
-            )}
+            <DialogActions>
+                <Button onClick={onClose} color="inherit">
+                    Close
+                </Button>
+            </DialogActions>
         </Dialog>
     );
 };
