@@ -38,12 +38,11 @@ export function AuthPage() {
 
             const fromLoading = getLocalStorageFromLoading() ?? '';
             const savedUserId = getLocalStorageUserId() ?? '';
+            const savedData = getLocalStorageDataCache() ?? '';
             removeLocalStorageUserId();
 
             if (sessionToken && providerId) {
                 setLocalStorageSessionId(sessionToken);
-
-                const savedData = getLocalStorageDataCache() ?? '';
 
                 if (fromLoading !== '') {
                     removeLocalStorageFromLoading();

@@ -1,5 +1,5 @@
-import { AppBar, Box, Stack, DialogContentText } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { AppBar, Box, Stack } from '@mui/material';
+import { useEffect } from 'react';
 
 import Import from './Import';
 import LoadSaveScheduleFunctionalityButton from './Load';
@@ -8,7 +8,7 @@ import { Logo } from './Logo';
 import SaveFunctionality from './Save';
 import AppDrawer from './SettingsMenu';
 
-import { AlertDialog } from '$components/AlertDialog';
+import { openSnackbar } from '$actions/AppStoreActions';
 import {
     getLocalStorageDataCache,
     removeLocalStorageImportedUser,
@@ -19,28 +19,23 @@ import { BLUE } from '$src/globals';
 import { useSessionStore } from '$stores/SessionStore';
 
 export function Header() {
-    const [savedId, setSavedId] = useState('');
     const { session } = useSessionStore();
-    const [alertDialog, setAlertDialog] = useState({
-        alertImportUser: false,
-        alertImportUnsavedChanges: false,
-    });
 
-    const handleCloseAlertDialog = () => {
-        setAlertDialog((prev) => ({ ...prev, alertImportUser: false, alertImportUnsavedChanges: false }));
+    const clearStorage = () => {
         removeLocalStorageImportedUser();
         removeLocalStorageDataCache();
     };
 
     useEffect(() => {
-        const importedUser = getLocalStorageImportedUser();
-        const dataCache = getLocalStorageDataCache();
+        const importedUser = getLocalStorageImportedUser() ?? '';
+        const dataCache = getLocalStorageDataCache() ?? '';
 
-        if (importedUser && importedUser !== '') {
-            setSavedId(importedUser);
-            setAlertDialog((prev) => ({ ...prev, alertImportUser: true }));
-        } else if (dataCache && dataCache !== '' && session) {
-            setAlertDialog((prev) => ({ ...prev, alertImportUnsavedChanges: true }));
+        if (importedUser !== '' && session) {
+            openSnackbar('success', `${importedUser} has been saved to your account!`);
+            clearStorage();
+        } else if (dataCache !== '' && session) {
+            openSnackbar('success', 'All changes have been saved to your account!');
+            clearStorage();
         }
     }, [session]);
     return (
@@ -72,26 +67,6 @@ export function Header() {
                     <AppDrawer key="settings" />
                 </Stack>
             </Box>
-
-            <AlertDialog
-                title={`Schedule "${savedId}" has been saved to your account!`}
-                open={alertDialog.alertImportUser}
-                onClose={handleCloseAlertDialog}
-                severity="info"
-            >
-                Note: All changes made to your schedule will be saved to your Google account
-            </AlertDialog>
-
-            <AlertDialog
-                title={`You have saved recent changes to your schedules!`}
-                open={alertDialog.alertImportUnsavedChanges}
-                onClose={handleCloseAlertDialog}
-                severity="info"
-            >
-                <DialogContentText>
-                    Note: all changes saved to your schedule will be saved via your Google account
-                </DialogContentText>
-            </AlertDialog>
         </AppBar>
     );
 }
