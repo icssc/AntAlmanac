@@ -9,7 +9,7 @@ import { TRPCError } from '@trpc/server';
 import { VariantType } from 'notistack';
 
 import { SnackbarPosition } from '$components/NotificationSnackbar';
-import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics';
+import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { removeLocalStorageUserId, setLocalStorageUserId } from '$lib/localStorage';

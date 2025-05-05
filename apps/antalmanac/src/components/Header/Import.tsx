@@ -18,11 +18,10 @@ import { PostAdd } from '@material-ui/icons';
 import { CourseInfo } from '@packages/antalmanac-types';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
-import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
-import RightPaneStore from '../RightPane/RightPaneStore';
-
 import { addCustomEvent, openSnackbar, addCourse } from '$actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import { WebSOC } from '$lib/websoc';
@@ -30,9 +29,8 @@ import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
-function Import() {
+export function Import() {
     const [open, setOpen] = useState(false);
-    const [term, setTerm] = useState(RightPaneStore.getFormData().term);
     const [importSource, setImportSource] = useState('studylist');
     const [studyListText, setStudyListText] = useState('');
     const [zotcourseScheduleName, setZotcourseScheduleName] = useState('');
@@ -84,9 +82,11 @@ function Import() {
         }
 
         try {
+            const term = RightPaneStore.getFormData().term;
+
             const sectionsAdded = addCoursesMultiple(
                 await WebSOC.getCourseInfo({
-                    term: term,
+                    term,
                     sectionCodes: sectionCodes.join(','),
                 }),
                 term,
@@ -242,7 +242,7 @@ function Import() {
                     )}
 
                     <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
-                    <TermSelector changeTerm={setTerm} fieldName={'selectedTerm'} />
+                    <TermSelector />
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>
@@ -256,5 +256,3 @@ function Import() {
         </>
     );
 }
-
-export default Import;

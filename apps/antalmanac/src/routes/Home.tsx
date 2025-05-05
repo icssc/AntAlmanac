@@ -6,11 +6,11 @@ import Split from 'react-split';
 
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { Header } from '$components/Header/Header';
+import { HelpMenu } from '$components/HelpMenu/HelpMenu';
 import InstallPWABanner from '$components/InstallPWABanner';
 import NotificationSnackbar from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
-import { Tutorial } from '$components/Tutorial';
 import { BLUE } from '$src/globals';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
@@ -80,8 +80,6 @@ function DesktopHome() {
                     </Stack>
                 </Split>
             </Stack>
-
-            <Tutorial />
         </>
     );
 }
@@ -99,6 +97,7 @@ export default function Home() {
             {isMobileScreen ? <MobileHome /> : <DesktopHome />}
 
             <NotificationSnackbar />
+            <HelpMenu />
         </MuiPickersUtilsProvider>
     );
 }
