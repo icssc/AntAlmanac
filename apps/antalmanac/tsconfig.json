@@ -7,13 +7,15 @@
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "strict": true,
+        "incremental": true,
         "forceConsistentCasingInFileNames": true,
         "module": "esnext",
         "moduleResolution": "node",
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
-        "jsx": "react-jsx",
+        "jsx": "preserve",
+        "plugins": [{ "name": "next" }],
         "baseUrl": ".",
         "paths": {
             "$assets/*": ["src/assets/*"],
@@ -28,5 +30,7 @@
             "$stores/*": ["src/stores/*"],
             "$src/*": ["src/*"]
         }
-    }
+    },
+    "include": ["./src", "./dist/types/**/*.ts", "./next-env.d.ts"],
+    "exclude": ["./node_modules"]
 }
