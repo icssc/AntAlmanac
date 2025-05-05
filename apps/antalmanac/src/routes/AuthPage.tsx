@@ -6,6 +6,7 @@ import { LoadingScreen } from '$components/LoadingScreen';
 import trpc from '$lib/api/trpc';
 import {
     getLocalStorageDataCache,
+    getLocalStorageFromLoading,
     setLocalStorageImportedUser,
     getLocalStorageUserId,
     removeLocalStorageUserId,
@@ -35,6 +36,7 @@ export function AuthPage() {
                 token: session ?? '',
             });
 
+            const fromLoading = getLocalStorageFromLoading() ?? '';
             const savedUserId = getLocalStorageUserId() ?? '';
             removeLocalStorageUserId();
 
@@ -43,36 +45,41 @@ export function AuthPage() {
 
                 const savedData = getLocalStorageDataCache() ?? '';
 
-                if (savedUserId === '' && savedData === '') {
+                if (fromLoading !== '') {
+                    removeLocalStorageFromLoading();
                     removeLocalStorageDataCache();
                     removeLocalStorageImportedUser();
                 } else {
-                    const userData = await trpc.userData.getUserData.query({ userId: userId });
-                    const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+                    if (savedUserId === '' && savedData === '') {
+                        removeLocalStorageDataCache();
+                        removeLocalStorageImportedUser();
+                    } else {
+                        const userData = await trpc.userData.getUserData.query({ userId: userId });
+                        const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
-                    if (savedData !== '') {
-                        if (savedUserId !== '') {
-                            await trpc.userData.flagImportedSchedule.mutate({ providerId: savedUserId });
-                            setLocalStorageImportedUser(savedUserId);
-                        }
-                        const data = JSON.parse(savedData);
-                        if (isEmptySchedule(userData.userData.schedules)) {
-                            scheduleSaveState.schedules = data;
-                        } else {
-                            const saveState = userData && 'userData' in userData ? userData.userData : userData;
-                            mergeShortCourseSchedules(saveState.schedules, data);
-                            scheduleSaveState.schedules = saveState.schedules;
-                        }
-                        await trpc.userData.saveUserData.mutate({
-                            id: providerId,
-                            data: {
+                        if (savedData !== '') {
+                            if (savedUserId !== '') {
+                                await trpc.userData.flagImportedSchedule.mutate({ providerId: savedUserId });
+                                setLocalStorageImportedUser(savedUserId);
+                            }
+                            const data = JSON.parse(savedData);
+                            if (isEmptySchedule(userData.userData.schedules)) {
+                                scheduleSaveState.schedules = data;
+                            } else {
+                                const saveState = userData && 'userData' in userData ? userData.userData : userData;
+                                mergeShortCourseSchedules(saveState.schedules, data);
+                                scheduleSaveState.schedules = saveState.schedules;
+                            }
+                            await trpc.userData.saveUserData.mutate({
                                 id: providerId,
-                                userData: scheduleSaveState,
-                            },
-                        });
+                                data: {
+                                    id: providerId,
+                                    userData: scheduleSaveState,
+                                },
+                            });
+                        }
                     }
                 }
-                removeLocalStorageFromLoading();
                 // navigate('/');
                 window.location.href = '/';
             }
