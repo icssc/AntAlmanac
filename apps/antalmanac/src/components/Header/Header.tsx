@@ -1,10 +1,10 @@
 import { AppBar, Box } from '@mui/material';
 
-import Import from './Import';
 import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
 import { Logo } from './Logo';
 import AppDrawer from './SettingsMenu';
 
+import { Import } from '$components/Header/Import';
 import { BLUE } from '$src/globals';
 
 export function Header() {

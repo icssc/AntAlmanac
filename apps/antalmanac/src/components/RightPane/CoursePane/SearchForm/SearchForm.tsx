@@ -8,10 +8,10 @@ import RightPaneStore from '../../RightPaneStore';
 
 import FuzzySearch from './FuzzySearch';
 import PrivacyPolicyBanner from './PrivacyPolicyBanner';
-import TermSelector from './TermSelector';
 
 import { HelpBox } from '$components/RightPane/CoursePane/SearchForm/HelpBox';
 import { LegacySearch } from '$components/RightPane/CoursePane/SearchForm/LegacySearch';
+import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
@@ -63,10 +63,7 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
             <form onSubmit={onFormSubmit} className={classes.form}>
                 <div className={classes.container}>
                     <div className={classes.margin}>
-                        <TermSelector
-                            changeTerm={(field: string, value: string) => RightPaneStore.updateFormValue(field, value)}
-                            fieldName={'term'}
-                        />
+                        <TermSelector />
                         <Tooltip title="Toggle Manual Search">
                             <IconButton onClick={toggleManualSearch}>
                                 <Tune />
