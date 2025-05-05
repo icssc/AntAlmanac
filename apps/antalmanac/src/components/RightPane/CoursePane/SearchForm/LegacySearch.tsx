@@ -3,7 +3,7 @@ import { Box, Button } from '@mui/material';
 import AdvancedSearch from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearch';
 import CourseNumberSearchBar from '$components/RightPane/CoursePane/SearchForm/CourseNumberSearchBar';
 import { DepartmentSearchBar } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/DepartmentSearchBar';
-import GESelector from '$components/RightPane/CoursePane/SearchForm/GESelector';
+import { GeSelector } from '$components/RightPane/CoursePane/SearchForm/GeSelector';
 import SectionCodeSearchBar from '$components/RightPane/CoursePane/SearchForm/SectionCodeSearchBar';
 
 interface LegacySearchProps {
@@ -20,7 +20,7 @@ export function LegacySearch({ onSubmit, onReset }: LegacySearchProps) {
                     <CourseNumberSearchBar />
                 </Box>
                 <Box sx={{ display: 'flex', width: '100%', gap: 2 }}>
-                    <GESelector />
+                    <GeSelector />
                     <SectionCodeSearchBar />
                 </Box>
             </Box>
