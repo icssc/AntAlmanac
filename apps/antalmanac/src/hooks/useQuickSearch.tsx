@@ -1,9 +1,7 @@
-import { ScheduleCourse } from '@packages/antalmanac-types';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import AppStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useTabStore } from '$stores/TabStore';
 
@@ -13,29 +11,12 @@ export function useQuickSearch() {
     const navigate = useNavigate();
 
     return useCallback(
-        (deptValue: string, courseNumber: string, termValue: string, sectionCode = '') => {
+        (deptValue: string, courseNumber: string, termValue: string) => {
             const queryParams = {
                 term: termValue,
                 deptValue: deptValue,
                 courseNumber: courseNumber,
             };
-
-            if ((!termValue || !deptValue || !courseNumber) && sectionCode.length > 0) {
-                const course = (AppStore.getAddedCourses() as ScheduleCourse[]).find(
-                    (course) =>
-                        ('sectionCode' in course && course.sectionCode === sectionCode) ||
-                        ('section' in course && course.section.sectionCode === sectionCode)
-                );
-
-                if (!course) {
-                    console.warn(`Course with section code ${sectionCode} not found.`);
-                    return;
-                }
-                termValue = course.term;
-                deptValue = course.deptCode;
-                courseNumber = course.courseNumber;
-            }
-
             const href = `/?${Object.entries(queryParams)
                 .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
                 .join('&')}`;
