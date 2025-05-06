@@ -40,9 +40,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const [open, setOpen] = useState(false);
-    const [scheduleIndices, setScheduleIndices] = useState<number[]>(() =>
-        AppStore.schedule.getIndexesOfCustomEvent(props.customEvent?.customEventID ?? -1)
-    );
+    const [scheduleIndices, setScheduleIndices] = useState<number[]>([]);
     const [start, setStart] = useState(props.customEvent?.start ?? defaultCustomEventValues.start);
     const [end, setEnd] = useState(props.customEvent?.end ?? defaultCustomEventValues.end);
     const [title, setTitle] = useState(props.customEvent?.title ?? defaultCustomEventValues.title);
@@ -74,13 +72,13 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
 
     const handleOpen = useCallback(() => {
         setOpen(true);
-        setScheduleIndices([AppStore.schedule.getCurrentScheduleIndex()]);
+        setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(props.customEvent?.customEventID ?? -1));
 
         logAnalytics({
             category: analyticsEnum.calendar.title,
             action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT,
         });
-    }, []);
+    }, [props.customEvent?.customEventID]);
 
     const handleClose = useCallback(() => {
         setOpen(false);
