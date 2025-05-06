@@ -165,7 +165,14 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                 </DialogTitle>
                 <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <FormControl fullWidth>
-                        <TextField label="Event Name" fullWidth value={title} onChange={handleEventNameChange} />
+                        <TextField
+                            label="Event Name"
+                            fullWidth
+                            value={title}
+                            onChange={handleEventNameChange}
+                            variant="outlined"
+                            InputLabelProps={{ variant: 'outlined' }}
+                        />
                     </FormControl>
                     <FormControl fullWidth sx={{ display: 'flex', flexDirection: 'row', gap: '12px' }}>
                         <TextField
@@ -174,6 +181,8 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             type="time"
                             defaultValue={start}
                             fullWidth
+                            variant="outlined"
+                            InputLabelProps={{ variant: 'outlined' }}
                         />
                         <TextField
                             onChange={handleEndTimeChange}
@@ -181,10 +190,12 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             type="time"
                             defaultValue={end}
                             fullWidth
+                            variant="outlined"
+                            InputLabelProps={{ variant: 'outlined' }}
                         />
                     </FormControl>
                     <DaySelector onSelectDay={handleDayChange} days={days} />
-                    <BuildingSelect value={building} onChange={handleBuildingChange} />
+                    <BuildingSelect value={building} onChange={handleBuildingChange} variant="outlined" />
                     <ScheduleSelector
                         scheduleIndices={scheduleIndices}
                         onSelectScheduleIndices={handleSelectScheduleIndices}

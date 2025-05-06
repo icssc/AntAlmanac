@@ -18,9 +18,15 @@ export function ScheduleSelector({ scheduleIndices, onSelectScheduleIndices, sch
     };
 
     return (
-        <FormControl style={{ maxWidth: 400 }} fullWidth variant="outlined">
-            <InputLabel>Select schedules</InputLabel>
-            <Select size="small" multiple value={scheduleIndices} onChange={handleChange}>
+        <FormControl style={{ maxWidth: 400 }} fullWidth>
+            <InputLabel variant="outlined">Select schedules</InputLabel>
+            <Select
+                variant="outlined"
+                label="Select schedules"
+                multiple
+                value={scheduleIndices}
+                onChange={handleChange}
+            >
                 {scheduleNames.map((name: string, index: number) => {
                     return (
                         <MenuItem key={index} value={index}>
