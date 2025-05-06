@@ -1,4 +1,4 @@
-import { Help } from '@material-ui/icons';
+import { Help } from '@mui/icons-material';
 import { Box, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 interface EnrollmentColumnHeaderProps {

@@ -136,6 +136,7 @@ const ScheduleNameDialog = forwardRef((props: ScheduleNameDialogProps, ref) => {
                         // eslint-disable-next-line jsx-a11y/no-autofocus
                         autoFocus
                         fullWidth
+                        required
                         className={classes.textField}
                         label="Name"
                         placeholder={`Schedule ${scheduleNames.length + 1}`}

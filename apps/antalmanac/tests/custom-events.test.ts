@@ -1,5 +1,5 @@
+import { type RepeatingCustomEvent, RepeatingCustomEventSchema } from '@packages/antalmanac-types';
 import { describe, test, expect } from 'vitest';
-import { RepeatingCustomEvent, RepeatingCustomEventSchema } from '@packages/antalmanac-types';
 
 describe('Custom Events', () => {
     const customEvent: RepeatingCustomEvent = {

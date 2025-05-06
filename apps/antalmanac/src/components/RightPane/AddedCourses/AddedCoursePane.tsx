@@ -195,6 +195,9 @@ function ScheduleNoteBox() {
                     maxLength: NOTE_MAX_LEN,
                     style: { cursor: skeletonMode ? 'not-allowed' : 'text' },
                 }}
+                InputLabelProps={{
+                    variant: 'filled',
+                }}
                 InputProps={{ disableUnderline: true }}
                 fullWidth
                 multiline

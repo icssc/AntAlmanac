@@ -1,4 +1,4 @@
-import { TableBody } from '@material-ui/core';
+import { TableBody } from '@mui/material';
 import { AACourse, AASection } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 

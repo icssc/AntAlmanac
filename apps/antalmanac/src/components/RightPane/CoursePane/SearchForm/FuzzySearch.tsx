@@ -187,7 +187,6 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                         {...params}
                         // eslint-disable-next-line jsx-a11y/no-autofocus
                         autoFocus={!isMobile()}
-                        focused
                         fullWidth
                         label={'Search'}
                         placeholder="Search for courses, departments, GEs..."

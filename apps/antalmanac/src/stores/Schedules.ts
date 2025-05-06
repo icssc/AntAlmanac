@@ -339,6 +339,8 @@ export class Schedules {
      */
     getIndexesOfCustomEvent(customEventId: number) {
         const indices: number[] = [];
+        console.log(this.schedules);
+
         for (const scheduleIndex of this.schedules.keys()) {
             if (this.doesCustomEventExistInSchedule(customEventId, scheduleIndex)) {
                 indices.push(scheduleIndex);
@@ -425,7 +427,7 @@ export class Schedules {
      * Checks if a schedule contains the custom event ID
      */
     doesCustomEventExistInSchedule(customEventId: number, scheduleIndex: number) {
-        for (const customEvent of this.schedules[scheduleIndex].customEvents) {
+        for (const customEvent of this.schedules.at(scheduleIndex)?.customEvents ?? []) {
             if (customEvent.customEventID === customEventId) {
                 return true;
             }
