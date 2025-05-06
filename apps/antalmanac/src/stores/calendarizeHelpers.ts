@@ -152,6 +152,8 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                     showLocationInfo: true,
                     instructors: course.section.instructors,
                     sectionCode: course.section.sectionCode,
+                    deptValue: course.deptCode,
+                    courseNumber: course.courseNumber,
                     sectionType: 'Fin',
                     start: startDate,
                     end: endDate,
