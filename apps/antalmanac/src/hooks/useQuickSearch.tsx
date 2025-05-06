@@ -17,6 +17,7 @@ export function useQuickSearch() {
                 deptValue: deptValue,
                 courseNumber: courseNumber,
             };
+
             const href = `/?${Object.entries(queryParams)
                 .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
                 .join('&')}`;
