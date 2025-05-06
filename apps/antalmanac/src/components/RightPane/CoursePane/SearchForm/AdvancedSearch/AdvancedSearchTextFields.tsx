@@ -60,7 +60,7 @@ export function AdvancedSearchTextFields() {
             const urlParam = new URLSearchParams(url.search);
 
             if (name === 'online') {
-                const checked = (event as { target: { checked: boolean } }).target.checked;
+                const checked = (event as { target: { checked: boolean } }).target.checked; // FIX ME: This is a hack and very bad typing
                 if (checked) {
                     setBuilding('ON');
                     setRoom('LINE');
