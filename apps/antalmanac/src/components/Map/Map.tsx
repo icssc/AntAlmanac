@@ -14,7 +14,7 @@ import ClassRoutes from './Routes';
 import UserLocator from './UserLocator';
 
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
+import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import { TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
 import locationIds from '$lib/locations/locations';
@@ -313,7 +313,7 @@ export default function CourseMap() {
                             <Tab key={day} label={day} sx={{ padding: 1, minHeight: 'auto', minWidth: '10%' }} />
                         ))}
                     </Tabs>
-                    <BuildingSelect onChange={onBuildingChange} variant="filled" />
+                    <BuildingSelect onChange={onBuildingChange} />
                 </Paper>
 
                 <TileLayer

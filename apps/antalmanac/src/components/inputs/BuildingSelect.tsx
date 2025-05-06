@@ -21,7 +21,6 @@ const buildings: ExtendedBuilding[] = Object.entries(buildingCatalogue)
 export type BuildingSelectProps = {
     value?: string;
     onChange?: (building?: ExtendedBuilding | null) => unknown;
-    variant?: 'standard' | 'filled' | 'outlined' | undefined;
 };
 
 export function BuildingSelect(props: BuildingSelectProps) {
@@ -54,7 +53,7 @@ export function BuildingSelect(props: BuildingSelectProps) {
             isOptionEqualToValue={(option, value) => option.id === value?.id}
             getOptionLabel={(option) => option.name ?? ''}
             onChange={handleChange}
-            renderInput={(params) => <TextField {...params} label="Search for a place" variant={props.variant} />}
+            renderInput={(params) => <TextField {...params} label="Search for a place" />}
         />
     );
 }

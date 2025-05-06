@@ -1,24 +1,20 @@
 import { Button, Box } from '@mui/material';
-import { useEffect, useState } from 'react';
 
-const normal_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as const;
 
 interface DaySelectorProps {
     days?: boolean[];
     onSelectDay: (days: boolean[]) => void;
 }
 
-const DaySelector = ({ days = [false, false, false, false, false, false, false], onSelectDay }: DaySelectorProps) => {
-    const [selectedDays, setSelectedDays] = useState(days);
-
-    useEffect(() => {
-        onSelectDay(selectedDays);
-    }, [onSelectDay, selectedDays]);
-
+export function DaySelector({
+    days = [false, false, false, false, false, false, false],
+    onSelectDay,
+}: DaySelectorProps) {
     const handleChange = (dayIndex: number) => {
-        const newSelectedDays = [...selectedDays];
-        newSelectedDays[dayIndex] = !selectedDays[dayIndex];
-        setSelectedDays(newSelectedDays);
+        const newDays = [...days];
+        newDays[dayIndex] = !newDays[dayIndex];
+        onSelectDay(newDays);
     };
 
     return (
@@ -30,25 +26,24 @@ const DaySelector = ({ days = [false, false, false, false, false, false, false],
             }}
             style={{ gap: '12px' }}
         >
-            {normal_days.map((day, index) => (
+            {DAYS.map((day, index) => (
                 <Button
                     key={index}
-                    variant={selectedDays[index] ? 'contained' : 'outlined'}
+                    variant={days.at(index) ? 'contained' : 'outlined'}
                     size="small"
+                    color="secondary"
                     fullWidth
                     onClick={() => handleChange(index)}
-                    style={{
+                    sx={{
                         display: 'block',
                         aspectRatio: 1 / 1,
                         minWidth: 20,
                         minHeight: 40,
                     }}
                 >
-                    {day[0]}
+                    {day.at(0)}
                 </Button>
             ))}
         </Box>
     );
-};
-
-export default DaySelector;
+}

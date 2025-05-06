@@ -7,9 +7,9 @@ import {
     Select,
     Switch,
     FormControlLabel,
-    SelectChangeEvent,
+    type SelectChangeEvent,
 } from '@mui/material';
-import { useState, useEffect, useCallback, ChangeEvent } from 'react';
+import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 
 import {
     EXCLUDE_RESTRICTION_CODES_OPTIONS,
@@ -18,18 +18,18 @@ import {
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 export function AdvancedSearchTextFields() {
-    const [instructor, setInstructor] = useState(RightPaneStore.getFormData().instructor);
-    const [units, setUnits] = useState(RightPaneStore.getFormData().units);
-    const [endTime, setEndTime] = useState(RightPaneStore.getFormData().endTime);
-    const [startTime, setStartTime] = useState(RightPaneStore.getFormData().startTime);
-    const [coursesFull, setCoursesFull] = useState(RightPaneStore.getFormData().coursesFull);
-    const [building, setBuilding] = useState(RightPaneStore.getFormData().building);
-    const [room, setRoom] = useState(RightPaneStore.getFormData().room);
-    const [division, setDivision] = useState(RightPaneStore.getFormData().division);
+    const [instructor, setInstructor] = useState(() => RightPaneStore.getFormData().instructor);
+    const [units, setUnits] = useState(() => RightPaneStore.getFormData().units);
+    const [endTime, setEndTime] = useState(() => RightPaneStore.getFormData().endTime);
+    const [startTime, setStartTime] = useState(() => RightPaneStore.getFormData().startTime);
+    const [coursesFull, setCoursesFull] = useState(() => RightPaneStore.getFormData().coursesFull);
+    const [building, setBuilding] = useState(() => RightPaneStore.getFormData().building);
+    const [room, setRoom] = useState(() => RightPaneStore.getFormData().room);
+    const [division, setDivision] = useState(() => RightPaneStore.getFormData().division);
     const [excludeRestrictionCodes, setExcludeRestrictionCodes] = useState(
-        RightPaneStore.getFormData().excludeRestrictionCodes
+        () => RightPaneStore.getFormData().excludeRestrictionCodes
     );
-    const [days, setDays] = useState(RightPaneStore.getFormData().days);
+    const [days, setDays] = useState(() => RightPaneStore.getFormData().days);
 
     const resetField = useCallback(() => {
         const formData = RightPaneStore.getFormData();
@@ -54,12 +54,7 @@ export function AdvancedSearchTextFields() {
 
     const handleChange =
         (name: string) =>
-        (
-            event:
-                | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-                | SelectChangeEvent<string | string[]>
-                | { target: { checked: boolean } }
-        ) => {
+        (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string | string[]>) => {
             const stateObj = { url: 'url' };
             const url = new URL(window.location.href);
             const urlParam = new URLSearchParams(url.search);
@@ -84,9 +79,7 @@ export function AdvancedSearchTextFields() {
                 return;
             }
 
-            const value = (
-                event as SelectChangeEvent<string | string[]> | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-            ).target.value;
+            const value = event.target.value;
             const stringValue = Array.isArray(value) ? value.join('') : value;
 
             switch (name) {
