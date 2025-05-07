@@ -17,7 +17,7 @@ export const AlertDialog = ({ open, title, children, severity = 'info', onClose 
             <DialogContent sx={{ fontSize: 'small' }}>
                 <Alert
                     severity={severity}
-                    variant={isDark ? 'outlined' : 'filled'}
+                    variant={isDark ? 'outlined' : 'standard'}
                     sx={{ alignItems: 'center', justifyContent: 'center', fontSize: 'medium' }}
                 >
                     {title}
