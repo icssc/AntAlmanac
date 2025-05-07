@@ -5,6 +5,7 @@ import * as fuzzysort from "fuzzysort";
 import { procedure, router } from '../trpc';
 import {courses, departments} from "../generated/searchData";
 import { backendEnvSchema } from 'src/env';
+import { termData } from "../../../antalmanac/src/lib/termData";
 
 const geCategoryKeys = ['ge1a', 'ge1b', 'ge2', 'ge3', 'ge4', 'ge5a', 'ge5b', 'ge6', 'ge7', 'ge8'] as const;
 
@@ -33,6 +34,7 @@ const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
 const toMutable = <T>(arr: readonly T[]): T[] => arr as T[];
 
 async function fetchUserCoursesPeterPortal(userId: string): Promise<Set<string>> {
+    const currentTerm = termData[0];
     const env = backendEnvSchema.parse(process.env);
     const apiKey = env.PETERPORTAL_CLIENT_API_KEY;
     if (!apiKey) throw new Error("PETERPORTAL_CLIENT_API_KEY is required");
@@ -51,11 +53,24 @@ async function fetchUserCoursesPeterPortal(userId: string): Promise<Set<string>>
         
         const data = await response.json();
         const coursesTaken = new Set<string>();
+
+        function parseCurrentTerm(term: string): [number, string] {
+            const [yearStr, ...quarterParts] = term.split(" ");
+            const year = parseInt(yearStr, 10);
+            const quarter = quarterParts.join(" ");
+            return [year, quarter];
+        }
+        
+        const validQuarters = new Set(["Fall", "Winter", "Spring"]);
+        const [currentYear, quarter] = parseCurrentTerm(currentTerm.shortName);
+        const currentQuarter = validQuarters.has(quarter) ? quarter : "Spring";
     
-        for (const roadmap of data.result.data) {
-            for (const year of roadmap.content) {
-                for (const quarter of year.quarters) {
-                    quarter.courses.forEach(course => coursesTaken.add(course));
+        for (const year of data.result.data[0].content) {
+            for (const quarter of year.quarters) {
+                quarter.courses.forEach(course => coursesTaken.add(course));
+                if (year.startYear === currentYear && quarter.name === currentQuarter) {
+                    console.log(coursesTaken);
+                    return coursesTaken;
                 }
             }
         }
