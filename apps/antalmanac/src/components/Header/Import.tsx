@@ -62,11 +62,11 @@ function Import() {
 
     const handleOpen = useCallback(() => {
         setOpenImportDialog(true);
-    }, []);
+    }, [setOpenImportDialog]);
 
     const handleClose = useCallback(() => {
         setOpenImportDialog(false);
-    }, []);
+    }, [setOpenImportDialog]);
 
     const handleSubmit = async () => {
         const currentSchedule = AppStore.getCurrentScheduleIndex();
@@ -100,10 +100,7 @@ function Import() {
                 uploadSectionCodes(sectionCodes, term, currentSchedule);
                 break;
             case ImportSource.AA_USERNAME_IMPORT: {
-                const importStatus = await importScheduleWithUsername(
-                    aaUsername,
-                    firstTimeUserFlag.current ? '' : '-(IMPORT)'
-                );
+                const importStatus = await importScheduleWithUsername(aaUsername);
                 if (importStatus instanceof Error) {
                     setAlertDialog(true);
                     setAlertMessage(typeof importStatus === 'string' ? importStatus : importStatus.message);
@@ -267,11 +264,11 @@ function Import() {
                                 control={<Radio color="primary" />}
                                 label="From Zotcourse"
                             />
-                            <Tooltip title="Import from your AntAlamanc schedule(s)" placement="right">
+                            <Tooltip title="Import from your unique user ID" placement="right">
                                 <FormControlLabel
                                     value={ImportSource.AA_USERNAME_IMPORT}
                                     control={<Radio color="primary" />}
-                                    label="From AntAlmanac schedule name"
+                                    label="From AntAlmanac unique user ID"
                                     disabled={!sessionIsValid}
                                 />
                             </Tooltip>
@@ -320,14 +317,19 @@ function Import() {
                         </Box>
                     )}
                     {importSource === ImportSource.AA_USERNAME_IMPORT && (
-                        <Box>
+                        <Box
+                            component="form"
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                handleSubmit();
+                            }}
+                        >
                             <DialogContentText>
-                                Paste your AntAlmanac schedule name below to import it into AntAlmanac.
+                                Paste your unique user ID here to import your schedule(s).
                             </DialogContentText>
                             <InputLabel style={{ fontSize: '9px' }}>AntAlmanac Schedule Name</InputLabel>
                             <TextField
                                 fullWidth
-                                multiline
                                 margin="dense"
                                 type="text"
                                 placeholder="Paste here"
