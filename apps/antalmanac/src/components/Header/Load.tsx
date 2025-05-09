@@ -11,7 +11,7 @@ import {
 import { CloudDownload, Save } from '@material-ui/icons';
 import GoogleIcon from '@mui/icons-material/Google';
 import { LoadingButton } from '@mui/lab';
-import { Divider } from '@mui/material';
+import { Divider, Stack } from '@mui/material';
 import { ChangeEvent, PureComponent, useEffect, useState, useCallback } from 'react';
 
 import { loadSchedule, saveSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
@@ -124,43 +124,34 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                 <Dialog open={this.state.isOpen} onClose={this.handleClose}>
                     <DialogTitle>{this.props.actionName}</DialogTitle>
                     <DialogContent>
-                        <LoadingButton
-                            onClick={this.props.actionSecondary}
-                            color="primary"
-                            variant="contained"
-                            startIcon={<GoogleIcon />}
-                            fullWidth
-                        >
-                            Sign in with Google
-                        </LoadingButton>
-                        <Divider sx={{ my: '1rem', width: '35rem', maxWidth: '100%' }}>or</Divider>
-                        <DialogContentText>
-                            Enter your unique user ID here to {this.props.actionName.toLowerCase()} your schedule.
-                        </DialogContentText>
-                        {/* <DialogContentText style={{ color: 'red' }}>
-                            Make sure the user ID is unique and secret, or someone else can overwrite your schedule.
-                        </DialogContentText> */}
-                        <TextField
-                            // eslint-disable-next-line jsx-a11y/no-autofocus
-                            autoFocus
-                            margin="dense"
-                            label="Unique User ID"
-                            type="text"
-                            fullWidth
-                            placeholder="Enter here"
-                            value={this.state.userID}
-                            onChange={(event) => this.setState({ userID: event.target.value })}
-                        />
-                        {/* <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={this.state.rememberMe}
-                                    onChange={this.handleToggleRememberMe}
-                                    color="primary"
-                                />
-                            }
-                            label="Remember Me (Uncheck on shared computers)"
-                        /> */}
+                        <Stack spacing={1}>
+                            <LoadingButton
+                                onClick={this.props.actionSecondary}
+                                color="primary"
+                                variant="contained"
+                                startIcon={<GoogleIcon />}
+                                size="large"
+                                fullWidth
+                            >
+                                Sign in with Google
+                            </LoadingButton>
+                            <Divider sx={{ width: '35rem', maxWidth: '100%' }}>or</Divider>
+                            <DialogContentText>
+                                Enter your unique user ID here to {this.props.actionName.toLowerCase()} your schedule.
+                            </DialogContentText>
+
+                            <TextField
+                                // eslint-disable-next-line jsx-a11y/no-autofocus
+                                autoFocus
+                                margin="dense"
+                                label="Unique User ID"
+                                type="text"
+                                fullWidth
+                                placeholder="Enter here"
+                                value={this.state.userID}
+                                onChange={(event) => this.setState({ userID: event.target.value })}
+                            />
+                        </Stack>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => this.handleClose(true)} color={this.props.colorType}>
@@ -189,9 +180,7 @@ const LoadFunctionality = () => {
     const validateImportedUser = async (userID: string) => {
         try {
             const res = await trpc.userData.getGuestAccountAndUserByName
-                .query({
-                    name: userID,
-                })
+                .query({ name: userID })
                 .then((res) => res.users.imported);
             if (res) {
                 setOpenalert(true);
@@ -202,53 +191,36 @@ const LoadFunctionality = () => {
             return false;
         }
     };
-    const loadScheduleAndSetLoading = useCallback(async (userID: string, rememberMe: boolean) => {
-        setOpenLoadingSchedule(true);
-        if (!(await validateImportedUser(userID))) {
-            await loadSchedule(userID, rememberMe, 'GUEST');
-        }
-        setOpenLoadingSchedule(false);
-    }, []);
+    const loadScheduleAndSetLoading = useCallback(
+        async (userID: string, rememberMe: boolean) => {
+            setOpenLoadingSchedule(true);
+            if (!(await validateImportedUser(userID))) {
+                await loadSchedule(userID, rememberMe, 'GUEST');
+            }
+            setOpenLoadingSchedule(false);
+        },
+        [setOpenLoadingSchedule]
+    );
 
     const loadScheduleAndSetLoadingAuth = useCallback(
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
-            const sessionToken: string = getLocalStorageSessionId() ?? '';
-            if (sessionToken.length > 0 && (await loadScheduleWithSessionToken())) {
-                // const account = await trpc.userData.getUserAndAccountBySessionToken
-                //     .query({ token: sessionToken })
-                //     .then((res) => res.accounts);
-                // pass in both userId and providerAccountId so the backend does not have to make a redundant request for the userId
-                // await loadSchedule(account.providerAccountId, rememberMe, 'GOOGLE', account.userId);
+
+            const sessionToken = getLocalStorageSessionId() || '';
+            const hasSessionToken = sessionToken.length > 0;
+
+            if (hasSessionToken && (await loadScheduleWithSessionToken())) {
                 updateSession(sessionToken);
             } else if (sessionToken === '' && userID && userID !== '') {
                 if (!(await validateImportedUser(userID))) {
                     await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
                 }
             }
+
             setOpenLoadingSchedule(false);
         },
-        [updateSession]
+        [setOpenLoadingSchedule, updateSession]
     );
-
-    //     const cacheSchedule = () => {
-    //         const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState().schedules;
-    //         if (!isEmptySchedule(scheduleSaveState)) {
-    //             setLocalStorageDataCache(JSON.stringify(scheduleSaveState));
-    //         }
-    //     };
-    //
-    //     const handleLogin = async () => {
-    //         try {
-    //             const authUrl = await trpc.userData.getGoogleAuthUrl.query();
-    //             if (authUrl) {
-    //                 cacheSchedule();
-    //                 window.location.href = authUrl;
-    //             }
-    //         } catch (error) {
-    //             console.error('Error during login initiation', error);
-    //         }
-    //     };
 
     useEffect(() => {
         const handleSkeletonModeChange = () => {
@@ -304,6 +276,7 @@ const LoadFunctionality = () => {
                     startIcon={<GoogleIcon />}
                     fullWidth
                     onClick={loginUser}
+                    size="large"
                 >
                     Sign in with Google
                 </LoadingButton>

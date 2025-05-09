@@ -172,32 +172,7 @@ export async function autoSaveSchedule(providerID: string) {
     }
 }
 
-/**
- * Combines the incoming schedule with the existing schedules.
- * If there are any duplicate schedule names, the incoming schedule will be renamed.
- * @param currentSchedules
- * @param incomingSchedule
- */
-export const mergeShortCourseSchedules = (
-    currentSchedules: ShortCourseSchedule[],
-    incomingSchedule: ShortCourseSchedule[],
-    importMessage = ''
-) => {
-    const existingScheduleNames = new Set(currentSchedules.map((s: ShortCourseSchedule) => s.scheduleName));
-    const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
-        let scheduleName = schedule.scheduleName;
-        if (existingScheduleNames.has(schedule.scheduleName)) {
-            scheduleName = scheduleName + '(1)';
-        }
-        return {
-            ...schedule,
-            scheduleName: `${scheduleName}${importMessage}`,
-        };
-    });
-    currentSchedules.push(...cacheSchedule);
-};
-
-export const importScheduleWithUsername = async (username: string, importTag = '-(IMPORT)') => {
+export const importScheduleWithUsername = async (username: string) => {
     try {
         const session = useSessionStore.getState();
         if (!session.sessionIsValid) {
@@ -228,13 +203,19 @@ export const importScheduleWithUsername = async (username: string, importTag = '
         const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
 
         if (scheduleSaveState.schedules) {
-            mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, importTag);
+            currentSchedules.schedules.push(...scheduleSaveState.schedules);
             currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
+
             useToggleStore.setState({ openImportDialog: false, openLoadingSchedule: true });
-            if (await AppStore.loadSchedule(currentSchedules)) {
+
+            const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
+            if (isScheduleLoaded) {
                 openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
+
                 useToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
-                await saveSchedule(accounts.providerAccountId, accounts.AccountType);
+
+                await saveSchedule(accounts.providerAccountId, true);
+
                 await trpc.userData.flagImportedSchedule.mutate({
                     providerId: username,
                 });
@@ -306,7 +287,7 @@ export const loadScheduleWithSessionToken = async () => {
     // });
     try {
         const userDataResponse = await trpc.userData.getUserDataWithSession.query({
-            sessionToken: useSessionStore.getState().session ?? '',
+            refreshToken: useSessionStore.getState().session ?? '',
         });
         const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
         if (isEmptySchedule(scheduleSaveState.schedules)) {

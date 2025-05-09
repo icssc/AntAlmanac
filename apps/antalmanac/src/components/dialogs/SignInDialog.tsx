@@ -41,7 +41,13 @@ export function SignInDialog(props: SignInDialogProps) {
             <DialogTitle>Save to your Google account</DialogTitle>
             <DialogContent>
                 <Stack>
-                    <Button onClick={loginUser} startIcon={<GoogleIcon />} color="primary" variant="contained">
+                    <Button
+                        onClick={loginUser}
+                        startIcon={<GoogleIcon />}
+                        color="primary"
+                        variant="contained"
+                        size="large"
+                    >
                         Sign in with Google
                     </Button>
                 </Stack>

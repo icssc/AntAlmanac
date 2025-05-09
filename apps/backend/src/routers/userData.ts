@@ -77,9 +77,9 @@ const userDataRouter = router({
             });
         }
     }),
-    getUserDataWithSession: procedure.input(z.object({ sessionToken: z.string() })).query(async ({ input }) => {
-        if ('sessionToken' in input) {
-            return await RDS.fetchUserDataWithSessionToken(db, input.sessionToken);
+    getUserDataWithSession: procedure.input(z.object({ refreshToken: z.string() })).query(async ({ input }) => {
+        if ('refreshToken' in input) {
+            return await RDS.fetchUserDataWithSession(db, input.refreshToken);
         } else {
             throw new TRPCError({
                 code: 'BAD_REQUEST',
@@ -91,6 +91,7 @@ const userDataRouter = router({
     getGuestAccountAndUserByName: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
         return RDS.getGuestAccountAndUserByName(db, input.name);
     }),
+
     getAccountByProviderId: procedure
         .input(z.object({ accountType: z.enum(['GOOGLE', 'GUEST']), providerId: z.string() }))
         .query(async ({ input }) => {

@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { isEmptySchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
+import { isEmptySchedule } from '$actions/AppStoreActions';
 import { LoadingScreen } from '$components/LoadingScreen';
 import trpc from '$lib/api/trpc';
 import {
@@ -61,14 +61,18 @@ export function AuthPage() {
                                 await trpc.userData.flagImportedSchedule.mutate({ providerId: savedUserId });
                                 setLocalStorageImportedUser(savedUserId);
                             }
+
                             const data = JSON.parse(savedData);
+
                             if (isEmptySchedule(userData.userData.schedules)) {
                                 scheduleSaveState.schedules = data;
                             } else {
                                 const saveState = userData && 'userData' in userData ? userData.userData : userData;
-                                mergeShortCourseSchedules(saveState.schedules, data);
+                                saveState.schedules.push(...data);
                                 scheduleSaveState.schedules = saveState.schedules;
+                                scheduleSaveState.scheduleIndex = saveState.schedules.length - 1;
                             }
+
                             await trpc.userData.saveUserData.mutate({
                                 id: providerId,
                                 data: {
