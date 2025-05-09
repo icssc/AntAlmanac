@@ -1,11 +1,12 @@
 import crypto from 'crypto';
 import { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent, Notification } from '@packages/antalmanac-types';
-import { and, eq, ExtractTablesWithRelations } from 'drizzle-orm';
+import { and, ExtractTablesWithRelations, eq, gt } from 'drizzle-orm';
 import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 import { type Database } from '$db/index';
 import {
     schedules,
     users,
+    accounts,
     coursesInSchedule,
     customEvents,
     AccountType,
@@ -14,7 +15,6 @@ import {
     CustomEvent,
     sessions,
     Account,
-    accounts,
     Session,
     subscriptions,
 } from '$db/schema';
@@ -24,6 +24,49 @@ type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesW
 type DatabaseOrTransaction = Omit<Database, '$client'> | Transaction;
 
 export class RDS {
+    /**
+     * If a guest user with the specified name exists, return their ID, otherwise return null.
+     */
+    private static async guestUserIdWithNameOrNull(tx: Transaction, name: string): Promise<string | null> {
+        return tx
+            .select({ id: accounts.userId })
+            .from(accounts)
+            .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.providerAccountId, name)))
+            .limit(1)
+            .then((xs: { id: string }[]) => xs[0]?.id ?? null);
+    }
+
+    /**
+     * Creates a guest user if they don't already exist.
+     *
+     * @param tx Database or transaction object
+     * @param name Guest user's name, to be used as providerAccountID and username
+     * @returns The new/existing user's ID
+     */
+    private static async createGuestUserOptional(tx: Transaction, name: string): Promise<string> {
+        const maybeUserId = await RDS.guestUserIdWithNameOrNull(tx, name);
+
+        const userId = maybeUserId
+            ? maybeUserId
+            : await tx
+                  .insert(users)
+                  .values({ name })
+                  .returning({ id: users.id })
+                  .then((users: { id: string }[]) => users[0].id);
+
+        if (userId === undefined) {
+            throw new Error(`Failed to create guest user for ${name}`);
+        }
+
+        await tx
+            .insert(accounts)
+            .values({ userId, accountType: 'GUEST', providerAccountId: name })
+            .onConflictDoNothing()
+            .execute();
+
+        return userId;
+    }
+
     /**
      * Retrieves an account with the specified user ID and account type.
      *
@@ -36,37 +79,55 @@ export class RDS {
         accountType: Account['accountType'],
         providerId: string
     ): Promise<Account | null> {
-        return db.transaction((tx) =>
+        return db.transaction((tx: Transaction) =>
             tx
                 .select()
                 .from(accounts)
                 .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerId)))
                 .limit(1)
-                .then((res) => res[0] ?? null)
+                .then((res: Account[]) => res[0] ?? null)
         );
     }
 
-    static async getAccountAndUserByToken(db: DatabaseOrTransaction, refreshToken: string) {
-        return db.transaction((tx) =>
+    static async getGuestAccountAndUserByName(db: DatabaseOrTransaction, name: string) {
+        return db.transaction((tx: Transaction) =>
             tx
                 .select()
-                .from(sessions)
-                .innerJoin(users, eq(sessions.userId, users.id))
-                .innerJoin(accounts, eq(users.id, accounts.userId))
-                .where(eq(sessions.refreshToken, refreshToken))
+                .from(accounts)
+                .innerJoin(users, eq(accounts.userId, users.id))
+                .where(and(eq(users.name, name), eq(accounts.accountType, 'GUEST')))
                 .execute()
-                .then((res) => {
+                .then((res: { users: User; accounts: Account }[]) => {
                     return { users: res[0].users, accounts: res[0].accounts };
                 })
         );
     }
-    private static async guestUserIdWithNameOrNull(tx: Transaction, name: string): Promise<string | null> {
-        return tx
-            .select({ id: accounts.userId })
-            .from(accounts)
-            .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.providerAccountId, name)))
-            .limit(1)
-            .then((xs) => xs[0]?.id ?? null);
+
+    /**
+     * Retrieves a user by their ID from the database.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param userId - The ID of the user to retrieve.
+     * @returns A promise that resolves to the user object if found, otherwise undefined.
+     */
+    static async getUserById(db: DatabaseOrTransaction, userId: string): Promise<User | undefined> {
+        return db.transaction((tx: Transaction) =>
+            tx
+                .select()
+                .from(users)
+                .where(eq(users.id, userId))
+                .then((res: User[]) => res[0])
+        );
+    }
+
+    static async getUserByEmail(db: DatabaseOrTransaction, email: string): Promise<User | undefined> {
+        return db.transaction((tx: Transaction) =>
+            tx
+                .select()
+                .from(users)
+                .where(eq(users.email, email))
+                .then((res: User[]) => res[0])
+        );
     }
 
     /**
@@ -83,7 +144,7 @@ export class RDS {
         accountType: Account['accountType'],
         email?: string,
         avatar?: string
-    ) {
+    ): Promise<Account> {
         const existingAccount = await this.getAccountByProviderId(db, accountType, providerId);
         if (!existingAccount) {
             const { userId } = await db
@@ -94,74 +155,28 @@ export class RDS {
                     email: email ?? '',
                 })
                 .returning({ userId: users.id })
-                .then((res) => res[0]);
+                .then((res: { userId: string }[]) => res[0]);
 
             const account = await db
                 .insert(accounts)
                 .values({ userId: userId, providerAccountId: providerId, accountType: accountType })
                 .returning()
-                .then((res) => res[0]);
+                .then((res: Account[]) => res[0]);
 
             return account;
         }
+
         return existingAccount;
     }
 
-    /**
-     * Retrieves a user by their ID from the database.
-     *
-     * @param db - The database or transaction object to use for the query.
-     * @param userId - The ID of the user to retrieve.
-     * @returns A promise that resolves to the user object if found, otherwise undefined.
-     */
-    static async getUserById(db: DatabaseOrTransaction, userId: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(users)
-                .where(eq(users.id, userId))
-                .then((res) => res[0])
-        );
-    }
-
-    static async getAccountById(db: DatabaseOrTransaction, userId: string) {
-        return db.transaction((tx) =>
+    static async getAccountById(db: DatabaseOrTransaction, userId: string): Promise<Account | undefined> {
+        return db.transaction((tx: Transaction) =>
             tx
                 .select()
                 .from(accounts)
                 .where(eq(accounts.userId, userId))
-                .then((res) => res[0])
+                .then((res: Account[]) => res[0])
         );
-    }
-    /**
-     * Creates a new user and an associated account with the specified provider ID.
-     *
-     * @param tx Database or transaction object
-     * @param name Guest user's name, to be used as providerAccountID and username
-     * @returns The new/existing user's ID
-     */
-    private static async createGuestUserOptional(tx: Transaction, name: string) {
-        const maybeUserId = await RDS.guestUserIdWithNameOrNull(tx, name);
-
-        const userId = maybeUserId
-            ? maybeUserId
-            : await tx
-                  .insert(users)
-                  .values({ name })
-                  .returning({ id: users.id })
-                  .then((users) => users[0].id);
-
-        if (userId === undefined) {
-            throw new Error(`Failed to create guest user for ${name}`);
-        }
-
-        await tx
-            .insert(accounts)
-            .values({ userId, accountType: 'GUEST', providerAccountId: name })
-            .onConflictDoNothing()
-            .execute();
-
-        return userId;
     }
 
     /**
@@ -175,7 +190,7 @@ export class RDS {
         userId: string,
         schedule: ShortCourseSchedule,
         index: number
-    ) {
+    ): Promise<string> {
         // Add schedule
         const dbSchedule = {
             userId,
@@ -185,13 +200,7 @@ export class RDS {
             lastUpdated: new Date(),
         };
 
-        const scheduleResult = await tx
-            .insert(schedules)
-            .values(dbSchedule)
-            .returning({ id: schedules.id })
-            .catch((error) => {
-                throw new Error(`Failed to insert schedule for ${userId} (${schedule.scheduleName}): ${error}`);
-            });
+        const scheduleResult = await tx.insert(schedules).values(dbSchedule).returning({ id: schedules.id });
 
         const scheduleId = scheduleResult[0].id;
         if (scheduleId === undefined) {
@@ -220,11 +229,10 @@ export class RDS {
      * @returns The user's ID
      */
     static async upsertUserData(db: DatabaseOrTransaction, userData: User): Promise<string> {
-        return db.transaction(async (tx) => {
-            let userId = userData.id;
-
-            let user = await this.getUserById(db, userId);
-            if (!user) {
+        return db.transaction(async (tx: Transaction) => {
+            const account = await this.registerUserAccount(db, userData.id, userData.id, 'GOOGLE');
+            const userId = account.userId;
+            if (!account) {
                 throw new Error(`Failed to create user`);
             }
 
@@ -263,7 +271,9 @@ export class RDS {
      * Drops all courses in the schedule and re-add them,
      * deduplicating by section code and term.
      * */
-    private static async upsertCourses(tx: Transaction, scheduleId: string, courses: ShortCourse[]) {
+    private static async upsertCourses(tx: Transaction, scheduleId: string, courses: ShortCourse[]): Promise<void> {
+        await tx.delete(coursesInSchedule).where(eq(coursesInSchedule.scheduleId, scheduleId));
+
         if (courses.length === 0) {
             return;
         }
@@ -294,7 +304,7 @@ export class RDS {
         tx: Transaction,
         scheduleId: string,
         repeatingCustomEvents: RepeatingCustomEvent[]
-    ) {
+    ): Promise<void> {
         if (repeatingCustomEvents.length === 0) {
             return;
         }
@@ -304,7 +314,7 @@ export class RDS {
             title: event.title,
             start: event.start,
             end: event.end,
-            days: event.days.map((day) => (day ? '1' : '0')).join(''),
+            days: event.days.map((day: boolean) => (day ? '1' : '0')).join(''),
             color: event.color,
             building: event.building,
             lastUpdated: new Date(),
@@ -313,34 +323,46 @@ export class RDS {
         await tx.insert(customEvents).values(dbCustomEvents);
     }
 
-    private static async fetchUserData(db: DatabaseOrTransaction, user: any) {
-        const userId = user.id;
-        const sectionResults = await db
-            .select()
-            .from(schedules)
-            .where(eq(schedules.userId, userId))
-            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+    private static async fetchUserData(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
+        return db.transaction(async (tx: Transaction) => {
+            const user = await tx
+                .select()
+                .from(users)
+                .where(eq(users.id, userId))
+                .then((res: User[]) => res[0]);
 
-        const customEventResults = await db
-            .select()
-            .from(schedules)
-            .where(eq(schedules.userId, userId))
-            .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+            if (!user) {
+                return null;
+            }
 
-        const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+            const sectionResults = await tx
+                .select()
+                .from(schedules)
+                .where(eq(schedules.userId, userId))
+                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
 
-        const scheduleIndex = user.currentScheduleId
-            ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
-            : userSchedules.length;
+            const customEventResults = await tx
+                .select()
+                .from(schedules)
+                .where(eq(schedules.userId, userId))
+                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
 
-        return {
-            id: userId,
-            userData: {
-                schedules: userSchedules,
-                scheduleIndex,
-            },
-        };
+            const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+
+            const scheduleIndex = user.currentScheduleId
+                ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
+                : userSchedules.length;
+
+            return {
+                id: userId,
+                userData: {
+                    schedules: userSchedules,
+                    scheduleIndex,
+                },
+            };
+        });
     }
+
     /**
      * Retrieves user data by user ID, including schedules and custom events.
      *
@@ -349,18 +371,14 @@ export class RDS {
      * @returns A promise that resolves to a User object containing user data and schedules, or null if the user is not found.
      */
     static async getUserDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
-        const user = await RDS.getUserById(db, userId);
-        if (!user) {
-            return null;
-        }
-        return await this.fetchUserData(db, user);
+        return await this.fetchUserData(db, userId);
     }
 
     private static async getUserAndAccount(
         db: DatabaseOrTransaction,
         accountType: AccountType,
         providerAccountId: string
-    ) {
+    ): Promise<{ user: User; account: Account } | null> {
         const res = await db
             .select()
             .from(accounts)
@@ -425,7 +443,7 @@ export class RDS {
                     title: customEvent.title,
                     start: customEvent.start,
                     end: customEvent.end,
-                    days: customEvent.days.split('').map((day) => day === '1'),
+                    days: customEvent.days.split('').map((day: string) => day === '1'),
                     color: customEvent.color ?? undefined,
                     building: customEvent.building ?? undefined,
                 });
@@ -445,13 +463,13 @@ export class RDS {
      * @param refreshToken - The refresh token to search for in the sessions table.
      * @returns A promise that resolves to the current session object if found, or null if not found.
      */
-    static async getCurrentSession(db: DatabaseOrTransaction, refreshToken: string) {
-        return db.transaction((tx) =>
+    static async getCurrentSession(db: DatabaseOrTransaction, refreshToken: string): Promise<Session | null> {
+        return db.transaction((tx: Transaction) =>
             tx
                 .select()
                 .from(sessions)
                 .where(eq(sessions.refreshToken, refreshToken))
-                .then((res) => res[0] ?? null)
+                .then((res: Session[]) => res[0] ?? null)
         );
     }
 
@@ -462,18 +480,15 @@ export class RDS {
      * @param userID - The ID of the user for whom the session is being created.
      * @returns A promise that resolves to the created session object or null if the creation failed.
      */
-    static async createSession(db: DatabaseOrTransaction, userID: string): Promise<Session | null> {
-        return db.transaction((tx) =>
-            tx
-                .insert(sessions)
-                .values({
-                    id: crypto.randomUUID(),
-                    userId: userID,
-                    expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-                })
-                .returning()
-                .then((res) => res[0] ?? null)
-        );
+    static async createSession(tx: Transaction, userID: string): Promise<Session | null> {
+        return tx
+            .insert(sessions)
+            .values({
+                userId: userID,
+                expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+            })
+            .returning()
+            .then((res: Session[]) => res[0] ?? null);
     }
 
     /**
@@ -484,7 +499,7 @@ export class RDS {
      * @param refreshToken - The refresh token of the session to be removed. If null, no action is taken.
      * @returns A promise that resolves when the session is removed.
      */
-    static async removeSession(db: DatabaseOrTransaction, userId: string, refreshToken: string | null) {
+    static async removeSession(db: DatabaseOrTransaction, userId: string, refreshToken: string | null): Promise<void> {
         if (refreshToken) {
             await db.delete(sessions).where(and(eq(sessions.userId, userId), eq(sessions.refreshToken, refreshToken)));
         }
@@ -504,9 +519,90 @@ export class RDS {
         userId: string,
         refreshToken?: string
     ): Promise<Session | null> {
-        const currentSession = await this.getCurrentSession(db, refreshToken ?? '');
-        if (currentSession) return currentSession;
-        return await RDS.createSession(db, userId);
+        return db.transaction(async (tx: Transaction) => {
+            const currentSession = await tx
+                .select()
+                .from(sessions)
+                .where(eq(sessions.refreshToken, refreshToken ?? ''))
+                .then((res: Session[]) => res[0] ?? null);
+
+            if (currentSession) return currentSession;
+            return await RDS.createSession(tx, userId);
+        });
+    }
+
+    private static async getUserDataWithSession(tx: Transaction, refreshToken: string): Promise<User | undefined> {
+        return tx
+            .select()
+            .from(users)
+            .leftJoin(sessions, eq(users.id, sessions.userId))
+            .where(and(eq(sessions.refreshToken, refreshToken), gt(sessions.expires, new Date())))
+            .then((res: { users: User }[]) => res[0].users);
+    }
+
+    static async fetchUserDataWithSession(db: DatabaseOrTransaction, refreshToken: string): Promise<User | null> {
+        return db.transaction(async (tx: Transaction) => {
+            const user = await this.getUserDataWithSession(tx, refreshToken);
+
+            if (user) {
+                const sectionResults = await tx
+                    .select()
+                    .from(schedules)
+                    .where(eq(schedules.userId, user.id))
+                    .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+
+                const customEventResults = await tx
+                    .select()
+                    .from(schedules)
+                    .where(eq(schedules.userId, user.id))
+                    .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+
+                const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+
+                const scheduleIndex = user.currentScheduleId
+                    ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
+                    : userSchedules.length;
+                return {
+                    id: user.id,
+                    userData: {
+                        schedules: userSchedules,
+                        scheduleIndex,
+                    },
+                };
+            }
+            return null;
+        });
+    }
+
+    static async getUserAndAccountBySessionToken(db: DatabaseOrTransaction, refreshToken: string) {
+        return db.transaction((tx: Transaction) =>
+            tx
+                .select()
+                .from(sessions)
+                .innerJoin(users, eq(sessions.userId, users.id))
+                .innerJoin(accounts, eq(users.id, accounts.userId))
+                .where(eq(sessions.refreshToken, refreshToken))
+                .execute()
+                .then((res: { users: User; accounts: Account }[]) => {
+                    return { users: res[0].users, accounts: res[0].accounts };
+                })
+        );
+    }
+
+    static async flagImportedUser(db: DatabaseOrTransaction, providerId: string): Promise<boolean> {
+        try {
+            const { users: user, accounts } = await this.getGuestAccountAndUserByName(db, providerId);
+            if (user.imported) {
+                return false;
+            }
+
+            await db.transaction((tx: Transaction) =>
+                tx.update(users).set({ imported: true }).where(eq(users.id, accounts.userId)).execute()
+            );
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
     /**
@@ -517,15 +613,12 @@ export class RDS {
      * @returns A promise that resolves to the notifications associated with a userId, or an empty array if not found.
      */
     static async retrieveNotifications(db: DatabaseOrTransaction, userId: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(subscriptions)
-                .where(eq(subscriptions.userId, userId))
+        return db.transaction((tx: Transaction) =>
+            tx.select().from(subscriptions).where(eq(subscriptions.userId, userId))
         );
     }
 
-     /**
+    /**
      * Upserts notification for a specified user
      *
      * @param db - The database or transaction object to use for the operation.
@@ -533,37 +626,42 @@ export class RDS {
      * @param notification - The notification object to upsert.
      * @returns A promise that upserts the notification associated with a userId.
      */
-     static async upsertNotification(db: DatabaseOrTransaction, userId: string, notification: Notification) {
-        return db.transaction((tx) =>
+    static async upsertNotification(db: DatabaseOrTransaction, userId: string, notification: Notification) {
+        return db.transaction((tx: Transaction) =>
             tx
                 .insert(subscriptions)
                 .values({
                     userId,
                     sectionCode: Number(notification.sectionCode),
-                    year: notification.term.split(" ")[0],  
-                    quarter: notification.term.split(" ")[1], 
+                    year: notification.term.split(' ')[0],
+                    quarter: notification.term.split(' ')[1],
                     openStatus: notification.notificationStatus.openStatus,
                     waitlistStatus: notification.notificationStatus.waitlistStatus,
                     fullStatus: notification.notificationStatus.fullStatus,
                     restrictionStatus: notification.notificationStatus.restrictionStatus,
-                    lastUpdated: notification.lastUpdated, 
-                    lastCodes: notification.lastCodes, 
+                    lastUpdated: notification.lastUpdated,
+                    lastCodes: notification.lastCodes,
                 })
                 .onConflictDoUpdate({
-                    target: [subscriptions.userId, subscriptions.year, subscriptions.quarter, subscriptions.sectionCode],
+                    target: [
+                        subscriptions.userId,
+                        subscriptions.year,
+                        subscriptions.quarter,
+                        subscriptions.sectionCode,
+                    ],
                     set: {
-                      openStatus: notification.notificationStatus.openStatus,
-                      waitlistStatus: notification.notificationStatus.waitlistStatus,
-                      fullStatus: notification.notificationStatus.fullStatus,
-                      restrictionStatus: notification.notificationStatus.restrictionStatus,
-                      lastUpdated: notification.lastUpdated,
-                      lastCodes: notification.lastCodes,
-                },
-            })
+                        openStatus: notification.notificationStatus.openStatus,
+                        waitlistStatus: notification.notificationStatus.waitlistStatus,
+                        fullStatus: notification.notificationStatus.fullStatus,
+                        restrictionStatus: notification.notificationStatus.restrictionStatus,
+                        lastUpdated: notification.lastUpdated,
+                        lastCodes: notification.lastCodes,
+                    },
+                })
         );
     }
 
-     /**
+    /**
      * Updates lastUpdated and lastCodes of ALL notifications with a shared sectionCode, year, and quarter
      *
      * @param db - The database or transaction object to use for the operation.
@@ -571,17 +669,18 @@ export class RDS {
      * @returns A promise that updates ALL notifications with a shared sectionCode, year, and quarter.
      */
     static async updateAllNotifications(db: DatabaseOrTransaction, notification: Notification) {
-        return db.transaction((tx) =>
+        return db.transaction((tx: Transaction) =>
             tx
                 .update(subscriptions)
-                .set({ lastUpdated: notification.lastUpdated,
-                    lastCodes: notification.lastCodes
-                 })
+                .set({
+                    lastUpdated: notification.lastUpdated,
+                    lastCodes: notification.lastCodes,
+                })
                 .where(
                     and(
                         eq(subscriptions.sectionCode, Number(notification.sectionCode)),
-                        eq(subscriptions.year, notification.term.split(" ")[0]),
-                        eq(subscriptions.quarter, notification.term.split(" ")[1])
+                        eq(subscriptions.year, notification.term.split(' ')[0]),
+                        eq(subscriptions.quarter, notification.term.split(' ')[1])
                     )
                 )
         );
@@ -595,22 +694,22 @@ export class RDS {
      * @param userId - The ID of the user for whom we're deleting a notification.
      * @returns A promise that deletes a user's notification.
      */
-      static async deleteNotification(db: DatabaseOrTransaction, notification: Notification, userId: string) {
-        return db.transaction((tx) =>
+    static async deleteNotification(db: DatabaseOrTransaction, notification: Notification, userId: string) {
+        return db.transaction((tx: Transaction) =>
             tx
                 .delete(subscriptions)
                 .where(
                     and(
                         eq(subscriptions.userId, userId),
                         eq(subscriptions.sectionCode, Number(notification.sectionCode)),
-                        eq(subscriptions.year, notification.term.split(" ")[0]),
-                        eq(subscriptions.quarter, notification.term.split(" ")[1])
+                        eq(subscriptions.year, notification.term.split(' ')[0]),
+                        eq(subscriptions.quarter, notification.term.split(' ')[1])
                     )
                 )
         );
     }
 
-     /**
+    /**
      * Deletes ALL notifications for a specified user
      *
      * @param db - The database or transaction object to use for the operation.
@@ -618,11 +717,6 @@ export class RDS {
      * @returns A promise that deletes all of a user's notifications.
      */
     static async deleteAllNotifications(db: DatabaseOrTransaction, userId: string) {
-        return db.transaction((tx) =>
-            tx
-                .delete(subscriptions)
-                .where(eq(subscriptions.userId, userId))
-        );
+        return db.transaction((tx: Transaction) => tx.delete(subscriptions).where(eq(subscriptions.userId, userId)));
     }
 }
-

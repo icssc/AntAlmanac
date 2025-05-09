@@ -5,10 +5,10 @@ import { getLocalStorageSessionId, removeLocalStorageSessionId, setLocalStorageS
 
 interface SessionState {
     session: string | null;
-    validSession: boolean;
     isGoogleUser: boolean;
     fetchUserData: (session: string | null) => Promise<void>;
     setSession: (session: string | null) => Promise<void>;
+    sessionIsValid: boolean;
     clearSession: () => Promise<void>;
 }
 
@@ -16,7 +16,6 @@ export const useSessionStore = create<SessionState>((set) => {
     const localSessionId = getLocalStorageSessionId();
     return {
         session: localSessionId,
-        validSession: false,
         isGoogleUser: false,
         fetchUserData: async (session) => {
             if (!session) {
@@ -37,23 +36,24 @@ export const useSessionStore = create<SessionState>((set) => {
                 set({ isGoogleUser: false });
             }
         },
+        sessionIsValid: false,
         setSession: async (session) => {
             if (session) {
-                const validSession: boolean = await trpc.auth.validateSession.query({ token: session });
-                if (validSession) {
+                const sessionIsValid: boolean = await trpc.auth.validateSession.query({ token: session });
+                if (sessionIsValid) {
                     setLocalStorageSessionId(session);
-                    set({ session: session, validSession: true });
+                    set({ session: session, sessionIsValid: true });
                 }
             } else {
-                set({ session: null, validSession: false });
+                set({ session: null, sessionIsValid: false });
             }
         },
         clearSession: async () => {
             const currentSession = getLocalStorageSessionId();
             if (currentSession) {
-                await trpc.auth.removeSession.mutate({ token: currentSession });
+                await trpc.auth.invalidateSession.mutate({ token: currentSession });
                 removeLocalStorageSessionId();
-                set({ session: null, validSession: false });
+                set({ session: null, sessionIsValid: false });
                 window.location.reload();
             }
         },

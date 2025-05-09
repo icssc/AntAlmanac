@@ -1,5 +1,5 @@
 {
-    "id": "00f3bec2-ee3a-4296-a9a4-b542da91421d",
+    "id": "f6cb6e8d-1467-48bf-9bb8-9e3889a7ef99",
     "prevId": "00000000-0000-0000-0000-000000000000",
     "version": "7",
     "dialect": "postgresql",
@@ -131,6 +131,13 @@
                     "type": "text",
                     "primaryKey": false,
                     "notNull": false
+                },
+                "imported": {
+                    "name": "imported",
+                    "type": "boolean",
+                    "primaryKey": false,
+                    "notNull": false,
+                    "default": false
                 },
                 "current_schedule_id": {
                     "name": "current_schedule_id",

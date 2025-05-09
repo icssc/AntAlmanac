@@ -14,6 +14,7 @@ import { Unsubscribe } from './routes/UnsubscribePage';
 
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
 import AppPostHogProvider from '$providers/PostHog';
+import { AuthPage } from '$routes/AuthPage';
 import { ErrorPage } from '$routes/ErrorPage';
 import Feedback from '$routes/Feedback';
 import Home from '$routes/Home';
@@ -55,6 +56,11 @@ const BROWSER_ROUTER = createBrowserRouter([
             {
                 path: '/feedback',
                 element: <Feedback />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: '/auth',
+                element: <AuthPage />,
                 errorElement: <ErrorPage />,
             },
             {

@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"avatar" text,
 	"name" text,
 	"email" text,
+	"imported" boolean DEFAULT false,
 	"current_schedule_id" text,
 	"last_updated" timestamp with time zone DEFAULT now()
 );
