@@ -181,22 +181,20 @@ const LoadFunctionality = () => {
         try {
             const res = await trpc.userData.getGuestAccountAndUserByName
                 .query({ name: userID })
-                .then((res) => res.users.imported);
-            if (res) {
-                setOpenalert(true);
-            }
+                .then((res) => res.users);
+            if (res.imported) setOpenalert(true);
             return res;
         } catch (error) {
             console.error('Error validating imported user:', error);
             return false;
         }
     };
+
     const loadScheduleAndSetLoading = useCallback(
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
-            if (!(await validateImportedUser(userID))) {
-                await loadSchedule(userID, rememberMe, 'GUEST');
-            }
+            await loadSchedule(userID, rememberMe, 'GUEST');
+            await validateImportedUser(userID);
             setOpenLoadingSchedule(false);
         },
         [setOpenLoadingSchedule]
@@ -206,21 +204,24 @@ const LoadFunctionality = () => {
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
 
-            const sessionToken = getLocalStorageSessionId() || '';
-            const hasSessionToken = sessionToken.length > 0;
+            const sessionToken = getLocalStorageSessionId();
 
-            if (hasSessionToken && (await loadScheduleWithSessionToken())) {
+            if (sessionToken && (await loadScheduleWithSessionToken())) {
                 updateSession(sessionToken);
             } else if (sessionToken === '' && userID && userID !== '') {
-                if (!(await validateImportedUser(userID))) {
-                    await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
-                }
+                await validateImportedUser(userID);
+                await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
             }
 
             setOpenLoadingSchedule(false);
         },
         [setOpenLoadingSchedule, updateSession]
     );
+
+    const handleLogin = () => {
+        loginUser();
+        setLocalStorageFromLoading('true');
+    };
 
     useEffect(() => {
         const handleSkeletonModeChange = () => {
@@ -254,10 +255,7 @@ const LoadFunctionality = () => {
                 id="load-button"
                 actionName={'Load'}
                 action={loadScheduleAndSetLoading}
-                actionSecondary={() => {
-                    loginUser();
-                    setLocalStorageFromLoading('true');
-                }}
+                actionSecondary={handleLogin}
                 disabled={skeletonMode}
                 loading={loadingSchedule}
                 colorType={isDark ? 'secondary' : 'primary'}
@@ -275,7 +273,7 @@ const LoadFunctionality = () => {
                     variant="contained"
                     startIcon={<GoogleIcon />}
                     fullWidth
-                    onClick={loginUser}
+                    onClick={handleLogin}
                     size="large"
                 >
                     Sign in with Google
