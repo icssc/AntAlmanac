@@ -1,18 +1,22 @@
 import { Chip, Tooltip } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface CourseCodeCellProps {
     sectionCode: string;
+    analyticsCategory: AnalyticsCategory;
 }
 
-export const CourseCodeCell = ({ sectionCode }: CourseCodeCellProps) => {
+export const CourseCodeCell = ({ sectionCode, analyticsCategory }: CourseCodeCellProps) => {
     const isDark = useThemeStore((store) => store.isDark);
     const [isHovered, setIsHovered] = useState(false);
+
+    const postHog = usePostHog();
 
     const handleMouseEnter = () => {
         setIsHovered(true);
@@ -28,9 +32,9 @@ export const CourseCodeCell = ({ sectionCode }: CourseCodeCellProps) => {
                 <Chip
                     onClick={(event) => {
                         clickToCopy(event, sectionCode);
-                        logAnalytics({
-                            category: analyticsEnum.classSearch.title,
-                            action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
+                        logAnalytics(postHog, {
+                            category: analyticsCategory,
+                            action: analyticsCategory.actions.COPY_COURSE_CODE,
                         });
                     }}
                     // className={classes.sectionCode}
