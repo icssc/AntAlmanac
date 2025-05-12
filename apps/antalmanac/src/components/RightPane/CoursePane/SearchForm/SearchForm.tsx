@@ -1,7 +1,7 @@
-import { IconButton, Theme, Tooltip } from '@material-ui/core';
+import { Button, IconButton, Theme, Tooltip, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { Tune } from '@material-ui/icons';
+import { ExpandLess, ExpandMore, Tune } from '@material-ui/icons';
 import type { FormEvent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
@@ -14,6 +14,7 @@ import { HelpBox } from '$components/RightPane/CoursePane/SearchForm/HelpBox';
 import { LegacySearch } from '$components/RightPane/CoursePane/SearchForm/LegacySearch';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import AdvancedSearch from './AdvancedSearch/AdvancedSearch';
 
 const styles: Styles<Theme, object> = {
     rightPane: {
@@ -67,11 +68,6 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                             changeTerm={(field: string, value: string) => RightPaneStore.updateFormValue(field, value)}
                             fieldName={'term'}
                         />
-                        <Tooltip title="Toggle Manual Search">
-                            <IconButton onClick={toggleManualSearch}>
-                                <Tune />
-                            </IconButton>
-                        </Tooltip>
                     </div>
 
                     {!manualSearchEnabled ? (
@@ -87,6 +83,17 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                             onReset={RightPaneStore.resetFormValues}
                         />
                     )}
+                    <Button
+                        onClick={toggleManualSearch}
+                        style={{ textTransform: 'none', width: 'auto', display: 'flex', justifyContent: 'start' }}
+                    >
+                        <div>
+                            <Typography noWrap variant="body1">
+                                Advanced Search Options
+                            </Typography>
+                        </div>
+                        {manualSearchEnabled ? <ExpandLess /> : <ExpandMore />}
+                    </Button>
                 </div>
             </form>
 

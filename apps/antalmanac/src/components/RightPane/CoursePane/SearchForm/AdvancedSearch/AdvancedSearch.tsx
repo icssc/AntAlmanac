@@ -36,10 +36,6 @@ class AdvancedSearch extends PureComponent<AdvancedSearchProps, AdvancedSearchSt
 
         let advanced = false;
 
-        if (typeof Storage !== 'undefined') {
-            advanced = getLocalStorageAdvanced() === 'expanded';
-        }
-
         const formData = RightPaneStore.getFormData();
         const defaultFormData = RightPaneStore.getDefaultFormData();
         for (const [key, value] of Object.entries(formData)) {
@@ -48,10 +44,6 @@ class AdvancedSearch extends PureComponent<AdvancedSearchProps, AdvancedSearchSt
                 break;
             }
         }
-
-        this.state = {
-            expandAdvanced: advanced,
-        };
     }
 
     componentDidMount() {
@@ -73,30 +65,9 @@ class AdvancedSearch extends PureComponent<AdvancedSearchProps, AdvancedSearchSt
         history.replaceState(stateObj, 'url', '/' + new_url);
     }
 
-    handleExpand = () => {
-        const nextExpansionState = !this.state.expandAdvanced;
-        setLocalStorageAdvanced(nextExpansionState ? 'expanded' : 'notexpanded');
-        this.setState({ expandAdvanced: nextExpansionState });
-    };
-
     render() {
         return (
-            <>
-                <Button
-                    onClick={this.handleExpand}
-                    style={{ textTransform: 'none', width: 'auto', display: 'flex', justifyContent: 'start' }}
-                >
-                    <div>
-                        <Typography noWrap variant="body1">
-                            Advanced Search Options
-                        </Typography>
-                    </div>
-                    {this.state.expandAdvanced ? <ExpandLess /> : <ExpandMore />}
-                </Button>
-                <Collapse in={this.state.expandAdvanced}>
-                    <AdvancedSearchTextFields />
-                </Collapse>
-            </>
+            <AdvancedSearchTextFields />
         );
     }
 }
