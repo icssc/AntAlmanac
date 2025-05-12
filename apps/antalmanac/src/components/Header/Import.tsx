@@ -19,13 +19,12 @@ import { CourseInfo } from '@packages/antalmanac-types';
 import { ChangeEvent, useCallback, useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
-import RightPaneStore from '../RightPane/RightPaneStore';
-
 import { ImportSource } from './constants';
 
 import { addCustomEvent, openSnackbar, addCourse, importScheduleWithUsername } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
+import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { QueryZotcourseError } from '$lib/customErrors';
@@ -42,8 +41,8 @@ import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { useToggleStore } from '$stores/ToggleStore';
 
-function Import() {
-    const [term, setTerm] = useState(RightPaneStore.getFormData().term);
+export function Import() {
+    // const [open, setOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertDialog, setAlertDialog] = useState(false);
     const [importSource, setImportSource] = useState('studylist');
@@ -70,7 +69,7 @@ function Import() {
 
     const handleSubmit = async () => {
         const currentSchedule = AppStore.getCurrentScheduleIndex();
-
+        const term = RightPaneStore.getFormData().term;
         let sectionCodes: string[] | null = null;
 
         switch (importSource) {
@@ -134,9 +133,11 @@ function Import() {
     };
     const uploadSectionCodes = async (sectionCodes: string[], term: string, currentSchedule: number) => {
         try {
+            const term = RightPaneStore.getFormData().term;
+
             const sectionsAdded = addCoursesMultiple(
                 await WebSOC.getCourseInfo({
-                    term: term,
+                    term,
                     sectionCodes: sectionCodes.join(','),
                 }),
                 term,
@@ -343,7 +344,7 @@ function Import() {
                     {importSource !== ImportSource.AA_USERNAME_IMPORT && (
                         <>
                             <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
-                            <TermSelector changeTerm={setTerm} fieldName={'selectedTerm'} />
+                            <TermSelector />
                         </>
                     )}
                 </DialogContent>
@@ -364,5 +365,3 @@ function Import() {
         </>
     );
 }
-
-export default Import;

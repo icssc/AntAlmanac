@@ -1,7 +1,7 @@
 import { AppBar, Box, Stack } from '@mui/material';
 import { useEffect } from 'react';
 
-import Import from './Import';
+import { Import } from './Import';
 import LoadSaveScheduleFunctionalityButton from './Load';
 import Login from './Login';
 import { Logo } from './Logo';
