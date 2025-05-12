@@ -170,7 +170,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
 const LoadFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
 
-    const { updateSession, sessionIsValid } = useSessionStore();
+    const { setSession, sessionIsValid } = useSessionStore();
 
     const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = useToggleStore();
 
@@ -207,7 +207,7 @@ const LoadFunctionality = () => {
             const sessionToken = getLocalStorageSessionId();
 
             if (sessionToken && (await loadScheduleWithSessionToken())) {
-                updateSession(sessionToken);
+                setSession(sessionToken);
             } else if (sessionToken === '' && userID && userID !== '') {
                 await validateImportedUser(userID);
                 await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
@@ -215,7 +215,7 @@ const LoadFunctionality = () => {
 
             setOpenLoadingSchedule(false);
         },
-        [setOpenLoadingSchedule, updateSession]
+        [setOpenLoadingSchedule, setSession]
     );
 
     const handleLogin = () => {
