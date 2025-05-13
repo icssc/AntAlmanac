@@ -1,21 +1,22 @@
 import { Dialog, DialogContent, LinearProgress, Stack, Box } from '@mui/material';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Logo } from './Header/Logo';
 
 import { BLUE } from '$src/globals';
 
+const funFacts = [
+    'Did you know? Antalmanac is maintained by the ICS Student Council at UCI!',
+    'AntAlmanac was created in 2018 by a small group of students under the leadership of @the-rango.',
+    'Did you know you can search for classes by pressing "CTRL/CMD" + clicking on your schedule item!',
+    'I 💖 Kevin Wu',
+    'Need a 4 year plan? Checkout PeterPortal!',
+];
 type LoadingScreenProps = {
     open: boolean;
 };
+
 export function LoadingScreen(props: LoadingScreenProps) {
-    const funFacts = useRef<string[]>([
-        'Did you know? Antalmanac is maintained by the ICS Student Council at UCI!',
-        'AntAlmanac was created in 2018 by a small group of students under the leadership of @the-rango.',
-        'Did you know you can search for classes by pressing "CTRL/CMD" + clicking on your schedule item!',
-        'I 💖 Kevin Wu',
-        'Need a 4 year plan? Checkout PeterPortal!',
-    ]).current;
     const [randomFact, setRandomFact] = useState<string>(funFacts[Math.floor(Math.random() * funFacts.length)]);
 
     useEffect(() => {
@@ -24,7 +25,7 @@ export function LoadingScreen(props: LoadingScreenProps) {
         }, 5000);
 
         return () => clearInterval(interval);
-    }, [funFacts]);
+    }, []);
     return (
         <Dialog fullScreen open={props.open}>
             <DialogContent
