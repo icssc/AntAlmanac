@@ -19,7 +19,7 @@ import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 
 export function AuthPage() {
-    const { session, updateSession: setSession } = useSessionStore();
+    const { session } = useSessionStore();
     const [searchParams] = useSearchParams();
     // const navigate = useNavigate();
 
@@ -89,7 +89,7 @@ export function AuthPage() {
         } catch (error) {
             console.error('Error during authentication', error);
         }
-    }, [searchParams, session, setSession]);
+    }, [searchParams, session]);
 
     useEffect(() => {
         handleSearchParamsChange();

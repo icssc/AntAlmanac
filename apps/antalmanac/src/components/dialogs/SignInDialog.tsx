@@ -1,5 +1,5 @@
 import GoogleIcon from '@mui/icons-material/Google';
-import { Button, Stack, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import { Button, Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
 
 import { isEmptySchedule, openSnackbar, loginUser } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
@@ -40,7 +40,10 @@ export function SignInDialog(props: SignInDialogProps) {
         >
             <DialogTitle>Save to your Google account</DialogTitle>
             <DialogContent>
-                <Stack>
+                <Stack spacing={1}>
+                    <Alert severity="info" sx={{ fontSize: 'small' }}>
+                        All changes made will be saved to your Google account
+                    </Alert>
                     <Button
                         onClick={loginUser}
                         startIcon={<GoogleIcon />}

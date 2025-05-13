@@ -5,7 +5,7 @@ import { useThemeStore } from '$stores/SettingsStore';
 interface AlertDialogProps {
     open: boolean;
     title: string;
-    children: React.ReactNode;
+    children?: React.ReactNode;
     severity?: 'error' | 'info' | 'success' | 'warning';
     defaultAction?: boolean;
     onClose?: () => void;
@@ -22,7 +22,7 @@ export const AlertDialog = ({ open, title, children, severity = 'info', onClose 
                 >
                     {title}
                 </Alert>
-                <Box paddingY="1.5rem">{children}</Box>
+                {children && <Box paddingY="1.5rem">{children}</Box>}
             </DialogContent>
             <DialogActions>
                 <Button onClick={onClose} color="inherit">

@@ -193,6 +193,7 @@ const LoadFunctionality = () => {
     const loadScheduleAndSetLoading = useCallback(
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
+            console.log('test');
             await loadSchedule(userID, rememberMe, 'GUEST');
             await validateImportedUser(userID);
             setOpenLoadingSchedule(false);
@@ -204,7 +205,7 @@ const LoadFunctionality = () => {
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
 
-            const sessionToken = getLocalStorageSessionId();
+            const sessionToken = getLocalStorageSessionId() ?? '';
 
             if (sessionToken && (await loadScheduleWithSessionToken())) {
                 updateSession(sessionToken);
