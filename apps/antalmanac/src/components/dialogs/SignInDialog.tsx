@@ -1,8 +1,7 @@
 import GoogleIcon from '@mui/icons-material/Google';
 import { Button, Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
 
-import { isEmptySchedule, openSnackbar, loginUser } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
+import { loginUser } from '$actions/AppStoreActions';
 
 interface SignInDialogProps {
     open: boolean;
@@ -12,17 +11,12 @@ interface SignInDialogProps {
 }
 
 export function SignInDialog(props: SignInDialogProps) {
-    const { onClose, open, action } = props;
+    const { onClose, open, isDark } = props;
 
     const handleClose = () => {
         onClose();
     };
 
-    if (isEmptySchedule(AppStore.schedule.getScheduleAsSaveState().schedules) && open && action === 'Save') {
-        openSnackbar('info', 'Please create a schedule before signing in.');
-        handleClose();
-        return;
-    }
     return (
         <Dialog
             open={open}
@@ -41,7 +35,7 @@ export function SignInDialog(props: SignInDialogProps) {
             <DialogTitle>Save to your Google account</DialogTitle>
             <DialogContent>
                 <Stack spacing={1}>
-                    <Alert severity="info" sx={{ fontSize: 'small' }}>
+                    <Alert severity="info" variant={isDark ? 'outlined' : 'standard'} sx={{ fontSize: 'small' }}>
                         All changes made will be saved to your Google account
                     </Alert>
                     <Button
