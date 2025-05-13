@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import { isEmptySchedule } from '$actions/AppStoreActions';
+import { isEmptySchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
 import { LoadingScreen } from '$components/LoadingScreen';
 import trpc from '$lib/api/trpc';
 import {
@@ -68,7 +68,7 @@ export function AuthPage() {
                                 scheduleSaveState.schedules = data;
                             } else {
                                 const saveState = userData && 'userData' in userData ? userData.userData : userData;
-                                saveState.schedules.push(...data);
+                                mergeShortCourseSchedules(saveState.schedules, data, '(import)-');
                                 scheduleSaveState.schedules = saveState.schedules;
                                 scheduleSaveState.scheduleIndex = saveState.schedules.length - 1;
                             }

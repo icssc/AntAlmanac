@@ -172,6 +172,25 @@ export async function autoSaveSchedule(providerID: string) {
     }
 }
 
+export const mergeShortCourseSchedules = (
+    currentSchedules: ShortCourseSchedule[],
+    incomingSchedule: ShortCourseSchedule[],
+    importMessage = ''
+) => {
+    const existingScheduleNames = new Set(currentSchedules.map((s: ShortCourseSchedule) => s.scheduleName));
+    const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
+        let scheduleName = schedule.scheduleName;
+        if (existingScheduleNames.has(schedule.scheduleName)) {
+            scheduleName = scheduleName + '(1)';
+        }
+        return {
+            ...schedule,
+            scheduleName: `${importMessage}${scheduleName}`,
+        };
+    });
+    currentSchedules.push(...cacheSchedule);
+};
+
 export const importScheduleWithUsername = async (username: string) => {
     try {
         const session = useSessionStore.getState();
@@ -204,6 +223,7 @@ export const importScheduleWithUsername = async (username: string) => {
 
         if (scheduleSaveState.schedules) {
             currentSchedules.schedules.push(...scheduleSaveState.schedules);
+            mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, '(import)-');
             currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
 
             useToggleStore.setState({ openImportDialog: false, openLoadingSchedule: true });
