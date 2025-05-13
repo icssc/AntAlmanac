@@ -59,21 +59,15 @@ export function SelectSchedulePopover() {
         getScheduleItems(AppStore.getSkeletonScheduleNames())
     );
 
-    // const [anchorEl, setAnchorEl] = useState<HTMLElement>();
-
     // TODO: maybe these widths should be dynamic based on i.e. the viewport width?
     const minWidth = useMemo(() => 100, []);
     const maxWidth = useMemo(() => 150, []);
 
-    // const open = useMemo(() => Boolean(anchorEl), [anchorEl]);
-
     const handleClick = useCallback(() => {
-        // setAnchorEl(event.currentTarget);
         setOpenScheduleSelect(true);
     }, [setOpenScheduleSelect]);
 
     const handleClose = useCallback(() => {
-        // setAnchorEl(undefined);
         setOpenScheduleSelect(false);
     }, [setOpenScheduleSelect]);
 
@@ -154,7 +148,6 @@ export function SelectSchedulePopover() {
 
             <Popover
                 open={openScheduleSelect}
-                // anchorEl={anchorEl}
                 anchorReference="anchorPosition"
                 anchorPosition={{ top: 95, left: 0 }}
                 onClose={handleClose}

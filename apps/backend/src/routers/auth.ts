@@ -5,21 +5,6 @@ import { RDS } from 'src/lib/rds';
 import { procedure, router } from '../trpc';
 
 const authRouter = router({
-    /**
-     * Returns the session refresh token for a guest user
-     */
-    //     handleGuestSession: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
-    //         const account = await RDS.registerUserAccount(db, input.name, input.name, 'GUEST');
-    //
-    //         if (account && account.userId.length > 0) {
-    //             const session = await RDS.upsertSession(db, account.userId);
-    //             return session?.refreshToken;
-    //         }
-    //         return null;
-    //     }),
-    /**
-     * returns true if the session exists exist and hasn't expired
-     */
     validateSession: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
         if (input.token === '') return false;
         const session = await RDS.getCurrentSession(db, input.token);

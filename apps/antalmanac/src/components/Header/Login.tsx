@@ -6,12 +6,9 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import trpc from '$lib/api/trpc';
-// import { getLocalStorageSessionId, removeLocalStorageSessionId } from '$lib/localStorage';
 import { useSessionStore } from '$stores/SessionStore';
-// import { useThemeStore } from '$stores/SettingsStore';
 
 function Login() {
-    // const [openSignIn, setOpenSignIn] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<null | User>(null);
     const navigate = useNavigate();
@@ -22,7 +19,6 @@ function Login() {
     };
 
     const { session, sessionIsValid, clearSession } = useSessionStore();
-    // const isDark = useThemeStore((store) => store.isDark);
 
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -61,8 +57,6 @@ function Login() {
                 sx={{ maxWidth: '9rem', minWidth: '3rem' }}
                 startIcon={!user?.avatar && <AccountCircleIcon />}
             >
-                {/* {user?.name && user?.name.length > 6 ? `${user?.name.substring(0, 6)}...` : user?.name} */}
-
                 {user?.avatar ? (
                     <Avatar
                         sx={{ width: '2.2rem', height: '2.2rem' }}

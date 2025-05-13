@@ -83,7 +83,6 @@ export function AuthPage() {
                         }
                     }
                 }
-                // navigate('/');
                 window.location.href = '/';
             }
         } catch (error) {
