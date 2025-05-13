@@ -1,4 +1,4 @@
-import { AppBar, Box, Stack, Snackbar, Alert, Button } from '@mui/material';
+import { AppBar, Box, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import { Import } from './Import';
@@ -18,13 +18,11 @@ import {
 } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
 import { useSessionStore } from '$stores/SessionStore';
-import { useToggleStore } from '$stores/ToggleStore';
 
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const importedUser = getLocalStorageImportedUser() ?? '';
     const { session } = useSessionStore();
-    const { openAutoSaveWarning } = useToggleStore();
 
     const clearStorage = () => {
         removeLocalStorageImportedUser();
@@ -74,31 +72,6 @@ export function Header() {
                     <Login />
                     <AppDrawer key="settings" />
                 </Stack>
-
-                <Snackbar open={openAutoSaveWarning} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
-                    <Alert
-                        severity="warning"
-                        variant="filled"
-                        sx={{ display: 'flex', alignItems: 'center', fontSize: 'small' }}
-                    >
-                        DISCLAIMER: Legacy (username-based) schedules can no longer be saved. Please log in with
-                        <Button
-                            color="inherit"
-                            variant="text"
-                            size="small"
-                            onClick={() => (window.location.href = '/login')}
-                            sx={{
-                                textTransform: 'none',
-                                padding: 0,
-                                fontSize: 'inherit',
-                                textDecoration: 'underline',
-                            }}
-                        >
-                            Google
-                        </Button>
-                        to <strong>save</strong> your schedule(s) and changes.
-                    </Alert>
-                </Snackbar>
 
                 <AlertDialog
                     open={openSuccessfulSaved}

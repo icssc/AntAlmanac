@@ -1,6 +1,6 @@
 import { Save } from '@material-ui/icons';
 import { LoadingButton } from '@mui/lab';
-import { Stack } from '@mui/material';
+import { Stack, Snackbar, Alert, Button } from '@mui/material';
 import { useState, useEffect } from 'react';
 
 import actionTypesStore from '$actions/ActionTypesStore';
@@ -10,6 +10,7 @@ import trpc from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
+import { useToggleStore } from '$stores/ToggleStore';
 
 const SaveFunctionality = () => {
     const isDark = useThemeStore((store) => store.isDark);
@@ -17,6 +18,7 @@ const SaveFunctionality = () => {
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const { openAutoSaveWarning } = useToggleStore();
 
     const handleClickSignIn = () => {
         setOpenSignInDialog(!openSignInDialog);
@@ -67,6 +69,31 @@ const SaveFunctionality = () => {
             >
                 Save
             </LoadingButton>
+
+            <Snackbar open={openAutoSaveWarning} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
+                <Alert
+                    severity="warning"
+                    variant="filled"
+                    sx={{ display: 'flex', alignItems: 'center', fontSize: 'small' }}
+                >
+                    DISCLAIMER: Legacy (username-based) schedules can no longer be saved. <br /> Please log in with
+                    <Button
+                        color="inherit"
+                        variant="text"
+                        size="small"
+                        onClick={handleClickSignIn}
+                        sx={{
+                            textTransform: 'none',
+                            padding: 0,
+                            fontSize: 'inherit',
+                            textDecoration: 'underline',
+                        }}
+                    >
+                        Google
+                    </Button>
+                    to <strong>save</strong> your schedule(s) and changes.
+                </Alert>
+            </Snackbar>
 
             <SignInDialog isDark={isDark} open={openSignInDialog} onClose={handleClickSignIn} action="Save" />
         </Stack>
