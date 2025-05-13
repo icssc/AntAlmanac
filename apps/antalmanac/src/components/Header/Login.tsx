@@ -1,6 +1,6 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Avatar, Button, Menu, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
+import { Avatar, Menu, ListItemIcon, ListItemText, MenuItem, IconButton } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -48,27 +48,24 @@ export function Login() {
     }
     return (
         <div id="load-save-container">
-            <Button
+            <IconButton
                 aria-controls={open ? 'basic-menu' : undefined}
                 color="inherit"
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}
                 onClick={handleClick}
-                sx={{ maxWidth: '9rem', minWidth: '3rem' }}
-                startIcon={!user?.avatar && <AccountCircleIcon />}
+                sx={{ width: 'fit-content' }}
             >
                 {user?.avatar ? (
                     <Avatar
-                        sx={{ width: '2.2rem', height: '2.2rem' }}
+                        sx={{ width: '2rem', height: '2rem' }}
                         src={`${user?.avatar}`}
                         alt={`${user?.name}-photo`}
                     />
-                ) : user?.name && window.innerWidth < 600 ? (
-                    `${user?.name.substring(0, 6)}...`
                 ) : (
-                    user?.name
+                    <AccountCircleIcon />
                 )}
-            </Button>
+            </IconButton>
             <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}

@@ -31,7 +31,7 @@ export function SignInDialog(props: SignInDialogProps) {
             fullScreen={true}
             sx={{
                 '& .MuiDialog-paper': {
-                    width: { xs: '45%', lg: '25%' },
+                    width: 'fit-content',
                     height: 'fit-content',
                     borderRadius: '0.5rem',
                 },
