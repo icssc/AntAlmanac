@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Dialog, DialogContent, DialogActions } from '@mui/material';
+import { Alert, Box, Button, Dialog, DialogContent, DialogActions, AlertColor } from '@mui/material';
 
 import { useThemeStore } from '$stores/SettingsStore';
 
@@ -6,7 +6,7 @@ interface AlertDialogProps {
     open: boolean;
     title: string;
     children?: React.ReactNode;
-    severity?: 'error' | 'info' | 'success' | 'warning';
+    severity?: AlertColor;
     defaultAction?: boolean;
     onClose?: () => void;
 }
