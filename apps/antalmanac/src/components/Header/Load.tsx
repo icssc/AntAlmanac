@@ -167,7 +167,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
     }
 }
 
-const LoadFunctionality = () => {
+export const Load = () => {
     const isDark = useThemeStore((store) => store.isDark);
 
     const { updateSession, sessionIsValid } = useSessionStore();
@@ -283,5 +283,3 @@ const LoadFunctionality = () => {
         </div>
     );
 };
-
-export default LoadFunctionality;

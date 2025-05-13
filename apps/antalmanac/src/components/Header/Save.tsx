@@ -1,4 +1,4 @@
-import { Save } from '@material-ui/icons';
+import { Save as SaveIcon } from '@material-ui/icons';
 import { LoadingButton } from '@mui/lab';
 import { Stack, Snackbar, Alert, Button } from '@mui/material';
 import { useState, useEffect } from 'react';
@@ -12,7 +12,7 @@ import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { useToggleStore } from '$stores/ToggleStore';
 
-const SaveFunctionality = () => {
+export const Save = () => {
     const isDark = useThemeStore((store) => store.isDark);
     const { session, sessionIsValid: validSession } = useSessionStore();
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
@@ -61,7 +61,7 @@ const SaveFunctionality = () => {
         <Stack direction="row">
             <LoadingButton
                 color="inherit"
-                startIcon={<Save />}
+                startIcon={<SaveIcon />}
                 loadingPosition="start"
                 onClick={validSession ? saveScheduleData : handleClickSignIn}
                 disabled={skeletonMode || saving}
@@ -99,5 +99,3 @@ const SaveFunctionality = () => {
         </Stack>
     );
 };
-
-export default SaveFunctionality;

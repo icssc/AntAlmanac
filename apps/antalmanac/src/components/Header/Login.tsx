@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
 
-function Login() {
+export function Login() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<null | User>(null);
     const navigate = useNavigate();
@@ -88,5 +88,3 @@ function Login() {
         </div>
     );
 }
-
-export default Login;

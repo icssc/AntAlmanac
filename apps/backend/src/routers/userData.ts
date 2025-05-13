@@ -1,4 +1,4 @@
-import { UserSchema, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
+import { UserSchema } from '@packages/antalmanac-types';
 import { TRPCError } from '@trpc/server';
 import { type } from 'arktype';
 import { OAuth2Client } from 'google-auth-library';

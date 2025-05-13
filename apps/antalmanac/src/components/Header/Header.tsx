@@ -2,10 +2,10 @@ import { AppBar, Box, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import { Import } from './Import';
-import LoadSaveScheduleFunctionalityButton from './Load';
-import Login from './Login';
+import { Load } from './Load';
+import { Login } from './Login';
 import { Logo } from './Logo';
-import SaveFunctionality from './Save';
+import { Save } from './Save';
 import AppDrawer from './SettingsMenu';
 
 import { openSnackbar } from '$actions/AppStoreActions';
@@ -66,8 +66,8 @@ export function Header() {
                 <Logo />
 
                 <Stack direction="row">
-                    <SaveFunctionality />
-                    <LoadSaveScheduleFunctionalityButton />
+                    <Save />
+                    <Load />
                     <Import key="studylist" />
                     <Login />
                     <AppDrawer key="settings" />
