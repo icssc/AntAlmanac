@@ -1,15 +1,14 @@
 import { AppBar, Box, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 
-import { Import } from './Import';
-import { Load } from './Load';
-import { Login } from './Login';
-import { Logo } from './Logo';
-import { Save } from './Save';
-import AppDrawer from './SettingsMenu';
-
 import { openSnackbar } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
+import { Import } from '$components/Header/Import';
+import { Load } from '$components/Header/Load';
+import { Login } from '$components/Header/Login';
+import { Logo } from '$components/Header/Logo';
+import { Save } from '$components/Header/Save';
+import AppDrawer from '$components/Header/SettingsMenu';
 import {
     getLocalStorageDataCache,
     removeLocalStorageImportedUser,

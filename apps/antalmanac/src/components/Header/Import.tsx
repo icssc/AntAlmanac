@@ -19,10 +19,9 @@ import { CourseInfo } from '@packages/antalmanac-types';
 import { ChangeEvent, useCallback, useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-import { ImportSource } from './constants';
-
 import { addCustomEvent, openSnackbar, addCourse, importScheduleWithUsername } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
+import { ImportSource } from '$components/Header/constants';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -42,7 +41,6 @@ import { useThemeStore } from '$stores/SettingsStore';
 import { useToggleStore } from '$stores/ToggleStore';
 
 export function Import() {
-    // const [open, setOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [alertDialog, setAlertDialog] = useState(false);
     const [importSource, setImportSource] = useState('studylist');
