@@ -51,7 +51,7 @@ export function Import() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const { session, sessionIsValid } = useSessionStore();
-    const { openImportDialog, setOpenImportDialog, setOpenScheduleSelect } = useToggleStore();
+    const { openImportDialog, setOpenImportDialog } = useToggleStore();
 
     const firstTimeUserFlag = useRef(true);
 
@@ -101,8 +101,6 @@ export function Import() {
                 if (importStatus instanceof Error) {
                     setAlertDialog(true);
                     setAlertMessage(typeof importStatus === 'string' ? importStatus : importStatus.message);
-                } else {
-                    setTimeout(() => setOpenScheduleSelect(false), 2000);
                 }
                 break;
             }
