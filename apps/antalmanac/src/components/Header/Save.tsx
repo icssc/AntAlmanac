@@ -74,19 +74,19 @@ const SaveFunctionality = () => {
                 <Alert
                     severity="warning"
                     variant="filled"
-                    sx={{ display: 'flex', alignItems: 'center', fontSize: 'small' }}
+                    sx={{ display: 'flex', alignItems: 'center', fontSize: 'xs' }}
                 >
                     DISCLAIMER: Legacy (username-based) schedules can no longer be saved. <br /> Please log in with
                     <Button
                         color="inherit"
                         variant="text"
-                        size="small"
                         onClick={handleClickSignIn}
                         sx={{
                             textTransform: 'none',
                             padding: 0,
                             fontSize: 'inherit',
                             textDecoration: 'underline',
+                            width: 'fit-content',
                         }}
                     >
                         Google
