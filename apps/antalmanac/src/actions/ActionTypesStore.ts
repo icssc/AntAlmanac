@@ -15,7 +15,7 @@ import AppStore from '$stores/AppStore';
 const MAX_UNSAVED_ACTIONS = 1000;
 
 export interface UndoAction {
-    type: 'undoAction';
+    type: 'undoAction' | 'redoAction';
 }
 
 export interface AddCourseAction {

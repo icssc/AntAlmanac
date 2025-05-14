@@ -237,6 +237,10 @@ class AppStore extends EventEmitter {
     redoAction() {
         this.schedule.redoState();
         this.unsavedChanges = true;
+        const action: UndoAction = {
+            type: 'redoAction',
+        };
+        actionTypesStore.autoSaveSchedule(action);
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
         this.emit('colorChange', false);
