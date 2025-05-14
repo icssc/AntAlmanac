@@ -36,7 +36,7 @@ export function SignInDialog(props: SignInDialogProps) {
             <DialogContent>
                 <Stack spacing={1}>
                     <Alert severity="info" variant={isDark ? 'outlined' : 'standard'} sx={{ fontSize: 'small' }}>
-                        All changes made will be saved to your Google account
+                        Don&apos;t worry, all changes made will be saved to your Google account
                     </Alert>
                     <Button
                         onClick={loginUser}

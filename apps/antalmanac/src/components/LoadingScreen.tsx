@@ -5,7 +5,7 @@ import { Logo } from './Header/Logo';
 
 import { BLUE } from '$src/globals';
 
-const funFacts = [
+const FUN_FACTS = [
     'Did you know? Antalmanac is maintained by the ICS Student Council at UCI!',
     'AntAlmanac was created in 2018 by a small group of students under the leadership of @the-rango.',
     'Did you know you can search for classes by pressing "CTRL/CMD" + clicking on your schedule item!',
@@ -17,11 +17,11 @@ type LoadingScreenProps = {
 };
 
 export function LoadingScreen(props: LoadingScreenProps) {
-    const [randomFact, setRandomFact] = useState<string>(funFacts[Math.floor(Math.random() * funFacts.length)]);
+    const [randomFact, setRandomFact] = useState<string>(FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)]);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setRandomFact(funFacts[Math.floor(Math.random() * funFacts.length)]);
+            setRandomFact(FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)]);
         }, 5000);
 
         return () => clearInterval(interval);
