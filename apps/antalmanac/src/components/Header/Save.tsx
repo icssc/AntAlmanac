@@ -1,6 +1,7 @@
 import { Save as SaveIcon } from '@material-ui/icons';
+import CloseIcon from '@mui/icons-material/Close';
 import { LoadingButton } from '@mui/lab';
-import { Stack, Snackbar, Alert, Link } from '@mui/material';
+import { Stack, Snackbar, Alert, Link, IconButton } from '@mui/material';
 import { useState, useEffect } from 'react';
 
 import actionTypesStore from '$actions/ActionTypesStore';
@@ -18,11 +19,16 @@ export const Save = () => {
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-    const { openAutoSaveWarning } = scheduleComponentsToggleStore();
+    const { openAutoSaveWarning, setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
 
     const handleClickSignIn = () => {
         setOpenSignInDialog(!openSignInDialog);
     };
+
+    const handleCloseAutoSaveWarning = () => {
+        setOpenAutoSaveWarning(false);
+    };
+
     useEffect(() => {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
@@ -74,9 +80,24 @@ export const Save = () => {
                 <Alert
                     severity="warning"
                     variant="filled"
-                    sx={{ display: 'flex', alignItems: 'center', fontSize: 'xs' }}
+                    sx={{ display: 'flex', alignItems: 'center', fontSize: 'xs', color: 'inherit' }}
+                    action={
+                        <IconButton
+                            aria-label="close"
+                            color="inherit"
+                            size="medium"
+                            onClick={handleCloseAutoSaveWarning}
+                            sx={{
+                                alignSelf: 'center',
+                                marginBottom: 'auto',
+                                marginTop: 'auto',
+                            }}
+                        >
+                            <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                    }
                 >
-                    DISCLAIMER: Legacy (username-based) schedules can no longer be saved. <br /> Please log in with{' '}
+                    DISCLAIMER: Legacy (username-based) schedules can no longer be saved. Please log in with{' '}
                     <Link
                         component="button"
                         onClick={handleClickSignIn}

@@ -1,3 +1,4 @@
+// NB: This store composes the state of dialogs, popovers, etc related to loading, importing, and managing schedules. This is most valuable for managing our auth and migration flows.
 import { create } from 'zustand';
 
 interface scheduleComponentsToggleState {
