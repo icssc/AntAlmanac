@@ -226,12 +226,7 @@ class AppStore extends EventEmitter {
             type: 'undoAction',
         };
         actionTypesStore.autoSaveSchedule(action);
-        this.emit('addedCoursesChange');
-        this.emit('customEventsChange');
-        this.emit('colorChange', false);
-        this.emit('scheduleNamesChange');
-        this.emit('currentScheduleIndexChange');
-        this.emit('scheduleNotesChange');
+        this.emitUndoRedoEvents();
     }
 
     redoAction() {
@@ -241,12 +236,7 @@ class AppStore extends EventEmitter {
             type: 'redoAction',
         };
         actionTypesStore.autoSaveSchedule(action);
-        this.emit('addedCoursesChange');
-        this.emit('customEventsChange');
-        this.emit('colorChange', false);
-        this.emit('scheduleNamesChange');
-        this.emit('currentScheduleIndexChange');
-        this.emit('scheduleNotesChange');
+        this.emitUndoRedoEvents();
     }
 
     addCustomEvent(customEvent: RepeatingCustomEvent, scheduleIndices: number[]) {
@@ -483,6 +473,15 @@ class AppStore extends EventEmitter {
         new Set([term, ...this.schedule.getCurrentCourses().map((course) => course.term)]);
 
     getPreviousStates = () => this.schedule.getPreviousStates();
+
+    emitUndoRedoEvents() {
+        this.emit('addedCoursesChange');
+        this.emit('customEventsChange');
+        this.emit('colorChange', false);
+        this.emit('scheduleNamesChange');
+        this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNotesChange');
+    }
 }
 
 const store = new AppStore();
