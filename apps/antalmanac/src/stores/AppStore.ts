@@ -17,7 +17,7 @@ import type {
     DeleteScheduleAction,
     ReorderScheduleAction,
     ChangeCourseColorAction,
-    UndoAction,
+    UndoRedoAction,
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
@@ -222,7 +222,7 @@ class AppStore extends EventEmitter {
     undoAction() {
         this.schedule.revertState();
         this.unsavedChanges = true;
-        const action: UndoAction = {
+        const action: UndoRedoAction = {
             type: 'undoAction',
         };
         actionTypesStore.autoSaveSchedule(action);
@@ -237,7 +237,7 @@ class AppStore extends EventEmitter {
     redoAction() {
         this.schedule.redoState();
         this.unsavedChanges = true;
-        const action: UndoAction = {
+        const action: UndoRedoAction = {
             type: 'redoAction',
         };
         actionTypesStore.autoSaveSchedule(action);
