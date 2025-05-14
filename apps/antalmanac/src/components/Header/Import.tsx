@@ -1,6 +1,5 @@
 import {
     Box,
-    Button,
     Dialog,
     DialogActions,
     DialogContent,
@@ -15,11 +14,18 @@ import {
 } from '@material-ui/core';
 import InputLabel from '@material-ui/core/InputLabel';
 import { PostAdd } from '@material-ui/icons';
+import { AlertColor, Button, Stack } from '@mui/material';
 import { CourseInfo } from '@packages/antalmanac-types';
 import { ChangeEvent, useCallback, useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-import { addCustomEvent, openSnackbar, addCourse, importScheduleWithUsername } from '$actions/AppStoreActions';
+import {
+    addCustomEvent,
+    openSnackbar,
+    addCourse,
+    importScheduleWithUsername,
+    importValidatedSchedule,
+} from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
 import { ImportSource } from '$components/Header/constants';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
@@ -35,13 +41,15 @@ import {
 } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
+import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { useToggleStore } from '$stores/ToggleStore';
 
 export function Import() {
-    const [alertMessage, setAlertMessage] = useState('');
+    const [alertDialogTitle, setAlertDialogTitle] = useState('');
+    const [alertDialogSeverity, setAlertDialogSeverity] = useState<AlertColor>('error');
     const [alertDialog, setAlertDialog] = useState(false);
     const [importSource, setImportSource] = useState('studylist');
     const [studyListText, setStudyListText] = useState('');
@@ -98,9 +106,18 @@ export function Import() {
                 break;
             case ImportSource.AA_USERNAME_IMPORT: {
                 const importStatus = await importScheduleWithUsername(aaUsername);
-                if (importStatus instanceof Error) {
+                if (importStatus.error) {
                     setAlertDialog(true);
-                    setAlertMessage(typeof importStatus === 'string' ? importStatus : importStatus.message);
+                    setAlertDialogSeverity('error');
+                    if (importStatus.error instanceof Error) {
+                        setAlertDialogTitle(importStatus.error.message);
+                    } else {
+                        setAlertDialogTitle('Error importing schedule');
+                    }
+                } else if (importStatus.imported) {
+                    setAlertDialog(true);
+                    setAlertDialogSeverity('warning');
+                    setAlertDialogTitle(`WARNING: "${aaUsername}" has already been imported`);
                 }
                 break;
             }
@@ -126,7 +143,15 @@ export function Import() {
 
     const handleCloseAlertDialog = () => {
         setAlertDialog(false);
+        setOpenImportDialog(true);
     };
+
+    const handleImportAnyways = () => {
+        importValidatedSchedule(aaUsername);
+        setOpenImportDialog(false);
+        setAlertDialog(false);
+    };
+
     const uploadSectionCodes = async (sectionCodes: string[], term: string, currentSchedule: number) => {
         try {
             const term = RightPaneStore.getFormData().term;
@@ -354,9 +379,33 @@ export function Import() {
                 </DialogActions>
             </Dialog>
 
-            <AlertDialog title={alertMessage} open={alertDialog} onClose={handleCloseAlertDialog} severity="error">
-                If you think this is a mistake please submit a{' '}
-                <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</Link>
+            <AlertDialog
+                title={alertDialogTitle}
+                open={alertDialog}
+                onClose={handleCloseAlertDialog}
+                severity={alertDialogSeverity}
+            >
+                {alertDialogSeverity === 'error' ? (
+                    <Box>
+                        If you think this is a mistake please submit a{' '}
+                        <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</Link>
+                    </Box>
+                ) : (
+                    <Stack direction="row" spacing={2} justifyContent="center">
+                        <Button
+                            onClick={handleImportAnyways}
+                            color="primary"
+                            variant="contained"
+                            size="large"
+                            sx={{ backgroundColor: BLUE }}
+                        >
+                            Import Anyways
+                        </Button>
+                        <Button onClick={handleCloseAlertDialog} color="inherit" size="large">
+                            Cancel
+                        </Button>
+                    </Stack>
+                )}
             </AlertDialog>
         </>
     );

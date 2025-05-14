@@ -268,7 +268,7 @@ export const Load = () => {
                 title="This schedule seems to have already been imported!"
                 severity="warning"
             >
-                <DialogContentText>To access your schedule sign in with the Google account</DialogContentText>
+                <DialogContentText>To load your schedule sign in with your Google account</DialogContentText>
                 <LoadingButton
                     color="primary"
                     variant="contained"

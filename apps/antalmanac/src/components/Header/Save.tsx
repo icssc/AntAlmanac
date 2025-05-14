@@ -1,6 +1,6 @@
 import { Save as SaveIcon } from '@material-ui/icons';
 import { LoadingButton } from '@mui/lab';
-import { Stack, Snackbar, Alert, Button } from '@mui/material';
+import { Stack, Snackbar, Alert, Link } from '@mui/material';
 import { useState, useEffect } from 'react';
 
 import actionTypesStore from '$actions/ActionTypesStore';
@@ -76,21 +76,23 @@ export const Save = () => {
                     variant="filled"
                     sx={{ display: 'flex', alignItems: 'center', fontSize: 'xs' }}
                 >
-                    DISCLAIMER: Legacy (username-based) schedules can no longer be saved. <br /> Please log in with
-                    <Button
-                        color="inherit"
-                        variant="text"
+                    DISCLAIMER: Legacy (username-based) schedules can no longer be saved. <br /> Please log in with{' '}
+                    <Link
+                        component="button"
                         onClick={handleClickSignIn}
                         sx={{
-                            textTransform: 'none',
-                            padding: 0,
-                            fontSize: 'inherit',
                             textDecoration: 'underline',
-                            width: 'fit-content',
+                            cursor: 'pointer',
+                            color: 'inherit',
+                            fontWeight: 'inherit',
+                            fontSize: 'inherit',
+                            padding: 0,
+                            border: 'none',
+                            background: 'none',
                         }}
                     >
                         Google
-                    </Button>
+                    </Link>{' '}
                     to <strong>save</strong> your schedule(s) and changes.
                 </Alert>
             </Snackbar>

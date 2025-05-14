@@ -32,7 +32,7 @@ export function SignInDialog(props: SignInDialogProps) {
                 padding: '1rem',
             }}
         >
-            <DialogTitle>Save to your Google account</DialogTitle>
+            <DialogTitle>Save</DialogTitle>
             <DialogContent>
                 <Stack spacing={1}>
                     <Alert severity="info" variant={isDark ? 'outlined' : 'standard'} sx={{ fontSize: 'small' }}>
