@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-interface ToggleState {
+interface scheduleComponentsToggleState {
     openScheduleSelect: boolean;
     openLoadingSchedule: boolean;
     openImportDialog: boolean;
@@ -11,7 +11,7 @@ interface ToggleState {
     setOpenAutoSaveWarning: (open: boolean) => void;
 }
 
-export const useToggleStore = create<ToggleState>((set) => ({
+export const scheduleComponentsToggleStore = create<scheduleComponentsToggleState>((set) => ({
     openScheduleSelect: false,
     openLoadingSchedule: false,
     openImportDialog: false,

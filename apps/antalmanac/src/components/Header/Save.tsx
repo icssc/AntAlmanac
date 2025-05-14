@@ -8,9 +8,9 @@ import { saveSchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import trpc from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import { useToggleStore } from '$stores/ToggleStore';
 
 export const Save = () => {
     const isDark = useThemeStore((store) => store.isDark);
@@ -18,7 +18,7 @@ export const Save = () => {
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-    const { openAutoSaveWarning } = useToggleStore();
+    const { openAutoSaveWarning } = scheduleComponentsToggleStore();
 
     const handleClickSignIn = () => {
         setOpenSignInDialog(!openSignInDialog);

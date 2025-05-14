@@ -43,9 +43,9 @@ import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import { useToggleStore } from '$stores/ToggleStore';
 
 export function Import() {
     const [alertDialogTitle, setAlertDialogTitle] = useState('');
@@ -59,7 +59,7 @@ export function Import() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const { session, sessionIsValid } = useSessionStore();
-    const { openImportDialog, setOpenImportDialog } = useToggleStore();
+    const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
 
     const firstTimeUserFlag = useRef(true);
 

@@ -17,8 +17,8 @@ import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
-import { useToggleStore } from '$stores/ToggleStore';
 
 /*
  * Always start week on Saturday for finals potentially on weekends.
@@ -54,7 +54,7 @@ export const ScheduleCalendar = memo(() => {
     );
     const isDark = useThemeStore(useShallow((store) => store.isDark));
 
-    const { openLoadingSchedule: loadingSchedule } = useToggleStore();
+    const { openLoadingSchedule: loadingSchedule } = scheduleComponentsToggleStore();
 
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
         if (showFinalsSchedule)

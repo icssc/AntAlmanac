@@ -15,8 +15,8 @@ import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache, removeLocalStorageSessionId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { useToggleStore } from '$stores/ToggleStore';
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
     onError: (scheduleName: string) => unknown;
@@ -222,13 +222,13 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
         mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, '(import)-');
         currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
 
-        useToggleStore.setState({ openImportDialog: false, openLoadingSchedule: true });
+        scheduleComponentsToggleStore.setState({ openImportDialog: false, openLoadingSchedule: true });
 
         const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
         if (isScheduleLoaded) {
             openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
 
-            useToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
+            scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
 
             await saveSchedule(accounts.providerAccountId, true);
 

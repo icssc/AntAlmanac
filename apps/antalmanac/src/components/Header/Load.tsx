@@ -19,9 +19,9 @@ import { AlertDialog } from '$components/AlertDialog';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import { useToggleStore } from '$stores/ToggleStore';
 
 interface LoadSaveButtonBaseProps {
     action: typeof saveSchedule;
@@ -172,7 +172,7 @@ export const Load = () => {
 
     const { updateSession, sessionIsValid } = useSessionStore();
 
-    const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = useToggleStore();
+    const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = scheduleComponentsToggleStore();
 
     const [openAlert, setOpenalert] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());

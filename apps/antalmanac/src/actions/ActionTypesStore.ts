@@ -11,8 +11,8 @@ import {
     setLocalStorageUnsavedActions,
 } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { useToggleStore } from '$stores/ToggleStore';
 
 const MAX_UNSAVED_ACTIONS = 1000;
 
@@ -131,7 +131,7 @@ class ActionTypesStore extends EventEmitter {
 
         if (!sessionStore.sessionIsValid || !sessionStore.session) {
             if (autoSave) {
-                useToggleStore.getState().setOpenAutoSaveWarning(true);
+                scheduleComponentsToggleStore.getState().setOpenAutoSaveWarning(true);
             }
             return;
         }
