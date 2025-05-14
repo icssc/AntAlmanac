@@ -259,8 +259,6 @@ export class RDS {
      * deduplicating by section code and term.
      * */
     private static async upsertCourses(tx: Transaction, scheduleId: string, courses: ShortCourse[]) {
-        await tx.delete(coursesInSchedule).where(eq(coursesInSchedule.scheduleId, scheduleId));
-
         if (courses.length === 0) {
             return;
         }
