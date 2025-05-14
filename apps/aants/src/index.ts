@@ -14,7 +14,7 @@ import {
     sendNotification,
 } from './helpers/helpers';
 
-async function main() {
+export async function scanAndNotify() {
     try {
         const subscriptions = await getSubscriptionSectionCodes();
         await Promise.all(
@@ -113,5 +113,3 @@ async function main() {
         process.exit(0);
     }
 }
-
-main();
