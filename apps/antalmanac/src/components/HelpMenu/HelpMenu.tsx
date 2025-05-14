@@ -18,6 +18,7 @@ import { TutorialAction } from '$components/HelpMenu/actions/TutorialAction';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { BLUE } from '$src/globals';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 export type HelpMenuAction = {
@@ -30,6 +31,7 @@ export type HelpMenuAction = {
 export function HelpMenu() {
     const isMobile = useIsMobile();
     const [open, setOpen] = useState(false);
+    const { sessionIsValid } = useSessionStore();
     const { openAutoSaveWarning, setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
 
     const isDark = useThemeStore((state) => state.isDark);
@@ -113,24 +115,26 @@ export function HelpMenu() {
                 ))}
             </SpeedDial>
 
-            <IconButton
-                aria-label="warning"
-                color="warning"
-                size="large"
-                onClick={handleOpenAutoSaveWarning}
-                sx={{
-                    bgcolor: isDark ? 'warning.dark' : 'warning.main',
-                    color: 'white',
-                    height: '4rem',
-                    width: '4rem',
-                    padding: 0,
-                    '&:hover': {
+            {!sessionIsValid && (
+                <IconButton
+                    aria-label="warning"
+                    color="warning"
+                    size="large"
+                    onClick={handleOpenAutoSaveWarning}
+                    sx={{
                         bgcolor: isDark ? 'warning.dark' : 'warning.main',
-                    },
-                }}
-            >
-                <Warning />
-            </IconButton>
+                        color: 'white',
+                        height: '4rem',
+                        width: '4rem',
+                        padding: 0,
+                        '&:hover': {
+                            bgcolor: isDark ? 'warning.dark' : 'warning.main',
+                        },
+                    }}
+                >
+                    <Warning />
+                </IconButton>
+            )}
         </Stack>
     );
 }

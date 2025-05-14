@@ -117,7 +117,7 @@ export function Import() {
                 } else if (importStatus.imported) {
                     setAlertDialog(true);
                     setAlertDialogSeverity('warning');
-                    setAlertDialogTitle(`WARNING: "${aaUsername}" has already been imported`);
+                    setAlertDialogTitle(`Note: "${aaUsername}" has already been imported`);
                 }
                 break;
             }

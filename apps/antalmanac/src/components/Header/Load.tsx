@@ -193,7 +193,6 @@ export const Load = () => {
     const loadScheduleAndSetLoading = useCallback(
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
-            console.log('test');
             await loadSchedule(userID, rememberMe, 'GUEST');
             await validateImportedUser(userID);
             setOpenLoadingSchedule(false);
