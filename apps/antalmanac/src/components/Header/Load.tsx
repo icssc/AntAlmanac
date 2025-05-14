@@ -142,9 +142,9 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
 
                             <Alert severity="info">
                                 <AlertTitle>
-                                    Note: Schedules saved to a unique user ID can no longer be saved.
+                                    Note: Existing schedules saved to a unique user ID can no longer be updated.
                                 </AlertTitle>
-                                Please sign up with your Google account and import your schedules
+                                Please sign up with your Google account to import your schedules.
                             </Alert>
 
                             <TextField
