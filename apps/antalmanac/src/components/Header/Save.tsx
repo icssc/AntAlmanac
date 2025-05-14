@@ -91,6 +91,7 @@ export const Save = () => {
                                 alignSelf: 'center',
                                 marginBottom: 'auto',
                                 marginTop: 'auto',
+                                padding: '0',
                             }}
                         >
                             <CloseIcon fontSize="inherit" />

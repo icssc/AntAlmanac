@@ -11,7 +11,7 @@ import {
 import { CloudDownload, Save } from '@material-ui/icons';
 import GoogleIcon from '@mui/icons-material/Google';
 import { LoadingButton } from '@mui/lab';
-import { Divider, Stack } from '@mui/material';
+import { Divider, Stack, Alert, AlertTitle } from '@mui/material';
 import { ChangeEvent, PureComponent, useEffect, useState, useCallback } from 'react';
 
 import { loadSchedule, saveSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
@@ -139,6 +139,13 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                             <DialogContentText>
                                 Enter your unique user ID here to {this.props.actionName.toLowerCase()} your schedule.
                             </DialogContentText>
+
+                            <Alert severity="info">
+                                <AlertTitle>
+                                    Note: Schedules saved to a unique user ID can no longer be saved.
+                                </AlertTitle>
+                                Please sign up with your Google account and import your schedules
+                            </Alert>
 
                             <TextField
                                 // eslint-disable-next-line jsx-a11y/no-autofocus

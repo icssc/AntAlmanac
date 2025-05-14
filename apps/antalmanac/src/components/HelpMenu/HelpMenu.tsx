@@ -16,6 +16,7 @@ import { HelpBoxAction } from '$components/HelpMenu/actions/HelpBoxAction';
 import { PatchNotesAction } from '$components/HelpMenu/actions/PatchNotesAction';
 import { TutorialAction } from '$components/HelpMenu/actions/TutorialAction';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { getLocalStorageAutoSave } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -33,6 +34,8 @@ export function HelpMenu() {
     const [open, setOpen] = useState(false);
     const { sessionIsValid } = useSessionStore();
     const { openAutoSaveWarning, setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
+
+    const autoSave = getLocalStorageAutoSave() ?? 'false';
 
     const isDark = useThemeStore((state) => state.isDark);
 
@@ -115,7 +118,7 @@ export function HelpMenu() {
                 ))}
             </SpeedDial>
 
-            {!sessionIsValid && (
+            {!sessionIsValid && autoSave === 'true' && (
                 <IconButton
                     aria-label="warning"
                     color="warning"
