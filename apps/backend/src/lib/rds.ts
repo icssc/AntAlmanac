@@ -310,7 +310,14 @@ export class RDS {
         await tx.insert(customEvents).values(dbCustomEvents);
     }
 
-    private static async fetchUserData(db: DatabaseOrTransaction, userId: string) {
+    /**
+     * Retrieves user data by user ID, including schedules and custom events.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param userId - The unique identifier of the user.
+     * @returns A promise that resolves to a User object containing user data and schedules, or null if the user is not found.
+     */
+    static async getUserDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
         return db.transaction(async (tx) => {
             const user = await tx
                 .select()
@@ -348,17 +355,6 @@ export class RDS {
                 },
             };
         });
-    }
-
-    /**
-     * Retrieves user data by user ID, including schedules and custom events.
-     *
-     * @param db - The database or transaction object to use for the query.
-     * @param userId - The unique identifier of the user.
-     * @returns A promise that resolves to a User object containing user data and schedules, or null if the user is not found.
-     */
-    static async getUserDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
-        return await this.fetchUserData(db, userId);
     }
 
     private static async getUserAndAccount(

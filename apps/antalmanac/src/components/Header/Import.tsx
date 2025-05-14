@@ -391,7 +391,7 @@ export function Import() {
                         <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</Link>
                     </Box>
                 ) : (
-                    <Stack direction="row" spacing={2} justifyContent="center">
+                    <Stack direction="row" justifyContent="center">
                         <Button
                             onClick={handleImportAnyways}
                             color="primary"
@@ -400,9 +400,6 @@ export function Import() {
                             sx={{ backgroundColor: BLUE }}
                         >
                             Import Anyways
-                        </Button>
-                        <Button onClick={handleCloseAlertDialog} color="inherit" size="large">
-                            Cancel
                         </Button>
                     </Stack>
                 )}
