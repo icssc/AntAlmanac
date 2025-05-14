@@ -14,8 +14,8 @@ import AppStore from '$stores/AppStore';
 
 const MAX_UNSAVED_ACTIONS = 1000;
 
-export interface UndoAction {
-    type: 'undoAction';
+export interface UndoRedoAction {
+    type: 'undoAction' | 'redoAction';
 }
 
 export interface AddCourseAction {
@@ -108,7 +108,7 @@ export type ActionType =
     | CopyScheduleAction
     | ReorderScheduleAction
     | ChangeCourseColorAction
-    | UndoAction;
+    | UndoRedoAction;
 
 function parseUnsavedActionsString(unsavedActionsString: string): ActionType[] {
     try {

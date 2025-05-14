@@ -17,7 +17,7 @@ import type {
     DeleteScheduleAction,
     ReorderScheduleAction,
     ChangeCourseColorAction,
-    UndoAction,
+    UndoRedoAction,
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
@@ -222,16 +222,21 @@ class AppStore extends EventEmitter {
     undoAction() {
         this.schedule.revertState();
         this.unsavedChanges = true;
-        const action: UndoAction = {
+        const action: UndoRedoAction = {
             type: 'undoAction',
         };
         actionTypesStore.autoSaveSchedule(action);
-        this.emit('addedCoursesChange');
-        this.emit('customEventsChange');
-        this.emit('colorChange', false);
-        this.emit('scheduleNamesChange');
-        this.emit('currentScheduleIndexChange');
-        this.emit('scheduleNotesChange');
+        this.emitUndoRedoEvents();
+    }
+
+    redoAction() {
+        this.schedule.redoState();
+        this.unsavedChanges = true;
+        const action: UndoRedoAction = {
+            type: 'redoAction',
+        };
+        actionTypesStore.autoSaveSchedule(action);
+        this.emitUndoRedoEvents();
     }
 
     addCustomEvent(customEvent: RepeatingCustomEvent, scheduleIndices: number[]) {
@@ -468,6 +473,15 @@ class AppStore extends EventEmitter {
         new Set([term, ...this.schedule.getCurrentCourses().map((course) => course.term)]);
 
     getPreviousStates = () => this.schedule.getPreviousStates();
+
+    emitUndoRedoEvents() {
+        this.emit('addedCoursesChange');
+        this.emit('customEventsChange');
+        this.emit('colorChange', false);
+        this.emit('scheduleNamesChange');
+        this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNotesChange');
+    }
 }
 
 const store = new AppStore();

@@ -243,6 +243,12 @@ export const undoDelete = (event: KeyboardEvent | null) => {
     }
 };
 
+export const redoDelete = (event: KeyboardEvent | null) => {
+    if (event == null || (event.keyCode === 89 && (event.ctrlKey || event.metaKey))) {
+        AppStore.redoAction();
+    }
+};
+
 export const changeCurrentSchedule = (newScheduleIndex: number) => {
     AppStore.changeCurrentSchedule(newScheduleIndex);
 };

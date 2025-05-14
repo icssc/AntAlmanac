@@ -1,12 +1,13 @@
 import {
     Undo as UndoIcon,
+    Redo as RedoIcon,
     Description as DescriptionIcon,
     DescriptionOutlined as DescriptionOutlinedIcon,
 } from '@mui/icons-material';
 import { useTheme, useMediaQuery, Box, Button, IconButton, Paper, Tooltip } from '@mui/material';
 import { useState, useCallback, useEffect, memo } from 'react';
 
-import { undoDelete } from '$actions/AppStoreActions';
+import { undoDelete, redoDelete } from '$actions/AppStoreActions';
 import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog';
 import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
 import { ClearScheduleButton } from '$components/buttons/Clear';
@@ -21,6 +22,14 @@ function handleUndo() {
         action: analyticsEnum.calendar.actions.UNDO,
     });
     undoDelete(null);
+}
+
+function handleRedo() {
+    logAnalytics({
+        category: analyticsEnum.calendar.title,
+        action: analyticsEnum.calendar.actions.REDO,
+    });
+    redoDelete(null);
 }
 
 export interface CalendarPaneToolbarProps {
@@ -115,6 +124,12 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                 <Tooltip title="Undo last action">
                     <IconButton onClick={handleUndo} size="medium" disabled={skeletonMode}>
                         <UndoIcon fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+
+                <Tooltip title="Redo last action">
+                    <IconButton onClick={handleRedo} size="medium" disabled={skeletonMode}>
+                        <RedoIcon fontSize="small" />
                     </IconButton>
                 </Tooltip>
 
