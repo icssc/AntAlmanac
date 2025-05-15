@@ -21,7 +21,6 @@ import { useSessionStore } from '$stores/SessionStore';
 export function AuthPage() {
     const { session } = useSessionStore();
     const [searchParams] = useSearchParams();
-    // const navigate = useNavigate();
 
     const handleSearchParamsChange = useCallback(async () => {
         try {
@@ -41,50 +40,60 @@ export function AuthPage() {
             const savedData = getLocalStorageDataCache() ?? '';
             removeLocalStorageUserId();
 
-            if (sessionToken && providerId) {
-                setLocalStorageSessionId(sessionToken);
-
-                if (fromLoading !== '') {
-                    removeLocalStorageFromLoading();
-                    removeLocalStorageDataCache();
-                    removeLocalStorageImportedUser();
-                } else {
-                    if (savedUserId === '' && savedData === '') {
-                        removeLocalStorageDataCache();
-                        removeLocalStorageImportedUser();
-                    } else {
-                        const userData = await trpc.userData.getUserData.query({ userId: userId });
-                        const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
-
-                        if (savedData !== '') {
-                            if (savedUserId !== '') {
-                                await trpc.userData.flagImportedSchedule.mutate({ providerId: savedUserId });
-                                setLocalStorageImportedUser(savedUserId);
-                            }
-
-                            const data = JSON.parse(savedData);
-
-                            if (isEmptySchedule(userData.userData.schedules)) {
-                                scheduleSaveState.schedules = data;
-                            } else {
-                                const saveState = userData && 'userData' in userData ? userData.userData : userData;
-                                mergeShortCourseSchedules(saveState.schedules, data, '(import)-');
-                                scheduleSaveState.schedules = saveState.schedules;
-                                scheduleSaveState.scheduleIndex = saveState.schedules.length - 1;
-                            }
-
-                            await trpc.userData.saveUserData.mutate({
-                                id: providerId,
-                                data: {
-                                    id: providerId,
-                                    userData: scheduleSaveState,
-                                },
-                            });
-                        }
-                    }
-                }
+            if (!(sessionToken && providerId)) {
                 window.location.href = '/';
+                return;
             }
+
+            setLocalStorageSessionId(sessionToken);
+
+            // load schedule without saving any changes
+            if (fromLoading !== '') {
+                removeLocalStorageFromLoading();
+                removeLocalStorageDataCache();
+                removeLocalStorageImportedUser();
+                window.location.href = '/';
+                return;
+            }
+
+            // no changes to save
+            if (savedUserId === '' && savedData === '') {
+                removeLocalStorageDataCache();
+                removeLocalStorageImportedUser();
+                window.location.href = '/';
+                return;
+            }
+
+            // handle unsaved changes
+            if (savedData !== '') {
+                const userData = await trpc.userData.getUserData.query({ userId: userId });
+                const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+
+                if (savedUserId !== '') {
+                    await trpc.userData.flagImportedSchedule.mutate({ providerId: savedUserId });
+                    setLocalStorageImportedUser(savedUserId);
+                }
+
+                const data = JSON.parse(savedData);
+
+                if (isEmptySchedule(userData.userData.schedules)) {
+                    scheduleSaveState.schedules = data;
+                } else {
+                    const saveState = userData && 'userData' in userData ? userData.userData : userData;
+                    mergeShortCourseSchedules(saveState.schedules, data, '(import)-');
+                    scheduleSaveState.schedules = saveState.schedules;
+                    scheduleSaveState.scheduleIndex = saveState.schedules.length - 1;
+                }
+
+                await trpc.userData.saveUserData.mutate({
+                    id: providerId,
+                    data: {
+                        id: providerId,
+                        userData: scheduleSaveState,
+                    },
+                });
+            }
+            window.location.href = '/';
         } catch (error) {
             console.error('Error during authentication', error);
         }
