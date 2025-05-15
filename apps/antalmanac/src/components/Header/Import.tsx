@@ -27,7 +27,6 @@ import {
     importValidatedSchedule,
 } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
-import { ImportSource } from '$components/Header/constants';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -46,6 +45,12 @@ import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
+
+enum ImportSource {
+    ZOT_COURSE_IMPORT = 'zotcourse',
+    STUDY_LIST_IMPORT = 'studylist',
+    AA_USERNAME_IMPORT = 'username',
+}
 
 export function Import() {
     const [alertDialogTitle, setAlertDialogTitle] = useState('');
