@@ -521,6 +521,18 @@ export class RDS {
             .then((res) => res[0].users);
     }
 
+    /**
+     * Fetches user data associated with a valid session using a refresh token.
+     *
+     * This function initiates a database transaction to retrieve user information
+     * based on the provided refresh token. If a user is found, it gathers the user's
+     * schedules and custom events, aggregates them, and determines the current schedule index.
+     *
+     * @param db - The database or transaction object to perform the operation.
+     * @param refreshToken - The refresh token used to identify the session.
+     * @returns A promise that resolves to an object containing the user's ID and user data,
+     *          including schedules and the current schedule index, or null if no user is found.
+     */
     static async fetchUserDataWithSession(db: DatabaseOrTransaction, refreshToken: string) {
         return db.transaction(async (tx) => {
             const user = await this.getUserDataWithSession(tx, refreshToken);
@@ -570,6 +582,17 @@ export class RDS {
         );
     }
 
+    /**
+     * Flags a user as imported based on the provided provider ID.
+     *
+     * This function checks if a user associated with the given provider ID has already been flagged as imported.
+     * If not, it updates the user's record to set the imported flag to true.
+     *
+     * @param db The database or transaction object used to perform the operation.
+     * @param providerId The provider ID used to identify the user.
+     * @returns A promise that resolves to true if the user was successfully flagged as imported, or false if the user
+     *          was already flagged or if an error occurred during the operation.
+     */
     static async flagImportedUser(db: DatabaseOrTransaction, providerId: string) {
         try {
             const { users: user, accounts } = await this.getGuestAccountAndUserByName(db, providerId);
