@@ -186,7 +186,7 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
             selector: '#load-save-container',
             content: (
                 <>
-                    <b>Sign in</b> to save your schedule when you&apos;re done. <br />
+                    <b>Sign in</b> to save your schedules when you&apos;re done. <br />
                     That&apos;s it 🎉 Good luck with your classes!
                 </>
             ),
