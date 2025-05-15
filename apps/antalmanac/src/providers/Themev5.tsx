@@ -99,6 +99,21 @@ export default function AppThemev5Provider(props: Props) {
                             }),
                         },
                     },
+                    MuiTextField: {
+                        defaultProps: {
+                            variant: 'standard',
+                        },
+                    },
+                    MuiInputLabel: {
+                        defaultProps: {
+                            variant: 'standard',
+                        },
+                    },
+                    MuiSelect: {
+                        defaultProps: {
+                            variant: 'standard',
+                        },
+                    },
                 },
                 breakpoints: {
                     /**
