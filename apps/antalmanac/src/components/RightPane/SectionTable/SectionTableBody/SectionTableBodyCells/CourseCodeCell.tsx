@@ -2,7 +2,7 @@ import { Chip, Tooltip } from '@mui/material';
 import { useState } from 'react';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import { useThemeStore } from '$stores/SettingsStore';
 

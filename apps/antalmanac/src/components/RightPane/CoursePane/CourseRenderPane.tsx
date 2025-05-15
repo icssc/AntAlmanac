@@ -15,7 +15,7 @@ import darkNoNothing from './static/dark-no_results.png';
 import noNothing from './static/no_results.png';
 
 import { openSnackbar } from '$actions/AppStoreActions';
-import analyticsEnum from '$lib/analytics';
+import analyticsEnum from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
@@ -241,6 +241,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             room: formData.room,
             division: formData.division,
             excludeRestrictionCodes: formData.excludeRestrictionCodes.split('').join(','), // comma delimited string (e.g. ABC -> A,B,C)
+            days: formData.days.split(/(?=[A-Z])/).join(','), // split on capital letters (e.g. MTuF -> M,Tu,F)
         };
 
         const gradesQueryParams = {

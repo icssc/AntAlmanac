@@ -4,7 +4,6 @@ import { getDefaultTerm } from '$lib/termData';
 
 const defaultFormValues: Record<string, string> = {
     deptValue: 'ALL',
-    deptLabel: 'ALL: Include All Departments',
     ge: 'ANY',
     term: getDefaultTerm().shortName,
     courseNumber: '',
@@ -18,6 +17,7 @@ const defaultFormValues: Record<string, string> = {
     room: '',
     division: '',
     excludeRestrictionCodes: '',
+    days: '',
 };
 
 export interface BuildingFocusInfo {
@@ -33,7 +33,6 @@ class RightPaneStore extends EventEmitter {
     private urlTermValue: string;
     private urlGEValue: string;
     private urlCourseNumValue: string;
-    private urlDeptLabel: string;
     private urlDeptValue: string;
 
     constructor() {
@@ -47,7 +46,6 @@ class RightPaneStore extends EventEmitter {
         this.urlTermValue = search.get('term') || '';
         this.urlGEValue = search.get('ge') || '';
         this.urlCourseNumValue = search.get('courseNumber') || '';
-        this.urlDeptLabel = search.get('deptLabel') || '';
         this.urlDeptValue = search.get('deptValue') || '';
 
         this.updateFormDataFromURL(search);
@@ -58,6 +56,7 @@ class RightPaneStore extends EventEmitter {
 
         formFields.forEach((field) => {
             const paramValue = search.get(field) || search.get(field.toUpperCase());
+
             if (paramValue !== null) {
                 this.formData[field] = paramValue;
             }
@@ -82,7 +81,6 @@ class RightPaneStore extends EventEmitter {
     getUrlTermValue = () => this.urlTermValue;
     getUrlGEValue = () => this.urlGEValue;
     getUrlCourseNumValue = () => this.urlCourseNumValue;
-    getUrlDeptLabel = () => this.urlDeptLabel;
     getUrlDeptValue = () => this.urlDeptValue;
 
     updateFormValue = (field: string, value: string) => {
@@ -101,7 +99,9 @@ class RightPaneStore extends EventEmitter {
 
     formDataIsValid = () => {
         const { ge, deptValue, sectionCode, instructor } = this.formData;
-        return ge !== 'ANY' || deptValue !== 'ALL' || sectionCode !== '' || instructor !== '';
+        return (
+            ge.toUpperCase() !== 'ANY' || deptValue.toUpperCase() !== 'ALL' || sectionCode !== '' || instructor !== ''
+        );
     };
 }
 

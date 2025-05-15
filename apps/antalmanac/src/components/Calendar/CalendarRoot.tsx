@@ -19,6 +19,17 @@ import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 
+/*
+ * Always start week on Saturday for finals potentially on weekends.
+ * CALENDAR_VIEWS will set the correct day range
+ */
+
+moment.updateLocale('es-us', {
+    week: {
+        dow: 6,
+    },
+});
+
 const CALENDAR_LOCALIZER: DateLocalizer = momentLocalizer(moment);
 const CALENDAR_VIEWS: ViewsProps<CalendarEvent, object> = [Views.WEEK, Views.WORK_WEEK];
 const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
@@ -126,7 +137,6 @@ export const ScheduleCalendar = memo(() => {
     };
 
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
-
     const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
     const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
 
@@ -138,8 +148,8 @@ export const ScheduleCalendar = memo(() => {
           ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
           : getDefaultFinalsStartDate();
 
-    const finalsDateFormat = finalsDate ? 'ddd MM/DD' : 'ddd';
-    const date = showFinalsSchedule && finalsDate ? finalsDate : new Date(2018, 0, 1);
+    const finalsDateFormat = 'ddd MM/DD';
+    const date = showFinalsSchedule ? finalsDate : new Date(2018, 0, 1);
 
     const formats = useMemo(
         () => ({
@@ -157,18 +167,6 @@ export const ScheduleCalendar = memo(() => {
         }),
         [calendarGutterTimeFormat, calendarTimeFormat, finalsDateFormat, showFinalsSchedule]
     );
-
-    useEffect(() => {
-        /**
-         * If a final is on a Saturday or Sunday, let the calendar start on Saturday
-         */
-        // eslint-disable-next-line import/no-named-as-default-member -- moment doesn't expose named exports: https://github.com/vitejs/vite-plugin-react/issues/202
-        moment.updateLocale('es-us', {
-            week: {
-                dow: hasWeekendCourse && showFinalsSchedule ? 6 : 0,
-            },
-        });
-    }, [hasWeekendCourse, showFinalsSchedule]);
 
     useEffect(() => {
         const updateEventsInCalendar = () => {

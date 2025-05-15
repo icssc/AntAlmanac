@@ -1,5 +1,5 @@
 import { Edit as EditIcon } from '@mui/icons-material';
-import { Box, IconButton, Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
 
 import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
@@ -21,8 +21,8 @@ export function RenameScheduleButton({ index, disabled }: RenameScheduleButtonPr
     }, []);
 
     return (
-        <Box>
-            <Tooltip title="Rename Schedule">
+        <>
+            <Tooltip title="Rename Schedule" disableInteractive>
                 <span>
                     <IconButton onClick={handleOpen} size="small" disabled={disabled}>
                         <EditIcon />
@@ -30,6 +30,6 @@ export function RenameScheduleButton({ index, disabled }: RenameScheduleButtonPr
                 </span>
             </Tooltip>
             <RenameScheduleDialog fullWidth open={open} index={index} onClose={handleClose} />
-        </Box>
+        </>
     );
 }

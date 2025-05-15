@@ -1,8 +1,9 @@
 import { create } from 'zustand';
 
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 interface CoursePaneStore {
     /** Whether the search form is displayed (or the classes view) */
-    searchIsDisplayed: boolean;
+    searchFormIsDisplayed: boolean;
     /** Switch to the course search form */
     displaySearch: () => void;
     /** Switch to the classes view */
@@ -17,14 +18,13 @@ interface CoursePaneStore {
     forceUpdate: () => void;
 }
 
-function paramsAreInURL() {
+export function paramsAreInURL() {
     const search = new URLSearchParams(window.location.search);
 
     // TODO: This should be standardized
     const searchParams = [
         'courseCode',
         'courseNumber',
-        'deptLabel',
         'ge',
         'deptValue',
         'term',
@@ -52,12 +52,12 @@ function requiredParamsAreInURL() {
 
 export const useCoursePaneStore = create<CoursePaneStore>((set) => {
     return {
-        searchIsDisplayed: requiredParamsAreInURL() ? false : true,
+        searchFormIsDisplayed: !requiredParamsAreInURL() || !RightPaneStore.formDataIsValid(),
         displaySearch: () => {
-            set({ searchIsDisplayed: true });
+            set({ searchFormIsDisplayed: true });
         },
         displaySections: () => {
-            set({ searchIsDisplayed: false });
+            set({ searchFormIsDisplayed: false });
         },
 
         manualSearchEnabled: paramsAreInURL(),

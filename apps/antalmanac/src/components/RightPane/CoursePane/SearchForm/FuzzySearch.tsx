@@ -6,7 +6,7 @@ import UAParser from 'ua-parser-js';
 
 import RightPaneStore from '../../RightPaneStore';
 
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 
 const SEARCH_TIMEOUT_MS = 150;
@@ -70,12 +70,10 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 break;
             case emojiMap.DEPARTMENT:
                 RightPaneStore.updateFormValue('deptValue', ident[0]);
-                RightPaneStore.updateFormValue('deptLabel', ident.join(':'));
                 break;
             case emojiMap.COURSE: {
                 const deptValue = ident[0].split(' ').slice(0, -1).join(' ');
                 RightPaneStore.updateFormValue('deptValue', deptValue);
-                RightPaneStore.updateFormValue('deptLabel', deptValue);
                 RightPaneStore.updateFormValue('courseNumber', ident[0].split(' ').slice(-1)[0]);
                 break;
             }

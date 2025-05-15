@@ -18,7 +18,7 @@ import ScheduleSelector from './ScheduleSelector';
 
 import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
