@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "aants": "tsx src/index.ts",
     "template": "tsx src/scripts/createTemplate.ts",
-    "sending": "tsx src/scripts/sendingTest.ts"
+    "build": "node scripts/build.mjs"
   },
   "keywords": [],
   "author": "",
