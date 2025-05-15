@@ -66,6 +66,7 @@ export const Save = () => {
     return (
         <Stack direction="row">
             <LoadingButton
+                id="save-button"
                 color="inherit"
                 startIcon={<SaveIcon />}
                 loadingPosition="start"

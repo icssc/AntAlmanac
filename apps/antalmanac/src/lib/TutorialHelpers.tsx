@@ -183,7 +183,7 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
             mutationObservables: ['#map-pane'],
         },
         saveAndLoad: {
-            selector: '#load-save-container',
+            selector: '#save-button',
             content: (
                 <>
                     <b>Sign in</b> to save your schedules when you&apos;re done. <br />
