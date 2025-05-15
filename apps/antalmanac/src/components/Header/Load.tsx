@@ -31,6 +31,7 @@ interface LoadSaveButtonBaseProps {
     loading: boolean;
     colorType: 'primary' | 'secondary';
     id?: string;
+    isDark: boolean;
 }
 
 interface LoadSaveButtonBaseState {
@@ -135,12 +136,12 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                             >
                                 Sign in with Google
                             </LoadingButton>
-                            <Divider sx={{ width: '35rem', maxWidth: '100%' }}>or</Divider>
+                            <Divider>or</Divider>
                             <DialogContentText>
                                 Enter your unique user ID here to {this.props.actionName.toLowerCase()} your schedule.
                             </DialogContentText>
 
-                            <Alert severity="info">
+                            <Alert severity="info" variant={this.props.isDark ? 'outlined' : 'standard'}>
                                 <AlertTitle>
                                     Note: Existing schedules saved to a unique user ID can no longer be updated.
                                 </AlertTitle>
@@ -266,6 +267,7 @@ export const Load = () => {
                 disabled={skeletonMode}
                 loading={loadingSchedule}
                 colorType={isDark ? 'secondary' : 'primary'}
+                isDark={isDark}
             />
 
             <AlertDialog
