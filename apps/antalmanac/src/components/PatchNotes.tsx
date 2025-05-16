@@ -50,6 +50,11 @@ function PatchNotes() {
                     <li>
                         Sign-in with Google! This will keep your schedules secure and enable exciting upcoming features.
                         Stay tuned!
+                        <li>
+                            If you encounter any issues reach out to us via{' '}
+                            <a href="https://discord.gg/8CSGbGBqz8">discord</a> or our{' '}
+                            <a href="https://forms.gle/234567890">feedback form</a>
+                        </li>
                     </li>
                     <li>Automatic addition of new terms so you don&apos;t have to wait for us to do it manually.</li>
                     <li>Filtering by day of the week in advanced search.</li>
@@ -59,7 +64,7 @@ function PatchNotes() {
                 <Typography>Bug Fixes</Typography>
                 <ul>
                     <li>Advanced search fields getting overridden by URL parameters.</li>
-                    <li>Off-by-one error in enrollmenet history graph.</li>
+                    <li>Off-by-one error in enrollment history graph.</li>
                 </ul>
             </DialogContent>
 
