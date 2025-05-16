@@ -1,7 +1,6 @@
-import { IconButton, Button } from '@material-ui/core';
 import { Close } from '@mui/icons-material';
 import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
-import { Alert, Box, Slide } from '@mui/material';
+import { Alert, Box, Button, IconButton, Slide } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { shallow } from 'zustand/shallow';
 
