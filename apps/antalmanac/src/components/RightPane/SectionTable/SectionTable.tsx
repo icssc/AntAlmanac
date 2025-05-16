@@ -96,13 +96,15 @@ function SectionTable(props: SectionTableProps) {
     return (
         <>
             <Box
-                sx={{
-                    display: 'flex',
-                    gap: '4px',
-                    marginBottom: '8px',
-                    marginTop: '4px',
-                }}
-            >
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '4px',
+                marginBottom: '8px',
+                marginTop: '4px',
+              }}
+        >
+            <Box sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start', alignItems: 'center'}}>
                 <CourseInfoBar
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
@@ -156,6 +158,20 @@ function SectionTable(props: SectionTableProps) {
                 />
             </Box>
 
+            {courseDetails.updatedAt && (
+                <Box sx={{
+                    fontSize: '0.75rem',
+                    color: '#888',
+                    alignSelf: { xs: 'flex-start', md: 'flex-end' },
+                    paddingRight: { sm: '0.5rem' },
+                    textAlign: { xs: 'left', md: 'right' },
+                    marginTop: { xs: 0, md: '-2rem' }
+                  }}>
+                    Status last updated {new Date(courseDetails.updatedAt).toLocaleTimeString()}
+                </Box>
+            )}
+        </Box>
+    
             <TableContainer
                 component={Paper}
                 sx={{ margin: '8px 0px 8px 0px', width: '100%' }}
@@ -193,7 +209,7 @@ function SectionTable(props: SectionTableProps) {
                                 ))}
                         </TableRow>
                     </TableHead>
-
+    
                     <SectionTableBody
                         courseDetails={courseDetails}
                         term={term}
@@ -203,7 +219,7 @@ function SectionTable(props: SectionTableProps) {
                 </Table>
             </TableContainer>
         </>
-    );
+    );    
 }
 
 export default SectionTable;
