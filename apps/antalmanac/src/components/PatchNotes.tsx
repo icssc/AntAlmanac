@@ -50,11 +50,13 @@ function PatchNotes() {
                     <li>
                         Sign-in with Google! This will keep your schedules secure and enable exciting upcoming features.
                         Stay tuned!
-                        <li>
-                            If you encounter any issues reach out to us via{' '}
-                            <a href="https://discord.gg/8CSGbGBqz8">discord</a> or our{' '}
-                            <a href="https://forms.gle/234567890">feedback form</a>
-                        </li>
+                        <ul>
+                            <li>
+                                If you encounter any issues reach out to us via{' '}
+                                <a href="https://discord.gg/8CSGbGBqz8">discord</a> or our{' '}
+                                <a href="https://forms.gle/234567890">feedback form</a>
+                            </li>
+                        </ul>
                     </li>
                     <li>Automatic addition of new terms so you don&apos;t have to wait for us to do it manually.</li>
                     <li>Filtering by day of the week in advanced search.</li>
