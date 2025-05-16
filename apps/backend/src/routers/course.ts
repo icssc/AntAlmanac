@@ -1,6 +1,5 @@
-import type { Course } from '@packages/antalmanac-types';
 import { z } from 'zod';
-
+import type { Course } from '@packages/antalmanac-types';
 import { procedure, router } from '../trpc';
 
 const courseRouter = router({

@@ -10,7 +10,6 @@ import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelec
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 
 type EventContext = {
     triggeredBy?: string;
@@ -50,7 +49,6 @@ function createScheduleSelector(index: number) {
  */
 export function SelectSchedulePopover() {
     const theme = useTheme();
-    const { openScheduleSelect, setOpenScheduleSelect } = scheduleComponentsToggleStore();
 
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const [scheduleMapping, setScheduleMapping] = useState(getScheduleItems());
@@ -59,17 +57,21 @@ export function SelectSchedulePopover() {
         getScheduleItems(AppStore.getSkeletonScheduleNames())
     );
 
+    const [anchorEl, setAnchorEl] = useState<HTMLElement>();
+
     // TODO: maybe these widths should be dynamic based on i.e. the viewport width?
     const minWidth = useMemo(() => 100, []);
     const maxWidth = useMemo(() => 150, []);
 
-    const handleClick = useCallback(() => {
-        setOpenScheduleSelect(true);
-    }, [setOpenScheduleSelect]);
+    const open = useMemo(() => Boolean(anchorEl), [anchorEl]);
+
+    const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    }, []);
 
     const handleClose = useCallback(() => {
-        setOpenScheduleSelect(false);
-    }, [setOpenScheduleSelect]);
+        setAnchorEl(undefined);
+    }, []);
 
     const handleScheduleIndexChange = useCallback(() => {
         setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
@@ -147,9 +149,8 @@ export function SelectSchedulePopover() {
             </Tooltip>
 
             <Popover
-                open={openScheduleSelect}
-                anchorReference="anchorPosition"
-                anchorPosition={{ top: 95, left: 0 }}
+                open={open}
+                anchorEl={anchorEl}
                 onClose={handleClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >

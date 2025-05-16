@@ -36,41 +36,6 @@
             "when": 1741580702375,
             "tag": "0004_goofy_harpoon",
             "breakpoints": true
-        },
-        {
-            "idx": 5,
-            "version": "7",
-            "when": 1742329643606,
-            "tag": "0005_typical_justice",
-            "breakpoints": true
-        },
-        {
-            "idx": 6,
-            "version": "7",
-            "when": 1745295961079,
-            "tag": "0006_overconfident_jack_power",
-            "breakpoints": true
-        },
-        {
-            "idx": 7,
-            "version": "7",
-            "when": 1745295997805,
-            "tag": "0007_awesome_spectrum",
-            "breakpoints": true
-        },
-        {
-            "idx": 8,
-            "version": "7",
-            "when": 1745296365472,
-            "tag": "0008_glamorous_venus",
-            "breakpoints": true
-        },
-        {
-            "idx": 9,
-            "version": "7",
-            "when": 1745976656599,
-            "tag": "0009_vengeful_random",
-            "breakpoints": true
         }
     ]
 }
