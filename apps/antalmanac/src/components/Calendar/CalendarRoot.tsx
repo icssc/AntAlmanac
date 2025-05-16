@@ -1,7 +1,7 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
 
-import { Box, useTheme } from '@mui/material';
+import { Box, Backdrop, CircularProgress, useTheme } from '@mui/material';
 import moment from 'moment';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
@@ -17,6 +17,7 @@ import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 
 /*
@@ -52,6 +53,8 @@ export const ScheduleCalendar = memo(() => {
         shallow
     );
     const isDark = useThemeStore(useShallow((store) => store.isDark));
+
+    const { openLoadingSchedule: loadingSchedule } = scheduleComponentsToggleStore();
 
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
         if (showFinalsSchedule)
@@ -195,14 +198,33 @@ export const ScheduleCalendar = memo(() => {
     }, []);
 
     return (
-        <Box id="calendar-root" borderRadius={1} flexGrow={1} height={'0px'} display="flex" flexDirection="column">
+        <Box
+            id="calendar-root"
+            borderRadius={1}
+            flexGrow={1}
+            height={'0px'}
+            display="flex"
+            flexDirection="column"
+            position="relative"
+        >
+            <Backdrop
+                sx={(theme) => ({
+                    color: '#ffff',
+                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                    zIndex: theme.zIndex.drawer + 1,
+                    position: 'absolute',
+                    padding: ' 0',
+                })}
+                open={loadingSchedule}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
             <CalendarToolbar
                 currentScheduleIndex={currentScheduleIndex}
                 toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
                 showFinalsSchedule={showFinalsSchedule}
                 scheduleNames={scheduleNames}
             />
-
             <Box id="screenshot" height="0" flexGrow={1}>
                 <CalendarEventPopover />
 
