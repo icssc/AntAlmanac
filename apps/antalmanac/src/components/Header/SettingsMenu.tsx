@@ -13,6 +13,8 @@ import { autoSaveSchedule } from '$actions/AppStoreActions';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import appStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useSessionStore } from '$stores/SessionStore';
 import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
 
 const lightSelectedStyle: CSSProperties = {
@@ -150,6 +152,8 @@ function TimeMenu() {
 function ExperimentalMenu() {
     const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
     const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
+    const { sessionIsValid, session } = useSessionStore();
+    const { setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
 
     const handlePreviewChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPreviewMode(event.target.checked);
@@ -159,6 +163,11 @@ function ExperimentalMenu() {
         setAutoSave(event.target.checked);
 
         if (!event.target.checked) return;
+
+        if (!sessionIsValid || !session) {
+            setOpenAutoSaveWarning(true);
+            return;
+        }
 
         const savedUserID = getLocalStorageUserId();
 

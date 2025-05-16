@@ -15,11 +15,63 @@ enum LocalStorageKeys {
     helpBoxDismissalTime = 'helpBoxDismissalTime',
     columnToggles = 'columnToggles',
     pwaDismissalTime = 'pwaDismissalTime',
+    sessionId = 'sessionId',
+    dataCache = 'dataCache',
+    newUser = 'newUser',
+    importedUser = 'importedUser',
+    fromLoading = 'fromLoading',
 }
 
 const LSK = LocalStorageKeys;
 
-// Helper functions for userId
+export function setLocalStorageFromLoading(value: string) {
+    window.localStorage.setItem(LSK.fromLoading, value);
+}
+
+export function getLocalStorageFromLoading() {
+    return window.localStorage.getItem(LSK.fromLoading);
+}
+
+export function removeLocalStorageFromLoading() {
+    window.localStorage.removeItem(LSK.fromLoading);
+}
+
+export function setLocalStorageImportedUser(value: string) {
+    window.localStorage.setItem(LSK.importedUser, value);
+}
+
+export function getLocalStorageImportedUser() {
+    return window.localStorage.getItem(LSK.importedUser);
+}
+
+export function removeLocalStorageImportedUser() {
+    window.localStorage.removeItem(LSK.importedUser);
+}
+
+export function setLocalStorageOnFirstSignin(value: string) {
+    window.localStorage.setItem(LSK.newUser, value);
+}
+
+export function getLocalStorageOnFirstSignin() {
+    return window.localStorage.getItem(LSK.newUser);
+}
+
+export function removeLocalStorageOnFirstSignin() {
+    window.localStorage.removeItem(LSK.newUser);
+}
+
+export function setLocalStorageDataCache(value: string) {
+    window.localStorage.setItem(LSK.dataCache, value);
+}
+
+export function getLocalStorageDataCache() {
+    return window.localStorage.getItem(LSK.dataCache);
+}
+
+export function removeLocalStorageDataCache() {
+    window.localStorage.removeItem(LSK.dataCache);
+}
+
 export function setLocalStorageUserId(value: string) {
     window.localStorage.setItem(LSK.userId, value);
 }
@@ -32,6 +84,17 @@ export function removeLocalStorageUserId() {
     window.localStorage.removeItem(LSK.userId);
 }
 
+export function setLocalStorageSessionId(value: string) {
+    window.localStorage.setItem(LSK.sessionId, value);
+}
+
+export function getLocalStorageSessionId() {
+    return window.localStorage.getItem(LSK.sessionId);
+}
+
+export function removeLocalStorageSessionId() {
+    window.localStorage.removeItem(LSK.sessionId);
+}
 // Helper functions for patchNotesKey
 export function setLocalStoragePatchNotesKey(value: string) {
     window.localStorage.setItem(LSK.patchNotesKey, value);
