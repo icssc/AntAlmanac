@@ -218,7 +218,6 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
     const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
 
     if (scheduleSaveState.schedules) {
-        currentSchedules.schedules.push(...scheduleSaveState.schedules);
         mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, '(import)-');
         currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
 
