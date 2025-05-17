@@ -280,6 +280,11 @@ export const loadSchedule = async (providerId: string, rememberMe: boolean, acco
                     providerId,
                 });
 
+                if (account == null) {
+                    openSnackbar('error', `Couldn't find account for username "${providerId}".`);
+                    return;
+                }
+
                 const userDataResponse = await trpc.userData.getUserData.query({ userId: account.userId });
                 const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
 
