@@ -6,7 +6,7 @@ import { Divider, Stack, Tooltip } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { useCallback, useState } from 'react';
 
-import { AboutButtonGroup } from './AboutButtonGroup';
+import { About } from './About';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
@@ -264,7 +264,7 @@ function AppDrawer() {
                     <SettingsMenu />
 
                     <Box sx={{ padding: '1.5rem', width: '100%', bottom: 0, position: 'absolute' }}>
-                        <AboutButtonGroup />
+                        <About />
                     </Box>
                 </Box>
             </Drawer>
