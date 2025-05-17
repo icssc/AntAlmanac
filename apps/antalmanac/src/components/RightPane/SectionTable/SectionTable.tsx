@@ -2,15 +2,14 @@ import { Assessment, ShowChart as ShowChartIcon } from '@mui/icons-material';
 import { Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow, useMediaQuery } from '@mui/material';
 import { useMemo } from 'react';
 
-import { EnrollmentHistoryPopup } from './EnrollmentHistoryPopup';
-import GradesPopup from './GradesPopup';
-import { SectionTableProps } from './SectionTable.types';
-
 import PeterPortalIcon from '$assets/peterportal-logo.png';
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
 import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
+import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/EnrollmentHistoryPopup';
+import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
+import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import analyticsEnum from '$lib/analytics/analytics';
 import { MOBILE_BREAKPOINT } from '$src/globals';
