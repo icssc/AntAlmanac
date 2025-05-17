@@ -1,4 +1,11 @@
+import { CloudDownload, Google, Save } from '@mui/icons-material';
+import { LoadingButton } from '@mui/lab';
 import {
+    Divider,
+    Stack,
+    Alert,
+    AlertTitle,
+    CircularProgress,
     Button,
     Dialog,
     DialogActions,
@@ -6,12 +13,7 @@ import {
     DialogContentText,
     DialogTitle,
     TextField,
-    CircularProgress,
-} from '@material-ui/core';
-import { CloudDownload, Save } from '@material-ui/icons';
-import GoogleIcon from '@mui/icons-material/Google';
-import { LoadingButton } from '@mui/lab';
-import { Divider, Stack, Alert, AlertTitle } from '@mui/material';
+} from '@mui/material';
 import { ChangeEvent, PureComponent, useEffect, useState, useCallback } from 'react';
 
 import { loadSchedule, saveSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
@@ -130,7 +132,7 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                                 onClick={this.props.actionSecondary}
                                 color="primary"
                                 variant="contained"
-                                startIcon={<GoogleIcon />}
+                                startIcon={<Google />}
                                 size="large"
                                 fullWidth
                             >
@@ -280,7 +282,7 @@ export const Load = () => {
                 <LoadingButton
                     color="primary"
                     variant="contained"
-                    startIcon={<GoogleIcon />}
+                    startIcon={<Google />}
                     fullWidth
                     onClick={handleLogin}
                     size="large"
