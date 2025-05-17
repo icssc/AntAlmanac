@@ -1,86 +1,51 @@
-import IconButton from '@material-ui/core/IconButton';
-import { amber, green } from '@material-ui/core/colors';
-import { Theme, withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import CloseIcon from '@material-ui/icons/Close';
+import { Close } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
 import { ProviderContext, withSnackbar } from 'notistack';
-import { PureComponent } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import AppStore from '$stores/AppStore';
-
-const styles: Styles<Theme, object> = (theme) => ({
-    success: {
-        backgroundColor: green[600],
-    },
-    error: {
-        backgroundColor: theme.palette.error.dark,
-    },
-    info: {
-        backgroundColor: theme.palette.primary.main,
-    },
-    warning: {
-        backgroundColor: amber[700],
-    },
-    icon: {
-        fontSize: 20,
-        opacity: 0.9,
-    },
-    iconVariant: {},
-    message: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-});
 
 export interface SnackbarPosition {
     horizontal: 'left' | 'right';
     vertical: 'bottom' | 'top';
 }
 
-interface NotificationSnackbarProps extends ProviderContext {
-    classes: ClassNameMap;
-}
+export const NotificationSnackbar = withSnackbar(({ enqueueSnackbar, closeSnackbar }: ProviderContext) => {
+    const snackbarAction = useCallback(
+        (key: string | number) => {
+            return (
+                <IconButton
+                    key="close"
+                    color="inherit"
+                    onClick={() => {
+                        closeSnackbar(key);
+                    }}
+                >
+                    <Close sx={{ fontSize: 20 }} />
+                </IconButton>
+            );
+        },
+        [closeSnackbar]
+    );
 
-class NotificationSnackbar extends PureComponent<NotificationSnackbarProps> {
-    state = {
-        message: '',
-        variant: 'info',
-        duration: 3000,
-    };
-
-    openSnackbar = () => {
-        this.props.enqueueSnackbar(AppStore.getSnackbarMessage(), {
+    const openSnackbar = useCallback(() => {
+        enqueueSnackbar(AppStore.getSnackbarMessage(), {
             variant: AppStore.getSnackbarVariant(),
             // @ts-expect-error notistack type claims it doesn't support `duration`, but this still runs without errors 🤷‍♂️
             duration: AppStore.getSnackbarDuration(),
             position: AppStore.getSnackbarPosition(),
-            action: this.snackbarAction,
+            action: snackbarAction,
             style: AppStore.getSnackbarStyle(),
         });
-    };
+    }, [enqueueSnackbar, snackbarAction]);
 
-    snackbarAction = (key: string | number) => {
-        const { classes } = this.props;
-        return (
-            <IconButton
-                key="close"
-                color="inherit"
-                onClick={() => {
-                    this.props.closeSnackbar(key);
-                }}
-            >
-                <CloseIcon className={classes.icon} />
-            </IconButton>
-        );
-    };
+    useEffect(() => {
+        AppStore.on('openSnackbar', openSnackbar);
 
-    componentDidMount = () => {
-        AppStore.on('openSnackbar', this.openSnackbar);
-    };
+        return () => {
+            AppStore.off('openSnackbar', openSnackbar);
+        };
+    }, [openSnackbar]);
 
-    render() {
-        return null;
-    }
-}
-
-export default withSnackbar(withStyles(styles)(NotificationSnackbar));
+    return null;
+});
