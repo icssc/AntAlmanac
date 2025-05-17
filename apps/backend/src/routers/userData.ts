@@ -89,13 +89,27 @@ const userDataRouter = router({
     }),
 
     getGuestAccountAndUserByName: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
-        return RDS.getGuestAccountAndUserByName(db, input.name);
+        const result = await RDS.getGuestAccountAndUserByName(db, input.name);
+        if (!result) {
+            throw new TRPCError({
+                code: 'NOT_FOUND',
+                message: 'User not found',
+            });
+        }
+        return result;
     }),
 
     getAccountByProviderId: procedure
         .input(z.object({ accountType: z.enum(['GOOGLE', 'GUEST']), providerId: z.string() }))
         .query(async ({ input }) => {
-            return RDS.getAccountByProviderId(db, input.accountType, input.providerId);
+            const account = await RDS.getAccountByProviderId(db, input.accountType, input.providerId);
+            if (!account) {
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                    message: `Couldn't find schedules for username "${input.providerId}".`,
+                });
+            }
+            return account;
         }),
     /**
      * Retrieves Google authentication URL for login/sign up.
