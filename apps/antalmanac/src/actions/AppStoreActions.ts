@@ -6,6 +6,7 @@ import type {
     User,
     WebsocSection,
 } from '@packages/antalmanac-types';
+import { TRPCClientError } from '@trpc/client';
 import { TRPCError } from '@trpc/server';
 import { VariantType } from 'notistack';
 
@@ -294,14 +295,16 @@ export const loadSchedule = async (providerId: string, rememberMe: boolean, acco
                     );
                 }
             } catch (e) {
-                if (e instanceof Error) {
-                    openSnackbar('error', e.message);
-                } else {
-                    openSnackbar(
-                        'error',
-                        '`Failed to load schedules. If this continues to happen, please submit a feedback form.`'
-                    );
+                if (e instanceof TRPCClientError) {
+                    if (e.data.httpStatus === 404) {
+                        openSnackbar('error', e.message);
+                    }
+                    return;
                 }
+                openSnackbar(
+                    'error',
+                    '`Failed to load schedules. If this continues to happen, please submit a feedback form.`'
+                );
             }
         }
     }
