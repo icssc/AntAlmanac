@@ -5,10 +5,10 @@ export function PrivacyPolicyBanner() {
         <Paper
             variant="outlined"
             sx={{
-                padding: 12,
-                paddingRight: 48, // FIX ME: Magic Number padding for the Help Menu
-                marginBottom: 8,
-                marginRight: 4,
+                padding: 1.5,
+                paddingRight: 6, // FIX ME: Magic Number padding for the Help Menu
+                marginBottom: 1,
+                marginRight: 0.5,
                 textWrap: 'pretty',
             }}
         >
