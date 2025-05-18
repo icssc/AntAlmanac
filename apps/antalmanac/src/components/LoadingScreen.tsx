@@ -49,12 +49,7 @@ export function LoadingScreen(props: LoadingScreenProps) {
                         alignItems="center"
                     >
                         <LinearProgress sx={{ width: { default: '100%', md: '50%' } }} />
-                        <Box
-                            fontStyle="italic"
-                            color="white"
-                            fontSize="h6.fontSize"
-                            sx={{ textAlign: 'center', height: '50%' }}
-                        >
+                        <Box fontStyle="italic" color="white" fontSize="h6.fontSize" sx={{ textAlign: 'center' }}>
                             {randomFact}
                         </Box>
                     </Stack>
