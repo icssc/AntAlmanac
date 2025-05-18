@@ -80,7 +80,7 @@ function SectionTable(props: SectionTableProps) {
 
     useEffect(() => {
         const observer = new ResizeObserver(([entry]) =>
-          setIsCompact(entry.contentRect.width < 650)
+          setIsCompact(entry.contentRect.width < 750)
         );
         observer.observe(buttonRowRef.current!);
         return () => observer.disconnect();
