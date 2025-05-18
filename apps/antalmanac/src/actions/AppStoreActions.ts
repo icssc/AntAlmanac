@@ -6,6 +6,7 @@ import type {
     User,
     WebsocSection,
 } from '@packages/antalmanac-types';
+import { TRPCClientError } from '@trpc/client';
 import { TRPCError } from '@trpc/server';
 import { VariantType } from 'notistack';
 
@@ -283,9 +284,7 @@ export const loadSchedule = async (providerId: string, rememberMe: boolean, acco
                 const userDataResponse = await trpc.userData.getUserData.query({ userId: account.userId });
                 const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
 
-                if (scheduleSaveState == null) {
-                    openSnackbar('error', `Couldn't find schedules for username "${providerId}".`);
-                } else if (await AppStore.loadSchedule(scheduleSaveState)) {
+                if (await AppStore.loadSchedule(scheduleSaveState)) {
                     openSnackbar('success', `Schedule loaded.`);
                 } else {
                     AppStore.loadSkeletonSchedule(scheduleSaveState);
@@ -296,10 +295,15 @@ export const loadSchedule = async (providerId: string, rememberMe: boolean, acco
                     );
                 }
             } catch (e) {
-                console.error(e);
+                if (e instanceof TRPCClientError) {
+                    if (e.data.httpStatus === 404) {
+                        openSnackbar('error', e.message);
+                    }
+                    return;
+                }
                 openSnackbar(
                     'error',
-                    `Failed to load schedules. If this continues to happen, please submit a feedback form.`
+                    '`Failed to load schedules. If this continues to happen, please submit a feedback form.`'
                 );
             }
         }
