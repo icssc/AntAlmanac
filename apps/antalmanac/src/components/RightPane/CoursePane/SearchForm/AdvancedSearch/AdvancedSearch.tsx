@@ -41,15 +41,8 @@ export function AdvancedSearch() {
 
     return (
         <>
-            <Button
-                onClick={handleExpand}
-                style={{ textTransform: 'none', width: 'auto', display: 'flex', justifyContent: 'start' }}
-            >
-                <div>
-                    <Typography noWrap variant="body1">
-                        Advanced Search Options
-                    </Typography>
-                </div>
+            <Button onClick={handleExpand} sx={{ textTransform: 'none', display: 'flex', justifyContent: 'start' }}>
+                <Typography noWrap>Advanced Search Options</Typography>
                 {open ? <ExpandLess /> : <ExpandMore />}
             </Button>
             <Collapse in={open}>
