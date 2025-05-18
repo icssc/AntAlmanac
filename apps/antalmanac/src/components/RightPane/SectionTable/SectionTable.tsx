@@ -1,6 +1,6 @@
 import { Assessment, ShowChart as ShowChartIcon } from '@mui/icons-material';
 import { Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow, useMediaQuery } from '@mui/material';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import PeterPortalIcon from '$assets/peterportal-logo.png';
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
@@ -75,6 +75,16 @@ function SectionTable(props: SectionTableProps) {
     const [activeTab] = useTabStore((store) => [store.activeTab]);
     const { isMilitaryTime } = useTimeFormatStore()
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
+    const [isCompact, setIsCompact] = useState(false);
+    const buttonRowRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const observer = new ResizeObserver(([entry]) =>
+          setIsCompact(entry.contentRect.width < 650)
+        );
+        observer.observe(buttonRowRef.current!);
+        return () => observer.disconnect();
+      }, []);
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
@@ -97,6 +107,7 @@ function SectionTable(props: SectionTableProps) {
     return (
         <>
             <Box
+            ref={buttonRowRef}
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -157,24 +168,27 @@ function SectionTable(props: SectionTableProps) {
                         />
                     }
                 />
-            </Box>
-
-            {courseDetails.updatedAt && (
-                <Box sx={{
-                    fontSize: '0.75rem',
-                    color: '#888',
-                    alignSelf: { xs: 'flex-start', md: 'flex-end' },
-                    paddingRight: { sm: '0.5rem' },
-                    textAlign: { xs: 'left', md: 'right' },
-                    marginTop: { xs: 0, md: '-2rem' }
-                  }}>
-                    Status last updated {new Date(courseDetails.updatedAt).toLocaleTimeString([], {
+                {courseDetails.updatedAt && (
+                    <Box sx={{
+                        fontSize: '0.75rem',
+                        color: '#888',
+                        px: 1,
+                        py: 0.5,
+                        whiteSpace: 'nowrap',
+                        backgroundColor: '#f3f3f3',
+                        flexGrow: 1,
+                        textAlign: 'right',
+                    }}
+                    >
+                    {isCompact ? 'Updated' : 'Status last updated'}{' '}
+                    {new Date(courseDetails.updatedAt).toLocaleTimeString([], {
                         hour: '2-digit',
                         minute: '2-digit',
-                        hour12: !isMilitaryTime
+                        hour12: !isMilitaryTime,
                     })}
-                </Box>
-            )}
+                    </Box>
+                )}
+            </Box>
         </Box>
     
             <TableContainer
