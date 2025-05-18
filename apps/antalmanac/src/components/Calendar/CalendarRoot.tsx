@@ -8,11 +8,10 @@ import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps
 import { useShallow } from 'zustand/react/shallow';
 import { shallow } from 'zustand/shallow';
 
-import { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
-
 import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
 import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
 import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
+import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';

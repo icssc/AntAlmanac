@@ -20,7 +20,7 @@ import type {
     UndoAction,
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
-import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { SnackbarPosition } from '$components/NotificationSnackbar';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
