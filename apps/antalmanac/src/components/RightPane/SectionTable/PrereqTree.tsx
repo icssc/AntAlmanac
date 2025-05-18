@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import { Button, Popover } from '@material-ui/core';
+import { Button, Popover } from '@mui/material';
 import { Prerequisite, PrerequisiteTree } from '@packages/antalmanac-types';
 import { FC, useState } from 'react';
 

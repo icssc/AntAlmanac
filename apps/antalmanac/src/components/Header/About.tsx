@@ -1,3 +1,4 @@
+import { Info, Assignment, FavoriteRounded } from '@mui/icons-material';
 import {
     Button,
     Dialog,
@@ -6,11 +7,9 @@ import {
     DialogContentText,
     DialogTitle,
     Link,
+    Stack,
     Tooltip,
-} from '@material-ui/core';
-import { Assignment, Info } from '@material-ui/icons';
-import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
-import { ButtonGroup } from '@mui/material';
+} from '@mui/material';
 import { useCallback, useState } from 'react';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -19,7 +18,7 @@ import { useThemeStore } from '$stores/SettingsStore';
 
 const DONATION_LINK = 'https://venmo.com/u/ICSSC';
 
-const About = () => {
+const AboutButton = () => {
     const [open, setOpen] = useState(false);
 
     const { isDark } = useThemeStore();
@@ -38,7 +37,7 @@ const About = () => {
 
     return (
         <>
-            <Button onClick={handleOpen} color="inherit" startIcon={<Info />} size="large">
+            <Button onClick={handleOpen} color="inherit" startIcon={<Info />} size="large" variant="text">
                 About
             </Button>
             <Dialog open={open} onClose={handleClose}>
@@ -92,23 +91,31 @@ const About = () => {
     );
 };
 
-const Feedback = () => {
+const FeedbackButton = () => {
     return (
         <Tooltip title="Give Us Feedback!">
-            <Button color="inherit" startIcon={<Assignment />} size="large" href={FEEDBACK_LINK} target="_blank">
+            <Button
+                color="inherit"
+                startIcon={<Assignment />}
+                size="large"
+                variant="text"
+                href={FEEDBACK_LINK}
+                target="_blank"
+            >
                 Feedback
             </Button>
         </Tooltip>
     );
 };
 
-const Donate = () => {
+const DonateButton = () => {
     return (
         <Tooltip title="Help us pay for the servers!">
             <Button
                 color="inherit"
-                startIcon={<FavoriteRoundedIcon />}
+                startIcon={<FavoriteRounded />}
                 size="large"
+                variant="text"
                 href={DONATION_LINK}
                 target="_blank"
             >
@@ -118,20 +125,12 @@ const Donate = () => {
     );
 };
 
-export function AboutButtonGroup() {
+export function About() {
     return (
-        <ButtonGroup
-            style={{
-                display: 'flex',
-                justifyContent: 'space-evenly',
-                alignItems: 'center',
-                width: '100%',
-                borderColor: 'unset',
-            }}
-        >
-            <Donate />
-            <About />
-            <Feedback />
-        </ButtonGroup>
+        <Stack direction="row" sx={{ justifyContent: 'space-evenly', alignItems: 'center' }}>
+            <DonateButton />
+            <AboutButton />
+            <FeedbackButton />
+        </Stack>
     );
 }
