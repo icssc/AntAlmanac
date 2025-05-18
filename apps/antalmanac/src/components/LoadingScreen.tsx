@@ -9,10 +9,8 @@ const FUN_FACTS = [
     'Did you know? Antalmanac is maintained by the ICS Student Council at UCI!',
     'AntAlmanac was created in 2018 by a small group of students under the leadership of @the-rango.',
     'Did you know you can search for classes by pressing "CTRL/CMD" + clicking on your schedule item!',
-    'I 💖 Kevin Wu',
     'Need a 4 year plan? Checkout PeterPortal!',
     'Congratulations class of 2025! 🎓',
-    'Thank you Minh Nguyen and Eddy Chen for your hard work and contributions to Antalmanac!',
 ];
 type LoadingScreenProps = {
     open: boolean;
