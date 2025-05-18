@@ -24,7 +24,7 @@ import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
  * Always start week on Saturday for finals potentially on weekends.
  * CALENDAR_VIEWS will set the correct day range
  */
-
+// eslint-disable-next-line import/no-named-as-default-member
 moment.updateLocale('es-us', {
     week: {
         dow: 6,

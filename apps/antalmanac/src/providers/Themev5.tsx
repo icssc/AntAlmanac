@@ -64,21 +64,6 @@ export default function AppThemev5Provider(props: Props) {
         () =>
             createTheme({
                 components: {
-                    MuiCssBaseline: {
-                        styleOverrides: {
-                            a: {
-                                color: appTheme === 'dark' ? DODGER_BLUE : BLUE,
-                            },
-                        },
-                    },
-                    // https://github.com/mui/material-ui/issues/43683#issuecomment-2492787970
-                    MuiDialog: {
-                        styleOverrides: {
-                            paper: {
-                                backgroundImage: 'none',
-                            },
-                        },
-                    },
                     MuiAppBar: {
                         styleOverrides: {
                             root: {
@@ -99,9 +84,26 @@ export default function AppThemev5Provider(props: Props) {
                             }),
                         },
                     },
-                    MuiTextField: {
-                        defaultProps: {
-                            variant: 'standard',
+                    MuiCssBaseline: {
+                        styleOverrides: {
+                            a: {
+                                color: appTheme === 'dark' ? DODGER_BLUE : BLUE,
+                            },
+                        },
+                    },
+                    // NB: https://github.com/mui/material-ui/issues/43683#issuecomment-2492787970
+                    MuiDialog: {
+                        styleOverrides: {
+                            paper: {
+                                backgroundImage: 'none',
+                            },
+                        },
+                    },
+                    MuiDrawer: {
+                        styleOverrides: {
+                            paper: {
+                                backgroundImage: 'none',
+                            },
                         },
                     },
                     MuiInputLabel: {
@@ -110,6 +112,11 @@ export default function AppThemev5Provider(props: Props) {
                         },
                     },
                     MuiSelect: {
+                        defaultProps: {
+                            variant: 'standard',
+                        },
+                    },
+                    MuiTextField: {
                         defaultProps: {
                             variant: 'standard',
                         },
