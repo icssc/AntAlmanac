@@ -1,6 +1,6 @@
-import DateFnsUtils from '@date-io/date-fns';
-import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { useMediaQuery, useTheme, Stack } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
 import { useCallback, useEffect, useRef } from 'react';
 import Split from 'react-split';
 
@@ -90,7 +90,7 @@ export default function Home() {
     const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     return (
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
             <PatchNotes />
             <InstallPWABanner />
 
@@ -98,6 +98,6 @@ export default function Home() {
 
             <NotificationSnackbar />
             <HelpMenu />
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
     );
 }

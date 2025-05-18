@@ -40,6 +40,7 @@
         "@mui/icons-material": "^5.11.0",
         "@mui/lab": "^5.0.0-alpha.118",
         "@mui/material": "^5.11.7",
+        "@mui/x-date-pickers": "^8.3.1",
         "@packages/antalmanac-types": "workspace:^",
         "@react-leaflet/core": "^2.1.0",
         "@reactour/tour": "^3.6.1",

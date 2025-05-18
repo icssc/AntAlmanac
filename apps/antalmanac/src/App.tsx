@@ -8,7 +8,6 @@ import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-rou
 
 import { undoDelete } from './actions/AppStoreActions';
 import AppQueryProvider from './providers/Query';
-import AppThemeProvider from './providers/Theme';
 import AppThemev5Provider from './providers/Themev5';
 
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
@@ -100,36 +99,34 @@ export default function App() {
     return (
         <AppPostHogProvider>
             <AppQueryProvider>
-                <AppThemeProvider>
-                    <AppThemev5Provider>
-                        <TourProvider
-                            steps={[] /** Will be populated by Tutorial component */}
-                            padding={5}
-                            styles={{
-                                maskArea: (base) => ({
-                                    ...base,
-                                    rx: 5,
-                                }),
-                                maskWrapper: (base) => ({
-                                    ...base,
-                                    color: 'rgba(0, 0, 0, 0.3)',
-                                }),
-                                popover: (base) => ({
-                                    ...base,
-                                    background: '#fff',
-                                    color: 'black',
-                                    borderRadius: 5,
-                                    boxShadow: '0 0 10px #000',
-                                    padding: 20,
-                                }),
-                            }}
-                        >
-                            <SnackbarProvider>
-                                <RouterProvider router={ROUTER} />
-                            </SnackbarProvider>
-                        </TourProvider>
-                    </AppThemev5Provider>
-                </AppThemeProvider>
+                <AppThemev5Provider>
+                    <TourProvider
+                        steps={[] /** Will be populated by Tutorial component */}
+                        padding={5}
+                        styles={{
+                            maskArea: (base) => ({
+                                ...base,
+                                rx: 5,
+                            }),
+                            maskWrapper: (base) => ({
+                                ...base,
+                                color: 'rgba(0, 0, 0, 0.3)',
+                            }),
+                            popover: (base) => ({
+                                ...base,
+                                background: '#fff',
+                                color: 'black',
+                                borderRadius: 5,
+                                boxShadow: '0 0 10px #000',
+                                padding: 20,
+                            }),
+                        }}
+                    >
+                        <SnackbarProvider>
+                            <RouterProvider router={ROUTER} />
+                        </SnackbarProvider>
+                    </TourProvider>
+                </AppThemev5Provider>
             </AppQueryProvider>
         </AppPostHogProvider>
     );
