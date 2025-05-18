@@ -1,6 +1,6 @@
 import { Box, Button } from '@mui/material';
 
-import AdvancedSearch from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearch';
+import { AdvancedSearch } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearch';
 import { CourseNumberSearchBar } from '$components/RightPane/CoursePane/SearchForm/CourseNumberSearchBar';
 import { DepartmentSearchBar } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/DepartmentSearchBar';
 import { GeSelector } from '$components/RightPane/CoursePane/SearchForm/GeSelector';
