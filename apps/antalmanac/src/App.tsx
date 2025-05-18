@@ -6,12 +6,11 @@ import { useEffect } from 'react';
 import ReactGA4 from 'react-ga4';
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
-import { undoDelete } from './actions/AppStoreActions';
-import AppQueryProvider from './providers/Query';
-import AppThemev5Provider from './providers/Themev5';
-
+import { undoDelete } from '$actions/AppStoreActions';
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
 import AppPostHogProvider from '$providers/PostHog';
+import AppQueryProvider from '$providers/Query';
+import AppThemeProvider from '$providers/Theme';
 import { AuthPage } from '$routes/AuthPage';
 import { ErrorPage } from '$routes/ErrorPage';
 import Feedback from '$routes/Feedback';
@@ -99,7 +98,7 @@ export default function App() {
     return (
         <AppPostHogProvider>
             <AppQueryProvider>
-                <AppThemev5Provider>
+                <AppThemeProvider>
                     <TourProvider
                         steps={[] /** Will be populated by Tutorial component */}
                         padding={5}
@@ -126,7 +125,7 @@ export default function App() {
                             <RouterProvider router={ROUTER} />
                         </SnackbarProvider>
                     </TourProvider>
-                </AppThemev5Provider>
+                </AppThemeProvider>
             </AppQueryProvider>
         </AppPostHogProvider>
     );
