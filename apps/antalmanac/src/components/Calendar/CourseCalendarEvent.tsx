@@ -81,15 +81,14 @@ interface CourseCalendarEventProps {
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover }: CourseCalendarEventProps) => {
-    const paperRef = useRef<HTMLInputElement>(null);
+    const paperRef = useRef<HTMLDivElement>(null);
     const quickSearch = useQuickSearch();
     const { isMilitaryTime } = useTimeFormatStore();
 
     useEffect(() => {
-        const handleKeyDown = (event: { keyCode: number }) => {
-            // event.keyCode === 27 reads for the "escape" key
-            if (event.keyCode === 27) {
-                if (paperRef.current) paperRef.current.style.display = 'none';
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                closePopover();
             }
         };
 
@@ -98,7 +97,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, []);
+    }, [closePopover]);
 
     if (!selectedEvent.isCustomEvent) {
         const { term, instructors, sectionCode, title, finalExam, locations, sectionType, deptValue, courseNumber } =

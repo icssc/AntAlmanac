@@ -117,7 +117,7 @@ export const CourseInfoBar = ({
                         <strong>{title}</strong>
                     </p>
                     <p>{description}</p>
-                    {JSON.stringify(prerequisite_tree) !== '{}' && <PrereqTree {...courseInfo} />}
+                    {Object.keys(prerequisite_tree).length > 0 && <PrereqTree {...courseInfo} />}
 
                     {prerequisite_text !== '' && (
                         <p>

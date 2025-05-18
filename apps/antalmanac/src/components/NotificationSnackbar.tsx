@@ -1,18 +1,13 @@
 import { Close } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
-import { ProviderContext, withSnackbar } from 'notistack';
+import { ProviderContext, withSnackbar, SnackbarKey } from 'notistack';
 import { useCallback, useEffect } from 'react';
 
 import AppStore from '$stores/AppStore';
 
-export interface SnackbarPosition {
-    horizontal: 'left' | 'right';
-    vertical: 'bottom' | 'top';
-}
-
 export const NotificationSnackbar = withSnackbar(({ enqueueSnackbar, closeSnackbar }: ProviderContext) => {
     const snackbarAction = useCallback(
-        (key: string | number) => {
+        (key: SnackbarKey) => {
             return (
                 <IconButton
                     key="close"
@@ -31,9 +26,8 @@ export const NotificationSnackbar = withSnackbar(({ enqueueSnackbar, closeSnackb
     const openSnackbar = useCallback(() => {
         enqueueSnackbar(AppStore.getSnackbarMessage(), {
             variant: AppStore.getSnackbarVariant(),
-            // @ts-expect-error notistack type claims it doesn't support `duration`, but this still runs without errors 🤷‍♂️
-            duration: AppStore.getSnackbarDuration(),
-            position: AppStore.getSnackbarPosition(),
+            autoHideDuration: AppStore.getSnackbarDuration(),
+            anchorOrigin: AppStore.getSnackbarPosition(),
             action: snackbarAction,
             style: AppStore.getSnackbarStyle(),
         });

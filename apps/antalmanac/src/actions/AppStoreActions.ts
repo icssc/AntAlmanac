@@ -7,9 +7,8 @@ import type {
     WebsocSection,
 } from '@packages/antalmanac-types';
 import { TRPCError } from '@trpc/server';
-import { VariantType } from 'notistack';
+import { SnackbarOrigin, VariantType } from 'notistack';
 
-import { SnackbarPosition } from '$components/NotificationSnackbar';
 import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
@@ -63,7 +62,7 @@ export const openSnackbar = (
     variant: VariantType,
     message: string,
     duration?: number,
-    position?: SnackbarPosition,
+    position?: SnackbarOrigin,
     style?: { [cssPropertyName: string]: string }
 ) => {
     AppStore.openSnackbar(variant, message, duration, position, style);

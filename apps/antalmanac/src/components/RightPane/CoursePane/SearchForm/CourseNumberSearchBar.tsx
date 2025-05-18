@@ -17,7 +17,7 @@ export function CourseNumberSearchBar() {
         urlParam.delete('courseNumber');
 
         if (newValue) {
-            urlParam.append('courseNumber', newValue);
+            urlParam.set('courseNumber', newValue);
         }
 
         const param = urlParam.toString();

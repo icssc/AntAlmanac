@@ -1,6 +1,6 @@
 import { Tune } from '@mui/icons-material';
 import { Box, IconButton, Stack, Tooltip } from '@mui/material';
-import type { FormEvent } from 'react';
+import { useCallback, type FormEvent } from 'react';
 
 import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
 import { HelpBox } from '$components/RightPane/CoursePane/SearchForm/HelpBox';
@@ -18,10 +18,13 @@ interface SearchFormProps {
 export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
 
-    const onFormSubmit = (event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        toggleSearch();
-    };
+    const onFormSubmit = useCallback(
+        (event: FormEvent<HTMLFormElement>) => {
+            event.preventDefault();
+            toggleSearch();
+        },
+        [toggleSearch]
+    );
 
     return (
         <Stack sx={{ height: '100%', overflowX: 'hidden' }}>
@@ -29,7 +32,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                 component="form"
                 onSubmit={onFormSubmit}
                 sx={{
-                    marginBottom: '20px',
+                    marginBottom: 2.5,
                     flexGrow: 2,
                 }}
             >

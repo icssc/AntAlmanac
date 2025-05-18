@@ -1,5 +1,5 @@
 import { Add, ArrowDropDown, Delete } from '@mui/icons-material';
-import { Box, IconButton, Menu, MenuItem, Tooltip, useMediaQuery } from '@mui/material';
+import { Box, IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { useState } from 'react';
 
@@ -8,7 +8,6 @@ import ColorPicker from '$components/ColorPicker';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { MOBILE_BREAKPOINT } from '$src/globals';
 import AppStore from '$stores/AppStore';
 
 /**
@@ -44,12 +43,10 @@ interface ActionProps {
 /**
  * Sections added to a schedule, can be recolored or deleted.
  */
-export function ColorAndDelete(props: ActionProps) {
-    const { section, term } = props;
+export function ColorAndDelete({ section, term }: ActionProps) {
+    const isMobile = useIsMobile();
 
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
-
-    const flexDirection = isMobileScreen ? 'column' : undefined;
+    const flexDirection = isMobile ? 'column' : undefined;
 
     const handleClick = () => {
         deleteCourse(section.sectionCode, term, AppStore.getCurrentScheduleIndex());

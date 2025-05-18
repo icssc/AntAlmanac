@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 
 import type { ScheduleCourse, ScheduleSaveState, RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { VariantType } from 'notistack';
+import { SnackbarOrigin, VariantType } from 'notistack';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import type {
@@ -21,7 +21,6 @@ import type {
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { SnackbarPosition } from '$components/NotificationSnackbar';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
 
@@ -38,7 +37,7 @@ class AppStore extends EventEmitter {
 
     snackbarDuration: number;
 
-    snackbarPosition: SnackbarPosition;
+    snackbarPosition: SnackbarOrigin;
 
     snackbarStyle: object;
 
@@ -448,7 +447,7 @@ class AppStore extends EventEmitter {
         variant: VariantType,
         message: string,
         duration?: number,
-        position?: SnackbarPosition,
+        position?: SnackbarOrigin,
         style?: Record<string, string>
     ) {
         this.snackbarVariant = variant;
