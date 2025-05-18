@@ -37,18 +37,16 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                 }}
             >
                 <Stack spacing={2}>
-                    <Box
-                        sx={{
-                            borderTop: 'solid 8px transparent',
-                            display: 'inline-flex',
-                        }}
-                    >
+                    <Box sx={{ display: 'flex', paddingTop: 1, alignItems: 'center', gap: 1 }}>
                         <TermSelector />
-                        <Tooltip title="Toggle Manual Search">
-                            <IconButton onClick={toggleManualSearch}>
-                                <Tune />
-                            </IconButton>
-                        </Tooltip>
+
+                        <Box sx={{ flexShrink: 0 }}>
+                            <Tooltip title="Toggle Manual Search">
+                                <IconButton onClick={toggleManualSearch}>
+                                    <Tune />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
                     </Box>
 
                     {!manualSearchEnabled ? (

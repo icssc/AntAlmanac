@@ -42,6 +42,7 @@
         "@trpc/server": "^10.30.0",
         "date-fns": "^2.29.3",
         "dayjs": "^1.11.7",
+        "events": "^3.3.0",
         "file-saver": "^2.0.5",
         "html2canvas": "^1.4.1",
         "ics": "^3.0.1",

@@ -81,6 +81,13 @@ export default function AppThemeProvider(props: Props) {
                                             backgroundColor: '#003A75',
                                         },
                                     }),
+                                ...(ownerState.variant === 'contained' &&
+                                    ownerState.color === 'secondary' && {
+                                        backgroundColor: '#E0E0E0',
+                                        ':hover': {
+                                            backgroundColor: '#D5D5D5',
+                                        },
+                                    }),
                             }),
                         },
                     },
@@ -109,6 +116,13 @@ export default function AppThemeProvider(props: Props) {
                     MuiInputLabel: {
                         defaultProps: {
                             variant: 'standard',
+                        },
+                    },
+                    MuiPopover: {
+                        styleOverrides: {
+                            paper: {
+                                backgroundImage: 'none',
+                            },
                         },
                     },
                     MuiSelect: {

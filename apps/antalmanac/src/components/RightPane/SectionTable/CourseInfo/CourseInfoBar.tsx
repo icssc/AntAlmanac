@@ -159,6 +159,7 @@ export const CourseInfoBar = ({
         <>
             <Button
                 variant="contained"
+                color="secondary"
                 startIcon={!isMobile && <InfoOutlined />}
                 size="small"
                 onClick={(event) => {
