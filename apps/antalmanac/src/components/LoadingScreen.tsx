@@ -11,6 +11,8 @@ const FUN_FACTS = [
     'Did you know you can search for classes by pressing "CTRL/CMD" + clicking on your schedule item!',
     'I 💖 Kevin Wu',
     'Need a 4 year plan? Checkout PeterPortal!',
+    'Congratulations class of 2025! 🎓',
+    'Thank you Minh Nguyen and Eddy Chen for your hard work and contributions to Antalmanac!',
 ];
 type LoadingScreenProps = {
     open: boolean;
@@ -22,7 +24,7 @@ export function LoadingScreen(props: LoadingScreenProps) {
     useEffect(() => {
         const interval = setInterval(() => {
             setRandomFact(FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)]);
-        }, 5000);
+        }, 4000);
 
         return () => clearInterval(interval);
     }, []);
