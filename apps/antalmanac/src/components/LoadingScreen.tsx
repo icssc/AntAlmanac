@@ -38,12 +38,26 @@ export function LoadingScreen(props: LoadingScreenProps) {
                     backgroundColor: BLUE,
                 }}
             >
-                <Stack spacing={5} width="100%" alignItems="center">
+                <Stack spacing={10} width="100%" height="inherit" justifyContent="center" alignItems="center">
                     <Logo />
-                    <LinearProgress sx={{ width: '25%', marginTop: 2 }} />
-                    <Box fontStyle="italic" color="white" fontSize="h6.fontSize">
-                        {randomFact}
-                    </Box>
+                    <Stack
+                        spacing={2}
+                        width="100%"
+                        height="25%"
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                    >
+                        <LinearProgress sx={{ width: { default: '100%', md: '50%' } }} />
+                        <Box
+                            fontStyle="italic"
+                            color="white"
+                            fontSize="h6.fontSize"
+                            sx={{ textAlign: 'center', height: '50%' }}
+                        >
+                            {randomFact}
+                        </Box>
+                    </Stack>
                 </Stack>
             </DialogContent>
         </Dialog>
