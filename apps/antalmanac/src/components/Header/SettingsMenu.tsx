@@ -1,12 +1,21 @@
-import { Box, Button, ButtonGroup, Drawer, Switch, Typography, useMediaQuery } from '@material-ui/core';
-import { CSSProperties } from '@material-ui/core/styles/withStyles';
-import { Close, DarkMode, Help, LightMode, SettingsBrightness } from '@mui/icons-material';
-import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
-import { Divider, Stack, Tooltip } from '@mui/material';
+import { LightMode, Close, SettingsBrightness, DarkMode, Help, MenuRounded } from '@mui/icons-material';
+import {
+    Box,
+    Button,
+    ButtonGroup,
+    Divider,
+    Drawer,
+    Stack,
+    Switch,
+    Tooltip,
+    Typography,
+    useMediaQuery,
+} from '@mui/material';
 import IconButton from '@mui/material/IconButton';
+import { CSSProperties } from '@mui/material/styles/createTypography';
 import { useCallback, useState } from 'react';
 
-import { AboutButtonGroup } from './AboutButtonGroup';
+import { About } from './About';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
@@ -237,7 +246,7 @@ function AppDrawer() {
     return (
         <>
             <IconButton onClick={handleDrawerOpen} color="inherit" size="large" style={{ padding: '4px' }}>
-                <MenuRoundedIcon fontSize="inherit" />
+                <MenuRounded />
             </IconButton>
             <Drawer
                 anchor="right"
@@ -257,14 +266,14 @@ function AppDrawer() {
                         }}
                     >
                         <IconButton size="large" onClick={handleDrawerClose} style={{ marginLeft: 'auto' }}>
-                            <Close fontSize="inherit" />
+                            <Close />
                         </IconButton>
                     </Box>
 
                     <SettingsMenu />
 
                     <Box sx={{ padding: '1.5rem', width: '100%', bottom: 0, position: 'absolute' }}>
-                        <AboutButtonGroup />
+                        <About />
                     </Box>
                 </Box>
             </Drawer>

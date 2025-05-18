@@ -1,5 +1,4 @@
-import { Save as SaveIcon } from '@material-ui/icons';
-import CloseIcon from '@mui/icons-material/Close';
+import { Close, Save as SaveIcon } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Stack, Snackbar, Alert, Link, IconButton } from '@mui/material';
 import { useState, useEffect } from 'react';
@@ -95,7 +94,7 @@ export const Save = () => {
                                 padding: '0',
                             }}
                         >
-                            <CloseIcon fontSize="inherit" />
+                            <Close fontSize="inherit" />
                         </IconButton>
                     }
                 >

@@ -5,7 +5,7 @@ import type {
     WebsocSectionFinalExam,
 } from '@packages/antalmanac-types';
 
-import { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
+import type { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { getFinalsStartDateForTerm } from '$lib/termData';
 import { notNull, getReferencesOccurring } from '$lib/utils';
 

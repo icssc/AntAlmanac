@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 
-import { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
 import { getEventsFromCourses } from '$lib/download';
 
 describe('download-ics', () => {
@@ -35,6 +35,8 @@ describe('download-ics', () => {
                 instructors: ['placeholderInstructor1', 'placeholderInstructor2'],
                 isCustomEvent: false,
                 sectionCode: 'placeholderSectionCode',
+                deptValue: 'placeholderDeptCode',
+                courseNumber: 'placeholderCourseNumber',
                 sectionType: 'placeholderSectionType',
                 term: '2023 Fall', // Cannot be a random placeholder; it has to be in `quarterStartDates` otherwise it'll be undefined
             },
@@ -65,6 +67,8 @@ describe('download-ics', () => {
                 instructors: ['placeholderInstructor1', 'placeholderInstructor2'],
                 isCustomEvent: false,
                 sectionCode: 'placeholderSectionCode',
+                deptValue: 'placeholderDeptCode',
+                courseNumber: 'placeholderCourseNumber',
                 sectionType: 'Fin',
                 term: '2023 Fall', // Cannot be a random placeholder; it has to be in `quarterStartDates` otherwise it'll be undefined
             },

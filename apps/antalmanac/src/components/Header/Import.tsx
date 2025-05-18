@@ -1,5 +1,8 @@
+import { ContentPasteGo } from '@mui/icons-material';
 import {
+    AlertColor,
     Box,
+    Button,
     Dialog,
     DialogActions,
     DialogContent,
@@ -7,14 +10,13 @@ import {
     DialogTitle,
     FormControl,
     FormControlLabel,
+    InputLabel,
     Radio,
     RadioGroup,
+    Stack,
     TextField,
     Tooltip,
-} from '@material-ui/core';
-import InputLabel from '@material-ui/core/InputLabel';
-import { PostAdd } from '@material-ui/icons';
-import { AlertColor, Button, Stack } from '@mui/material';
+} from '@mui/material';
 import { CourseInfo } from '@packages/antalmanac-types';
 import { ChangeEvent, useCallback, useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
@@ -259,12 +261,11 @@ export function Import() {
 
     return (
         <>
-            {/* TODO after mui v5 migration: change icon to ContentPasteGo */}
             <Tooltip title="Import a schedule from your Study List">
                 <Button
                     onClick={handleOpen}
                     color="inherit"
-                    startIcon={<PostAdd />}
+                    startIcon={<ContentPasteGo />}
                     disabled={skeletonMode}
                     id="import-button"
                 >
