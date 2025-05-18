@@ -15,6 +15,7 @@ import analyticsEnum from '$lib/analytics';
 import { MOBILE_BREAKPOINT } from '$src/globals';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import { useTabStore } from '$stores/TabStore';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -72,6 +73,7 @@ function SectionTable(props: SectionTableProps) {
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
+    const { isMilitaryTime } = useTimeFormatStore()
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
 
     const courseId = useMemo(() => {
@@ -154,7 +156,11 @@ function SectionTable(props: SectionTableProps) {
                     textAlign: { xs: 'left', md: 'right' },
                     marginTop: { xs: 0, md: '-2rem' }
                   }}>
-                    Status last updated {new Date(courseDetails.updatedAt).toLocaleTimeString()}
+                    Status last updated {new Date(courseDetails.updatedAt).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: !isMilitaryTime
+                    })}
                 </Box>
             )}
         </Box>
