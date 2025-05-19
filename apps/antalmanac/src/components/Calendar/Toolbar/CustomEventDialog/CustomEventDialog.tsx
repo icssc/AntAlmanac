@@ -163,7 +163,15 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                 <DialogTitle id="form-dialog-title">
                     {props.customEvent ? 'Edit a Custom Event' : 'Add a Custom Event'}
                 </DialogTitle>
-                <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingTop: '12px' }}>
+                <DialogContent
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '12px',
+                        paddingTop: '12px',
+                        minWidth: (theme) => theme.breakpoints.values.xxs,
+                    }}
+                >
                     <FormControl fullWidth>
                         <TextField
                             label="Event Name"
