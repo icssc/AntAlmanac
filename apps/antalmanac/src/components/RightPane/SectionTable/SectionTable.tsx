@@ -163,7 +163,6 @@ function SectionTable(props: SectionTableProps) {
                         px: 1,
                         py: 0.5,
                         whiteSpace: 'nowrap',
-                        backgroundColor: '#f3f3f3',
                         flexGrow: 1,
                         textAlign: 'right',
                     }}
