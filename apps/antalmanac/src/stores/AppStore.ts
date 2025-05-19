@@ -355,7 +355,8 @@ class AppStore extends EventEmitter {
     }
 
     async loadSchedule(savedSchedule: ScheduleSaveState) {
-        if (!(await this.loadScheduleFromSaveState(savedSchedule))) {
+        const loadSuccess = await this.loadScheduleFromSaveState(savedSchedule);
+        if (!loadSuccess) {
             return false;
         }
         this.unsavedChanges = false;
