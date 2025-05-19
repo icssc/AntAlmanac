@@ -1,6 +1,6 @@
 import { readFile } from 'fs/promises';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { z } from 'zod';
 import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
 import uFuzzy from '@leeoniya/ufuzzy';
