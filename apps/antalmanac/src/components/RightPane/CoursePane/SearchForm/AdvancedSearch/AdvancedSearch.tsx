@@ -1,5 +1,3 @@
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import { Button, Collapse, Typography } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
 import { AdvancedSearchTextFields } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchTextFields';
@@ -40,13 +38,7 @@ export function AdvancedSearch() {
 
     return (
         <>
-            <Button onClick={handleExpand} sx={{ textTransform: 'none', display: 'flex', justifyContent: 'start' }}>
-                <Typography noWrap>Advanced Search Options</Typography>
-                {open ? <ExpandLess /> : <ExpandMore />}
-            </Button>
-            <Collapse in={open}>
-                <AdvancedSearchTextFields />
-            </Collapse>
+            <AdvancedSearchTextFields />
         </>
     );
 }

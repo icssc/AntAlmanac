@@ -1,4 +1,5 @@
-import { Tune } from '@mui/icons-material';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { Button, Collapse, Typography } from '@mui/material';
 import { Box, IconButton, Stack, Tooltip } from '@mui/material';
 import { useCallback, type FormEvent } from 'react';
 
@@ -10,6 +11,7 @@ import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSe
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { AdvancedSearch } from './AdvancedSearch/AdvancedSearch';
 
 interface SearchFormProps {
     toggleSearch: () => void;
@@ -39,33 +41,37 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                 <Stack spacing={2}>
                     <Box sx={{ display: 'flex', paddingTop: 1, alignItems: 'center', gap: 1 }}>
                         <TermSelector />
-
-                        <Box sx={{ flexShrink: 0 }}>
-                            <Tooltip title="Toggle Manual Search">
-                                <IconButton onClick={toggleManualSearch}>
-                                    <Tune />
-                                </IconButton>
-                            </Tooltip>
-                        </Box>
                     </Box>
 
-                    <div style={manualSearchEnabled ? { pointerEvents: 'none', opacity: 0.5 } : {}}>
+                    <Box sx={manualSearchEnabled ? { pointerEvents: 'none', opacity: 0.5 } : {}}>
                         <FuzzySearch
                             toggleSearch={toggleSearch}
                             toggleShowLegacySearch={toggleManualSearch}
                         />
-                    </div>
+                    </Box>
+
+                    <Button
+                        onClick={toggleManualSearch}
+                        sx={{ textTransform: 'none', width: 'auto', display: 'flex', justifyContent: 'start' }}
+                    >
+                        <Typography noWrap variant="body1">
+                            Advanced Search Options
+                        </Typography>
+                        {manualSearchEnabled ? <ExpandLess /> : <ExpandMore />}
+                    </Button>
 
                     {manualSearchEnabled && (
-                        <LegacySearch
-                            onSubmit={() => {
-                                logAnalytics({
-                                    category: analyticsEnum.classSearch.title,
-                                    action: analyticsEnum.classSearch.actions.MANUAL_SEARCH,
-                                });
-                            }}
-                            onReset={RightPaneStore.resetFormValues}
-                        />
+                        <>
+                            <LegacySearch
+                                onSubmit={() => {
+                                    logAnalytics({
+                                        category: analyticsEnum.classSearch.title,
+                                        action: analyticsEnum.classSearch.actions.MANUAL_SEARCH,
+                                    });
+                                }}
+                                onReset={RightPaneStore.resetFormValues}
+                            />
+                        </>
                     )}
                 </Stack>
             </Box>
