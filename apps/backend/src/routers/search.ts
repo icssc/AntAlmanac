@@ -1,9 +1,14 @@
+import { readFile } from 'fs/promises';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { z } from 'zod';
 import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
 import uFuzzy from '@leeoniya/ufuzzy';
 import * as fuzzysort from 'fuzzysort';
 import { procedure, router } from '../trpc';
 import * as searchData from '../generated/searchData';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const geCategoryKeys = ['ge1a', 'ge1b', 'ge2', 'ge3', 'ge4', 'ge5a', 'ge5b', 'ge6', 'ge7', 'ge8'] as const;
 
@@ -37,13 +42,14 @@ const searchRouter = router({
             const [year, quarter] = input.term.split(' ');
             const parsedTerm = `${quarter}_${year}`;
 
-            let termModule;
+            let termData: Record<string, SectionSearchResult>;
             try {
-                termModule = await import(`../generated/terms/termData_${parsedTerm}.js`);
+                const filePath = join(__dirname, '..', 'generated', 'terms', `${parsedTerm}.json`);
+                const fileContent = await readFile(filePath, 'utf-8');
+                termData = JSON.parse(fileContent);
             } catch (err) {
-                throw new Error(`Failed to load term data for ${parsedTerm}`);
+                throw new Error(`Failed to load term data for ${parsedTerm}: ${err}`);
             }
-            const termData = termModule[parsedTerm] as Record<string, SectionSearchResult>;
 
             const num = Number(input.query);
             const matchedSections: SectionSearchResult[] = [];

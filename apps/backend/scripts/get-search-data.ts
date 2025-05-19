@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { mkdir, writeFile, appendFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 import { queryGraphQL } from 'src/lib/helpers';
 import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from 'src/lib/term-section-codes';
@@ -100,13 +100,8 @@ async function main() {
         );
         count += Object.keys(parsedSectionData).length;
 
-        const fileName = join(__dirname, `../src/generated/terms/termData_${parsedTerm}.ts`);
-        await writeFile(
-            fileName,
-            `import type { SectionSearchResult } from "@packages/antalmanac-types";
-    export const ${parsedTerm}: Record<string, SectionSearchResult> = ${JSON.stringify(parsedSectionData, null, 2)};
-    `
-        );
+        const fileName = join(__dirname, `../src/generated/terms/${parsedTerm}.json`);
+        await writeFile(fileName, JSON.stringify(parsedSectionData, null, 2));
     }
     console.log(`Fetched ${count} course codes for ${termData.length} terms from Anteater API.`);
     console.log('Cache generated.');
