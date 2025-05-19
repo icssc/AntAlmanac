@@ -1,5 +1,5 @@
-import { IconButton, Popover, Tooltip } from '@material-ui/core';
-import { ColorLens } from '@material-ui/icons';
+import { ColorLens } from '@mui/icons-material';
+import { IconButton, Popover, PopoverProps, Tooltip } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { memo, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
@@ -29,7 +29,7 @@ const ColorPicker = memo(function ColorPicker({
     term,
     sectionCode,
 }: ColorPickerProps) {
-    const [anchorEl, setAnchorEl] = useState<Element | ((element: Element) => Element) | null>(null);
+    const [anchorEl, setAnchorEl] = useState<PopoverProps['anchorEl']>(null);
     const [currColor, setCurrColor] = useState(color);
 
     const postHog = usePostHog();

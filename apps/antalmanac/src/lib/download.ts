@@ -5,7 +5,7 @@ import { createEvents, type EventAttributes } from 'ics';
 import { notNull } from './utils';
 
 import { openSnackbar } from '$actions/AppStoreActions';
-import { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
+import type { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { getDefaultTerm, termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
@@ -251,13 +251,14 @@ export function getRRule(bydays: string[], quarter: string) {
 
 export function getEventsFromCourses(
     events = AppStore.getEventsWithFinalsInCalendar(),
-    term = getDefaultTerm(events).shortName
+    _term?: string
 ): EventAttributes[] {
     const customEventIDs = new Set();
     const calendarEvents = events.flatMap((event) => {
         if (event.isCustomEvent) {
             // FIXME: We don't have a way to get the term for custom events,
             // so we just use the default term.
+            const term = _term ?? getDefaultTerm(events).shortName;
             const { title, start, end, building } = event as CustomEvent;
             const days = getByDays(event.days.join(''));
             const rrule = getRRule(days, getQuarter(term));

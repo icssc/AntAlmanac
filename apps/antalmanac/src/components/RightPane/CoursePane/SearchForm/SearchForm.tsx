@@ -1,80 +1,55 @@
-import { IconButton, Theme, Tooltip } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { Tune } from '@material-ui/icons';
+import { Tune } from '@mui/icons-material';
+import { Box, IconButton, Stack, Tooltip } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import type { FormEvent } from 'react';
+import { useCallback, type FormEvent } from 'react';
 
-import RightPaneStore from '../../RightPaneStore';
-
-import FuzzySearch from './FuzzySearch';
-import PrivacyPolicyBanner from './PrivacyPolicyBanner';
-import TermSelector from './TermSelector';
-
+import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
 import { HelpBox } from '$components/RightPane/CoursePane/SearchForm/HelpBox';
 import { LegacySearch } from '$components/RightPane/CoursePane/SearchForm/LegacySearch';
+import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
+import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
-const styles: Styles<Theme, object> = {
-    rightPane: {
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        overflowX: 'hidden',
-    },
-    container: {
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-        gap: 16,
-    },
-    searchBar: {
-        display: 'flex',
-        flexDirection: 'row',
-    },
-    margin: {
-        borderTop: 'solid 8px transparent',
-        display: 'inline-flex',
-    },
-    form: {
-        marginBottom: '20px',
-        flexGrow: 2,
-    },
-    fallback: {
-        height: '100%',
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-};
+interface SearchFormProps {
+    toggleSearch: () => void;
+}
 
-const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) => {
-    const { classes, toggleSearch } = props;
+export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
     const postHog = usePostHog();
 
-    const onFormSubmit = (event: FormEvent) => {
-        event.preventDefault();
-        toggleSearch();
-    };
+    const onFormSubmit = useCallback(
+        (event: FormEvent<HTMLFormElement>) => {
+            event.preventDefault();
+            toggleSearch();
+        },
+        [toggleSearch]
+    );
 
     return (
-        <div className={classes.rightPane}>
-            <form onSubmit={onFormSubmit} className={classes.form}>
-                <div className={classes.container}>
-                    <div className={classes.margin}>
-                        <TermSelector
-                            changeTerm={(field: string, value: string) => RightPaneStore.updateFormValue(field, value)}
-                            fieldName={'term'}
-                        />
-                        <Tooltip title="Toggle Manual Search">
-                            <IconButton onClick={toggleManualSearch}>
-                                <Tune />
-                            </IconButton>
-                        </Tooltip>
-                    </div>
+        <Stack sx={{ height: '100%', overflowX: 'hidden' }}>
+            <Box
+                component="form"
+                onSubmit={onFormSubmit}
+                sx={{
+                    marginBottom: 2.5,
+                    flexGrow: 2,
+                }}
+            >
+                <Stack spacing={2}>
+                    <Box sx={{ display: 'flex', paddingTop: 1, alignItems: 'center', gap: 1 }}>
+                        <TermSelector />
+
+                        <Box sx={{ flexShrink: 0 }}>
+                            <Tooltip title="Toggle Manual Search">
+                                <IconButton onClick={toggleManualSearch}>
+                                    <Tune />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
+                    </Box>
 
                     {!manualSearchEnabled ? (
                         <FuzzySearch
@@ -93,13 +68,11 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                             onReset={RightPaneStore.resetFormValues}
                         />
                     )}
-                </div>
-            </form>
+                </Stack>
+            </Box>
 
             <HelpBox />
             <PrivacyPolicyBanner />
-        </div>
+        </Stack>
     );
 };
-
-export default withStyles(styles)(SearchForm);

@@ -32,21 +32,24 @@ export const CourseInfoButton = ({
     const compact =
         isMobileScreen || (scheduleManagementWidth && scheduleManagementWidth < theme.breakpoints.values.xs);
 
-    const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
-        logAnalytics(postHog, {
-            category: analyticsCategory,
-            action: analyticsAction,
-        });
+    const handleClick = useCallback(
+        (event: React.MouseEvent<HTMLElement>) => {
+            logAnalytics(postHog, {
+                category: analyticsCategory,
+                action: analyticsAction,
+            });
 
-        if (redirectLink) {
-            window.open(redirectLink);
-            return;
-        }
+            if (redirectLink) {
+                window.open(redirectLink);
+                return;
+            }
 
-        if (popupContent) {
-            setAnchorEl(anchorEl ? null : event.currentTarget);
-        }
-    }, []);
+            if (popupContent) {
+                setAnchorEl(anchorEl ? null : event.currentTarget);
+            }
+        },
+        [analyticsAction, analyticsCategory, anchorEl, popupContent, redirectLink]
+    );
 
     const handleClose = useCallback(() => {
         setAnchorEl(null);

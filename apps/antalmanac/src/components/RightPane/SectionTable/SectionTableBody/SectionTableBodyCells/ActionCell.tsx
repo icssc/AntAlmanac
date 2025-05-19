@@ -1,14 +1,14 @@
 import { Add, ArrowDropDown, Delete } from '@mui/icons-material';
-import { Box, IconButton, Menu, MenuItem, Tooltip, useMediaQuery } from '@mui/material';
+import { Box, IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
-import { bindMenu, bindTrigger, usePopupState } from 'material-ui-popup-state/hooks';
 import { usePostHog } from 'posthog-js/react';
+import { useState } from 'react';
 
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { MOBILE_BREAKPOINT } from '$src/globals';
 import AppStore from '$stores/AppStore';
 
 /**
@@ -44,12 +44,10 @@ interface ActionProps {
 /**
  * Sections added to a schedule, can be recolored or deleted.
  */
-export function ColorAndDelete(props: ActionProps) {
-    const { section, term } = props;
+export function ColorAndDelete({ section, term }: ActionProps) {
+    const isMobile = useIsMobile();
 
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
-
-    const flexDirection = isMobileScreen ? 'column' : undefined;
+    const flexDirection = isMobile ? 'column' : undefined;
 
     const postHog = usePostHog();
 
@@ -96,23 +94,21 @@ const fieldsToReset = ['courseCode', 'courseNumber', 'deptValue', 'ge', 'term'];
 /**
  * Sections that have not been added to a schedule can be added to a schedule.
  */
-export function ScheduleAddCell(props: ActionProps) {
-    const { section, courseDetails, term, scheduleNames, scheduleConflict } = props;
+export function ScheduleAddCell({ section, courseDetails, term, scheduleNames, scheduleConflict }: ActionProps) {
+    const isMobile = useIsMobile();
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-    const popupState = usePopupState({ popupId: 'SectionTableAddCellPopup', variant: 'popover' });
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
-
-    const flexDirection = isMobileScreen ? 'column' : undefined;
+    const flexDirection = isMobile ? 'column' : undefined;
+    const open = Boolean(anchorEl);
 
     const postHog = usePostHog();
 
     const closeAndAddCourse = (scheduleIndex: number, specificSchedule?: boolean) => {
-        popupState.close();
+        setAnchorEl(null);
 
         for (const meeting of section.meetings) {
             if (meeting.timeIsTBA) {
                 openSnackbar('success', 'Online/TBA class added');
-                // See Added Classes."
                 break;
             }
         }
@@ -146,7 +142,15 @@ export function ScheduleAddCell(props: ActionProps) {
                 openSnackbar('error', 'Fail to copy the link!');
             }
         );
-        popupState.close();
+        setAnchorEl(null);
+    };
+
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
     };
 
     return (
@@ -170,11 +174,23 @@ export function ScheduleAddCell(props: ActionProps) {
                 </IconButton>
             )}
 
-            <IconButton {...bindTrigger(popupState)}>
+            <IconButton onClick={handleClick}>
                 <ArrowDropDown fontSize="small" />
             </IconButton>
 
-            <Menu {...bindMenu(popupState)}>
+            <Menu
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+            >
                 {scheduleNames.map((name, index) => (
                     <MenuItem key={index} onClick={() => closeAndAddCourse(index, true)}>
                         Add to {name}

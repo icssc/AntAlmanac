@@ -1,6 +1,5 @@
 import { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent } from '@packages/antalmanac-types';
-
-import { and, eq, ExtractTablesWithRelations } from 'drizzle-orm';
+import { and, eq, ExtractTablesWithRelations, gt } from 'drizzle-orm';
 import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 import type { Database } from '$db/index';
 import {
@@ -13,6 +12,9 @@ import {
     Schedule,
     CourseInSchedule,
     CustomEvent,
+    sessions,
+    Account,
+    Session,
 } from '$db/schema';
 import * as schema from '$db/schema';
 
@@ -62,10 +64,111 @@ export class RDS {
 
         return userId;
     }
+    /**
+     * Retrieves an account with the specified user ID and account type.
+     *
+     * @param db - The database or transaction object.
+     * @param userId - The ID of the user whose account is to be retrieved.
+     * @returns A promise that resolves to the account object if found, otherwise null.
+     */
+    static async getAccountByProviderId(
+        db: DatabaseOrTransaction,
+        accountType: Account['accountType'],
+        providerId: string
+    ): Promise<Account | null> {
+        return db.transaction((tx) =>
+            tx
+                .select()
+                .from(accounts)
+                .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerId)))
+                .limit(1)
+                .then((res) => res[0] ?? null)
+        );
+    }
+
+    static async getGuestAccountAndUserByName(db: DatabaseOrTransaction, name: string) {
+        return db.transaction((tx) =>
+            tx
+                .select()
+                .from(accounts)
+                .innerJoin(users, eq(accounts.userId, users.id))
+                .where(and(eq(users.name, name), eq(accounts.accountType, 'GUEST')))
+                .execute()
+                .then((res) => {
+                    return { users: res[0].users, accounts: res[0].accounts };
+                })
+        );
+    }
+
+    /**
+     * Retrieves a user by their ID from the database.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param userId - The ID of the user to retrieve.
+     * @returns A promise that resolves to the user object if found, otherwise undefined.
+     */
+    static async getUserById(db: DatabaseOrTransaction, userId: string) {
+        return db.transaction((tx) =>
+            tx
+                .select()
+                .from(users)
+                .where(eq(users.id, userId))
+                .then((res) => res[0])
+        );
+    }
+
+    static async getUserByEmail(db: DatabaseOrTransaction, email: string) {
+        return db.transaction((tx) =>
+            tx
+                .select()
+                .from(users)
+                .where(eq(users.email, email))
+                .then((res) => res[0])
+        );
+    }
+    /**
+     * Creates a new user and an associated account with the specified provider ID.
+     *
+     * @param db - The database or transaction object.
+     * @param providerId - The provider account ID for the new account.
+     * @returns A promise that resolves to the newly created account object.
+     */
+    static async registerUserAccount(
+        db: DatabaseOrTransaction,
+        providerId: string,
+        name: string,
+        accountType: Account['accountType'],
+        email?: string,
+        avatar?: string
+    ) {
+        const existingAccount = await this.getAccountByProviderId(db, accountType, providerId);
+        if (!existingAccount) {
+            const { userId } = await db
+                .insert(users)
+                .values({
+                    avatar: avatar ?? '',
+                    name: name,
+                    email: email ?? '',
+                })
+                .returning({ userId: users.id })
+                .then((res) => res[0]);
+
+            const account = await db
+                .insert(accounts)
+                .values({ userId: userId, providerAccountId: providerId, accountType: accountType })
+                .returning()
+                .then((res) => res[0]);
+
+            return account;
+        }
+
+        return existingAccount;
+    }
 
     /**
      * Creates a new schedule if one with its name doesn't already exist
      * and replaces its courses and custom events with the ones provided.
+     *
      *
      * @returns The ID of the new/existing schedule
      */
@@ -84,13 +187,7 @@ export class RDS {
             lastUpdated: new Date(),
         };
 
-        const scheduleResult = await tx
-            .insert(schedules)
-            .values(dbSchedule)
-            .returning({ id: schedules.id })
-            .catch((error) => {
-                throw new Error(`Failed to insert schedule for ${userId} (${schedule.scheduleName}): ${error}`);
-            });
+        const scheduleResult = await tx.insert(schedules).values(dbSchedule).returning({ id: schedules.id });
 
         const scheduleId = scheduleResult[0].id;
         if (scheduleId === undefined) {
@@ -112,30 +209,18 @@ export class RDS {
     }
 
     /**
-     * If the guest user with the username in the userData object doesn't already exist,
-     * create a new guest user and populate their data. Otherwise, returns null.
-     */
-    static async insertGuestUserData(db: DatabaseOrTransaction, userData: User): Promise<string | null> {
-        return db.transaction(async (tx) => {
-            const userId = await RDS.guestUserIdWithNameOrNull(tx, userData.id);
-            if (userId) return null;
-            return RDS.upsertGuestUserData(tx, userData);
-        });
-    }
-
-    /**
      * Does the same thing as `insertGuestUserData`, but also updates the user's schedules and courses if they exist.
      *
      * @param db The Drizzle client or transaction object
      * @param userData The object of data containing the user's schedules and courses
      * @returns The user's ID
      */
-    static async upsertGuestUserData(db: DatabaseOrTransaction, userData: User): Promise<string> {
+    static async upsertUserData(db: DatabaseOrTransaction, userData: User): Promise<string> {
         return db.transaction(async (tx) => {
-            const userId = await this.createGuestUserOptional(tx, userData.id);
-
-            if (userId === undefined) {
-                throw new Error(`Failed to create guest user for ${userData.id}`);
+            const account = await this.registerUserAccount(db, userData.id, userData.id, 'GOOGLE');
+            const userId = account.userId;
+            if (!account) {
+                throw new Error(`Failed to create user`);
             }
 
             // Add schedules and courses
@@ -223,39 +308,51 @@ export class RDS {
         await tx.insert(customEvents).values(dbCustomEvents);
     }
 
-    static async getGuestUserData(db: DatabaseOrTransaction, guestId: string): Promise<User | null> {
-        const userAndAccount = await RDS.getUserAndAccount(db, 'GUEST', guestId);
-        if (!userAndAccount) {
-            return null;
-        }
+    /**
+     * Retrieves user data by user ID, including schedules and custom events.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param userId - The unique identifier of the user.
+     * @returns A promise that resolves to a User object containing user data and schedules, or null if the user is not found.
+     */
+    static async getUserDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
+        return db.transaction(async (tx) => {
+            const user = await tx
+                .select()
+                .from(users)
+                .where(eq(users.id, userId))
+                .then((res) => res[0]);
 
-        const userId = userAndAccount.user.id;
+            if (!user) {
+                return null;
+            }
 
-        const sectionResults = await db
-            .select()
-            .from(schedules)
-            .where(eq(schedules.userId, userId))
-            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+            const sectionResults = await tx
+                .select()
+                .from(schedules)
+                .where(eq(schedules.userId, userId))
+                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
 
-        const customEventResults = await db
-            .select()
-            .from(schedules)
-            .where(eq(schedules.userId, userId))
-            .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+            const customEventResults = await tx
+                .select()
+                .from(schedules)
+                .where(eq(schedules.userId, userId))
+                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
 
-        const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+            const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
 
-        const scheduleIndex = userAndAccount.user.currentScheduleId
-            ? userSchedules.findIndex((schedule) => schedule.id === userAndAccount.user.currentScheduleId)
-            : userSchedules.length;
+            const scheduleIndex = user.currentScheduleId
+                ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
+                : userSchedules.length;
 
-        return {
-            id: guestId,
-            userData: {
-                schedules: userSchedules,
-                scheduleIndex,
-            },
-        };
+            return {
+                id: userId,
+                userData: {
+                    schedules: userSchedules,
+                    scheduleIndex,
+                },
+            };
+        });
     }
 
     private static async getUserAndAccount(
@@ -338,5 +435,177 @@ export class RDS {
 
         // Sort schedules by index
         return Object.values(schedulesMapping).sort((a, b) => a.index - b.index);
+    }
+
+    /**
+     * Retrieves the current session from the database using the provided refresh token.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param refreshToken - The refresh token to search for in the sessions table.
+     * @returns A promise that resolves to the current session object if found, or null if not found.
+     */
+    static async getCurrentSession(db: DatabaseOrTransaction, refreshToken: string) {
+        return db.transaction((tx) =>
+            tx
+                .select()
+                .from(sessions)
+                .where(eq(sessions.refreshToken, refreshToken))
+                .then((res) => res[0] ?? null)
+        );
+    }
+
+    /**
+     * Creates a new session for a user in the database.
+     *
+     * @param db - The database or transaction object to use for the operation.
+     * @param userID - The ID of the user for whom the session is being created.
+     * @returns A promise that resolves to the created session object or null if the creation failed.
+     */
+    static async createSession(tx: Transaction, userID: string): Promise<Session | null> {
+        return tx
+            .insert(sessions)
+            .values({
+                userId: userID,
+                expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+            })
+            .returning()
+            .then((res) => res[0] ?? null);
+    }
+
+    /**
+     * Removes a session from the database for a given user and refresh token.
+     *
+     * @param db - The database or transaction object to perform the operation.
+     * @param userId - The ID of the user whose session is to be removed.
+     * @param refreshToken - The refresh token of the session to be removed. If null, no action is taken.
+     * @returns A promise that resolves when the session is removed.
+     */
+    static async removeSession(db: DatabaseOrTransaction, userId: string, refreshToken: string | null) {
+        if (refreshToken) {
+            await db.delete(sessions).where(and(eq(sessions.userId, userId), eq(sessions.refreshToken, refreshToken)));
+        }
+    }
+
+    /**
+     * Upserts a session for a user. If a session with the given refresh token already exists,
+     * it returns the current session. Otherwise, it creates a new session for the user.
+     *
+     * @param db - The database or transaction object to use for the operation.
+     * @param userId - The ID of the user for whom the session is being upserted.
+     * @param refreshToken - The refresh token to check for an existing session.
+     * @returns A promise that resolves to the current session if it exists, or a new session if it was created, or null if the operation fails.
+     */
+    static async upsertSession(
+        db: DatabaseOrTransaction,
+        userId: string,
+        refreshToken?: string
+    ): Promise<Session | null> {
+        return db.transaction(async (tx) => {
+            const currentSession = await tx
+                .select()
+                .from(sessions)
+                .where(eq(sessions.refreshToken, refreshToken ?? ''))
+                .then((res) => res[0] ?? null);
+
+            if (currentSession) return currentSession;
+            return await RDS.createSession(tx, userId);
+        });
+    }
+
+    private static async getUserDataWithSession(tx: Transaction, refreshToken: string) {
+        return tx
+            .select()
+            .from(users)
+            .leftJoin(sessions, eq(users.id, sessions.userId))
+            .where(and(eq(sessions.refreshToken, refreshToken), gt(sessions.expires, new Date())))
+            .then((res) => res[0].users);
+    }
+
+    /**
+     * Fetches user data associated with a valid session using a refresh token.
+     *
+     * This function initiates a database transaction to retrieve user information
+     * based on the provided refresh token. If a user is found, it gathers the user's
+     * schedules and custom events, aggregates them, and determines the current schedule index.
+     *
+     * @param db - The database or transaction object to perform the operation.
+     * @param refreshToken - The refresh token used to identify the session.
+     * @returns A promise that resolves to an object containing the user's ID and user data,
+     *          including schedules and the current schedule index, or null if no user is found.
+     */
+    static async fetchUserDataWithSession(db: DatabaseOrTransaction, refreshToken: string) {
+        return db.transaction(async (tx) => {
+            const user = await this.getUserDataWithSession(tx, refreshToken);
+
+            if (user) {
+                const sectionResults = await tx
+                    .select()
+                    .from(schedules)
+                    .where(eq(schedules.userId, user.id))
+                    .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+
+                const customEventResults = await tx
+                    .select()
+                    .from(schedules)
+                    .where(eq(schedules.userId, user.id))
+                    .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+
+                const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+
+                const scheduleIndex = user.currentScheduleId
+                    ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
+                    : userSchedules.length;
+                return {
+                    id: user.id,
+                    userData: {
+                        schedules: userSchedules,
+                        scheduleIndex,
+                    },
+                };
+            }
+            return null;
+        });
+    }
+
+    static async getUserAndAccountBySessionToken(db: DatabaseOrTransaction, refreshToken: string) {
+        return db.transaction((tx) =>
+            tx
+                .select()
+                .from(sessions)
+                .innerJoin(users, eq(sessions.userId, users.id))
+                .innerJoin(accounts, eq(users.id, accounts.userId))
+                .where(eq(sessions.refreshToken, refreshToken))
+                .execute()
+                .then((res) => {
+                    return { users: res[0].users, accounts: res[0].accounts };
+                })
+        );
+    }
+
+    /**
+     * Flags a user as imported based on the provided provider ID.
+     *
+     * This function checks if a user associated with the given provider ID has already been flagged as imported.
+     * If not, it updates the user's record to set the imported flag to true.
+     *
+     * @param db The database or transaction object used to perform the operation.
+     * @param providerId The provider ID used to identify the user.
+     * @returns A promise that resolves to true if the user was successfully flagged as imported, or false if the user
+     *          was already flagged or if an error occurred during the operation.
+     */
+    static async flagImportedUser(db: DatabaseOrTransaction, providerId: string) {
+        try {
+            const { users: user, accounts } = await this.getGuestAccountAndUserByName(db, providerId);
+            if (user.imported) {
+                return false;
+            }
+
+            await db.transaction((tx) =>
+                tx.update(users).set({ imported: true }).where(eq(users.id, accounts.userId)).execute()
+            );
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 }

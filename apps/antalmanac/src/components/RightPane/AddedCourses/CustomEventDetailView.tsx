@@ -4,10 +4,9 @@ import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 
-import ColorPicker from '../../ColorPicker';
-
 import { deleteCustomEvent } from '$actions/AppStoreActions';
-import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
+import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import ColorPicker from '$components/ColorPicker';
 import { MapLink } from '$components/buttons/MapLink';
 import analyticsEnum from '$lib/analytics/analytics';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';

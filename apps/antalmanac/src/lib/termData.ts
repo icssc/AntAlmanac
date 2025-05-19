@@ -1,4 +1,4 @@
-import { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { terms } from '$generated/termData';
 
 /**

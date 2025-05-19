@@ -15,7 +15,7 @@ import ClassRoutes from './Routes';
 import UserLocator from './UserLocator';
 
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
+import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
