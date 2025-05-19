@@ -1,12 +1,11 @@
-import TextField from '@material-ui/core/TextField';
-import Autocomplete, { AutocompleteInputChangeReason } from '@material-ui/lab/Autocomplete';
+import { Autocomplete, type AutocompleteInputChangeReason, TextField } from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
 import { PureComponent } from 'react';
 import UAParser from 'ua-parser-js';
 
 import RightPaneStore from '../../RightPaneStore';
 
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 
 const SEARCH_TIMEOUT_MS = 150;
@@ -71,12 +70,10 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 break;
             case emojiMap.DEPARTMENT:
                 RightPaneStore.updateFormValue('deptValue', ident[0]);
-                RightPaneStore.updateFormValue('deptLabel', ident.join(':'));
                 break;
             case emojiMap.COURSE: {
                 const deptValue = ident[0].split(' ').slice(0, -1).join(' ');
                 RightPaneStore.updateFormValue('deptValue', deptValue);
-                RightPaneStore.updateFormValue('deptLabel', deptValue);
                 RightPaneStore.updateFormValue('courseNumber', ident[0].split(' ').slice(-1)[0]);
                 break;
             }
@@ -117,8 +114,6 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 return '';
         }
     };
-
-    getOptionSelected = () => true;
 
     requestIsCurrent = (requestTimestamp: number) => this.state.requestTimestamp === requestTimestamp;
 
@@ -194,19 +189,16 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 renderInput={(params) => (
                     <TextField
                         {...params}
-                        inputRef={(input: HTMLInputElement | null) => {
-                            if (input && !isMobile()) {
-                                input.focus();
-                            }
-                        }}
+                        // eslint-disable-next-line jsx-a11y/no-autofocus
+                        autoFocus={!isMobile()}
                         fullWidth
                         label={'Search'}
+                        placeholder="Search for courses, departments, GEs..."
                     />
                 )}
                 autoHighlight={true}
                 filterOptions={this.filterOptions}
                 getOptionLabel={this.getOptionLabel}
-                getOptionSelected={this.getOptionSelected}
                 id={'fuzzy-search'}
                 noOptionsText={'No results found! Please try broadening your search.'}
                 onClose={this.onClose}

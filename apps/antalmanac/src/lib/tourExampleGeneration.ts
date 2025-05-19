@@ -96,7 +96,7 @@ export function addSampleClasses() {
 }
 
 export function removeSampleClasses() {
-    AppStore.deleteCourses(sampleClassesSectionCodes, CURRENT_TERM, false);
+    AppStore.deleteCourses(sampleClassesSectionCodes, CURRENT_TERM, AppStore.getCurrentScheduleIndex(), false);
     sampleClassesSectionCodes = [];
 }
 
@@ -230,6 +230,7 @@ export function sampleClassFactory({
             status: 'Waitl',
             units: '4',
             updatedAt: null,
+            webURL: '',
         },
     };
 }

@@ -1,35 +1,12 @@
-import { Button, Popover, useMediaQuery } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
-import { Skeleton } from '@material-ui/lab';
+import { InfoOutlined } from '@mui/icons-material';
+import { Box, Button, Popover, Skeleton } from '@mui/material';
 import type { PrerequisiteTree } from '@packages/antalmanac-types';
 import { useState } from 'react';
 
-import { MOBILE_BREAKPOINT } from '../../../../globals';
-
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import trpc from '$lib/api/trpc';
 import PrereqTree from '$components/RightPane/SectionTable/PrereqTree';
-
-const styles = () => ({
-    rightSpace: {
-        marginRight: 4,
-    },
-    button: {
-        backgroundColor: '#72a9ed',
-        boxShadow: 'none',
-    },
-    courseInfoPane: {
-        margin: 10,
-        maxWidth: 500,
-    },
-    skeleton: {
-        margin: 10,
-        width: 500,
-        height: 150,
-    },
-});
+import { useIsMobile } from '$hooks/useIsMobile';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import trpc from '$lib/api/trpc';
 
 const noCourseInfo = {
     id: '',
@@ -49,7 +26,6 @@ interface CourseInfoBarProps {
     courseNumber: string;
     deptCode: string;
     prerequisiteLink: string;
-    classes: ClassNameMap;
     analyticsCategory: string;
 }
 
@@ -66,8 +42,14 @@ export interface CourseInfo {
     ge_list: string;
 }
 
-export const CourseInfoBar = withStyles(styles)((props: CourseInfoBarProps) => {
-    const { courseTitle, courseNumber, deptCode, prerequisiteLink, classes, analyticsCategory } = props;
+export const CourseInfoBar = ({
+    courseTitle,
+    courseNumber,
+    deptCode,
+    prerequisiteLink,
+    analyticsCategory,
+}: CourseInfoBarProps) => {
+    const isMobile = useIsMobile();
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [courseInfo, setCourseInfo] = useState<CourseInfo | null>(null);
@@ -75,41 +57,45 @@ export const CourseInfoBar = withStyles(styles)((props: CourseInfoBarProps) => {
     const togglePopover = async (currentTarget: HTMLElement | null) => {
         if (anchorEl) {
             setAnchorEl(null);
-        } else {
-            setAnchorEl(currentTarget);
+            return;
+        }
 
-            if (courseInfo === null) {
-                try {
-                    const res = await trpc.course.get.query({
-                        id: `${deptCode.replace(/\s/g, '')}${courseNumber.replace(/\s/g, '')}`,
-                    });
-                    if (res) {
-                        setCourseInfo({
-                            id: res.id,
-                            department: res.department,
-                            courseNumber: res.courseNumber,
-                            title: res.title,
-                            prerequisite_tree: res.prerequisiteTree,
-                            prerequisite_list: res.prerequisites.map((x) => x.id),
-                            prerequisite_text: res.prerequisiteText,
-                            prerequisite_for: res.dependencies.map((x) => x.id),
-                            description: res.description,
-                            ge_list: res.geList.join(', '),
-                        });
-                    } else {
-                        setCourseInfo(noCourseInfo);
-                    }
-                } catch (e) {
-                    setCourseInfo(noCourseInfo);
-                }
+        setAnchorEl(currentTarget);
+        if (courseInfo !== null) {
+            return;
+        }
+
+        try {
+            const res = await trpc.course.get.query({
+                id: `${deptCode.replace(/\s/g, '')}${courseNumber.replace(/\s/g, '')}`,
+            });
+
+            if (!res) {
+                setCourseInfo(noCourseInfo);
+                return;
             }
+
+            setCourseInfo({
+                id: res.id,
+                department: res.department,
+                courseNumber: res.courseNumber,
+                title: res.title,
+                prerequisite_tree: res.prerequisiteTree,
+                prerequisite_list: res.prerequisites.map((x) => x.id),
+                prerequisite_text: res.prerequisiteText,
+                prerequisite_for: res.dependencies.map((x) => x.id),
+                description: res.description,
+                ge_list: res.geList.join(', '),
+            });
+        } catch (e) {
+            setCourseInfo(noCourseInfo);
         }
     };
 
     const getPopoverContent = () => {
         if (courseInfo === null) {
             return (
-                <div className={classes.skeleton}>
+                <Box sx={{ margin: 1.5, width: 500, height: 150 }}>
                     <p>
                         <Skeleton variant="text" animation="wave" height={30} width="50%" />
                     </p>
@@ -120,18 +106,18 @@ export const CourseInfoBar = withStyles(styles)((props: CourseInfoBarProps) => {
                         <Skeleton variant="text" animation="wave" />
                         <Skeleton variant="text" animation="wave" />
                     </p>
-                </div>
+                </Box>
             );
         } else {
             const { title, prerequisite_tree, prerequisite_text, prerequisite_for, description, ge_list } = courseInfo;
 
             return (
-                <div className={classes.courseInfoPane}>
+                <Box sx={{ margin: 1.5, maxWidth: 500 }}>
                     <p>
                         <strong>{title}</strong>
                     </p>
                     <p>{description}</p>
-                    {JSON.stringify(prerequisite_tree) !== '{}' && <PrereqTree {...courseInfo} />}
+                    {Object.keys(prerequisite_tree).length > 0 && <PrereqTree {...courseInfo} />}
 
                     {prerequisite_text !== '' && (
                         <p>
@@ -146,36 +132,35 @@ export const CourseInfoBar = withStyles(styles)((props: CourseInfoBarProps) => {
                                 rel="noopener noreferrer"
                                 target="_blank"
                             >
-                                <span className={classes.rightSpace}>Prerequisites:</span>
+                                <span style={{ marginRight: 4 }}>Prerequisites:</span>
                             </a>
                             {prerequisite_text}
                         </p>
                     )}
                     {prerequisite_for.length !== 0 && (
                         <p>
-                            <span className={classes.rightSpace}>Prerequisite for:</span>
+                            <span style={{ marginRight: 4 }}>Prerequisite for:</span>
                             {prerequisite_for.join(', ')}
                         </p>
                     )}
 
                     {ge_list !== '' && (
                         <p>
-                            <span className={classes.rightSpace}>General Education Categories:</span>
+                            <span style={{ marginRight: 4 }}>General Education Categories:</span>
                             {ge_list}
                         </p>
                     )}
-                </div>
+                </Box>
             );
         }
     };
-
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
 
     return (
         <>
             <Button
                 variant="contained"
-                startIcon={!isMobileScreen && <InfoOutlinedIcon />}
+                color="secondary"
+                startIcon={!isMobile && <InfoOutlined />}
                 size="small"
                 onClick={(event) => {
                     logAnalytics({
@@ -190,6 +175,7 @@ export const CourseInfoBar = withStyles(styles)((props: CourseInfoBarProps) => {
                     {`${deptCode} ${courseNumber} | ${courseTitle}`}
                 </span>
             </Button>
+
             <Popover
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
@@ -207,4 +193,4 @@ export const CourseInfoBar = withStyles(styles)((props: CourseInfoBarProps) => {
             </Popover>
         </>
     );
-});
+};

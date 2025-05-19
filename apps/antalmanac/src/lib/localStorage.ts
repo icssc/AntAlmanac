@@ -5,7 +5,7 @@ enum LocalStorageKeys {
     phoneNumber = 'phoneNumber',
     recruitmentDismissalTime = 'recruitmentDismissalTime',
     advanced = 'advanced',
-    favorites = 'favorites',
+    recentlySearched = 'recentlySearched',
     tourHasRun = 'tourHasRun',
     theme = 'theme',
     show24HourTime = 'show24HourTime',
@@ -13,11 +13,65 @@ enum LocalStorageKeys {
     autoSave = 'autoSave',
     unsavedActions = 'unsavedActions',
     helpBoxDismissalTime = 'helpBoxDismissalTime',
+    columnToggles = 'columnToggles',
+    pwaDismissalTime = 'pwaDismissalTime',
+    sessionId = 'sessionId',
+    dataCache = 'dataCache',
+    newUser = 'newUser',
+    importedUser = 'importedUser',
+    fromLoading = 'fromLoading',
 }
 
 const LSK = LocalStorageKeys;
 
-// Helper functions for userId
+export function setLocalStorageFromLoading(value: string) {
+    window.localStorage.setItem(LSK.fromLoading, value);
+}
+
+export function getLocalStorageFromLoading() {
+    return window.localStorage.getItem(LSK.fromLoading);
+}
+
+export function removeLocalStorageFromLoading() {
+    window.localStorage.removeItem(LSK.fromLoading);
+}
+
+export function setLocalStorageImportedUser(value: string) {
+    window.localStorage.setItem(LSK.importedUser, value);
+}
+
+export function getLocalStorageImportedUser() {
+    return window.localStorage.getItem(LSK.importedUser);
+}
+
+export function removeLocalStorageImportedUser() {
+    window.localStorage.removeItem(LSK.importedUser);
+}
+
+export function setLocalStorageOnFirstSignin(value: string) {
+    window.localStorage.setItem(LSK.newUser, value);
+}
+
+export function getLocalStorageOnFirstSignin() {
+    return window.localStorage.getItem(LSK.newUser);
+}
+
+export function removeLocalStorageOnFirstSignin() {
+    window.localStorage.removeItem(LSK.newUser);
+}
+
+export function setLocalStorageDataCache(value: string) {
+    window.localStorage.setItem(LSK.dataCache, value);
+}
+
+export function getLocalStorageDataCache() {
+    return window.localStorage.getItem(LSK.dataCache);
+}
+
+export function removeLocalStorageDataCache() {
+    window.localStorage.removeItem(LSK.dataCache);
+}
+
 export function setLocalStorageUserId(value: string) {
     window.localStorage.setItem(LSK.userId, value);
 }
@@ -30,6 +84,17 @@ export function removeLocalStorageUserId() {
     window.localStorage.removeItem(LSK.userId);
 }
 
+export function setLocalStorageSessionId(value: string) {
+    window.localStorage.setItem(LSK.sessionId, value);
+}
+
+export function getLocalStorageSessionId() {
+    return window.localStorage.getItem(LSK.sessionId);
+}
+
+export function removeLocalStorageSessionId() {
+    window.localStorage.removeItem(LSK.sessionId);
+}
 // Helper functions for patchNotesKey
 export function setLocalStoragePatchNotesKey(value: string) {
     window.localStorage.setItem(LSK.patchNotesKey, value);
@@ -82,17 +147,17 @@ export function removeLocalStorageAdvanced() {
     window.localStorage.removeItem(LSK.advanced);
 }
 
-// Helper functions for favorites
-export function setLocalStorageFavorites(value: string) {
-    window.localStorage.setItem(LSK.favorites, value);
+// Helper functions for recently searched
+export function setLocalStorageRecentlySearched(value: string) {
+    window.localStorage.setItem(LSK.recentlySearched, value);
 }
 
-export function getLocalStorageFavorites() {
-    return window.localStorage.getItem(LSK.favorites);
+export function getLocalStorageRecentlySearched() {
+    return window.localStorage.getItem(LSK.recentlySearched);
 }
 
-export function removeLocalStorageFavorites() {
-    window.localStorage.removeItem(LSK.favorites);
+export function removeLocalStorageRecentlySearched() {
+    window.localStorage.removeItem(LSK.recentlySearched);
 }
 
 // Helper functions for tourHasRun
@@ -184,4 +249,22 @@ export function getLocalStorageHelpBoxDismissalTime() {
 
 export function removeLocalStorageHelpBoxDismissalTime() {
     window.localStorage.removeItem(LSK.helpBoxDismissalTime);
+}
+
+// Helper functions for columnToggles
+export function setLocalStorageColumnToggles(value: string) {
+    window.localStorage.setItem(LSK.columnToggles, value);
+}
+
+export function getLocalStorageColumnToggles() {
+    return window.localStorage.getItem(LSK.columnToggles);
+}
+
+// Helper functions for pwaDismissalTime
+export function setLocalStoragePWADismissalTime(value: string) {
+    window.localStorage.setItem(LSK.pwaDismissalTime, value);
+}
+
+export function getLocalStoragePWADismissalTime() {
+    return window.localStorage.getItem(LSK.pwaDismissalTime);
 }

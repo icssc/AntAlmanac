@@ -11,10 +11,13 @@ export default defineConfig({
             $actions: resolve(__dirname, './src/actions'),
             $api: resolve(__dirname, './src/api'),
             $components: resolve(__dirname, './src/components'),
+            $generated: resolve(__dirname, './src/generated'),
             $lib: resolve(__dirname, './src/lib'),
             $providers: resolve(__dirname, './src/providers'),
             $routes: resolve(__dirname, './src/routes'),
+            $src: resolve(__dirname, './src'),
             $stores: resolve(__dirname, './src/stores'),
+            $hooks: resolve(__dirname, './src/hooks'),
         },
     },
     build: {

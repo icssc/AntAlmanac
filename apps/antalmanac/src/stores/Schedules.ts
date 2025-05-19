@@ -5,12 +5,12 @@ import type {
     ScheduleUndoState,
     ShortCourseSchedule,
     RepeatingCustomEvent,
+    CourseInfo,
 } from '@packages/antalmanac-types';
-import type { CourseInfo } from '@packages/antalmanac-types';
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 
-import { termData } from '$lib/termData';
+import { getDefaultTerm } from '$lib/termData';
 import { WebSOC } from '$lib/websoc';
 import { getColorForNewSection } from '$stores/scheduleHelpers';
 
@@ -38,7 +38,7 @@ export class Schedules {
 
         this.schedules = [
             {
-                scheduleName: `${termData[0].shortName.replaceAll(' ', '-')}`,
+                scheduleName: `${getDefaultTerm().shortName.replaceAll(' ', '-')}`,
                 courses: [],
                 customEvents: [],
                 scheduleNoteId: scheduleNoteId,
@@ -63,7 +63,7 @@ export class Schedules {
     }
 
     getDefaultScheduleName() {
-        return termData[0].shortName.replaceAll(' ', '-');
+        return getDefaultTerm().shortName.replaceAll(' ', '-');
     }
 
     getCurrentScheduleIndex() {
@@ -161,6 +161,23 @@ export class Schedules {
             this.addCustomEvent(customEvent, [to], false);
         }
         this.currentScheduleIndex = this.previousStates[this.previousStates.length - 1].scheduleIndex; // return to previously selected schedule index
+    }
+
+    /**
+     * Reorder schedules by moving a schedule from one index to another.
+     * This modifies the order of schedules and updates the current schedule index to maintain the correct reference.
+     */
+    reorderSchedule(from: number, to: number) {
+        this.addUndoState();
+        const [removed] = this.schedules.splice(from, 1);
+        this.schedules.splice(to, 0, removed);
+        if (this.currentScheduleIndex === from) {
+            this.currentScheduleIndex = to;
+        } else if (this.currentScheduleIndex > from && this.currentScheduleIndex <= to) {
+            this.currentScheduleIndex -= 1;
+        } else if (this.currentScheduleIndex < from && this.currentScheduleIndex >= to) {
+            this.currentScheduleIndex += 1;
+        }
     }
     getCurrentCourses() {
         return this.schedules[this.currentScheduleIndex]?.courses || [];
@@ -281,9 +298,10 @@ export class Schedules {
     /**
      * Delete a course in current schedule.
      */
-    deleteCourse(sectionCode: string, term: string) {
+    deleteCourse(sectionCode: string, term: string, scheduleIndex: number) {
         this.addUndoState();
-        this.schedules[this.currentScheduleIndex].courses = this.getCurrentCourses().filter((course) => {
+        this.setCurrentScheduleIndex(scheduleIndex);
+        this.schedules[scheduleIndex].courses = this.schedules[this.currentScheduleIndex].courses.filter((course) => {
             return !(course.section.sectionCode === sectionCode && course.term === term);
         });
     }
@@ -321,6 +339,8 @@ export class Schedules {
      */
     getIndexesOfCustomEvent(customEventId: number) {
         const indices: number[] = [];
+        console.log(this.schedules);
+
         for (const scheduleIndex of this.schedules.keys()) {
             if (this.doesCustomEventExistInSchedule(customEventId, scheduleIndex)) {
                 indices.push(scheduleIndex);
@@ -407,7 +427,7 @@ export class Schedules {
      * Checks if a schedule contains the custom event ID
      */
     doesCustomEventExistInSchedule(customEventId: number, scheduleIndex: number) {
-        for (const customEvent of this.schedules[scheduleIndex].customEvents) {
+        for (const customEvent of this.schedules.at(scheduleIndex)?.customEvents ?? []) {
             if (customEvent.customEventID === customEventId) {
                 return true;
             }
@@ -444,6 +464,20 @@ export class Schedules {
      */
     getCalendarizedFinals() {
         return calendarizeFinals(this.getCurrentCourses());
+    }
+
+    /**
+     * Getter for previous states
+     */
+    getPreviousStates() {
+        return this.previousStates;
+    }
+
+    /**
+     * Clears previous states
+     */
+    clearPreviousStates() {
+        this.previousStates = [];
     }
 
     /**

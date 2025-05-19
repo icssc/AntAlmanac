@@ -5,17 +5,13 @@ import { createEvents, type EventAttributes } from 'ics';
 import { notNull } from './utils';
 
 import { openSnackbar } from '$actions/AppStoreActions';
-import { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
-import buildingCatalogue from '$lib/buildingCatalogue';
+import type { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { getDefaultTerm, termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 
-export const quarterStartDates = Object.fromEntries(
-    termData
-        .filter((term) => term.startDate !== undefined)
-        .map((term) => [term.shortName, term.startDate as [number, number, number]])
-);
+export const quarterStartDates = Object.fromEntries(termData.map((term) => [term.shortName, term.startDate]));
 
 export const months: Record<string, number> = { Mar: 3, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Dec: 12 };
 
@@ -80,7 +76,7 @@ export function getByDays(days: string): string[] {
  */
 export function getClassStartDate(term: string, bydays: string[]) {
     // Get the start date of the quarter (Monday)
-    const quarterStartDate = new Date(...quarterStartDates[term]);
+    const quarterStartDate = new Date(quarterStartDates[term]);
 
     // The number of days since the start of the quarter.
     let dayOffset: number;
@@ -223,7 +219,7 @@ export function getTermLength(quarter: string) {
  */
 export function getRRule(bydays: string[], quarter: string) {
     /**
-     * Number of occurences in the quarter
+     * Number of occurrences in the quarter
      */
     let count = getTermLength(quarter) * bydays.length;
 
@@ -256,13 +252,14 @@ export function getRRule(bydays: string[], quarter: string) {
 
 export function getEventsFromCourses(
     events = AppStore.getEventsWithFinalsInCalendar(),
-    term = getDefaultTerm(events).shortName
+    _term?: string
 ): EventAttributes[] {
     const customEventIDs = new Set();
     const calendarEvents = events.flatMap((event) => {
         if (event.isCustomEvent) {
             // FIXME: We don't have a way to get the term for custom events,
             // so we just use the default term.
+            const term = _term ?? getDefaultTerm(events).shortName;
             const { title, start, end, building } = event as CustomEvent;
             const days = getByDays(event.days.join(''));
             const rrule = getRRule(days, getQuarter(term));

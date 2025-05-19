@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 
 import type { ScheduleCourse, ScheduleSaveState, RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { VariantType } from 'notistack';
+import { SnackbarOrigin, VariantType } from 'notistack';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import type {
@@ -15,12 +15,12 @@ import type {
     CopyScheduleAction,
     RenameScheduleAction,
     DeleteScheduleAction,
+    ReorderScheduleAction,
     ChangeCourseColorAction,
     UndoAction,
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
-import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { SnackbarPosition } from '$components/NotificationSnackbar';
+import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
 
@@ -37,7 +37,7 @@ class AppStore extends EventEmitter {
 
     snackbarDuration: number;
 
-    snackbarPosition: SnackbarPosition;
+    snackbarPosition: SnackbarOrigin;
 
     snackbarStyle: object;
 
@@ -198,20 +198,23 @@ class AppStore extends EventEmitter {
         }
     }
 
-    deleteCourse(sectionCode: string, term: string, triggerUnsavedWarning = true) {
-        this.schedule.deleteCourse(sectionCode, term);
+    deleteCourse(sectionCode: string, term: string, scheduleIndex: number, triggerUnsavedWarning = true) {
+        this.schedule.deleteCourse(sectionCode, term, scheduleIndex);
         this.unsavedChanges = triggerUnsavedWarning;
         const action: DeleteCourseAction = {
             type: 'deleteCourse',
             sectionCode: sectionCode,
             term: term,
+            scheduleIndex: this.schedule.getCurrentScheduleIndex(),
         };
         actionTypesStore.autoSaveSchedule(action);
         this.emit('addedCoursesChange');
     }
 
-    deleteCourses(sectionCodes: string[], term: string, triggerUnsavedWarning = true) {
-        sectionCodes.forEach((sectionCode) => this.deleteCourse(sectionCode, term, triggerUnsavedWarning));
+    deleteCourses(sectionCodes: string[], term: string, scheduleIndex: number, triggerUnsavedWarning = true) {
+        sectionCodes.forEach((sectionCode) =>
+            this.deleteCourse(sectionCode, term, scheduleIndex, triggerUnsavedWarning)
+        );
         this.emit('addedCoursesChange');
     }
 
@@ -254,12 +257,13 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    deleteCustomEvent(customEventId: number) {
-        this.schedule.deleteCustomEvent(customEventId);
+    deleteCustomEvent(customEventId: number, scheduleIndices: number[]) {
+        this.schedule.deleteCustomEvent(customEventId, scheduleIndices);
         this.unsavedChanges = true;
         const action: DeleteCustomEventAction = {
             type: 'deleteCustomEvent',
             customEventId: customEventId,
+            scheduleIndices: scheduleIndices,
         };
         actionTypesStore.autoSaveSchedule(action);
         this.emit('customEventsChange');
@@ -327,15 +331,50 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    async loadSchedule(savedSchedule: ScheduleSaveState) {
+    reorderSchedule(from: number, to: number) {
+        this.schedule.reorderSchedule(from, to);
+        this.unsavedChanges = true;
+        const action: ReorderScheduleAction = {
+            type: 'reorderSchedule',
+            from: from,
+            to: to,
+        };
+        actionTypesStore.autoSaveSchedule(action);
+        this.emit('currentScheduleIndexChange');
+        this.emit('scheduleNamesChange', { triggeredBy: 'reorder' });
+        this.emit('reorderSchedule');
+    }
+
+    private async loadScheduleFromSaveState(savedSchedule: ScheduleSaveState) {
         try {
             await this.schedule.fromScheduleSaveState(savedSchedule);
+            return true;
         } catch {
+            return false;
+        }
+    }
+
+    async loadSchedule(savedSchedule: ScheduleSaveState) {
+        const loadSuccess = await this.loadScheduleFromSaveState(savedSchedule);
+        if (!loadSuccess) {
             return false;
         }
         this.unsavedChanges = false;
 
-        await actionTypesStore.loadScheduleFromLocalSave();
+        /**
+         * Attempt to load unsaved actions
+         * On failure, quietly reload from save state (essentially undoing any partially loaded unsaved actions)
+         */
+        try {
+            await actionTypesStore.loadScheduleFromUnsavedActions();
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                console.error('Unsaved actions could not be loaded:', e.message);
+            }
+            await this.loadScheduleFromSaveState(savedSchedule);
+        }
+
+        this.schedule.clearPreviousStates();
 
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
@@ -359,7 +398,7 @@ class AppStore extends EventEmitter {
         this.emit('skeletonModeChange');
 
         // Switch to added courses tab since Anteater API can't be reached anyway
-        useTabStore.getState().setActiveTab(2);
+        useTabStore.getState().setActiveTab('added');
     }
 
     changeCurrentSchedule(newScheduleIndex: number) {
@@ -412,7 +451,7 @@ class AppStore extends EventEmitter {
         variant: VariantType,
         message: string,
         duration?: number,
-        position?: SnackbarPosition,
+        position?: SnackbarOrigin,
         style?: Record<string, string>
     ) {
         this.snackbarVariant = variant;
@@ -430,6 +469,8 @@ class AppStore extends EventEmitter {
 
     termsInSchedule = (term: string) =>
         new Set([term, ...this.schedule.getCurrentCourses().map((course) => course.term)]);
+
+    getPreviousStates = () => this.schedule.getPreviousStates();
 }
 
 const store = new AppStore();

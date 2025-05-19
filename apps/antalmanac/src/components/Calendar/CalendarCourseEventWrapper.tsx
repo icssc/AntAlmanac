@@ -1,9 +1,10 @@
 import { Box } from '@mui/material';
 import { useCallback, useEffect, useRef } from 'react';
 import { EventWrapperProps } from 'react-big-calendar';
-import { shallow } from 'zustand/shallow';
+import { useShallow } from 'zustand/react/shallow';
 
 import type { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
+import { useQuickSearch } from '$src/hooks/useQuickSearch';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 
 interface CalendarCourseEventWrapperProps extends EventWrapperProps<CalendarEvent> {
@@ -15,17 +16,23 @@ interface CalendarCourseEventWrapperProps extends EventWrapperProps<CalendarEven
  */
 export const CalendarCourseEventWrapper = ({ children, ...props }: CalendarCourseEventWrapperProps) => {
     const ref = useRef<HTMLDivElement>(null);
+    const quickSearch = useQuickSearch();
 
-    const setSelectedEvent = useSelectedEventStore((state) => state.setSelectedEvent, shallow);
+    const setSelectedEvent = useSelectedEventStore(useShallow((state) => state.setSelectedEvent));
 
     const handleClick = useCallback(
         (e: React.MouseEvent) => {
             e.preventDefault();
             e.stopPropagation();
 
-            setSelectedEvent(e, props.event);
+            if (props.event && !props.event.isCustomEvent && (e.metaKey || e.ctrlKey)) {
+                const courseInfo = props.event;
+                quickSearch(courseInfo.deptValue, courseInfo.courseNumber, courseInfo.term);
+            } else {
+                setSelectedEvent(e, props.event);
+            }
         },
-        [props.event, setSelectedEvent]
+        [props.event, quickSearch, setSelectedEvent]
     );
 
     useEffect(() => {

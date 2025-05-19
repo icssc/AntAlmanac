@@ -1,88 +1,41 @@
-import { Button, Theme } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
+import { Box, Button } from '@mui/material';
 
-import AdvancedSearch from './AdvancedSearch/AdvancedSearch';
-import CourseNumberSearchBar from './CourseNumberSearchBar';
-import DeptSearchBar from './DeptSearchBar/DeptSearchBar';
-import GESelector from './GESelector';
-import SectionCodeSearchBar from './SectionCodeSearchBar';
+import { AdvancedSearch } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearch';
+import { CourseNumberSearchBar } from '$components/RightPane/CoursePane/SearchForm/CourseNumberSearchBar';
+import { DepartmentSearchBar } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/DepartmentSearchBar';
+import { GeSelector } from '$components/RightPane/CoursePane/SearchForm/GeSelector';
+import SectionCodeSearchBar from '$components/RightPane/CoursePane/SearchForm/SectionCodeSearchBar';
 
-const styles: Styles<Theme, object> = {
-    container: {
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-    },
-    collapse: {
-        display: 'inline-flex',
-        cursor: 'pointer',
-        marginTop: 20,
-        marginBottom: 10,
-    },
-    search: {
-        display: 'flex',
-        justifyContent: 'center',
-        borderTop: 'solid 8px transparent',
-    },
-    margin: {
-        borderTop: 'solid 8px transparent',
-        display: 'inline-flex',
-        width: '100%',
-    },
-    new: {
-        width: '55%',
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-    },
-    searchButton: {
-        width: '50%',
-    },
-    buttonContainer: {
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        gap: 16,
-    },
-};
+interface LegacySearchProps {
+    onSubmit: VoidFunction;
+    onReset: VoidFunction;
+}
 
-function LegacySearch(props: { classes: ClassNameMap; onSubmit: () => void; onReset: () => void }) {
-    const { classes, onSubmit, onReset } = props;
-
+export function LegacySearch({ onSubmit, onReset }: LegacySearchProps) {
     return (
-        <>
-            <div className={classes.margin}>
-                <DeptSearchBar />
-                <CourseNumberSearchBar />
-            </div>
-
-            <div className={classes.margin}>
-                <GESelector />
-                <SectionCodeSearchBar />
-            </div>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+            <Box>
+                <Box sx={{ display: 'flex', width: '100%', gap: 2 }}>
+                    <DepartmentSearchBar />
+                    <CourseNumberSearchBar />
+                </Box>
+                <Box sx={{ display: 'flex', width: '100%', gap: 2 }}>
+                    <GeSelector />
+                    <SectionCodeSearchBar />
+                </Box>
+            </Box>
 
             <AdvancedSearch />
 
-            <div className={classes.search}>
-                <div className={classes.buttonContainer}>
-                    <Button
-                        className={classes.searchButton}
-                        color="primary"
-                        variant="contained"
-                        onClick={onSubmit}
-                        type="submit"
-                    >
-                        Search
-                    </Button>
+            <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', gap: 2 }}>
+                <Button color="primary" variant="contained" type="submit" onClick={onSubmit} sx={{ width: '50%' }}>
+                    Search
+                </Button>
 
-                    <Button variant="contained" onClick={onReset}>
-                        Reset
-                    </Button>
-                </div>
-            </div>
-        </>
+                <Button variant="contained" color="secondary" onClick={onReset}>
+                    Reset
+                </Button>
+            </Box>
+        </Box>
     );
 }
-
-export default withStyles(styles)(LegacySearch);

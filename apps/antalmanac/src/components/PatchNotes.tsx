@@ -8,24 +8,11 @@ import {
     DialogTitle,
     Typography,
 } from '@mui/material';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
-import { getLocalStoragePatchNotesKey, setLocalStoragePatchNotesKey } from '$lib/localStorage';
-
-/**
- * Show modal only if the current patch notes haven't been shown.
- * This is denoted by a date string YYYYMMDD
- *
- * @example '20230819'
- */
-export const latestPatchNotesUpdate = '20241124';
-
-/**
- * Whether the user's last visited patch notes is outdated.
- */
-function isOutdated() {
-    return getLocalStoragePatchNotesKey() != latestPatchNotesUpdate;
-}
+import { setLocalStoragePatchNotesKey } from '$lib/localStorage';
+import { LATEST_PATCH_NOTES_UPDATE, useHelpMenuStore } from '$stores/HelpMenuStore';
 
 /**
  * Custom backdrop that can be tested via a test ID.
@@ -38,41 +25,48 @@ function PatchNotesBackdrop(props: BackdropProps) {
  * PatchNotes follows structure/layout of AboutPage.tsx
  */
 function PatchNotes() {
-    const [open, setOpen] = useState(isOutdated());
+    const [showPatchNotes, setShowPatchNotes] = useHelpMenuStore(
+        useShallow((store) => [store.showPatchNotes, store.setShowPatchNotes])
+    );
 
     const handleClose = useCallback(() => {
-        setLocalStoragePatchNotesKey(latestPatchNotesUpdate);
-        setOpen(false);
-    }, []);
+        setLocalStoragePatchNotesKey(LATEST_PATCH_NOTES_UPDATE);
+        setShowPatchNotes(false);
+    }, [setShowPatchNotes]);
 
     return (
         <Dialog
             fullWidth={true}
             onClose={handleClose}
-            open={open}
+            open={showPatchNotes}
             data-testid={dialogTestId}
             slots={{ backdrop: PatchNotesBackdrop }}
         >
-            <DialogTitle>{"What's New - November 2024"}</DialogTitle>
+            <DialogTitle>{"What's New - May 2025"}</DialogTitle>
 
             <DialogContent>
-                <Typography>Migration</Typography>
-                <ul>
-                    <li>We are migrating our database to support exciting features coming this year!</li>
-                    <li>
-                        If you experience issues with saving and retrieving schedules, please let us know by filling out
-                        the{' '}
-                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSe0emRHqog-Ctl8tjZfJvewY_CSGXys8ykBkFBy1EEUUUHbUw/viewform">
-                            feedback form
-                        </a>
-                        .
-                    </li>
-                </ul>
-
                 <Typography>Features</Typography>
                 <ul>
-                    <li>Search now contains all new classes and will update automatically!</li>
-                    <li>Many bug fixes and quality-of-life improvements</li>
+                    <li>
+                        Sign-in with Google! This will keep your schedules secure and enable exciting upcoming features.
+                        Stay tuned!
+                        <ul>
+                            <li>
+                                If you encounter any issues reach out to us via{' '}
+                                <a href="https://discord.gg/8CSGbGBqz8">discord</a> or our{' '}
+                                <a href="https://forms.gle/234567890">feedback form</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>Automatic addition of new terms so you don&apos;t have to wait for us to do it manually.</li>
+                    <li>Filtering by day of the week in advanced search.</li>
+                    <li>Optimizations to speed up schedule saving.</li>
+                    <li>Outage page for the rare occasion that Antalmanac is down.</li>
+                </ul>
+                <Typography>Bug Fixes</Typography>
+                <ul>
+                    <li>Advanced search fields getting overridden by URL parameters.</li>
+                    <li>Off-by-one error in enrollment history graph.</li>
                 </ul>
             </DialogContent>
 

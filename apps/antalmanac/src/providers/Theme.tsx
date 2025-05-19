@@ -1,11 +1,44 @@
-import { createTheme } from '@material-ui/core';
-import { ThemeProvider } from '@material-ui/core/styles';
-import { useEffect } from 'react';
+import { createTheme, CssBaseline, ThemeProvider, type PaletteOptions } from '@mui/material';
+import { useEffect, useMemo } from 'react';
 
+import { BLUE, DODGER_BLUE } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
+
+const lightTheme: PaletteOptions = {
+    primary: {
+        main: '#5191d6',
+    },
+    secondary: {
+        main: '#ffffff',
+    },
+    background: {
+        default: '#fafafa',
+        paper: '#fff',
+    },
+};
+
+const darkTheme: PaletteOptions = {
+    primary: {
+        main: DODGER_BLUE,
+    },
+    secondary: {
+        main: '#ffffff',
+    },
+    background: {
+        default: '#303030',
+        paper: '#424242',
+    },
+};
 
 interface Props {
     children?: React.ReactNode;
+}
+
+declare module '@mui/material/styles' {
+    interface BreakpointOverrides {
+        xxs: true;
+        default: true;
+    }
 }
 
 /**
@@ -26,53 +59,111 @@ export default function AppThemeProvider(props: Props) {
         return () => {
             mediaQueryList.removeEventListener('change', onChange);
         };
-    }, [setAppTheme, appTheme]);
+    }, [setAppTheme]);
 
-    const AppTheme = createTheme({
-        overrides: {
-            MuiCssBaseline: {
-                '@global': {
-                    a: {
-                        color: appTheme == 'dark' ? 'dodgerBlue' : 'blue',
+    const AppTheme = useMemo(
+        () =>
+            createTheme({
+                components: {
+                    MuiAppBar: {
+                        styleOverrides: {
+                            root: {
+                                backgroundImage: 'none',
+                            },
+                        },
+                    },
+                    MuiButton: {
+                        styleOverrides: {
+                            root: ({ ownerState }) => ({
+                                ...(ownerState.variant === 'contained' &&
+                                    ownerState.color === 'primary' && {
+                                        backgroundColor: BLUE,
+                                        ':hover': {
+                                            backgroundColor: '#003A75',
+                                        },
+                                    }),
+                                ...(ownerState.variant === 'contained' &&
+                                    ownerState.color === 'secondary' && {
+                                        backgroundColor: '#E0E0E0',
+                                        ':hover': {
+                                            backgroundColor: '#D5D5D5',
+                                        },
+                                    }),
+                            }),
+                        },
+                    },
+                    MuiCssBaseline: {
+                        styleOverrides: {
+                            a: {
+                                color: appTheme === 'dark' ? DODGER_BLUE : BLUE,
+                            },
+                        },
+                    },
+                    // NB: https://github.com/mui/material-ui/issues/43683#issuecomment-2492787970
+                    MuiDialog: {
+                        styleOverrides: {
+                            paper: {
+                                backgroundImage: 'none',
+                            },
+                        },
+                    },
+                    MuiDrawer: {
+                        styleOverrides: {
+                            paper: {
+                                backgroundImage: 'none',
+                            },
+                        },
+                    },
+                    MuiInputLabel: {
+                        defaultProps: {
+                            variant: 'standard',
+                        },
+                    },
+                    MuiPopover: {
+                        styleOverrides: {
+                            paper: {
+                                backgroundImage: 'none',
+                            },
+                        },
+                    },
+                    MuiSelect: {
+                        defaultProps: {
+                            variant: 'standard',
+                        },
+                    },
+                    MuiTextField: {
+                        defaultProps: {
+                            variant: 'standard',
+                        },
                     },
                 },
-            },
-        },
-        breakpoints: {
-            /**
-             * Based on Tailwind's breakpoints.
-             * @see https://tailwindcss.com/docs/screens
-             */
-            values: {
-                xs: 640,
-                sm: 768,
-                md: 1024,
-                lg: 1280,
-                xl: 1536,
-            },
-        },
-        typography: {
-            htmlFontSize: parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10),
-            fontSize:
-                parseInt(window.getComputedStyle(document.documentElement).getPropertyValue('font-size'), 10) * 0.9,
-        },
-        palette: {
-            type: appTheme == 'dark' ? 'dark' : 'light',
-            primary: {
-                light: '#5191d6',
-                main: '#305db7',
-                dark: '#003a75',
-                contrastText: '#fff',
-            },
-            secondary: {
-                light: '#ffff52',
-                main: '#ffffff',
-                dark: '#c7a100',
-                contrastText: '#000',
-            },
-        },
-        spacing: 4,
-    });
+                breakpoints: {
+                    /**
+                     * Based on Tailwind's breakpoints.
+                     * @see https://tailwindcss.com/docs/screens
+                     */
+                    values: {
+                        default: 0,
+                        xxs: 400,
+                        xs: 640,
+                        sm: 768,
+                        md: 1024,
+                        lg: 1280,
+                        xl: 1536,
+                    },
+                },
+                palette: {
+                    mode: appTheme === 'dark' ? 'dark' : 'light',
+                    ...(appTheme === 'dark' ? darkTheme : lightTheme),
+                },
+            }),
+        [appTheme]
+    );
 
-    return <ThemeProvider theme={AppTheme}>{props.children}</ThemeProvider>;
+    return (
+        <ThemeProvider theme={AppTheme}>
+            <CssBaseline />
+            {props.children}
+        </ThemeProvider>
+    );
 }

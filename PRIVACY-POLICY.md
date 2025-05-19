@@ -16,6 +16,6 @@ We use *Google Analytics* to track your usage, for example, which button you cli
 ## Information that we do not collect
   **Personally-identifiable information:** We do not collect any personally identifiable information. Your username should not contain your real name, and you should not enter sensitive information into *AntAlmanac*.
 
-  **Sale of data:** *AntAlamanac* is a not-for-profit project, and we do not sell your information for any purpose.
+  **Sale of data:** *AntAlmanac* is a not-for-profit project, and we do not sell your information for any purpose.
 ## Contact us
 If you have questions, email us at: [icssc@uci.edu](mailto:icssc@uci.edu)

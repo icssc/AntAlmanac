@@ -1,30 +1,19 @@
-import {
-    Box,
-    Paper,
-    Table,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Tooltip,
-    Typography,
-    useMediaQuery,
-} from '@material-ui/core';
-import { Assessment, Help, RateReview, Search, ShowChart as ShowChartIcon } from '@material-ui/icons';
+import { Assessment, ShowChart as ShowChartIcon } from '@mui/icons-material';
+import { Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow, useMediaQuery } from '@mui/material';
 import { useMemo } from 'react';
 
-import { MOBILE_BREAKPOINT } from '../../../globals';
-
-import { EnrollmentHistoryPopup } from './EnrollmentHistoryPopup';
-import GradesPopup from './GradesPopup';
-import { SectionTableProps } from './SectionTable.types';
-
-import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
-import analyticsEnum from '$lib/analytics';
-import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
-import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
+import PeterPortalIcon from '$assets/peterportal-logo.png';
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
+import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
+import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
+import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/EnrollmentHistoryPopup';
+import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
+import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
+import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
+import analyticsEnum from '$lib/analytics/analytics';
+import { MOBILE_BREAKPOINT } from '$src/globals';
+import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import { useTabStore } from '$stores/TabStore';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
@@ -45,11 +34,11 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
     },
     instructors: {
         label: 'Instructors',
-        width: '13%',
+        width: '15%',
     },
     gpa: {
         label: 'GPA',
-        width: '6%',
+        width: '5%',
     },
     dayAndTime: {
         label: 'Times',
@@ -71,37 +60,12 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
         label: 'Status',
         width: '8%',
     },
+    syllabus: {
+        label: 'Syllabus',
+        width: '8%',
+    },
 };
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
-
-interface EnrollmentColumnHeaderProps {
-    label: string;
-}
-
-function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
-
-    return (
-        <Box display="flex">
-            {props.label}
-            {!isMobileScreen && (
-                <Tooltip
-                    title={
-                        <Typography>
-                            Enrolled/Capacity
-                            <br />
-                            Waitlist
-                            <br />
-                            New-Only Reserved
-                        </Typography>
-                    }
-                >
-                    <Help fontSize="small" />
-                </Tooltip>
-            )}
-        </Box>
-    );
-}
 
 function SectionTable(props: SectionTableProps) {
     const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory } = props;
@@ -117,15 +81,27 @@ function SectionTable(props: SectionTableProps) {
     /**
      * Limit table width to force side scrolling.
      */
+    const width = 780;
     const tableMinWidth = useMemo(() => {
-        const width = isMobileScreen ? 600 : 780;
         const numActiveColumns = activeColumns.length;
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
-    }, [isMobileScreen, activeColumns]);
+    }, [activeColumns]);
+
+    /**
+     * Store the size for the custom PeterPortal icon.
+     */
+    const customIconSize = 18;
 
     return (
         <>
-            <Box style={{ display: 'flex', gap: 4, marginTop: 4, marginBottom: 8 }}>
+            <Box
+                sx={{
+                    display: 'flex',
+                    gap: '4px',
+                    marginBottom: '8px',
+                    marginTop: '4px',
+                }}
+            >
                 <CourseInfoBar
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
@@ -139,8 +115,15 @@ function SectionTable(props: SectionTableProps) {
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}
                     analyticsAction={analyticsEnum.classSearch.actions.CLICK_REVIEWS}
-                    text="Reviews"
-                    icon={<RateReview />}
+                    text="PeterPortal"
+                    icon={
+                        <img
+                            src={PeterPortalIcon}
+                            alt="PeterPortal Icon"
+                            width={customIconSize}
+                            height={customIconSize}
+                        />
+                    }
                     redirectLink={`https://peterportal.org/course/${courseId}`}
                 />
 
@@ -172,20 +155,37 @@ function SectionTable(props: SectionTableProps) {
                 />
             </Box>
 
-            <TableContainer component={Paper} style={{ margin: '8px 0px 8px 0px' }} elevation={0} variant="outlined">
-                <Table size="small" style={{ minWidth: `${tableMinWidth}px` }}>
+            <TableContainer
+                component={Paper}
+                sx={{ margin: '8px 0px 8px 0px', width: '100%' }}
+                elevation={0}
+                variant="outlined"
+            >
+                <Table
+                    size="small"
+                    sx={{
+                        minWidth: `${tableMinWidth}px`,
+                        width: '100%',
+                        tableLayout: 'fixed',
+                    }}
+                >
                     <TableHead>
                         <TableRow>
-                            <TableCell padding="none" />
-
+                            <TableCell
+                                sx={{
+                                    padding: 0,
+                                    width: isMobileScreen ? '6%' : '8%',
+                                }}
+                            />
                             {tableHeaderColumnEntries
                                 .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
                                 .map(([column, { label, width }]) => (
                                     <TableCell
                                         key={column}
-                                        padding="none"
-                                        width={width}
-                                        style={{ paddingRight: 0.5, paddingLeft: 0.5 }}
+                                        sx={{
+                                            width: width,
+                                            padding: 0,
+                                        }}
                                     >
                                         {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
                                     </TableCell>

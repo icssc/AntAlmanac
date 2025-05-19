@@ -5,8 +5,8 @@ import type {
     WebsocSectionFinalExam,
 } from '@packages/antalmanac-types';
 
-import { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
-import { getFinalsStartForTerm } from '$lib/termData';
+import type { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
+import { getFinalsStartDateForTerm } from '$lib/termData';
 import { notNull, getReferencesOccurring } from '$lib/utils';
 
 export const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
@@ -55,6 +55,8 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): 
                         color: course.section.color,
                         term: course.term,
                         title: `${course.deptCode} ${course.courseNumber}`,
+                        deptValue: course.deptCode,
+                        courseNumber: course.courseNumber,
                         courseTitle: course.courseTitle,
                         locations: meeting.bldg.map(getLocation).map((location: Location) => {
                             return {
@@ -125,43 +127,43 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
              * Fallback to January 2018 if no finals start date is available.
              * finalsDay is handled later by day since it varies by day.
              */
-            const [finalsYear, finalsMonth, finalsDay] = [...(getFinalsStartForTerm(course.term) ?? [2018, 0])];
+            const finalsStartDate = getFinalsStartDateForTerm(course.term);
 
-            return dayIndicesOccurring.map((dayIndex) => ({
-                color: course.section.color,
-                term: course.term,
-                title: `${course.deptCode} ${course.courseNumber}`,
-                courseTitle: course.courseTitle,
-                locations: locationsWithNoDays.map((location: Location) => {
-                    return {
-                        ...location,
-                        days: COURSE_WEEK_DAYS[dayIndex],
-                    };
-                }),
-                showLocationInfo: true,
-                instructors: course.section.instructors,
-                sectionCode: course.section.sectionCode,
-                sectionType: 'Fin',
-                start: new Date(
-                    finalsYear,
-                    finalsMonth,
-                    finalsDay ? finalsDay + dayIndex : dayIndex - 1,
-                    startHour,
-                    startMin
-                ),
-                end: new Date(
-                    finalsYear,
-                    finalsMonth,
-                    finalsDay ? finalsDay + dayIndex : dayIndex - 1,
-                    endHour,
-                    endMin
-                ),
-                finalExam: {
-                    ...finalExam,
-                    locations: bldg?.map(getLocation) ?? [],
-                },
-                isCustomEvent: false,
-            }));
+            return dayIndicesOccurring.map((dayIndex) => {
+                const startDate = new Date(finalsStartDate);
+                startDate.setDate(finalsStartDate.getDate() + dayIndex);
+                startDate.setHours(startHour, startMin);
+
+                // Copy startDate, which already has the correct day
+                const endDate = new Date(startDate);
+                endDate.setHours(endHour, endMin);
+
+                return {
+                    color: course.section.color,
+                    term: course.term,
+                    title: `${course.deptCode} ${course.courseNumber}`,
+                    courseTitle: course.courseTitle,
+                    locations: locationsWithNoDays.map((location: Location) => {
+                        return {
+                            ...location,
+                            days: COURSE_WEEK_DAYS[dayIndex],
+                        };
+                    }),
+                    showLocationInfo: true,
+                    instructors: course.section.instructors,
+                    sectionCode: course.section.sectionCode,
+                    deptValue: course.deptCode,
+                    courseNumber: course.courseNumber,
+                    sectionType: 'Fin',
+                    start: startDate,
+                    end: endDate,
+                    finalExam: {
+                        ...finalExam,
+                        locations: bldg?.map(getLocation) ?? [],
+                    },
+                    isCustomEvent: false,
+                };
+            });
         });
 }
 

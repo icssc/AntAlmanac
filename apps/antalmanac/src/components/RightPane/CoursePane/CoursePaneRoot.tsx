@@ -5,16 +5,16 @@ import RightPaneStore from '../RightPaneStore';
 
 import { CoursePaneButtonRow } from './CoursePaneButtonRow';
 import CourseRenderPane from './CourseRenderPane';
-import SearchForm from './SearchForm/SearchForm';
 
 import { openSnackbar } from '$actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { WebSOC } from '$lib/websoc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
 export function CoursePaneRoot() {
-    const { key, forceUpdate, searchIsDisplayed, displaySearch, displaySections } = useCoursePaneStore();
+    const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections } = useCoursePaneStore();
 
     const handleSearch = useCallback(() => {
         if (RightPaneStore.formDataIsValid()) {
@@ -54,13 +54,17 @@ export function CoursePaneRoot() {
     }, [handleKeydown]);
 
     return (
-        <Box height={'0px'} flexGrow={1} marginX={0.5}>
+        <Box height={'0px'} flexGrow={1}>
             <CoursePaneButtonRow
-                showSearch={!searchIsDisplayed}
+                showSearch={!searchFormIsDisplayed}
                 onDismissSearchResults={displaySearch}
                 onRefreshSearch={refreshSearch}
             />
-            {searchIsDisplayed ? <SearchForm toggleSearch={handleSearch} /> : <CourseRenderPane key={key} id={key} />}
+            {searchFormIsDisplayed ? (
+                <SearchForm toggleSearch={handleSearch} />
+            ) : (
+                <CourseRenderPane key={key} id={key} />
+            )}
         </Box>
     );
 }

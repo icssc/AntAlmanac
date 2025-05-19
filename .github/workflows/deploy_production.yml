@@ -30,6 +30,8 @@ env:
     GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
     DB_URL: ${{ secrets.PROD_DB_URL }}
     ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
+    VITE_PUBLIC_POSTHOG_HOST: ${{ vars.VITE_PUBLIC_POSTHOG_HOST}}
+    VITE_PUBLIC_POSTHOG_KEY: ${{ vars.VITE_PUBLIC_POSTHOG_KEY}}
 
     # Turborepo credentials.
     TURBO_API: ${{ vars.TURBO_API }}
@@ -68,7 +70,7 @@ jobs:
               run: pnpm --filter "antalmanac" build
 
             - name: Upload built artifacts
-              uses: actions/upload-pages-artifact@v2
+              uses: actions/upload-pages-artifact@v3
               with:
                   path: apps/antalmanac/build
 
@@ -91,7 +93,7 @@ jobs:
         steps:
             - name: Deploy to GitHub Pages
               id: deployment
-              uses: actions/deploy-pages@v2
+              uses: actions/deploy-pages@v4
 
     # Production backend used by the live production website.
     deploy_production_backend:
@@ -123,6 +125,10 @@ jobs:
 
             - name: Deploy backend production CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" backend-production deploy
+              env:
+                  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+                  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+                  GOOGLE_REDIRECT_URI: https://antalmanac.com/auth
 
     # A shadow/mirror of the production backend used as the default API endpoint during development and staging.
     deploy_development_backend:

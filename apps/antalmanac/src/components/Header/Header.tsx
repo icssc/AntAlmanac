@@ -1,53 +1,86 @@
-import { AppBar, Toolbar } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import { ClassNameMap } from '@material-ui/core/styles/withStyles';
+import { AppBar, Box, Stack } from '@mui/material';
+import { useEffect, useState } from 'react';
 
-import Import from './Import';
-import LoadSaveScheduleFunctionality from './LoadSaveFunctionality';
-import { Logo } from './Logo';
-import AppDrawer from './SettingsMenu';
+import { openSnackbar } from '$actions/AppStoreActions';
+import { AlertDialog } from '$components/AlertDialog';
+import { Import } from '$components/Header/Import';
+import { Load } from '$components/Header/Load';
+import { Login } from '$components/Header/Login';
+import { Logo } from '$components/Header/Logo';
+import { Save } from '$components/Header/Save';
+import AppDrawer from '$components/Header/SettingsMenu';
+import {
+    getLocalStorageDataCache,
+    removeLocalStorageImportedUser,
+    removeLocalStorageDataCache,
+    getLocalStorageImportedUser,
+} from '$lib/localStorage';
+import { BLUE } from '$src/globals';
+import { useSessionStore } from '$stores/SessionStore';
 
-const styles = {
-    appBar: {
-        marginBottom: '4px',
-        boxShadow: 'none',
-        minHeight: 0,
-        height: '50px',
-    },
-    buttonMargin: {
-        marginRight: '4px',
-    },
-    fallback: {
-        height: '100%',
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    menuIconContainer: {
-        padding: '0.25rem',
-        display: 'flex',
-    },
-};
+export function Header() {
+    const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
+    const importedUser = getLocalStorageImportedUser() ?? '';
+    const { session } = useSessionStore();
 
-interface CustomAppBarProps {
-    classes: ClassNameMap;
-}
+    const clearStorage = () => {
+        removeLocalStorageImportedUser();
+        removeLocalStorageDataCache();
+    };
 
-const Header = ({ classes }: CustomAppBarProps) => {
+    const handleCloseSuccessfulSaved = () => {
+        setOpenSuccessfulSaved(false);
+        clearStorage();
+    };
+
+    useEffect(() => {
+        const dataCache = getLocalStorageDataCache() ?? '';
+
+        if (importedUser !== '' && session) {
+            setOpenSuccessfulSaved(true);
+        } else if (dataCache !== '' && session) {
+            openSnackbar('success', `Unsaved changes have been saved to your account!`);
+            clearStorage();
+        }
+    }, [importedUser, session]);
     return (
-        <AppBar position="static" className={classes.appBar}>
-            <Toolbar variant="dense" style={{ padding: '5px', display: 'flex', justifyContent: 'space-between' }}>
+        <AppBar
+            position="static"
+            color="primary"
+            sx={{
+                height: 52,
+                padding: 1,
+                boxShadow: 'none',
+                backgroundColor: BLUE,
+            }}
+        >
+            <Box
+                sx={{
+                    display: 'flex',
+                    height: '100%',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                }}
+            >
                 <Logo />
 
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
-                    <LoadSaveScheduleFunctionality />
+                <Stack direction="row">
+                    <Save />
+                    <Load />
                     <Import key="studylist" />
+                    <Login />
                     <AppDrawer key="settings" />
-                </div>
-            </Toolbar>
+                </Stack>
+
+                <AlertDialog
+                    open={openSuccessfulSaved}
+                    title={`Schedule from "${importedUser}" has been saved to your account!`}
+                    severity="success"
+                    onClose={handleCloseSuccessfulSaved}
+                >
+                    NOTE: All changes made to your schedules will be saved to your Google account
+                </AlertDialog>
+            </Box>
         </AppBar>
     );
-};
-
-export default withStyles(styles)(Header);
+}

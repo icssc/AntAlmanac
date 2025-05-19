@@ -3,7 +3,7 @@ import { IconButton, Tooltip } from '@mui/material';
 import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
 
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { useThemeStore } from '$stores/SettingsStore';
 
 const ScreenshotButton = () => {

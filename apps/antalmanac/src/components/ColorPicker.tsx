@@ -1,10 +1,10 @@
-import { IconButton, Popover, Tooltip } from '@material-ui/core';
-import { ColorLens } from '@material-ui/icons';
+import { ColorLens } from '@mui/icons-material';
+import { IconButton, Popover, Tooltip } from '@mui/material';
 import { PureComponent } from 'react';
 import { SketchPicker } from 'react-color';
 
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 
 interface ColorPickerProps {

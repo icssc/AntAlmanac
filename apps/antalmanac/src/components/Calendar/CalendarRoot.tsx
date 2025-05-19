@@ -1,22 +1,34 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
 
-import { Box } from '@material-ui/core';
+import { Box, Backdrop, CircularProgress, useTheme } from '@mui/material';
 import moment from 'moment';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
+import { useShallow } from 'zustand/react/shallow';
 import { shallow } from 'zustand/shallow';
-
-import { CalendarEvent, CourseEvent } from './CourseCalendarEvent';
 
 import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
 import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
 import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
+import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
-import { useTimeFormatStore } from '$stores/SettingsStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+
+/*
+ * Always start week on Saturday for finals potentially on weekends.
+ * CALENDAR_VIEWS will set the correct day range
+ */
+// eslint-disable-next-line import/no-named-as-default-member
+moment.updateLocale('es-us', {
+    week: {
+        dow: 6,
+    },
+});
 
 const CALENDAR_LOCALIZER: DateLocalizer = momentLocalizer(moment);
 const CALENDAR_VIEWS: ViewsProps<CalendarEvent, object> = [Views.WEEK, Views.WORK_WEEK];
@@ -33,11 +45,15 @@ export const ScheduleCalendar = memo(() => {
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
 
+    const theme = useTheme();
     const { isMilitaryTime } = useTimeFormatStore();
     const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
         (state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal],
         shallow
     );
+    const isDark = useThemeStore(useShallow((store) => store.isDark));
+
+    const { openLoadingSchedule: loadingSchedule } = scheduleComponentsToggleStore();
 
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
         if (showFinalsSchedule)
@@ -81,6 +97,24 @@ export const ScheduleCalendar = memo(() => {
         return { style };
     }, []);
 
+    /**
+     * This prop getter overrides `react-big-calendar`'s built-in `.rbc-today` style which applies a light blue coloring on both light and dark mode.
+     */
+    const dayStyleGetter = useCallback(
+        (date: Date) => {
+            if (date.toLocaleDateString() !== new Date().toLocaleDateString()) {
+                return {};
+            }
+
+            const style = {
+                backgroundColor: isDark ? theme.palette.background.paper : '',
+            };
+
+            return { style };
+        },
+        [isDark, theme]
+    );
+
     const colorContrastSufficient = (bg: string) => {
         // This equation is taken from w3c, does not use the colour difference part
         const minBrightnessDiff = 125;
@@ -105,7 +139,6 @@ export const ScheduleCalendar = memo(() => {
     };
 
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
-
     const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
     const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
 
@@ -114,11 +147,11 @@ export const ScheduleCalendar = memo(() => {
     const finalsDate = hoveredCalendarizedFinal
         ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
         : onlyCourseEvents.length > 0
-        ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
-        : getDefaultFinalsStartDate();
+          ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
+          : getDefaultFinalsStartDate();
 
-    const finalsDateFormat = finalsDate ? 'ddd MM/DD' : 'ddd';
-    const date = showFinalsSchedule && finalsDate ? finalsDate : new Date(2018, 0, 1);
+    const finalsDateFormat = 'ddd MM/DD';
+    const date = showFinalsSchedule ? finalsDate : new Date(2018, 0, 1);
 
     const formats = useMemo(
         () => ({
@@ -136,18 +169,6 @@ export const ScheduleCalendar = memo(() => {
         }),
         [calendarGutterTimeFormat, calendarTimeFormat, finalsDateFormat, showFinalsSchedule]
     );
-
-    useEffect(() => {
-        /**
-         * If a final is on a Saturday or Sunday, let the calendar start on Saturday
-         */
-        // eslint-disable-next-line import/no-named-as-default-member -- moment doesn't expose named exports: https://github.com/vitejs/vite-plugin-react/issues/202
-        moment.updateLocale('es-us', {
-            week: {
-                dow: hasWeekendCourse && showFinalsSchedule ? 6 : 0,
-            },
-        });
-    }, [hasWeekendCourse, showFinalsSchedule]);
 
     useEffect(() => {
         const updateEventsInCalendar = () => {
@@ -176,14 +197,33 @@ export const ScheduleCalendar = memo(() => {
     }, []);
 
     return (
-        <Box id="calendar-root" borderRadius={1} flexGrow={1} height={'0px'} display="flex" flexDirection="column">
+        <Box
+            id="calendar-root"
+            borderRadius={1}
+            flexGrow={1}
+            height={'0px'}
+            display="flex"
+            flexDirection="column"
+            position="relative"
+        >
+            <Backdrop
+                sx={(theme) => ({
+                    color: '#ffff',
+                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                    zIndex: theme.zIndex.drawer + 1,
+                    position: 'absolute',
+                    padding: ' 0',
+                })}
+                open={loadingSchedule}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
             <CalendarToolbar
                 currentScheduleIndex={currentScheduleIndex}
                 toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
                 showFinalsSchedule={showFinalsSchedule}
                 scheduleNames={scheduleNames}
             />
-
             <Box id="screenshot" height="0" flexGrow={1}>
                 <CalendarEventPopover />
 
@@ -207,6 +247,7 @@ export const ScheduleCalendar = memo(() => {
                     max={CALENDAR_MAX_DATE}
                     events={events}
                     eventPropGetter={eventStyleGetter}
+                    dayPropGetter={dayStyleGetter}
                     showMultiDayTimes={false}
                     components={CALENDAR_COMPONENTS}
                 />

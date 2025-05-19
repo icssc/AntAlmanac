@@ -22,6 +22,27 @@
             "when": 1732578460427,
             "tag": "0002_fat_ted_forrester",
             "breakpoints": true
+        },
+        {
+            "idx": 3,
+            "version": "7",
+            "when": 1737598788794,
+            "tag": "0003_watery_nekra",
+            "breakpoints": true
+        },
+        {
+            "idx": 4,
+            "version": "7",
+            "when": 1741580702375,
+            "tag": "0004_goofy_harpoon",
+            "breakpoints": true
+        },
+        {
+            "idx": 5,
+            "version": "7",
+            "when": 1747424649430,
+            "tag": "0005_smooth_millenium_guard",
+            "breakpoints": true
         }
     ]
 }

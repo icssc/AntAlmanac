@@ -1,53 +1,31 @@
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
-import { useTabStore } from '$stores/TabStore';
-import { Search } from '@material-ui/icons';
+import { Search } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { useCallback } from 'react';
-import { Link } from 'react-router-dom';
+
+import { useQuickSearch } from '$src/hooks/useQuickSearch';
 
 /**
  * Routes the user to the corresponding search result
  */
 export function CourseInfoSearchButton({ courseDetails, term }: { courseDetails: AACourse; term: string }) {
-    const { setActiveTab } = useTabStore();
-    const { displaySections } = useCoursePaneStore();
+    const quickSearch = useQuickSearch();
 
     const { deptCode, courseNumber } = courseDetails;
 
     const handleClick = useCallback(() => {
-        RightPaneStore.updateFormValue('deptValue', deptCode);
-        RightPaneStore.updateFormValue('courseNumber', courseNumber);
-        RightPaneStore.updateFormValue('term', term);
-
-        displaySections();
-        setActiveTab(1);
-    }, []);
-
-    const queryParams = {
-        term: term,
-        deptValue: deptCode,
-        courseNumber: courseNumber,
-    };
-
-    const href = `/?${Object.entries(queryParams)
-        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-        .join('&')}`;
+        quickSearch(deptCode, courseNumber, term);
+    }, [courseNumber, deptCode, quickSearch, term]);
 
     return (
-        <div>
-            <Button
-                variant="contained"
-                size="small"
-                color="primary"
-                style={{ minWidth: 'fit-content' }}
-                to={href}
-                component={Link}
-                onClick={handleClick}
-            >
-                <Search />
-            </Button>
-        </div>
+        <Button
+            variant="contained"
+            size="small"
+            color="primary"
+            style={{ minWidth: 'fit-content' }}
+            onClick={handleClick}
+        >
+            <Search />
+        </Button>
     );
 }

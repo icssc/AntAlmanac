@@ -27,6 +27,7 @@ env:
     GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
     GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
     ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
+    DB_URL: ${{ secrets.STAGING_DB_URL }}
 
     # Turborepo credentials.
     TURBO_API: ${{ vars.TURBO_API }}
@@ -95,6 +96,10 @@ jobs:
 
             - name: Destroy backend staging CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" backend-staging destroy --force
+              env: # Placeholder values because they shouldn't be necessary
+                  GOOGLE_CLIENT_ID: ""
+                  GOOGLE_CLIENT_SECRET: ""
+                  GOOGLE_REDIRECT_URI: ""
 
             - name: Delete deployment
               uses: ./.github/actions/delete-deployment
