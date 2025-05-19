@@ -8,12 +8,6 @@ on:
             - main
 
     workflow_dispatch:
-    
-    # Re-deploy everyr 15 minutes because *something* is breaking, and re-deploying
-    # seems to fix it remporarily. This is a temporary fix during enrollment.
-    schedule:
-        - cron: '*/15 * * * *'
-        
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
