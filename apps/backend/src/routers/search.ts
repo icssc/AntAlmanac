@@ -1,6 +1,5 @@
 import { readFile } from 'fs/promises';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
 import { z } from 'zod';
 import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
 import uFuzzy from '@leeoniya/ufuzzy';
@@ -9,7 +8,10 @@ import { procedure, router } from '../trpc';
 import { backendEnvSchema } from '../env';
 import * as searchData from '../generated/searchData';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const env = backendEnvSchema.parse(process.env);
+const isLambda = env.STAGE !== 'local';
+
+const termsFolderPath = isLambda ? '/var/task/terms' : join(process.cwd(), 'src', 'generated', 'terms');
 
 const geCategoryKeys = ['ge1a', 'ge1b', 'ge2', 'ge3', 'ge4', 'ge5a', 'ge5b', 'ge6', 'ge7', 'ge8'] as const;
 
@@ -34,11 +36,6 @@ const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
 ];
 
 const toMutable = <T>(arr: readonly T[]): T[] => arr as T[];
-
-const env = backendEnvSchema.parse(process.env);
-const isLambda = env.STAGE !== 'local';
-
-const termsFolderPath = isLambda ? join(__dirname, '..', '..', 'terms') : join(__dirname, '..', 'generated', 'terms');
 
 const searchRouter = router({
     doSearch: procedure
