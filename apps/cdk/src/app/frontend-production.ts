@@ -10,7 +10,7 @@ async function main() {
 
     const app = new App({ autoSynth: true });
 
-    new FrontendStack(app, stackName, { env: { region: 'us-east-1' } });
+    new FrontendStack(app, stackName, { env: { region: 'us-west-1' } });
 }
 
 main();
