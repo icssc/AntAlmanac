@@ -1,4 +1,4 @@
-import { Button, Box } from '@mui/material';
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as const;
 
@@ -11,39 +11,20 @@ export function DaySelector({
     days = [false, false, false, false, false, false, false],
     onSelectDay,
 }: DaySelectorProps) {
-    const handleChange = (dayIndex: number) => {
-        const newDays = [...days];
-        newDays[dayIndex] = !newDays[dayIndex];
+    const daysValue = days.map((day, index) => (day ? DAYS.at(index) : false)).filter(Boolean);
+
+    const handleChange = (_event: unknown, value: typeof DAYS) => {
+        const newDays = DAYS.map((d) => value.includes(d));
         onSelectDay(newDays);
     };
 
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-            }}
-            style={{ gap: '12px' }}
-        >
-            {DAYS.map((day, index) => (
-                <Button
-                    key={index}
-                    variant={days.at(index) ? 'contained' : 'outlined'}
-                    size="small"
-                    color="secondary"
-                    fullWidth
-                    onClick={() => handleChange(index)}
-                    sx={{
-                        display: 'block',
-                        aspectRatio: 1 / 1,
-                        minWidth: 20,
-                        minHeight: 40,
-                    }}
-                >
+        <ToggleButtonGroup value={daysValue} onChange={handleChange} fullWidth>
+            {DAYS.map((day) => (
+                <ToggleButton key={day} value={day}>
                     {day.at(0)}
-                </Button>
+                </ToggleButton>
             ))}
-        </Box>
+        </ToggleButtonGroup>
     );
 }
