@@ -6,7 +6,8 @@ import type { GESearchResult, SearchResult, SectionSearchResult } from '@package
 import uFuzzy from '@leeoniya/ufuzzy';
 import * as fuzzysort from 'fuzzysort';
 import { procedure, router } from '../trpc';
-import * as searchData from '../generated/searchData';
+import { backendEnvSchema } from '../env';
+import * as searchData from '$generated/searchData';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -34,6 +35,11 @@ const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
 
 const toMutable = <T>(arr: readonly T[]): T[] => arr as T[];
 
+const env = backendEnvSchema.parse(process.env);
+const isLambda = env.STAGE !== 'local';
+
+const termsFolderPath = isLambda ? join(__dirname, '..', '..', 'terms') : join(__dirname, '..', 'generated', 'terms');
+
 const searchRouter = router({
     doSearch: procedure
         .input(z.object({ query: z.string(), term: z.string() }))
@@ -44,7 +50,7 @@ const searchRouter = router({
 
             let termData: Record<string, SectionSearchResult>;
             try {
-                const filePath = join(__dirname, '..', 'generated', 'terms', `${parsedTerm}.json`);
+                const filePath = join(termsFolderPath, `${parsedTerm}.json`);
                 const fileContent = await readFile(filePath, 'utf-8');
                 termData = JSON.parse(fileContent);
             } catch (err) {
