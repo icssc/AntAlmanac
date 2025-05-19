@@ -37,6 +37,7 @@ interface Props {
 declare module '@mui/material/styles' {
     interface BreakpointOverrides {
         xxs: true;
+        default: true;
     }
 }
 
@@ -142,6 +143,7 @@ export default function AppThemeProvider(props: Props) {
                      * @see https://tailwindcss.com/docs/screens
                      */
                     values: {
+                        default: 0,
                         xxs: 400,
                         xs: 640,
                         sm: 768,
