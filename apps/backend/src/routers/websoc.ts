@@ -59,14 +59,19 @@ function sortWebsocResponse(response: WebsocAPIResponse) {
     return response;
 }
 
-const queryWebSoc = async ({ input }: { input: Record<string, string> }) =>
-    await fetch(`https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`, {
-        headers: {
-            ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
-        },
-    })
-        .then((data) => data.json())
-        .then((data) => sortWebsocResponse(data.data as WebsocAPIResponse));
+const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
+    const response = await fetch(
+        `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`,
+        {
+            headers: {
+                ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
+            },
+        }
+    );
+    const data = await response.json();
+    console.log('queryWebSoc', data);
+    return sortWebsocResponse(data.data as WebsocAPIResponse);
+};
 
 function combineWebsocResponses(responses: WebsocAPIResponse[]) {
     const combined: WebsocAPIResponse = { schools: [] };
