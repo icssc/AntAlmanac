@@ -1,5 +1,5 @@
 import { SectionSearchResult } from '@packages/antalmanac-types';
-import { terms } from '$generated/termData';
+import { terms } from '../generated/termData';
 
 interface SectionData {
     sectionCode: string;

@@ -13,8 +13,6 @@
         "paths": {
             "$aa/*": ["../antalmanac/*"],
             "$db/*": ["./src/db/*"],
-            "$generated/*": ["./src/generated/*"],
-            "$lib/*": ["./src/lib/*"],
             "$models/*": ["./src/models/*"]
         }
     },

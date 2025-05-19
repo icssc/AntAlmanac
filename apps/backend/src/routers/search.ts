@@ -7,7 +7,7 @@ import uFuzzy from '@leeoniya/ufuzzy';
 import * as fuzzysort from 'fuzzysort';
 import { procedure, router } from '../trpc';
 import { backendEnvSchema } from '../env';
-import * as searchData from '$generated/searchData';
+import * as searchData from '../generated/searchData';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

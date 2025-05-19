@@ -81,7 +81,7 @@ async function main() {
     });
 
     const termEntries = calendarTerms.map(serializeTerm).join(',\n');
-    const fileContent = `import type { Term } from '$lib/term-section-codes';
+    const fileContent = `import type { Term } from '../lib/term-section-codes';
 
 export const terms: Term[] = [
 ${termEntries}
