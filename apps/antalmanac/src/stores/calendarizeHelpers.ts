@@ -5,7 +5,7 @@ import type {
     WebsocSectionFinalExam,
 } from '@packages/antalmanac-types';
 
-import { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
+import type { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { getFinalsStartDateForTerm } from '$lib/termData';
 import { notNull, getReferencesOccurring } from '$lib/utils';
 
@@ -152,6 +152,8 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                     showLocationInfo: true,
                     instructors: course.section.instructors,
                     sectionCode: course.section.sectionCode,
+                    deptValue: course.deptCode,
+                    courseNumber: course.courseNumber,
                     sectionType: 'Fin',
                     start: startDate,
                     end: endDate,

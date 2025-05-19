@@ -1,5 +1,4 @@
-import TextField from '@material-ui/core/TextField';
-import Autocomplete, { AutocompleteInputChangeReason } from '@material-ui/lab/Autocomplete';
+import { Autocomplete, type AutocompleteInputChangeReason, TextField } from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
 import { PureComponent } from 'react';
 import UAParser from 'ua-parser-js';
@@ -109,8 +108,6 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         }
     };
 
-    getOptionSelected = () => true;
-
     requestIsCurrent = (requestTimestamp: number) => this.state.requestTimestamp === requestTimestamp;
 
     // Returns a function for use with setTimeout that exhibits the following behavior:
@@ -187,7 +184,6 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                         {...params}
                         // eslint-disable-next-line jsx-a11y/no-autofocus
                         autoFocus={!isMobile()}
-                        focused
                         fullWidth
                         label={'Search'}
                         placeholder="Search for courses, departments, GEs..."
@@ -196,7 +192,6 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 autoHighlight={true}
                 filterOptions={this.filterOptions}
                 getOptionLabel={this.getOptionLabel}
-                getOptionSelected={this.getOptionSelected}
                 id={'fuzzy-search'}
                 noOptionsText={'No results found! Please try broadening your search.'}
                 onClose={this.onClose}

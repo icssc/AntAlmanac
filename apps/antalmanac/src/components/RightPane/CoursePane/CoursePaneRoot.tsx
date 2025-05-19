@@ -5,9 +5,9 @@ import RightPaneStore from '../RightPaneStore';
 
 import { CoursePaneButtonRow } from './CoursePaneButtonRow';
 import CourseRenderPane from './CourseRenderPane';
-import SearchForm from './SearchForm/SearchForm';
 
 import { openSnackbar } from '$actions/AppStoreActions';
+import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { WebSOC } from '$lib/websoc';

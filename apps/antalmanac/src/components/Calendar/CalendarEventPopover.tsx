@@ -2,7 +2,7 @@ import { Popover } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { shallow } from 'zustand/shallow';
 
-import CourseCalendarEvent from '$components/Calendar/CourseCalendarEvent';
+import { CourseCalendarEvent } from '$components/Calendar/CourseCalendarEvent';
 import AppStore from '$stores/AppStore';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 

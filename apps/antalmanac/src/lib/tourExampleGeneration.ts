@@ -230,6 +230,7 @@ export function sampleClassFactory({
             status: 'Waitl',
             units: '4',
             updatedAt: null,
+            webURL: '',
         },
     };
 }

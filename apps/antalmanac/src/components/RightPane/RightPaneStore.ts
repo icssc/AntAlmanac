@@ -27,8 +27,6 @@ export interface BuildingFocusInfo {
 
 class RightPaneStore extends EventEmitter {
     private formData: Record<string, string>;
-    private doDisplaySearch: boolean;
-    private openSpotAlertPopoverActive: boolean;
     private urlCourseCodeValue: string;
     private urlTermValue: string;
     private urlGEValue: string;
@@ -39,8 +37,6 @@ class RightPaneStore extends EventEmitter {
         super();
         this.setMaxListeners(15);
         this.formData = structuredClone(defaultFormValues);
-        this.doDisplaySearch = true;
-        this.openSpotAlertPopoverActive = false;
         const search = new URLSearchParams(window.location.search);
         this.urlCourseCodeValue = search.get('courseCode') || '';
         this.urlTermValue = search.get('term') || '';
@@ -73,10 +69,6 @@ class RightPaneStore extends EventEmitter {
         return defaultFormValues;
     };
 
-    getOpenSpotAlertPopoverActive = () => {
-        return this.openSpotAlertPopoverActive;
-    };
-
     getUrlCourseCodeValue = () => this.urlCourseCodeValue;
     getUrlTermValue = () => this.urlTermValue;
     getUrlGEValue = () => this.urlGEValue;
@@ -91,10 +83,6 @@ class RightPaneStore extends EventEmitter {
     resetFormValues = () => {
         this.formData = structuredClone(defaultFormValues);
         this.emit('formReset');
-    };
-
-    toggleOpenSpotAlert = () => {
-        this.openSpotAlertPopoverActive = !this.openSpotAlertPopoverActive;
     };
 
     formDataIsValid = () => {

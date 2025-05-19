@@ -42,24 +42,31 @@ function PatchNotes() {
             data-testid={dialogTestId}
             slots={{ backdrop: PatchNotesBackdrop }}
         >
-            <DialogTitle>{"What's New - January 2025"}</DialogTitle>
+            <DialogTitle>{"What's New - May 2025"}</DialogTitle>
 
             <DialogContent>
                 <Typography>Features</Typography>
                 <ul>
                     <li>
-                        Added column linking to course syllabi (thanks to the ASUCI{' '}
-                        <a href="https://asuci.uci.edu/academicvp/" target="_blank" rel="noreferrer">
-                            AAVP
-                        </a>
-                        !).
+                        Sign-in with Google! This will keep your schedules secure and enable exciting upcoming features.
+                        Stay tuned!
+                        <ul>
+                            <li>
+                                If you encounter any issues reach out to us via{' '}
+                                <a href="https://discord.gg/8CSGbGBqz8">discord</a> or our{' '}
+                                <a href="https://forms.gle/234567890">feedback form</a>
+                            </li>
+                        </ul>
                     </li>
-                    <li>Direct course search buttons in calendar pop-up and course header.</li>
-                    <li>Search caching for faster results on repeated queries.</li>
+                    <li>Automatic addition of new terms so you don&apos;t have to wait for us to do it manually.</li>
+                    <li>Filtering by day of the week in advanced search.</li>
+                    <li>Optimizations to speed up schedule saving.</li>
+                    <li>Outage page for the rare occasion that Antalmanac is down.</li>
                 </ul>
                 <Typography>Bug Fixes</Typography>
                 <ul>
-                    <li>Loading schedules with BIO SCI classes. Thank you for your feedback and patience!</li>
+                    <li>Advanced search fields getting overridden by URL parameters.</li>
+                    <li>Off-by-one error in enrollment history graph.</li>
                 </ul>
             </DialogContent>
 
