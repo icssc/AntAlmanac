@@ -1,13 +1,10 @@
-import { Button, Collapse, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { ClassNameMap } from '@material-ui/core/styles/withStyles';
-import { ExpandLess, ExpandMore } from '@material-ui/icons';
 import { PureComponent } from 'react';
 
 import RightPaneStore from '../../../RightPaneStore';
 
 import { AdvancedSearchTextFields } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchTextFields';
-import { getLocalStorageAdvanced, setLocalStorageAdvanced } from '$lib/localStorage';
 
 const parentStyles = {
     container: {

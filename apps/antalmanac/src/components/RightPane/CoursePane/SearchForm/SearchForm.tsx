@@ -14,7 +14,6 @@ import { HelpBox } from '$components/RightPane/CoursePane/SearchForm/HelpBox';
 import { LegacySearch } from '$components/RightPane/CoursePane/SearchForm/LegacySearch';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
-import AdvancedSearch from './AdvancedSearch/AdvancedSearch';
 
 const styles: Styles<Theme, object> = {
     rightPane: {
@@ -48,6 +47,10 @@ const styles: Styles<Theme, object> = {
         justifyContent: 'center',
         alignItems: 'center',
     },
+    disabledOverlay: {
+        pointerEvents: 'none',
+        opacity: 0.5,
+    },
 };
 
 const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) => {
@@ -70,9 +73,14 @@ const SearchForm = (props: { classes: ClassNameMap; toggleSearch: () => void }) 
                         />
                     </div>
 
-                    {!manualSearchEnabled ? (
-                        <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleManualSearch} />
-                    ) : (
+                    <div className={manualSearchEnabled ? classes.disabledOverlay : ''}>
+                        <FuzzySearch
+                            toggleSearch={toggleSearch}
+                            toggleShowLegacySearch={toggleManualSearch}
+                        />
+                    </div>
+
+                    {manualSearchEnabled && (
                         <LegacySearch
                             onSubmit={() => {
                                 logAnalytics({
