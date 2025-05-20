@@ -43,13 +43,6 @@
             "when": 1747424649430,
             "tag": "0005_smooth_millenium_guard",
             "breakpoints": true
-        },
-        {
-            "idx": 6,
-            "version": "7",
-            "when": 1747779738563,
-            "tag": "0006_normal_eternals",
-            "breakpoints": true
         }
     ]
 }
