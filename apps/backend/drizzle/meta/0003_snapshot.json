@@ -1,6 +1,6 @@
 {
-    "id": "f6cb6e8d-1467-48bf-9bb8-9e3889a7ef99",
-    "prevId": "00000000-0000-0000-0000-000000000000",
+    "id": "1ce29958-0c6a-4cc2-947c-147a6c85c0b8",
+    "prevId": "1653e3a7-93bd-4f8b-b7e5-8b6cda63fa4f",
     "version": "7",
     "dialect": "postgresql",
     "tables": {
@@ -131,13 +131,6 @@
                     "type": "text",
                     "primaryKey": false,
                     "notNull": false
-                },
-                "imported": {
-                    "name": "imported",
-                    "type": "boolean",
-                    "primaryKey": false,
-                    "notNull": false,
-                    "default": false
                 },
                 "current_schedule_id": {
                     "name": "current_schedule_id",
@@ -392,60 +385,14 @@
                     "name": "sectionCode",
                     "type": "integer",
                     "primaryKey": false,
-                    "notNull": true
-                },
-                "year": {
-                    "name": "year",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": true
-                },
-                "quarter": {
-                    "name": "quarter",
-                    "type": "text",
-                    "primaryKey": false,
-                    "notNull": true
-                },
-                "lastUpdated": {
-                    "name": "lastUpdated",
-                    "type": "text",
-                    "primaryKey": false,
                     "notNull": false
                 },
-                "lastCodes": {
-                    "name": "lastCodes",
-                    "type": "text",
+                "status": {
+                    "name": "status",
+                    "type": "subscription_target_status",
+                    "typeSchema": "public",
                     "primaryKey": false,
-                    "notNull": false,
-                    "default": "''"
-                },
-                "openStatus": {
-                    "name": "openStatus",
-                    "type": "boolean",
-                    "primaryKey": false,
-                    "notNull": false,
-                    "default": false
-                },
-                "waitlistStatus": {
-                    "name": "waitlistStatus",
-                    "type": "boolean",
-                    "primaryKey": false,
-                    "notNull": false,
-                    "default": false
-                },
-                "fullStatus": {
-                    "name": "fullStatus",
-                    "type": "boolean",
-                    "primaryKey": false,
-                    "notNull": false,
-                    "default": false
-                },
-                "restrictionStatus": {
-                    "name": "restrictionStatus",
-                    "type": "boolean",
-                    "primaryKey": false,
-                    "notNull": false,
-                    "default": false
+                    "notNull": false
                 }
             },
             "indexes": {},
@@ -461,9 +408,9 @@
                 }
             },
             "compositePrimaryKeys": {
-                "subscriptions_userId_sectionCode_year_quarter_pk": {
-                    "name": "subscriptions_userId_sectionCode_year_quarter_pk",
-                    "columns": ["userId", "sectionCode", "year", "quarter"]
+                "subscriptions_userId_sectionCode_pk": {
+                    "name": "subscriptions_userId_sectionCode_pk",
+                    "columns": ["userId", "sectionCode"]
                 }
             },
             "uniqueConstraints": {},
@@ -477,6 +424,11 @@
             "name": "account_type",
             "schema": "public",
             "values": ["GOOGLE", "GUEST"]
+        },
+        "public.subscription_target_status": {
+            "name": "subscription_target_status",
+            "schema": "public",
+            "values": ["OPEN", "WAITLISTED"]
         }
     },
     "schemas": {},
