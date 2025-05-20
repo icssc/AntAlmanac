@@ -45,11 +45,11 @@ const searchRouter = router({
             const [year, quarter] = input.term.split(' ');
             const parsedTerm = `${quarter}_${year}`;
 
-            let termData: Record<string, SectionSearchResult>;
+            let termSectionCodes: Record<string, SectionSearchResult>;
             try {
                 const filePath = join(termsFolderPath, `${parsedTerm}.json`);
                 const fileContent = await readFile(filePath, 'utf-8');
-                termData = JSON.parse(fileContent);
+                termSectionCodes = JSON.parse(fileContent);
             } catch (err) {
                 throw new Error(`Failed to load term data for ${parsedTerm}: ${err}`);
             }
@@ -61,13 +61,13 @@ const searchRouter = router({
                 if (input.query.length === 4) {
                     for (let i = 0; i < 10; i++) {
                         const possibleCourseCode = `${baseCourseCode}${i}`;
-                        if (termData[possibleCourseCode]) {
-                            matchedSections.push(termData[possibleCourseCode]);
+                        if (termSectionCodes[possibleCourseCode]) {
+                            matchedSections.push(termSectionCodes[possibleCourseCode]);
                         }
                     }
                 } else if (input.query.length === 5) {
-                    if (termData[baseCourseCode]) {
-                        matchedSections.push(termData[baseCourseCode]);
+                    if (termSectionCodes[baseCourseCode]) {
+                        matchedSections.push(termSectionCodes[baseCourseCode]);
                     }
                 }
             }
