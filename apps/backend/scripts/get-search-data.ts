@@ -86,7 +86,7 @@ async function main() {
     `
     );
     let count = 0;
-    for (const term of termData) {
+    const termPromises = termData.map(async (term) => {
         const [year, quarter] = term.shortName.split(' ');
         const parsedTerm = `${quarter}_${year}`;
         const query = QUERY_TEMPLATE.replace('$$YEAR$$', year).replace('$$QUARTER$$', quarter);
@@ -98,11 +98,15 @@ async function main() {
         console.log(
             `Fetched ${Object.keys(parsedSectionData).length} course codes for ${term.shortName} from Anteater API.`
         );
-        count += Object.keys(parsedSectionData).length;
 
         const fileName = join(__dirname, `../src/generated/terms/${parsedTerm}.json`);
         await writeFile(fileName, JSON.stringify(parsedSectionData, null, 2));
-    }
+        return Object.keys(parsedSectionData).length;
+    });
+
+    const results = await Promise.all(termPromises);
+    count = results.reduce((acc, numKeys) => acc + numKeys, 0);
+
     console.log(`Fetched ${count} course codes for ${termData.length} terms from Anteater API.`);
     console.log('Cache generated.');
 }
