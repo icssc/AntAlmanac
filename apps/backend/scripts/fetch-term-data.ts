@@ -13,7 +13,7 @@ import { backendEnvSchema } from 'src/env';
 
 import 'dotenv/config';
 
-const env = backendEnvSchema.parse(process.env);
+const env = aapiEnvSchema.parse(process.env);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
