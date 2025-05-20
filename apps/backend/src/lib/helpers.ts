@@ -14,7 +14,9 @@ export async function queryGraphQL<PromiseReturnType>(queryString: string): Prom
 
     const json = await res.json();
 
-    if (!res.ok || json.data === null) return null;
+    if (!res.ok || json.data === null) {
+        return null;
+    }
 
     return json as Promise<PromiseReturnType>;
 }
