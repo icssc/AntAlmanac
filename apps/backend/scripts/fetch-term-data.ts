@@ -10,7 +10,8 @@ import { fileURLToPath } from 'node:url';
 
 import { CalendarTerm } from '@packages/antalmanac-types';
 
-const PUBLIC_ANTEATER_API_KEY = 'INSqn9qP1pXlEwihpQa_GtrJhGOxQyjE5zcAKYLptLg.pk.prj9hlf3sf7q638jkq61u282';
+const apiKey = process.env.ANTEATER_API_KEY;
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const OUTPUT_DIR = join(__dirname, '../src/generated/');
@@ -35,7 +36,7 @@ function sanitizeTermName(year: string, quarter: keyof typeof QUARTER_MAP): `${s
 async function fetchCalendarTerms(): Promise<CalendarTerm[]> {
     const res = await fetch(API_URL, {
         headers: {
-            Authorization: `Bearer ${PUBLIC_ANTEATER_API_KEY}`,
+            Authorization: `Bearer ${apiKey}`,
             Origin: ORIGIN,
         },
     });
