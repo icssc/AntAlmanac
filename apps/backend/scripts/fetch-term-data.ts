@@ -10,6 +10,8 @@ import { fileURLToPath } from 'node:url';
 
 import { CalendarTerm } from '@packages/antalmanac-types';
 
+import 'dotenv/config';
+
 const apiKey = process.env.ANTEATER_API_KEY;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
