@@ -8,6 +8,8 @@ import { procedure, router } from '../trpc';
 import { backendEnvSchema } from '../env';
 import * as searchData from '../generated/searchData';
 
+const MAX_AUTOCOMPLETE_RESULTS = 12;
+
 const env = backendEnvSchema.parse(process.env);
 const isLambda = env.STAGE !== 'local';
 
@@ -77,19 +79,19 @@ const searchRouter = router({
             if (matchedGEs.length) return Object.fromEntries(matchedGEs.map(toGESearchResult));
 
             const matchedDepts =
-                matchedSections.length === 10
+                matchedSections.length === MAX_AUTOCOMPLETE_RESULTS
                     ? []
                     : fuzzysort.go(query, searchData.departments, {
                           keys: ['id', 'alias'],
-                          limit: 10 - matchedSections.length,
+                          limit: MAX_AUTOCOMPLETE_RESULTS - matchedSections.length,
                       });
 
             const matchedCourses =
-                matchedSections.length + matchedDepts.length === 10
+                matchedSections.length + matchedDepts.length === MAX_AUTOCOMPLETE_RESULTS
                     ? []
                     : fuzzysort.go(query, searchData.courses, {
                           keys: ['id', 'name', 'alias', 'metadata.department', 'metadata.number'],
-                          limit: 10 - matchedDepts.length - matchedSections.length,
+                          limit: MAX_AUTOCOMPLETE_RESULTS - matchedDepts.length - matchedSections.length,
                       });
 
             return Object.fromEntries([
