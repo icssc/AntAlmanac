@@ -9,7 +9,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { CalendarTerm } from '@packages/antalmanac-types';
-import { backendEnvSchema } from 'src/env';
+import { aapiEnvSchema } from 'src/env';
 
 import 'dotenv/config';
 
