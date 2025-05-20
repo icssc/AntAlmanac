@@ -22,7 +22,7 @@ function getAndCheckEnv() {
     }
 
     if (!env.GOOGLE_CLIENT_SECRET) {
-        console.error('GOOGLE_CLIENT_SECRET is not set');
+        console.error('MAPBOX_ACCESS_TOKEN is not set');
     }
 
     return env;

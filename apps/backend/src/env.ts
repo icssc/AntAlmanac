@@ -26,15 +26,14 @@ export const mapboxEnvSchema = z.object({
 /**
  * Environment variables required by the backend to connect to the Anteater API.
  */
-export const anteaterEnvSchema = z.object({
+export const aapiEnvSchema = z.object({
     ANTEATER_API_KEY: z.string(),
 });
 
 /**
  * Environment variables required by the backend during runtime.
  */
-
-export const backendEnvSchema = rdsEnvSchema
+export const backendEnvSchema = googleOAuthEnvSchema
+    .merge(rdsEnvSchema)
     .merge(mapboxEnvSchema)
-    .merge(googleOAuthEnvSchema)
-    .merge(anteaterEnvSchema);
+    .merge(aapiEnvSchema);
