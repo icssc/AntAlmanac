@@ -78,7 +78,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 break;
             }
             case emojiMap.SECTION: {
-                RightPaneStore.updateFormValue('sectionCode', ident[0].split(' ').slice(0)[0]);
+                RightPaneStore.updateFormValue('sectionCode', ident[0].split(' ')[0]);
                 break;
             }
             default:
