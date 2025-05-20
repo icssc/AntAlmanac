@@ -1,40 +1,25 @@
-import { SectionSearchResult } from '@packages/antalmanac-types';
+import {
+    SectionSearchResult,
+    WebsocCourse,
+    WebsocDepartment,
+    WebsocSchool,
+    WebsocSection,
+} from '@packages/antalmanac-types';
 import { terms } from '../generated/termData';
-
-interface SectionData {
-    sectionCode: string;
-    sectionType: string;
-    sectionNum: string;
-}
-
-interface CourseData {
-    courseTitle: string;
-    courseNumber: string;
-    sections: SectionData[];
-}
-
-interface DepartmentData {
-    deptCode: string;
-    courses: CourseData[];
-}
-
 export interface SectionCodesGraphQLResponse {
     data: {
         websoc: {
-            schools: {
-                departments: DepartmentData[];
-            }[];
+            schools: WebsocSchool[];
         };
     };
 }
 
 export function parseSectionCodes(response: SectionCodesGraphQLResponse): Record<string, SectionSearchResult> {
     const results: Record<string, SectionSearchResult> = {};
-
-    response.data.websoc.schools.forEach((school) => {
-        school.departments.forEach((department) => {
-            department.courses.forEach((course) => {
-                course.sections.forEach((section) => {
+    response.data.websoc.schools.forEach((school: WebsocSchool) => {
+        school.departments.forEach((department: WebsocDepartment) => {
+            department.courses.forEach((course: WebsocCourse) => {
+                course.sections.forEach((section: WebsocSection) => {
                     const sectionCode = section.sectionCode;
                     results[sectionCode] = {
                         type: 'SECTION',
