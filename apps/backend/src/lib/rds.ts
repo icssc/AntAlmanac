@@ -601,7 +601,7 @@ export class RDS {
      * @returns A promise that resolves to the notifications associated with a userId, or an empty array if not found.
      */
     static async retrieveNotifications(db: DatabaseOrTransaction, userId: string) {
-        return db.transaction((tx: Transaction) =>
+        return db.transaction((tx) =>
             tx.select().from(subscriptions).where(eq(subscriptions.userId, userId))
         );
     }
@@ -615,7 +615,7 @@ export class RDS {
      * @returns A promise that upserts the notification associated with a userId.
      */
     static async upsertNotification(db: DatabaseOrTransaction, userId: string, notification: Notification) {
-        return db.transaction((tx: Transaction) =>
+        return db.transaction((tx) =>
             tx
                 .insert(subscriptions)
                 .values({
@@ -657,7 +657,7 @@ export class RDS {
      * @returns A promise that updates ALL notifications with a shared sectionCode, year, and quarter.
      */
     static async updateAllNotifications(db: DatabaseOrTransaction, notification: Notification) {
-        return db.transaction((tx: Transaction) =>
+        return db.transaction((tx) =>
             tx
                 .update(subscriptions)
                 .set({
@@ -683,7 +683,7 @@ export class RDS {
      * @returns A promise that deletes a user's notification.
      */
     static async deleteNotification(db: DatabaseOrTransaction, notification: Notification, userId: string) {
-        return db.transaction((tx: Transaction) =>
+        return db.transaction((tx) =>
             tx
                 .delete(subscriptions)
                 .where(
@@ -705,6 +705,6 @@ export class RDS {
      * @returns A promise that deletes all of a user's notifications.
      */
     static async deleteAllNotifications(db: DatabaseOrTransaction, userId: string) {
-        return db.transaction((tx: Transaction) => tx.delete(subscriptions).where(eq(subscriptions.userId, userId)));
+        return db.transaction((tx) => tx.delete(subscriptions).where(eq(subscriptions.userId, userId)));
     }
 }

@@ -28,6 +28,7 @@ export const useSessionStore = create<SessionState>((set) => {
                 });
 
                 const isGoogleUser = Boolean(users.email);
+
                 set({
                     isGoogleUser,
                 });

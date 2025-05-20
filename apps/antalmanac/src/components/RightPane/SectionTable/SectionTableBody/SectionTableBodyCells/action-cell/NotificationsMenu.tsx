@@ -7,6 +7,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { NotificationStatus, useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { useThemeStore } from '$stores/SettingsStore';
 
 const MENU_ITEMS: { status: keyof NotificationStatus; label: string }[] = [
     { status: 'openStatus', label: 'Section is OPEN' },
@@ -27,6 +28,7 @@ export const NotificationsMenu = memo(({ section, term, courseTitle }: Notificat
     const [notification, setNotifications] = useNotificationStore(
         useShallow((store) => [store.notifications[notificationKey], store.setNotifications])
     );
+    const isDark = useThemeStore((store) => store.isDark);
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [signInOpen, setSignInOpen] = useState(false);
@@ -136,7 +138,7 @@ export const NotificationsMenu = memo(({ section, term, courseTitle }: Notificat
                 })}
             </Menu>
 
-            <SignInDialog open={signInOpen} onClose={handleSignInClose} isDark={false} />
+            <SignInDialog open={signInOpen} onClose={handleSignInClose} isDark={isDark} action="Login" />
         </>
     );
 });
