@@ -13,7 +13,8 @@
         "paths": {
             "$aa/*": ["../antalmanac/*"],
             "$db/*": ["./src/db/*"],
-            "$models/*": ["./src/models/*"]
+            "$models/*": ["./src/models/*"],
+            "$generated/*": ["./src/generated/*"]
         }
     },
     "include": ["src/**/*", "scripts/**/*.ts", "drizzle.config.ts"],
