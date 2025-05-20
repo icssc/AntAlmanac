@@ -1,3 +1,9 @@
+/**
+ * NB: This script exists in both apps/antalmanac and apps/backend
+ * for the purpose of fetching and processing term data from the Anteater API.
+ * If you're making changes to the logic in one location, you most likely
+ * should make the corresponding changes in the other to maintain consistency.
+ */
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
