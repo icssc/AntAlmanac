@@ -76,7 +76,7 @@ async function main() {
     await writeFile(
         join(__dirname, '../src/generated/searchData.ts'),
         `
-    import type { CourseSearchResult, DepartmentSearchResult, SectionSearchResult } from "@packages/antalmanac-types";
+    import type { CourseSearchResult, DepartmentSearchResult } from "@packages/antalmanac-types";
     export const departments: Array<DepartmentSearchResult & { id: string }> = ${JSON.stringify(
         Array.from(deptMap.values())
     )};
