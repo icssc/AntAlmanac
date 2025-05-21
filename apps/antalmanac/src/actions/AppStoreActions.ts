@@ -6,17 +6,17 @@ import type {
     User,
     WebsocSection,
 } from '@packages/antalmanac-types';
+import { TRPCClientError } from '@trpc/client';
 import { TRPCError } from '@trpc/server';
-import { VariantType } from 'notistack';
+import { SnackbarOrigin, VariantType } from 'notistack';
 
-import { SnackbarPosition } from '$components/NotificationSnackbar';
 import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache, removeLocalStorageSessionId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { useToggleStore } from '$stores/ToggleStore';
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
     onError: (scheduleName: string) => unknown;
@@ -63,7 +63,7 @@ export const openSnackbar = (
     variant: VariantType,
     message: string,
     duration?: number,
-    position?: SnackbarPosition,
+    position?: SnackbarOrigin,
     style?: { [cssPropertyName: string]: string }
 ) => {
     AppStore.openSnackbar(variant, message, duration, position, style);
@@ -172,59 +172,87 @@ export async function autoSaveSchedule(providerID: string) {
     }
 }
 
+export const mergeShortCourseSchedules = (
+    currentSchedules: ShortCourseSchedule[],
+    incomingSchedule: ShortCourseSchedule[],
+    importMessage = ''
+) => {
+    const existingScheduleNames = new Set(currentSchedules.map((s: ShortCourseSchedule) => s.scheduleName));
+    const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
+        let scheduleName = schedule.scheduleName;
+        if (existingScheduleNames.has(schedule.scheduleName)) {
+            scheduleName = scheduleName + '(1)';
+        }
+        return {
+            ...schedule,
+            scheduleName: `${importMessage}${scheduleName}`,
+        };
+    });
+    currentSchedules.push(...cacheSchedule);
+};
+
+const handleScheduleImport = async (username: string, skipImportedCheck = false) => {
+    const session = useSessionStore.getState();
+    if (!session.sessionIsValid) {
+        throw new Error("Invalid session: User isn't logged in.");
+    }
+
+    const incomingUser = await trpc.userData.getGuestAccountAndUserByName
+        .query({ name: username })
+        .then((res) => res?.users)
+        .catch(() => {
+            throw new Error(`Oops! Schedule "${username}" doesn't seem to exist.`);
+        });
+
+    if (!skipImportedCheck && incomingUser.imported) {
+        return { imported: true, error: null };
+    }
+
+    const accounts = await trpc.userData.getUserAndAccountBySessionToken
+        .query({ token: session.session ?? '' })
+        .then((res) => res.accounts);
+
+    const incomingData: User = await trpc.userData.getUserData.query({ userId: incomingUser.id });
+    const scheduleSaveState = 'userData' in incomingData ? incomingData.userData : incomingData;
+
+    const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
+
+    if (scheduleSaveState.schedules) {
+        mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, '(import)-');
+        currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
+
+        scheduleComponentsToggleStore.setState({ openImportDialog: false, openLoadingSchedule: true });
+
+        const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
+        if (isScheduleLoaded) {
+            openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
+
+            scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
+
+            await saveSchedule(accounts.providerAccountId, true);
+
+            await trpc.userData.flagImportedSchedule.mutate({
+                providerId: username,
+            });
+        }
+    }
+
+    return { imported: false, error: null };
+};
+
+export const importValidatedSchedule = async (username: string) => {
+    try {
+        return await handleScheduleImport(username, true);
+    } catch (e) {
+        return { imported: false, error: e };
+    }
+};
+
 export const importScheduleWithUsername = async (username: string) => {
     try {
-        const session = useSessionStore.getState();
-        if (!session.sessionIsValid) {
-            throw new Error("Invalid session: User isn't logged in.");
-        }
-
-        const accounts = await trpc.userData.getUserAndAccountBySessionToken
-            .query({ token: session.session ?? '' })
-            .then((res) => res.accounts);
-
-        const incomingUser = await trpc.userData.getGuestAccountAndUserByName
-            .query({ name: username })
-            .then((res) => res?.users)
-            .catch((err) => {
-                console.error(err);
-                throw new Error(`Oops! Schedule "${username}" doesn't seem to exist.`);
-            });
-
-        if (!incomingUser) {
-            throw new Error(`Couldn't find user with username "${username}".`);
-        } else if (incomingUser.imported) {
-            throw new Error(`Schedule with name "${username}" has already been imported.`);
-        }
-
-        const incomingData: User = await trpc.userData.getUserData.query({ userId: incomingUser.id });
-        const scheduleSaveState = incomingData && 'userData' in incomingData ? incomingData.userData : incomingData;
-
-        const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
-
-        if (scheduleSaveState.schedules) {
-            currentSchedules.schedules.push(...scheduleSaveState.schedules);
-            currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
-
-            useToggleStore.setState({ openImportDialog: false, openLoadingSchedule: true });
-
-            const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
-            if (isScheduleLoaded) {
-                openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
-
-                useToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
-
-                await saveSchedule(accounts.providerAccountId, true);
-
-                await trpc.userData.flagImportedSchedule.mutate({
-                    providerId: username,
-                });
-            }
-        }
-        return '';
+        return await handleScheduleImport(username, false);
     } catch (e) {
-        console.log(e);
-        return e;
+        return { imported: false, error: e };
     }
 };
 
@@ -242,7 +270,7 @@ export const loadSchedule = async (providerId: string, rememberMe: boolean, acco
     ) {
         providerId = providerId.replace(/\s+/g, '');
         if (providerId.length > 0) {
-            if (rememberMe && accountType === 'GUEST') {
+            if (rememberMe) {
                 setLocalStorageUserId(providerId);
             }
 
@@ -255,9 +283,7 @@ export const loadSchedule = async (providerId: string, rememberMe: boolean, acco
                 const userDataResponse = await trpc.userData.getUserData.query({ userId: account.userId });
                 const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
 
-                if (scheduleSaveState == null) {
-                    openSnackbar('error', `Couldn't find schedules for username "${providerId}".`);
-                } else if (await AppStore.loadSchedule(scheduleSaveState)) {
+                if (await AppStore.loadSchedule(scheduleSaveState)) {
                     openSnackbar('success', `Schedule loaded.`);
                 } else {
                     AppStore.loadSkeletonSchedule(scheduleSaveState);
@@ -268,10 +294,15 @@ export const loadSchedule = async (providerId: string, rememberMe: boolean, acco
                     );
                 }
             } catch (e) {
-                console.error(e);
+                if (e instanceof TRPCClientError) {
+                    if (e.data.httpStatus === 404) {
+                        openSnackbar('error', e.message);
+                    }
+                    return;
+                }
                 openSnackbar(
                     'error',
-                    `Failed to load schedules. If this continues to happen, please submit a feedback form.`
+                    '`Failed to load schedules. If this continues to happen, please submit a feedback form.`'
                 );
             }
         }

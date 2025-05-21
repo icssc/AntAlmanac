@@ -1,4 +1,6 @@
+import { ContentPasteGo } from '@mui/icons-material';
 import {
+    AlertColor,
     Box,
     Button,
     Dialog,
@@ -8,24 +10,27 @@ import {
     DialogTitle,
     FormControl,
     FormControlLabel,
+    InputLabel,
     Radio,
     RadioGroup,
+    Stack,
     TextField,
     Tooltip,
-} from '@material-ui/core';
-import InputLabel from '@material-ui/core/InputLabel';
-import { PostAdd } from '@material-ui/icons';
+} from '@mui/material';
 import { CourseInfo } from '@packages/antalmanac-types';
 import { ChangeEvent, useCallback, useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-import TermSelector from '../RightPane/CoursePane/SearchForm/TermSelector';
-import RightPaneStore from '../RightPane/RightPaneStore';
-
-import { ImportSource } from './constants';
-
-import { addCustomEvent, openSnackbar, addCourse, importScheduleWithUsername } from '$actions/AppStoreActions';
+import {
+    addCustomEvent,
+    openSnackbar,
+    addCourse,
+    importScheduleWithUsername,
+    importValidatedSchedule,
+} from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
+import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { QueryZotcourseError } from '$lib/customErrors';
@@ -37,14 +42,21 @@ import {
 } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
+import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import { useToggleStore } from '$stores/ToggleStore';
 
-function Import() {
-    const [term, setTerm] = useState(RightPaneStore.getFormData().term);
-    const [alertMessage, setAlertMessage] = useState('');
+enum ImportSource {
+    ZOT_COURSE_IMPORT = 'zotcourse',
+    STUDY_LIST_IMPORT = 'studylist',
+    AA_USERNAME_IMPORT = 'username',
+}
+
+export function Import() {
+    const [alertDialogTitle, setAlertDialogTitle] = useState('');
+    const [alertDialogSeverity, setAlertDialogSeverity] = useState<AlertColor>('error');
     const [alertDialog, setAlertDialog] = useState(false);
     const [importSource, setImportSource] = useState('studylist');
     const [studyListText, setStudyListText] = useState('');
@@ -54,7 +66,7 @@ function Import() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const { session, sessionIsValid } = useSessionStore();
-    const { openImportDialog, setOpenImportDialog, setOpenScheduleSelect } = useToggleStore();
+    const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
 
     const firstTimeUserFlag = useRef(true);
 
@@ -70,7 +82,7 @@ function Import() {
 
     const handleSubmit = async () => {
         const currentSchedule = AppStore.getCurrentScheduleIndex();
-
+        const term = RightPaneStore.getFormData().term;
         let sectionCodes: string[] | null = null;
 
         switch (importSource) {
@@ -101,11 +113,18 @@ function Import() {
                 break;
             case ImportSource.AA_USERNAME_IMPORT: {
                 const importStatus = await importScheduleWithUsername(aaUsername);
-                if (importStatus instanceof Error) {
+                if (importStatus.error) {
                     setAlertDialog(true);
-                    setAlertMessage(typeof importStatus === 'string' ? importStatus : importStatus.message);
-                } else {
-                    setTimeout(() => setOpenScheduleSelect(false), 2000);
+                    setAlertDialogSeverity('error');
+                    if (importStatus.error instanceof Error) {
+                        setAlertDialogTitle(importStatus.error.message);
+                    } else {
+                        setAlertDialogTitle('Error importing schedule');
+                    }
+                } else if (importStatus.imported) {
+                    setAlertDialog(true);
+                    setAlertDialogSeverity('info');
+                    setAlertDialogTitle(`Note: "${aaUsername}" has already been imported`);
                 }
                 break;
             }
@@ -131,12 +150,22 @@ function Import() {
 
     const handleCloseAlertDialog = () => {
         setAlertDialog(false);
+        setOpenImportDialog(true);
     };
+
+    const handleImportAnyways = () => {
+        importValidatedSchedule(aaUsername);
+        setOpenImportDialog(false);
+        setAlertDialog(false);
+    };
+
     const uploadSectionCodes = async (sectionCodes: string[], term: string, currentSchedule: number) => {
         try {
+            const term = RightPaneStore.getFormData().term;
+
             const sectionsAdded = addCoursesMultiple(
                 await WebSOC.getCourseInfo({
-                    term: term,
+                    term,
                     sectionCodes: sectionCodes.join(','),
                 }),
                 term,
@@ -232,12 +261,11 @@ function Import() {
 
     return (
         <>
-            {/* TODO after mui v5 migration: change icon to ContentPasteGo */}
             <Tooltip title="Import a schedule from your Study List">
                 <Button
                     onClick={handleOpen}
                     color="inherit"
-                    startIcon={<PostAdd />}
+                    startIcon={<ContentPasteGo />}
                     disabled={skeletonMode}
                     id="import-button"
                 >
@@ -343,7 +371,7 @@ function Import() {
                     {importSource !== ImportSource.AA_USERNAME_IMPORT && (
                         <>
                             <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
-                            <TermSelector changeTerm={setTerm} fieldName={'selectedTerm'} />
+                            <TermSelector />
                         </>
                     )}
                 </DialogContent>
@@ -357,12 +385,31 @@ function Import() {
                 </DialogActions>
             </Dialog>
 
-            <AlertDialog title={alertMessage} open={alertDialog} onClose={handleCloseAlertDialog} severity="error">
-                If you think this is a mistake please submit a{' '}
-                <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</Link>
+            <AlertDialog
+                title={alertDialogTitle}
+                open={alertDialog}
+                onClose={handleCloseAlertDialog}
+                severity={alertDialogSeverity}
+            >
+                {alertDialogSeverity === 'error' ? (
+                    <Box>
+                        If you think this is a mistake please submit a{' '}
+                        <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</Link>
+                    </Box>
+                ) : (
+                    <Stack direction="row" justifyContent="center">
+                        <Button
+                            onClick={handleImportAnyways}
+                            color="primary"
+                            variant="contained"
+                            size="large"
+                            sx={{ backgroundColor: BLUE }}
+                        >
+                            Import Anyways
+                        </Button>
+                    </Stack>
+                )}
             </AlertDialog>
         </>
     );
 }
-
-export default Import;

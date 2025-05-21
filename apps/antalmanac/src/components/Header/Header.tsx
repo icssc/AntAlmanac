@@ -1,14 +1,14 @@
 import { AppBar, Box, Stack } from '@mui/material';
-import { useEffect } from 'react';
-
-import Import from './Import';
-import LoadSaveScheduleFunctionalityButton from './Load';
-import Login from './Login';
-import { Logo } from './Logo';
-import SaveFunctionality from './Save';
-import AppDrawer from './SettingsMenu';
+import { useEffect, useState } from 'react';
 
 import { openSnackbar } from '$actions/AppStoreActions';
+import { AlertDialog } from '$components/AlertDialog';
+import { Import } from '$components/Header/Import';
+import { Load } from '$components/Header/Load';
+import { Login } from '$components/Header/Login';
+import { Logo } from '$components/Header/Logo';
+import { Save } from '$components/Header/Save';
+import AppDrawer from '$components/Header/SettingsMenu';
 import {
     getLocalStorageDataCache,
     removeLocalStorageImportedUser,
@@ -19,6 +19,8 @@ import { BLUE } from '$src/globals';
 import { useSessionStore } from '$stores/SessionStore';
 
 export function Header() {
+    const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
+    const importedUser = getLocalStorageImportedUser() ?? '';
     const { session } = useSessionStore();
 
     const clearStorage = () => {
@@ -26,18 +28,21 @@ export function Header() {
         removeLocalStorageDataCache();
     };
 
+    const handleCloseSuccessfulSaved = () => {
+        setOpenSuccessfulSaved(false);
+        clearStorage();
+    };
+
     useEffect(() => {
-        const importedUser = getLocalStorageImportedUser() ?? '';
         const dataCache = getLocalStorageDataCache() ?? '';
 
         if (importedUser !== '' && session) {
-            openSnackbar('success', `${importedUser} has been saved to your account!`);
-            clearStorage();
+            setOpenSuccessfulSaved(true);
         } else if (dataCache !== '' && session) {
-            openSnackbar('success', 'All changes have been saved to your account!');
+            openSnackbar('success', `Unsaved changes have been saved to your account!`);
             clearStorage();
         }
-    }, [session]);
+    }, [importedUser, session]);
     return (
         <AppBar
             position="static"
@@ -60,12 +65,21 @@ export function Header() {
                 <Logo />
 
                 <Stack direction="row">
-                    <SaveFunctionality />
-                    <LoadSaveScheduleFunctionalityButton />
+                    <Save />
+                    <Load />
                     <Import key="studylist" />
                     <Login />
                     <AppDrawer key="settings" />
                 </Stack>
+
+                <AlertDialog
+                    open={openSuccessfulSaved}
+                    title={`Schedule from "${importedUser}" has been saved to your account!`}
+                    severity="success"
+                    onClose={handleCloseSuccessfulSaved}
+                >
+                    NOTE: All changes made to your schedules will be saved to your Google account
+                </AlertDialog>
             </Box>
         </AppBar>
     );

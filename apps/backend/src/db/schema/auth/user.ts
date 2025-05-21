@@ -34,6 +34,8 @@ export const users = pgTable('users', {
 
     /**
      * Imported User Flag.
+     *
+     * Indicates if the user was imported into a Google account.
      */
     imported: boolean('imported').default(false),
 

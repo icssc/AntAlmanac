@@ -58,7 +58,7 @@ export class BackendStack extends Stack {
 
         const handler = new lambda.Function(this, 'lambda', {
             runtime: lambda.Runtime.NODEJS_LATEST,
-            code: lambda.Code.fromAsset('../backend/dist'),
+            code: lambda.Code.fromAsset('../backend/dist.zip'),
             handler: 'lambda.handler',
             timeout: Duration.seconds(20),
             memorySize: 256,

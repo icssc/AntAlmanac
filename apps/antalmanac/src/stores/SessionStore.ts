@@ -7,8 +7,8 @@ interface SessionState {
     session: string | null;
     isGoogleUser: boolean;
     fetchUserData: (session: string | null) => Promise<void>;
-    setSession: (session: string | null) => Promise<void>;
     sessionIsValid: boolean;
+    updateSession: (session: string | null) => Promise<void>;
     clearSession: () => Promise<void>;
 }
 
@@ -38,7 +38,7 @@ export const useSessionStore = create<SessionState>((set) => {
             }
         },
         sessionIsValid: false,
-        setSession: async (session) => {
+        updateSession: async (session) => {
             if (session) {
                 const sessionIsValid: boolean = await trpc.auth.validateSession.query({ token: session });
                 if (sessionIsValid) {

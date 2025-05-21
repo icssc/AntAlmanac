@@ -1,4 +1,11 @@
+import { CloudDownload, Google, Save } from '@mui/icons-material';
+import { LoadingButton } from '@mui/lab';
 import {
+    Divider,
+    Stack,
+    Alert,
+    AlertTitle,
+    CircularProgress,
     Button,
     Dialog,
     DialogActions,
@@ -6,12 +13,7 @@ import {
     DialogContentText,
     DialogTitle,
     TextField,
-    CircularProgress,
-} from '@material-ui/core';
-import { CloudDownload, Save } from '@material-ui/icons';
-import GoogleIcon from '@mui/icons-material/Google';
-import { LoadingButton } from '@mui/lab';
-import { Divider, Stack } from '@mui/material';
+} from '@mui/material';
 import { ChangeEvent, PureComponent, useEffect, useState, useCallback } from 'react';
 
 import { loadSchedule, saveSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
@@ -19,9 +21,9 @@ import { AlertDialog } from '$components/AlertDialog';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import { useToggleStore } from '$stores/ToggleStore';
 
 interface LoadSaveButtonBaseProps {
     action: typeof saveSchedule;
@@ -31,6 +33,7 @@ interface LoadSaveButtonBaseProps {
     loading: boolean;
     colorType: 'primary' | 'secondary';
     id?: string;
+    isDark: boolean;
 }
 
 interface LoadSaveButtonBaseState {
@@ -129,16 +132,23 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
                                 onClick={this.props.actionSecondary}
                                 color="primary"
                                 variant="contained"
-                                startIcon={<GoogleIcon />}
+                                startIcon={<Google />}
                                 size="large"
                                 fullWidth
                             >
                                 Sign in with Google
                             </LoadingButton>
-                            <Divider sx={{ width: '35rem', maxWidth: '100%' }}>or</Divider>
+                            <Divider>or</Divider>
                             <DialogContentText>
                                 Enter your unique user ID here to {this.props.actionName.toLowerCase()} your schedule.
                             </DialogContentText>
+
+                            <Alert severity="info" variant={this.props.isDark ? 'outlined' : 'standard'}>
+                                <AlertTitle>
+                                    Note: Existing schedules saved to a unique user ID can no longer be updated.
+                                </AlertTitle>
+                                Please sign up with your Google account to save your schedules.
+                            </Alert>
 
                             <TextField
                                 // eslint-disable-next-line jsx-a11y/no-autofocus
@@ -167,12 +177,12 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
     }
 }
 
-const LoadFunctionality = () => {
+export const Load = () => {
     const isDark = useThemeStore((store) => store.isDark);
 
-    const { setSession, sessionIsValid } = useSessionStore();
+    const { updateSession, sessionIsValid } = useSessionStore();
 
-    const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = useToggleStore();
+    const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = scheduleComponentsToggleStore();
 
     const [openAlert, setOpenalert] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
@@ -204,10 +214,10 @@ const LoadFunctionality = () => {
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
 
-            const sessionToken = getLocalStorageSessionId();
+            const sessionToken = getLocalStorageSessionId() ?? '';
 
             if (sessionToken && (await loadScheduleWithSessionToken())) {
-                setSession(sessionToken);
+                updateSession(sessionToken);
             } else if (sessionToken === '' && userID && userID !== '') {
                 await validateImportedUser(userID);
                 await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
@@ -215,7 +225,7 @@ const LoadFunctionality = () => {
 
             setOpenLoadingSchedule(false);
         },
-        [setOpenLoadingSchedule, setSession]
+        [setOpenLoadingSchedule, updateSession]
     );
 
     const handleLogin = () => {
@@ -259,6 +269,7 @@ const LoadFunctionality = () => {
                 disabled={skeletonMode}
                 loading={loadingSchedule}
                 colorType={isDark ? 'secondary' : 'primary'}
+                isDark={isDark}
             />
 
             <AlertDialog
@@ -267,11 +278,11 @@ const LoadFunctionality = () => {
                 title="This schedule seems to have already been imported!"
                 severity="warning"
             >
-                <DialogContentText>To access your schedule sign in with the Google account</DialogContentText>
+                <DialogContentText>To load your schedule sign in with your Google account</DialogContentText>
                 <LoadingButton
                     color="primary"
                     variant="contained"
-                    startIcon={<GoogleIcon />}
+                    startIcon={<Google />}
                     fullWidth
                     onClick={handleLogin}
                     size="large"
@@ -282,5 +293,3 @@ const LoadFunctionality = () => {
         </div>
     );
 };
-
-export default LoadFunctionality;

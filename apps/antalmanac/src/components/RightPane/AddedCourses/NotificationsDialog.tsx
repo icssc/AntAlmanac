@@ -77,7 +77,7 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
                 </DialogContent>
             </Dialog>
 
-            <SignInDialog isDark={isDark} open={signInOpen} onClose={handleSignInClose} action="Login" />
+            <SignInDialog isDark={isDark} open={signInOpen} onClose={handleSignInClose} action="Notification" />
         </>
     );
 }

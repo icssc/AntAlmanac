@@ -7,7 +7,7 @@ import gradesRouter from './grades';
 import searchRouter from './search';
 import userDataRouter from './userData';
 import websocRouter from './websoc';
-import zotcourseRouter from './zotcours';
+import zotcourseRouter from './zotcourse';
 import notificationsRouter from './notifications';
 
 const appRouter = router({

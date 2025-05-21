@@ -1,7 +1,5 @@
-import { createTheme } from '@material-ui/core';
-import { ThemeProvider } from '@material-ui/core/styles';
-import { PaletteOptions } from '@material-ui/core/styles/createPalette';
-import { useEffect } from 'react';
+import { createTheme, CssBaseline, ThemeProvider, type PaletteOptions } from '@mui/material';
+import { useEffect, useMemo } from 'react';
 
 import { BLUE, DODGER_BLUE } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -36,9 +34,10 @@ interface Props {
     children?: React.ReactNode;
 }
 
-declare module '@material-ui/core/styles/createBreakpoints' {
+declare module '@mui/material/styles' {
     interface BreakpointOverrides {
         xxs: true;
+        default: true;
     }
 }
 
@@ -60,38 +59,111 @@ export default function AppThemeProvider(props: Props) {
         return () => {
             mediaQueryList.removeEventListener('change', onChange);
         };
-    }, [setAppTheme, appTheme]);
+    }, [setAppTheme]);
 
-    const AppTheme = createTheme({
-        overrides: {
-            MuiCssBaseline: {
-                '@global': {
-                    a: {
-                        color: appTheme == 'dark' ? DODGER_BLUE : BLUE,
+    const AppTheme = useMemo(
+        () =>
+            createTheme({
+                components: {
+                    MuiAppBar: {
+                        styleOverrides: {
+                            root: {
+                                backgroundImage: 'none',
+                            },
+                        },
+                    },
+                    MuiButton: {
+                        styleOverrides: {
+                            root: ({ ownerState }) => ({
+                                ...(ownerState.variant === 'contained' &&
+                                    ownerState.color === 'primary' && {
+                                        backgroundColor: BLUE,
+                                        ':hover': {
+                                            backgroundColor: '#003A75',
+                                        },
+                                    }),
+                                ...(ownerState.variant === 'contained' &&
+                                    ownerState.color === 'secondary' && {
+                                        backgroundColor: '#E0E0E0',
+                                        ':hover': {
+                                            backgroundColor: '#D5D5D5',
+                                        },
+                                    }),
+                            }),
+                        },
+                    },
+                    MuiCssBaseline: {
+                        styleOverrides: {
+                            a: {
+                                color: appTheme === 'dark' ? DODGER_BLUE : BLUE,
+                            },
+                        },
+                    },
+                    // NB: https://github.com/mui/material-ui/issues/43683#issuecomment-2492787970
+                    MuiDialog: {
+                        styleOverrides: {
+                            paper: {
+                                backgroundImage: 'none',
+                            },
+                        },
+                    },
+                    MuiDrawer: {
+                        styleOverrides: {
+                            paper: {
+                                backgroundImage: 'none',
+                            },
+                        },
+                    },
+                    MuiInputLabel: {
+                        defaultProps: {
+                            variant: 'standard',
+                        },
+                    },
+                    MuiPopover: {
+                        styleOverrides: {
+                            paper: {
+                                backgroundImage: 'none',
+                            },
+                        },
+                    },
+                    MuiSelect: {
+                        defaultProps: {
+                            variant: 'standard',
+                        },
+                    },
+                    MuiTextField: {
+                        defaultProps: {
+                            variant: 'standard',
+                        },
                     },
                 },
-            },
-        },
-        breakpoints: {
-            /**
-             * Based on Tailwind's breakpoints.
-             * @see https://tailwindcss.com/docs/screens
-             */
-            values: {
-                xxs: 400,
-                xs: 640,
-                sm: 768,
-                md: 1024,
-                lg: 1280,
-                xl: 1536,
-            },
-        },
-        palette: {
-            type: appTheme == 'dark' ? 'dark' : 'light',
-            ...(appTheme == 'dark' ? darkTheme : lightTheme),
-        },
-        spacing: 4,
-    });
+                breakpoints: {
+                    /**
+                     * Based on Tailwind's breakpoints.
+                     * @see https://tailwindcss.com/docs/screens
+                     */
+                    values: {
+                        default: 0,
+                        xxs: 400,
+                        xs: 640,
+                        sm: 768,
+                        md: 1024,
+                        lg: 1280,
+                        xl: 1536,
+                    },
+                },
+                palette: {
+                    mode: appTheme === 'dark' ? 'dark' : 'light',
+                    ...(appTheme === 'dark' ? darkTheme : lightTheme),
+                },
+            }),
+        [appTheme]
+    );
 
-    return <ThemeProvider theme={AppTheme}>{props.children}</ThemeProvider>;
+    return (
+        <ThemeProvider theme={AppTheme}>
+            <CssBaseline />
+            {props.children}
+        </ThemeProvider>
+    );
 }

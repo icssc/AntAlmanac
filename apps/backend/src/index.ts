@@ -14,8 +14,23 @@ const MAPBOX_API_URL = 'https://api.mapbox.com';
 
 const PORT = 3000;
 
+function getAndCheckEnv() {
+    const env = backendEnvSchema.parse(process.env);
+
+    if (!env.ANTEATER_API_KEY) {
+        console.error('ANTEATER_API_KEY is not set');
+    }
+
+    if (!env.GOOGLE_CLIENT_SECRET) {
+        console.error('MAPBOX_ACCESS_TOKEN is not set');
+    }
+
+    return env;
+}
+
 export async function start(corsEnabled = false) {
-    const env = backendEnvSchema.parse(process.env)
+    const env = getAndCheckEnv();
+
     const app = express();
     app.use(cors(corsEnabled ? corsOptions : undefined));
     app.use(express.json());

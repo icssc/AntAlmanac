@@ -5,7 +5,7 @@ import { createEvents, type EventAttributes } from 'ics';
 import { notNull } from './utils';
 
 import { openSnackbar } from '$actions/AppStoreActions';
-import { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
+import type { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { getDefaultTerm, termData } from '$lib/termData';
@@ -252,7 +252,7 @@ export function getRRule(bydays: string[], quarter: string) {
 
 export function getEventsFromCourses(
     events = AppStore.getEventsWithFinalsInCalendar(),
-    _term = getDefaultTerm(events).shortName
+    _term?: string
 ): EventAttributes[] {
     const customEventIDs = new Set();
     const calendarEvents = events.flatMap((event) => {

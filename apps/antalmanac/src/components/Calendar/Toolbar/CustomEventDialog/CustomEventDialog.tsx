@@ -13,11 +13,10 @@ import {
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 
-import DaySelector from './DaySelector';
-import ScheduleSelector from './ScheduleSelector';
-
 import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
-import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
+import { DaySelector } from '$components/Calendar/Toolbar/CustomEventDialog/DaySelector';
+import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog/ScheduleSelector';
+import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -37,16 +36,18 @@ const defaultCustomEventValues: RepeatingCustomEvent = {
     building: undefined,
 };
 
-function CustomEventDialogs(props: CustomEventDialogProps) {
+export function CustomEventDialog(props: CustomEventDialogProps) {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const [open, setOpen] = useState(false);
     const [scheduleIndices, setScheduleIndices] = useState<number[]>([]);
-    const [start, setStart] = useState(defaultCustomEventValues.start);
-    const [end, setEnd] = useState(defaultCustomEventValues.end);
-    const [title, setTitle] = useState(defaultCustomEventValues.title);
-    const [days, setDays] = useState(defaultCustomEventValues.days);
-    const [building, setBuilding] = useState<string | undefined>();
+    const [start, setStart] = useState(props.customEvent?.start ?? defaultCustomEventValues.start);
+    const [end, setEnd] = useState(props.customEvent?.end ?? defaultCustomEventValues.end);
+    const [title, setTitle] = useState(props.customEvent?.title ?? defaultCustomEventValues.title);
+    const [days, setDays] = useState(props.customEvent?.days ?? defaultCustomEventValues.days);
+    const [building, setBuilding] = useState<string | undefined>(
+        props.customEvent?.building ?? defaultCustomEventValues.building
+    );
 
     const resetForm = () => {
         setStart(defaultCustomEventValues.start);
@@ -54,6 +55,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
         setTitle(defaultCustomEventValues.title);
         setDays(defaultCustomEventValues.days);
         setBuilding(undefined);
+        setScheduleIndices([]);
     };
 
     const disabled = !(scheduleIndices.length && days.includes(true));
@@ -70,13 +72,13 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
 
     const handleOpen = useCallback(() => {
         setOpen(true);
-        setScheduleIndices([AppStore.schedule.getCurrentScheduleIndex()]);
+        setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(props.customEvent?.customEventID ?? -1));
 
         logAnalytics({
             category: analyticsEnum.calendar.title,
             action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT,
         });
-    }, []);
+    }, [props.customEvent?.customEventID]);
 
     const handleClose = useCallback(() => {
         setOpen(false);
@@ -110,16 +112,18 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
         if (!days.some((day) => day) || scheduleIndices.length === 0) return;
 
         const newCustomEvent: RepeatingCustomEvent = {
-            color: props.customEvent ? props.customEvent.color : '#551a8b',
+            color: props.customEvent?.color ?? '#551a8b',
             title: title,
             days: days,
             start: start,
             end: end,
-            customEventID: props.customEvent ? props.customEvent.customEventID : Date.now(),
+            customEventID: props.customEvent?.customEventID ?? Date.now(),
             building: building,
         };
 
         resetForm();
+
+        console.log(props.customEvent);
 
         props.customEvent
             ? editCustomEvent(newCustomEvent, scheduleIndices)
@@ -144,19 +148,7 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
         <>
             {props.customEvent ? (
                 <Tooltip title="Edit">
-                    <IconButton
-                        onClick={() => {
-                            handleOpen();
-                            // Typecasting prevents TypeScript possibly undefined compile error
-                            const customEvent = props.customEvent as RepeatingCustomEvent;
-                            setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(customEvent.customEventID));
-                            setStart(customEvent.start);
-                            setEnd(customEvent.end);
-                            setTitle(customEvent.title);
-                            setDays(customEvent.days);
-                            setBuilding(customEvent.building);
-                        }}
-                    >
+                    <IconButton onClick={handleOpen}>
                         <Edit fontSize="small" />
                     </IconButton>
                 </Tooltip>
@@ -174,13 +166,12 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                 <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <FormControl fullWidth>
                         <TextField
-                            id="event-name-input"
                             label="Event Name"
-                            variant="outlined"
-                            required={true}
+                            fullWidth
                             value={title}
                             onChange={handleEventNameChange}
-                            margin="dense"
+                            variant="outlined"
+                            InputLabelProps={{ variant: 'outlined' }}
                         />
                     </FormControl>
                     <FormControl fullWidth sx={{ display: 'flex', flexDirection: 'row', gap: '12px' }}>
@@ -190,12 +181,8 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                             type="time"
                             defaultValue={start}
                             fullWidth
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            inputProps={{
-                                step: 300,
-                            }}
+                            variant="outlined"
+                            InputLabelProps={{ variant: 'outlined' }}
                         />
                         <TextField
                             onChange={handleEndTimeChange}
@@ -203,20 +190,15 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
                             type="time"
                             defaultValue={end}
                             fullWidth
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                            inputProps={{
-                                step: 300,
-                            }}
+                            variant="outlined"
+                            InputLabelProps={{ variant: 'outlined' }}
                         />
                     </FormControl>
-                    <DaySelector onSelectDay={handleDayChange} days={props.customEvent?.days} />
+                    <DaySelector onSelectDay={handleDayChange} days={days} />
                     <BuildingSelect value={building} onChange={handleBuildingChange} variant="outlined" />
                     <ScheduleSelector
                         scheduleIndices={scheduleIndices}
                         onSelectScheduleIndices={handleSelectScheduleIndices}
-                        customEvent={props.customEvent}
                         scheduleNames={props.scheduleNames}
                     />
                 </DialogContent>
@@ -233,4 +215,3 @@ function CustomEventDialogs(props: CustomEventDialogProps) {
         </>
     );
 }
-export default CustomEventDialogs;

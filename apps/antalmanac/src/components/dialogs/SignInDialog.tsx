@@ -1,28 +1,22 @@
 import GoogleIcon from '@mui/icons-material/Google';
-import { Button, Stack, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import { Button, Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
 
-import { isEmptySchedule, openSnackbar, loginUser } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
+import { loginUser } from '$actions/AppStoreActions';
 
 interface SignInDialogProps {
     open: boolean;
     isDark: boolean;
-    action: 'Load' | 'Save';
+    action: 'Load' | 'Save' | 'Notification';
     onClose: () => void;
 }
 
 export function SignInDialog(props: SignInDialogProps) {
-    const { onClose, open, action } = props;
+    const { onClose, open, isDark } = props;
 
     const handleClose = () => {
         onClose();
     };
 
-    if (isEmptySchedule(AppStore.schedule.getScheduleAsSaveState().schedules) && open && action === 'Save') {
-        openSnackbar('info', 'Please create a schedule before signing in.');
-        handleClose();
-        return;
-    }
     return (
         <Dialog
             open={open}
@@ -31,16 +25,21 @@ export function SignInDialog(props: SignInDialogProps) {
             fullScreen={true}
             sx={{
                 '& .MuiDialog-paper': {
-                    width: { xs: '45%', lg: '25%' },
+                    width: 'fit-content',
                     height: 'fit-content',
                     borderRadius: '0.5rem',
                 },
                 padding: '1rem',
             }}
         >
-            <DialogTitle>Save to your Google account</DialogTitle>
+            <DialogTitle>{props.action === 'Notification' ? 'Login to Use Notifications' : 'Save'}</DialogTitle>
             <DialogContent>
-                <Stack>
+                <Stack spacing={1}>
+                    {props.action === 'Save' && (
+                        <Alert severity="info" variant={isDark ? 'outlined' : 'standard'} sx={{ fontSize: 'small' }}>
+                            All changes made will be saved to your Google account
+                        </Alert>
+                    )}
                     <Button
                         onClick={loginUser}
                         startIcon={<GoogleIcon />}
