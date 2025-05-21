@@ -1,5 +1,19 @@
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, Tooltip } from '@mui/material';
+import {
+    blue,
+    amber,
+    yellow,
+    green,
+    teal,
+    cyan,
+    lightBlue,
+    indigo,
+    purple,
+    pink,
+    brown,
+    grey,
+} from '@mui/material/colors';
 import { PureComponent } from 'react';
 import { SketchPicker } from 'react-color';
 
@@ -104,11 +118,36 @@ class ColorPicker extends PureComponent<ColorPickerProps> {
                         horizontal: 'left',
                     }}
                 >
-                    <SketchPicker color={this.state.color} onChange={this.handleColorChange} />
+                    <SketchPicker
+                        color={this.state.color}
+                        onChange={this.handleColorChange}
+                        presetColors={[
+                            blue[300],
+                            amber[300],
+                            yellow[300],
+                            green[300],
+                            teal[300],
+                            cyan[300],
+                            lightBlue[300],
+                            indigo[300],
+                            purple[300],
+                            pink[300],
+                            brown[500],
+                            green[900],
+                            grey[800],
+                            grey[400],
+                            grey[100],
+                            grey[50],
+                        ]}
+                    />
                 </Popover>
             </>
         );
     }
 }
 
+/*
+
+
+*/
 export default ColorPicker;
