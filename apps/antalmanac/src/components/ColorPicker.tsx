@@ -1,6 +1,7 @@
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, Tooltip } from '@mui/material';
 import {
+    red,
     blue,
     amber,
     yellow,
@@ -122,6 +123,7 @@ class ColorPicker extends PureComponent<ColorPickerProps> {
                         color={this.state.color}
                         onChange={this.handleColorChange}
                         presetColors={[
+                            red[300],
                             blue[300],
                             amber[300],
                             yellow[300],
@@ -136,7 +138,6 @@ class ColorPicker extends PureComponent<ColorPickerProps> {
                             green[900],
                             grey[800],
                             grey[400],
-                            grey[100],
                             grey[50],
                         ]}
                     />
