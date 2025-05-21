@@ -13,7 +13,7 @@ import { SnackbarOrigin, VariantType } from 'notistack';
 import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
-import { setLocalStorageUserId, setLocalStorageDataCache, removeLocalStorageSessionId } from '$lib/localStorage';
+import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -342,7 +342,6 @@ export const loadScheduleWithSessionToken = async () => {
     } catch (e) {
         console.error(e);
         openSnackbar('error', `Failed to load schedules. If this continues to happen, please submit a feedback form.`);
-        removeLocalStorageSessionId();
         return false;
     }
 };
