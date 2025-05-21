@@ -126,6 +126,25 @@ export class RDS {
                 .then((res) => res[0])
         );
     }
+
+    /**
+     * Retrieves a google ID by their user ID from the database.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param userId - The ID of the user to retrieve.
+     * @returns A promise that resolves to the google user object if found, otherwise undefined.
+     */
+    static async getGoogleIdByUserId(db: DatabaseOrTransaction, userId: string): Promise<string | null> {
+        return db.transaction((tx) =>
+            tx
+                .select({ providerAccountId: accounts.providerAccountId })
+                .from(accounts)
+                .where(and(eq(accounts.userId, userId), eq(accounts.accountType, 'GOOGLE')))
+                .limit(1)
+                .then((res) => (res.length > 0 ? res[0].providerAccountId : null))
+        );
+    }
+
     /**
      * Creates a new user and an associated account with the specified provider ID.
      *

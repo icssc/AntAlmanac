@@ -38,6 +38,7 @@ interface FuzzySearchState {
     open: boolean;
     results: Record<string, SearchResult> | undefined;
     value: string;
+    googleId: string;
     loading: boolean;
     requestTimestamp?: number;
     pendingRequest?: number;
@@ -49,6 +50,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         open: false,
         results: {},
         value: '',
+        googleId: RightPaneStore.getGoogleId(),
         loading: false,
         requestTimestamp: undefined,
         pendingRequest: undefined,
@@ -124,14 +126,27 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         if (!this.requestIsCurrent(requestTimestamp)) return;
         trpc.search.doSearch
             .query({ query: this.state.value, term: RightPaneStore.getFormData().term })
-            .then((result) => {
+            .then(async(result) => {
                 if (!this.requestIsCurrent(requestTimestamp)) return;
+                let userTakenCourses: Set<string> = new Set();
+                let filteredResults = result;
+
+                if (RightPaneStore.getFilterTakenCourses()) {
+                    userTakenCourses = new Set<string>(await trpc.search.fetchUserCoursesPeterPortal.query({ userId: this.state.googleId }));
+                    RightPaneStore.setUserTakenCourses(userTakenCourses);
+
+                    filteredResults = Object.fromEntries(
+                        Object.entries(result).filter(([id]) => 
+                            !RightPaneStore.getUserTakenCourses().has(id)
+                        )
+                    );
+                }
                 this.setState({
                     cache: {
                         ...this.state.cache,
-                        [this.state.value]: result,
+                        [this.state.value]: filteredResults,
                     },
-                    results: result,
+                    results: filteredResults,
                     loading: false,
                     pendingRequest: undefined,
                     requestTimestamp: undefined,
@@ -142,6 +157,16 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 this.setState({ results: {}, loading: false });
                 console.error(e);
             });
+    };
+
+    fetchUserTakenCourses = async () => {
+        try {
+            const userTakenCourses = await trpc.search.fetchUserCoursesPeterPortal.query({ userId: this.state.googleId });
+            return new Set(userTakenCourses);
+        } catch (error) {
+            console.error("Error fetching user courses from PeterPortal:", error);
+            return new Set();
+        }
     };
 
     onInputChange = (_event: unknown, value: string, reason: AutocompleteInputChangeReason) => {

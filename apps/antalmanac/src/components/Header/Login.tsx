@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 export function Login() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -34,6 +35,8 @@ export function Login() {
                 .query({ token: session ?? '' })
                 .then((res) => res.users);
             setUser(userData);
+            const googleId = await trpc.userData.getGoogleIdByUserId.query({ userId: userId });
+            RightPaneStore.setGoogleId(googleId ?? '');
         }
     }, [session, sessionIsValid, setUser]);
 

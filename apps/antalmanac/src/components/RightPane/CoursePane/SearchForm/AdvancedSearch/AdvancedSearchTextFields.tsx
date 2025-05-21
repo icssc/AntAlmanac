@@ -16,6 +16,7 @@ import {
     DAYS_OPTIONS,
 } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+import PPLogo from '$assets/peterportal-shortform-logo.svg'
 
 export function AdvancedSearchTextFields() {
     const [instructor, setInstructor] = useState(() => RightPaneStore.getFormData().instructor);
@@ -30,6 +31,7 @@ export function AdvancedSearchTextFields() {
         () => RightPaneStore.getFormData().excludeRestrictionCodes
     );
     const [days, setDays] = useState(() => RightPaneStore.getFormData().days);
+    const [filterCourses, setFilterCourses] = useState(RightPaneStore.getFilterTakenCourses());
 
     const resetField = useCallback(() => {
         const formData = RightPaneStore.getFormData();
@@ -77,6 +79,10 @@ export function AdvancedSearchTextFields() {
                     urlParam.delete('room');
                 }
                 return;
+            } else if (name === 'filterTakenCourses') {
+                const newFilterState = !filterCourses;
+                RightPaneStore.setFilterTakenCourses(newFilterState);
+                setFilterCourses(newFilterState);
             }
 
             const value = event.target.value;
@@ -250,6 +256,24 @@ export function AdvancedSearchTextFields() {
                     {endsBeforeMenuItems}
                 </Select>
             </FormControl>
+
+            <FormControlLabel
+                control={
+                    <Switch
+                        onChange={handleChange('filterTakenCourses')}
+                        color="primary"
+                        checked={filterCourses}
+                    />
+                }
+                label={
+                    <Box display="flex" alignItems="center">
+                        <Box component='img' src={PPLogo} style={{ height: '1.4rem', marginTop: '-0.2rem' }} />
+                        <Box component="span"> Filter Taken Courses </Box>
+                    </Box>
+                }
+                labelPlacement="top"
+                style={{ margin: 0, justifyContent: 'flex-end' }}
+            />
 
             <FormControlLabel
                 control={

@@ -5,8 +5,9 @@ import type { GESearchResult, SearchResult, SectionSearchResult } from '@package
 import uFuzzy from '@leeoniya/ufuzzy';
 import * as fuzzysort from 'fuzzysort';
 import { procedure, router } from '../trpc';
-import { backendEnvSchema } from '../env';
+import { backendEnvSchema, ppEnvSchema } from '../env';
 import * as searchData from '$generated/searchData';
+import { termData } from "../../../antalmanac/src/lib/termData";
 
 const MAX_AUTOCOMPLETE_RESULTS = 12;
 
@@ -32,12 +33,63 @@ const geCategories: Record<GECategoryKey, GESearchResult> = {
     ge8: { type: 'GE_CATEGORY', name: 'International/Global Issues' },
 };
 
+const PETERPORTAL_API_URL = "https://peterportal.org/api/trpc/external.roadmaps.getByGoogleID";
+
 const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
     key.toUpperCase().replace('GE', 'GE-'),
     geCategories[key],
 ];
 
 const toMutable = <T>(arr: readonly T[]): T[] => arr as T[];
+
+async function fetchUserCoursesPeterPortal(userId: string): Promise<Set<string>> {
+    const currentTerm = termData[0];
+    const env = ppEnvSchema.parse(process.env);
+    const apiKey = env.PETERPORTAL_CLIENT_API_KEY;
+    if (!apiKey) throw new Error("PETERPORTAL_CLIENT_API_KEY is required");
+    const searchParams = new URLSearchParams({ input: JSON.stringify({ googleUserId: userId }) });
+    const url = `${PETERPORTAL_API_URL}?${searchParams.toString()}`;
+    try {
+
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${apiKey}`,
+                "Content-Type": "application/json"
+            },
+        });
+
+        if(!response.ok) throw new Error(`Failed to fetch courses: ${response.statusText}`);
+
+        const data = await response.json();
+        const coursesTaken = new Set<string>();
+
+        function parseCurrentTerm(term: string): [number, string] {
+            const [yearStr, ...quarterParts] = term.split(" ");
+            const year = parseInt(yearStr, 10);
+            const quarter = quarterParts.join(" ");
+            return [year, quarter];
+        }
+
+        const validQuarters = new Set(["Fall", "Winter", "Spring"]);
+        const [currentYear, quarter] = parseCurrentTerm(currentTerm.shortName);
+        const currentQuarter = validQuarters.has(quarter) ? quarter : "Spring";
+
+        for (const year of data.result.data[0].content) {
+            for (const quarter of year.quarters) {
+                quarter.courses.forEach(course => coursesTaken.add(course));
+                if (year.startYear === currentYear && quarter.name === currentQuarter) {
+                    console.log(coursesTaken);
+                    return coursesTaken;
+                }
+            }
+        }
+
+        return coursesTaken;
+    } catch (error) {
+        return new Set();
+    }
+}
 
 const searchRouter = router({
     doSearch: procedure
@@ -93,12 +145,20 @@ const searchRouter = router({
                           keys: ['id', 'name', 'alias', 'metadata.department', 'metadata.number'],
                           limit: MAX_AUTOCOMPLETE_RESULTS - matchedDepts.length - matchedSections.length,
                       });
-
-            return Object.fromEntries([
+    
+            let results = [
                 ...matchedSections.map((x) => [x.sectionCode, x]),
-                ...matchedDepts.map((x) => [x.obj.id, x.obj]),
-                ...matchedCourses.map((x) => [x.obj.id, x.obj]),
-            ]);
+                ...matchedDepts.map(x => [x.obj.id, x.obj]),
+                ...matchedCourses.map(x => [x.obj.id, x.obj]),
+            ]
+
+            return Object.fromEntries(results);
+        }),
+
+    fetchUserCoursesPeterPortal: procedure
+        .input(z.object({ userId: z.string() }))
+        .query(async ({ input }) => {
+            return await fetchUserCoursesPeterPortal(input.userId);
         }),
 });
 
