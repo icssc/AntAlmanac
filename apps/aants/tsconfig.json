@@ -10,6 +10,6 @@
         "outDir": "dist",
         "resolveJsonModule": true,
     },
-    "include": ["src/**/*", "drizzle.config.ts"],
+    "include": ["src/**/*", "drizzle.config.ts", "scripts"],
     "exclude": ["node_modules", "dist"]
 }
