@@ -1,5 +1,4 @@
-import { Tune } from '@mui/icons-material';
-import { Box, IconButton, Stack, Tooltip } from '@mui/material';
+import { Box, Button, ButtonGroup, Stack } from '@mui/material';
 import { useCallback, type FormEvent } from 'react';
 
 import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
@@ -37,16 +36,42 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                 }}
             >
                 <Stack spacing={2}>
-                    <Box sx={{ display: 'flex', paddingTop: 1, alignItems: 'center', gap: 1 }}>
+                    <ButtonGroup fullWidth disableElevation size="large" aria-label="Search selection" sx={{ px: 2 }}>
+                        <Button
+                            variant={manualSearchEnabled ? 'outlined' : 'contained'}
+                            onClick={
+                                manualSearchEnabled
+                                    ? toggleManualSearch
+                                    : (e) => {
+                                          e.preventDefault();
+                                      }
+                            }
+                        >
+                            Quick Search
+                        </Button>
+                        <Button
+                            variant={manualSearchEnabled ? 'contained' : 'outlined'}
+                            onClick={
+                                manualSearchEnabled
+                                    ? (e) => {
+                                          e.preventDefault();
+                                      }
+                                    : toggleManualSearch
+                            }
+                        >
+                            Manual Search
+                        </Button>
+                    </ButtonGroup>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <TermSelector />
 
-                        <Box sx={{ flexShrink: 0 }}>
+                        {/* <Box sx={{ flexShrink: 0 }}>
                             <Tooltip title="Toggle Manual Search">
                                 <IconButton onClick={toggleManualSearch}>
                                     <Tune />
                                 </IconButton>
                             </Tooltip>
-                        </Box>
+                        </Box> */}
                     </Box>
 
                     {!manualSearchEnabled ? (

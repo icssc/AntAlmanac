@@ -11,6 +11,8 @@ import {
 } from '@mui/material';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 
+import { ManualSearchTextField } from '../ManualSearch/ManualSearchTextField';
+
 import {
     EXCLUDE_RESTRICTION_CODES_OPTIONS,
     DAYS_OPTIONS,
@@ -158,22 +160,26 @@ export function AdvancedSearchTextFields() {
                 marginBottom: '1rem',
             }}
         >
-            <TextField
+            <ManualSearchTextField
                 label="Instructor"
-                type="search"
-                value={instructor}
-                onChange={handleChange('instructor')}
+                inputProps={{
+                    type: 'search',
+                    value: instructor,
+                    onChange: handleChange('instructor'),
+                }}
                 helperText="Last name only"
             />
 
-            <TextField
-                id="units"
+            <ManualSearchTextField
                 label="Units"
-                value={units}
-                onChange={handleChange('units')}
-                type="search"
                 helperText="ex. 3, 4, or VAR"
-                style={{ width: 80 }}
+                inputProps={{
+                    value: units,
+                    onChange: handleChange('units'),
+                    type: 'search',
+                    style: { width: 200 },
+                    id: 'units',
+                }}
             />
 
             <FormControl>
