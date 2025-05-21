@@ -56,8 +56,8 @@ jobs:
         runs-on: ubuntu-latest
 
         outputs:
-            # A staging backend should only be deployed if either the backend, CDK, or AANTS have changed.
-            should-deploy-backend: ${{ steps.changed.outputs.backend == 'true' ||  steps.changed.outputs.cdk == 'true' || steps.changed.outputs.aants == 'true'}}
+            # A staging backend should only be deployed if either the backend or CDK changed.
+            should-deploy-backend: ${{ steps.changed.outputs.backend == 'true' ||  steps.changed.outputs.cdk == 'true' || steps.changed.outputs.aants=='true' }}
 
             # If a staging backend is deployed, then the frontend should use its URL.
             # Otherwise use the default development API endpoint.
