@@ -1,6 +1,6 @@
 import { Assessment, ShowChart as ShowChartIcon } from '@mui/icons-material';
 import { Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow, useMediaQuery } from '@mui/material';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import PeterPortalIcon from '$assets/peterportal-logo.png';
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
@@ -15,6 +15,7 @@ import analyticsEnum from '$lib/analytics/analytics';
 import { MOBILE_BREAKPOINT } from '$src/globals';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import { useTabStore } from '$stores/TabStore';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -72,7 +73,18 @@ function SectionTable(props: SectionTableProps) {
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
+    const { isMilitaryTime } = useTimeFormatStore()
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
+    const [isCompact, setIsCompact] = useState(false);
+    const buttonRowRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const observer = new ResizeObserver(([entry]) =>
+          setIsCompact(entry.contentRect.width < 750)
+        );
+        observer.observe(buttonRowRef.current!);
+        return () => observer.disconnect();
+      }, []);
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
@@ -95,13 +107,16 @@ function SectionTable(props: SectionTableProps) {
     return (
         <>
             <Box
-                sx={{
-                    display: 'flex',
-                    gap: '4px',
-                    marginBottom: '8px',
-                    marginTop: '4px',
-                }}
-            >
+            ref={buttonRowRef}
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '4px',
+                marginBottom: '8px',
+                marginTop: '4px',
+              }}
+        >
+            <Box sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start', alignItems: 'center'}}>
                 <CourseInfoBar
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
@@ -153,8 +168,28 @@ function SectionTable(props: SectionTableProps) {
                         />
                     }
                 />
+                {courseDetails.updatedAt && (
+                    <Box sx={{
+                        fontSize: '0.75rem',
+                        color: '#888',
+                        px: 1,
+                        py: 0.5,
+                        whiteSpace: 'nowrap',
+                        flexGrow: 1,
+                        textAlign: 'right',
+                    }}
+                    >
+                    {isCompact ? 'Updated' : 'Status last updated'}{' '}
+                    {new Date(courseDetails.updatedAt).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: !isMilitaryTime,
+                    })}
+                    </Box>
+                )}
             </Box>
-
+        </Box>
+    
             <TableContainer
                 component={Paper}
                 sx={{ margin: '8px 0px 8px 0px', width: '100%' }}
@@ -192,7 +227,7 @@ function SectionTable(props: SectionTableProps) {
                                 ))}
                         </TableRow>
                     </TableHead>
-
+    
                     <SectionTableBody
                         courseDetails={courseDetails}
                         term={term}
@@ -202,7 +237,7 @@ function SectionTable(props: SectionTableProps) {
                 </Table>
             </TableContainer>
         </>
-    );
+    );    
 }
 
 export default SectionTable;
