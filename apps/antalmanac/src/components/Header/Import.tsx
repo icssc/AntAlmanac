@@ -18,6 +18,7 @@ import {
     Tooltip,
 } from '@mui/material';
 import { CourseInfo } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
 import { ChangeEvent, useCallback, useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -71,6 +72,8 @@ export function Import() {
     const firstTimeUserFlag = useRef(true);
 
     const { isDark } = useThemeStore();
+
+    const postHog = usePostHog();
 
     const handleOpen = useCallback(() => {
         setOpenImportDialog(true);
@@ -172,8 +175,8 @@ export function Import() {
                 currentSchedule
             );
 
-            logAnalytics({
-                category: analyticsEnum.nav.title,
+            logAnalytics(postHog, {
+                category: analyticsEnum.nav,
                 action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
                 value: sectionsAdded / (sectionCodes.length || 1),
             });
@@ -204,7 +207,7 @@ export function Import() {
         scheduleIndex: number
     ) => {
         for (const section of Object.values(courseInfo)) {
-            addCourse(section.section, section.courseDetails, term, scheduleIndex, true);
+            addCourse(section.section, section.courseDetails, term, scheduleIndex, true, postHog);
         }
 
         const terms = AppStore.termsInSchedule(term);

@@ -6,7 +6,6 @@ import { notNull } from './utils';
 
 import { openSnackbar } from '$actions/AppStoreActions';
 import type { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { getDefaultTerm, termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
@@ -345,11 +344,6 @@ export function exportCalendar() {
     // Convert the events into a vcalendar.
     // Callback function triggers a download of the .ics file
     createEvents(events, (error, value) => {
-        logAnalytics({
-            category: 'Calendar Pane',
-            action: analyticsEnum.calendar.actions.DOWNLOAD,
-        });
-
         if (error) {
             openSnackbar('error', 'Something went wrong! Unable to download schedule.', 5);
             console.log(error);

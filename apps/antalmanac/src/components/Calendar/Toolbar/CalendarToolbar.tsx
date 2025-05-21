@@ -4,6 +4,7 @@ import {
     DescriptionOutlined as DescriptionOutlinedIcon,
 } from '@mui/icons-material';
 import { useTheme, useMediaQuery, Box, Button, IconButton, Paper, Tooltip } from '@mui/material';
+import { PostHog, usePostHog } from 'posthog-js/react';
 import { useState, useCallback, useEffect, memo } from 'react';
 
 import { undoDelete } from '$actions/AppStoreActions';
@@ -15,12 +16,14 @@ import ScreenshotButton from '$components/buttons/Screenshot';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 
-function handleUndo() {
-    logAnalytics({
-        category: analyticsEnum.calendar.title,
-        action: analyticsEnum.calendar.actions.UNDO,
-    });
-    undoDelete(null);
+function handleUndo(postHog?: PostHog) {
+    return () => {
+        logAnalytics(postHog, {
+            category: analyticsEnum.calendar,
+            action: analyticsEnum.calendar.actions.UNDO,
+        });
+        undoDelete(null);
+    };
 }
 
 export interface CalendarPaneToolbarProps {
@@ -39,11 +42,15 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('xxs'));
 
+    const postHog = usePostHog();
+
     const handleToggleFinals = useCallback(() => {
-        logAnalytics({
-            category: analyticsEnum.calendar.title,
-            action: analyticsEnum.calendar.actions.DISPLAY_FINALS,
-        });
+        if (!showFinalsSchedule) {
+            logAnalytics(postHog, {
+                category: analyticsEnum.calendar,
+                action: analyticsEnum.calendar.actions.DISPLAY_FINALS,
+            });
+        }
         toggleDisplayFinalsSchedule();
     }, [toggleDisplayFinalsSchedule]);
 
@@ -113,12 +120,17 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                 <DownloadButton />
 
                 <Tooltip title="Undo last action">
-                    <IconButton onClick={handleUndo} size="medium" disabled={skeletonMode}>
+                    <IconButton onClick={handleUndo(postHog)} size="medium" disabled={skeletonMode}>
                         <UndoIcon fontSize="small" />
                     </IconButton>
                 </Tooltip>
 
-                <ClearScheduleButton size="medium" fontSize="small" skeletonMode={skeletonMode} />
+                <ClearScheduleButton
+                    size="medium"
+                    fontSize="small"
+                    skeletonMode={skeletonMode}
+                    analyticsCategory={analyticsEnum.calendar}
+                />
 
                 <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
             </Box>

@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { CSSProperties } from '@mui/material/styles/createTypography';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 
 import { About } from './About';
@@ -49,10 +50,11 @@ function ThemeMenu() {
         store.setAppTheme,
     ]);
     const { forceUpdate } = useCoursePaneStore();
+    const postHog = usePostHog();
 
     const handleThemeChange = (event: React.MouseEvent<HTMLButtonElement>) => {
         forceUpdate();
-        setTheme(event.currentTarget.value as 'light' | 'dark' | 'system');
+        setTheme(event.currentTarget.value as 'light' | 'dark' | 'system', postHog);
     };
 
     return (
@@ -164,6 +166,8 @@ function ExperimentalMenu() {
     const { sessionIsValid, session } = useSessionStore();
     const { setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
 
+    const postHog = usePostHog();
+
     const handlePreviewChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPreviewMode(event.target.checked);
     };
@@ -182,7 +186,7 @@ function ExperimentalMenu() {
 
         if (!savedUserID) return;
         actionTypesStore.emit('autoSaveStart');
-        await autoSaveSchedule(savedUserID);
+        await autoSaveSchedule(savedUserID, postHog);
         appStore.unsavedChanges = false;
         actionTypesStore.emit('autoSaveEnd');
     };
