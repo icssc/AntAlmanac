@@ -83,8 +83,6 @@ jobs:
                         - 'apps/backend/**'
                       cdk:
                         - 'apps/cdk/**'
-                      aants:
-                        - 'apps/aants/**'
 
     deploy_staging_frontend:
         name: Deploy frontend staging CloudFormation stack and environment
