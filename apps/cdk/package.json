@@ -13,9 +13,9 @@
         "directory": "apps/cdk"
     },
     "scripts": {
-        "backend-development": "cdk --app 'npx tsx src/app/backend-development.ts' --require-approval never",
-        "backend-staging": "cdk --app 'npx tsx src/app/backend-staging.ts' --require-approval never",
-        "backend-production": "cdk --app 'npx tsx src/app/backend-production.ts' --require-approval never",
+        "backend-development": "cdk --app 'npx tsx src/app/backend-development.ts' --all --require-approval never",
+        "backend-staging": "cdk --app 'npx tsx src/app/backend-staging.ts' --all --require-approval never",
+        "backend-production": "cdk --app 'npx tsx src/app/backend-production.ts' --all --require-approval never",
         "frontend-staging": "cdk --app 'npx tsx src/app/frontend-staging.ts' --require-approval never"
     },
     "dependencies": {
