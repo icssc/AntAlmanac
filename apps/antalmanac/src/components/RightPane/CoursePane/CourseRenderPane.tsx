@@ -280,7 +280,6 @@ export default function CourseRenderPane(props: { id?: number }) {
 
                 return true;
             });
-
             setCourseData(filteredCourses);
         } catch (error) {
             console.error(error);

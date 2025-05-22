@@ -130,7 +130,6 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 if (!this.requestIsCurrent(requestTimestamp)) return;
                 let userTakenCourses: Set<string> = new Set();
                 let filteredResults = result;
-
                 if (RightPaneStore.getFilterTakenCourses()) {
                     userTakenCourses = new Set<string>(await trpc.search.fetchUserCoursesPeterPortal.query({ userId: this.state.googleId }));
                     RightPaneStore.setUserTakenCourses(userTakenCourses);
