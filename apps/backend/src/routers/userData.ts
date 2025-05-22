@@ -161,10 +161,15 @@ const userDataRouter = router({
 
         if (userId.length > 0) {
             const session = await RDS.upsertSession(db, userId, input.token);
-            return { sessionToken: session?.refreshToken, userId: userId, providerId: payload.sub };
+            return {
+                sessionToken: session?.refreshToken,
+                userId: userId,
+                providerId: payload.sub,
+                newUser: account.newUser,
+            };
         }
 
-        return { sessionToken: null, userId: null, providerId: null };
+        return { sessionToken: null, userId: null, providerId: null, newUser: account.newUser };
     }),
     /**
      * Logs in or signs up existing user
