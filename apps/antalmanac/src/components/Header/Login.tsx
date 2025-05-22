@@ -19,7 +19,7 @@ export function Login() {
         navigate('/');
     };
 
-    const { session, sessionIsValid, clearSession } = useSessionStore();
+    const { session, sessionIsValid, setGoogleId, setFilterTakenCourses, clearSession } = useSessionStore();
 
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -35,8 +35,14 @@ export function Login() {
                 .query({ token: session ?? '' })
                 .then((res) => res.users);
             setUser(userData);
-            const googleId = await trpc.userData.getGoogleIdByUserId.query({ userId: userData.id });
-            RightPaneStore.setGoogleId(googleId ?? '');
+            try {
+                const googleId = await trpc.userData.getGoogleIdByUserId.query({ userId: userData.id });
+                setGoogleId(googleId ?? '');
+              } catch (error) {
+                console.error('Failed to fetch Google ID for user:', error);
+                setGoogleId('');
+                setFilterTakenCourses(false);
+            }
         }
     }, [session, sessionIsValid, setUser]);
 

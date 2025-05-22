@@ -6,8 +6,14 @@ import { getLocalStorageSessionId, removeLocalStorageSessionId, setLocalStorageS
 interface SessionState {
     session: string | null;
     sessionIsValid: boolean;
+    googleId: string | null;
+    filterTakenCourses: boolean;
+    userTakenCourses: Set<string>;
     updateSession: (session: string | null) => Promise<void>;
     clearSession: () => Promise<void>;
+    setGoogleId: (id: string) => void;
+    setFilterTakenCourses: (value: boolean) => void;
+    setUserTakenCourses: (courses: Set<string>) => void;
 }
 
 export const useSessionStore = create<SessionState>((set) => {
@@ -15,6 +21,10 @@ export const useSessionStore = create<SessionState>((set) => {
     return {
         session: localSessionId,
         sessionIsValid: false,
+        googleId: null,
+        filterTakenCourses: false,
+        userTakenCourses: new Set(),
+
         updateSession: async (session) => {
             if (session) {
                 const sessionIsValid: boolean = await trpc.auth.validateSession.query({ token: session });
@@ -35,5 +45,8 @@ export const useSessionStore = create<SessionState>((set) => {
                 window.location.reload();
             }
         },
+        setGoogleId: (id: string) => set({ googleId: id }),
+        setFilterTakenCourses: (value: boolean) => set({ filterTakenCourses: value }),
+        setUserTakenCourses: (courses: Set<string>) => set({ userTakenCourses: courses }),
     };
 });

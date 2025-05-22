@@ -10,6 +10,7 @@ import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSe
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { useSessionStore } from '$stores/SessionStore';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import PPLogo from '$assets/peterportal-shortform-logo.svg'
@@ -20,7 +21,8 @@ interface SearchFormProps {
 
 export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
-    const [filterCourses, setFilterCourses] = useState(RightPaneStore.getFilterTakenCourses());
+    const filterCourses = useSessionStore((s) => s.filterTakenCourses);
+    const setFilterCourses = useSessionStore((s) => s.setFilterTakenCourses);
 
     const onFormSubmit = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
@@ -31,22 +33,8 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     );
 
     const toggleFilterCourses = () => {
-        const newFilterState = !filterCourses;
-        RightPaneStore.setFilterTakenCourses(newFilterState);
-        setFilterCourses(newFilterState);
+        setFilterCourses(!filterCourses);
     };
-
-    useEffect(() => {
-        const handleStoreUpdate = () => {
-            setFilterCourses(RightPaneStore.getFilterTakenCourses());
-        };
-
-        RightPaneStore.on('formDataChange', handleStoreUpdate);
-
-        return () => {
-            RightPaneStore.off('formDataChange', handleStoreUpdate);
-        };
-    }, []);
 
     return (
         <Stack sx={{ height: '100%', overflowX: 'hidden' }}>
