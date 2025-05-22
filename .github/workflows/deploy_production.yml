@@ -160,3 +160,6 @@ jobs:
               run: pnpm --filter "antalmanac-cdk" backend-development deploy
               env:
                   NODE_ENV: development
+                  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+                  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+                  GOOGLE_REDIRECT_URI: https://antalmanac.com/auth
