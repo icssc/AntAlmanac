@@ -7,7 +7,6 @@ import * as fuzzysort from 'fuzzysort';
 import { procedure, router } from '../trpc';
 import { backendEnvSchema, ppEnvSchema } from '../env';
 import * as searchData from '$generated/searchData';
-import { termData } from "../../../antalmanac/src/lib/termData";
 
 const MAX_AUTOCOMPLETE_RESULTS = 12;
 
@@ -42,8 +41,23 @@ const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
 
 const toMutable = <T>(arr: readonly T[]): T[] => arr as T[];
 
+function getCurrentTerm(): { year: number; quarter: string } {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    const quarter =
+        month >= 1 && month <= 3
+            ? 'Winter'
+            : month >= 4 && month <= 6
+            ? 'Spring'
+            : month >= 7 && month <= 9
+            ? 'Summer'
+            : 'Fall';
+    return { year, quarter };
+}
+
 async function fetchUserCoursesPeterPortal(userId: string): Promise<Set<string>> {
-    const currentTerm = termData[0];
+    const { year, quarter } = getCurrentTerm();
     const env = ppEnvSchema.parse(process.env);
     const apiKey = env.PETERPORTAL_CLIENT_API_KEY;
     if (!apiKey) throw new Error("PETERPORTAL_CLIENT_API_KEY is required");
@@ -64,22 +78,10 @@ async function fetchUserCoursesPeterPortal(userId: string): Promise<Set<string>>
         const data = await response.json();
         const coursesTaken = new Set<string>();
 
-        function parseCurrentTerm(term: string): [number, string] {
-            const [yearStr, ...quarterParts] = term.split(" ");
-            const year = parseInt(yearStr, 10);
-            const quarter = quarterParts.join(" ");
-            return [year, quarter];
-        }
-
-        const validQuarters = new Set(["Fall", "Winter", "Spring"]);
-        const [currentYear, quarter] = parseCurrentTerm(currentTerm.shortName);
-        const currentQuarter = validQuarters.has(quarter) ? quarter : "Spring";
-
-        for (const year of data.result.data[0].content) {
-            for (const quarter of year.quarters) {
-                quarter.courses.forEach(course => coursesTaken.add(course));
-                if (year.startYear === currentYear && quarter.name === currentQuarter) {
-                    console.log(coursesTaken);
+        for (const yearData of data.result.data[0].content) {
+            for (const quarterData of yearData.quarters) {
+                quarterData.courses.forEach(course => coursesTaken.add(course));
+                if (yearData.startYear === year && quarterData.name === quarter) {
                     return coursesTaken;
                 }
             }
