@@ -35,7 +35,7 @@ export function Login() {
                 .query({ token: session ?? '' })
                 .then((res) => res.users);
             setUser(userData);
-            const googleId = await trpc.userData.getGoogleIdByUserId.query({ userId: userId });
+            const googleId = await trpc.userData.getGoogleIdByUserId.query({ userId: userData.id });
             RightPaneStore.setGoogleId(googleId ?? '');
         }
     }, [session, sessionIsValid, setUser]);

@@ -7,7 +7,7 @@ import createContext from './context';
 import { backendEnvSchema } from "./env";
 
 const corsOptions: CorsOptions = {
-    origin: ['https://antalmanac.com', 'https://www.antalmanac.com', 'https://icssc-projects.github.io/AntAlmanac', 'http://localhost:5173'],
+    origin: ['https://antalmanac.com', 'https://www.antalmanac.com', 'https://icssc-projects.github.io/AntAlmanac'],
 };
 
 const MAPBOX_API_URL = 'https://api.mapbox.com';
@@ -63,7 +63,7 @@ export async function start(corsEnabled = false) {
             createContext,
         })
     );
-    
+
     //if (env.STAGE === 'local') {
         app.listen(PORT, async () => {
             console.log(`🚀 Server listening at http://localhost:${PORT}`);
