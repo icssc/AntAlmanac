@@ -7,7 +7,7 @@ export interface HSLColor {
     l: number;
 }
 
-const defaultColors = [blue[500], pink[500], purple[500], green[500], amber[500], deepPurple[500], deepOrange[500]];
+const defaultColors = [blue[300], pink[300], purple[300], green[300], amber[300], deepPurple[300], deepOrange[300]];
 
 /**
  * Converts a hex color to HSL
@@ -141,7 +141,7 @@ function generateCloseColor(originalColor: string, usedColors: Set<string>, vari
     ) {
         color = {
             ...color,
-            l: Math.round(((color.l + delta) * 100) % 100) / 100,
+            l: Math.max(0, Math.round(((color.l - delta) * 100) % 100) / 100), // Subtract delta and ensure lightness doesn't go below 0
         };
     }
 
