@@ -15,6 +15,7 @@ import {
     EXCLUDE_RESTRICTION_CODES_OPTIONS,
     DAYS_OPTIONS,
 } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
+import { useSessionStore } from '$stores/SessionStore';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import PPLogo from '$assets/peterportal-shortform-logo.svg'
 
@@ -31,7 +32,7 @@ export function AdvancedSearchTextFields() {
         () => RightPaneStore.getFormData().excludeRestrictionCodes
     );
     const [days, setDays] = useState(() => RightPaneStore.getFormData().days);
-    const [filterCourses, setFilterCourses] = useState(RightPaneStore.getFilterTakenCourses());
+    const { filterTakenCourses, setFilterTakenCourses } = useSessionStore();
 
     const resetField = useCallback(() => {
         const formData = RightPaneStore.getFormData();
@@ -80,9 +81,7 @@ export function AdvancedSearchTextFields() {
                 }
                 return;
             } else if (name === 'filterTakenCourses') {
-                const newFilterState = !filterCourses;
-                RightPaneStore.setFilterTakenCourses(newFilterState);
-                setFilterCourses(newFilterState);
+                setFilterTakenCourses(!filterTakenCourses);
             }
 
             const value = event.target.value;
@@ -262,7 +261,7 @@ export function AdvancedSearchTextFields() {
                     <Switch
                         onChange={handleChange('filterTakenCourses')}
                         color="primary"
-                        checked={filterCourses}
+                        checked={filterTakenCourses}
                     />
                 }
                 label={
