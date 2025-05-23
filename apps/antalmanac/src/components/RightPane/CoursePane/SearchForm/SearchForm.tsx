@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Stack } from '@mui/material';
+import { Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useCallback, type FormEvent } from 'react';
 
 import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
@@ -36,46 +36,19 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                 }}
             >
                 <Stack spacing={2}>
-                    <ButtonGroup
+                    <ToggleButtonGroup
                         fullWidth
-                        disableElevation
-                        size="large"
+                        size="medium"
+                        color="primary"
+                        value={manualSearchEnabled ? 'manual' : 'quick'}
+                        exclusive
                         aria-label="Search selection"
                         sx={{ paddingTop: 1 }}
+                        onChange={() => toggleManualSearch()}
                     >
-                        <Button
-                            color={manualSearchEnabled ? 'inherit' : 'primary'}
-                            variant={manualSearchEnabled ? 'outlined' : 'contained'}
-                            sx={{
-                                color: manualSearchEnabled ? 'grey' : undefined,
-                            }}
-                            onClick={
-                                manualSearchEnabled
-                                    ? toggleManualSearch
-                                    : (e) => {
-                                          e.preventDefault();
-                                      }
-                            }
-                        >
-                            Quick Search
-                        </Button>
-                        <Button
-                            color={manualSearchEnabled ? 'primary' : 'inherit'}
-                            variant={manualSearchEnabled ? 'contained' : 'outlined'}
-                            sx={{
-                                color: manualSearchEnabled ? undefined : 'grey',
-                            }}
-                            onClick={
-                                manualSearchEnabled
-                                    ? (e) => {
-                                          e.preventDefault();
-                                      }
-                                    : toggleManualSearch
-                            }
-                        >
-                            Manual Search
-                        </Button>
-                    </ButtonGroup>
+                        <ToggleButton value="quick">Quick Search</ToggleButton>
+                        <ToggleButton value="manual">Manual Search</ToggleButton>
+                    </ToggleButtonGroup>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <TermSelector />
                     </Box>

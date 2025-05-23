@@ -58,7 +58,7 @@ class SectionCodeSearchBar extends PureComponent {
                 }}
                 helperText="ex. 14200, 29000-29100"
                 formControlProps={{
-                    sx: { minWidth: 400 },
+                    sx: { minWidth: 350 },
                 }}
             />
         );
