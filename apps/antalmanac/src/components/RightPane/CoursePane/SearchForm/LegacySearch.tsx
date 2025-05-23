@@ -14,12 +14,12 @@ interface LegacySearchProps {
 export function LegacySearch({ onSubmit, onReset }: LegacySearchProps) {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-            <Box>
-                <Box sx={{ display: 'flex', width: '100%', gap: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box sx={{ display: 'flex', width: '100%', gap: 2, flexWrap: 'wrap' }}>
                     <DepartmentSearchBar />
                     <CourseNumberSearchBar />
                 </Box>
-                <Box sx={{ display: 'flex', width: '100%', gap: 2 }}>
+                <Box sx={{ display: 'flex', width: '100%', gap: 2, flexWrap: 'wrap' }}>
                     <GeSelector />
                     <SectionCodeSearchBar />
                 </Box>

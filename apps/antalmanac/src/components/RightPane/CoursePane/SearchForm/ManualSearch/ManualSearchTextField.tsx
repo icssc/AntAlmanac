@@ -1,26 +1,39 @@
-import { FormControl, TextField, TextFieldProps } from '@mui/material';
+import { FormControl, FormControlProps, TextField, TextFieldProps } from '@mui/material';
 
 import { ManualSearchInputAdornment } from './ManualSearchInputAdornment';
 
 interface ManualSearchTextFieldProps {
     label: string;
-    inputProps?: TextFieldProps;
+    textFieldProps?: TextFieldProps;
+    autocompleteProps?: TextFieldProps;
+    formControlProps?: FormControlProps;
     helperText?: string;
+    fullWidth?: boolean;
 }
 
-export const ManualSearchTextField = ({ label, inputProps, helperText }: ManualSearchTextFieldProps) => {
+export const ManualSearchTextField = ({
+    label,
+    textFieldProps,
+    autocompleteProps,
+    formControlProps,
+    helperText,
+    fullWidth,
+}: ManualSearchTextFieldProps) => {
     return (
-        <FormControl variant="outlined">
+        <FormControl variant="outlined" fullWidth={fullWidth} sx={{ minWidth: 200 }} {...formControlProps}>
             <TextField
+                fullWidth={fullWidth}
                 size="small"
                 variant="outlined"
                 placeholder={helperText}
-                {...inputProps}
+                {...textFieldProps}
                 InputProps={{
+                    ...autocompleteProps?.InputProps,
+                    sx: { paddingX: 0 },
                     startAdornment: <ManualSearchInputAdornment label={label} />,
-                    sx: { px: 0 },
                 }}
                 inputProps={{
+                    ...autocompleteProps?.inputProps,
                     sx: { paddingRight: 1 },
                 }}
             />

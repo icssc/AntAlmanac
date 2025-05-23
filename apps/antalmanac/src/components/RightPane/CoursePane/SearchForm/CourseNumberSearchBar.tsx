@@ -1,5 +1,6 @@
-import { TextField } from '@mui/material';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+
+import { ManualSearchTextField } from './ManualSearch/ManualSearchTextField';
 
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
@@ -39,11 +40,13 @@ export function CourseNumberSearchBar() {
 
     return (
         <div>
-            <TextField
+            <ManualSearchTextField
                 label="Course Number(s)"
-                type="search"
-                value={value}
-                onChange={handleChange}
+                textFieldProps={{
+                    type: 'search',
+                    value,
+                    onChange: handleChange,
+                }}
                 helperText="ex. 6B, 17, 30-40"
             />
         </div>

@@ -1,7 +1,8 @@
-import { TextField } from '@mui/material';
 import { ChangeEvent, PureComponent } from 'react';
 
 import RightPaneStore from '../../RightPaneStore';
+
+import { ManualSearchTextField } from './ManualSearch/ManualSearchTextField';
 
 class SectionCodeSearchBar extends PureComponent {
     updateCourseCodeAndGetFormData() {
@@ -48,16 +49,19 @@ class SectionCodeSearchBar extends PureComponent {
 
     render() {
         return (
-            <div>
-                <TextField
-                    label="Course Code or Range"
-                    value={this.state.sectionCode}
-                    onChange={this.handleChange}
-                    type="search"
-                    helperText="ex. 14200, 29000-29100"
-                    fullWidth
-                />
-            </div>
+            <ManualSearchTextField
+                label="Course Code or Range"
+                textFieldProps={{
+                    value: this.state.sectionCode,
+                    onChange: this.handleChange,
+                    type: 'search',
+                    fullWidth: true,
+                }}
+                helperText="ex. 14200, 29000-29100"
+                formControlProps={{
+                    sx: { minWidth: 350 },
+                }}
+            />
         );
     }
 }

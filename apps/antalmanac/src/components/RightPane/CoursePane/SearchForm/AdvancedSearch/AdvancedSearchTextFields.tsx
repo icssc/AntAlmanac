@@ -1,16 +1,7 @@
-import {
-    MenuItem,
-    TextField,
-    Box,
-    FormControl,
-    InputLabel,
-    Select,
-    Switch,
-    FormControlLabel,
-    type SelectChangeEvent,
-} from '@mui/material';
+import { MenuItem, Box, type SelectChangeEvent } from '@mui/material';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 
+import { ManualSearchSelect } from '../ManualSearch/ManualSearchSelect';
 import { ManualSearchTextField } from '../ManualSearch/ManualSearchTextField';
 
 import {
@@ -49,6 +40,7 @@ export function AdvancedSearchTextFields() {
 
     useEffect(() => {
         RightPaneStore.on('formReset', resetField);
+
         return () => {
             RightPaneStore.removeListener('formReset', resetField);
         };
@@ -62,7 +54,7 @@ export function AdvancedSearchTextFields() {
             const urlParam = new URLSearchParams(url.search);
 
             if (name === 'online') {
-                const checked = (event as { target: { checked: boolean } }).target.checked; // FIX ME: This is a hack and very bad typing
+                const checked = event.target.value === 'True';
                 if (checked) {
                     setBuilding('ON');
                     setRoom('LINE');
@@ -153,16 +145,14 @@ export function AdvancedSearchTextFields() {
         <Box
             style={{
                 display: 'flex',
-                gap: '1.5rem',
+                gap: '1rem',
                 flexWrap: 'wrap',
-                paddingLeft: '8px',
-                paddingRight: '8px',
                 marginBottom: '1rem',
             }}
         >
             <ManualSearchTextField
                 label="Instructor"
-                inputProps={{
+                textFieldProps={{
                     type: 'search',
                     value: instructor,
                     onChange: handleChange('instructor'),
@@ -173,7 +163,7 @@ export function AdvancedSearchTextFields() {
             <ManualSearchTextField
                 label="Units"
                 helperText="ex. 3, 4, or VAR"
-                inputProps={{
+                textFieldProps={{
                     value: units,
                     onChange: handleChange('units'),
                     type: 'search',
@@ -182,12 +172,27 @@ export function AdvancedSearchTextFields() {
                 }}
             />
 
-            <FormControl>
-                <InputLabel>Class Full Option</InputLabel>
-                <Select
-                    value={coursesFull}
-                    onChange={handleChange('coursesFull')}
-                    MenuProps={{
+            <ManualSearchSelect
+                label="Class Full Option"
+                selectProps={{
+                    value: coursesFull,
+                    onChange: handleChange('coursesFull'),
+                }}
+            >
+                <MenuItem value={'ANY'}>Include all classes</MenuItem>
+                <MenuItem value={'SkipFullWaitlist'}>Include full courses if space on waitlist</MenuItem>
+                <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
+                <MenuItem value={'FullOnly'}>Show only full or waitlisted courses</MenuItem>
+                <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
+            </ManualSearchSelect>
+
+            <ManualSearchSelect
+                label="Course Level"
+                selectProps={{
+                    value: division,
+                    onChange: handleChange('division'),
+                    displayEmpty: true,
+                    MenuProps: {
                         anchorOrigin: {
                             vertical: 'bottom',
                             horizontal: 'left',
@@ -196,160 +201,147 @@ export function AdvancedSearchTextFields() {
                             vertical: 'top',
                             horizontal: 'left',
                         },
-                    }}
-                >
-                    <MenuItem value={'ANY'}>Include all classes</MenuItem>
-                    <MenuItem value={'SkipFullWaitlist'}>Include full courses if space on waitlist</MenuItem>
-                    <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
-                    <MenuItem value={'FullOnly'}>Show only full or waitlisted courses</MenuItem>
-                    <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
-                </Select>
-            </FormControl>
+                    },
+                }}
+            >
+                <MenuItem value={''}>Any Division</MenuItem>
+                <MenuItem value={'LowerDiv'}>Lower Division</MenuItem>
+                <MenuItem value={'UpperDiv'}>Upper Division</MenuItem>
+                <MenuItem value={'Graduate'}>Graduate/Professional</MenuItem>
+            </ManualSearchSelect>
 
-            <FormControl>
-                <InputLabel id="division-label" shrink>
-                    Course Level
-                </InputLabel>
-                <Select
-                    labelId="division-label"
-                    value={division}
-                    onChange={handleChange('division')}
-                    displayEmpty
-                    MenuProps={{
-                        anchorOrigin: {
-                            vertical: 'bottom',
-                            horizontal: 'left',
-                        },
-                        transformOrigin: {
-                            vertical: 'top',
-                            horizontal: 'left',
-                        },
-                    }}
-                >
-                    <MenuItem value={''}>Any Division</MenuItem>
-                    <MenuItem value={'LowerDiv'}>Lower Division</MenuItem>
-                    <MenuItem value={'UpperDiv'}>Upper Division</MenuItem>
-                    <MenuItem value={'Graduate'}>Graduate/Professional</MenuItem>
-                </Select>
-            </FormControl>
+            <ManualSearchSelect
+                label="Starts After"
+                selectProps={{
+                    value: startTime,
+                    onChange: handleChange('startTime'),
+                }}
+                formControlProps={{
+                    sx: { minWidth: 200 },
+                }}
+            >
+                {startsAfterMenuItems}
+            </ManualSearchSelect>
 
-            <FormControl>
-                <InputLabel id="starts-after-dropdown-label">Starts After</InputLabel>
-                <Select
-                    labelId="starts-after-dropdown-label"
-                    value={startTime}
-                    onChange={handleChange('startTime')}
-                    style={{ width: 130 }}
-                >
-                    {startsAfterMenuItems}
-                </Select>
-            </FormControl>
+            <ManualSearchSelect
+                label="Ends Before"
+                selectProps={{
+                    value: endTime,
+                    onChange: handleChange('endTime'),
+                }}
+                formControlProps={{
+                    sx: { minWidth: 200 },
+                }}
+            >
+                {endsBeforeMenuItems}
+            </ManualSearchSelect>
 
-            <FormControl>
-                <InputLabel id="ends-before-dropdown-label">Ends Before</InputLabel>
-                <Select
-                    labelId="ends-before-dropdown-label"
-                    value={endTime}
-                    onChange={handleChange('endTime')}
-                    style={{ width: 130 }}
-                >
-                    {endsBeforeMenuItems}
-                </Select>
-            </FormControl>
-
-            <FormControlLabel
-                control={
-                    <Switch
-                        onChange={handleChange('online')}
-                        value="online"
-                        color="primary"
-                        checked={building === 'ON'}
-                    />
-                }
+            <ManualSearchSelect
                 label="Online Only"
-                labelPlacement="top"
-                style={{ margin: 0, justifyContent: 'flex-end' }}
-            />
+                selectProps={{
+                    value: building === 'ON' ? 'True' : 'False',
+                    onChange: handleChange('online'),
+                }}
+                formControlProps={{
+                    sx: { minWidth: 100 },
+                }}
+            >
+                <MenuItem value={'False'}>False</MenuItem>
+                <MenuItem value={'True'}>True</MenuItem>
+            </ManualSearchSelect>
 
-            <TextField
-                id="building"
+            <ManualSearchTextField
                 label="Building"
-                type="search"
-                value={building}
-                onChange={handleChange('building')}
+                textFieldProps={{
+                    id: 'building',
+                    type: 'search',
+                    value: building,
+                    onChange: handleChange('building'),
+                }}
+                formControlProps={{
+                    sx: { minWidth: 100 },
+                }}
             />
 
-            <TextField id="room" label="Room" type="search" value={room} onChange={handleChange('room')} />
+            <ManualSearchTextField
+                label="Room"
+                textFieldProps={{
+                    id: 'room',
+                    type: 'search',
+                    value: room,
+                    onChange: handleChange('room'),
+                }}
+                formControlProps={{
+                    sx: { minWidth: 100 },
+                }}
+            />
 
-            <FormControl style={{ minWidth: 150 }}>
-                <InputLabel id="exclude-restriction-codes-label">Exclude Restrictions</InputLabel>
-                <Select
-                    multiple
-                    labelId="exclude-restriction-codes-label"
-                    value={excludeRestrictionCodes.split('')}
-                    onChange={handleChange('excludeRestrictionCodes')}
-                    renderValue={(selected) => (selected as string[]).join(', ')}
-                >
-                    {EXCLUDE_RESTRICTION_CODES_OPTIONS.map((option) => (
-                        <MenuItem
-                            key={option.value}
-                            value={option.value}
+            <ManualSearchSelect
+                label="Exclude Restrictions"
+                selectProps={{
+                    multiple: true,
+                    value: excludeRestrictionCodes.split(''),
+                    onChange: handleChange('excludeRestrictionCodes'),
+                    renderValue: (selected) => (selected as string[]).join(', '),
+                }}
+            >
+                {EXCLUDE_RESTRICTION_CODES_OPTIONS.map((option) => (
+                    <MenuItem
+                        key={option.value}
+                        value={option.value}
+                        style={{
+                            maxWidth: 240,
+                        }}
+                    >
+                        <span
                             style={{
-                                maxWidth: 240,
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
                             }}
                         >
-                            <span
-                                style={{
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {option.label}
-                            </span>
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
+                            {option.label}
+                        </span>
+                    </MenuItem>
+                ))}
+            </ManualSearchSelect>
 
-            <FormControl style={{ minWidth: 150 }}>
-                <InputLabel id="days-label">Days</InputLabel>
-                <Select
-                    multiple
-                    labelId="days-label"
-                    value={days ? days.split(/(?=[A-Z])/) : []}
-                    onChange={handleChange('days')}
-                    renderValue={(selected) =>
+            <ManualSearchSelect
+                label="Days"
+                selectProps={{
+                    multiple: true,
+                    value: days ? days.split(/(?=[A-Z])/) : [],
+                    onChange: handleChange('days'),
+                    renderValue: (selected) =>
                         (selected as string[])
                             .sort((a, b) => {
                                 const orderA = DAYS_OPTIONS.findIndex((day) => day.value === a);
                                 const orderB = DAYS_OPTIONS.findIndex((day) => day.value === b);
                                 return orderA - orderB;
                             })
-                            .join(', ')
-                    }
-                >
-                    {DAYS_OPTIONS.map((option) => (
-                        <MenuItem
-                            key={option.value}
-                            value={option.value}
+                            .join(', '),
+                }}
+            >
+                {DAYS_OPTIONS.map((option) => (
+                    <MenuItem
+                        key={option.value}
+                        value={option.value}
+                        style={{
+                            maxWidth: 240,
+                        }}
+                    >
+                        <span
                             style={{
-                                maxWidth: 240,
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
                             }}
                         >
-                            <span
-                                style={{
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {option.label}
-                            </span>
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
+                            {option.label}
+                        </span>
+                    </MenuItem>
+                ))}
+            </ManualSearchSelect>
         </Box>
     );
 }

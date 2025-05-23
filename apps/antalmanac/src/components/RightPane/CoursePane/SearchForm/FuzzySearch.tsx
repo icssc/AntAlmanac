@@ -1,9 +1,11 @@
-import { Autocomplete, type AutocompleteInputChangeReason, TextField } from '@mui/material';
+import { Autocomplete, type AutocompleteInputChangeReason } from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
 import { PureComponent } from 'react';
 import UAParser from 'ua-parser-js';
 
 import RightPaneStore from '../../RightPaneStore';
+
+import { ManualSearchTextField } from './ManualSearch/ManualSearchTextField';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
@@ -186,14 +188,20 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 loading={this.state.loading}
                 style={{ width: '100%' }}
                 options={Object.keys(this.state.results ?? {})}
+                sx={{
+                    '& .MuiOutlinedInput-root.MuiInputBase-sizeSmall': {
+                        paddingLeft: 0,
+                    },
+                }}
                 renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        // eslint-disable-next-line jsx-a11y/no-autofocus
-                        autoFocus={!isMobile()}
+                    <ManualSearchTextField
+                        autocompleteProps={params}
+                        label="Search"
+                        textFieldProps={{
+                            autoFocus: !isMobile(),
+                        }}
+                        helperText="Search for courses, departments, GEs..."
                         fullWidth
-                        label={'Search'}
-                        placeholder="Search for courses, departments, GEs..."
                     />
                 )}
                 autoHighlight={true}

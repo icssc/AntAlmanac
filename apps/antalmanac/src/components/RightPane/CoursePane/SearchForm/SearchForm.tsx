@@ -36,9 +36,19 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                 }}
             >
                 <Stack spacing={2}>
-                    <ButtonGroup fullWidth disableElevation size="large" aria-label="Search selection" sx={{ px: 2 }}>
+                    <ButtonGroup
+                        fullWidth
+                        disableElevation
+                        size="large"
+                        aria-label="Search selection"
+                        sx={{ paddingTop: 1 }}
+                    >
                         <Button
+                            color={manualSearchEnabled ? 'inherit' : 'primary'}
                             variant={manualSearchEnabled ? 'outlined' : 'contained'}
+                            sx={{
+                                color: manualSearchEnabled ? 'grey' : undefined,
+                            }}
                             onClick={
                                 manualSearchEnabled
                                     ? toggleManualSearch
@@ -50,7 +60,11 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                             Quick Search
                         </Button>
                         <Button
+                            color={manualSearchEnabled ? 'primary' : 'inherit'}
                             variant={manualSearchEnabled ? 'contained' : 'outlined'}
+                            sx={{
+                                color: manualSearchEnabled ? undefined : 'grey',
+                            }}
                             onClick={
                                 manualSearchEnabled
                                     ? (e) => {
@@ -64,14 +78,6 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                     </ButtonGroup>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <TermSelector />
-
-                        {/* <Box sx={{ flexShrink: 0 }}>
-                            <Tooltip title="Toggle Manual Search">
-                                <IconButton onClick={toggleManualSearch}>
-                                    <Tune />
-                                </IconButton>
-                            </Tooltip>
-                        </Box> */}
                     </Box>
 
                     {!manualSearchEnabled ? (

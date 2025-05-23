@@ -1,5 +1,7 @@
-import { Autocomplete, Box, TextField } from '@mui/material';
+import { Autocomplete, Box } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
+
+import { ManualSearchTextField } from '../ManualSearch/ManualSearchTextField';
 
 import { DEPARTMENT_MAP } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
@@ -80,7 +82,7 @@ export function DepartmentSearchBar() {
     }, [recentSearches]);
 
     return (
-        <Box sx={{ flexGrow: 1, width: '50%' }}>
+        <Box sx={{ flexGrow: 1, width: '50%', padding: 0 }}>
             <Autocomplete
                 value={value}
                 options={Array.from(new Set<string>([...recentSearches, ...options]))}
@@ -91,7 +93,14 @@ export function DepartmentSearchBar() {
                 includeInputInList={true}
                 noOptionsText="No departments match the search"
                 groupBy={(option) => (recentSearches.includes(option) ? 'Recently Searched' : 'Departments')}
-                renderInput={(params) => <TextField {...params} label="Department" variant="standard" />}
+                sx={{
+                    '& .MuiOutlinedInput-root.MuiInputBase-sizeSmall': {
+                        paddingLeft: 0,
+                    },
+                }}
+                renderInput={(params) => (
+                    <ManualSearchTextField autocompleteProps={params} label="Department" fullWidth />
+                )}
             />
         </Box>
     );
