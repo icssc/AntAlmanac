@@ -60,6 +60,10 @@ const input = {
 
 const command = new CreateEmailTemplateCommand(input);
 
+/**
+ * Creates a new email template in SES named 'CourseNotification'.
+ * This script will upload the template specified in the input object to SES.
+ */
 async function createTemplate() {
     try {
         const response = await client.send(command);
