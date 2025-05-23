@@ -11,6 +11,7 @@ import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { SignInDialog } from '$components/dialogs/SignInDialog';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import PPLogo from '$assets/peterportal-shortform-logo.svg'
@@ -21,6 +22,9 @@ interface SearchFormProps {
 
 export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
+    const [signInOpen, setSignInOpen] = useState(false);
+    const isGoogleUser = useSessionStore((s) => s.googleId !== null);
+    const isDark = false;
     const filterCourses = useSessionStore((s) => s.filterTakenCourses);
     const setFilterCourses = useSessionStore((s) => s.setFilterTakenCourses);
 
@@ -33,6 +37,10 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     );
 
     const toggleFilterCourses = () => {
+        if (!isGoogleUser) {
+            setSignInOpen(true);
+            return;
+        }
         setFilterCourses(!filterCourses);
     };
 
@@ -95,6 +103,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
 
             <HelpBox />
             <PrivacyPolicyBanner />
+            <SignInDialog open={signInOpen} onClose={() => setSignInOpen(false)} isDark={isDark} action="Filtering Courses" />
         </Stack>
     );
 };
