@@ -1,6 +1,6 @@
 import { Tune } from '@mui/icons-material';
 import { Box, IconButton, Stack, Tooltip } from '@mui/material';
-import { useCallback, type FormEvent } from 'react';
+import { useState, useEffect, useCallback, type FormEvent } from 'react';
 
 import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
 import { HelpBox } from '$components/RightPane/CoursePane/SearchForm/HelpBox';
@@ -10,6 +10,11 @@ import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSe
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { useSessionStore } from '$stores/SessionStore';
+import { SignInDialog } from '$components/dialogs/SignInDialog';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
+import PPLogo from '$assets/peterportal-shortform-logo.svg'
 
 interface SearchFormProps {
     toggleSearch: () => void;
@@ -17,6 +22,11 @@ interface SearchFormProps {
 
 export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
+    const [signInOpen, setSignInOpen] = useState(false);
+    const isGoogleUser = useSessionStore((s) => s.googleId !== null);
+    const isDark = false;
+    const filterCourses = useSessionStore((s) => s.filterTakenCourses);
+    const setFilterCourses = useSessionStore((s) => s.setFilterTakenCourses);
 
     const onFormSubmit = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
@@ -25,6 +35,14 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
         },
         [toggleSearch]
     );
+
+    const toggleFilterCourses = () => {
+        if (!isGoogleUser) {
+            setSignInOpen(true);
+            return;
+        }
+        setFilterCourses(!filterCourses);
+    };
 
     return (
         <Stack sx={{ height: '100%', overflowX: 'hidden' }}>
@@ -50,7 +68,25 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                     </Box>
 
                     {!manualSearchEnabled ? (
-                        <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleManualSearch} />
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <FuzzySearch
+                                toggleSearch={toggleSearch}
+                                toggleShowLegacySearch={toggleManualSearch}
+                            />
+                            <Tooltip
+                                arrow
+                                title={
+                                    <div style={{ fontSize: '0.8rem' }}>
+                                        Filter Taken Courses <br /> (Data from PeterPortal.org)
+                                    </div>
+                                }
+                            >
+                                <IconButton onClick={toggleFilterCourses}>
+                                    <Box component="img" src={PPLogo} style={{ position: 'absolute', top: '60%', left: '5%', width: '35%', height: '35%' }} />
+                                    {filterCourses ? <FilterAltIcon /> : <FilterAltOffIcon />}
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
                     ) : (
                         <LegacySearch
                             onSubmit={() => {
@@ -67,6 +103,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
 
             <HelpBox />
             <PrivacyPolicyBanner />
+            <SignInDialog open={signInOpen} onClose={() => setSignInOpen(false)} isDark={isDark} action="Filtering Courses" />
         </Stack>
     );
 };

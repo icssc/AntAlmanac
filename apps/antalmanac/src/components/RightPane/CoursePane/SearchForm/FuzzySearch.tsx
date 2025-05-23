@@ -4,9 +4,11 @@ import { PureComponent } from 'react';
 import UAParser from 'ua-parser-js';
 
 import RightPaneStore from '../../RightPaneStore';
+import { useSessionStore } from '$stores/SessionStore';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
+import { NullifiedContextProvider } from '@dnd-kit/core/dist/components/DragOverlay/components';
 
 const SEARCH_TIMEOUT_MS = 150;
 
@@ -122,16 +124,28 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     // state to reflect the results of the query.
     maybeDoSearchFactory = (requestTimestamp: number) => () => {
         if (!this.requestIsCurrent(requestTimestamp)) return;
+        const sessionState = useSessionStore.getState();
         trpc.search.doSearch
             .query({ query: this.state.value, term: RightPaneStore.getFormData().term })
-            .then((result) => {
+            .then(async(result) => {
                 if (!this.requestIsCurrent(requestTimestamp)) return;
+                let userTakenCourses: Set<string> = new Set();
+                let filteredResults = result;
+                if (sessionState .filterTakenCourses) {
+                    userTakenCourses = new Set<string>(await trpc.search.fetchUserCoursesPeterPortal.query({ userId: sessionState .googleId ?? ''}));
+                    sessionState .setUserTakenCourses(userTakenCourses);
+
+                    const userCourses = sessionState .userTakenCourses ?? new Set();
+                    filteredResults = Object.fromEntries(
+                        Object.entries(result).filter(([id]) => !userCourses.has(id))
+                    );
+                }
                 this.setState({
                     cache: {
                         ...this.state.cache,
-                        [this.state.value]: result,
+                        [this.state.value]: filteredResults,
                     },
-                    results: result,
+                    results: filteredResults,
                     loading: false,
                     pendingRequest: undefined,
                     requestTimestamp: undefined,
@@ -142,6 +156,16 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 this.setState({ results: {}, loading: false });
                 console.error(e);
             });
+    };
+
+    fetchUserTakenCourses = async () => {
+        try {
+            const userTakenCourses = await trpc.search.fetchUserCoursesPeterPortal.query({ userId: useSessionStore.getState().googleId ?? '' });
+            return new Set(userTakenCourses);
+        } catch (error) {
+            console.error("Error fetching user courses from PeterPortal:", error);
+            return new Set();
+        }
     };
 
     onInputChange = (_event: unknown, value: string, reason: AutocompleteInputChangeReason) => {
