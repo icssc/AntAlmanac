@@ -41,6 +41,7 @@ export function CoursePaneRoot() {
                 'error',
                 `Please provide one of the following: Department, GE, Course Code/Range, or Instructor`
             );
+            RightPaneStore.replaceFormValues(advancedSearchData!);
         }
     }, [displaySections, forceUpdate]);
 
