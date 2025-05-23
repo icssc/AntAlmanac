@@ -8,6 +8,7 @@ import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 import CustomEventDetailView from './CustomEventDetailView';
 
 import { updateScheduleNote } from '$actions/AppStoreActions';
+import { NotificationsDialog } from '$components/RightPane/AddedCourses/NotificationsDialog';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -346,6 +347,7 @@ function AddedSectionsGrid() {
                 <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
                 <ClearScheduleButton buttonSx={buttonSx} />
                 <ColumnToggleDropdown />
+                <NotificationsDialog buttonSx={buttonSx} />
             </Box>
             <Box style={{ marginTop: 56 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>

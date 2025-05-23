@@ -1,14 +1,15 @@
-import { Add, ArrowDropDown, Delete } from '@mui/icons-material';
+import { Add, ArrowDropDown } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 
-import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
-import ColorPicker from '$components/ColorPicker';
+import { addCourse, openSnackbar } from '$actions/AppStoreActions';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { DeleteAndNotifications } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/DeleteAndNotifications';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
+import { type NotificationStatus } from '$stores/NotificationStore';
 
 /**
  * Props received by components that perform actions on a specified section.
@@ -38,48 +39,10 @@ interface ActionProps {
      * Whether the section has a schedule conflict with another event in the calendar.
      */
     scheduleConflict: boolean;
-}
 
-/**
- * Sections added to a schedule, can be recolored or deleted.
- */
-export function ColorAndDelete({ section, term }: ActionProps) {
-    const isMobile = useIsMobile();
-
-    const flexDirection = isMobile ? 'column' : undefined;
-
-    const handleClick = () => {
-        deleteCourse(section.sectionCode, term, AppStore.getCurrentScheduleIndex());
-
-        logAnalytics({
-            category: analyticsEnum.addedClasses.title,
-            action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
-        });
-    };
-
-    return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: flexDirection,
-                justifyContent: 'space-evenly',
-                alignItems: 'center',
-            }}
-        >
-            <IconButton onClick={handleClick}>
-                <Delete fontSize="small" />
-            </IconButton>
-
-            <ColorPicker
-                key={AppStore.getCurrentScheduleIndex()}
-                color={section.color}
-                isCustomEvent={false}
-                sectionCode={section.sectionCode}
-                term={term}
-                analyticsCategory={analyticsEnum.addedClasses.title}
-            />
-        </Box>
-    );
+    notificationStatus: NotificationStatus | undefined;
+    lastUpdated: string;
+    lastCodes: string;
 }
 
 /**
@@ -208,10 +171,16 @@ export interface ActionCellProps extends Omit<ActionProps, 'classes'> {
 /**
  * Given a section and schedule information, provides appropriate set of actions.
  */
-export function ActionCell(props: ActionCellProps) {
+export const ActionCell = memo(({ ...props }: ActionCellProps) => {
     return (
-        <TableBodyCellContainer>
-            {props.addedCourse ? <ColorAndDelete {...props} /> : <ScheduleAddCell {...props} />}
+        <TableBodyCellContainer sx={{ width: '8%' }}>
+            {props.addedCourse ? (
+                <DeleteAndNotifications {...props} courseTitle={props.courseDetails.courseTitle} />
+            ) : (
+                <ScheduleAddCell {...props} />
+            )}
         </TableBodyCellContainer>
     );
-}
+});
+
+ActionCell.displayName = 'ActionCell';

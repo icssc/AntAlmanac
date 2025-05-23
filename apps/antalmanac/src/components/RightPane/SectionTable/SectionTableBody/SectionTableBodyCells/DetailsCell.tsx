@@ -20,8 +20,9 @@ const SECTION_COLORS = {
 
 interface DetailCellProps {
     sectionType: WebsocSectionType;
-    sectionNum: string;
-    units: number;
+    sectionNum: string | undefined;
+    units: number | undefined;
+    sx?: SxProps;
 }
 
 export const DetailsCell = ({ sectionType, sectionNum, units }: DetailCellProps) => {
