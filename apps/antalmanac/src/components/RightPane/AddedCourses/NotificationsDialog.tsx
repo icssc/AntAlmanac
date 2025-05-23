@@ -71,7 +71,7 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
             </Tooltip>
 
             <Dialog open={open} onClose={handleClose} fullWidth>
-                <DialogTitle>Manage Active Course Notifications</DialogTitle>
+                <DialogTitle>Manage Notifications</DialogTitle>
                 <DialogContent>
                     <NotificationsTabs />
                 </DialogContent>

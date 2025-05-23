@@ -23,8 +23,8 @@ async function getUpdatedClasses(quarter: string, year: string, sections: string
         };
         const response = await request(term, { sectionCodes: sections.join(',') });
         return response;
-    } catch (error: any) {
-        console.error('Error getting class information:', error.message);
+    } catch (error) {
+        console.error('Error getting class information:', error);
     }
 }
 
@@ -51,8 +51,8 @@ async function getSubscriptionSectionCodes() {
         }, {});
 
         return groupedByTerm;
-    } catch (error: any) {
-        console.error('Error getting subscriptions:', error.message);
+    } catch (error) {
+        console.error('Error getting subscriptions:', error);
     }
 }
 
@@ -74,8 +74,8 @@ async function updateSubscriptionStatus(
                     eq(subscriptions.sectionCode, sectionCode)
                 )
             );
-    } catch (error: any) {
-        console.error('Error updating subscription:', error.message);
+    } catch (error) {
+        console.error('Error updating subscription:', error);
     }
 }
 
@@ -149,8 +149,8 @@ async function getUsers(
         }
         const result = await query;
         return result;
-    } catch (error: any) {
-        console.error('Error getting users:', error.message);
+    } catch (error) {
+        console.error('Error getting users:', error);
     }
 }
 
@@ -266,6 +266,5 @@ export {
     getLastUpdatedStatus,
     batchCourseCodes,
     getUsers,
-    getFormattedTime,
     sendNotification,
 };

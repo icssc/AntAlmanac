@@ -29,9 +29,7 @@ export const useSessionStore = create<SessionState>((set) => {
 
                 const isGoogleUser = Boolean(users.email);
 
-                set({
-                    isGoogleUser,
-                });
+                set({ isGoogleUser });
             } catch (error) {
                 console.error('Failed to fetch user data:', error);
                 set({ isGoogleUser: false });

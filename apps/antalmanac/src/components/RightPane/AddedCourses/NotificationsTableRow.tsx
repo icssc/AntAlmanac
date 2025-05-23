@@ -21,7 +21,6 @@ export const NotificationTableRow = memo(({ notificationKey }: NotificationTable
 
     return (
         <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-            {/* <TableCell>{sectionCode}</TableCell> */}
             <NotificationTableDeleteCell notificationKey={notificationKey} />
             <CourseCodeCell sectionCode={sectionCode} sx={{ width: 'unset', padding: '6px 16px' }} />
             <DetailsCell
