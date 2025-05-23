@@ -7,6 +7,7 @@ import * as fuzzysort from 'fuzzysort';
 import { procedure, router } from '../trpc';
 import { backendEnvSchema, ppEnvSchema } from '../env';
 import * as searchData from '$generated/searchData';
+import { fetchUserCoursesPeterPortal, getCurrentTerm } from '../lib/peterportal';
 
 const MAX_AUTOCOMPLETE_RESULTS = 12;
 
@@ -32,66 +33,12 @@ const geCategories: Record<GECategoryKey, GESearchResult> = {
     ge8: { type: 'GE_CATEGORY', name: 'International/Global Issues' },
 };
 
-const PETERPORTAL_API_URL = "https://peterportal.org/api/trpc/external.roadmaps.getByGoogleID";
-
 const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
     key.toUpperCase().replace('GE', 'GE-'),
     geCategories[key],
 ];
 
 const toMutable = <T>(arr: readonly T[]): T[] => arr as T[];
-
-function getCurrentTerm(): { year: number; quarter: string } {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth() + 1;
-    const quarter =
-        month >= 1 && month <= 3
-            ? 'Winter'
-            : month >= 4 && month <= 6
-            ? 'Spring'
-            : month >= 7 && month <= 9
-            ? 'Summer'
-            : 'Fall';
-    return { year, quarter };
-}
-
-async function fetchUserCoursesPeterPortal(userId: string): Promise<Set<string>> {
-    const { year, quarter } = getCurrentTerm();
-    const env = ppEnvSchema.parse(process.env);
-    const apiKey = env.PETERPORTAL_CLIENT_API_KEY;
-    if (!apiKey) throw new Error("PETERPORTAL_CLIENT_API_KEY is required");
-    const searchParams = new URLSearchParams({ input: JSON.stringify({ googleUserId: userId }) });
-    const url = `${PETERPORTAL_API_URL}?${searchParams.toString()}`;
-    try {
-
-        const response = await fetch(url, {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${apiKey}`,
-                "Content-Type": "application/json"
-            },
-        });
-
-        if(!response.ok) throw new Error(`Failed to fetch courses: ${response.statusText}`);
-
-        const data = await response.json();
-        const coursesTaken = new Set<string>();
-
-        for (const yearData of data.result.data[0].content) {
-            for (const quarterData of yearData.quarters) {
-                quarterData.courses.forEach(course => coursesTaken.add(course));
-                if (yearData.startYear === year && quarterData.name === quarter) {
-                    return coursesTaken;
-                }
-            }
-        }
-
-        return coursesTaken;
-    } catch (error) {
-        return new Set();
-    }
-}
 
 const searchRouter = router({
     doSearch: procedure
@@ -157,10 +104,10 @@ const searchRouter = router({
             return Object.fromEntries(results);
         }),
 
-    fetchUserCoursesPeterPortal: procedure
+        fetchUserCoursesPeterPortal: procedure
         .input(z.object({ userId: z.string() }))
         .query(async ({ input }) => {
-            return await fetchUserCoursesPeterPortal(input.userId);
+          return await fetchUserCoursesPeterPortal(input.userId);
         }),
 });
 

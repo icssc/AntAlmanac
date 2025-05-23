@@ -7,7 +7,7 @@ import createContext from './context';
 import { backendEnvSchema } from "./env";
 
 const corsOptions: CorsOptions = {
-    origin: ['https://antalmanac.com', 'https://www.antalmanac.com', 'https://icssc-projects.github.io/AntAlmanac'],
+    origin: ['https://antalmanac.com', 'https://www.antalmanac.com', 'https://icssc-projects.github.io/AntAlmanac', 'http://localhost:5173'],
 };
 
 const MAPBOX_API_URL = 'https://api.mapbox.com';
