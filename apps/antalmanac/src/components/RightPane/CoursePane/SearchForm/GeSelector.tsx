@@ -1,5 +1,7 @@
-import { FormControl, InputLabel, MenuItem, Select, type SelectChangeEvent } from '@mui/material';
+import { MenuItem, type SelectChangeEvent } from '@mui/material';
 import { useEffect, useCallback, useState } from 'react';
+
+import { ManualSearchSelect } from './ManualSearch/ManualSearchSelect';
 
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
@@ -54,32 +56,25 @@ export function GeSelector() {
     }, [resetField]);
 
     return (
-        <FormControl sx={{ flexGrow: 1, width: '50%' }}>
-            <InputLabel variant="standard">General Education</InputLabel>
-            <Select
-                value={ge}
-                onChange={handleChange}
-                fullWidth
-                MenuProps={{
-                    anchorOrigin: {
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    },
-                    transformOrigin: {
-                        vertical: 'top',
-                        horizontal: 'left',
-                    },
-                }}
-                variant="standard"
-            >
-                {GE_LIST.map((category) => {
-                    return (
-                        <MenuItem key={category.value} value={category.value}>
-                            {category.label}
-                        </MenuItem>
-                    );
-                })}
-            </Select>
-        </FormControl>
+        <ManualSearchSelect
+            label="General Education"
+            selectProps={{
+                value: ge,
+                onChange: handleChange,
+                fullWidth: true,
+                variant: 'standard',
+            }}
+            formControlProps={{
+                sx: { flexBasis: '50%', flexGrow: 1 },
+            }}
+        >
+            {GE_LIST.map((category) => {
+                return (
+                    <MenuItem key={category.value} value={category.value}>
+                        {category.label}
+                    </MenuItem>
+                );
+            })}
+        </ManualSearchSelect>
     );
 }

@@ -1,13 +1,10 @@
 import { EventEmitter } from 'events';
 
+import { AdvancedSearchParam, ManualSearchParam } from './CoursePane/SearchForm/constants';
+
 import { getDefaultTerm } from '$lib/termData';
 
-const defaultFormValues: Record<string, string> = {
-    deptValue: 'ALL',
-    ge: 'ANY',
-    term: getDefaultTerm().shortName,
-    courseNumber: '',
-    sectionCode: '',
+const advancedSearchValues: Record<AdvancedSearchParam, string> = {
     instructor: '',
     units: '',
     endTime: '',
@@ -20,13 +17,22 @@ const defaultFormValues: Record<string, string> = {
     days: '',
 };
 
+const defaultFormValues: Record<ManualSearchParam, string> = {
+    deptValue: 'ALL',
+    ge: 'ANY',
+    term: getDefaultTerm().shortName,
+    courseNumber: '',
+    sectionCode: '',
+    ...advancedSearchValues,
+};
+
 export interface BuildingFocusInfo {
     location: string; // E.g., ICS 174
     courseName: string;
 }
 
 class RightPaneStore extends EventEmitter {
-    private formData: Record<string, string>;
+    private formData: Record<ManualSearchParam, string>;
     private urlCourseCodeValue: string;
     private urlTermValue: string;
     private urlGEValue: string;
@@ -80,9 +86,21 @@ class RightPaneStore extends EventEmitter {
         this.emit('formDataChange');
     };
 
+    replaceFormValues = (formData: Record<ManualSearchParam, string>) => {
+        this.formData = formData;
+        this.emit('formDataChange');
+    };
+
     resetFormValues = () => {
         this.formData = structuredClone(defaultFormValues);
         this.emit('formReset');
+    };
+
+    resetAdvancedSearchValues = () => {
+        for (const field in advancedSearchValues) {
+            this.formData[field] = '';
+        }
+        this.emit('formDataChange');
     };
 
     formDataIsValid = () => {

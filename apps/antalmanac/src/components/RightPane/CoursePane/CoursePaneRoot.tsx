@@ -5,6 +5,7 @@ import RightPaneStore from '../RightPaneStore';
 
 import { CoursePaneButtonRow } from './CoursePaneButtonRow';
 import CourseRenderPane from './CourseRenderPane';
+import { ManualSearchParam } from './SearchForm/constants';
 
 import { openSnackbar } from '$actions/AppStoreActions';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
@@ -17,14 +18,30 @@ export function CoursePaneRoot() {
     const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections } = useCoursePaneStore();
 
     const handleSearch = useCallback(() => {
+        const advancedSearchEnabled = useCoursePaneStore.getState().advancedSearchEnabled;
+        let advancedSearchData: Record<ManualSearchParam, string> | null = null;
+
+        if (!advancedSearchEnabled) {
+            advancedSearchData = structuredClone(RightPaneStore.getFormData());
+            RightPaneStore.resetAdvancedSearchValues();
+        }
+
         if (RightPaneStore.formDataIsValid()) {
             displaySections();
             forceUpdate();
+
+            if (advancedSearchData) {
+                // Reset advanced search values if previously hidden
+                requestAnimationFrame(() => {
+                    RightPaneStore.replaceFormValues(advancedSearchData!);
+                });
+            }
         } else {
             openSnackbar(
                 'error',
                 `Please provide one of the following: Department, GE, Course Code/Range, or Instructor`
             );
+            RightPaneStore.replaceFormValues(advancedSearchData!);
         }
     }, [displaySections, forceUpdate]);
 

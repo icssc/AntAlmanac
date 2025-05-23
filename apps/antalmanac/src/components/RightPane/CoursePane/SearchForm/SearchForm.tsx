@@ -1,10 +1,9 @@
-import { Tune } from '@mui/icons-material';
-import { Box, IconButton, Stack, Tooltip } from '@mui/material';
+import { Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useCallback, type FormEvent } from 'react';
 
 import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
 import { HelpBox } from '$components/RightPane/CoursePane/SearchForm/HelpBox';
-import { LegacySearch } from '$components/RightPane/CoursePane/SearchForm/LegacySearch';
+import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/ManualSearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
@@ -37,22 +36,27 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                 }}
             >
                 <Stack spacing={2}>
-                    <Box sx={{ display: 'flex', paddingTop: 1, alignItems: 'center', gap: 1 }}>
+                    <ToggleButtonGroup
+                        fullWidth
+                        size="medium"
+                        color="primary"
+                        value={manualSearchEnabled ? 'manual' : 'quick'}
+                        exclusive
+                        aria-label="Search selection"
+                        sx={{ paddingTop: 1 }}
+                        onChange={() => toggleManualSearch()}
+                    >
+                        <ToggleButton value="quick">Quick Search</ToggleButton>
+                        <ToggleButton value="manual">Manual Search</ToggleButton>
+                    </ToggleButtonGroup>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <TermSelector />
-
-                        <Box sx={{ flexShrink: 0 }}>
-                            <Tooltip title="Toggle Manual Search">
-                                <IconButton onClick={toggleManualSearch}>
-                                    <Tune />
-                                </IconButton>
-                            </Tooltip>
-                        </Box>
                     </Box>
 
                     {!manualSearchEnabled ? (
-                        <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleManualSearch} />
+                        <FuzzySearch toggleSearch={toggleSearch} toggleShowManualSearch={toggleManualSearch} />
                     ) : (
-                        <LegacySearch
+                        <ManualSearch
                             onSubmit={() => {
                                 logAnalytics({
                                     category: analyticsEnum.classSearch.title,
