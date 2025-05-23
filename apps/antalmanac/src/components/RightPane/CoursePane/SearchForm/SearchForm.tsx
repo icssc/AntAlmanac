@@ -3,7 +3,7 @@ import { useCallback, type FormEvent } from 'react';
 
 import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
 import { HelpBox } from '$components/RightPane/CoursePane/SearchForm/HelpBox';
-import { LegacySearch } from '$components/RightPane/CoursePane/SearchForm/LegacySearch';
+import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/ManualSearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
@@ -81,9 +81,9 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                     </Box>
 
                     {!manualSearchEnabled ? (
-                        <FuzzySearch toggleSearch={toggleSearch} toggleShowLegacySearch={toggleManualSearch} />
+                        <FuzzySearch toggleSearch={toggleSearch} toggleShowManualSearch={toggleManualSearch} />
                     ) : (
-                        <LegacySearch
+                        <ManualSearch
                             onSubmit={() => {
                                 logAnalytics({
                                     category: analyticsEnum.classSearch.title,
