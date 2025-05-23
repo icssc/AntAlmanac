@@ -17,7 +17,6 @@ export const ManualSearchInputAdornment = ({ label }: ManualSearchInputAdornment
                     alignItems: 'center',
                     paddingY: 1,
                     paddingX: 1.5,
-                    gap: 0,
                     bgcolor: isDark ? grey[800] : grey[200],
                 }}
             >

@@ -22,8 +22,9 @@ export function ManualSearchSelect<T = string | string[]>({
     return (
         <FormControl variant="outlined" size="small" fullWidth={fullWidth} sx={{ minWidth: 200 }} {...formControlProps}>
             <Select
-                {...selectProps}
+                fullWidth={fullWidth}
                 placeholder={helperText}
+                {...selectProps}
                 sx={{
                     paddingLeft: 0,
                 }}

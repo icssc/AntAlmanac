@@ -55,11 +55,10 @@ class SectionCodeSearchBar extends PureComponent {
                     value: this.state.sectionCode,
                     onChange: this.handleChange,
                     type: 'search',
-                    fullWidth: true,
                 }}
                 helperText="ex. 14200, 29000-29100"
                 formControlProps={{
-                    sx: { minWidth: 350 },
+                    sx: { minWidth: 400 },
                 }}
             />
         );

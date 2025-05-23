@@ -39,7 +39,6 @@ export function TermSelector() {
             selectProps={{
                 value: term,
                 onChange: handleChange,
-                fullWidth: true,
             }}
         >
             {termData.map((term, index) => (
