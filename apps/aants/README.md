@@ -2,8 +2,7 @@
 This is the underlying code that manages how [AntAlmanac](https://antalmanac.com) handles and sends emails for class update notification subscriptions.  
 
 # Functionality Summary
-AANTS runs using a Lambda Function on a 5 minute timer (subject to change) via a CloudWatch Event.
-    - The code for this can be found under `apps/cdk/src/stacks/aants.ts`
+AANTS runs using a Lambda Function on a 5 minute timer (subject to change) via a CloudWatch Event. The code for this can be found under `apps/cdk/src/stacks/aants.ts`
 
 ## Class Information Gathering Protocol
 - When the AANTS Lambda Function is triggered, it scrapes WebSoc directly for new class information.
