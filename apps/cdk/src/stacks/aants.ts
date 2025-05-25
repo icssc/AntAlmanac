@@ -12,7 +12,7 @@ export class AantsStack extends Stack {
 
         const env = aantsEnvSchema.parse(process.env);
 
-        const handler = new lambda.Function(this, 'lambda', {
+        const handler = new lambda.Function(this, 'notificationWorker', {
             runtime: lambda.Runtime.NODEJS_LATEST,
             code: lambda.Code.fromAsset('../aants/dist'),
             handler: 'lambda.handler',
@@ -23,7 +23,7 @@ export class AantsStack extends Stack {
             },
         });
 
-        const eventRule = new events.Rule(this, 'scheduleRule', {
+        const eventRule = new events.Rule(this, 'notificationCronRule', {
             schedule: events.Schedule.cron({ minute: '5' }), // TODO: Might change in future
         });
 

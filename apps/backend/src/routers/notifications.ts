@@ -28,7 +28,6 @@ const notificationsRouter = router({
     set: procedure
         .input(z.object({ id: z.string(), notifications: z.array(NotificationSchema) }))
         .mutation(async ({ input }) => {
-
             await Promise.all(
                 input.notifications.map(notification =>
                     RDS.upsertNotification(db, input.id, notification)

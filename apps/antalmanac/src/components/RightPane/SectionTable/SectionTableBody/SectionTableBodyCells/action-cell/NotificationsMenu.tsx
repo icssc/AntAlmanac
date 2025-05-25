@@ -138,7 +138,7 @@ export const NotificationsMenu = memo(({ section, term, courseTitle }: Notificat
                 })}
             </Menu>
 
-            <SignInDialog open={signInOpen} onClose={handleSignInClose} isDark={isDark} action="Notification" />
+            <SignInDialog open={signInOpen} onClose={handleSignInClose} isDark={isDark} feature="Notification" />
         </>
     );
 });
