@@ -4,7 +4,7 @@ import { AdvancedSearchParam, ManualSearchParam } from './CoursePane/SearchForm/
 
 import { getDefaultTerm } from '$lib/termData';
 
-const advancedSearchValues: Record<AdvancedSearchParam, string> = {
+const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {
     instructor: '',
     units: '',
     endTime: '',
@@ -23,7 +23,7 @@ const defaultFormValues: Record<ManualSearchParam, string> = {
     term: getDefaultTerm().shortName,
     courseNumber: '',
     sectionCode: '',
-    ...advancedSearchValues,
+    ...defaultAdvancedSearchValues,
 };
 
 export interface BuildingFocusInfo {
@@ -33,6 +33,7 @@ export interface BuildingFocusInfo {
 
 class RightPaneStore extends EventEmitter {
     private formData: Record<ManualSearchParam, string>;
+    private prevFormData?: Record<ManualSearchParam, string>;
     private urlCourseCodeValue: string;
     private urlTermValue: string;
     private urlGEValue: string;
@@ -86,8 +87,15 @@ class RightPaneStore extends EventEmitter {
         this.emit('formDataChange');
     };
 
-    replaceFormValues = (formData: Record<ManualSearchParam, string>) => {
-        this.formData = formData;
+    storePrevFormData = () => {
+        this.prevFormData = structuredClone(this.formData);
+        this.emit('formDataChange');
+    };
+
+    restorePrevFormData = () => {
+        if (!this.prevFormData) return;
+        this.formData = this.prevFormData;
+        this.prevFormData = undefined;
         this.emit('formDataChange');
     };
 
@@ -97,9 +105,7 @@ class RightPaneStore extends EventEmitter {
     };
 
     resetAdvancedSearchValues = () => {
-        for (const field in advancedSearchValues) {
-            this.formData[field] = '';
-        }
+        Object.assign(this.formData, defaultAdvancedSearchValues);
         this.emit('formDataChange');
     };
 
@@ -107,6 +113,12 @@ class RightPaneStore extends EventEmitter {
         const { ge, deptValue, sectionCode, instructor } = this.formData;
         return (
             ge.toUpperCase() !== 'ANY' || deptValue.toUpperCase() !== 'ALL' || sectionCode !== '' || instructor !== ''
+        );
+    };
+
+    formDataHasAdvancedSearch = () => {
+        return Object.keys(defaultAdvancedSearchValues).some(
+            (key) => this.formData[key] !== defaultAdvancedSearchValues[key]
         );
     };
 }
