@@ -46,7 +46,7 @@ export function AdvancedSearchTextFields() {
         };
     }, [resetField]);
 
-    const handleChange =
+    const changeHandlerFactory =
         (name: string) =>
         (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string | string[]>) => {
             const stateObj = { url: 'url' };
@@ -109,6 +109,7 @@ export function AdvancedSearchTextFields() {
                     break;
                 }
                 default:
+                    console.error(`Could not find advanced search field with name ${name}`);
                     break;
             }
 
@@ -155,7 +156,7 @@ export function AdvancedSearchTextFields() {
                 textFieldProps={{
                     type: 'search',
                     value: instructor,
-                    onChange: handleChange('instructor'),
+                    onChange: changeHandlerFactory('instructor'),
                 }}
                 helperText="Last name only"
             />
@@ -165,7 +166,7 @@ export function AdvancedSearchTextFields() {
                 helperText="ex. 3, 4, or VAR"
                 textFieldProps={{
                     value: units,
-                    onChange: handleChange('units'),
+                    onChange: changeHandlerFactory('units'),
                     type: 'search',
                     style: { width: 200 },
                     id: 'units',
@@ -176,7 +177,7 @@ export function AdvancedSearchTextFields() {
                 label="Class Full Option"
                 selectProps={{
                     value: coursesFull,
-                    onChange: handleChange('coursesFull'),
+                    onChange: changeHandlerFactory('coursesFull'),
                 }}
             >
                 <MenuItem value={'ANY'}>Include all classes</MenuItem>
@@ -190,7 +191,7 @@ export function AdvancedSearchTextFields() {
                 label="Course Level"
                 selectProps={{
                     value: division,
-                    onChange: handleChange('division'),
+                    onChange: changeHandlerFactory('division'),
                     displayEmpty: true,
                     MenuProps: {
                         anchorOrigin: {
@@ -214,7 +215,7 @@ export function AdvancedSearchTextFields() {
                 label="Starts After"
                 selectProps={{
                     value: startTime,
-                    onChange: handleChange('startTime'),
+                    onChange: changeHandlerFactory('startTime'),
                 }}
                 formControlProps={{
                     sx: { minWidth: 200 },
@@ -227,7 +228,7 @@ export function AdvancedSearchTextFields() {
                 label="Ends Before"
                 selectProps={{
                     value: endTime,
-                    onChange: handleChange('endTime'),
+                    onChange: changeHandlerFactory('endTime'),
                 }}
                 formControlProps={{
                     sx: { minWidth: 200 },
@@ -240,7 +241,7 @@ export function AdvancedSearchTextFields() {
                 label="Online Only"
                 selectProps={{
                     value: building === 'ON' ? 'True' : 'False',
-                    onChange: handleChange('online'),
+                    onChange: changeHandlerFactory('online'),
                 }}
                 formControlProps={{
                     sx: { minWidth: 100 },
@@ -256,7 +257,7 @@ export function AdvancedSearchTextFields() {
                     id: 'building',
                     type: 'search',
                     value: building,
-                    onChange: handleChange('building'),
+                    onChange: changeHandlerFactory('building'),
                 }}
                 formControlProps={{
                     sx: { minWidth: 100 },
@@ -269,7 +270,7 @@ export function AdvancedSearchTextFields() {
                     id: 'room',
                     type: 'search',
                     value: room,
-                    onChange: handleChange('room'),
+                    onChange: changeHandlerFactory('room'),
                 }}
                 formControlProps={{
                     sx: { minWidth: 100 },
@@ -281,7 +282,7 @@ export function AdvancedSearchTextFields() {
                 selectProps={{
                     multiple: true,
                     value: excludeRestrictionCodes.split(''),
-                    onChange: handleChange('excludeRestrictionCodes'),
+                    onChange: changeHandlerFactory('excludeRestrictionCodes'),
                     renderValue: (selected) => (selected as string[]).join(', '),
                 }}
             >
@@ -311,7 +312,7 @@ export function AdvancedSearchTextFields() {
                 selectProps={{
                     multiple: true,
                     value: days ? days.split(/(?=[A-Z])/) : [],
-                    onChange: handleChange('days'),
+                    onChange: changeHandlerFactory('days'),
                     renderValue: (selected) =>
                         (selected as string[])
                             .sort((a, b) => {
