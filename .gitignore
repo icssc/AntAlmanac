@@ -16,6 +16,7 @@ build/
 
 ## `tsc` output, specified by tsconfig.json
 dist/
+dist.zip
 
 ## CDK output.
 cdk.out/

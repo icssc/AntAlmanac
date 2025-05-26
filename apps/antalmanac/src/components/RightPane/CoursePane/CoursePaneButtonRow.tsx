@@ -12,8 +12,10 @@ import {
     type SxProps,
     Popover,
 } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useMemo, useState } from 'react';
 
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 
 /**
@@ -72,8 +74,14 @@ export function ColumnToggleDropdown() {
     const [anchorEl, setAnchorEl] = useState<HTMLElement>();
     const open = Boolean(anchorEl);
 
+    const postHog = usePostHog();
+
     const handleChange = useCallback(
         (e: SelectChangeEvent<SectionTableColumn[]>) => {
+            logAnalytics(postHog, {
+                category: analyticsEnum.classSearch,
+                action: analyticsEnum.classSearch.actions.TOGGLE_COLUMNS,
+            });
             if (typeof e.target.value !== 'string') {
                 setSelectedColumns(e.target.value);
             }

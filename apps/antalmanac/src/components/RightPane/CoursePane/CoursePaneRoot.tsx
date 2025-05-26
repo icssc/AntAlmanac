@@ -1,4 +1,5 @@
 import { Box } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect } from 'react';
 
 import RightPaneStore from '../RightPaneStore';
@@ -15,6 +16,7 @@ import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
 export function CoursePaneRoot() {
     const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections } = useCoursePaneStore();
+    const postHog = usePostHog();
 
     const handleSearch = useCallback(() => {
         if (RightPaneStore.formDataIsValid()) {
@@ -29,8 +31,8 @@ export function CoursePaneRoot() {
     }, [displaySections, forceUpdate]);
 
     const refreshSearch = useCallback(() => {
-        logAnalytics({
-            category: analyticsEnum.classSearch.title,
+        logAnalytics(postHog, {
+            category: analyticsEnum.classSearch,
             action: analyticsEnum.classSearch.actions.REFRESH,
         });
         WebSOC.clearCache();

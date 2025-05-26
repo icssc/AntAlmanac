@@ -19,4 +19,13 @@ export type CourseSearchResult = {
     };
 };
 
-export type SearchResult = GESearchResult | DepartmentSearchResult | CourseSearchResult;
+export type SectionSearchResult = {
+    type: 'SECTION';
+    department: string;
+    courseNumber: string;
+    sectionCode: string;
+    sectionNum: string;
+    sectionType: string;
+};
+
+export type SearchResult = GESearchResult | DepartmentSearchResult | CourseSearchResult | SectionSearchResult;

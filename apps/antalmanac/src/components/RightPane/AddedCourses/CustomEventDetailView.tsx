@@ -89,7 +89,7 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                             color={customEvent.color as string}
                             isCustomEvent={true}
                             customEventID={customEvent.customEventID}
-                            analyticsCategory={analyticsEnum.addedClasses.title}
+                            analyticsCategory={analyticsEnum.addedClasses}
                         />
                     </Box>
 

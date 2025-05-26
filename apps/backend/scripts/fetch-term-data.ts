@@ -9,8 +9,12 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { CalendarTerm } from '@packages/antalmanac-types';
+import { aapiEnvSchema } from 'src/env';
 
-const PUBLIC_ANTEATER_API_KEY = 'INSqn9qP1pXlEwihpQa_GtrJhGOxQyjE5zcAKYLptLg.pk.prj9hlf3sf7q638jkq61u282';
+import 'dotenv/config';
+
+const env = aapiEnvSchema.parse(process.env);
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const OUTPUT_DIR = join(__dirname, '../src/generated/');
@@ -35,7 +39,7 @@ function sanitizeTermName(year: string, quarter: keyof typeof QUARTER_MAP): `${s
 async function fetchCalendarTerms(): Promise<CalendarTerm[]> {
     const res = await fetch(API_URL, {
         headers: {
-            Authorization: `Bearer ${PUBLIC_ANTEATER_API_KEY}`,
+            Authorization: `Bearer ${env.ANTEATER_API_KEY}`,
             Origin: ORIGIN,
         },
     });
@@ -87,7 +91,7 @@ async function main() {
     });
 
     const termEntries = calendarTerms.map(serializeTerm).join(',\n');
-    const fileContent = `import type { Term } from '$lib/termData';
+    const fileContent = `import type { Term } from '../lib/term-section-codes';
 
 export const terms: Term[] = [
 ${termEntries}
