@@ -44,7 +44,7 @@ export function GeSelector() {
     };
 
     const resetField = useCallback(() => {
-        setGe(RightPaneStore.getFormData().term);
+        setGe(RightPaneStore.getFormData().ge);
     }, []);
 
     useEffect(() => {
