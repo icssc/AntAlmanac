@@ -1,6 +1,10 @@
 import { FormControl, FormControlProps, TextField, TextFieldProps } from '@mui/material';
+import { grey } from '@mui/material/colors';
 
 import { ManualSearchInputAdornment } from './ManualSearchInputAdornment';
+
+import { BLUE } from '$src/globals';
+import { useThemeStore } from '$stores/SettingsStore';
 
 interface ManualSearchTextFieldProps {
     label: string;
@@ -19,6 +23,8 @@ export const ManualSearchTextField = ({
     helperText,
     fullWidth,
 }: ManualSearchTextFieldProps) => {
+    const isDark = useThemeStore((store) => store.isDark);
+
     return (
         <FormControl variant="outlined" fullWidth={fullWidth} sx={{ minWidth: 200 }} {...formControlProps}>
             <TextField
@@ -34,7 +40,20 @@ export const ManualSearchTextField = ({
                 }}
                 inputProps={{
                     ...autocompleteProps?.inputProps,
-                    sx: { paddingRight: 1 },
+                    sx: {
+                        paddingX: 1,
+                    },
+                }}
+                sx={{
+                    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                        borderColor: isDark ? grey[400] : grey[600],
+                    },
+                    '& .MuiOutlinedInput-root': {
+                        '&.Mui-focused fieldset': {
+                            borderColor: isDark ? BLUE : undefined,
+                            borderWidth: 1,
+                        },
+                    },
                 }}
             />
         </FormControl>

@@ -1,4 +1,4 @@
-import { Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useCallback, type FormEvent } from 'react';
 
 import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
@@ -8,7 +8,9 @@ import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { DODGER_BLUE } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { useThemeStore } from '$stores/SettingsStore';
 
 interface SearchFormProps {
     toggleSearch: () => void;
@@ -16,6 +18,7 @@ interface SearchFormProps {
 
 export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
+    const isDark = useThemeStore((store) => store.isDark);
 
     const onFormSubmit = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
@@ -24,6 +27,12 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
         },
         [toggleSearch]
     );
+
+    const toggleSearchMode = (event: React.MouseEvent<HTMLElement>, value: string) => {
+        event.preventDefault();
+        if (!value) return;
+        toggleManualSearch();
+    };
 
     return (
         <Stack sx={{ height: '100%', overflowX: 'hidden' }}>
@@ -43,8 +52,13 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                         value={manualSearchEnabled ? 'manual' : 'quick'}
                         exclusive
                         aria-label="Search selection"
-                        sx={{ paddingTop: 1 }}
-                        onChange={() => toggleManualSearch()}
+                        sx={{
+                            paddingTop: 1,
+                            '& .MuiToggleButton-root.Mui-selected': {
+                                backgroundColor: isDark ? alpha(DODGER_BLUE, 0.05) : undefined,
+                            },
+                        }}
+                        onChange={toggleSearchMode}
                     >
                         <ToggleButton value="quick">Quick Search</ToggleButton>
                         <ToggleButton value="manual">Manual Search</ToggleButton>

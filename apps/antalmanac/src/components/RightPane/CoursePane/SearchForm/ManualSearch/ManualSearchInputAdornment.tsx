@@ -10,7 +10,7 @@ interface ManualSearchInputAdornmentProps {
 export const ManualSearchInputAdornment = ({ label }: ManualSearchInputAdornmentProps) => {
     const isDark = useThemeStore((store) => store.isDark);
     return (
-        <InputAdornment position="start">
+        <InputAdornment position="start" sx={{ marginRight: 0 }}>
             <Box
                 sx={{
                     display: 'flex',
