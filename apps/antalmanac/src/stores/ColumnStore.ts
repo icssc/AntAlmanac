@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { getLocalStorageColumnToggles, setLocalStorageColumnToggles } from '$lib/localStorage';
 
 /**
@@ -63,10 +62,6 @@ export const useColumnStore = create<ColumnStore>((set, _) => {
 
                 console.log('activeColumns', activeColumns);
                 return { selectedColumns, activeColumns };
-            });
-            logAnalytics({
-                category: analyticsEnum.classSearch.title,
-                action: analyticsEnum.classSearch.actions.TOGGLE_COLUMNS,
             });
         },
     };

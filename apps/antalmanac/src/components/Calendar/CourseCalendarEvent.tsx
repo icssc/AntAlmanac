@@ -1,6 +1,7 @@
 import { Delete, Search } from '@mui/icons-material';
 import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
 import { WebsocSectionFinalExam } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
 import { useEffect, useRef } from 'react';
 import { Event } from 'react-big-calendar';
 
@@ -85,6 +86,8 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
     const quickSearch = useQuickSearch();
     const { isMilitaryTime } = useTimeFormatStore();
 
+    const postHog = usePostHog();
+
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
@@ -148,8 +151,8 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                             onClick={() => {
                                 closePopover();
                                 deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
-                                logAnalytics({
-                                    category: analyticsEnum.calendar.title,
+                                logAnalytics(postHog, {
+                                    category: analyticsEnum.calendar,
                                     action: analyticsEnum.calendar.actions.DELETE_COURSE,
                                 });
                             }}
@@ -167,9 +170,9 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                                     <Chip
                                         onClick={(event) => {
                                             clickToCopy(event, sectionCode);
-                                            logAnalytics({
-                                                category: analyticsEnum.classSearch.title,
-                                                action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
+                                            logAnalytics(postHog, {
+                                                category: analyticsEnum.calendar,
+                                                action: analyticsEnum.calendar.actions.COPY_COURSE_CODE,
                                             });
                                         }}
                                         label={sectionCode}
@@ -211,7 +214,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                                     isCustomEvent={selectedEvent.isCustomEvent}
                                     sectionCode={selectedEvent.sectionCode}
                                     term={selectedEvent.term}
-                                    analyticsCategory={analyticsEnum.calendar.title}
+                                    analyticsCategory={analyticsEnum.calendar}
                                 />
                             </td>
                         </tr>
@@ -235,7 +238,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         color={selectedEvent.color}
                         isCustomEvent={true}
                         customEventID={selectedEvent.customEventID}
-                        analyticsCategory={analyticsEnum.calendar.title}
+                        analyticsCategory={analyticsEnum.calendar}
                     />
                     <CustomEventDialog
                         onDialogClose={closePopover}
@@ -248,8 +251,8 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                             onClick={() => {
                                 closePopover();
                                 deleteCustomEvent(customEventID, [AppStore.getCurrentScheduleIndex()]);
-                                logAnalytics({
-                                    category: analyticsEnum.calendar.title,
+                                logAnalytics(postHog, {
+                                    category: analyticsEnum.calendar,
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
                                 });
                             }}
