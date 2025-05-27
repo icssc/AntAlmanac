@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { procedure, router } from '../trpc';
 import { db } from 'src/db';
 import { RDS } from 'src/lib/rds';
+import { procedure, router } from '../trpc';
 
 const NotificationStatusSchema = z.object({
     openStatus: z.boolean(),
@@ -12,7 +12,7 @@ const NotificationStatusSchema = z.object({
 
 const NotificationSchema = z.object({
     term: z.string(),
-    sectionCode: z.string(),
+    sectionCode: z.string().transform((val) => Number(val)),
     courseTitle: z.string(),
     sectionType: z.string(),
     lastUpdated: z.string(),
