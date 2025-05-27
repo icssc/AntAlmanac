@@ -7,7 +7,7 @@ export type NotificationStatus = {
 
 export type Notification = {
     term: string;
-    sectionCode: number;
+    sectionCode: string;
     courseTitle: string;
     sectionType: string;
     notificationStatus: NotificationStatus;
