@@ -89,8 +89,10 @@ async function sendNotification(
         } else if (statusChanged) {
             notification += `- The class is now <strong>${currentStatus}</strong>`;
         }
-        if (codesChanged) {
+        if (codesChanged && statusChanged) {
             notification += `\n- The class now has restriction codes <strong>${restrictionCodes}</strong>`;
+        } else if (codesChanged) {
+            notification += `- The class now has restriction codes <strong>${restrictionCodes}</strong>`;
         }
 
         notification = notification.replace(/\n/g, '<br>');
