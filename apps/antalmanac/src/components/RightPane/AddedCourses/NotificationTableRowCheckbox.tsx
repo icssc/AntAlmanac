@@ -13,6 +13,8 @@ export const NotificationTableRowCheckbox = memo(
         courseTitle,
         sectionCode,
         term,
+        units,
+        sectionNum,
         sectionType,
         notificationKey,
         statusKey,
@@ -30,11 +32,24 @@ export const NotificationTableRowCheckbox = memo(
                 sectionCode,
                 sectionType,
                 term,
+                units,
+                sectionNum,
                 status: statusKey,
                 lastUpdated,
                 lastCodes,
             });
-        }, [setNotifications, courseTitle, sectionCode, sectionType, term, statusKey, lastUpdated, lastCodes]);
+        }, [
+            setNotifications,
+            courseTitle,
+            sectionCode,
+            sectionType,
+            term,
+            statusKey,
+            lastUpdated,
+            lastCodes,
+            units,
+            sectionNum,
+        ]);
 
         return (
             <TableCell align="center">

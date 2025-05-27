@@ -17,7 +17,7 @@ export const NotificationTableRow = memo(({ notificationKey }: NotificationTable
         return null;
     }
 
-    const { courseTitle, sectionType, term, sectionCode, lastCodes, lastUpdated } = notification;
+    const { courseTitle, sectionType, term, sectionCode, lastCodes, lastUpdated, units, sectionNum } = notification;
 
     return (
         <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
@@ -25,8 +25,8 @@ export const NotificationTableRow = memo(({ notificationKey }: NotificationTable
             <CourseCodeCell sectionCode={sectionCode} sx={{ width: 'unset', padding: '6px 16px' }} />
             <DetailsCell
                 sectionType={sectionType}
-                sectionNum={undefined}
-                units={undefined}
+                sectionNum={sectionNum}
+                units={units}
                 sx={{ width: 'unset', padding: '6px 16px' }}
             />
             <TableCell>{courseTitle}</TableCell>
@@ -37,6 +37,8 @@ export const NotificationTableRow = memo(({ notificationKey }: NotificationTable
                     courseTitle={courseTitle}
                     sectionCode={sectionCode}
                     sectionType={sectionType}
+                    units={units}
+                    sectionNum={sectionNum}
                     lastUpdated={lastUpdated}
                     lastCodes={lastCodes}
                     term={term}

@@ -16,6 +16,8 @@ export type NotificationStatus = {
 export type Notification = {
     term: string;
     sectionCode: AASection['sectionCode'];
+    units: number;
+    sectionNum: string;
     courseTitle: Course['title'];
     sectionType: AASection['sectionType'];
     notificationStatus: NotificationStatus;
@@ -52,7 +54,17 @@ export const useNotificationStore = create<NotificationStore>((set) => {
     return {
         initialized: false,
         notifications: {},
-        setNotifications: async ({ courseTitle, sectionCode, term, sectionType, status, lastUpdated, lastCodes }) => {
+        setNotifications: async ({
+            courseTitle,
+            sectionCode,
+            units,
+            sectionNum,
+            term,
+            sectionType,
+            status,
+            lastUpdated,
+            lastCodes,
+        }) => {
             const key = sectionCode + ' ' + term;
 
             set((state) => {
@@ -77,6 +89,8 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                           sectionCode,
                           courseTitle,
                           sectionType,
+                          units,
+                          sectionNum,
                           notificationStatus: {
                               openStatus: false,
                               waitlistStatus: false,
@@ -174,6 +188,8 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                                 sectionCode,
                                 courseTitle: course.courseDetails.courseTitle,
                                 sectionType: course.section.sectionType,
+                                units: Number(course.section.units),
+                                sectionNum: course.section.sectionNum,
                                 notificationStatus: {
                                     openStatus: existingNotification.openStatus ?? false,
                                     waitlistStatus: existingNotification.waitlistStatus ?? false,
