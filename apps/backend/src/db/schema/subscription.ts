@@ -31,7 +31,7 @@ export const subscriptions = pgTable(
 
         /**
          * Status since polling script last updated 
-         * @example "OPEN" | "WAITLISTED" | "FULL"
+         * @example "OPEN" | "Waitl" | "FULL" | 
          */
 
         lastUpdated: text('lastUpdated'),

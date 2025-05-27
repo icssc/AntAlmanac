@@ -9,18 +9,19 @@ import {
     getSubscriptionSectionCodes,
     updateSubscriptionStatus,
     getLastUpdatedStatus,
-    batchCourseCodes,
     getUsers,
-    sendNotification,
-} from './helpers/helpers';
+} from './helpers/subscriptionData';
+
+import { batchCourseCodes, sendNotification } from './helpers/notificationDispatch';
 
 export async function scanAndNotify() {
     try {
         const subscriptions = await getSubscriptionSectionCodes();
+        if (!subscriptions) return;
         await Promise.all(
             Object.entries(subscriptions).map(async ([term, sectionCodes]) => {
                 const [quarter, year] = term.split('-');
-                const batches = await batchCourseCodes(sectionCodes as string[]);
+                const batches = await batchCourseCodes(sectionCodes.map(String));
 
                 await Promise.all(
                     batches.map(async (batch) => {

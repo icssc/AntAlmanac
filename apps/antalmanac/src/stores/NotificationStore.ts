@@ -58,13 +58,8 @@ export const useNotificationStore = create<NotificationStore>((set) => {
             set((state) => {
                 const notifications = state.notifications;
                 const existingNotification = notifications[key];
-                if (lastUpdated === 'Waitl') {
-                    lastUpdated = 'WAITLISTED';
-                }
-                let previousLastUpdated = existingNotification?.lastUpdated ?? null;
-                if (previousLastUpdated === 'Waitl') {
-                    previousLastUpdated = 'WAITLISTED';
-                }
+                const previousLastUpdated = existingNotification?.lastUpdated ?? null;
+
                 const previousLastCodes = existingNotification?.lastCodes ?? null;
 
                 const newNotification = existingNotification
