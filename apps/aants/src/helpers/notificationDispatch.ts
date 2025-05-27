@@ -84,7 +84,7 @@ async function sendNotification(
     try {
         let notification = ``;
 
-        if (currentStatus === 'Waitl') {
+        if (currentStatus === 'Waitl' && statusChanged) {
             notification += `- The class is now <strong>WAITLISTED</strong>`;
         } else if (statusChanged) {
             notification += `- The class is now <strong>${currentStatus}</strong>`;
