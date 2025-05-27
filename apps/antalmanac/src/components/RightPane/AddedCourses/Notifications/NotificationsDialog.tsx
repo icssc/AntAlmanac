@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle, IconButton, SxProps, Tooltip } from
 import { useCallback, useState, useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-import { NotificationsTabs } from '$components/RightPane/AddedCourses/NotificationsTabs';
+import { NotificationsTabs } from '$components/RightPane/AddedCourses/Notifications/NotificationsTabs';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';

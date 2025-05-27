@@ -3,7 +3,7 @@ import { Box, Tab, Paper } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-import { NotificationsTable } from '$components/RightPane/AddedCourses/NotificationsTable';
+import { NotificationsTable } from '$components/RightPane/AddedCourses/Notifications/NotificationsTable';
 import { useNotificationStore } from '$stores/NotificationStore';
 
 function groupNotificationsByTerm(notifications: Record<string, unknown>) {

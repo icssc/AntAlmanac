@@ -1,8 +1,8 @@
 import { TableRow, TableCell } from '@mui/material';
 import { memo } from 'react';
 
-import { NotificationTableDeleteCell } from '$components/RightPane/AddedCourses/NotificationTableDeleteCell';
-import { NotificationTableRowCheckbox } from '$components/RightPane/AddedCourses/NotificationTableRowCheckbox';
+import { NotificationTableDeleteCell } from '$components/RightPane/AddedCourses/Notifications/NotificationTableDeleteCell';
+import { NotificationTableRowCheckbox } from '$components/RightPane/AddedCourses/Notifications/NotificationTableRowCheckbox';
 import { CourseCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/CourseCodeCell';
 import { DetailsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell';
 import { NotificationStatus, useNotificationStore } from '$stores/NotificationStore';
