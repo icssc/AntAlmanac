@@ -1,4 +1,4 @@
-import { request, Term, Quarter, WebsocSection } from '@icssc/libwebsoc-next';
+import { request, Term, Quarter, WebsocSection, WebsocResponse } from '@icssc/libwebsoc-next';
 import { eq, and, or } from 'drizzle-orm';
 
 import { db } from '../../../backend/src/db/index';
@@ -9,7 +9,29 @@ interface TermGrouping {
     [term: string]: number[];
 }
 
-async function getUpdatedClasses(quarter: string, year: string, sections: string[]) {
+interface ClassStatus {
+    lastUpdated: WebsocSection['status'] | null;
+    lastCodes: string | null;
+}
+
+export interface User {
+    userName: string | null;
+    email: string | null;
+    userId: string | null;
+}
+
+/**
+ * Fetches updated class information for specific section codes within a given term from WebSoc.
+ * @param quarter - The academic quarter (e.g., "Fall", "Winter", "Spring", "Summer1", "Summer10wk", "Summer2").
+ * @param year - The academic year (e.g., "2023").
+ * @param sections - An array of section codes to fetch.
+ * @returns A promise that resolves to the WebSoc response, or undefined if an error occurs.
+ */
+async function getUpdatedClasses(
+    quarter: string,
+    year: string,
+    sections: string[]
+): Promise<WebsocResponse | undefined> {
     try {
         const term: Term = {
             year: year,
@@ -22,7 +44,11 @@ async function getUpdatedClasses(quarter: string, year: string, sections: string
     }
 }
 
-async function getSubscriptionSectionCodes() {
+/**
+ * Fetches and batches all unique section codes and their associated term information from the database.
+ * @returns A promise that resolves to an object mapping terms to arrays of section codes, or undefined if an error occurs.
+ */
+async function getSubscriptionSectionCodes(): Promise<TermGrouping | undefined> {
     try {
         const result = await db
             .selectDistinct({
@@ -50,13 +76,21 @@ async function getSubscriptionSectionCodes() {
     }
 }
 
+/**
+ * Updates the subscription status for all users subscribed to a specific class section in the database.
+ * @param year - The academic year of the subscription.
+ * @param quarter - The academic quarter of the subscription.
+ * @param sectionCode - The section code of the class.
+ * @param lastUpdated - The new status of the class.
+ * @param lastCodes - The new restriction codes of the class.
+ */
 async function updateSubscriptionStatus(
     year: string,
     quarter: string,
     sectionCode: number,
     lastUpdated: WebsocSection['status'],
     lastCodes: string
-) {
+): Promise<void> {
     try {
         await db
             .update(subscriptions)
@@ -73,7 +107,19 @@ async function updateSubscriptionStatus(
     }
 }
 
-async function getLastUpdatedStatus(year: string, quarter: string, sectionCode: number) {
+/**
+ * Fetches the last updated status and restriction codes for a specific class section from the database.
+ * This function makes the assumption that all class subscriptions always have the same status and restriction codes.
+ * @param year - The academic year of the subscription.
+ * @param quarter - The academic quarter of the subscription.
+ * @param sectionCode - The section code of the class.
+ * @returns A promise that resolves to the last updated status and restriction codes of a class section, or undefined if an error occurs.
+ */
+async function getLastUpdatedStatus(
+    year: string,
+    quarter: string,
+    sectionCode: number
+): Promise<ClassStatus | undefined> {
     try {
         const result = await db
             .select({
@@ -91,10 +137,22 @@ async function getLastUpdatedStatus(year: string, quarter: string, sectionCode: 
             .limit(1);
 
         return result;
-    } catch (error: any) {
-        console.error('Error getting last updated status:', error.message);
+    } catch (error) {
+        console.error('Error getting last updated status:', error);
     }
 }
+
+/**
+ * Fetches all users who are subscribed to a specific class section and have enabled notifications
+ * for the current type of status change (status and/or restriction codes changes)
+ * @param quarter - The academic quarter of the subscription.
+ * @param year - The academic year of the subscription.
+ * @param sectionCode - The section code of the class.
+ * @param status - The status of the class.
+ * @param statusChanged - True if the class status has changed.
+ * @param codesChanged - True if the class restriction codes have changed.
+ * @returns A promise that resolves to an array of user information, or undefined if an error occurs.
+ */
 
 async function getUsers(
     quarter: string,
@@ -103,7 +161,7 @@ async function getUsers(
     status: WebsocSection['status'],
     statusChanged: boolean,
     codesChanged: boolean
-) {
+): Promise<User[] | undefined> {
     try {
         const statusColumnMap: Record<WebsocSection['status'], any> = {
             OPEN: subscriptions.openStatus,

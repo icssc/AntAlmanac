@@ -1,16 +1,30 @@
 import { SESv2Client, SendBulkEmailCommand } from '@aws-sdk/client-sesv2';
 import { WebsocSection } from '@icssc/libwebsoc-next';
+import { User } from './subscriptionData';
 
-type User = {
-    userName: string;
-    email: string;
-    userId: string;
-};
+export interface CourseDetails {
+    sectionCode: number;
+    instructor: string;
+    days: string;
+    hours: string;
+    currentStatus: WebsocSection['status'];
+    restrictionCodes: string;
+    deptCode: string;
+    courseNumber: string;
+    courseTitle: string;
+    quarter: string;
+    year: string;
+}
 
 const BATCH_SIZE = 450;
 const client = new SESv2Client({ region: 'us-east-2' });
 
-async function batchCourseCodes(codes: string[]) {
+/**
+ * Batches an array of course codes into smaller arrays based on a predefined BATCH_SIZE.
+ * @param codes - An array of course codes to be batched.
+ * @returns A 2D array, where each inner array is a batch of course codes.
+ */
+function batchCourseCodes(codes: string[]): string[][] {
     const batches = [];
     for (let i = 0; i < codes.length; i += BATCH_SIZE) {
         batches.push(codes.slice(i, i + BATCH_SIZE));
@@ -18,7 +32,11 @@ async function batchCourseCodes(codes: string[]) {
     return batches;
 }
 
-function getFormattedTime() {
+/**
+ * Returns a formatted timestamp string for the current date and time.
+ * @returns A string representing the current date and time in the format "HH:MM AM/PM on MM/DD/YYYY".
+ */
+function getFormattedTime(): string {
     const now = new Date();
 
     return (
@@ -36,32 +54,43 @@ function getFormattedTime() {
     );
 }
 
+/**
+ * Sends batch notifications to users about a course status change.
+ * @param courseDetails - An object containing details about the course.
+ * @param users - An array of user objects.
+ * @param statusChanged - A boolean indicating if the status has changed.
+ * @param codesChanged - A boolean indicating if the restriction codes have changed.
+ */
 async function sendNotification(
-    sectionCode: number,
-    instructor: string,
-    days: string,
-    hours: string,
-    status: WebsocSection['status'],
-    codes: string,
-    deptCode: string,
-    courseNumber: string,
-    courseTitle: string,
+    courseDetails: CourseDetails,
     users: User[],
     statusChanged: boolean,
-    codesChanged: boolean,
-    quarter: string,
-    year: string
+    codesChanged: boolean
 ) {
+    const {
+        sectionCode,
+        instructor,
+        days,
+        hours,
+        currentStatus,
+        restrictionCodes,
+        deptCode,
+        courseNumber,
+        courseTitle,
+        quarter,
+        year,
+    } = courseDetails;
+
     try {
         let notification = ``;
 
-        if (status === 'Waitl') {
+        if (currentStatus === 'Waitl') {
             notification += `- The class is now <strong>WAITLISTED</strong>`;
         } else if (statusChanged) {
-            notification += `- The class is now <strong>${status}</strong>`;
+            notification += `- The class is now <strong>${currentStatus}</strong>`;
         }
         if (codesChanged) {
-            notification += `\n- The class now has restriction codes <strong>${codes}</strong>`;
+            notification += `\n- The class now has restriction codes <strong>${restrictionCodes}</strong>`;
         }
 
         notification = notification.replace(/\n/g, '<br>');

@@ -2,7 +2,7 @@
  * To run this script, use 'pnpm run aants'
  */
 
-import { WebsocResponse } from '@icssc/libwebsoc-next';
+import { WebsocResponse, WebsocSection } from '@icssc/libwebsoc-next';
 
 import {
     getUpdatedClasses,
@@ -12,7 +12,7 @@ import {
     getUsers,
 } from './helpers/subscriptionData';
 
-import { batchCourseCodes, sendNotification } from './helpers/notificationDispatch';
+import { batchCourseCodes, sendNotification, CourseDetails } from './helpers/notificationDispatch';
 
 export async function scanAndNotify() {
     try {
@@ -21,7 +21,7 @@ export async function scanAndNotify() {
         await Promise.all(
             Object.entries(subscriptions).map(async ([term, sectionCodes]) => {
                 const [quarter, year] = term.split('-');
-                const batches = await batchCourseCodes(sectionCodes.map(String));
+                const batches = batchCourseCodes(sectionCodes.map(String));
 
                 await Promise.all(
                     batches.map(async (batch) => {
@@ -37,7 +37,7 @@ export async function scanAndNotify() {
                                                 const { deptCode, courseNumber, courseTitle } = course;
 
                                                 await Promise.all(
-                                                    course.sections.map(async (section) => {
+                                                    course.sections.map(async (section: WebsocSection) => {
                                                         const {
                                                             sectionCode,
                                                             instructors,
@@ -46,8 +46,8 @@ export async function scanAndNotify() {
                                                             restrictions,
                                                         } = section;
                                                         const instructor = instructors.join(', ');
-                                                        const currentStatus = section.status;
-                                                        const currentCodes = section.restrictions;
+                                                        // const currentStatus = section.status;
+                                                        // const currentCodes = section.restrictions;
 
                                                         const previousState = await getLastUpdatedStatus(
                                                             year,
@@ -55,10 +55,11 @@ export async function scanAndNotify() {
                                                             Number(sectionCode)
                                                         );
                                                         const previousStatus = previousState?.[0]?.lastUpdated || null;
-                                                        const previousCodes = previousState?.[0]?.lastCodes || '';
+                                                        const previousRestrictions =
+                                                            previousState?.[0]?.lastCodes || '';
 
-                                                        const statusChanged = previousStatus !== currentStatus;
-                                                        const codesChanged = previousCodes !== currentCodes;
+                                                        const statusChanged = previousStatus !== status;
+                                                        const codesChanged = previousRestrictions !== restrictions;
 
                                                         if (!statusChanged && !codesChanged) return;
 
@@ -66,35 +67,39 @@ export async function scanAndNotify() {
                                                             quarter,
                                                             year,
                                                             Number(sectionCode),
-                                                            currentStatus,
+                                                            status,
                                                             statusChanged,
                                                             codesChanged
                                                         );
 
+                                                        const courseDetails: CourseDetails = {
+                                                            sectionCode: Number(sectionCode),
+                                                            instructor,
+                                                            days: meetings[0].days,
+                                                            hours: meetings[0].time,
+                                                            currentStatus: status,
+                                                            restrictionCodes: restrictions,
+                                                            deptCode,
+                                                            courseNumber,
+                                                            courseTitle,
+                                                            quarter,
+                                                            year,
+                                                        };
+
                                                         if (users && users.length > 0) {
                                                             await sendNotification(
-                                                                Number(sectionCode),
-                                                                instructor,
-                                                                meetings[0].days,
-                                                                meetings[0].time,
-                                                                status,
-                                                                restrictions,
-                                                                deptCode,
-                                                                courseNumber,
-                                                                courseTitle,
+                                                                courseDetails,
                                                                 users,
                                                                 statusChanged,
-                                                                codesChanged,
-                                                                quarter,
-                                                                year
+                                                                codesChanged
                                                             );
                                                         }
                                                         await updateSubscriptionStatus(
                                                             year,
                                                             quarter,
                                                             Number(sectionCode),
-                                                            currentStatus,
-                                                            currentCodes
+                                                            status,
+                                                            restrictions
                                                         );
                                                     })
                                                 );
@@ -108,6 +113,7 @@ export async function scanAndNotify() {
                 );
             })
         );
+        console.log('All subscriptions sent!');
     } catch (error) {
         console.error('Error in managing subscription:', error instanceof Error ? error.message : String(error));
     } finally {
