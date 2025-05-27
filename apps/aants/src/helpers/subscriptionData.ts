@@ -136,7 +136,7 @@ async function getLastUpdatedStatus(
             )
             .limit(1);
 
-        return result;
+        return result?.[0] as ClassStatus;
     } catch (error) {
         console.error('Error getting last updated status:', error);
     }

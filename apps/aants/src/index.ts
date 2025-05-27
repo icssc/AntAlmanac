@@ -46,17 +46,14 @@ export async function scanAndNotify() {
                                                             restrictions,
                                                         } = section;
                                                         const instructor = instructors.join(', ');
-                                                        // const currentStatus = section.status;
-                                                        // const currentCodes = section.restrictions;
 
                                                         const previousState = await getLastUpdatedStatus(
                                                             year,
                                                             quarter,
                                                             Number(sectionCode)
                                                         );
-                                                        const previousStatus = previousState?.[0]?.lastUpdated || null;
-                                                        const previousRestrictions =
-                                                            previousState?.[0]?.lastCodes || '';
+                                                        const previousStatus = previousState?.lastUpdated || null;
+                                                        const previousRestrictions = previousState?.lastCodes || '';
 
                                                         const statusChanged = previousStatus !== status;
                                                         const codesChanged = previousRestrictions !== restrictions;
@@ -120,3 +117,5 @@ export async function scanAndNotify() {
         process.exit(0);
     }
 }
+
+scanAndNotify();

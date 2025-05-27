@@ -97,30 +97,32 @@ async function sendNotification(
 
         const time = getFormattedTime();
 
-        const bulkEmailEntries = users.map((user) => ({
-            Destination: {
-                ToAddresses: [user.email],
-            },
-            ReplacementEmailContent: {
-                ReplacementTemplate: {
-                    ReplacementTemplateData: JSON.stringify({
-                        userName: user.userName,
-                        notification: notification,
-                        deptCode: deptCode,
-                        courseNumber: courseNumber,
-                        courseTitle: courseTitle,
-                        instructor: instructor,
-                        days: days,
-                        hours: hours,
-                        time: time,
-                        sectionCode: sectionCode,
-                        userId: user.userId,
-                        quarter: quarter,
-                        year: year,
-                    }),
+        const bulkEmailEntries = users
+            .filter((user) => user.email !== null)
+            .map((user) => ({
+                Destination: {
+                    ToAddresses: [user.email!],
                 },
-            },
-        }));
+                ReplacementEmailContent: {
+                    ReplacementTemplate: {
+                        ReplacementTemplateData: JSON.stringify({
+                            userName: user.userName,
+                            notification: notification,
+                            deptCode: deptCode,
+                            courseNumber: courseNumber,
+                            courseTitle: courseTitle,
+                            instructor: instructor,
+                            days: days,
+                            hours: hours,
+                            time: time,
+                            sectionCode: sectionCode,
+                            userId: user.userId,
+                            quarter: quarter,
+                            year: year,
+                        }),
+                    },
+                },
+            }));
 
         const input = {
             FromEmailAddress: 'icssc@uci.edu',
