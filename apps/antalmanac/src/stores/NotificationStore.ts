@@ -25,6 +25,12 @@ export type Notification = {
     lastCodes: string;
 };
 
+interface RawNotification {
+    year: string;
+    quarter: string;
+    sectionCode: number;
+}
+
 export interface NotificationStore {
     initialized: boolean;
     notifications: Partial<Record<string, Notification>>;
@@ -176,8 +182,8 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                         const key = sectionCode + ' ' + term;
 
                         const existingNotification = existingNotifications.find(
-                            (notification) =>
-                                notification.sectionCode === parseInt(sectionCode) &&
+                            (notification: RawNotification) =>
+                                notification.sectionCode.toString() === sectionCode &&
                                 notification.year === term.split(' ')[0] &&
                                 notification.quarter === term.split(' ')[1]
                         );
