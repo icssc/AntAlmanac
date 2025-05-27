@@ -81,8 +81,6 @@ export function SectionTableBody({ courseDetails, term, scheduleNames, allowHigh
                     <SectionTableBodyRow
                         key={section.sectionCode}
                         section={section}
-                        currentStatus={section.status}
-                        currentRestrictions={section.restrictions}
                         courseDetails={courseDetails}
                         term={term}
                         allowHighlight={allowHighlight}

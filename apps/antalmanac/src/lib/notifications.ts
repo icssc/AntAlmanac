@@ -2,7 +2,7 @@ import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId } from '$lib/localStorage';
 import { Notification } from '$stores/NotificationStore';
 
-class _Notifications {
+class NotificationsClient {
     async getNotifications() {
         const currentSession = getLocalStorageSessionId();
         if (currentSession) {
@@ -23,6 +23,7 @@ class _Notifications {
                 return await trpc.notifications.set.mutate({ id: userId, notifications });
             }
         } else {
+            console.error('No session found to set notifications successfully.');
             return;
         }
     }
@@ -39,9 +40,10 @@ class _Notifications {
                 return await trpc.notifications.deleteNotification.mutate({ id: userId, notification });
             }
         } else {
+            console.error('No session found to delete notification successfully.');
             return;
         }
     }
 }
 
-export const Notifications = new _Notifications();
+export const Notifications = new NotificationsClient();
