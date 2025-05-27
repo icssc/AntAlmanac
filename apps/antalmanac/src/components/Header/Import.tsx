@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { CourseInfo } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
-import { ChangeEvent, useCallback, useEffect, useState, useRef } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import {
@@ -33,13 +33,14 @@ import { AlertDialog } from '$components/AlertDialog';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import {
     getLocalStorageDataCache,
     getLocalStorageOnFirstSignin,
-    setLocalStorageOnFirstSignin,
+    getLocalStorageUserId,
+    removeLocalStorageOnFirstSignin,
+    removeLocalStorageUserId,
 } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
@@ -66,10 +67,8 @@ export function Import() {
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    const { session, sessionIsValid } = useSessionStore();
+    const { sessionIsValid } = useSessionStore();
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
-
-    const firstTimeUserFlag = useRef(true);
 
     const { isDark } = useThemeStore();
 
@@ -235,18 +234,16 @@ export function Import() {
     }, []);
 
     const handleFirstTimeSignin = useCallback(async () => {
-        const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({ token: session ?? '' });
-
-        if (!users.currentScheduleId && accounts.accountType === 'GOOGLE') {
-            if (getLocalStorageOnFirstSignin() === null || getLocalStorageOnFirstSignin() !== users.email) {
-                setLocalStorageOnFirstSignin(users.email);
-                handleOpen();
-                setImportSource(ImportSource.AA_USERNAME_IMPORT);
-            } else {
-                firstTimeUserFlag.current = false;
-            }
+        const newUserFlag = getLocalStorageOnFirstSignin() ?? '';
+        if (newUserFlag !== '') {
+            const savedUserId = getLocalStorageUserId();
+            if (savedUserId) setAAUsername(savedUserId);
+            handleOpen();
+            removeLocalStorageOnFirstSignin();
+            removeLocalStorageUserId();
+            setImportSource(ImportSource.AA_USERNAME_IMPORT);
         }
-    }, [session, handleOpen]);
+    }, [handleOpen]);
 
     useEffect(() => {
         const handleSkeletonModeChange = () => {
