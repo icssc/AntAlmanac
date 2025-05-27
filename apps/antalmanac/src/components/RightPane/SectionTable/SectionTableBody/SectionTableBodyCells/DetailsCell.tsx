@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, SxProps } from '@mui/material';
 import { WebsocSectionType } from '@packages/antalmanac-types';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
