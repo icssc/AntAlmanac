@@ -8,6 +8,7 @@ import {
     TextField,
     type DialogProps,
 } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useState, useEffect, useCallback } from 'react';
 
 import { copySchedule } from '$actions/AppStoreActions';
@@ -22,6 +23,8 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
     const { onClose } = props; // destructured separately for memoization.
     const [name, setName] = useState<string>(`Copy of ${AppStore.getScheduleNames()[index]}`);
 
+    const postHog = usePostHog();
+
     const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setName(event.target.value);
     }, []);
@@ -31,7 +34,7 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
     }, [onClose]);
 
     const handleCopy = useCallback(() => {
-        copySchedule(index, name);
+        copySchedule(index, name, undefined, postHog);
         onClose?.({}, 'escapeKeyDown');
     }, [index, name, onClose]);
 
