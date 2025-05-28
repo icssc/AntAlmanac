@@ -141,7 +141,7 @@ function generateCloseColor(originalColor: string, usedColors: Set<string>, vari
     ) {
         color = {
             ...color,
-            l: Math.max(0, Math.round(((color.l - delta) * 100) % 100) / 100), // Subtract delta and ensure lightness doesn't go below 0
+            l: Math.round(((color.l + delta) * 100) % 100) / 100,
         };
     }
 
