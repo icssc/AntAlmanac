@@ -1,6 +1,6 @@
 import { Assessment, ShowChart as ShowChartIcon } from '@mui/icons-material';
 import { Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow, useMediaQuery } from '@mui/material';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import PeterPortalIcon from '$assets/peterportal-logo.png';
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
@@ -15,6 +15,7 @@ import analyticsEnum from '$lib/analytics/analytics';
 import { MOBILE_BREAKPOINT } from '$src/globals';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import { useTabStore } from '$stores/TabStore';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -72,11 +73,25 @@ function SectionTable(props: SectionTableProps) {
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
+    const { isMilitaryTime } = useTimeFormatStore()
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
+    const isCompact = useMediaQuery('(max-width:750px)');
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
     }, [courseDetails.deptCode, courseDetails.courseNumber]);
+
+    const formattedTime = useMemo(() => {
+        const raw = courseDetails.updatedAt ?? '';
+        const parsed = Date.parse(raw);
+        if (isNaN(parsed)) return null;
+
+        return new Date(parsed).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: !isMilitaryTime,
+        });
+    }, [courseDetails.updatedAt, isMilitaryTime]);
 
     /**
      * Limit table width to force side scrolling.
@@ -95,13 +110,15 @@ function SectionTable(props: SectionTableProps) {
     return (
         <>
             <Box
-                sx={{
-                    display: 'flex',
-                    gap: '4px',
-                    marginBottom: '8px',
-                    marginTop: '4px',
-                }}
-            >
+            sx={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 1,
+              }}
+        >
+            <Box sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start', alignItems: 'center'}}>
                 <CourseInfoBar
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
@@ -154,7 +171,23 @@ function SectionTable(props: SectionTableProps) {
                     }
                 />
             </Box>
-
+            {courseDetails.updatedAt && (
+                    <Box sx={{
+                        fontSize: '0.75rem',
+                        color: '#888',
+                        px: 1,
+                        py: 0.5,
+                        whiteSpace: 'nowrap',
+                        flexShrink: 0,
+                        textAlign: 'right',
+                        minWidth: 0,
+                    }}
+                >
+                    {isCompact ? 'Updated ' : 'Status last updated '}{formattedTime}
+            </Box>
+            )}
+        </Box>
+    
             <TableContainer
                 component={Paper}
                 sx={{ margin: '8px 0px 8px 0px', width: '100%' }}
@@ -192,7 +225,7 @@ function SectionTable(props: SectionTableProps) {
                                 ))}
                         </TableRow>
                     </TableHead>
-
+    
                     <SectionTableBody
                         courseDetails={courseDetails}
                         term={term}
@@ -203,7 +236,7 @@ function SectionTable(props: SectionTableProps) {
                 </Table>
             </TableContainer>
         </>
-    );
+    );    
 }
 
 export default SectionTable;
