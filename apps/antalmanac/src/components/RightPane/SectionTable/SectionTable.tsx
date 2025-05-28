@@ -79,12 +79,19 @@ function SectionTable(props: SectionTableProps) {
     const buttonRowRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const observer = new ResizeObserver(([entry]) =>
-          setIsCompact(entry.contentRect.width < 750)
-        );
-        observer.observe(buttonRowRef.current!);
+        const observer = new ResizeObserver(([entry]) => {
+            setIsCompact(entry.contentRect.width < 750);
+        });
+
+        const currentRef = buttonRowRef.current;
+        if (currentRef) {
+            observer.observe(currentRef);
+        } else {
+            console.error('buttonRowRef is null; cannot observe width');
+        }
+
         return () => observer.disconnect();
-      }, []);
+    }, []);
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
