@@ -75,27 +75,23 @@ function SectionTable(props: SectionTableProps) {
     const [activeTab] = useTabStore((store) => [store.activeTab]);
     const { isMilitaryTime } = useTimeFormatStore()
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
-    const [isCompact, setIsCompact] = useState(false);
-    const buttonRowRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const observer = new ResizeObserver(([entry]) => {
-            setIsCompact(entry.contentRect.width < 750);
-        });
-
-        const currentRef = buttonRowRef.current;
-        if (currentRef) {
-            observer.observe(currentRef);
-        } else {
-            console.error('buttonRowRef is null; cannot observe width');
-        }
-
-        return () => observer.disconnect();
-    }, []);
+    const isCompact = useMediaQuery('(max-width:750px)');
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
     }, [courseDetails.deptCode, courseDetails.courseNumber]);
+
+    const formattedTime = useMemo(() => {
+        const raw = courseDetails.updatedAt ?? '';
+        const parsed = Date.parse(raw);
+        if (isNaN(parsed)) return null;
+
+        return new Date(parsed).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: !isMilitaryTime,
+        });
+    }, [courseDetails.updatedAt, isMilitaryTime]);
 
     /**
      * Limit table width to force side scrolling.
@@ -114,13 +110,12 @@ function SectionTable(props: SectionTableProps) {
     return (
         <>
             <Box
-            ref={buttonRowRef}
             sx={{
                 display: 'flex',
-                flexDirection: 'column',
-                gap: '4px',
-                marginBottom: '8px',
-                marginTop: '4px',
+                flexWrap: 'wrap',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 1,
               }}
         >
             <Box sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start', alignItems: 'center'}}>
@@ -175,26 +170,22 @@ function SectionTable(props: SectionTableProps) {
                         />
                     }
                 />
-                {courseDetails.updatedAt && (
+            </Box>
+            {courseDetails.updatedAt && (
                     <Box sx={{
                         fontSize: '0.75rem',
                         color: '#888',
                         px: 1,
                         py: 0.5,
                         whiteSpace: 'nowrap',
-                        flexGrow: 1,
+                        flexShrink: 0,
                         textAlign: 'right',
+                        minWidth: 0,
                     }}
-                    >
-                    {isCompact ? 'Updated' : 'Status last updated'}{' '}
-                    {new Date(courseDetails.updatedAt).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: !isMilitaryTime,
-                    })}
-                    </Box>
-                )}
+                >
+                    {isCompact ? 'Updated ' : 'Status last updated '}{formattedTime}
             </Box>
+            )}
         </Box>
     
             <TableContainer
