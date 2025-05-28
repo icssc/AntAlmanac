@@ -58,6 +58,9 @@ export function ScheduleNote() {
                     style: { cursor: fallback ? 'not-allowed' : 'text' },
                 }}
                 InputProps={{ disableUnderline: true }}
+                InputLabelProps={{
+                    variant: 'filled',
+                }}
                 fullWidth
                 multiline
                 disabled={fallback}

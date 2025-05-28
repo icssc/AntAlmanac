@@ -3,14 +3,14 @@ import './App.css';
 import { TourProvider } from '@reactour/tour';
 import { SnackbarProvider } from 'notistack';
 import { useEffect } from 'react';
-import ReactGA4 from 'react-ga4';
-import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
-import { undoDelete } from './actions/AppStoreActions';
-import AppQueryProvider from './providers/Query';
-import AppThemeProvider from './providers/Theme';
-import AppThemev5Provider from './providers/Themev5';
-
+import { undoDelete } from '$actions/AppStoreActions';
+import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
+import AppPostHogProvider from '$providers/PostHog';
+import AppQueryProvider from '$providers/Query';
+import AppThemeProvider from '$providers/Theme';
+import { AuthPage } from '$routes/AuthPage';
 import { ErrorPage } from '$routes/ErrorPage';
 import Feedback from '$routes/Feedback';
 import Home from '$routes/Home';
@@ -28,28 +28,47 @@ const FUTURE_CONFIG = {
 /**
  * Do not edit this unless you know what you're doing.
  */
+function RouteLayout() {
+    return (
+        <>
+            <PosthogPageviewTracker />
+            <Outlet />
+        </>
+    );
+}
+
 const OUTAGE = false;
 
 const BROWSER_ROUTER = createBrowserRouter(
     [
         {
-            path: '/',
-            element: <Home />,
-            errorElement: <ErrorPage />,
-        },
-        {
-            path: '/:tab',
-            element: <Home />,
-            errorElement: <ErrorPage />,
-        },
-        {
-            path: '/feedback',
-            element: <Feedback />,
-            errorElement: <ErrorPage />,
-        },
-        {
-            path: '*',
-            element: <Navigate to="/" replace />,
+            element: <RouteLayout />,
+            children: [
+                {
+                    path: '/',
+                    element: <Home />,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '/:tab',
+                    element: <Home />,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '/feedback',
+                    element: <Feedback />,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '/auth',
+                    element: <AuthPage />,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '*',
+                    element: <Navigate to="/" replace />,
+                },
+            ],
         },
     ],
     { future: FUTURE_CONFIG }
@@ -58,13 +77,18 @@ const BROWSER_ROUTER = createBrowserRouter(
 const OUTAGE_ROUTER = createBrowserRouter(
     [
         {
-            path: '/outage',
-            element: <OutagePage />,
-            errorElement: <ErrorPage />,
-        },
-        {
-            path: '*',
-            element: <Navigate to="/outage" replace />,
+            element: <RouteLayout />,
+            children: [
+                {
+                    path: '/outage',
+                    element: <OutagePage />,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '*',
+                    element: <Navigate to="/outage" replace />,
+                },
+            ],
         },
     ],
     { future: FUTURE_CONFIG }
@@ -78,17 +102,15 @@ const ROUTER = OUTAGE ? OUTAGE_ROUTER : BROWSER_ROUTER;
 export default function App() {
     useEffect(() => {
         document.addEventListener('keydown', undoDelete, false);
-        ReactGA4.initialize('G-30HVJXC2Y4');
-        ReactGA4.send('pageview');
         return () => {
             document.removeEventListener('keydown', undoDelete, false);
         };
     }, []);
 
     return (
-        <AppQueryProvider>
-            <AppThemeProvider>
-                <AppThemev5Provider>
+        <AppPostHogProvider>
+            <AppQueryProvider>
+                <AppThemeProvider>
                     <TourProvider
                         steps={[] /** Will be populated by Tutorial component */}
                         padding={5}
@@ -120,8 +142,8 @@ export default function App() {
                             />
                         </SnackbarProvider>
                     </TourProvider>
-                </AppThemev5Provider>
-            </AppThemeProvider>
-        </AppQueryProvider>
+                </AppThemeProvider>
+            </AppQueryProvider>
+        </AppPostHogProvider>
     );
 }

@@ -4,10 +4,10 @@ import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import moment from 'moment';
 
 import { deleteCustomEvent } from '$actions/AppStoreActions';
-import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
-import ColorPicker from '$components/ColorPicker';
+import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { ColorPicker } from '$components/ColorPicker';
 import { MapLink } from '$components/buttons/MapLink';
-import analyticsEnum from '$lib/analytics';
+import analyticsEnum from '$lib/analytics/analytics';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
@@ -74,7 +74,7 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                             color={customEvent.color as string}
                             isCustomEvent={true}
                             customEventID={customEvent.customEventID}
-                            analyticsCategory={analyticsEnum.addedClasses.title}
+                            analyticsCategory={analyticsEnum.addedClasses}
                         />
                     </Box>
 

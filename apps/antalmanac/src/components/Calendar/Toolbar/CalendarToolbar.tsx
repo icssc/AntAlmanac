@@ -4,24 +4,27 @@ import {
     DescriptionOutlined as DescriptionOutlinedIcon,
 } from '@mui/icons-material';
 import { useTheme, useMediaQuery, Box, Button, IconButton, Paper, Tooltip } from '@mui/material';
+import { PostHog, usePostHog } from 'posthog-js/react';
 import { useCallback, memo } from 'react';
 
 import { undoDelete } from '$actions/AppStoreActions';
-import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog';
+import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import DownloadButton from '$components/buttons/Download';
 import ScreenshotButton from '$components/buttons/Screenshot';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 
-function handleUndo() {
-    logAnalytics({
-        category: analyticsEnum.calendar.title,
-        action: analyticsEnum.calendar.actions.UNDO,
-    });
-    undoDelete(null);
+function handleUndo(postHog?: PostHog) {
+    return () => {
+        logAnalytics(postHog, {
+            category: analyticsEnum.calendar,
+            action: analyticsEnum.calendar.actions.UNDO,
+        });
+        undoDelete(null);
+    };
 }
 
 export interface CalendarPaneToolbarProps {
@@ -40,13 +43,17 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const { fallback } = useFallbackStore();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('xxs'));
 
+    const postHog = usePostHog();
+
     const handleToggleFinals = useCallback(() => {
-        logAnalytics({
-            category: analyticsEnum.calendar.title,
-            action: analyticsEnum.calendar.actions.DISPLAY_FINALS,
-        });
+        if (!showFinalsSchedule) {
+            logAnalytics(postHog, {
+                category: analyticsEnum.calendar,
+                action: analyticsEnum.calendar.actions.DISPLAY_FINALS,
+            });
+        }
         toggleDisplayFinalsSchedule();
-    }, [toggleDisplayFinalsSchedule]);
+    }, [postHog, showFinalsSchedule, toggleDisplayFinalsSchedule]);
 
     return (
         <Paper
@@ -102,12 +109,12 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                 <DownloadButton />
 
                 <Tooltip title="Undo last action">
-                    <IconButton onClick={handleUndo} size="medium" disabled={fallback}>
+                    <IconButton onClick={handleUndo(postHog)} size="medium" disabled={fallback}>
                         <UndoIcon fontSize="small" />
                     </IconButton>
                 </Tooltip>
 
-                <ClearScheduleButton fontSize="small" disabled={fallback} />
+                <ClearScheduleButton fontSize="small" disabled={fallback} analyticsCategory={analyticsEnum.calendar} />
 
                 <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
             </Box>

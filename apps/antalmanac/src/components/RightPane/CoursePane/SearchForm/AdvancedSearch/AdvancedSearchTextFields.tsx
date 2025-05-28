@@ -1,22 +1,35 @@
-import { TextField, Box, FormControl, InputLabel, Select, Switch, FormControlLabel } from '@material-ui/core';
-import { MenuItem } from '@mui/material';
-import { useState, useEffect, useCallback } from 'react';
+import {
+    MenuItem,
+    TextField,
+    Box,
+    FormControl,
+    InputLabel,
+    Select,
+    Switch,
+    FormControlLabel,
+    type SelectChangeEvent,
+} from '@mui/material';
+import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 
-import { EXCLUDE_RESTRICTION_CODES_OPTIONS } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
+import {
+    EXCLUDE_RESTRICTION_CODES_OPTIONS,
+    DAYS_OPTIONS,
+} from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 export function AdvancedSearchTextFields() {
-    const [instructor, setInstructor] = useState(RightPaneStore.getFormData().instructor);
-    const [units, setUnits] = useState(RightPaneStore.getFormData().units);
-    const [endTime, setEndTime] = useState(RightPaneStore.getFormData().endTime);
-    const [startTime, setStartTime] = useState(RightPaneStore.getFormData().startTime);
-    const [coursesFull, setCoursesFull] = useState(RightPaneStore.getFormData().coursesFull);
-    const [building, setBuilding] = useState(RightPaneStore.getFormData().building);
-    const [room, setRoom] = useState(RightPaneStore.getFormData().room);
-    const [division, setDivision] = useState(RightPaneStore.getFormData().division);
+    const [instructor, setInstructor] = useState(() => RightPaneStore.getFormData().instructor);
+    const [units, setUnits] = useState(() => RightPaneStore.getFormData().units);
+    const [endTime, setEndTime] = useState(() => RightPaneStore.getFormData().endTime);
+    const [startTime, setStartTime] = useState(() => RightPaneStore.getFormData().startTime);
+    const [coursesFull, setCoursesFull] = useState(() => RightPaneStore.getFormData().coursesFull);
+    const [building, setBuilding] = useState(() => RightPaneStore.getFormData().building);
+    const [room, setRoom] = useState(() => RightPaneStore.getFormData().room);
+    const [division, setDivision] = useState(() => RightPaneStore.getFormData().division);
     const [excludeRestrictionCodes, setExcludeRestrictionCodes] = useState(
-        RightPaneStore.getFormData().excludeRestrictionCodes
+        () => RightPaneStore.getFormData().excludeRestrictionCodes
     );
+    const [days, setDays] = useState(() => RightPaneStore.getFormData().days);
 
     const resetField = useCallback(() => {
         const formData = RightPaneStore.getFormData();
@@ -29,6 +42,7 @@ export function AdvancedSearchTextFields() {
         setRoom(formData.room);
         setDivision(formData.division);
         setExcludeRestrictionCodes(formData.excludeRestrictionCodes);
+        setDays(formData.days);
     }, []);
 
     useEffect(() => {
@@ -40,18 +54,14 @@ export function AdvancedSearchTextFields() {
 
     const handleChange =
         (name: string) =>
-        (
-            event: React.ChangeEvent<
-                HTMLInputElement | HTMLTextAreaElement | { name?: string | undefined; value: unknown }
-            >
-        ) => {
+        (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string | string[]>) => {
             const stateObj = { url: 'url' };
             const url = new URL(window.location.href);
             const urlParam = new URLSearchParams(url.search);
-            const value = event.target.value as string | string[];
 
             if (name === 'online') {
-                if (event.target instanceof HTMLInputElement && event.target.checked) {
+                const checked = (event as { target: { checked: boolean } }).target.checked; // FIX ME: This is a hack and very bad typing
+                if (checked) {
                     setBuilding('ON');
                     setRoom('LINE');
                     RightPaneStore.updateFormValue('building', 'ON');
@@ -66,53 +76,59 @@ export function AdvancedSearchTextFields() {
                     urlParam.delete('building');
                     urlParam.delete('room');
                 }
+                return;
+            }
+
+            const value = event.target.value;
+            const stringValue = Array.isArray(value) ? value.join('') : value;
+
+            switch (name) {
+                case 'instructor':
+                    setInstructor(stringValue);
+                    break;
+                case 'units':
+                    setUnits(stringValue);
+                    break;
+                case 'endTime':
+                    setEndTime(stringValue);
+                    break;
+                case 'startTime':
+                    setStartTime(stringValue);
+                    break;
+                case 'coursesFull':
+                    setCoursesFull(stringValue);
+                    break;
+                case 'building':
+                    setBuilding(stringValue);
+                    break;
+                case 'room':
+                    setRoom(stringValue);
+                    break;
+                case 'division':
+                    setDivision(stringValue);
+                    break;
+                case 'excludeRestrictionCodes':
+                    setExcludeRestrictionCodes(stringValue);
+                    break;
+                case 'days': {
+                    setDays(stringValue);
+                    break;
+                }
+                default:
+                    break;
+            }
+
+            if (stringValue !== '') {
+                urlParam.set(name, String(stringValue));
             } else {
-                const stringValue = Array.isArray(value) ? value.join('') : value;
-
-                switch (name) {
-                    case 'instructor':
-                        setInstructor(stringValue);
-                        break;
-                    case 'units':
-                        setUnits(stringValue);
-                        break;
-                    case 'endTime':
-                        setEndTime(stringValue);
-                        break;
-                    case 'startTime':
-                        setStartTime(stringValue);
-                        break;
-                    case 'coursesFull':
-                        setCoursesFull(stringValue);
-                        break;
-                    case 'building':
-                        setBuilding(stringValue);
-                        break;
-                    case 'room':
-                        setRoom(stringValue);
-                        break;
-                    case 'division':
-                        setDivision(stringValue);
-                        break;
-                    case 'excludeRestrictionCodes':
-                        setExcludeRestrictionCodes(stringValue);
-                        break;
-                    default:
-                        break;
-                }
-
-                if (stringValue !== '') {
-                    urlParam.set(name, String(stringValue));
-                } else {
-                    urlParam.delete(name);
-                }
-
-                RightPaneStore.updateFormValue(name, stringValue);
+                urlParam.delete(name);
             }
 
             const param = urlParam.toString();
             const newUrl = `${param.trim() ? '?' : ''}${param}`;
             history.replaceState(stateObj, 'url', '/' + newUrl);
+
+            RightPaneStore.updateFormValue(name, stringValue);
         };
 
     // List of times from 2:00am-11:00pm
@@ -269,6 +285,45 @@ export function AdvancedSearchTextFields() {
                     renderValue={(selected) => (selected as string[]).join(', ')}
                 >
                     {EXCLUDE_RESTRICTION_CODES_OPTIONS.map((option) => (
+                        <MenuItem
+                            key={option.value}
+                            value={option.value}
+                            style={{
+                                maxWidth: 240,
+                            }}
+                        >
+                            <span
+                                style={{
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                }}
+                            >
+                                {option.label}
+                            </span>
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+
+            <FormControl style={{ minWidth: 150 }}>
+                <InputLabel id="days-label">Days</InputLabel>
+                <Select
+                    multiple
+                    labelId="days-label"
+                    value={days ? days.split(/(?=[A-Z])/) : []}
+                    onChange={handleChange('days')}
+                    renderValue={(selected) =>
+                        (selected as string[])
+                            .sort((a, b) => {
+                                const orderA = DAYS_OPTIONS.findIndex((day) => day.value === a);
+                                const orderB = DAYS_OPTIONS.findIndex((day) => day.value === b);
+                                return orderA - orderB;
+                            })
+                            .join(', ')
+                    }
+                >
+                    {DAYS_OPTIONS.map((option) => (
                         <MenuItem
                             key={option.value}
                             value={option.value}

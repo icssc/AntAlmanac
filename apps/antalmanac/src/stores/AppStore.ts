@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 
 import type { ScheduleCourse, ScheduleSaveState, RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { VariantType } from 'notistack';
+import { SnackbarOrigin, VariantType } from 'notistack';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import type {
@@ -21,7 +21,6 @@ import type {
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
 import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { SnackbarPosition } from '$components/NotificationSnackbar';
 import { useFallbackStore } from '$stores/FallbackStore';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
@@ -39,7 +38,7 @@ class AppStore extends EventEmitter {
 
     snackbarDuration: number;
 
-    snackbarPosition: SnackbarPosition;
+    snackbarPosition: SnackbarOrigin;
 
     snackbarStyle: object;
 
@@ -244,7 +243,7 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    deleteCustomEvent(customEventId: number, scheduleIndices: number[]) {
+    deleteCustomEvent(customEventId: number | string, scheduleIndices: number[]) {
         this.schedule.deleteCustomEvent(customEventId, scheduleIndices);
         this.unsavedChanges = true;
         const action: DeleteCustomEventAction = {
@@ -256,7 +255,7 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    changeCustomEventColor(customEventId: number, newColor: string) {
+    changeCustomEventColor(customEventId: number | string, newColor: string) {
         this.schedule.changeCustomEventColor(customEventId, newColor);
         this.unsavedChanges = true;
         const action: ChangeCustomEventColorAction = {
@@ -427,7 +426,7 @@ class AppStore extends EventEmitter {
         variant: VariantType,
         message: string,
         duration?: number,
-        position?: SnackbarPosition,
+        position?: SnackbarOrigin,
         style?: Record<string, string>
     ) {
         this.snackbarVariant = variant;

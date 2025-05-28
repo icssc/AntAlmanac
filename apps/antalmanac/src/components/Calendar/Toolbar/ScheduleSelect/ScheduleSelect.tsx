@@ -1,5 +1,6 @@
 import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
 import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
+import { PostHog, usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { changeCurrentSchedule } from '$actions/AppStoreActions';
@@ -8,9 +9,10 @@ import { AddScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/s
 import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/DeleteScheduleButton';
 import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
 import { CopyScheduleButton } from '$components/buttons/Copy';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 
 type EventContext = {
     triggeredBy?: string;
@@ -31,9 +33,9 @@ function getScheduleItems(): ScheduleItem[] {
     return scheduleNames.map((name, index) => ({ id: index, name }));
 }
 
-function handleScheduleChange(index: number) {
-    logAnalytics({
-        category: analyticsEnum.calendar.title,
+function handleScheduleChange(index: number, postHog?: PostHog) {
+    logAnalytics(postHog, {
+        category: analyticsEnum.calendar,
         action: analyticsEnum.calendar.actions.CHANGE_SCHEDULE,
     });
     changeCurrentSchedule(index);
@@ -42,9 +44,9 @@ function handleScheduleChange(index: number) {
 /**
  * Creates an event handler callback that will change the current schedule to the one at a specified index.
  */
-function createScheduleSelector(index: number) {
+function createScheduleSelector(index: number, postHog?: PostHog) {
     return () => {
-        handleScheduleChange(index);
+        handleScheduleChange(index, postHog);
     };
 }
 
@@ -56,25 +58,24 @@ function createScheduleSelector(index: number) {
 export function SelectSchedulePopover() {
     const theme = useTheme();
     const { fallback } = useFallbackStore();
+    const { openScheduleSelect, setOpenScheduleSelect } = scheduleComponentsToggleStore();
 
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
     const [scheduleMapping, setScheduleMapping] = useState(() => getScheduleItems());
 
-    const [anchorEl, setAnchorEl] = useState<HTMLElement>();
+    const postHog = usePostHog();
 
     // TODO: maybe these widths should be dynamic based on i.e. the viewport width?
     const minWidth = useMemo(() => 100, []);
     const maxWidth = useMemo(() => 150, []);
 
-    const open = useMemo(() => Boolean(anchorEl), [anchorEl]);
-
-    const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    }, []);
+    const handleClick = useCallback(() => {
+        setOpenScheduleSelect(true);
+    }, [setOpenScheduleSelect]);
 
     const handleClose = useCallback(() => {
-        setAnchorEl(undefined);
-    }, []);
+        setOpenScheduleSelect(false);
+    }, [setOpenScheduleSelect]);
 
     const handleScheduleIndexChange = useCallback(() => {
         setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
@@ -145,8 +146,9 @@ export function SelectSchedulePopover() {
             </Tooltip>
 
             <Popover
-                open={open}
-                anchorEl={anchorEl}
+                open={openScheduleSelect}
+                anchorReference="anchorPosition"
+                anchorPosition={{ top: 95, left: 0 }}
                 onClose={handleClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >
@@ -200,7 +202,7 @@ export function SelectSchedulePopover() {
                                                                 ? theme.palette.action.selected
                                                                 : undefined,
                                                     }}
-                                                    onClick={() => createScheduleSelector(index)()}
+                                                    onClick={() => createScheduleSelector(index, postHog)()}
                                                 >
                                                     <Typography
                                                         overflow="hidden"

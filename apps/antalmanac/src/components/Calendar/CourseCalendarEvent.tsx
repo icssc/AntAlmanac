@@ -1,16 +1,15 @@
-import { Chip, IconButton, Paper, Tooltip, Button } from '@material-ui/core';
-import { Theme, withStyles } from '@material-ui/core/styles';
-import { ClassNameMap, Styles } from '@material-ui/core/styles/withStyles';
-import { Delete, Search } from '@material-ui/icons';
+import { Delete, Search } from '@mui/icons-material';
+import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
 import { WebsocSectionFinalExam } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
 import { useEffect, useRef } from 'react';
 import { Event } from 'react-big-calendar';
 
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
-import CustomEventDialog from '$components/Calendar/Toolbar/CustomEventDialog/';
-import ColorPicker from '$components/ColorPicker';
+import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { ColorPicker } from '$components/ColorPicker';
 import { MapLink } from '$components/buttons/MapLink';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import locationIds from '$lib/locations/locations';
@@ -18,69 +17,6 @@ import { useQuickSearch } from '$src/hooks/useQuickSearch';
 import AppStore from '$stores/AppStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
-
-const styles: Styles<Theme, object> = {
-    courseContainer: {
-        padding: '0.5rem',
-        minWidth: '15rem',
-    },
-    customEventContainer: {
-        padding: '0.5rem',
-    },
-    buttonBar: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-    title: {
-        fontSize: '0.9rem',
-        fontWeight: 500,
-    },
-    icon: {
-        cursor: 'pointer',
-    },
-    titleBar: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '0.25rem',
-    },
-    table: {
-        border: 'none',
-        width: '100%',
-        borderCollapse: 'collapse',
-        fontSize: '0.9rem',
-    },
-    alignToTop: {
-        verticalAlign: 'top',
-    },
-    rightCells: {
-        textAlign: 'right',
-    },
-    multiline: {
-        whiteSpace: 'pre',
-    },
-    stickToRight: {
-        float: 'right',
-    },
-    colorPicker: {
-        cursor: 'pointer',
-        '& > div': {
-            margin: '0px 8px 0px 4px',
-            height: '20px',
-            width: '20px',
-            borderRadius: '50%',
-        },
-    },
-
-    clickableLocation: {
-        cursor: 'pointer',
-        background: 'none !important',
-        border: 'none',
-        padding: '0 !important',
-        fontSize: 'inherit',
-        textDecoration: 'none',
-    },
-};
 
 interface CommonCalendarEvent extends Event {
     color: string;
@@ -138,7 +74,6 @@ export interface CustomEvent extends CommonCalendarEvent {
 export type CalendarEvent = CourseEvent | CustomEvent;
 
 interface CourseCalendarEventProps {
-    classes: ClassNameMap;
     selectedEvent: CalendarEvent;
     scheduleNames: string[];
     closePopover: () => void;
@@ -146,16 +81,17 @@ interface CourseCalendarEventProps {
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopover }: CourseCalendarEventProps) => {
-    const paperRef = useRef<HTMLInputElement>(null);
+export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover }: CourseCalendarEventProps) => {
+    const paperRef = useRef<HTMLDivElement>(null);
     const quickSearch = useQuickSearch();
     const { isMilitaryTime } = useTimeFormatStore();
 
+    const postHog = usePostHog();
+
     useEffect(() => {
-        const handleKeyDown = (event: { keyCode: number }) => {
-            // event.keyCode === 27 reads for the "escape" key
-            if (event.keyCode === 27) {
-                if (paperRef.current) paperRef.current.style.display = 'none';
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                closePopover();
             }
         };
 
@@ -164,7 +100,7 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, []);
+    }, [closePopover]);
 
     if (!selectedEvent.isCustomEvent) {
         const { term, instructors, sectionCode, title, finalExam, locations, sectionType, deptValue, courseNumber } =
@@ -193,12 +129,19 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
         };
 
         return (
-            <Paper className={classes.courseContainer} ref={paperRef}>
-                <div className={classes.titleBar}>
+            <Paper sx={{ padding: '0.5rem', minWidth: '15rem' }} ref={paperRef}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '0.25rem',
+                    }}
+                >
                     <Tooltip title="Quick Search">
                         <Button size="small" onClick={handleQuickSearch}>
                             <Search fontSize="small" style={{ marginRight: 5 }} />
-                            <span className={classes.title}>{`${title} ${sectionType}`}</span>
+                            <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{`${title} ${sectionType}`}</span>
                         </Button>
                     </Tooltip>
                     <Tooltip title="Delete">
@@ -208,8 +151,8 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                             onClick={() => {
                                 closePopover();
                                 deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
-                                logAnalytics({
-                                    category: analyticsEnum.calendar.title,
+                                logAnalytics(postHog, {
+                                    category: analyticsEnum.calendar,
                                     action: analyticsEnum.calendar.actions.DELETE_COURSE,
                                 });
                             }}
@@ -217,22 +160,21 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                             <Delete fontSize="inherit" />
                         </IconButton>
                     </Tooltip>
-                </div>
-                <table className={classes.table}>
+                </Box>
+                <table style={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
                     <tbody>
                         <tr>
-                            <td className={classes.alignToTop}>Section code</td>
+                            <td style={{ verticalAlign: 'top' }}>Section code</td>
                             <Tooltip title="Click to copy course code" placement="right">
-                                <td className={classes.rightCells}>
+                                <td style={{ textAlign: 'right' }}>
                                     <Chip
                                         onClick={(event) => {
                                             clickToCopy(event, sectionCode);
-                                            logAnalytics({
-                                                category: analyticsEnum.classSearch.title,
-                                                action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
+                                            logAnalytics(postHog, {
+                                                category: analyticsEnum.calendar,
+                                                action: analyticsEnum.calendar.actions.COPY_COURSE_CODE,
                                             });
                                         }}
-                                        className={classes.sectionCode}
                                         label={sectionCode}
                                         size="small"
                                     />
@@ -240,16 +182,16 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                             </Tooltip>
                         </tr>
                         <tr>
-                            <td className={classes.alignToTop}>Term</td>
-                            <td className={classes.rightCells}>{term}</td>
+                            <td style={{ verticalAlign: 'top' }}>Term</td>
+                            <td style={{ textAlign: 'right' }}>{term}</td>
                         </tr>
                         <tr>
-                            <td className={classes.alignToTop}>Instructors</td>
-                            <td className={`${classes.multiline} ${classes.rightCells}`}>{instructors.join('\n')}</td>
+                            <td style={{ verticalAlign: 'top' }}>Instructors</td>
+                            <td style={{ whiteSpace: 'pre', textAlign: 'right' }}>{instructors.join('\n')}</td>
                         </tr>
                         <tr>
-                            <td className={classes.alignToTop}>Location{locations.length > 1 && 's'}</td>
-                            <td className={`${classes.multiline} ${classes.rightCells}`}>
+                            <td style={{ verticalAlign: 'top' }}>Location{locations.length > 1 && 's'}</td>
+                            <td style={{ whiteSpace: 'pre', textAlign: 'right' }}>
                                 {locations.map((location) => (
                                     <div key={`${sectionCode} @ ${location.building} ${location.room}`}>
                                         <MapLink
@@ -262,17 +204,17 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                         </tr>
                         <tr>
                             <td>Final</td>
-                            <td className={classes.rightCells}>{finalExamString}</td>
+                            <td style={{ textAlign: 'right' }}>{finalExamString}</td>
                         </tr>
                         <tr>
                             <td>Color</td>
-                            <td className={`${classes.colorPicker} ${classes.stickToRight}`}>
+                            <td style={{ textAlign: 'right' }}>
                                 <ColorPicker
                                     color={selectedEvent.color}
                                     isCustomEvent={selectedEvent.isCustomEvent}
                                     sectionCode={selectedEvent.sectionCode}
                                     term={selectedEvent.term}
-                                    analyticsCategory={analyticsEnum.calendar.title}
+                                    analyticsCategory={analyticsEnum.calendar}
                                 />
                             </td>
                         </tr>
@@ -283,23 +225,21 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
     } else {
         const { title, customEventID, building } = selectedEvent;
         return (
-            <Paper className={classes.customEventContainer} ref={paperRef}>
-                <div className={classes.title}>{title}</div>
+            <Paper sx={{ padding: '0.5rem' }} ref={paperRef}>
+                <Box sx={{ fontSize: '0.9rem', fontWeight: 500 }}>{title}</Box>
                 {building && (
-                    <div className={classes.table}>
+                    <Box sx={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
                         Location:&nbsp;
                         <MapLink buildingId={+building} room={buildingCatalogue[+building]?.name ?? ''} />
-                    </div>
+                    </Box>
                 )}
-                <div className={classes.buttonBar}>
-                    <div className={`${classes.colorPicker}`}>
-                        <ColorPicker
-                            color={selectedEvent.color}
-                            isCustomEvent={true}
-                            customEventID={selectedEvent.customEventID}
-                            analyticsCategory={analyticsEnum.calendar.title}
-                        />
-                    </div>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <ColorPicker
+                        color={selectedEvent.color}
+                        isCustomEvent={true}
+                        customEventID={selectedEvent.customEventID}
+                        analyticsCategory={analyticsEnum.calendar}
+                    />
                     <CustomEventDialog
                         onDialogClose={closePopover}
                         customEvent={AppStore.schedule.getExistingCustomEvent(customEventID)}
@@ -311,8 +251,8 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                             onClick={() => {
                                 closePopover();
                                 deleteCustomEvent(customEventID, [AppStore.getCurrentScheduleIndex()]);
-                                logAnalytics({
-                                    category: analyticsEnum.calendar.title,
+                                logAnalytics(postHog, {
+                                    category: analyticsEnum.calendar,
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
                                 });
                             }}
@@ -320,10 +260,8 @@ const CourseCalendarEvent = ({ classes, selectedEvent, scheduleNames, closePopov
                             <Delete fontSize="small" />
                         </IconButton>
                     </Tooltip>
-                </div>
+                </Box>
             </Paper>
         );
     }
 };
-
-export default withStyles(styles)(CourseCalendarEvent);

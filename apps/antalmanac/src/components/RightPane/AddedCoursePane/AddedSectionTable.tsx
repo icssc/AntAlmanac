@@ -8,7 +8,7 @@ import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePan
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
-import analyticsEnum from '$lib/analytics';
+import analyticsEnum from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 
 /**
@@ -135,7 +135,7 @@ export function AddedSectionTable() {
         <Box display="flex" flexDirection="column" gap={1}>
             <Box display="flex" width={1} position="absolute" zIndex="2">
                 <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
-                <ClearScheduleButton sx={buttonSx} />
+                <ClearScheduleButton sx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />
                 <ColumnToggleDropdown />
             </Box>
             <Box style={{ marginTop: 56 }}>
@@ -149,7 +149,7 @@ export function AddedSectionTable() {
                                     courseDetails={course}
                                     term={course.term}
                                     allowHighlight={false}
-                                    analyticsCategory={analyticsEnum.addedClasses.title}
+                                    analyticsCategory={analyticsEnum.addedClasses}
                                     scheduleNames={scheduleNames}
                                 />
                             </Box>

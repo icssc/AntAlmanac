@@ -1,55 +1,30 @@
-import { Button, Box } from '@material-ui/core';
-import { useEffect, useState } from 'react';
+import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 
-const normal_days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as const;
 
 interface DaySelectorProps {
     days?: boolean[];
     onSelectDay: (days: boolean[]) => void;
 }
 
-const DaySelector = ({ days = [false, false, false, false, false, false, false], onSelectDay }: DaySelectorProps) => {
-    const [selectedDays, setSelectedDays] = useState(days);
+export function DaySelector({
+    days = [false, false, false, false, false, false, false],
+    onSelectDay,
+}: DaySelectorProps) {
+    const daysValue = days.map((day, index) => (day ? DAYS.at(index) : false)).filter(Boolean);
 
-    useEffect(() => {
-        onSelectDay(selectedDays);
-    }, [onSelectDay, selectedDays]);
-
-    const handleChange = (dayIndex: number) => {
-        const newSelectedDays = [...selectedDays];
-        newSelectedDays[dayIndex] = !selectedDays[dayIndex];
-        setSelectedDays(newSelectedDays);
+    const handleChange = (_event: unknown, value: typeof DAYS) => {
+        const newDays = DAYS.map((d) => value.includes(d));
+        onSelectDay(newDays);
     };
 
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-            }}
-            style={{ gap: '12px' }}
-        >
-            {normal_days.map((day, index) => (
-                <Button
-                    key={index}
-                    variant={selectedDays[index] ? 'contained' : 'outlined'}
-                    size="small"
-                    fullWidth
-                    onClick={() => handleChange(index)}
-                    color={'default'}
-                    style={{
-                        display: 'block',
-                        aspectRatio: 1 / 1,
-                        minWidth: 20,
-                        minHeight: 40,
-                    }}
-                >
-                    {day[0]}
-                </Button>
+        <ToggleButtonGroup value={daysValue} onChange={handleChange} fullWidth>
+            {DAYS.map((day) => (
+                <ToggleButton key={day} value={day}>
+                    {day.at(0)}
+                </ToggleButton>
             ))}
-        </Box>
+        </ToggleButtonGroup>
     );
-};
-
-export default DaySelector;
+}

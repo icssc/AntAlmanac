@@ -1,32 +1,40 @@
 import { Box, Typography, Paper, Chip, Tooltip } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { CustomEventsTable } from '$components/RightPane/AddedCoursePane/CustomEventsTable';
 import { ScheduleNote } from '$components/RightPane/AddedCoursePane/ScheduleNote';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
 import { useFallbackStore } from '$stores/FallbackStore';
 
 export function FallbackSchedule() {
     const { fallbackSchedules } = useFallbackStore();
+    const postHog = usePostHog();
 
     const [schedule, setSchedule] = useState(() => fallbackSchedules.at(AppStore.getCurrentScheduleIndex()));
 
-    const handleSectionClick = useCallback((event: React.MouseEvent<HTMLDivElement>, section: string) => {
-        clickToCopy(event, section);
-        logAnalytics({
-            category: analyticsEnum.classSearch.title,
-            action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
-        });
-    }, []);
+    const handleSectionClick = useCallback(
+        (event: React.MouseEvent<HTMLDivElement>, section: string) => {
+            clickToCopy(event, section);
+            logAnalytics(postHog, {
+                category: analyticsEnum.classSearch,
+                action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
+            });
+        },
+        [postHog]
+    );
 
     const sectionsByTerm: [string, string[]][] = useMemo(() => {
-        const result = schedule?.courses.reduce((accumulated, course) => {
-            accumulated[course.term] ??= [];
-            accumulated[course.term].push(course.sectionCode);
-            return accumulated;
-        }, {} as Record<string, string[]>);
+        const result = schedule?.courses.reduce(
+            (accumulated, course) => {
+                accumulated[course.term] ??= [];
+                accumulated[course.term].push(course.sectionCode);
+                return accumulated;
+            },
+            {} as Record<string, string[]>
+        );
 
         return Object.entries(result ?? {});
     }, [schedule?.courses]);

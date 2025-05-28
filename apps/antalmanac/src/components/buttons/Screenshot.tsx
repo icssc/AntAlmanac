@@ -2,16 +2,18 @@ import { Panorama } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
+import { usePostHog } from 'posthog-js/react';
 
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { useThemeStore } from '$stores/SettingsStore';
 
 const ScreenshotButton = () => {
     const { isDark } = useThemeStore();
+    const postHog = usePostHog();
 
     const handleClick = () => {
-        logAnalytics({
-            category: analyticsEnum.calendar.title,
+        logAnalytics(postHog, {
+            category: analyticsEnum.calendar,
             action: analyticsEnum.calendar.actions.SCREENSHOT,
         });
 
