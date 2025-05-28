@@ -212,8 +212,6 @@ export const Load = () => {
 
     const loadScheduleAndSetLoadingAuth = useCallback(
         async (userID: string, rememberMe: boolean) => {
-            console.log('HIT HIT HIT 2');
-
             setOpenLoadingSchedule(true);
 
             const sessionToken = getLocalStorageSessionId() ?? '';
