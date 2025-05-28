@@ -3,7 +3,6 @@ import './App.css';
 import { TourProvider } from '@reactour/tour';
 import { SnackbarProvider } from 'notistack';
 import { useEffect } from 'react';
-import ReactGA4 from 'react-ga4';
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
 import { undoDelete } from '$actions/AppStoreActions';
@@ -88,8 +87,6 @@ const ROUTER = OUTAGE ? OUTAGE_ROUTER : BROWSER_ROUTER;
 export default function App() {
     useEffect(() => {
         document.addEventListener('keydown', undoDelete, false);
-        ReactGA4.initialize('G-30HVJXC2Y4');
-        ReactGA4.send('pageview');
         return () => {
             document.removeEventListener('keydown', undoDelete, false);
         };

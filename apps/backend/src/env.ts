@@ -33,7 +33,9 @@ export const aapiEnvSchema = z.object({
 /**
  * Environment variables required by the backend during runtime.
  */
-export const backendEnvSchema = googleOAuthEnvSchema
+export const backendEnvSchema = z
+    .object({ STAGE: z.string() })
+    .merge(googleOAuthEnvSchema)
     .merge(rdsEnvSchema)
     .merge(mapboxEnvSchema)
     .merge(aapiEnvSchema);

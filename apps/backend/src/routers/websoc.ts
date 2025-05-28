@@ -60,8 +60,11 @@ function sortWebsocResponse(response: WebsocAPIResponse) {
 }
 
 const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
+    const url = `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`;
+    console.log('queryWebSoc', url);
+    
     const response = await fetch(
-        `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`,
+        url,
         {
             headers: {
                 ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
