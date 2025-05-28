@@ -1,5 +1,6 @@
 import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { ColumnToggleDropdown } from '../CoursePane/CoursePaneButtonRow';
@@ -214,6 +215,7 @@ function ScheduleNoteBox() {
 
 function SkeletonSchedule() {
     const [skeletonSchedule, setSkeletonSchedule] = useState(AppStore.getCurrentSkeletonSchedule());
+    const postHog = usePostHog();
 
     useEffect(() => {
         const updateSkeletonSchedule = () => {
@@ -256,9 +258,9 @@ function SkeletonSchedule() {
                                     <Chip
                                         onClick={(event) => {
                                             clickToCopy(event, section);
-                                            logAnalytics({
-                                                category: analyticsEnum.classSearch.title,
-                                                action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
+                                            logAnalytics(postHog, {
+                                                category: analyticsEnum.addedClasses,
+                                                action: analyticsEnum.addedClasses.actions.COPY_COURSE_CODE,
                                             });
                                         }}
                                         label={section}
@@ -344,7 +346,7 @@ function AddedSectionsGrid() {
         <Box display="flex" flexDirection="column" gap={1}>
             <Box display="flex" width={1} position="absolute" zIndex="2">
                 <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
-                <ClearScheduleButton buttonSx={buttonSx} />
+                <ClearScheduleButton buttonSx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />
                 <ColumnToggleDropdown />
             </Box>
             <Box style={{ marginTop: 56 }}>
@@ -358,7 +360,7 @@ function AddedSectionsGrid() {
                                     courseDetails={course}
                                     term={course.term}
                                     allowHighlight={false}
-                                    analyticsCategory={analyticsEnum.addedClasses.title}
+                                    analyticsCategory={analyticsEnum.addedClasses}
                                     scheduleNames={scheduleNames}
                                 />
                             </Box>
@@ -376,11 +378,19 @@ function AddedSectionsGrid() {
 
 export function AddedCoursePane() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const postHog = usePostHog();
 
     useEffect(() => {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
         };
+
+        console.log('Opened added ourse');
+
+        logAnalytics(postHog, {
+            category: analyticsEnum.addedClasses,
+            action: analyticsEnum.addedClasses.actions.OPEN,
+        });
 
         AppStore.on('skeletonModeChange', handleSkeletonModeChange);
 

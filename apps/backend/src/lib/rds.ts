@@ -178,10 +178,10 @@ export class RDS {
                 .returning()
                 .then((res) => res[0]);
 
-            return account;
+            return { ...account, newUser: true };
         }
 
-        return existingAccount;
+        return { ...existingAccount, newUser: false };
     }
 
     /**

@@ -1,10 +1,22 @@
-import ReactGA4 from 'react-ga4';
+import { PostHog } from 'posthog-js/react';
 /**
  * This is an enum that stores all the
  * possible category names and associated actions
- * for Google Analytics
  */
-const analyticsEnum = {
+export interface AnalyticsCategory {
+    title: string;
+    actions: Record<string, string>;
+}
+
+export interface AnalyticsEnum {
+    calendar: AnalyticsCategory;
+    nav: AnalyticsCategory;
+    classSearch: AnalyticsCategory;
+    addedClasses: AnalyticsCategory;
+    map: AnalyticsCategory;
+}
+
+const analyticsEnum: AnalyticsEnum = {
     calendar: {
         title: 'Calendar Pane',
         actions: {
@@ -59,6 +71,8 @@ const analyticsEnum = {
             OPEN: 'Open Added Classes',
             COPY_SCHEDULE: 'Copy Schedule',
             CLEAR_SCHEDULE: 'Clear Schedule',
+            CHANGE_COURSE_COLOR: 'Change Course Color',
+            COPY_COURSE_CODE: 'Copy Course Code',
         },
     },
     map: {
@@ -73,17 +87,21 @@ const analyticsEnum = {
 export default analyticsEnum;
 
 interface AnalyticsProps {
-    category: string;
+    category: AnalyticsCategory;
     action: string;
     label?: string;
     value?: number;
 }
 
 /**
- * This is just a wrapper around ReactGA4.event so we don't have to import it everywhere
+ * Logs event to PostHog instance
  */
-export function logAnalytics({ category, action, label, value }: AnalyticsProps) {
-    ReactGA4.event({ category, action, label, value });
+export function logAnalytics(postHog: PostHog | undefined, { category, action, label, value }: AnalyticsProps) {
+    postHog?.capture(action, {
+        category: category.title,
+        label,
+        value,
+    });
 }
 
 /**

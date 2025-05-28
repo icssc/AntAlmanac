@@ -135,7 +135,7 @@ const SectionTableWrapped = (
                 courseDetails={course}
                 allowHighlight={true}
                 scheduleNames={scheduleNames}
-                analyticsCategory={analyticsEnum.classSearch.title}
+                analyticsCategory={analyticsEnum.classSearch}
             />
         );
     } else {
@@ -146,7 +146,7 @@ const SectionTableWrapped = (
                 courseDetails={course}
                 allowHighlight={true}
                 scheduleNames={scheduleNames}
-                analyticsCategory={analyticsEnum.classSearch.title}
+                analyticsCategory={analyticsEnum.classSearch}
             />
         );
     }

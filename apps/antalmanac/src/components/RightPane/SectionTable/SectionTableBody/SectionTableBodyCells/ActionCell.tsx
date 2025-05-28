@@ -1,6 +1,7 @@
 import { Add, ArrowDropDown, Delete } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
@@ -48,11 +49,13 @@ export function ColorAndDelete({ section, term }: ActionProps) {
 
     const flexDirection = isMobile ? 'column' : undefined;
 
+    const postHog = usePostHog();
+
     const handleClick = () => {
         deleteCourse(section.sectionCode, term, AppStore.getCurrentScheduleIndex());
 
-        logAnalytics({
-            category: analyticsEnum.addedClasses.title,
+        logAnalytics(postHog, {
+            category: analyticsEnum.addedClasses,
             action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
         });
     };
@@ -76,7 +79,7 @@ export function ColorAndDelete({ section, term }: ActionProps) {
                 isCustomEvent={false}
                 sectionCode={section.sectionCode}
                 term={term}
-                analyticsCategory={analyticsEnum.addedClasses.title}
+                analyticsCategory={analyticsEnum.addedClasses}
             />
         </Box>
     );
@@ -98,6 +101,8 @@ export function ScheduleAddCell({ section, courseDetails, term, scheduleNames, s
     const flexDirection = isMobile ? 'column' : undefined;
     const open = Boolean(anchorEl);
 
+    const postHog = usePostHog();
+
     const closeAndAddCourse = (scheduleIndex: number, specificSchedule?: boolean) => {
         setAnchorEl(null);
 
@@ -109,8 +114,8 @@ export function ScheduleAddCell({ section, courseDetails, term, scheduleNames, s
         }
 
         if (specificSchedule) {
-            logAnalytics({
-                category: analyticsEnum.classSearch.title,
+            logAnalytics(postHog, {
+                category: analyticsEnum.classSearch,
                 action: analyticsEnum.classSearch.actions.ADD_SPECIFIC,
             });
         }

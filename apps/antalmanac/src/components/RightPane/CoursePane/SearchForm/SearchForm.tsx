@@ -1,6 +1,7 @@
 import { Tune } from '@mui/icons-material';
 import { Box, IconButton, Stack, Tooltip } from '@mui/material';
 import { useState, useEffect, useCallback, type FormEvent } from 'react';
+import { usePostHog } from 'posthog-js/react';
 
 import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
 import { HelpBox } from '$components/RightPane/CoursePane/SearchForm/HelpBox';
@@ -27,6 +28,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     const isDark = false;
     const filterCourses = useSessionStore((s) => s.filterTakenCourses);
     const setFilterCourses = useSessionStore((s) => s.setFilterTakenCourses);
+    const postHog = usePostHog();
 
     const onFormSubmit = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
@@ -72,6 +74,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                             <FuzzySearch
                                 toggleSearch={toggleSearch}
                                 toggleShowLegacySearch={toggleManualSearch}
+                                postHog={postHog}
                             />
                             <Tooltip
                                 arrow
@@ -90,8 +93,8 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                     ) : (
                         <LegacySearch
                             onSubmit={() => {
-                                logAnalytics({
-                                    category: analyticsEnum.classSearch.title,
+                                logAnalytics(postHog, {
+                                    category: analyticsEnum.classSearch,
                                     action: analyticsEnum.classSearch.actions.MANUAL_SEARCH,
                                 });
                             }}

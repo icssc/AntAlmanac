@@ -1,11 +1,12 @@
 import { InfoOutlined } from '@mui/icons-material';
 import { Box, Button, Popover, Skeleton } from '@mui/material';
 import type { PrerequisiteTree } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 
 import PrereqTree from '$components/RightPane/SectionTable/PrereqTree';
 import { useIsMobile } from '$hooks/useIsMobile';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import analyticsEnum, { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 
 const noCourseInfo = {
@@ -26,7 +27,7 @@ interface CourseInfoBarProps {
     courseNumber: string;
     deptCode: string;
     prerequisiteLink: string;
-    analyticsCategory: string;
+    analyticsCategory: AnalyticsCategory;
 }
 
 export interface CourseInfo {
@@ -53,6 +54,8 @@ export const CourseInfoBar = ({
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [courseInfo, setCourseInfo] = useState<CourseInfo | null>(null);
+
+    const postHog = usePostHog();
 
     const togglePopover = async (currentTarget: HTMLElement | null) => {
         if (anchorEl) {
@@ -123,7 +126,7 @@ export const CourseInfoBar = ({
                         <p>
                             <a
                                 onClick={() => {
-                                    logAnalytics({
+                                    logAnalytics(postHog, {
                                         category: analyticsCategory,
                                         action: analyticsEnum.classSearch.actions.CLICK_PREREQUISITES,
                                     });
@@ -163,7 +166,7 @@ export const CourseInfoBar = ({
                 startIcon={!isMobile && <InfoOutlined />}
                 size="small"
                 onClick={(event) => {
-                    logAnalytics({
+                    logAnalytics(postHog, {
                         category: analyticsCategory,
                         action: analyticsEnum.classSearch.actions.CLICK_INFO,
                     });
