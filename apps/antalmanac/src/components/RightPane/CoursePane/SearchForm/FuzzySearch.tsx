@@ -195,7 +195,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                         autoFocus={!isMobile()}
                         fullWidth
                         label={'Search'}
-                        placeholder="Search for courses, departments, GEs..."
+                        placeholder="Search for courses, departments, course codes, GEs..."
                     />
                 )}
                 autoHighlight={true}
