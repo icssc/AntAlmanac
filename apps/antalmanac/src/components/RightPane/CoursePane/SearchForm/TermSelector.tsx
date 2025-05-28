@@ -1,44 +1,26 @@
-import { FormControl, InputLabel, MenuItem, Select } from '@material-ui/core';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { FormControl, InputLabel, MenuItem, Select, type SelectChangeEvent } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
 
-import RightPaneStore from '../../RightPaneStore';
-
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { termData } from '$lib/termData';
 
-interface TermSelectorProps {
-    changeTerm: (field: string, value: string) => void;
-    fieldName: string;
-}
+export function TermSelector() {
+    const [term, setTerm] = useState<string>(() => RightPaneStore.getFormData().term);
 
-function TermSelector(props: TermSelectorProps) {
-    const { changeTerm, fieldName } = props;
-
-    const getTerm = () => {
-        const urlTerm = RightPaneStore.getUrlTermValue();
-
-        if (urlTerm) {
-            RightPaneStore.updateFormValue('term', urlTerm);
-        }
-
-        return RightPaneStore.getFormData().term;
-    };
-
-    const [term, setTerm] = useState(getTerm());
-
-    const handleChange = (event: ChangeEvent<{ name?: string | undefined; value: unknown }>) => {
-        const newValue = event.target.value as string;
-
-        setTerm(newValue);
-        changeTerm(fieldName, newValue);
+    const handleChange = (event: SelectChangeEvent<string>) => {
+        const value = event.target.value;
+        setTerm(value);
 
         const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('term', newValue);
+        urlParams.set('term', value);
         history.replaceState({ url: 'url' }, 'url', `/?${urlParams}`);
+
+        RightPaneStore.updateFormValue('term', value);
     };
 
-    const resetField = () => {
+    const resetField = useCallback(() => {
         setTerm(RightPaneStore.getFormData().term);
-    };
+    }, []);
 
     useEffect(() => {
         RightPaneStore.on('formReset', resetField);
@@ -46,12 +28,12 @@ function TermSelector(props: TermSelectorProps) {
         return () => {
             RightPaneStore.off('formReset', resetField);
         };
-    });
+    }, [resetField]);
 
     return (
         <FormControl fullWidth>
-            <InputLabel>Term</InputLabel>
-            <Select value={term} onChange={handleChange}>
+            <InputLabel variant="standard">Term</InputLabel>
+            <Select value={term} onChange={handleChange} fullWidth variant="standard">
                 {termData.map((term, index) => (
                     <MenuItem key={index} value={term.shortName}>
                         {term.longName}
@@ -61,5 +43,3 @@ function TermSelector(props: TermSelectorProps) {
         </FormControl>
     );
 }
-
-export default TermSelector;

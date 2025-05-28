@@ -10,7 +10,7 @@ import type {
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 
-import { termData } from '$lib/termData';
+import { getDefaultTerm } from '$lib/termData';
 import { WebSOC } from '$lib/websoc';
 import { getColorForNewSection } from '$stores/scheduleHelpers';
 
@@ -38,7 +38,7 @@ export class Schedules {
 
         this.schedules = [
             {
-                scheduleName: `${termData[0].shortName.replaceAll(' ', '-')}`,
+                scheduleName: `${getDefaultTerm().shortName.replaceAll(' ', '-')}`,
                 courses: [],
                 customEvents: [],
                 scheduleNoteId: scheduleNoteId,
@@ -63,7 +63,7 @@ export class Schedules {
     }
 
     getDefaultScheduleName() {
-        return termData[0].shortName.replaceAll(' ', '-');
+        return getDefaultTerm().shortName.replaceAll(' ', '-');
     }
 
     getCurrentScheduleIndex() {
@@ -339,6 +339,8 @@ export class Schedules {
      */
     getIndexesOfCustomEvent(customEventId: number) {
         const indices: number[] = [];
+        console.log(this.schedules);
+
         for (const scheduleIndex of this.schedules.keys()) {
             if (this.doesCustomEventExistInSchedule(customEventId, scheduleIndex)) {
                 indices.push(scheduleIndex);
@@ -425,7 +427,7 @@ export class Schedules {
      * Checks if a schedule contains the custom event ID
      */
     doesCustomEventExistInSchedule(customEventId: number, scheduleIndex: number) {
-        for (const customEvent of this.schedules[scheduleIndex].customEvents) {
+        for (const customEvent of this.schedules.at(scheduleIndex)?.customEvents ?? []) {
             if (customEvent.customEventID === customEventId) {
                 return true;
             }

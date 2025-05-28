@@ -1,8 +1,9 @@
-import { TableBody } from '@material-ui/core';
+import { TableBody } from '@mui/material';
 import { AACourse, AASection } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 
 import { SectionTableBodyRow } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRow';
+import { AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { normalizeTime, parseDaysString } from '$stores/calendarizeHelpers';
 
@@ -11,9 +12,16 @@ interface SectionTableBodyProps {
     term: string;
     scheduleNames: string[];
     allowHighlight: boolean;
+    analyticsCategory: AnalyticsCategory;
 }
 
-export function SectionTableBody({ courseDetails, term, scheduleNames, allowHighlight }: SectionTableBodyProps) {
+export function SectionTableBody({
+    courseDetails,
+    term,
+    scheduleNames,
+    allowHighlight,
+    analyticsCategory,
+}: SectionTableBodyProps) {
     const [calendarEvents, setCalendarEvents] = useState(() => AppStore.getCourseEventsInCalendar());
 
     /**
@@ -86,6 +94,7 @@ export function SectionTableBody({ courseDetails, term, scheduleNames, allowHigh
                         allowHighlight={allowHighlight}
                         scheduleNames={scheduleNames}
                         scheduleConflict={conflict}
+                        analyticsCategory={analyticsCategory}
                     />
                 );
             })}

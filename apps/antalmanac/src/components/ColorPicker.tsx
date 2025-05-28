@@ -1,15 +1,16 @@
-import { IconButton, Popover, Tooltip } from '@material-ui/core';
-import { ColorLens } from '@material-ui/icons';
-import { PureComponent } from 'react';
+import { ColorLens } from '@mui/icons-material';
+import { IconButton, Popover, PopoverProps, Tooltip } from '@mui/material';
+import { PostHog, usePostHog } from 'posthog-js/react';
+import { memo, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
 
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '$lib/analytics';
+import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 
 interface ColorPickerProps {
     color: string;
-    analyticsCategory: string;
+    analyticsCategory: AnalyticsCategory;
     /**If true, this object has a customEventID. If false, this object has a term and sectionCode. */
     isCustomEvent: boolean;
     /**Not undefined when isCustomEvent is true */
@@ -20,95 +21,90 @@ interface ColorPickerProps {
     sectionCode?: string;
 }
 
-class ColorPicker extends PureComponent<ColorPickerProps> {
-    state = {
-        anchorEl: null,
-        color: this.props.color,
-    };
+const ColorPicker = memo(function ColorPicker({
+    color,
+    analyticsCategory,
+    isCustomEvent,
+    customEventID,
+    term,
+    sectionCode,
+}: ColorPickerProps) {
+    const [anchorEl, setAnchorEl] = useState<PopoverProps['anchorEl']>(null);
+    const [currColor, setCurrColor] = useState(color);
 
-    handleClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
+    const postHog = usePostHog();
+
+    useEffect(() => {
+        let colorPickerId;
+        if (isCustomEvent && customEventID) colorPickerId = customEventID.toString();
+        else if (sectionCode) colorPickerId = sectionCode;
+        else throw new Error("Colorpicker custom component wasn't supplied a custom event id or a section code.");
+        AppStore.registerColorPicker(colorPickerId, updateColor);
+
+        return () => {
+            AppStore.unregisterColorPicker(colorPickerId, updateColor);
+        };
+    }, [isCustomEvent, customEventID, sectionCode]);
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>, postHog?: PostHog) => {
         event.stopPropagation();
 
-        this.setState({
-            anchorEl: event.currentTarget,
-        });
-        logAnalytics({
-            category: this.props.analyticsCategory,
-            action: analyticsEnum.calendar.actions.CHANGE_COURSE_COLOR,
+        setAnchorEl(event.currentTarget);
+
+        logAnalytics(postHog, {
+            category: analyticsCategory,
+            action: analyticsCategory.actions.CHANGE_COURSE_COLOR,
         });
     };
 
-    handleClose = (event: Event) => {
+    const handleClose = (event: Event) => {
         if (event.stopPropagation) event.stopPropagation();
-        this.setState({
-            anchorEl: null,
-        });
+        setAnchorEl(null);
     };
 
-    handleColorChange = (color: { hex: string }) => {
-        this.setState({ color: color.hex }, () => {
-            // The && here is to keep the TS compiler happy. If isCustomEvent is true, there should always be a customEventID passed to props.
-            if (this.props.isCustomEvent && this.props.customEventID)
-                changeCustomEventColor(this.props.customEventID, this.state.color);
-            else if (this.props.sectionCode && this.props.term)
-                changeCourseColor(this.props.sectionCode, this.props.term, this.state.color);
-        });
+    const handleColorChange = (newColor: { hex: string }) => {
+        setCurrColor(newColor.hex);
+        if (isCustomEvent && customEventID) changeCustomEventColor(customEventID, newColor.hex);
+        else if (sectionCode && term) changeCourseColor(sectionCode, term, newColor.hex);
     };
 
-    updateColor = (color: string) => {
-        if (color !== this.props.color) {
-            this.setState({ color: color });
+    const updateColor = (newColor: string) => {
+        if (currColor !== newColor) {
+            setCurrColor(newColor);
         }
     };
 
-    componentDidMount = () => {
-        let colorPickerId;
-        if (this.props.isCustomEvent && this.props.customEventID) colorPickerId = this.props.customEventID.toString();
-        else if (this.props.sectionCode) colorPickerId = this.props.sectionCode;
-        else throw new Error("Colorpicker custom component wasn't supplied a custom event id or a section code.");
-        AppStore.registerColorPicker(colorPickerId, this.updateColor);
-    };
-    componentWillUnmount = () => {
-        let colorPickerId;
-        if (this.props.isCustomEvent && this.props.customEventID) colorPickerId = this.props.customEventID.toString();
-        else if (this.props.sectionCode) colorPickerId = this.props.sectionCode;
-        else throw new Error("Colorpicker custom component wasn't supplied a custom event id or a section code.");
-        AppStore.unregisterColorPicker(colorPickerId, this.updateColor);
-    };
-
-    render() {
-        return (
-            <>
-                <Tooltip title="Change Color">
-                    <IconButton
-                        style={{ color: this.state.color, padding: 8 }}
-                        onClick={(e) => {
-                            this.handleClick(e);
-                        }}
-                    >
-                        <ColorLens fontSize="small" />
-                    </IconButton>
-                </Tooltip>
-
-                <Popover
-                    open={Boolean(this.state.anchorEl)}
-                    anchorEl={this.state.anchorEl}
-                    onClose={this.handleClose}
-                    onClick={(e) => e.stopPropagation()}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'center',
-                    }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
+    return (
+        <>
+            <Tooltip title="Change Color">
+                <IconButton
+                    style={{ color: currColor, padding: 8 }}
+                    onClick={(e) => {
+                        handleClick(e, postHog);
                     }}
                 >
-                    <SketchPicker color={this.state.color} onChange={this.handleColorChange} />
-                </Popover>
-            </>
-        );
-    }
-}
+                    <ColorLens fontSize="small" />
+                </IconButton>
+            </Tooltip>
+
+            <Popover
+                open={Boolean(anchorEl)}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                onClick={(e) => e.stopPropagation()}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}
+            >
+                <SketchPicker color={currColor} onChange={handleColorChange} />
+            </Popover>
+        </>
+    );
+});
 
 export default ColorPicker;

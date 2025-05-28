@@ -14,6 +14,7 @@ import { LocationsCell } from '$components/RightPane/SectionTable/SectionTableBo
 import { RestrictionsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/RestrictionsCell';
 import { StatusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/StatusCell';
 import { SyllabusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SyllabusCell';
+import { AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
@@ -26,6 +27,7 @@ interface SectionTableBodyRowProps {
     allowHighlight: boolean;
     scheduleNames: string[];
     scheduleConflict: boolean;
+    analyticsCategory: AnalyticsCategory;
 }
 
 // These components have too varied of types, any is fine here
@@ -45,7 +47,7 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
 };
 
 export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
-    const { section, courseDetails, term, allowHighlight, scheduleNames, scheduleConflict } = props;
+    const { section, courseDetails, term, allowHighlight, scheduleNames, scheduleConflict, analyticsCategory } = props;
 
     const theme = useTheme();
     const isDark = useThemeStore((store) => store.isDark);
@@ -143,6 +145,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
                             units={parseFloat(section.units)}
                             courseName={`${courseDetails.deptCode} ${courseDetails.courseNumber}`}
                             {...courseDetails}
+                            analyticsCategory={analyticsCategory}
                         />
                     );
                 })}

@@ -23,6 +23,10 @@
     border: 0;
 }
 
+.rbc-time-slot {
+    min-width: 42px;
+}
+
 .rbc-timeslot-group {
     min-height: 25px;
     border-bottom-color: #80808080;

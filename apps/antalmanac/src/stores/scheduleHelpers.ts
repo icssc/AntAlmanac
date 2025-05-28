@@ -1,4 +1,4 @@
-import { amber, blue, deepOrange, deepPurple, green, pink, purple } from '@material-ui/core/colors';
+import { amber, blue, deepOrange, deepPurple, green, pink, purple } from '@mui/material/colors';
 import { ScheduleCourse } from '@packages/antalmanac-types';
 
 export interface HSLColor {
