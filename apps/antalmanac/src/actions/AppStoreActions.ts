@@ -271,6 +271,7 @@ export const loadSchedule = async (
         label: providerId,
         value: rememberMe ? 1 : 0,
     });
+
     if (
         providerId != null &&
         (!AppStore.hasUnsavedChanges() ||
@@ -283,12 +284,18 @@ export const loadSchedule = async (
             }
 
             try {
-                const account = await trpc.userData.getAccountByProviderId.query({
-                    accountType,
-                    providerId,
-                });
+                const account = await trpc.userData.getAccountByProviderId.query(
+                    {
+                        accountType,
+                        providerId,
+                    },
+                    { context: { skipBatch: true } }
+                );
+                const userDataResponse = await trpc.userData.getUserData.query(
+                    { userId: account.userId },
+                    { context: { skipBatch: true } }
+                );
 
-                const userDataResponse = await trpc.userData.getUserData.query({ userId: account.userId });
                 const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
 
                 if (await AppStore.loadSchedule(scheduleSaveState)) {
@@ -318,16 +325,14 @@ export const loadSchedule = async (
 };
 
 export const loadScheduleWithSessionToken = async () => {
-    // logAnalytics({
-    //     category: analyticsEnum.nav.title,
-    //     action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
-    //     label: providerId,
-    //     value: rememberMe ? 1 : 0,
-    // });
     try {
-        const userDataResponse = await trpc.userData.getUserDataWithSession.query({
-            refreshToken: useSessionStore.getState().session ?? '',
-        });
+        const userDataResponse = await trpc.userData.getUserDataWithSession.query(
+            {
+                refreshToken: useSessionStore.getState().session ?? '',
+            },
+            { context: { skipBatch: true } }
+        );
+
         const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
         if (isEmptySchedule(scheduleSaveState.schedules)) {
             return true;
@@ -335,18 +340,23 @@ export const loadScheduleWithSessionToken = async () => {
 
         if (scheduleSaveState == null) {
             openSnackbar('error', `Couldn't find schedules for this account`);
-        } else if (await AppStore.loadSchedule(scheduleSaveState)) {
+            return false;
+        }
+
+        try {
+            await AppStore.loadSchedule(scheduleSaveState);
+
             openSnackbar('success', `Schedule loaded.`);
             return true;
-        } else {
+        } catch (error) {
             AppStore.loadFallbackSchedules(scheduleSaveState);
             openSnackbar(
                 'error',
-                `Network error loading course information". 	              
-                        If this continues to happen, please submit a feedback form.`
+                `Network error loading course information. 	              
+                            If this continues to happen, please submit a feedback form.`
             );
+            return false;
         }
-        return false;
     } catch (e) {
         console.error(e);
         openSnackbar('error', `Failed to load schedules. If this continues to happen, please submit a feedback form.`);
