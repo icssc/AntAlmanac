@@ -7,17 +7,18 @@ import actionTypesStore from '$actions/ActionTypesStore';
 import { saveSchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import trpc from '$lib/api/trpc';
-import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 export const Save = () => {
     const isDark = useThemeStore((store) => store.isDark);
+    const { fallback } = useFallbackStore();
+
     const { session, sessionIsValid: validSession } = useSessionStore();
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const { openAutoSaveWarning, setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
 
     const handleClickSignIn = () => {
@@ -27,18 +28,6 @@ export const Save = () => {
     const handleCloseAutoSaveWarning = () => {
         setOpenAutoSaveWarning(false);
     };
-
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
 
     const saveScheduleData = async () => {
         if (validSession && session) {
@@ -70,7 +59,7 @@ export const Save = () => {
                 startIcon={<SaveIcon />}
                 loadingPosition="start"
                 onClick={validSession ? saveScheduleData : handleClickSignIn}
-                disabled={skeletonMode || saving}
+                disabled={fallback || saving}
                 loading={saving}
             >
                 Save
