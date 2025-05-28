@@ -53,7 +53,7 @@ export function FallbackSchedule() {
 
     return (
         <Box display="flex" flexDirection="column" gap={1}>
-            <Typography variant="h6">Schedule: {schedule?.scheduleName}</Typography>
+            <Typography variant="h6">Schedule Name: {schedule?.scheduleName}</Typography>
             {
                 // Sections organized under terms, in case the schedule contains multiple terms
                 sectionsByTerm.map(([term, sections]) => (
