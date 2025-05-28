@@ -1,14 +1,15 @@
 import { MenuItem, Box, type SelectChangeEvent } from '@mui/material';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 
-import { ManualSearchSelect } from '../ManualSearch/ManualSearchSelect';
-import { ManualSearchTextField } from '../ManualSearch/ManualSearchTextField';
-
+import { AdornedSelect } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/AdornedSelect';
+import { AdornedTextField } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/AdornedTextField';
 import {
     EXCLUDE_RESTRICTION_CODES_OPTIONS,
     DAYS_OPTIONS,
 } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
+import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { safeUnreachableCase } from '$lib/utils';
 
 export function AdvancedSearchTextFields() {
     const [instructor, setInstructor] = useState(() => RightPaneStore.getFormData().instructor);
@@ -47,7 +48,7 @@ export function AdvancedSearchTextFields() {
     }, [resetField]);
 
     const changeHandlerFactory =
-        (name: string) =>
+        (name: AdvancedSearchParam | 'online') =>
         (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string | string[]>) => {
             const stateObj = { url: 'url' };
             const url = new URL(window.location.href);
@@ -104,12 +105,11 @@ export function AdvancedSearchTextFields() {
                 case 'excludeRestrictionCodes':
                     setExcludeRestrictionCodes(stringValue);
                     break;
-                case 'days': {
+                case 'days':
                     setDays(stringValue);
                     break;
-                }
                 default:
-                    console.error(`Could not find advanced search field with name ${name}`);
+                    safeUnreachableCase(name);
                     break;
             }
 
@@ -144,205 +144,245 @@ export function AdvancedSearchTextFields() {
 
     return (
         <Box
-            style={{
+            sx={{
                 display: 'flex',
-                gap: '1rem',
+                gap: 2,
                 flexWrap: 'wrap',
                 marginBottom: '1rem',
             }}
         >
-            <ManualSearchTextField
-                label="Instructor"
-                textFieldProps={{
-                    type: 'search',
-                    value: instructor,
-                    onChange: changeHandlerFactory('instructor'),
-                }}
-                helperText="Last name only"
-            />
-
-            <ManualSearchTextField
-                label="Units"
-                helperText="ex. 3, 4, or VAR"
-                textFieldProps={{
-                    value: units,
-                    onChange: changeHandlerFactory('units'),
-                    type: 'search',
-                    style: { width: 200 },
-                    id: 'units',
-                }}
-            />
-
-            <ManualSearchSelect
-                label="Class Full Option"
-                selectProps={{
-                    value: coursesFull,
-                    onChange: changeHandlerFactory('coursesFull'),
+            <Box
+                sx={{
+                    display: 'flex',
+                    rowGap: 1,
+                    columnGap: 2,
+                    flexWrap: 'wrap',
                 }}
             >
-                <MenuItem value={'ANY'}>Include all classes</MenuItem>
-                <MenuItem value={'SkipFullWaitlist'}>Include full courses if space on waitlist</MenuItem>
-                <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
-                <MenuItem value={'FullOnly'}>Show only full or waitlisted courses</MenuItem>
-                <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
-            </ManualSearchSelect>
+                <AdornedTextField
+                    label="Instructor"
+                    textFieldProps={{
+                        type: 'search',
+                        value: instructor,
+                        onChange: changeHandlerFactory('instructor'),
+                        placeholder: 'Last name only',
+                    }}
+                />
 
-            <ManualSearchSelect
-                label="Course Level"
-                selectProps={{
-                    value: division,
-                    onChange: changeHandlerFactory('division'),
-                    displayEmpty: true,
-                    MenuProps: {
-                        anchorOrigin: {
-                            vertical: 'bottom',
-                            horizontal: 'left',
+                <AdornedTextField
+                    label="Units"
+                    textFieldProps={{
+                        value: units,
+                        onChange: changeHandlerFactory('units'),
+                        type: 'search',
+                        sx: { width: 200 },
+                        id: 'units',
+                        placeholder: 'ex. 3, 4, or VAR',
+                    }}
+                />
+            </Box>
+
+            <Box
+                sx={{
+                    display: 'flex',
+                    rowGap: 1,
+                    columnGap: 2,
+                    flexWrap: 'wrap',
+                }}
+            >
+                <AdornedSelect
+                    label="Class Full Option"
+                    selectProps={{
+                        value: coursesFull,
+                        onChange: changeHandlerFactory('coursesFull'),
+                    }}
+                >
+                    <MenuItem value={'ANY'}>Include all classes</MenuItem>
+                    <MenuItem value={'SkipFullWaitlist'}>Include full courses if space on waitlist</MenuItem>
+                    <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
+                    <MenuItem value={'FullOnly'}>Show only full or waitlisted courses</MenuItem>
+                    <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
+                </AdornedSelect>
+                <AdornedSelect
+                    label="Course Level"
+                    selectProps={{
+                        value: division,
+                        onChange: changeHandlerFactory('division'),
+                        displayEmpty: true,
+                        MenuProps: {
+                            anchorOrigin: {
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            },
+                            transformOrigin: {
+                                vertical: 'top',
+                                horizontal: 'left',
+                            },
                         },
-                        transformOrigin: {
-                            vertical: 'top',
-                            horizontal: 'left',
-                        },
-                    },
-                }}
-            >
-                <MenuItem value={''}>Any Division</MenuItem>
-                <MenuItem value={'LowerDiv'}>Lower Division</MenuItem>
-                <MenuItem value={'UpperDiv'}>Upper Division</MenuItem>
-                <MenuItem value={'Graduate'}>Graduate/Professional</MenuItem>
-            </ManualSearchSelect>
-
-            <ManualSearchSelect
-                label="Starts After"
-                selectProps={{
-                    value: startTime,
-                    onChange: changeHandlerFactory('startTime'),
-                }}
-                formControlProps={{
-                    sx: { minWidth: 200 },
-                }}
-            >
-                {startsAfterMenuItems}
-            </ManualSearchSelect>
-
-            <ManualSearchSelect
-                label="Ends Before"
-                selectProps={{
-                    value: endTime,
-                    onChange: changeHandlerFactory('endTime'),
-                }}
-                formControlProps={{
-                    sx: { minWidth: 200 },
-                }}
-            >
-                {endsBeforeMenuItems}
-            </ManualSearchSelect>
-
-            <ManualSearchSelect
-                label="Online Only"
-                selectProps={{
-                    value: building === 'ON' ? 'True' : 'False',
-                    onChange: changeHandlerFactory('online'),
-                }}
-                formControlProps={{
-                    sx: { minWidth: 100 },
-                }}
-            >
-                <MenuItem value={'False'}>False</MenuItem>
-                <MenuItem value={'True'}>True</MenuItem>
-            </ManualSearchSelect>
-
-            <ManualSearchTextField
-                label="Building"
-                textFieldProps={{
-                    id: 'building',
-                    type: 'search',
-                    value: building,
-                    onChange: changeHandlerFactory('building'),
-                }}
-                formControlProps={{
-                    sx: { minWidth: 100 },
-                }}
-            />
-
-            <ManualSearchTextField
-                label="Room"
-                textFieldProps={{
-                    id: 'room',
-                    type: 'search',
-                    value: room,
-                    onChange: changeHandlerFactory('room'),
-                }}
-                formControlProps={{
-                    sx: { minWidth: 100 },
-                }}
-            />
-
-            <ManualSearchSelect
-                label="Exclude Restrictions"
-                selectProps={{
-                    multiple: true,
-                    value: excludeRestrictionCodes.split(''),
-                    onChange: changeHandlerFactory('excludeRestrictionCodes'),
-                    renderValue: (selected) => (selected as string[]).join(', '),
-                }}
-            >
-                {EXCLUDE_RESTRICTION_CODES_OPTIONS.map((option) => (
-                    <MenuItem
-                        key={option.value}
-                        value={option.value}
-                        style={{
-                            maxWidth: 240,
+                    }}
+                >
+                    <MenuItem value={''}>Any Division</MenuItem>
+                    <MenuItem value={'LowerDiv'}>Lower Division</MenuItem>
+                    <MenuItem value={'UpperDiv'}>Upper Division</MenuItem>
+                    <MenuItem value={'Graduate'}>Graduate/Professional</MenuItem>
+                </AdornedSelect>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        rowGap: 1,
+                        columnGap: 2,
+                        flexWrap: 'wrap',
+                    }}
+                >
+                    <AdornedSelect
+                        label="Starts After"
+                        selectProps={{
+                            value: startTime,
+                            onChange: changeHandlerFactory('startTime'),
+                        }}
+                        formControlProps={{
+                            sx: { minWidth: 200 },
                         }}
                     >
-                        <span
-                            style={{
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                            }}
-                        >
-                            {option.label}
-                        </span>
-                    </MenuItem>
-                ))}
-            </ManualSearchSelect>
+                        {startsAfterMenuItems}
+                    </AdornedSelect>
 
-            <ManualSearchSelect
-                label="Days"
-                selectProps={{
-                    multiple: true,
-                    value: days ? days.split(/(?=[A-Z])/) : [],
-                    onChange: changeHandlerFactory('days'),
-                    renderValue: (selected) =>
-                        (selected as string[])
-                            .sort((a, b) => {
-                                const orderA = DAYS_OPTIONS.findIndex((day) => day.value === a);
-                                const orderB = DAYS_OPTIONS.findIndex((day) => day.value === b);
-                                return orderA - orderB;
-                            })
-                            .join(', '),
-                }}
-            >
-                {DAYS_OPTIONS.map((option) => (
-                    <MenuItem
-                        key={option.value}
-                        value={option.value}
-                        style={{
-                            maxWidth: 240,
+                    <AdornedSelect
+                        label="Ends Before"
+                        selectProps={{
+                            value: endTime,
+                            onChange: changeHandlerFactory('endTime'),
+                        }}
+                        formControlProps={{
+                            sx: { minWidth: 200 },
                         }}
                     >
-                        <span
-                            style={{
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
+                        {endsBeforeMenuItems}
+                    </AdornedSelect>
+                </Box>
+            </Box>
+
+            <Box
+                sx={{
+                    display: 'flex',
+                    rowGap: 1,
+                    columnGap: 2,
+                    flexWrap: 'wrap',
+                }}
+            >
+                <AdornedSelect
+                    label="Online Only"
+                    selectProps={{
+                        value: building === 'ON' ? 'True' : 'False',
+                        onChange: changeHandlerFactory('online'),
+                    }}
+                    formControlProps={{
+                        sx: { minWidth: 100 },
+                    }}
+                >
+                    <MenuItem value={'False'}>False</MenuItem>
+                    <MenuItem value={'True'}>True</MenuItem>
+                </AdornedSelect>
+                <AdornedTextField
+                    label="Building"
+                    textFieldProps={{
+                        id: 'building',
+                        type: 'search',
+                        value: building,
+                        onChange: changeHandlerFactory('building'),
+                    }}
+                    formControlProps={{
+                        sx: { minWidth: 100 },
+                    }}
+                />
+                <AdornedTextField
+                    label="Room"
+                    textFieldProps={{
+                        id: 'room',
+                        type: 'search',
+                        value: room,
+                        onChange: changeHandlerFactory('room'),
+                    }}
+                    formControlProps={{
+                        sx: { minWidth: 100 },
+                    }}
+                />
+            </Box>
+
+            <Box
+                sx={{
+                    display: 'flex',
+                    rowGap: 1,
+                    columnGap: 2,
+                    flexWrap: 'wrap',
+                }}
+            >
+                <AdornedSelect
+                    label="Exclude Restrictions"
+                    selectProps={{
+                        multiple: true,
+                        value: excludeRestrictionCodes.split(''),
+                        onChange: changeHandlerFactory('excludeRestrictionCodes'),
+                        renderValue: (selected) => (selected as string[]).join(', '),
+                    }}
+                >
+                    {EXCLUDE_RESTRICTION_CODES_OPTIONS.map((option) => (
+                        <MenuItem
+                            key={option.value}
+                            value={option.value}
+                            sx={{
+                                maxWidth: 240,
                             }}
                         >
-                            {option.label}
-                        </span>
-                    </MenuItem>
-                ))}
-            </ManualSearchSelect>
+                            <span
+                                style={{
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                }}
+                            >
+                                {option.label}
+                            </span>
+                        </MenuItem>
+                    ))}
+                </AdornedSelect>
+                <AdornedSelect
+                    label="Days"
+                    selectProps={{
+                        multiple: true,
+                        value: days ? days.split(/(?=[A-Z])/) : [],
+                        onChange: changeHandlerFactory('days'),
+                        renderValue: (selected) =>
+                            (selected as string[])
+                                .sort((a, b) => {
+                                    const orderA = DAYS_OPTIONS.findIndex((day) => day.value === a);
+                                    const orderB = DAYS_OPTIONS.findIndex((day) => day.value === b);
+                                    return orderA - orderB;
+                                })
+                                .join(', '),
+                    }}
+                >
+                    {DAYS_OPTIONS.map((option) => (
+                        <MenuItem
+                            key={option.value}
+                            value={option.value}
+                            sx={{
+                                maxWidth: 240,
+                            }}
+                        >
+                            <span
+                                style={{
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                }}
+                            >
+                                {option.label}
+                            </span>
+                        </MenuItem>
+                    ))}
+                </AdornedSelect>
+            </Box>
         </Box>
     );
 }

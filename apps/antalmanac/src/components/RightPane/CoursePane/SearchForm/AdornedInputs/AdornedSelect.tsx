@@ -1,50 +1,44 @@
 import { FormControl, FormControlProps, OutlinedInput, Select, SelectProps } from '@mui/material';
 import { grey } from '@mui/material/colors';
+import { useId } from 'react';
 
-import { ManualSearchInputAdornment } from './ManualSearchInputAdornment';
-
-import { BLUE } from '$src/globals';
+import { SearchAdornment } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/SearchAdornment';
 import { useThemeStore } from '$stores/SettingsStore';
 
-interface ManualSearchSelectProps<T = string | string[]> {
+interface AdornedSelectProps<T = string | string[]> {
     label: string;
     selectProps?: SelectProps<T>;
     formControlProps?: FormControlProps;
-    helperText?: string;
     children?: React.ReactNode;
-    fullWidth?: boolean;
 }
 
-export function ManualSearchSelect<T = string | string[]>({
+export function AdornedSelect<T = string | string[]>({
     label,
     selectProps,
     formControlProps,
-    helperText,
     children,
-    fullWidth,
-}: ManualSearchSelectProps<T>) {
+}: AdornedSelectProps<T>) {
     const isDark = useThemeStore((store) => store.isDark);
+    const id = useId();
 
     return (
-        <FormControl variant="outlined" size="small" fullWidth={fullWidth} sx={{ minWidth: 200 }} {...formControlProps}>
+        <FormControl variant="outlined" size="small" sx={{ minWidth: 200 }} {...formControlProps}>
             <Select
-                fullWidth={fullWidth}
-                placeholder={helperText}
                 {...selectProps}
                 sx={{
                     paddingLeft: 0,
                     '&:hover .MuiOutlinedInput-notchedOutline': {
-                        borderColor: isDark ? grey[400] : grey[600],
+                        borderColor: isDark ? grey[500] : grey[600],
                     },
                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                        borderColor: isDark ? BLUE : undefined,
                         borderWidth: 1,
                     },
                     '& .MuiSelect-select': {
                         paddingLeft: 1,
                     },
                 }}
-                input={<OutlinedInput startAdornment={<ManualSearchInputAdornment label={label} />} />}
+                input={<OutlinedInput startAdornment={<SearchAdornment label={label} id={id} />} />}
+                aria-labelledby={`adornment-label-${id}`}
             >
                 {children}
             </Select>

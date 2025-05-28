@@ -3,7 +3,7 @@ import { useCallback, type FormEvent } from 'react';
 
 import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
 import { HelpBox } from '$components/RightPane/CoursePane/SearchForm/HelpBox';
-import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch/ManualSearch';
+import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';

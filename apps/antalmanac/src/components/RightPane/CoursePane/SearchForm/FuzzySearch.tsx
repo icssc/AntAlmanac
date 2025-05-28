@@ -3,10 +3,8 @@ import type { SearchResult } from '@packages/antalmanac-types';
 import { PureComponent } from 'react';
 import UAParser from 'ua-parser-js';
 
-import RightPaneStore from '../../RightPaneStore';
-
-import { ManualSearchTextField } from './ManualSearch/ManualSearchTextField';
-
+import { AdornedTextField } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/AdornedTextField';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 
@@ -186,22 +184,20 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         return (
             <Autocomplete
                 loading={this.state.loading}
-                style={{ width: '100%' }}
+                sx={{ width: '100%' }}
                 options={Object.keys(this.state.results ?? {})}
-                sx={{
-                    '& .MuiOutlinedInput-root.MuiInputBase-sizeSmall': {
-                        paddingLeft: 0,
-                    },
-                }}
+                size="small"
                 renderInput={(params) => (
-                    <ManualSearchTextField
-                        autocompleteProps={params}
+                    <AdornedTextField
                         label="Search"
-                        textFieldProps={{
-                            autoFocus: !isMobile(),
+                        formControlProps={{
+                            fullWidth: true,
                         }}
-                        helperText="Search for courses, departments, GEs..."
-                        fullWidth
+                        textFieldProps={{
+                            ...params,
+                            autoFocus: !isMobile(),
+                            placeholder: 'Search for courses, departments, GEs...',
+                        }}
                     />
                 )}
                 autoHighlight={true}

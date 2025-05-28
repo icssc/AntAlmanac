@@ -1,7 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { AdvancedSearchParam, ManualSearchParam } from './CoursePane/SearchForm/constants';
-
+import { AdvancedSearchParam, ManualSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { getDefaultTerm } from '$lib/termData';
 
 const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {
@@ -55,7 +54,7 @@ class RightPaneStore extends EventEmitter {
     }
 
     updateFormDataFromURL = (search: URLSearchParams) => {
-        const formFields = Object.keys(defaultFormValues);
+        const formFields = Object.keys(defaultFormValues) as ManualSearchParam[];
 
         formFields.forEach((field) => {
             const paramValue = search.get(field) || search.get(field.toUpperCase());
@@ -82,18 +81,19 @@ class RightPaneStore extends EventEmitter {
     getUrlCourseNumValue = () => this.urlCourseNumValue;
     getUrlDeptValue = () => this.urlDeptValue;
 
-    updateFormValue = (field: string, value: string) => {
+    updateFormValue = (field: ManualSearchParam, value: string) => {
         this.formData[field] = value;
         this.emit('formDataChange');
     };
 
     storePrevFormData = () => {
         this.prevFormData = structuredClone(this.formData);
-        this.emit('formDataChange');
     };
 
     restorePrevFormData = () => {
-        if (!this.prevFormData) return;
+        if (!this.prevFormData) {
+            return;
+        }
         this.formData = this.prevFormData;
         this.prevFormData = undefined;
         this.emit('formDataChange');
@@ -117,9 +117,8 @@ class RightPaneStore extends EventEmitter {
     };
 
     formDataHasAdvancedSearch = () => {
-        return Object.keys(defaultAdvancedSearchValues).some(
-            (key) => this.formData[key] !== defaultAdvancedSearchValues[key]
-        );
+        const formFields = Object.keys(defaultAdvancedSearchValues) as AdvancedSearchParam[];
+        return formFields.some((key) => this.formData[key] !== defaultAdvancedSearchValues[key]);
     };
 }
 

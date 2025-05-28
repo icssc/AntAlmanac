@@ -1,13 +1,12 @@
 import { Box } from '@mui/material';
 import { useCallback, useEffect } from 'react';
 
-import RightPaneStore from '../RightPaneStore';
-
-import { CoursePaneButtonRow } from './CoursePaneButtonRow';
-import CourseRenderPane from './CourseRenderPane';
 
 import { openSnackbar } from '$actions/AppStoreActions';
+import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
+import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { WebSOC } from '$lib/websoc';

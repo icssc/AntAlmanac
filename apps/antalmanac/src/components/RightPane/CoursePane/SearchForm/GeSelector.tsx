@@ -1,8 +1,7 @@
 import { MenuItem, type SelectChangeEvent } from '@mui/material';
 import { useEffect, useCallback, useState } from 'react';
 
-import { ManualSearchSelect } from './ManualSearch/ManualSearchSelect';
-
+import { AdornedSelect } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/AdornedSelect';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 const GE_LIST = [
@@ -56,16 +55,15 @@ export function GeSelector() {
     }, [resetField]);
 
     return (
-        <ManualSearchSelect
+        <AdornedSelect
             label="General Education"
             selectProps={{
                 value: ge,
                 onChange: handleChange,
-                fullWidth: true,
                 variant: 'standard',
             }}
             formControlProps={{
-                sx: { flexBasis: '50%', flexGrow: 1 },
+                sx: { flexGrow: 1 },
             }}
         >
             {GE_LIST.map((category) => {
@@ -75,6 +73,6 @@ export function GeSelector() {
                     </MenuItem>
                 );
             })}
-        </ManualSearchSelect>
+        </AdornedSelect>
     );
 }

@@ -9,7 +9,7 @@ export const ADVANCED_SEARCH_PARAMS = [
     'division',
     'excludeRestrictionCodes',
     'days',
-];
+] as const;
 
 export type AdvancedSearchParam = (typeof ADVANCED_SEARCH_PARAMS)[number];
 
@@ -20,6 +20,6 @@ export const MANUAL_SEARCH_PARAMS = [
     'courseNumber',
     'sectionCode',
     ...ADVANCED_SEARCH_PARAMS,
-];
+] as const;
 
 export type ManualSearchParam = (typeof MANUAL_SEARCH_PARAMS)[number];

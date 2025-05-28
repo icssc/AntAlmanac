@@ -1,7 +1,6 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
-import { ManualSearchTextField } from './ManualSearch/ManualSearchTextField';
-
+import { AdornedTextField } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/AdornedTextField';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 export function CourseNumberSearchBar() {
@@ -40,14 +39,14 @@ export function CourseNumberSearchBar() {
 
     return (
         <div>
-            <ManualSearchTextField
+            <AdornedTextField
                 label="Course Number(s)"
                 textFieldProps={{
                     type: 'search',
                     value,
                     onChange: handleChange,
+                    placeholder: 'ex. 6B, 17, 30-40',
                 }}
-                helperText="ex. 6B, 17, 30-40"
             />
         </div>
     );

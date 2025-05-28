@@ -19,7 +19,7 @@ export function ManualSearch({ onSubmit, onReset }: ManualSearchProps) {
                     <DepartmentSearchBar />
                     <CourseNumberSearchBar />
                 </Box>
-                <Box sx={{ display: 'flex', width: '100%', gap: 2, flexWrap: 'wrap' }}>
+                <Box sx={{ display: 'flex', width: '100%', flexDirection: 'row', gap: 2, flexWrap: 'wrap' }}>
                     <GeSelector />
                     <SectionCodeSearchBar />
                 </Box>

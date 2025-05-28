@@ -1,8 +1,7 @@
 import { MenuItem, type SelectChangeEvent } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
-import { ManualSearchSelect } from './ManualSearch/ManualSearchSelect';
-
+import { AdornedSelect } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/AdornedSelect';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { termData } from '$lib/termData';
 
@@ -33,12 +32,14 @@ export function TermSelector() {
     }, [resetField]);
 
     return (
-        <ManualSearchSelect
+        <AdornedSelect
             label="Term"
-            fullWidth
             selectProps={{
                 value: term,
                 onChange: handleChange,
+            }}
+            formControlProps={{
+                fullWidth: true,
             }}
         >
             {termData.map((term, index) => (
@@ -46,6 +47,6 @@ export function TermSelector() {
                     {term.longName}
                 </MenuItem>
             ))}
-        </ManualSearchSelect>
+        </AdornedSelect>
     );
 }
