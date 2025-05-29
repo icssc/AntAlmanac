@@ -143,8 +143,4 @@ const ColorPicker = memo(function ColorPicker({
     );
 });
 
-/*
-
-
-*/
 export default ColorPicker;
