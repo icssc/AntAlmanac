@@ -1,5 +1,20 @@
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, PopoverProps, Tooltip } from '@mui/material';
+import {
+    red,
+    blue,
+    amber,
+    yellow,
+    green,
+    teal,
+    cyan,
+    lightBlue,
+    indigo,
+    purple,
+    pink,
+    brown,
+    grey,
+} from '@mui/material/colors';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { memo, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
@@ -101,7 +116,28 @@ const ColorPicker = memo(function ColorPicker({
                     horizontal: 'left',
                 }}
             >
-                <SketchPicker color={currColor} onChange={handleColorChange} />
+                <SketchPicker
+                    color={currColor}
+                    onChange={handleColorChange}
+                    presetColors={[
+                        red[300],
+                        blue[300],
+                        amber[300],
+                        yellow[300],
+                        green[300],
+                        teal[300],
+                        cyan[300],
+                        lightBlue[300],
+                        indigo[300],
+                        purple[300],
+                        pink[300],
+                        brown[500],
+                        green[900],
+                        grey[800],
+                        grey[400],
+                        grey[50],
+                    ]}
+                />
             </Popover>
         </>
     );
