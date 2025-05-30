@@ -5,7 +5,7 @@ import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
-import ColorPicker from '$components/ColorPicker';
+import { ColorPicker } from '$components/ColorPicker';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';

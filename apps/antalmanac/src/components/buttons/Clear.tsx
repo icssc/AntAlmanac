@@ -1,5 +1,5 @@
 import { DeleteOutline } from '@mui/icons-material';
-import { IconButton, SxProps, Tooltip } from '@mui/material';
+import { IconButton, IconButtonProps, IconProps, Tooltip } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
 
 import { clearSchedules } from '$actions/AppStoreActions';
@@ -20,20 +20,22 @@ function handleClearSchedule(postHog?: PostHog, analyticsCategory?: AnalyticsCat
     };
 }
 
-interface ClearScheduleButtonProps {
-    skeletonMode?: boolean;
-    buttonSx?: SxProps;
-    size?: 'small' | 'medium' | 'large' | undefined;
-    fontSize?: 'small' | 'medium' | 'large' | 'inherit' | undefined;
-    analyticsCategory?: AnalyticsCategory;
+interface ClearScheduleButtonProps extends IconButtonProps {
+    fontSize?: IconProps['fontSize'];
+    analyticsCategory: AnalyticsCategory;
 }
 
-export function ClearScheduleButton({ skeletonMode, buttonSx, size, fontSize }: ClearScheduleButtonProps) {
+export function ClearScheduleButton({
+    disabled = false,
+    sx,
+    fontSize = 'small',
+    analyticsCategory,
+}: ClearScheduleButtonProps) {
     const postHog = usePostHog();
 
     return (
         <Tooltip title="Clear schedule">
-            <IconButton sx={buttonSx} onClick={handleClearSchedule(postHog)} size={size} disabled={skeletonMode}>
+            <IconButton sx={sx} onClick={handleClearSchedule(postHog, analyticsCategory)} disabled={disabled}>
                 <DeleteOutline fontSize={fontSize} />
             </IconButton>
         </Tooltip>

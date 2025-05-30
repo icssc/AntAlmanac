@@ -24,8 +24,6 @@ export class Schedules {
 
     private previousStates: ScheduleUndoState[];
 
-    private skeletonSchedules: ShortCourseSchedule[];
-
     /**
      * We do not want schedule notes to be undone; to avoid this,
      * we keep track of every schedule note in an object where each key
@@ -47,7 +45,6 @@ export class Schedules {
         this.currentScheduleIndex = 0;
         this.previousStates = [];
         this.scheduleNoteMap = { [scheduleNoteId]: '' };
-        this.skeletonSchedules = [];
     }
 
     getNextScheduleName(scheduleIndex: number, newScheduleName: string) {
@@ -325,7 +322,7 @@ export class Schedules {
     /**
      * Get a reference ito the custom event that matches the ID.
      */
-    getExistingCustomEvent(customEventId: number) {
+    getExistingCustomEvent(customEventId: string | number) {
         for (const customEvent of this.getAllCustomEvents()) {
             if (customEvent.customEventID === customEventId) {
                 return customEvent;
@@ -337,9 +334,8 @@ export class Schedules {
     /**
      * Get indices of schedules that contain the custom event.
      */
-    getIndexesOfCustomEvent(customEventId: number) {
+    getIndexesOfCustomEvent(customEventId: string | number) {
         const indices: number[] = [];
-        console.log(this.schedules);
 
         for (const scheduleIndex of this.schedules.keys()) {
             if (this.doesCustomEventExistInSchedule(customEventId, scheduleIndex)) {
@@ -374,7 +370,7 @@ export class Schedules {
      * Deletes custom event from the given indices.
      * @param scheduleIndices The schedule indices to delete the custom event from.
      */
-    deleteCustomEvent(customEventId: number, scheduleIndices = [this.getCurrentScheduleIndex()]) {
+    deleteCustomEvent(customEventId: string | number, scheduleIndices = [this.getCurrentScheduleIndex()]) {
         this.addUndoState();
         for (const scheduleIndex of scheduleIndices) {
             const customEvents = this.schedules[scheduleIndex].customEvents;
@@ -388,7 +384,7 @@ export class Schedules {
     /**
      * Change color of a custom event
      */
-    changeCustomEventColor(customEventId: number, newColor: string) {
+    changeCustomEventColor(customEventId: number | string, newColor: string) {
         this.addUndoState();
         const customEvent = this.getExistingCustomEvent(customEventId);
         if (customEvent) {
@@ -426,8 +422,8 @@ export class Schedules {
     /**
      * Checks if a schedule contains the custom event ID
      */
-    doesCustomEventExistInSchedule(customEventId: number, scheduleIndex: number) {
-        for (const customEvent of this.schedules.at(scheduleIndex)?.customEvents ?? []) {
+    doesCustomEventExistInSchedule(customEventId: string | number, scheduleIndex: number) {
+        for (const customEvent of this.schedules[scheduleIndex].customEvents) {
             if (customEvent.customEventID === customEventId) {
                 return true;
             }
@@ -607,7 +603,7 @@ export class Schedules {
     }
 
     getCurrentScheduleNote() {
-        const scheduleNoteId = this.schedules[this.currentScheduleIndex]?.scheduleNoteId;
+        const scheduleNoteId = this.schedules.at(this.currentScheduleIndex)?.scheduleNoteId;
 
         if (scheduleNoteId == null) {
             return '';
@@ -619,17 +615,5 @@ export class Schedules {
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
         const scheduleNoteId = this.schedules[scheduleIndex].scheduleNoteId;
         this.scheduleNoteMap[scheduleNoteId] = newScheduleNote;
-    }
-
-    getCurrentSkeletonSchedule(): ShortCourseSchedule {
-        return this.skeletonSchedules[this.currentScheduleIndex];
-    }
-
-    getSkeletonScheduleNames(): string[] {
-        return this.skeletonSchedules.map((schedule) => schedule.scheduleName);
-    }
-
-    setSkeletonSchedules(skeletonSchedules: ShortCourseSchedule[]) {
-        this.skeletonSchedules = skeletonSchedules;
     }
 }

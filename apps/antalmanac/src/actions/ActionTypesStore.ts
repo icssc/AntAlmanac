@@ -41,7 +41,7 @@ export interface AddCustomEventAction {
 
 export interface DeleteCustomEventAction {
     type: 'deleteCustomEvent';
-    customEventId: number;
+    customEventId: number | string;
     scheduleIndices: number[];
 }
 
@@ -53,7 +53,7 @@ export interface EditCustomEventAction {
 
 export interface ChangeCustomEventColorAction {
     type: 'changeCustomEventColor';
-    customEventId: number;
+    customEventId: number | string;
     newColor: string;
 }
 

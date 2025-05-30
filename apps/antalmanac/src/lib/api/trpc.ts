@@ -1,4 +1,4 @@
-import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
+import { createTRPCProxyClient, httpBatchLink, httpLink, splitLink } from '@trpc/client';
 import superjson from 'superjson';
 
 import type { AppRouter } from '../../../../backend/src/routers';
@@ -13,10 +13,25 @@ function getEndpoint() {
     return import.meta.env.MODE === 'development' ? `https://dev.api.antalmanac.com` : `https://api.antalmanac.com`;
 }
 
+const trpcUrl = getEndpoint() + '/trpc';
+
 const trpc = createTRPCProxyClient<AppRouter>({
     links: [
+        // NB: This allows us to skip batching for certain operations.
+        splitLink({
+            condition(op) {
+                return op.context.skipBatch === true;
+            },
+            true: httpLink({
+                url: trpcUrl,
+            }),
+            false: httpBatchLink({
+                url: trpcUrl,
+            }),
+        }),
+
         httpBatchLink({
-            url: getEndpoint() + '/trpc',
+            url: trpcUrl,
         }),
     ],
     transformer: superjson,

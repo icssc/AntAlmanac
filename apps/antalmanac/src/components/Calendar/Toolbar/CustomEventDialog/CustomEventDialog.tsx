@@ -12,7 +12,8 @@ import {
 } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
 import { DaySelector } from '$components/Calendar/Toolbar/CustomEventDialog/DaySelector';
@@ -20,6 +21,7 @@ import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface CustomEventDialogProps {
@@ -38,7 +40,8 @@ const defaultCustomEventValues: RepeatingCustomEvent = {
 };
 
 export function CustomEventDialog(props: CustomEventDialogProps) {
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const { fallback } = useFallbackStore();
 
     const [open, setOpen] = useState(false);
     const [scheduleIndices, setScheduleIndices] = useState<number[]>([]);
@@ -81,7 +84,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             category: analyticsEnum.calendar,
             action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT,
         });
-    }, [props.customEvent?.customEventID]);
+    }, [postHog, props.customEvent?.customEventID]);
 
     const handleClose = useCallback(() => {
         setOpen(false);
@@ -126,26 +129,10 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
 
         resetForm();
 
-        console.log(props.customEvent);
-
         props.customEvent
             ? editCustomEvent(newCustomEvent, scheduleIndices)
             : addCustomEvent(newCustomEvent, scheduleIndices);
     };
-
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
-
-    const isDark = useThemeStore.getState().isDark;
 
     return (
         <>
@@ -157,7 +144,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                 </Tooltip>
             ) : (
                 <Tooltip title="Add custom events">
-                    <IconButton onClick={handleOpen} size="medium" disabled={skeletonMode}>
+                    <IconButton onClick={handleOpen} size="medium" disabled={fallback}>
                         <Add fontSize="small" />
                     </IconButton>
                 </Tooltip>

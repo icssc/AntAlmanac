@@ -20,7 +20,8 @@ import type {
     UndoAction,
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
-import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
 
@@ -47,8 +48,6 @@ class AppStore extends EventEmitter {
 
     unsavedChanges: boolean;
 
-    skeletonMode: boolean;
-
     constructor() {
         super();
         this.setMaxListeners(300);
@@ -63,7 +62,6 @@ class AppStore extends EventEmitter {
         this.eventsInCalendar = [];
         this.finalsEventsInCalendar = [];
         this.unsavedChanges = false;
-        this.skeletonMode = false;
 
         if (typeof window !== 'undefined') {
             window.addEventListener('beforeunload', (event) => {
@@ -96,14 +94,6 @@ class AppStore extends EventEmitter {
 
     getCustomEvents() {
         return this.schedule.getAllCustomEvents();
-    }
-
-    getCurrentSkeletonSchedule() {
-        return this.schedule.getCurrentSkeletonSchedule();
-    }
-
-    getSkeletonScheduleNames() {
-        return this.schedule.getSkeletonScheduleNames();
     }
 
     addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
@@ -170,10 +160,6 @@ class AppStore extends EventEmitter {
 
     getCurrentScheduleNote() {
         return this.schedule.getCurrentScheduleNote();
-    }
-
-    getSkeletonMode() {
-        return this.skeletonMode;
     }
 
     hasUnsavedChanges() {
@@ -257,7 +243,7 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    deleteCustomEvent(customEventId: number, scheduleIndices: number[]) {
+    deleteCustomEvent(customEventId: number | string, scheduleIndices: number[]) {
         this.schedule.deleteCustomEvent(customEventId, scheduleIndices);
         this.unsavedChanges = true;
         const action: DeleteCustomEventAction = {
@@ -269,7 +255,7 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    changeCustomEventColor(customEventId: number, newColor: string) {
+    changeCustomEventColor(customEventId: number | string, newColor: string) {
         this.schedule.changeCustomEventColor(customEventId, newColor);
         this.unsavedChanges = true;
         const action: ChangeCustomEventColorAction = {
@@ -346,11 +332,7 @@ class AppStore extends EventEmitter {
     }
 
     private async loadScheduleFromSaveState(savedSchedule: ScheduleSaveState) {
-        try {
-            await this.schedule.fromScheduleSaveState(savedSchedule);
-        } catch {
-            return false;
-        }
+        await this.schedule.fromScheduleSaveState(savedSchedule);
     }
 
     async loadSchedule(savedSchedule: ScheduleSaveState) {
@@ -381,17 +363,14 @@ class AppStore extends EventEmitter {
         return true;
     }
 
-    loadSkeletonSchedule(savedSchedule: ScheduleSaveState) {
-        this.schedule.setSkeletonSchedules(savedSchedule.schedules);
-        this.skeletonMode = true;
+    loadFallbackSchedules(savedSchedule: ScheduleSaveState) {
+        useFallbackStore.setState({ fallback: true, fallbackSchedules: savedSchedule.schedules });
 
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNotesChange');
-
-        this.emit('skeletonModeChange');
 
         // Switch to added courses tab since Anteater API can't be reached anyway
         useTabStore.getState().setActiveTab('added');

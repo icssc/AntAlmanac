@@ -20,7 +20,7 @@ import { loadSchedule, saveSchedule, loginUser, loadScheduleWithSessionToken } f
 import { AlertDialog } from '$components/AlertDialog';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
-import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -179,13 +179,13 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
 
 export const Load = () => {
     const isDark = useThemeStore((store) => store.isDark);
+    const { fallback } = useFallbackStore();
 
     const { updateSession, sessionIsValid } = useSessionStore();
 
     const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = scheduleComponentsToggleStore();
 
     const [openAlert, setOpenalert] = useState(false);
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const validateImportedUser = async (userID: string) => {
         try {
@@ -234,18 +234,6 @@ export const Load = () => {
     };
 
     useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
-
-    useEffect(() => {
         if (typeof Storage !== 'undefined') {
             const savedUserID = getLocalStorageUserId();
             const sessionID = getLocalStorageSessionId();
@@ -266,7 +254,7 @@ export const Load = () => {
                 actionName={'Load'}
                 action={loadScheduleAndSetLoading}
                 actionSecondary={handleLogin}
-                disabled={skeletonMode}
+                disabled={fallback}
                 loading={loadingSchedule}
                 colorType={isDark ? 'secondary' : 'primary'}
                 isDark={isDark}

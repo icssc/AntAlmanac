@@ -7,7 +7,6 @@ import Split from 'react-split';
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { Header } from '$components/Header/Header';
 import { HelpMenu } from '$components/HelpMenu/HelpMenu';
-import InstallPWABanner from '$components/InstallPWABanner';
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
@@ -92,7 +91,6 @@ export default function Home() {
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <PatchNotes />
-            <InstallPWABanner />
 
             {isMobileScreen ? <MobileHome /> : <DesktopHome />}
 
