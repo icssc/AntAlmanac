@@ -91,7 +91,6 @@ export default function Home() {
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <PatchNotes />
-            {/* <InstallPWABanner /> */}
 
             {isMobileScreen ? <MobileHome /> : <DesktopHome />}
 
