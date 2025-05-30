@@ -1,5 +1,5 @@
 import { DeleteOutline } from '@mui/icons-material';
-import { IconButton, SxProps, Tooltip } from '@mui/material';
+import { IconButton, SxProps, Tooltip, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
 
 import { clearSchedules } from '$actions/AppStoreActions';
@@ -25,17 +25,33 @@ interface ClearScheduleButtonProps {
     buttonSx?: SxProps;
     size?: 'small' | 'medium' | 'large' | undefined;
     fontSize?: 'small' | 'medium' | 'large' | 'inherit' | undefined;
+    dropdown: boolean;
     analyticsCategory?: AnalyticsCategory;
 }
 
-export function ClearScheduleButton({ skeletonMode, buttonSx, size, fontSize }: ClearScheduleButtonProps) {
+export function ClearScheduleButton({
+    skeletonMode,
+    buttonSx,
+    size,
+    fontSize,
+    dropdown = false,
+}: ClearScheduleButtonProps) {
     const postHog = usePostHog();
 
     return (
-        <Tooltip title="Clear schedule">
-            <IconButton sx={buttonSx} onClick={handleClearSchedule(postHog)} size={size} disabled={skeletonMode}>
-                <DeleteOutline fontSize={fontSize} />
-            </IconButton>
+        <Tooltip title="Clear schedule" placement={dropdown ? 'right' : 'bottom'}>
+            {dropdown ? (
+                <MenuItem onClick={handleClearSchedule(postHog)} disabled={skeletonMode}>
+                    <ListItemIcon>
+                        <DeleteOutline fontSize={fontSize} />
+                    </ListItemIcon>
+                    <ListItemText>Clear</ListItemText>
+                </MenuItem>
+            ) : (
+                <IconButton sx={buttonSx} onClick={handleClearSchedule(postHog)} size={size} disabled={skeletonMode}>
+                    <DeleteOutline fontSize={fontSize} />
+                </IconButton>
+            )}
         </Tooltip>
     );
 }

@@ -1,5 +1,5 @@
 import { Panorama } from '@mui/icons-material';
-import { IconButton, Tooltip } from '@mui/material';
+import { Tooltip, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
 import { usePostHog } from 'posthog-js/react';
@@ -27,10 +27,13 @@ const ScreenshotButton = () => {
     };
 
     return (
-        <Tooltip title="Get a screenshot of your schedule">
-            <IconButton onClick={handleClick} size="medium">
-                <Panorama fontSize="small" />
-            </IconButton>
+        <Tooltip title="Get a screenshot of your schedule" placement="right">
+            <MenuItem onClick={handleClick}>
+                <ListItemIcon>
+                    <Panorama fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Screenshot</ListItemText>
+            </MenuItem>
         </Tooltip>
     );
 };

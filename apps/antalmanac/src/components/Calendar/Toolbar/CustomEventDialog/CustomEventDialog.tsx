@@ -9,6 +9,9 @@ import {
     IconButton,
     TextField,
     Tooltip,
+    MenuItem,
+    ListItemIcon,
+    ListItemText,
 } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
@@ -156,10 +159,13 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                     </IconButton>
                 </Tooltip>
             ) : (
-                <Tooltip title="Add custom events">
-                    <IconButton onClick={handleOpen} size="medium" disabled={skeletonMode}>
-                        <Add fontSize="small" />
-                    </IconButton>
+                <Tooltip title="Custom events" placement="right">
+                    <MenuItem onClick={handleOpen} disabled={skeletonMode}>
+                        <ListItemIcon>
+                            <Add fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText>Custom Event</ListItemText>
+                    </MenuItem>
                 </Tooltip>
             )}
             <Dialog open={open} onClose={handleClose} maxWidth={'xs'}>

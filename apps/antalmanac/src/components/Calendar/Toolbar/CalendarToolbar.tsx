@@ -2,8 +2,9 @@ import {
     Undo as UndoIcon,
     Description as DescriptionIcon,
     DescriptionOutlined as DescriptionOutlinedIcon,
+    MoreVert as MoreVertIcon,
 } from '@mui/icons-material';
-import { useTheme, useMediaQuery, Box, Button, IconButton, Paper, Tooltip } from '@mui/material';
+import { useTheme, useMediaQuery, Box, Button, IconButton, Paper, Tooltip, Menu } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { useState, useCallback, useEffect, memo } from 'react';
 
@@ -41,6 +42,15 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('xxs'));
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     const postHog = usePostHog();
 
@@ -115,24 +125,32 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             <Box flexGrow={1} />
 
             <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
-                <ScreenshotButton />
-
-                <DownloadButton />
-
                 <Tooltip title="Undo last action">
                     <IconButton onClick={handleUndo(postHog)} size="medium" disabled={skeletonMode}>
                         <UndoIcon fontSize="small" />
                     </IconButton>
                 </Tooltip>
 
-                <ClearScheduleButton
-                    size="medium"
-                    fontSize="small"
-                    skeletonMode={skeletonMode}
-                    analyticsCategory={analyticsEnum.calendar}
-                />
-
-                <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
+                <IconButton onClick={handleClick}>
+                    <MoreVertIcon />
+                </IconButton>
+                <Menu
+                    open={open}
+                    onClose={handleClose}
+                    anchorEl={anchorEl}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    sx={{
+                        '& .MuiPaper-root': {
+                            boxShadow: '0px -2px 8px rgba(0, 0, 0, 0.15), 2px 4px 8px rgba(0, 0, 0, 0.15)',
+                        },
+                    }}
+                >
+                    <ScreenshotButton />
+                    <DownloadButton />
+                    <ClearScheduleButton dropdown fontSize="small" />
+                    <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
+                </Menu>
             </Box>
         </Paper>
     );
