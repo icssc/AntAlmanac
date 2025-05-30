@@ -13,24 +13,25 @@ function getEndpoint() {
     return import.meta.env.MODE === 'development' ? `https://dev.api.antalmanac.com` : `https://api.antalmanac.com`;
 }
 
-const url = getEndpoint() + '/trpc';
+const trpcUrl = getEndpoint() + '/trpc';
+
 const trpc = createTRPCProxyClient<AppRouter>({
     links: [
+        // NB: This allows us to skip batching for certain operations.
         splitLink({
             condition(op) {
                 return op.context.skipBatch === true;
             },
             true: httpLink({
-                url,
+                url: trpcUrl,
             }),
-            // when condition is false, use batching
             false: httpBatchLink({
-                url,
+                url: trpcUrl,
             }),
         }),
 
         httpBatchLink({
-            url: getEndpoint() + '/trpc',
+            url: trpcUrl,
         }),
     ],
     transformer: superjson,
