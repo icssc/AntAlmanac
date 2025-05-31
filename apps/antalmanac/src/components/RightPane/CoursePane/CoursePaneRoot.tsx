@@ -2,23 +2,27 @@ import { Box } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect } from 'react';
 
-import RightPaneStore from '../RightPaneStore';
-
-import { CoursePaneButtonRow } from './CoursePaneButtonRow';
-import CourseRenderPane from './CourseRenderPane';
-
 import { openSnackbar } from '$actions/AppStoreActions';
+import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
+import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { WebSOC } from '$lib/websoc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
 export function CoursePaneRoot() {
-    const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections } = useCoursePaneStore();
+    const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections, advancedSearchEnabled } =
+        useCoursePaneStore();
     const postHog = usePostHog();
 
     const handleSearch = useCallback(() => {
+        if (!advancedSearchEnabled) {
+            RightPaneStore.storePrevFormData();
+            RightPaneStore.resetAdvancedSearchValues();
+        }
+
         if (RightPaneStore.formDataIsValid()) {
             displaySections();
             forceUpdate();
@@ -28,7 +32,7 @@ export function CoursePaneRoot() {
                 `Please provide one of the following: Department, GE, Course Code/Range, or Instructor`
             );
         }
-    }, [displaySections, forceUpdate]);
+    }, [advancedSearchEnabled, displaySections, forceUpdate]);
 
     const refreshSearch = useCallback(() => {
         logAnalytics(postHog, {
