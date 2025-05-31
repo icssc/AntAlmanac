@@ -9,9 +9,10 @@ interface AdornedTextFieldProps {
     label: string;
     textFieldProps?: TextFieldProps;
     formControlProps?: FormControlProps;
+    isManual?: boolean;
 }
 
-export const AdornedTextField = ({ label, textFieldProps, formControlProps }: AdornedTextFieldProps) => {
+export const AdornedTextField = ({ label, textFieldProps, formControlProps, isManual }: AdornedTextFieldProps) => {
     const isDark = useThemeStore((store) => store.isDark);
     const id = useId();
 
@@ -23,7 +24,7 @@ export const AdornedTextField = ({ label, textFieldProps, formControlProps }: Ad
                 {...textFieldProps}
                 InputProps={{
                     ...textFieldProps?.InputProps,
-                    startAdornment: <SearchAdornment label={label} id={id} />,
+                    startAdornment: <SearchAdornment label={label} id={id} isManual={isManual} />,
                 }}
                 inputProps={{
                     ...textFieldProps?.inputProps,

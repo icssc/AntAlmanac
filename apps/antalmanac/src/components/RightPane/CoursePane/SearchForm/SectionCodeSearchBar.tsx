@@ -3,7 +3,6 @@ import { ChangeEvent, PureComponent } from 'react';
 import { AdornedTextField } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/AdornedTextField';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
-
 class SectionCodeSearchBar extends PureComponent {
     updateCourseCodeAndGetFormData() {
         RightPaneStore.updateFormValue('sectionCode', RightPaneStore.getUrlCourseCodeValue());
@@ -50,7 +49,7 @@ class SectionCodeSearchBar extends PureComponent {
     render() {
         return (
             <AdornedTextField
-                label="Course Code or Range"
+                label="Course Code"
                 textFieldProps={{
                     value: this.state.sectionCode,
                     onChange: this.handleChange,
@@ -58,8 +57,12 @@ class SectionCodeSearchBar extends PureComponent {
                     placeholder: 'ex. 14200, 29000-29100',
                 }}
                 formControlProps={{
-                    sx: { minWidth: 350 },
+                    fullWidth: true,
+                    sx: {
+                        minWidth: 400,
+                    },
                 }}
+                isManual={true}
             />
         );
     }

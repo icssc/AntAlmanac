@@ -38,16 +38,21 @@ export function CourseNumberSearchBar() {
     }, [resetField]);
 
     return (
-        <div>
-            <AdornedTextField
-                label="Course Number(s)"
-                textFieldProps={{
-                    type: 'search',
-                    value,
-                    onChange: handleChange,
-                    placeholder: 'ex. 6B, 17, 30-40',
-                }}
-            />
-        </div>
+        <AdornedTextField
+            label="Course Number(s)"
+            textFieldProps={{
+                type: 'search',
+                value,
+                onChange: handleChange,
+                placeholder: 'ex. 6B, 17, 30-40',
+            }}
+            formControlProps={{
+                fullWidth: true,
+                sx: {
+                    minWidth: 400,
+                },
+            }}
+            isManual={true}
+        />
     );
 }

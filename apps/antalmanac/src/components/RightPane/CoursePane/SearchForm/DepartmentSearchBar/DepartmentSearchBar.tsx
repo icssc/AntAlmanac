@@ -1,4 +1,4 @@
-import { Autocomplete, Box } from '@mui/material';
+import { Autocomplete } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
 import { AdornedTextField } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/AdornedTextField';
@@ -81,26 +81,25 @@ export function DepartmentSearchBar() {
     }, [recentSearches]);
 
     return (
-        <Box sx={{ flexGrow: 1 }}>
-            <Autocomplete
-                value={value}
-                options={Array.from(new Set<string>([...recentSearches, ...options]))}
-                autoHighlight={true}
-                openOnFocus={true}
-                getOptionLabel={(option) => DEPARTMENT_MAP[option.toUpperCase() as keyof typeof DEPARTMENT_MAP]}
-                onChange={handleChange}
-                includeInputInList={true}
-                noOptionsText="No departments match the search"
-                groupBy={(option) => (recentSearches.includes(option) ? 'Recently Searched' : 'Departments')}
-                size="small"
-                renderInput={(params) => (
-                    <AdornedTextField
-                        textFieldProps={params}
-                        label="Department"
-                        formControlProps={{ fullWidth: true }}
-                    />
-                )}
-            />
-        </Box>
+        <Autocomplete
+            value={value}
+            options={Array.from(new Set<string>([...recentSearches, ...options]))}
+            autoHighlight={true}
+            openOnFocus={true}
+            getOptionLabel={(option) => DEPARTMENT_MAP[option.toUpperCase() as keyof typeof DEPARTMENT_MAP]}
+            onChange={handleChange}
+            includeInputInList={true}
+            noOptionsText="No departments match the search"
+            groupBy={(option) => (recentSearches.includes(option) ? 'Recently Searched' : 'Departments')}
+            size="small"
+            renderInput={(params) => (
+                <AdornedTextField
+                    textFieldProps={params}
+                    label="Department"
+                    formControlProps={{ fullWidth: true }}
+                    isManual={true}
+                />
+            )}
+        />
     );
 }

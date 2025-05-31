@@ -154,8 +154,7 @@ export function AdvancedSearchTextFields() {
             <Box
                 sx={{
                     display: 'flex',
-                    rowGap: 1,
-                    columnGap: 2,
+                    gap: 2,
                     flexWrap: 'wrap',
                 }}
             >
@@ -175,21 +174,10 @@ export function AdvancedSearchTextFields() {
                         value: units,
                         onChange: changeHandlerFactory('units'),
                         type: 'search',
-                        sx: { width: 200 },
                         id: 'units',
                         placeholder: 'ex. 3, 4, or VAR',
                     }}
                 />
-            </Box>
-
-            <Box
-                sx={{
-                    display: 'flex',
-                    rowGap: 1,
-                    columnGap: 2,
-                    flexWrap: 'wrap',
-                }}
-            >
                 <AdornedSelect
                     label="Class Full Option"
                     selectProps={{
@@ -203,6 +191,15 @@ export function AdvancedSearchTextFields() {
                     <MenuItem value={'FullOnly'}>Show only full or waitlisted courses</MenuItem>
                     <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
                 </AdornedSelect>
+            </Box>
+
+            <Box
+                sx={{
+                    display: 'flex',
+                    gap: 2,
+                    flexWrap: 'wrap',
+                }}
+            >
                 <AdornedSelect
                     label="Course Level"
                     selectProps={{
@@ -240,9 +237,6 @@ export function AdvancedSearchTextFields() {
                             value: startTime,
                             onChange: changeHandlerFactory('startTime'),
                         }}
-                        formControlProps={{
-                            sx: { minWidth: 200 },
-                        }}
                     >
                         {startsAfterMenuItems}
                     </AdornedSelect>
@@ -253,9 +247,6 @@ export function AdvancedSearchTextFields() {
                             value: endTime,
                             onChange: changeHandlerFactory('endTime'),
                         }}
-                        formControlProps={{
-                            sx: { minWidth: 200 },
-                        }}
                     >
                         {endsBeforeMenuItems}
                     </AdornedSelect>
@@ -265,8 +256,7 @@ export function AdvancedSearchTextFields() {
             <Box
                 sx={{
                     display: 'flex',
-                    rowGap: 1,
-                    columnGap: 2,
+                    gap: 2,
                     flexWrap: 'wrap',
                 }}
             >
@@ -275,9 +265,6 @@ export function AdvancedSearchTextFields() {
                     selectProps={{
                         value: building === 'ON' ? 'True' : 'False',
                         onChange: changeHandlerFactory('online'),
-                    }}
-                    formControlProps={{
-                        sx: { minWidth: 100 },
                     }}
                 >
                     <MenuItem value={'False'}>False</MenuItem>
@@ -291,9 +278,6 @@ export function AdvancedSearchTextFields() {
                         value: building,
                         onChange: changeHandlerFactory('building'),
                     }}
-                    formControlProps={{
-                        sx: { minWidth: 100 },
-                    }}
                 />
                 <AdornedTextField
                     label="Room"
@@ -303,17 +287,13 @@ export function AdvancedSearchTextFields() {
                         value: room,
                         onChange: changeHandlerFactory('room'),
                     }}
-                    formControlProps={{
-                        sx: { minWidth: 100 },
-                    }}
                 />
             </Box>
 
             <Box
                 sx={{
                     display: 'flex',
-                    rowGap: 1,
-                    columnGap: 2,
+                    gap: 2,
                     flexWrap: 'wrap',
                 }}
             >

@@ -63,8 +63,9 @@ export function GeSelector() {
                 variant: 'standard',
             }}
             formControlProps={{
-                sx: { flexGrow: 1 },
+                fullWidth: true,
             }}
+            isManual={true}
         >
             {GE_LIST.map((category) => {
                 return (

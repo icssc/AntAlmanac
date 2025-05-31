@@ -16,12 +16,20 @@ export function ManualSearch({ onSubmit, onReset }: ManualSearchProps) {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <Box sx={{ display: 'flex', width: '100%', gap: 2, flexWrap: 'wrap' }}>
-                    <DepartmentSearchBar />
-                    <CourseNumberSearchBar />
+                    <Box sx={{ flex: 1 }}>
+                        <DepartmentSearchBar />
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                        <CourseNumberSearchBar />
+                    </Box>
                 </Box>
                 <Box sx={{ display: 'flex', width: '100%', flexDirection: 'row', gap: 2, flexWrap: 'wrap' }}>
-                    <GeSelector />
-                    <SectionCodeSearchBar />
+                    <Box sx={{ flex: 1 }}>
+                        <GeSelector />
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                        <SectionCodeSearchBar />
+                    </Box>
                 </Box>
             </Box>
 
