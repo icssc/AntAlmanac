@@ -55,7 +55,7 @@ export function AdvancedSearchTextFields() {
             const urlParam = new URLSearchParams(url.search);
 
             if (name === 'online') {
-                const checked = event.target.value === 'True';
+                const checked = event.target.value === 'true';
                 if (checked) {
                     setBuilding('ON');
                     setRoom('LINE');
@@ -263,12 +263,12 @@ export function AdvancedSearchTextFields() {
                 <AdornedSelect
                     label="Online Only"
                     selectProps={{
-                        value: building === 'ON' ? 'True' : 'False',
+                        value: building === 'ON' ? 'true' : 'false',
                         onChange: changeHandlerFactory('online'),
                     }}
                 >
-                    <MenuItem value={'False'}>False</MenuItem>
-                    <MenuItem value={'True'}>True</MenuItem>
+                    <MenuItem value="false">False</MenuItem>
+                    <MenuItem value="true">True</MenuItem>
                 </AdornedSelect>
                 <AdornedTextField
                     label="Building"

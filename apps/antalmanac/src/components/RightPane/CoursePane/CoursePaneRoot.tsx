@@ -2,7 +2,6 @@ import { Box } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect } from 'react';
 
-
 import { openSnackbar } from '$actions/AppStoreActions';
 import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
@@ -14,12 +13,11 @@ import { WebSOC } from '$lib/websoc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
 export function CoursePaneRoot() {
-    const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections } = useCoursePaneStore();
+    const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections, advancedSearchEnabled } =
+        useCoursePaneStore();
     const postHog = usePostHog();
 
     const handleSearch = useCallback(() => {
-        const advancedSearchEnabled = useCoursePaneStore.getState().advancedSearchEnabled;
-
         if (!advancedSearchEnabled) {
             RightPaneStore.storePrevFormData();
             RightPaneStore.resetAdvancedSearchValues();
@@ -34,7 +32,7 @@ export function CoursePaneRoot() {
                 `Please provide one of the following: Department, GE, Course Code/Range, or Instructor`
             );
         }
-    }, [displaySections, forceUpdate]);
+    }, [advancedSearchEnabled, displaySections, forceUpdate]);
 
     const refreshSearch = useCallback(() => {
         logAnalytics(postHog, {
