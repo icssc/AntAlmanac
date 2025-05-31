@@ -10,6 +10,7 @@ import {
     Stack,
     Tooltip,
 } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -20,13 +21,13 @@ const DONATION_LINK = 'https://venmo.com/u/ICSSC';
 
 const AboutButton = () => {
     const [open, setOpen] = useState(false);
-
     const { isDark } = useThemeStore();
+    const postHog = usePostHog();
 
     const handleOpen = useCallback(() => {
         setOpen(true);
-        logAnalytics({
-            category: analyticsEnum.nav.title,
+        logAnalytics(postHog, {
+            category: analyticsEnum.nav,
             action: analyticsEnum.nav.actions.CLICK_ABOUT,
         });
     }, []);

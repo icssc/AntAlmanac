@@ -1,5 +1,7 @@
+
 import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useCallback, type FormEvent } from 'react';
+import { usePostHog } from 'posthog-js/react';
 
 import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
 import { HelpBox } from '$components/RightPane/CoursePane/SearchForm/HelpBox';
@@ -19,6 +21,7 @@ interface SearchFormProps {
 export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
     const isDark = useThemeStore((store) => store.isDark);
+    const postHog = usePostHog();
 
     const onFormSubmit = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
@@ -68,12 +71,12 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                     </Box>
 
                     {!manualSearchEnabled ? (
-                        <FuzzySearch toggleSearch={toggleSearch} toggleShowManualSearch={toggleManualSearch} />
+                        <FuzzySearch toggleSearch={toggleSearch} toggleShowManualSearch={toggleManualSearch} postHog={postHog} />
                     ) : (
                         <ManualSearch
                             onSubmit={() => {
-                                logAnalytics({
-                                    category: analyticsEnum.classSearch.title,
+                                logAnalytics(postHog, {
+                                    category: analyticsEnum.classSearch,
                                     action: analyticsEnum.classSearch.actions.MANUAL_SEARCH,
                                 });
                             }}

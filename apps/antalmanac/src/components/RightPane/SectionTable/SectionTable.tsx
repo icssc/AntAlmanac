@@ -198,6 +198,7 @@ function SectionTable(props: SectionTableProps) {
                         term={term}
                         allowHighlight={allowHighlight}
                         scheduleNames={scheduleNames}
+                        analyticsCategory={analyticsCategory}
                     />
                 </Table>
             </TableContainer>
