@@ -95,7 +95,6 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
    If none of those work for any reason, you can defer to your Operating System's
    package manager or [the downloads from the official website](https://nodejs.org/en/download).
-   We will be using the latest LTS version, 20.10.0, lts/iron.
 
 2. Install `pnpm`. This is our package manager of choice for this project.
    It's responsible for installing, uninstalling, and keeping track of the app's dependencies.
@@ -110,6 +109,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
 3. Start the development server for the frontend.
   `pnpm start:aa` or `cd apps/antalmanac && pnpm dev`
+  - Note that signing in with Google does not work for local development. We are actively working on a fix.
 
 4. View the local website at http://localhost:5173.
    As you make changes to the React application, those changes will be automatically reflected on the local website.
