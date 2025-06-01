@@ -97,7 +97,7 @@ export function DepartmentSearchBar() {
                     textFieldProps={params}
                     label="Department"
                     formControlProps={{ fullWidth: true }}
-                    isManual={true}
+                    isAligned={true}
                 />
             )}
         />

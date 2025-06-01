@@ -1,7 +1,6 @@
-
 import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { useCallback, type FormEvent } from 'react';
 import { usePostHog } from 'posthog-js/react';
+import { useCallback, type FormEvent } from 'react';
 
 import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
 import { HelpBox } from '$components/RightPane/CoursePane/SearchForm/HelpBox';
@@ -67,11 +66,15 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                         <ToggleButton value="manual">Manual Search</ToggleButton>
                     </ToggleButtonGroup>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <TermSelector isManual={manualSearchEnabled} />
+                        <TermSelector />
                     </Box>
 
                     {!manualSearchEnabled ? (
-                        <FuzzySearch toggleSearch={toggleSearch} toggleShowManualSearch={toggleManualSearch} postHog={postHog} />
+                        <FuzzySearch
+                            toggleSearch={toggleSearch}
+                            toggleShowManualSearch={toggleManualSearch}
+                            postHog={postHog}
+                        />
                     ) : (
                         <ManualSearch
                             onSubmit={() => {

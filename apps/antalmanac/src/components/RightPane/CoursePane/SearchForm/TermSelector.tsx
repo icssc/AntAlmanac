@@ -5,11 +5,7 @@ import { AdornedSelect } from '$components/RightPane/CoursePane/SearchForm/Adorn
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { termData } from '$lib/termData';
 
-interface TermSelectorProps {
-    isManual?: boolean;
-}
-
-export function TermSelector({ isManual }: TermSelectorProps) {
+export function TermSelector() {
     const [term, setTerm] = useState<string>(() => RightPaneStore.getFormData().term);
 
     const handleChange = (event: SelectChangeEvent<string>) => {
@@ -45,7 +41,7 @@ export function TermSelector({ isManual }: TermSelectorProps) {
             formControlProps={{
                 fullWidth: true,
             }}
-            isManual={isManual}
+            isAligned={true}
         >
             {termData.map((term, index) => (
                 <MenuItem key={index} value={term.shortName}>

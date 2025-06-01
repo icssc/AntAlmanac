@@ -10,7 +10,7 @@ interface AdornedSelectProps<T = string | string[]> {
     selectProps?: SelectProps<T>;
     formControlProps?: FormControlProps;
     children?: React.ReactNode;
-    isManual?: boolean;
+    isAligned?: boolean;
 }
 
 export function AdornedSelect<T = string | string[]>({
@@ -18,7 +18,7 @@ export function AdornedSelect<T = string | string[]>({
     selectProps,
     formControlProps,
     children,
-    isManual,
+    isAligned,
 }: AdornedSelectProps<T>) {
     const isDark = useThemeStore((store) => store.isDark);
     const id = useId();
@@ -39,7 +39,9 @@ export function AdornedSelect<T = string | string[]>({
                         paddingLeft: 1,
                     },
                 }}
-                input={<OutlinedInput startAdornment={<SearchAdornment label={label} id={id} isManual={isManual} />} />}
+                input={
+                    <OutlinedInput startAdornment={<SearchAdornment label={label} id={id} isAligned={isAligned} />} />
+                }
                 aria-labelledby={`adornment-label-${id}`}
             >
                 {children}

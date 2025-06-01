@@ -6,11 +6,12 @@ import { useThemeStore } from '$stores/SettingsStore';
 interface SearchAdornmentProps {
     label: string;
     id: string;
-    isManual?: boolean;
+    isAligned?: boolean;
 }
 
-export const SearchAdornment = ({ label, id, isManual }: SearchAdornmentProps) => {
+export const SearchAdornment = ({ label, id, isAligned }: SearchAdornmentProps) => {
     const isDark = useThemeStore((store) => store.isDark);
+
     return (
         <InputAdornment position="start" sx={{ marginRight: 0, paddingLeft: 0 }}>
             <Box
@@ -20,8 +21,12 @@ export const SearchAdornment = ({ label, id, isManual }: SearchAdornmentProps) =
                     alignItems: 'center',
                     paddingY: 1,
                     paddingX: 1.5,
-                    minWidth: isManual ? 160 : 100,
+                    minWidth: isAligned ? '10rem' : '6rem',
                     bgcolor: isDark ? grey[800] : grey[200],
+                    userSelect: 'none',
+                }}
+                onClick={(e) => {
+                    e.stopPropagation();
                 }}
             >
                 {label}

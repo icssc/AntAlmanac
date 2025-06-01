@@ -65,7 +65,7 @@ export function GeSelector() {
             formControlProps={{
                 fullWidth: true,
             }}
-            isManual={true}
+            isAligned={true}
         >
             {GE_LIST.map((category) => {
                 return (

@@ -52,7 +52,7 @@ export function CourseNumberSearchBar() {
                     minWidth: 400,
                 },
             }}
-            isManual={true}
+            isAligned={true}
         />
     );
 }

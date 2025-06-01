@@ -62,7 +62,7 @@ class SectionCodeSearchBar extends PureComponent {
                         minWidth: 400,
                     },
                 }}
-                isManual={true}
+                isAligned={true}
             />
         );
     }
