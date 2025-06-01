@@ -21,7 +21,7 @@ export const SearchAdornment = ({ label, id, isAligned }: SearchAdornmentProps) 
                     alignItems: 'center',
                     paddingY: 1,
                     paddingX: 1.5,
-                    minWidth: isAligned ? '10rem' : '6rem',
+                    minWidth: isAligned ? '10.25rem' : '6rem',
                     bgcolor: isDark ? grey[800] : grey[200],
                     userSelect: 'none',
                 }}
