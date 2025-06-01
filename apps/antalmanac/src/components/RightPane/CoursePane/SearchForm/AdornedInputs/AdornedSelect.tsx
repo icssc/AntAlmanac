@@ -38,6 +38,9 @@ export function AdornedSelect<T = string | string[]>({
                     '& .MuiSelect-select': {
                         paddingLeft: 1,
                     },
+                    '& .MuiSelect-icon': {
+                        right: '9px',
+                    },
                 }}
                 input={
                     <OutlinedInput startAdornment={<SearchAdornment label={label} id={id} isAligned={isAligned} />} />
