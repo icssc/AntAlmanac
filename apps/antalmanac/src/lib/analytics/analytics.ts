@@ -10,6 +10,7 @@ export interface AnalyticsCategory {
 
 export interface AnalyticsEnum {
     calendar: AnalyticsCategory;
+    auth: AnalyticsCategory;
     nav: AnalyticsCategory;
     classSearch: AnalyticsCategory;
     addedClasses: AnalyticsCategory;
@@ -34,16 +35,31 @@ const analyticsEnum: AnalyticsEnum = {
             DOWNLOAD: 'Download Schedule',
         },
     },
+    auth: {
+        title: 'Auth',
+        actions: {
+            LOG_IN: 'Log In',
+            LOG_IN_FAIL: 'Log In Failure',
+            LOG_OUT: 'Log Out',
+            LOAD_SCHEDULE: 'Load Schedule',
+            LOAD_SCHEDULE_FAIL: 'Load Schedule Failure',
+            LOAD_SCHEDULE_LEGACY: 'Load Schedule Legacy', // Value is 1 if the user checked "remember me", 0 otherwise
+            LOAD_SCHEDULE_LEGACY_FAIL: 'Load Schedule Legacy Failure',
+            SAVE_SCHEDULE: 'Save Schedule', // Value is 1 if autosave is turned on, 0 otherwise
+            SAVE_SCHEDULE_FAIL: 'Save Schedule Failure',
+        },
+    },
     nav: {
         title: 'Navbar',
         actions: {
             CLICK_NOTIFICATIONS: 'Click Notifications',
             CLICK_ABOUT: 'Click About Page',
+            CLICK_SAVE: 'Click Save Button',
+            CLICK_LOAD: 'Click Load Button',
             CHANGE_THEME: 'Change Theme', // Label is the theme changed to
             IMPORT_STUDY_LIST: 'Import Study List', // Value is the percentage of courses successfully imported (decimal value)
-            LOAD_SCHEDULE: 'Load Schedule', // Value is 1 if the user checked "remember me", 0 otherwise
-            SAVE_SCHEDULE: 'Save Schedule', // Value is 1 if the user checked "remember me", 0 otherwise
-            CLICK_NEWS: 'Click News',
+            IMPORT_ZOTCOURSE: 'Import Zotcourse Schedule', // Value is the percentage of courses successfully imported (decimal value)
+            IMPORT_LEGACY: 'Import From Legacy Username',
         },
     },
     classSearch: {

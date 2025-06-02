@@ -15,6 +15,7 @@ import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -90,13 +91,6 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
 }
 
 export const saveSchedule = async (providerId: string, rememberMe: boolean, postHog?: PostHog) => {
-    logAnalytics(postHog, {
-        category: analyticsEnum.nav,
-        action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
-        label: providerId,
-        value: rememberMe ? 1 : 0,
-    });
-
     if (providerId != null) {
         providerId = providerId.replace(/\s+/g, '');
 
@@ -129,28 +123,34 @@ export const saveSchedule = async (providerId: string, rememberMe: boolean, post
                         `Schedule saved under username "${providerId}". Don't forget to sign up for classes on WebReg!`
                     );
                 }
+                logAnalytics(postHog, {
+                    category: analyticsEnum.auth,
+                    action: analyticsEnum.auth.actions.SAVE_SCHEDULE,
+                    value: 0,
+                });
                 AppStore.saveSchedule();
             } catch (e) {
                 if (e instanceof TRPCError) {
                     if (useSessionStore.getState().sessionIsValid) {
                         openSnackbar('error', `Schedule could not be saved`);
                     } else {
-                        openSnackbar('error', `Schedule could not be saved under username "${providerId}`);
+                        openSnackbar('error', `Schedule could not be saved under username "${providerId}"`);
                     }
                 } else {
                     openSnackbar('error', 'Network error or server is down.');
                 }
+                logAnalytics(postHog, {
+                    category: analyticsEnum.auth,
+                    action: analyticsEnum.auth.actions.SAVE_SCHEDULE_FAIL,
+                    label: getErrorMessage(e),
+                    value: 0,
+                });
             }
         }
     }
 };
 
 export async function autoSaveSchedule(providerID: string, postHog?: PostHog) {
-    logAnalytics(postHog, {
-        category: analyticsEnum.nav,
-        action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
-        label: providerID,
-    });
     if (providerID == null) return;
     providerID = providerID.replace(/\s+/g, '');
     if (providerID.length < 0) return;
@@ -164,14 +164,25 @@ export async function autoSaveSchedule(providerID: string, postHog?: PostHog) {
                 userData: scheduleSaveState,
             },
         });
-
         AppStore.saveSchedule();
+        logAnalytics(postHog, {
+            category: analyticsEnum.auth,
+            action: analyticsEnum.auth.actions.SAVE_SCHEDULE,
+            label: providerID,
+            value: 1,
+        });
     } catch (e) {
         if (e instanceof TRPCError) {
-            openSnackbar('error', `Schedule could not be auto-saved under username "${providerID}`);
+            openSnackbar('error', `Schedule could not be auto-saved under username "${providerID}"`);
         } else {
             openSnackbar('error', 'Network error or server is down.');
         }
+        logAnalytics(postHog, {
+            category: analyticsEnum.auth,
+            action: analyticsEnum.auth.actions.SAVE_SCHEDULE_LEGACY,
+            label: getErrorMessage(e),
+            value: 1,
+        });
     }
 }
 
@@ -194,7 +205,7 @@ export const mergeShortCourseSchedules = (
     currentSchedules.push(...cacheSchedule);
 };
 
-const handleScheduleImport = async (username: string, skipImportedCheck = false) => {
+const handleScheduleImport = async (username: string, skipImportedCheck = false, postHog?: PostHog) => {
     const session = useSessionStore.getState();
     if (!session.sessionIsValid) {
         throw new Error("Invalid session: User isn't logged in.");
@@ -228,11 +239,16 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
 
         const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
         if (isScheduleLoaded) {
+            logAnalytics(postHog, {
+                category: analyticsEnum.auth,
+                action: analyticsEnum.auth.actions.IMPORT_LEGACY,
+            });
+
             openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
 
             scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
 
-            await saveSchedule(accounts.providerAccountId, true);
+            await saveSchedule(accounts.providerAccountId, true, postHog);
 
             await trpc.userData.flagImportedSchedule.mutate({
                 providerId: username,
@@ -243,17 +259,17 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
     return { imported: false, error: null };
 };
 
-export const importValidatedSchedule = async (username: string) => {
+export const importValidatedSchedule = async (username: string, postHog?: PostHog) => {
     try {
-        return await handleScheduleImport(username, true);
+        return await handleScheduleImport(username, true, postHog);
     } catch (e) {
         return { imported: false, error: e };
     }
 };
 
-export const importScheduleWithUsername = async (username: string) => {
+export const importScheduleWithUsername = async (username: string, postHog?: PostHog) => {
     try {
-        return await handleScheduleImport(username, false);
+        return await handleScheduleImport(username, false, postHog);
     } catch (e) {
         return { imported: false, error: e };
     }
@@ -265,12 +281,6 @@ export const loadSchedule = async (
     accountType: 'GOOGLE' | 'GUEST',
     postHog?: PostHog
 ) => {
-    logAnalytics(postHog, {
-        category: analyticsEnum.nav,
-        action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
-        label: providerId,
-        value: rememberMe ? 1 : 0,
-    });
     if (
         providerId != null &&
         (!AppStore.hasUnsavedChanges() ||
@@ -291,10 +301,40 @@ export const loadSchedule = async (
                 const userDataResponse = await trpc.userData.getUserData.query({ userId: account.userId });
                 const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
 
+                if (postHog && account.userId) {
+                    postHog.identify(account.userId);
+                }
+
                 if (await AppStore.loadSchedule(scheduleSaveState)) {
+                    if (accountType === 'GOOGLE') {
+                        logAnalytics(postHog, {
+                            category: analyticsEnum.auth,
+                            action: analyticsEnum.auth.actions.LOAD_SCHEDULE,
+                        });
+                    } else {
+                        logAnalytics(postHog, {
+                            category: analyticsEnum.auth,
+                            action: analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY,
+                            value: rememberMe ? 1 : 0,
+                        });
+                    }
                     openSnackbar('success', `Schedule loaded.`);
                 } else {
                     AppStore.loadSkeletonSchedule(scheduleSaveState);
+                    if (accountType === 'GOOGLE') {
+                        logAnalytics(postHog, {
+                            category: analyticsEnum.auth,
+                            action: analyticsEnum.auth.actions.LOAD_SCHEDULE_FAIL,
+                            label: 'Network error',
+                        });
+                    } else {
+                        logAnalytics(postHog, {
+                            category: analyticsEnum.auth,
+                            action: analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY_FAIL,
+                            label: 'Network error',
+                            value: rememberMe ? 1 : 0,
+                        });
+                    }
                     openSnackbar(
                         'error',
                         `Network error loading course information for "${providerId}". 	              
@@ -302,6 +342,15 @@ export const loadSchedule = async (
                     );
                 }
             } catch (e) {
+                logAnalytics(postHog, {
+                    category: analyticsEnum.auth,
+                    action:
+                        accountType === 'GOOGLE'
+                            ? analyticsEnum.auth.actions.LOAD_SCHEDULE_FAIL
+                            : analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY_FAIL,
+                    label: getErrorMessage(e),
+                    value: accountType === 'GOOGLE' ? undefined : rememberMe ? 1 : 0,
+                });
                 if (e instanceof TRPCClientError) {
                     if (e.data.httpStatus === 404) {
                         openSnackbar('error', e.message);
@@ -317,28 +366,39 @@ export const loadSchedule = async (
     }
 };
 
-export const loadScheduleWithSessionToken = async () => {
-    // logAnalytics({
-    //     category: analyticsEnum.nav.title,
-    //     action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
-    //     label: providerId,
-    //     value: rememberMe ? 1 : 0,
-    // });
+export const loadScheduleWithSessionToken = async (postHog?: PostHog) => {
     try {
+        let analyticsErrorMessage = '';
         const userDataResponse = await trpc.userData.getUserDataWithSession.query({
             refreshToken: useSessionStore.getState().session ?? '',
         });
+        const userId = userDataResponse?.id;
         const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
+
+        if (postHog && userId) {
+            postHog.identify(userId);
+        }
+
         if (isEmptySchedule(scheduleSaveState.schedules)) {
+            logAnalytics(postHog, {
+                category: analyticsEnum.auth,
+                action: analyticsEnum.auth.actions.LOAD_SCHEDULE,
+            });
             return true;
         }
 
         if (scheduleSaveState == null) {
+            analyticsErrorMessage = "Couldn't find schedules";
             openSnackbar('error', `Couldn't find schedules for this account`);
         } else if (await AppStore.loadSchedule(scheduleSaveState)) {
             openSnackbar('success', `Schedule loaded.`);
+            logAnalytics(postHog, {
+                category: analyticsEnum.auth,
+                action: analyticsEnum.auth.actions.LOAD_SCHEDULE,
+            });
             return true;
         } else {
+            analyticsErrorMessage = 'Network error';
             AppStore.loadSkeletonSchedule(scheduleSaveState);
             openSnackbar(
                 'error',
@@ -346,9 +406,19 @@ export const loadScheduleWithSessionToken = async () => {
                         If this continues to happen, please submit a feedback form.`
             );
         }
+        logAnalytics(postHog, {
+            category: analyticsEnum.auth,
+            action: analyticsEnum.auth.actions.LOAD_SCHEDULE_FAIL,
+            label: analyticsErrorMessage,
+        });
         return false;
     } catch (e) {
         console.error(e);
+        logAnalytics(postHog, {
+            category: analyticsEnum.auth,
+            action: analyticsEnum.auth.actions.LOAD_SCHEDULE_FAIL,
+            label: getErrorMessage(e),
+        });
         openSnackbar('error', `Failed to load schedules. If this continues to happen, please submit a feedback form.`);
         return false;
     }
@@ -361,14 +431,23 @@ const cacheSchedule = () => {
     }
 };
 
-export const loginUser = async () => {
+export const loginUser = async (postHog?: PostHog) => {
     try {
         const authUrl = await trpc.userData.getGoogleAuthUrl.query();
         if (authUrl) {
+            logAnalytics(postHog, {
+                category: analyticsEnum.auth,
+                action: analyticsEnum.auth.actions.LOG_IN,
+            });
             cacheSchedule();
             window.location.href = authUrl;
         }
     } catch (error) {
+        logAnalytics(postHog, {
+            category: analyticsEnum.auth,
+            action: analyticsEnum.auth.actions.LOG_IN_FAIL,
+            label: getErrorMessage(error),
+        });
         console.error('Error during login initiation', error);
         openSnackbar('error', 'Error during login initiation. Please Try Again.');
     }
