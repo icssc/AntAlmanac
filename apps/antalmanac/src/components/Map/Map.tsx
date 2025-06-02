@@ -4,6 +4,7 @@ import './Map.css';
 
 import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
 import { Marker, type Map, type LatLngTuple } from 'leaflet';
+import { usePostHog } from 'posthog-js/react';
 import { Fragment, useEffect, useRef, useCallback, useState, createRef, useMemo } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -14,7 +15,8 @@ import ClassRoutes from './Routes';
 import UserLocator from './UserLocator';
 
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { BuildingSelect, ExtendedBuilding } from '$components/inputs/building-select';
+import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
 import locationIds from '$lib/locations/locations';
@@ -155,11 +157,18 @@ export default function CourseMap() {
     const [customEventMarkers, setCustomEventMarkers] = useState(getCustomEventPerBuilding());
     const [calendarEvents, setCalendarEvents] = useState(AppStore.getEventsInCalendar());
 
+    const postHog = usePostHog();
+
     useEffect(() => {
         const updateAllMarkers = () => {
             setMarkers(getCoursesPerBuilding());
             setCustomEventMarkers(getCustomEventPerBuilding());
         };
+
+        logAnalytics(postHog, {
+            category: analyticsEnum.map,
+            action: analyticsEnum.map.actions.OPEN,
+        });
 
         AppStore.on('addedCoursesChange', updateAllMarkers);
         AppStore.on('customEventsChange', updateAllMarkers);

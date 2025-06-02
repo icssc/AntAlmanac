@@ -1,6 +1,6 @@
-import TextField from '@material-ui/core/TextField';
-import Autocomplete, { AutocompleteInputChangeReason } from '@material-ui/lab/Autocomplete';
+import { Autocomplete, type AutocompleteInputChangeReason, TextField } from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
+import { PostHog } from 'posthog-js/react';
 import { PureComponent } from 'react';
 import UAParser from 'ua-parser-js';
 
@@ -15,6 +15,7 @@ const emojiMap: Record<string, string> = {
     GE_CATEGORY: '🏫', // U+1F3EB :school:
     DEPARTMENT: '🏢', // U+1F3E2 :office:
     COURSE: '📚', // U+1F4DA :books:
+    SECTION: '📝', // U+1F4DD :memo:
 };
 
 const romanArr = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
@@ -31,6 +32,7 @@ const isIpad = () => {
 interface FuzzySearchProps {
     toggleSearch: () => void;
     toggleShowLegacySearch: () => void;
+    postHog?: PostHog;
 }
 
 interface FuzzySearchState {
@@ -77,12 +79,16 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 RightPaneStore.updateFormValue('courseNumber', ident[0].split(' ').slice(-1)[0]);
                 break;
             }
+            case emojiMap.SECTION: {
+                RightPaneStore.updateFormValue('sectionCode', ident[0].split(' ')[0]);
+                break;
+            }
             default:
                 break;
         }
         this.props.toggleSearch();
-        logAnalytics({
-            category: analyticsEnum.classSearch.title,
+        logAnalytics(this.props.postHog, {
+            category: analyticsEnum.classSearch,
             action: analyticsEnum.classSearch.actions.FUZZY_SEARCH,
         });
     };
@@ -104,12 +110,12 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 return `${emojiMap.DEPARTMENT} ${option}: ${object.name}`;
             case 'COURSE':
                 return `${emojiMap.COURSE} ${object.metadata.department} ${object.metadata.number}: ${object.name}`;
+            case 'SECTION':
+                return `${emojiMap.SECTION} ${object.sectionCode} ${object.sectionType} ${object.sectionNum}: ${object.department} ${object.courseNumber}`;
             default:
                 return '';
         }
     };
-
-    getOptionSelected = () => true;
 
     requestIsCurrent = (requestTimestamp: number) => this.state.requestTimestamp === requestTimestamp;
 
@@ -119,7 +125,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     maybeDoSearchFactory = (requestTimestamp: number) => () => {
         if (!this.requestIsCurrent(requestTimestamp)) return;
         trpc.search.doSearch
-            .query({ query: this.state.value })
+            .query({ query: this.state.value, term: RightPaneStore.getFormData().term })
             .then((result) => {
                 if (!this.requestIsCurrent(requestTimestamp)) return;
                 this.setState({
@@ -187,16 +193,14 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                         {...params}
                         // eslint-disable-next-line jsx-a11y/no-autofocus
                         autoFocus={!isMobile()}
-                        focused
                         fullWidth
                         label={'Search'}
-                        placeholder="Search for courses, departments, GEs..."
+                        placeholder="Search for courses, departments, course codes, GEs..."
                     />
                 )}
                 autoHighlight={true}
                 filterOptions={this.filterOptions}
                 getOptionLabel={this.getOptionLabel}
-                getOptionSelected={this.getOptionSelected}
                 id={'fuzzy-search'}
                 noOptionsText={'No results found! Please try broadening your search.'}
                 onClose={this.onClose}

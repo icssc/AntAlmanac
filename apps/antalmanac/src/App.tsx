@@ -3,16 +3,14 @@ import './App.css';
 import { TourProvider } from '@reactour/tour';
 import { SnackbarProvider } from 'notistack';
 import { useEffect } from 'react';
-import ReactGA4 from 'react-ga4';
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
-import { undoDelete } from './actions/AppStoreActions';
-import AppQueryProvider from './providers/Query';
-import AppThemeProvider from './providers/Theme';
-import AppThemev5Provider from './providers/Themev5';
-
+import { undoDelete } from '$actions/AppStoreActions';
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
 import AppPostHogProvider from '$providers/PostHog';
+import AppQueryProvider from '$providers/Query';
+import AppThemeProvider from '$providers/Theme';
+import { AuthPage } from '$routes/AuthPage';
 import { ErrorPage } from '$routes/ErrorPage';
 import Feedback from '$routes/Feedback';
 import Home from '$routes/Home';
@@ -52,6 +50,11 @@ const BROWSER_ROUTER = createBrowserRouter([
                 errorElement: <ErrorPage />,
             },
             {
+                path: '/auth',
+                element: <AuthPage />,
+                errorElement: <ErrorPage />,
+            },
+            {
                 path: '*',
                 element: <Navigate to="/" replace />,
             },
@@ -84,8 +87,6 @@ const ROUTER = OUTAGE ? OUTAGE_ROUTER : BROWSER_ROUTER;
 export default function App() {
     useEffect(() => {
         document.addEventListener('keydown', undoDelete, false);
-        ReactGA4.initialize('G-30HVJXC2Y4');
-        ReactGA4.send('pageview');
         return () => {
             document.removeEventListener('keydown', undoDelete, false);
         };
@@ -95,34 +96,32 @@ export default function App() {
         <AppPostHogProvider>
             <AppQueryProvider>
                 <AppThemeProvider>
-                    <AppThemev5Provider>
-                        <TourProvider
-                            steps={[] /** Will be populated by Tutorial component */}
-                            padding={5}
-                            styles={{
-                                maskArea: (base) => ({
-                                    ...base,
-                                    rx: 5,
-                                }),
-                                maskWrapper: (base) => ({
-                                    ...base,
-                                    color: 'rgba(0, 0, 0, 0.3)',
-                                }),
-                                popover: (base) => ({
-                                    ...base,
-                                    background: '#fff',
-                                    color: 'black',
-                                    borderRadius: 5,
-                                    boxShadow: '0 0 10px #000',
-                                    padding: 20,
-                                }),
-                            }}
-                        >
-                            <SnackbarProvider>
-                                <RouterProvider router={ROUTER} />
-                            </SnackbarProvider>
-                        </TourProvider>
-                    </AppThemev5Provider>
+                    <TourProvider
+                        steps={[] /** Will be populated by Tutorial component */}
+                        padding={5}
+                        styles={{
+                            maskArea: (base) => ({
+                                ...base,
+                                rx: 5,
+                            }),
+                            maskWrapper: (base) => ({
+                                ...base,
+                                color: 'rgba(0, 0, 0, 0.3)',
+                            }),
+                            popover: (base) => ({
+                                ...base,
+                                background: '#fff',
+                                color: 'black',
+                                borderRadius: 5,
+                                boxShadow: '0 0 10px #000',
+                                padding: 20,
+                            }),
+                        }}
+                    >
+                        <SnackbarProvider>
+                            <RouterProvider router={ROUTER} />
+                        </SnackbarProvider>
+                    </TourProvider>
                 </AppThemeProvider>
             </AppQueryProvider>
         </AppPostHogProvider>

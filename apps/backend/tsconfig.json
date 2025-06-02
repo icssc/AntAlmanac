@@ -12,8 +12,9 @@
         "resolveJsonModule": true,
         "paths": {
             "$aa/*": ["../antalmanac/*"],
+            "$db/*": ["./src/db/*"],
             "$models/*": ["./src/models/*"],
-            "$db/*": ["./src/db/*"]
+            "$generated/*": ["./src/generated/*"]
         }
     },
     "include": ["src/**/*", "scripts/**/*.ts", "drizzle.config.ts"],
