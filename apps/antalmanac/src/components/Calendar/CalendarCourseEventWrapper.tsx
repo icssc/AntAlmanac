@@ -1,3 +1,5 @@
+'use client';
+
 import { Box } from '@mui/material';
 import { useCallback, useEffect, useRef } from 'react';
 import { EventWrapperProps } from 'react-big-calendar';
