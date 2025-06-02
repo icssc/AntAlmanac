@@ -1,5 +1,6 @@
 import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
 import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
+import { PostHog, usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { changeCurrentSchedule } from '$actions/AppStoreActions';
@@ -26,9 +27,9 @@ function getScheduleItems(items?: string[]): ScheduleItem[] {
     return scheduleNames.map((name, index) => ({ id: index, name }));
 }
 
-function handleScheduleChange(index: number) {
-    logAnalytics({
-        category: analyticsEnum.calendar.title,
+function handleScheduleChange(index: number, postHog?: PostHog) {
+    logAnalytics(postHog, {
+        category: analyticsEnum.calendar,
         action: analyticsEnum.calendar.actions.CHANGE_SCHEDULE,
     });
     changeCurrentSchedule(index);
@@ -37,9 +38,9 @@ function handleScheduleChange(index: number) {
 /**
  * Creates an event handler callback that will change the current schedule to the one at a specified index.
  */
-function createScheduleSelector(index: number) {
+function createScheduleSelector(index: number, postHog?: PostHog) {
     return () => {
-        handleScheduleChange(index);
+        handleScheduleChange(index, postHog);
     };
 }
 
@@ -58,6 +59,8 @@ export function SelectSchedulePopover() {
     const [skeletonScheduleMapping, setSkeletonScheduleMapping] = useState(
         getScheduleItems(AppStore.getSkeletonScheduleNames())
     );
+
+    const postHog = usePostHog();
 
     // TODO: maybe these widths should be dynamic based on i.e. the viewport width?
     const minWidth = useMemo(() => 100, []);
@@ -203,7 +206,7 @@ export function SelectSchedulePopover() {
                                                                 ? theme.palette.action.selected
                                                                 : undefined,
                                                     }}
-                                                    onClick={() => createScheduleSelector(index)()}
+                                                    onClick={() => createScheduleSelector(index, postHog)()}
                                                 >
                                                     <Typography
                                                         overflow="hidden"

@@ -11,6 +11,7 @@ import {
     Tooltip,
 } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
@@ -49,6 +50,8 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
         props.customEvent?.building ?? defaultCustomEventValues.building
     );
 
+    const postHog = usePostHog();
+
     const resetForm = () => {
         setStart(defaultCustomEventValues.start);
         setEnd(defaultCustomEventValues.end);
@@ -64,8 +67,8 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
         handleClose();
         handleAddToCalendar();
 
-        logAnalytics({
-            category: analyticsEnum.calendar.title,
+        logAnalytics(postHog, {
+            category: analyticsEnum.calendar,
             action: analyticsEnum.calendar.actions.ADD_CUSTOM_EVENT,
         });
     };
@@ -74,8 +77,8 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
         setOpen(true);
         setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(props.customEvent?.customEventID ?? -1));
 
-        logAnalytics({
-            category: analyticsEnum.calendar.title,
+        logAnalytics(postHog, {
+            category: analyticsEnum.calendar,
             action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT,
         });
     }, [props.customEvent?.customEventID]);
@@ -163,12 +166,21 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                 <DialogTitle id="form-dialog-title">
                     {props.customEvent ? 'Edit a Custom Event' : 'Add a Custom Event'}
                 </DialogTitle>
-                <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <DialogContent
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '12px',
+                        paddingTop: '12px',
+                        minWidth: (theme) => theme.breakpoints.values.xxs,
+                    }}
+                >
                     <FormControl fullWidth>
                         <TextField
                             label="Event Name"
                             fullWidth
                             value={title}
+                            margin="dense"
                             onChange={handleEventNameChange}
                             variant="outlined"
                             InputLabelProps={{ variant: 'outlined' }}

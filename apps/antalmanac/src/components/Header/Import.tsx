@@ -18,7 +18,8 @@ import {
     Tooltip,
 } from '@mui/material';
 import { CourseInfo } from '@packages/antalmanac-types';
-import { ChangeEvent, useCallback, useEffect, useState, useRef } from 'react';
+import { usePostHog } from 'posthog-js/react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import {
@@ -32,13 +33,14 @@ import { AlertDialog } from '$components/AlertDialog';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
 import {
     getLocalStorageDataCache,
     getLocalStorageOnFirstSignin,
-    setLocalStorageOnFirstSignin,
+    getLocalStorageUserId,
+    removeLocalStorageOnFirstSignin,
+    removeLocalStorageUserId,
 } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
@@ -65,12 +67,12 @@ export function Import() {
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    const { session, sessionIsValid } = useSessionStore();
+    const { sessionIsValid } = useSessionStore();
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
 
-    const firstTimeUserFlag = useRef(true);
-
     const { isDark } = useThemeStore();
+
+    const postHog = usePostHog();
 
     const handleOpen = useCallback(() => {
         setOpenImportDialog(true);
@@ -172,8 +174,8 @@ export function Import() {
                 currentSchedule
             );
 
-            logAnalytics({
-                category: analyticsEnum.nav.title,
+            logAnalytics(postHog, {
+                category: analyticsEnum.nav,
                 action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
                 value: sectionsAdded / (sectionCodes.length || 1),
             });
@@ -204,7 +206,7 @@ export function Import() {
         scheduleIndex: number
     ) => {
         for (const section of Object.values(courseInfo)) {
-            addCourse(section.section, section.courseDetails, term, scheduleIndex, true);
+            addCourse(section.section, section.courseDetails, term, scheduleIndex, true, postHog);
         }
 
         const terms = AppStore.termsInSchedule(term);
@@ -232,18 +234,16 @@ export function Import() {
     }, []);
 
     const handleFirstTimeSignin = useCallback(async () => {
-        const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({ token: session ?? '' });
-
-        if (!users.currentScheduleId && accounts.accountType === 'GOOGLE') {
-            if (getLocalStorageOnFirstSignin() === null || getLocalStorageOnFirstSignin() !== users.email) {
-                setLocalStorageOnFirstSignin(users.email);
-                handleOpen();
-                setImportSource(ImportSource.AA_USERNAME_IMPORT);
-            } else {
-                firstTimeUserFlag.current = false;
-            }
+        const newUserFlag = getLocalStorageOnFirstSignin() ?? '';
+        if (newUserFlag !== '') {
+            const savedUserId = getLocalStorageUserId();
+            if (savedUserId) setAAUsername(savedUserId);
+            handleOpen();
+            removeLocalStorageOnFirstSignin();
+            removeLocalStorageUserId();
+            setImportSource(ImportSource.AA_USERNAME_IMPORT);
         }
-    }, [session, handleOpen]);
+    }, [handleOpen]);
 
     useEffect(() => {
         const handleSkeletonModeChange = () => {

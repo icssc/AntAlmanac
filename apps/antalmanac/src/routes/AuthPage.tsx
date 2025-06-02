@@ -14,6 +14,7 @@ import {
     removeLocalStorageDataCache,
     removeLocalStorageFromLoading,
     setLocalStorageSessionId,
+    setLocalStorageOnFirstSignin,
 } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -30,7 +31,7 @@ export function AuthPage() {
                 return;
             }
 
-            const { sessionToken, userId, providerId } = await trpc.userData.handleGoogleCallback.mutate({
+            const { sessionToken, userId, providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
                 code: code,
                 token: session ?? '',
             });
@@ -38,7 +39,12 @@ export function AuthPage() {
             const fromLoading = getLocalStorageFromLoading() ?? '';
             const savedUserId = getLocalStorageUserId() ?? '';
             const savedData = getLocalStorageDataCache() ?? '';
-            removeLocalStorageUserId();
+
+            if (newUser) {
+                setLocalStorageOnFirstSignin('true');
+            } else {
+                removeLocalStorageUserId();
+            }
 
             if (!(sessionToken && providerId)) {
                 window.location.href = '/';
