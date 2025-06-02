@@ -9,6 +9,7 @@ import { ErrorMessage } from '$components/RightPane/CoursePane/messages/ErrorMes
 import { LoadingMessage } from '$components/RightPane/CoursePane/messages/LoadingMessage';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { SectionTableWrapped } from '$components/RightPane/SectionTable/SectionTableWrapped';
+import analyticsEnum from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { WebSOC } from '$lib/websoc';
 import AppStore from '$stores/AppStore';
@@ -77,6 +78,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             room: formData.room,
             division: formData.division,
             excludeRestrictionCodes: formData.excludeRestrictionCodes.split('').join(','), // comma delimited string (e.g. ABC -> A,B,C)
+            days: formData.days.split(/(?=[A-Z])/).join(','), // split on capital letters (e.g. MTuF -> M,Tu,F)
         };
 
         const gradesQueryParams = {

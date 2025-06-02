@@ -1,7 +1,8 @@
 import { Box, Button, Paper, Popover, useMediaQuery, useTheme } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 
-import { logAnalytics } from '$lib/analytics';
+import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
 interface CourseInfoButtonProps {
@@ -10,7 +11,7 @@ interface CourseInfoButtonProps {
     redirectLink?: string;
     popupContent?: React.ReactElement;
     analyticsAction: string;
-    analyticsCategory: string;
+    analyticsCategory: AnalyticsCategory;
 }
 
 export const CourseInfoButton = ({
@@ -21,6 +22,7 @@ export const CourseInfoButton = ({
     analyticsAction,
     analyticsCategory,
 }: CourseInfoButtonProps) => {
+    const postHog = usePostHog();
     const theme = useTheme();
     const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -30,21 +32,24 @@ export const CourseInfoButton = ({
     const compact =
         isMobileScreen || (scheduleManagementWidth && scheduleManagementWidth < theme.breakpoints.values.xs);
 
-    const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
-        logAnalytics({
-            category: analyticsCategory,
-            action: analyticsAction,
-        });
+    const handleClick = useCallback(
+        (event: React.MouseEvent<HTMLElement>) => {
+            logAnalytics(postHog, {
+                category: analyticsCategory,
+                action: analyticsAction,
+            });
 
-        if (redirectLink) {
-            window.open(redirectLink);
-            return;
-        }
+            if (redirectLink) {
+                window.open(redirectLink);
+                return;
+            }
 
-        if (popupContent) {
-            setAnchorEl(anchorEl ? null : event.currentTarget);
-        }
-    }, []);
+            if (popupContent) {
+                setAnchorEl(anchorEl ? null : event.currentTarget);
+            }
+        },
+        [analyticsAction, analyticsCategory, anchorEl, popupContent, redirectLink]
+    );
 
     const handleClose = useCallback(() => {
         setAnchorEl(null);

@@ -1,5 +1,5 @@
 import { createId } from '@paralleldrive/cuid2';
-import { AnyPgColumn, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import { AnyPgColumn, pgTable, text, timestamp, boolean } from 'drizzle-orm/pg-core';
 
 import { schedules } from '../schedule/schedule';
 
@@ -18,7 +18,7 @@ export const users = pgTable('users', {
     phone: text('phone'),
 
     /**
-     * Profile picture..
+     * Profile picture.
      */
     avatar: text('avatar'),
 
@@ -28,14 +28,25 @@ export const users = pgTable('users', {
     name: text('name'),
 
     /**
+     * User's email.
+     */
+    email: text('email'),
+
+    /**
+     * Imported User Flag.
+     *
+     * Indicates if the user was imported into a Google account.
+     */
+    imported: boolean('imported').default(false),
+
+    /**
      * Most recently viewed schedule.
      */
-    currentScheduleId: text('current_schedule_id')
-        .references(
-            // Necessary because this is a circular dependency.
-            (): AnyPgColumn => schedules.id,
-            { onDelete: 'set null'}
-        ),
+    currentScheduleId: text('current_schedule_id').references(
+        // Necessary because this is a circular dependency.
+        (): AnyPgColumn => schedules.id,
+        { onDelete: 'set null' }
+    ),
 
     lastUpdated: timestamp('last_updated', { withTimezone: true }).defaultNow(),
 });

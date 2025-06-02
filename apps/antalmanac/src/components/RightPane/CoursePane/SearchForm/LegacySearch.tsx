@@ -1,10 +1,10 @@
 import { Box, Button } from '@mui/material';
 
-import AdvancedSearch from './AdvancedSearch/AdvancedSearch';
-import CourseNumberSearchBar from './CourseNumberSearchBar';
-import DeptSearchBar from './DeptSearchBar/DeptSearchBar';
-import GESelector from './GESelector';
-import SectionCodeSearchBar from './SectionCodeSearchBar';
+import { AdvancedSearch } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearch';
+import { CourseNumberSearchBar } from '$components/RightPane/CoursePane/SearchForm/CourseNumberSearchBar';
+import { DepartmentSearchBar } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/DepartmentSearchBar';
+import { GeSelector } from '$components/RightPane/CoursePane/SearchForm/GeSelector';
+import SectionCodeSearchBar from '$components/RightPane/CoursePane/SearchForm/SectionCodeSearchBar';
 
 interface LegacySearchProps {
     onSubmit: VoidFunction;
@@ -16,11 +16,11 @@ export function LegacySearch({ onSubmit, onReset }: LegacySearchProps) {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
             <Box>
                 <Box sx={{ display: 'flex', width: '100%', gap: 2 }}>
-                    <DeptSearchBar />
+                    <DepartmentSearchBar />
                     <CourseNumberSearchBar />
                 </Box>
                 <Box sx={{ display: 'flex', width: '100%', gap: 2 }}>
-                    <GESelector />
+                    <GeSelector />
                     <SectionCodeSearchBar />
                 </Box>
             </Box>

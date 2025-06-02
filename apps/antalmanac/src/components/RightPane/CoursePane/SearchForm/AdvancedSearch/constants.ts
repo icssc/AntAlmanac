@@ -18,3 +18,13 @@ export const EXCLUDE_RESTRICTION_CODES_OPTIONS = [
     { value: 'S', label: 'S: Satisfactory/Unsatisfactory only' },
     { value: 'X', label: 'X: Separate authorization codes required to add, drop, or change enrollment' },
 ];
+
+export const DAYS_OPTIONS = [
+    { value: 'Su', label: 'Su: Sunday' },
+    { value: 'M', label: 'M: Monday' },
+    { value: 'Tu', label: 'Tu: Tuesday' },
+    { value: 'W', label: 'W: Wednesday' },
+    { value: 'Th', label: 'Th: Thursday' },
+    { value: 'F', label: 'F: Friday' },
+    { value: 'Sa', label: 'Sa: Saturday' },
+];

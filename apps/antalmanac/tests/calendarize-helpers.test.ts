@@ -170,6 +170,8 @@ describe('calendarize-helpers', () => {
             color: 'placeholderColor',
             term: '2024 Winter',
             title: 'placeholderDeptCode placeholderCourseNumber',
+            courseNumber: 'placeholderCourseNumber',
+            deptValue: 'placeholderDeptCode',
             courseTitle: 'placeholderCourseTitle',
             instructors: [],
             sectionCode: 'placeholderSectionCode',
