@@ -1,20 +1,20 @@
 import { UserSchema } from '@packages/antalmanac-types';
 import { TRPCError } from '@trpc/server';
 import { type } from 'arktype';
-import { OAuth2Client } from 'google-auth-library';
 import { z } from 'zod';
 
 import { db } from 'src/db';
 import { googleOAuthEnvSchema } from 'src/env';
 import { mangleDuplicateScheduleNames } from 'src/lib/formatting';
 import { RDS } from 'src/lib/rds';
+import { GoogleOAuth2ClientsManager } from 'src/lib/googleOAuth';
 import { procedure, router } from '../trpc';
 
-const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } = googleOAuthEnvSchema.parse(process.env);
+const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = googleOAuthEnvSchema.parse(process.env);
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
 
-const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI);
+const oauth2ClientsManager = new GoogleOAuth2ClientsManager(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET);
 
 const saveInputSchema = type({
     /**
@@ -34,6 +34,7 @@ const saveInputSchema = type({
 const saveGoogleSchema = type({
     code: 'string',
     token: 'string',
+    redirectOrigin: 'string',
 });
 
 const userDataRouter = router({
@@ -115,8 +116,8 @@ const userDataRouter = router({
      * Retrieves Google authentication URL for login/sign up.
      * Retrieves Google auth url to login/sign up
      */
-    getGoogleAuthUrl: procedure.query(async () => {
-        const url = oauth2Client.generateAuthUrl({
+    getGoogleAuthUrl: procedure.input(z.object({ redirectOrigin: z.string() })).query(async ({ input }) => {
+        const url = oauth2ClientsManager.getClient(input.redirectOrigin).generateAuthUrl({
             access_type: 'offline',
             scope: ['profile', 'email'],
         });
@@ -126,6 +127,7 @@ const userDataRouter = router({
      * Logs in or signs up a user and creates user's session
      */
     handleGoogleCallback: procedure.input(saveGoogleSchema.assert).mutation(async ({ input }) => {
+        const oauth2Client = oauth2ClientsManager.getClient(input.redirectOrigin);
         const { tokens } = await oauth2Client.getToken({ code: input.code });
         if (!tokens || !tokens.id_token) {
             throw new TRPCError({
