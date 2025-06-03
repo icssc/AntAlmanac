@@ -1,4 +1,19 @@
-import { amber, blue, deepOrange, deepPurple, green, pink, purple } from '@mui/material/colors';
+import {
+    amber,
+    blue,
+    cyan,
+    deepOrange,
+    deepPurple,
+    green,
+    grey,
+    indigo,
+    lightBlue,
+    pink,
+    purple,
+    red,
+    teal,
+    yellow,
+} from '@mui/material/colors';
 import { ScheduleCourse } from '@packages/antalmanac-types';
 
 export interface HSLColor {
@@ -9,6 +24,24 @@ export interface HSLColor {
 
 const defaultColors = [blue[300], pink[300], purple[300], green[300], amber[300], deepPurple[300], deepOrange[300]];
 
+export const colorPickerPresetColors = [
+    red[300],
+    blue[300],
+    deepOrange[300],
+    amber[300],
+    yellow[300],
+    green[300],
+    teal[300],
+    cyan[300],
+    lightBlue[300],
+    indigo[300],
+    deepPurple[300],
+    pink[300],
+    green[900],
+    grey[800],
+    grey[400],
+    grey[50],
+];
 /**
  * Converts a hex color to HSL
  * Assumes the hex color is in the format #RRGGBB
@@ -127,7 +160,7 @@ function colorIsContained(color: HSLColor, usedColors: Iterable<HSLColor>, delta
  *
  * @return Unused hex color that is close to the original color ("#RRGGBB").
  */
-function generateCloseColor(originalColor: string, usedColors: Set<string>, variation = 0.1): string {
+function generateCloseColor(originalColor: string, usedColors: Set<string>, variation = 0.05): string {
     const usedColorsHSL = [...usedColors].map(HexToHSL);
 
     // Generate a color that is slightly different from the original color and that is not already used
