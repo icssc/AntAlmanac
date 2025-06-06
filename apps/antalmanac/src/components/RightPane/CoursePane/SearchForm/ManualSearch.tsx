@@ -6,22 +6,30 @@ import { DepartmentSearchBar } from '$components/RightPane/CoursePane/SearchForm
 import { GeSelector } from '$components/RightPane/CoursePane/SearchForm/GeSelector';
 import SectionCodeSearchBar from '$components/RightPane/CoursePane/SearchForm/SectionCodeSearchBar';
 
-interface LegacySearchProps {
+interface ManualSearchProps {
     onSubmit: VoidFunction;
     onReset: VoidFunction;
 }
 
-export function LegacySearch({ onSubmit, onReset }: LegacySearchProps) {
+export function ManualSearch({ onSubmit, onReset }: ManualSearchProps) {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-            <Box>
-                <Box sx={{ display: 'flex', width: '100%', gap: 2 }}>
-                    <DepartmentSearchBar />
-                    <CourseNumberSearchBar />
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box sx={{ display: 'flex', width: '100%', gap: 2, flexWrap: 'wrap' }}>
+                    <Box sx={{ flex: 1 }}>
+                        <DepartmentSearchBar />
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                        <CourseNumberSearchBar />
+                    </Box>
                 </Box>
-                <Box sx={{ display: 'flex', width: '100%', gap: 2 }}>
-                    <GeSelector />
-                    <SectionCodeSearchBar />
+                <Box sx={{ display: 'flex', width: '100%', flexDirection: 'row', gap: 2, flexWrap: 'wrap' }}>
+                    <Box sx={{ flex: 1 }}>
+                        <GeSelector />
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                        <SectionCodeSearchBar />
+                    </Box>
                 </Box>
             </Box>
 

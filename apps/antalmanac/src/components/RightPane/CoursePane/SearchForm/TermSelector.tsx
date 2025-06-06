@@ -1,6 +1,7 @@
-import { FormControl, InputLabel, MenuItem, Select, type SelectChangeEvent } from '@mui/material';
+import { MenuItem, type SelectChangeEvent } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
+import { AdornedSelect } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/AdornedSelect';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { termData } from '$lib/termData';
 
@@ -31,15 +32,22 @@ export function TermSelector() {
     }, [resetField]);
 
     return (
-        <FormControl fullWidth>
-            <InputLabel variant="standard">Term</InputLabel>
-            <Select value={term} onChange={handleChange} fullWidth variant="standard">
-                {termData.map((term, index) => (
-                    <MenuItem key={index} value={term.shortName}>
-                        {term.longName}
-                    </MenuItem>
-                ))}
-            </Select>
-        </FormControl>
+        <AdornedSelect
+            label="Term"
+            selectProps={{
+                value: term,
+                onChange: handleChange,
+            }}
+            formControlProps={{
+                fullWidth: true,
+            }}
+            isAligned={true}
+        >
+            {termData.map((term, index) => (
+                <MenuItem key={index} value={term.shortName}>
+                    {term.longName}
+                </MenuItem>
+            ))}
+        </AdornedSelect>
     );
 }

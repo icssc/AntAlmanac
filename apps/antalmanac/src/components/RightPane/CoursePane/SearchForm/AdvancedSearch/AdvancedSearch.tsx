@@ -1,19 +1,16 @@
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Button, Collapse, Typography } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { AdvancedSearchTextFields } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchTextFields';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { getLocalStorageAdvanced, setLocalStorageAdvanced } from '$lib/localStorage';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
 export function AdvancedSearch() {
-    const [open, setOpen] = useState(() => getLocalStorageAdvanced() === 'expanded');
+    const { advancedSearchEnabled, toggleAdvancedSearch } = useCoursePaneStore();
 
     const handleExpand = () => {
-        setOpen((prev) => {
-            setLocalStorageAdvanced(!prev ? 'expanded' : 'notexpanded');
-            return !prev;
-        });
+        toggleAdvancedSearch();
     };
 
     const resetField = useCallback(() => {
@@ -43,9 +40,9 @@ export function AdvancedSearch() {
         <>
             <Button onClick={handleExpand} sx={{ textTransform: 'none', display: 'flex', justifyContent: 'start' }}>
                 <Typography noWrap>Advanced Search Options</Typography>
-                {open ? <ExpandLess /> : <ExpandMore />}
+                {advancedSearchEnabled ? <ExpandLess /> : <ExpandMore />}
             </Button>
-            <Collapse in={open}>
+            <Collapse in={advancedSearchEnabled}>
                 <AdvancedSearchTextFields />
             </Collapse>
         </>
