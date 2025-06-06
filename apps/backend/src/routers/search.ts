@@ -5,8 +5,9 @@ import type { GESearchResult, SearchResult, SectionSearchResult } from '@package
 import uFuzzy from '@leeoniya/ufuzzy';
 import * as fuzzysort from 'fuzzysort';
 import { procedure, router } from '../trpc';
-import { backendEnvSchema } from '../env';
+import { backendEnvSchema, ppEnvSchema } from '../env';
 import * as searchData from '$generated/searchData';
+import { fetchUserCoursesPeterPortal, getCurrentTerm } from '../lib/peterportal';
 
 const MAX_AUTOCOMPLETE_RESULTS = 12;
 
@@ -93,12 +94,20 @@ const searchRouter = router({
                           keys: ['id', 'name', 'alias', 'metadata.department', 'metadata.number'],
                           limit: MAX_AUTOCOMPLETE_RESULTS - matchedDepts.length - matchedSections.length,
                       });
-
-            return Object.fromEntries([
+    
+            let results = [
                 ...matchedSections.map((x) => [x.sectionCode, x]),
-                ...matchedDepts.map((x) => [x.obj.id, x.obj]),
-                ...matchedCourses.map((x) => [x.obj.id, x.obj]),
-            ]);
+                ...matchedDepts.map(x => [x.obj.id, x.obj]),
+                ...matchedCourses.map(x => [x.obj.id, x.obj]),
+            ]
+
+            return Object.fromEntries(results);
+        }),
+
+        fetchUserCoursesPeterPortal: procedure
+        .input(z.object({ userId: z.string() }))
+        .query(async ({ input }) => {
+          return await fetchUserCoursesPeterPortal(input.userId);
         }),
 });
 
