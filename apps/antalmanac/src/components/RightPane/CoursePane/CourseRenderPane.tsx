@@ -113,7 +113,7 @@ const RecruitmentBanner = () => {
  */
 const SectionTableWrapped = (
     index: number,
-    data: { scheduleNames: string[]; courseData: (WebsocSchool | WebsocDepartment | AACourse)[] }
+    data: { scheduleNames: string[]; courseData: (WebsocSchool | WebsocDepartment | AACourse)[]; }
 ) => {
     const { courseData, scheduleNames } = data;
     const formData = RightPaneStore.getFormData();
