@@ -14,10 +14,12 @@ import {
     DialogTitle,
     TextField,
 } from '@mui/material';
+import { PostHog, usePostHog } from 'posthog-js/react';
 import { ChangeEvent, PureComponent, useEffect, useState, useCallback } from 'react';
 
 import { loadSchedule, saveSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
@@ -34,6 +36,7 @@ interface LoadSaveButtonBaseProps {
     colorType: 'primary' | 'secondary';
     id?: string;
     isDark: boolean;
+    postHog?: PostHog;
 }
 
 interface LoadSaveButtonBaseState {
@@ -65,6 +68,10 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
     };
 
     handleOpen = () => {
+        logAnalytics(this.props.postHog, {
+            category: analyticsEnum.nav,
+            action: analyticsEnum.nav.actions.CLICK_LOAD,
+        });
         this.setState({ isOpen: true });
         if (typeof Storage !== 'undefined') {
             const userID = getLocalStorageUserId();
@@ -187,6 +194,8 @@ export const Load = () => {
     const [openAlert, setOpenalert] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
+    const postHog = usePostHog();
+
     const validateImportedUser = async (userID: string) => {
         try {
             const res = await trpc.userData.getGuestAccountAndUserByName
@@ -203,11 +212,11 @@ export const Load = () => {
     const loadScheduleAndSetLoading = useCallback(
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
-            await loadSchedule(userID, rememberMe, 'GUEST');
+            await loadSchedule(userID, rememberMe, 'GUEST', postHog);
             await validateImportedUser(userID);
             setOpenLoadingSchedule(false);
         },
-        [setOpenLoadingSchedule]
+        [setOpenLoadingSchedule, postHog]
     );
 
     const loadScheduleAndSetLoadingAuth = useCallback(
@@ -216,16 +225,16 @@ export const Load = () => {
 
             const sessionToken = getLocalStorageSessionId() ?? '';
 
-            if (sessionToken && (await loadScheduleWithSessionToken())) {
+            if (sessionToken && (await loadScheduleWithSessionToken(postHog))) {
                 updateSession(sessionToken);
             } else if (sessionToken === '' && userID && userID !== '') {
                 await validateImportedUser(userID);
-                await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
+                await loadSchedule(userID, rememberMe, 'GUEST', postHog); // fallback to guest
             }
 
             setOpenLoadingSchedule(false);
         },
-        [setOpenLoadingSchedule, updateSession]
+        [setOpenLoadingSchedule, updateSession, postHog]
     );
 
     const handleLogin = () => {
@@ -270,6 +279,7 @@ export const Load = () => {
                 loading={loadingSchedule}
                 colorType={isDark ? 'secondary' : 'primary'}
                 isDark={isDark}
+                postHog={postHog}
             />
 
             <AlertDialog
