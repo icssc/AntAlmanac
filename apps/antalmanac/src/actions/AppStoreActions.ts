@@ -363,7 +363,7 @@ const cacheSchedule = () => {
 
 export const loginUser = async () => {
     try {
-        const authUrl = await trpc.userData.getGoogleAuthUrl.query();
+        const authUrl = await trpc.userData.getGoogleAuthUrl.query({ redirectOrigin: window.location.origin });
         if (authUrl) {
             cacheSchedule();
             window.location.href = authUrl;
