@@ -41,6 +41,7 @@ export class Schedules {
                 scheduleName: `${getDefaultTerm().shortName.replaceAll(' ', '-')}`,
                 courses: [],
                 customEvents: [],
+                larcSections: [],
                 scheduleNoteId: scheduleNoteId,
             },
         ];
@@ -111,6 +112,7 @@ export class Schedules {
             scheduleName: this.getNextScheduleName(this.getNumberOfSchedules(), newScheduleName),
             courses: [],
             customEvents: [],
+            larcSections: [],
             scheduleNoteId: scheduleNoteId,
         });
         // Setting schedule index manually otherwise 2 undo states are added
@@ -596,6 +598,7 @@ export class Schedules {
                     scheduleName: shortCourseSchedule.scheduleName,
                     courses: courses,
                     customEvents: shortCourseSchedule.customEvents,
+                    larcSections: [],
                     scheduleNoteId: scheduleNoteId,
                 });
             }
