@@ -16,6 +16,7 @@ import { MOBILE_BREAKPOINT } from '$src/globals';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import { useTabStore } from '$stores/TabStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
+import { StatusColumnHeader } from './StatusColumnHeader';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -110,15 +111,13 @@ function SectionTable(props: SectionTableProps) {
     return (
         <>
             <Box
-            sx={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: 1,
-              }}
+                sx={{
+                    display: 'flex',
+                    gap: '4px',
+                    marginBottom: '8px',
+                    marginTop: '4px',
+                }}
         >
-            <Box sx={{display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-start', alignItems: 'center'}}>
                 <CourseInfoBar
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
@@ -171,22 +170,6 @@ function SectionTable(props: SectionTableProps) {
                     }
                 />
             </Box>
-            {courseDetails.updatedAt && (
-                    <Box sx={{
-                        fontSize: '0.75rem',
-                        color: '#888',
-                        px: 1,
-                        py: 0.5,
-                        whiteSpace: 'nowrap',
-                        flexShrink: 0,
-                        textAlign: 'right',
-                        minWidth: 0,
-                    }}
-                >
-                    {isCompact ? 'Updated ' : 'Status last updated '}{formattedTime}
-            </Box>
-            )}
-        </Box>
     
             <TableContainer
                 component={Paper}
@@ -220,7 +203,7 @@ function SectionTable(props: SectionTableProps) {
                                             padding: 0,
                                         }}
                                     >
-                                        {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
+                                        {label === 'Status' ? <StatusColumnHeader label={label} formattedTime={formattedTime}/> : label}
                                     </TableCell>
                                 ))}
                         </TableRow>
