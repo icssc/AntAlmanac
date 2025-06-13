@@ -3,6 +3,10 @@ import { OAuth2Client } from 'google-auth-library';
 import { backendEnvSchema } from 'src/env';
 import { TRPCError } from '@trpc/server';
 
+/**
+ * Manages Google OAuth2 clients for different redirect origins.
+ * Handles client creation and validation of redirect URIs based on environment.
+ */
 export class GoogleOAuth2ClientsManager {
     /**
      * Map of redirect origins to OAuth2Clients.
@@ -22,6 +26,12 @@ export class GoogleOAuth2ClientsManager {
         this.redirectOrigin = GOOGLE_REDIRECT_URI;
     }
 
+    /**
+     * Gets or creates an OAuth2Client for the given redirect origin.
+     *
+     * @param redirectOrigin - The origin URL to create/get a client for
+     * @returns OAuth2Client configured for the given redirect origin
+     */
     getClient(redirectOrigin: string): OAuth2Client {
         if (!this.allowDynamicRedirects && redirectOrigin !== this.redirectOrigin) {
             throw new TRPCError({
