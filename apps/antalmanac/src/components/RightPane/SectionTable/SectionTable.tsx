@@ -15,7 +15,7 @@ import { MOBILE_BREAKPOINT } from '$src/globals';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import { useTabStore } from '$stores/TabStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
-import { StatusColumnHeader } from './StatusColumnHeader';
+import { EnrollmentColumnHeader } from './EnrollmentColumnHeader';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -201,7 +201,7 @@ function SectionTable(props: SectionTableProps) {
                                             padding: 0,
                                         }}
                                     >
-                                        {label === 'Status' ? <StatusColumnHeader label={label} formattedTime={formattedTime}/> : label}
+                                        {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} formattedTime={formattedTime}/> : label}
                                     </TableCell>
                                 ))}
                         </TableRow>
