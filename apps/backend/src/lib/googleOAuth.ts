@@ -33,11 +33,9 @@ export class GoogleOAuth2ClientsManager {
      * @returns OAuth2Client configured for the given redirect origin
      */
     getClient(redirectOrigin: string): OAuth2Client {
+        // If the STAGE is prod then we will use the value stored from GOOGLE_REDIRECT_URI (i.e. https://antalmanac.com/auth)
         if (!this.allowDynamicRedirects && redirectOrigin !== this.redirectOrigin) {
-            throw new TRPCError({
-                code: 'BAD_REQUEST',
-                message: 'Dynamic redirects are not allowed',
-            });
+            return new OAuth2Client(this.clientId, this.clientSecret, this.redirectOrigin);
         }
 
         try {
