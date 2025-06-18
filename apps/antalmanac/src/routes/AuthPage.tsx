@@ -34,7 +34,6 @@ export function AuthPage() {
             const { sessionToken, userId, providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
                 code: code,
                 token: session ?? '',
-                redirectOrigin: window.location.origin,
             });
 
             const fromLoading = getLocalStorageFromLoading() ?? '';
@@ -73,7 +72,7 @@ export function AuthPage() {
 
             // handle unsaved changes
             if (savedData !== '') {
-                const userData = await trpc.userData.getUserData.query({ userId: userId ?? '' });
+                const userData = await trpc.userData.getUserData.query({ userId: userId });
                 const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
                 if (savedUserId !== '') {
