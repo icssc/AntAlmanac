@@ -42,6 +42,9 @@ export function AdornedSelect<T = string | string[]>({
                         right: '9px',
                     },
                 }}
+                MenuProps={{
+                    marginThreshold: null,
+                }}
                 input={
                     <OutlinedInput startAdornment={<SearchAdornment label={label} id={id} isAligned={isAligned} />} />
                 }
