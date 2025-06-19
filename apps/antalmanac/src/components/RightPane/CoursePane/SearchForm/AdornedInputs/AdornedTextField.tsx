@@ -14,7 +14,7 @@ export const AdornedTextField = ({ label, textFieldProps, isAligned }: AdornedTe
     const isDark = useThemeStore((store) => store.isDark);
 
     return (
-        <Stack direction="row" alignItems="center" sx={{ border: '1px solid #606060', borderRadius: '4px' }}>
+        <Stack direction="row" alignItems="center">
             <InputLabel
                 shrink={false}
                 htmlFor={textFieldProps?.id}
@@ -28,6 +28,8 @@ export const AdornedTextField = ({ label, textFieldProps, isAligned }: AdornedTe
                     backgroundColor: isDark ? grey[800] : grey[200],
                     borderTopLeftRadius: 4,
                     borderBottomLeftRadius: 4,
+                    border: '1px solid #606060',
+                    borderRightWidth: 0,
                 }}
             >
                 {label}
@@ -44,9 +46,6 @@ export const AdornedTextField = ({ label, textFieldProps, isAligned }: AdornedTe
                         },
                         '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                             borderWidth: 1,
-                        },
-                        '&.MuiOutlinedInput-notchedOutline': {
-                            borderLeftWidth: 0,
                         },
                     },
                 }}
