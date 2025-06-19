@@ -1,8 +1,6 @@
-import { FormControl, FormControlProps, TextField, TextFieldProps } from '@mui/material';
+import { FormControlProps, InputLabel, Stack, TextField, TextFieldProps } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { useId } from 'react';
 
-import { SearchAdornment } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/SearchAdornment';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface AdornedTextFieldProps {
@@ -12,27 +10,33 @@ interface AdornedTextFieldProps {
     isAligned?: boolean;
 }
 
-export const AdornedTextField = ({ label, textFieldProps, formControlProps, isAligned }: AdornedTextFieldProps) => {
+export const AdornedTextField = ({ label, textFieldProps, isAligned }: AdornedTextFieldProps) => {
     const isDark = useThemeStore((store) => store.isDark);
-    const id = useId();
 
     return (
-        <FormControl variant="outlined" sx={{ minWidth: 200 }} {...formControlProps}>
+        <Stack direction="row" alignItems="center" sx={{ border: '1px solid #606060', borderRadius: '4px' }}>
+            <InputLabel
+                shrink={false}
+                htmlFor={textFieldProps?.id}
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    paddingY: 1,
+                    paddingX: 1.5,
+                    minWidth: isAligned ? '10.25rem' : '6rem',
+                    maxWidth: 'fit-content',
+                    backgroundColor: isDark ? grey[800] : grey[200],
+                    borderTopLeftRadius: 4,
+                    borderBottomLeftRadius: 4,
+                }}
+            >
+                {label}
+            </InputLabel>
+
             <TextField
                 size="small"
                 variant="outlined"
                 {...textFieldProps}
-                InputProps={{
-                    ...textFieldProps?.InputProps,
-                    startAdornment: <SearchAdornment label={label} id={id} isAligned={isAligned} />,
-                }}
-                inputProps={{
-                    ...textFieldProps?.inputProps,
-                    sx: {
-                        paddingLeft: 1,
-                    },
-                    'aria-labelledby': `adornment-label-${id}`,
-                }}
                 sx={{
                     '& .MuiOutlinedInput-root': {
                         '&:hover:not(.Mui-focused) .MuiOutlinedInput-notchedOutline': {
@@ -41,12 +45,18 @@ export const AdornedTextField = ({ label, textFieldProps, formControlProps, isAl
                         '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                             borderWidth: 1,
                         },
+                        '&.MuiOutlinedInput-notchedOutline': {
+                            borderLeftWidth: 0,
+                        },
                     },
-                    '&&& .MuiInputBase-sizeSmall': {
-                        paddingLeft: 0,
+                }}
+                InputProps={{
+                    sx: {
+                        borderTopLeftRadius: 0,
+                        borderBottomLeftRadius: 0,
                     },
                 }}
             />
-        </FormControl>
+        </Stack>
     );
 };
