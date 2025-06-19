@@ -13,6 +13,7 @@ import {
     DialogContentText,
     DialogTitle,
     TextField,
+    AlertColor,
 } from '@mui/material';
 import { ChangeEvent, PureComponent, useEffect, useState, useCallback } from 'react';
 
@@ -177,6 +178,17 @@ class LoadSaveButtonBase extends PureComponent<LoadSaveButtonBaseProps, LoadSave
     }
 }
 
+const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = {
+    SESSION_EXPIRED: {
+        title: 'Your session has expired. Please sign in again.',
+        severity: 'info',
+    },
+    SCHEDULE_IMPORTED: {
+        title: 'This schedule seems to have already been imported!',
+        severity: 'warning',
+    },
+};
+
 export const Load = () => {
     const isDark = useThemeStore((store) => store.isDark);
 
@@ -187,18 +199,25 @@ export const Load = () => {
     const [openAlert, setOpenalert] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    const validateImportedUser = async (userID: string) => {
+    const [alertMessage, setAlertMessage] = useState<{ title: string; severity: AlertColor }>(
+        ALERT_MESSAGES.SCHEDULE_IMPORTED
+    );
+
+    const validateImportedUser = useCallback(async (userID: string) => {
         try {
             const res = await trpc.userData.getGuestAccountAndUserByName
                 .query({ name: userID })
                 .then((res) => res.users);
-            if (res.imported) setOpenalert(true);
+            if (res.imported) {
+                setAlertMessage(ALERT_MESSAGES.SCHEDULE_IMPORTED);
+                setOpenalert(true);
+            }
             return res;
         } catch (error) {
             console.error('Error validating imported user:', error);
             return false;
         }
-    };
+    }, []);
 
     const loadScheduleAndSetLoading = useCallback(
         async (userID: string, rememberMe: boolean) => {
@@ -207,7 +226,7 @@ export const Load = () => {
             await validateImportedUser(userID);
             setOpenLoadingSchedule(false);
         },
-        [setOpenLoadingSchedule]
+        [setOpenLoadingSchedule, validateImportedUser]
     );
 
     const loadScheduleAndSetLoadingAuth = useCallback(
@@ -216,7 +235,14 @@ export const Load = () => {
 
             const sessionToken = getLocalStorageSessionId() ?? '';
 
-            if (sessionToken && (await loadScheduleWithSessionToken())) {
+            const validSession = await trpc.auth.validateSession.query({
+                token: sessionToken,
+            });
+
+            if (!validSession) {
+                setOpenalert(true);
+                setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
+            } else if (sessionToken && (await loadScheduleWithSessionToken())) {
                 updateSession(sessionToken);
             } else if (sessionToken === '' && userID && userID !== '') {
                 await validateImportedUser(userID);
@@ -225,7 +251,7 @@ export const Load = () => {
 
             setOpenLoadingSchedule(false);
         },
-        [setOpenLoadingSchedule, updateSession]
+        [setOpenLoadingSchedule, updateSession, validateImportedUser]
     );
 
     const handleLogin = () => {
@@ -275,8 +301,8 @@ export const Load = () => {
             <AlertDialog
                 open={openAlert}
                 onClose={() => setOpenalert(false)}
-                title="This schedule seems to have already been imported!"
-                severity="warning"
+                title={alertMessage.title}
+                severity={alertMessage.severity}
             >
                 <DialogContentText>To load your schedule sign in with your Google account</DialogContentText>
                 <LoadingButton
