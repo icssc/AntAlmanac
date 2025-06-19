@@ -184,8 +184,8 @@ const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = 
         severity: 'info',
     },
     SCHEDULE_IMPORTED: {
-        title: 'This schedule seems to have already been imported!',
-        severity: 'warning',
+        title: 'This schedule was previously imported to a Google account. Did you want to sign in with Google?',
+        severity: 'info',
     },
 };
 
