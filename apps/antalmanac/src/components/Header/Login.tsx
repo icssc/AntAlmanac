@@ -1,16 +1,20 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import GoogleIcon from '@mui/icons-material/Google';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Avatar, Menu, ListItemIcon, ListItemText, MenuItem, IconButton } from '@mui/material';
+import { Avatar, Menu, ListItemIcon, ListItemText, MenuItem, IconButton, Button } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { loginUser } from '$actions/AppStoreActions';
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
+``;
 
 export function Login() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<null | User>(null);
+
     const navigate = useNavigate();
 
     const handleLogout = async () => {
@@ -20,11 +24,11 @@ export function Login() {
 
     const { session, sessionIsValid, clearSession } = useSessionStore();
 
-    const open = Boolean(anchorEl);
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const openMenu = Boolean(anchorEl);
+    const handleClickMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
-    const handleClose = () => {
+    const handleCloseMenu = () => {
         setAnchorEl(null);
     };
 
@@ -43,34 +47,38 @@ export function Login() {
         }
     }, [handleAuthChange, sessionIsValid]);
 
-    if (!sessionIsValid) {
-        return;
-    }
     return (
         <div id="load-save-container">
-            <IconButton
-                aria-controls={open ? 'basic-menu' : undefined}
-                color="inherit"
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-                sx={{ width: 'fit-content' }}
-            >
-                {user?.avatar ? (
-                    <Avatar
-                        sx={{ width: '2rem', height: '2rem' }}
-                        src={`${user?.avatar}`}
-                        alt={`${user?.name}-photo`}
-                    />
-                ) : (
-                    <AccountCircleIcon />
-                )}
-            </IconButton>
+            {sessionIsValid ? (
+                <IconButton
+                    aria-controls={openMenu ? 'basic-menu' : undefined}
+                    color="inherit"
+                    aria-haspopup="true"
+                    aria-expanded={openMenu ? 'true' : undefined}
+                    onClick={handleClickMenu}
+                    sx={{ width: 'fit-content' }}
+                >
+                    {user?.avatar ? (
+                        <Avatar
+                            sx={{ width: '2rem', height: '2rem' }}
+                            src={`${user?.avatar}`}
+                            alt={`${user?.name}-photo`}
+                        />
+                    ) : (
+                        <AccountCircleIcon />
+                    )}
+                </IconButton>
+            ) : (
+                <Button color="inherit" startIcon={<GoogleIcon />} onClick={loginUser}>
+                    Sign in
+                </Button>
+            )}
+
             <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}
-                onClose={handleClose}
-                open={open}
+                onClose={handleCloseMenu}
+                open={openMenu}
                 MenuListProps={{
                     'aria-labelledby': 'basic-button',
                 }}
