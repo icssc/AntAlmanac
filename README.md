@@ -54,8 +54,10 @@ Since then, the project has continued to evolve and grow with successive generat
 | 2021 - 2022    | @ChaseC99            |
 | 2022 - 2024    | @EricPedley          |
 | 2023 - 2024    | @ap0nia              |
-| 2024 - Present | @MinhxNguyen7        |
-| 2024 - Present | @adcockdalton        |
+| 2024 - 2025    | @MinhxNguyen7        |
+| 2024 - 2025    | @adcockdalton        |
+| 2025 - Present | @alexespejo          |
+
 
 
 # Contributing
