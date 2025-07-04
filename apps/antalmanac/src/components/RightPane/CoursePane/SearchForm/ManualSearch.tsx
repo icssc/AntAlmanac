@@ -13,9 +13,9 @@ interface ManualSearchProps {
 
 export function ManualSearch({ onSubmit, onReset }: ManualSearchProps) {
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <Box sx={{ display: 'flex', width: '100%', gap: 2, flexWrap: 'wrap' }}>
+        <Box display="flex" flexDirection="column" gap={0.5}>
+            <Box display="flex" flexDirection="column" gap={2}>
+                <Box display="flex" width="100%" gap={2} flexWrap={'wrap'}>
                     <Box sx={{ flex: 1 }}>
                         <DepartmentSearchBar />
                     </Box>
@@ -23,11 +23,11 @@ export function ManualSearch({ onSubmit, onReset }: ManualSearchProps) {
                         <CourseNumberSearchBar />
                     </Box>
                 </Box>
-                <Box sx={{ display: 'flex', width: '100%', flexDirection: 'row', gap: 2, flexWrap: 'wrap' }}>
-                    <Box sx={{ flex: 1 }}>
+                <Box display="flex" width="100%" gap={2} flexWrap={'wrap'}>
+                    <Box flex={1}>
                         <GeSelector />
                     </Box>
-                    <Box sx={{ flex: 1 }}>
+                    <Box flex={1}>
                         <SectionCodeSearchBar />
                     </Box>
                 </Box>
@@ -35,7 +35,7 @@ export function ManualSearch({ onSubmit, onReset }: ManualSearchProps) {
 
             <AdvancedSearch />
 
-            <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', gap: 2 }}>
+            <Box display="flex" width="100%" gap={2} justifyContent="center">
                 <Button color="primary" variant="contained" type="submit" onClick={onSubmit} sx={{ width: '50%' }}>
                     Search
                 </Button>

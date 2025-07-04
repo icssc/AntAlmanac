@@ -151,82 +151,96 @@ export function AdvancedSearchTextFields() {
                 marginBottom: '1rem',
             }}
         >
-            <Box display={'flex'} flexWrap={'wrap'} gap={2}>
-                <LabelledTextField
-                    label="Instructor"
-                    textFieldProps={{
-                        type: 'search',
-                        value: instructor,
-                        onChange: changeHandlerFactory('instructor'),
-                        placeholder: 'Last name only',
-                    }}
-                />
-
-                <LabelledTextField
-                    label="Units"
-                    textFieldProps={{
-                        value: units,
-                        onChange: changeHandlerFactory('units'),
-                        type: 'search',
-                        id: 'units',
-                        placeholder: 'ex. 3, 4, or VAR',
-                    }}
-                />
-                <LabelledSelect
-                    label="Class Full Option"
-                    selectProps={{
-                        value: coursesFull,
-                        onChange: changeHandlerFactory('coursesFull'),
-                    }}
-                >
-                    <MenuItem value={'ANY'}>Include all classes</MenuItem>
-                    <MenuItem value={'SkipFullWaitlist'}>Include full courses if space on waitlist</MenuItem>
-                    <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
-                    <MenuItem value={'FullOnly'}>Show only full or waitlisted courses</MenuItem>
-                    <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
-                </LabelledSelect>
+            <Box display={'flex'} flexWrap={'wrap'} gap={2} width={'100%'}>
+                <Box flex={1}>
+                    <LabelledTextField
+                        label="Instructor"
+                        textFieldProps={{
+                            type: 'search',
+                            value: instructor,
+                            onChange: changeHandlerFactory('instructor'),
+                            placeholder: 'Last name only',
+                            fullWidth: true,
+                        }}
+                    />
+                </Box>
+                <Box flex={1}>
+                    <LabelledTextField
+                        label="Units"
+                        textFieldProps={{
+                            value: units,
+                            onChange: changeHandlerFactory('units'),
+                            type: 'search',
+                            id: 'units',
+                            placeholder: 'ex. 3, 4, or VAR',
+                            fullWidth: true,
+                        }}
+                    />
+                </Box>
+                <Box flex={1}>
+                    <LabelledSelect
+                        label="Class Full Option"
+                        selectProps={{
+                            value: coursesFull,
+                            onChange: changeHandlerFactory('coursesFull'),
+                            fullWidth: true,
+                        }}
+                    >
+                        <MenuItem value={'ANY'}>Include all classes</MenuItem>
+                        <MenuItem value={'SkipFullWaitlist'}>Include full courses if space on waitlist</MenuItem>
+                        <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
+                        <MenuItem value={'FullOnly'}>Show only full or waitlisted courses</MenuItem>
+                        <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
+                    </LabelledSelect>
+                </Box>
             </Box>
 
-            <Box display={'flex'} flexWrap={'wrap'} gap={2}>
-                <LabelledSelect
-                    label="Course Level"
-                    selectProps={{
-                        value: division,
-                        onChange: changeHandlerFactory('division'),
-                        displayEmpty: true,
-                        MenuProps: {
-                            anchorOrigin: {
-                                vertical: 'bottom',
-                                horizontal: 'left',
+            <Box display={'flex'} flexWrap={'wrap'} gap={2} width={'100%'}>
+                <Box flex={1}>
+                    <LabelledSelect
+                        label="Course Level"
+                        selectProps={{
+                            value: division,
+                            onChange: changeHandlerFactory('division'),
+                            displayEmpty: true,
+                            MenuProps: {
+                                anchorOrigin: {
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                },
+                                transformOrigin: {
+                                    vertical: 'top',
+                                    horizontal: 'left',
+                                },
                             },
-                            transformOrigin: {
-                                vertical: 'top',
-                                horizontal: 'left',
-                            },
-                        },
-                    }}
-                >
-                    <MenuItem value={''}>Any Division</MenuItem>
-                    <MenuItem value={'LowerDiv'}>Lower Division</MenuItem>
-                    <MenuItem value={'UpperDiv'}>Upper Division</MenuItem>
-                    <MenuItem value={'Graduate'}>Graduate/Professional</MenuItem>
-                </LabelledSelect>
-                <Box display={'flex'} flexWrap={'wrap'} gap={2}>
+                            fullWidth: true,
+                        }}
+                    >
+                        <MenuItem value={''}>Any Division</MenuItem>
+                        <MenuItem value={'LowerDiv'}>Lower Division</MenuItem>
+                        <MenuItem value={'UpperDiv'}>Upper Division</MenuItem>
+                        <MenuItem value={'Graduate'}>Graduate/Professional</MenuItem>
+                    </LabelledSelect>
+                </Box>
+                <Box flex={1}>
                     <LabelledSelect
                         label="Starts After"
                         selectProps={{
                             value: startTime,
                             onChange: changeHandlerFactory('startTime'),
+                            fullWidth: true,
                         }}
                     >
                         {startsAfterMenuItems}
                     </LabelledSelect>
-
+                </Box>
+                <Box flex={1}>
                     <LabelledSelect
                         label="Ends Before"
                         selectProps={{
                             value: endTime,
                             onChange: changeHandlerFactory('endTime'),
+                            fullWidth: true,
                         }}
                     >
                         {endsBeforeMenuItems}
@@ -234,103 +248,118 @@ export function AdvancedSearchTextFields() {
                 </Box>
             </Box>
 
-            <Box display={'flex'} flexWrap={'wrap'} gap={2}>
-                <LabelledSelect
-                    label="Online Only"
-                    selectProps={{
-                        value: building === 'ON' ? 'true' : 'false',
-                        onChange: changeHandlerFactory('online'),
-                    }}
-                >
-                    <MenuItem value="false">False</MenuItem>
-                    <MenuItem value="true">True</MenuItem>
-                </LabelledSelect>
-                <LabelledTextField
-                    label="Building"
-                    textFieldProps={{
-                        id: 'building',
-                        type: 'search',
-                        value: building,
-                        onChange: changeHandlerFactory('building'),
-                    }}
-                />
-                <LabelledTextField
-                    label="Room"
-                    textFieldProps={{
-                        id: 'room',
-                        type: 'search',
-                        value: room,
-                        onChange: changeHandlerFactory('room'),
-                    }}
-                />
+            <Box display={'flex'} flexWrap={'wrap'} gap={2} width={'100%'}>
+                <Box flex={1}>
+                    <LabelledSelect
+                        label="Online Only"
+                        selectProps={{
+                            value: building === 'ON' ? 'true' : 'false',
+                            onChange: changeHandlerFactory('online'),
+                            fullWidth: true,
+                        }}
+                    >
+                        <MenuItem value="false">False</MenuItem>
+                        <MenuItem value="true">True</MenuItem>
+                    </LabelledSelect>
+                </Box>
+                <Box flex={1}>
+                    <LabelledTextField
+                        label="Building"
+                        textFieldProps={{
+                            id: 'building',
+                            type: 'search',
+                            value: building,
+                            onChange: changeHandlerFactory('building'),
+                            fullWidth: true,
+                        }}
+                    />
+                </Box>
+                <Box flex={1}>
+                    <LabelledTextField
+                        label="Room"
+                        textFieldProps={{
+                            id: 'room',
+                            type: 'search',
+                            value: room,
+                            onChange: changeHandlerFactory('room'),
+                            fullWidth: true,
+                        }}
+                    />
+                </Box>
             </Box>
 
-            <Box display={'flex'} flexWrap={'wrap'} gap={2}>
-                <LabelledSelect
-                    label="Exclude Restrictions"
-                    selectProps={{
-                        multiple: true,
-                        value: excludeRestrictionCodes.split(''),
-                        onChange: changeHandlerFactory('excludeRestrictionCodes'),
-                        renderValue: (selected) => (selected as string[]).join(', '),
-                    }}
-                >
-                    {EXCLUDE_RESTRICTION_CODES_OPTIONS.map((option) => (
-                        <MenuItem
-                            key={option.value}
-                            value={option.value}
-                            sx={{
-                                maxWidth: 240,
-                            }}
-                        >
-                            <span
-                                style={{
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap',
+            <Box display={'flex'} flexWrap={'wrap'} gap={2} width={'100%'}>
+                <Box flex={1}>
+                    <LabelledSelect
+                        label="Exclude Restrictions"
+                        selectProps={{
+                            multiple: true,
+                            value: excludeRestrictionCodes.split(''),
+                            onChange: changeHandlerFactory('excludeRestrictionCodes'),
+                            renderValue: (selected) => (selected as string[]).join(', '),
+                            fullWidth: true,
+                        }}
+                    >
+                        {EXCLUDE_RESTRICTION_CODES_OPTIONS.map((option) => (
+                            <MenuItem
+                                key={option.value}
+                                value={option.value}
+                                sx={{
+                                    maxWidth: 240,
                                 }}
                             >
-                                {option.label}
-                            </span>
-                        </MenuItem>
-                    ))}
-                </LabelledSelect>
-                <LabelledSelect
-                    label="Days"
-                    selectProps={{
-                        multiple: true,
-                        value: days ? days.split(/(?=[A-Z])/) : [],
-                        onChange: changeHandlerFactory('days'),
-                        renderValue: (selected) =>
-                            (selected as string[])
-                                .sort((a, b) => {
-                                    const orderA = DAYS_OPTIONS.findIndex((day) => day.value === a);
-                                    const orderB = DAYS_OPTIONS.findIndex((day) => day.value === b);
-                                    return orderA - orderB;
-                                })
-                                .join(', '),
-                    }}
-                >
-                    {DAYS_OPTIONS.map((option) => (
-                        <MenuItem
-                            key={option.value}
-                            value={option.value}
-                            sx={{
-                                maxWidth: 240,
-                            }}
-                        >
-                            <span
-                                style={{
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap',
+                                <span
+                                    style={{
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {option.label}
+                                </span>
+                            </MenuItem>
+                        ))}
+                    </LabelledSelect>
+                </Box>
+                <Box flex={1}>
+                    <LabelledSelect
+                        label="Days"
+                        selectProps={{
+                            multiple: true,
+                            value: days ? days.split(/(?=[A-Z])/) : [],
+                            onChange: changeHandlerFactory('days'),
+                            renderValue: (selected) =>
+                                (selected as string[])
+                                    .sort((a, b) => {
+                                        const orderA = DAYS_OPTIONS.findIndex((day) => day.value === a);
+                                        const orderB = DAYS_OPTIONS.findIndex((day) => day.value === b);
+                                        return orderA - orderB;
+                                    })
+                                    .join(', '),
+                            fullWidth: true,
+                        }}
+                    >
+                        {DAYS_OPTIONS.map((option) => (
+                            <MenuItem
+                                key={option.value}
+                                value={option.value}
+                                sx={{
+                                    maxWidth: 240,
                                 }}
                             >
-                                {option.label}
-                            </span>
-                        </MenuItem>
-                    ))}
-                </LabelledSelect>
+                                <span
+                                    style={{
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    {option.label}
+                                </span>
+                            </MenuItem>
+                        ))}
+                    </LabelledSelect>
+                </Box>
             </Box>
         </Box>
     );

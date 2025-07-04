@@ -39,10 +39,6 @@ export function TermSelector() {
                 onChange: handleChange,
                 fullWidth: true,
             }}
-            fullWidth
-            // formControlProps={{
-            //     fullWidth: true,
-            // }}
             isAligned={true}
         >
             {termData.map((term, index) => (

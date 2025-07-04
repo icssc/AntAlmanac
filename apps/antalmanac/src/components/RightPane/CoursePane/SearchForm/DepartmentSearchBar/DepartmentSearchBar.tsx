@@ -99,26 +99,5 @@ export function DepartmentSearchBar() {
             }}
             isAligned
         />
-        // <Autocomplete
-        //     value={value}
-        //     options={Array.from(new Set<string>([...recentSearches, ...options]))}
-        //     autoHighlight={true}
-        //     openOnFocus={true}
-        //     getOptionLabel={(option) => DEPARTMENT_MAP[option.toUpperCase() as keyof typeof DEPARTMENT_MAP]}
-        //     onChange={handleChange}
-        //     includeInputInList={true}
-        //     noOptionsText="No departments match the search"
-        //     groupBy={(option) => (recentSearches.includes(option) ? 'Recently Searched' : 'Departments')}
-        //     size="small"
-        //     renderInput={(params) => (
-        //         <LabelledTextField
-        //             textFieldProps={{
-        //                 fullWidth: true,
-        //             }}
-        //             label="Department"
-        //             isAligned={true}
-        //         />
-        //     )}
-        // />
     );
 }

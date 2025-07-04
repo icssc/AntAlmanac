@@ -20,8 +20,8 @@ export const LabelledInput = ({ label, children, wrapperProps, id, isAligned }: 
         <Box display="flex" alignItems="center" {...wrapperProps}>
             <CustomInputLabel label={label} id={id} isAligned={isAligned} />
             <Box
+                flexGrow={1}
                 sx={{
-                    flexGrow: 1,
                     '& .MuiOutlinedInput-root': {
                         minWidth: 100,
                         borderTopLeftRadius: 0,

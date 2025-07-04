@@ -208,33 +208,6 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 }}
                 isAligned
             />
-            // <Autocomplete
-            //     loading={this.state.loading}
-            //     sx={{ width: '100%' }}
-            //     options={Object.keys(this.state.results ?? {})}
-            //     size="small"
-            //     renderInput={(params) => (
-            //         <LabelledTextField
-            //             label="Search"
-            //             textFieldProps={{
-            //                 ...params,
-            //                 autoFocus: !isMobile(),
-            //                 placeholder: 'Search for courses, departments, GEs...',
-            //                 fullWidth: true,
-            //             }}
-            //             isAligned={true}
-            //         />
-            //     )}
-            //     autoHighlight={true}
-            //     filterOptions={this.filterOptions}
-            //     getOptionLabel={this.getOptionLabel}
-            //     id={'fuzzy-search'}
-            //     noOptionsText={'No results found! Please try broadening your search.'}
-            //     onClose={this.onClose}
-            //     onInputChange={this.onInputChange}
-            //     open={this.state.open}
-            //     popupIcon={''}
-            // />
         );
     }
 }

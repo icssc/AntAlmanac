@@ -7,7 +7,6 @@ interface LabelledSelectProps<T = string | string[]> {
     label: string;
     selectProps?: SelectProps<T>;
     children?: React.ReactNode;
-    fullWidth?: boolean;
     isAligned?: boolean;
 }
 
@@ -30,31 +29,5 @@ export function LabelledSelect<T = string | string[]>({
                 {children}
             </Select>
         </LabelledInput>
-        // <FormControl variant="outlined" size="small" sx={{ minWidth: 200 }} {...formControlProps}>
-        //     <Select
-        //         {...selectProps}
-        //         sx={{
-        //             paddingLeft: 0,
-        //             '&:hover .MuiOutlinedInput-notchedOutline': {
-        //                 borderColor: isDark ? grey[500] : grey[600],
-        //             },
-        //             '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-        //                 borderWidth: 1,
-        //             },
-        //             '& .MuiSelect-select': {
-        //                 paddingLeft: 1,
-        //             },
-        //             '& .MuiSelect-icon': {
-        //                 right: '9px',
-        //             },
-        //         }}
-        //         input={
-        //             <OutlinedInput startAdornment={<SearchAdornment label={label} id={id} isAligned={isAligned} />} />
-        //         }
-        //         aria-labelledby={`adornment-label-${id}`}
-        //     >
-        //         {children}
-        //     </Select>
-        // </FormControl>
     );
 }
