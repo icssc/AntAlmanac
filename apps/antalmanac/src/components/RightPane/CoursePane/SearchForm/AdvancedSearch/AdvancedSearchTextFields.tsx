@@ -1,12 +1,12 @@
 import { MenuItem, Box, type SelectChangeEvent } from '@mui/material';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 
-import { AdornedSelect } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/AdornedSelect';
-import { AdornedTextField } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/AdornedTextField';
 import {
     EXCLUDE_RESTRICTION_CODES_OPTIONS,
     DAYS_OPTIONS,
 } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
+import { LabelledSelect } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabelledSelect';
+import { LabelledTextField } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabelledTextField';
 import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { safeUnreachableCase } from '$lib/utils';
@@ -144,21 +144,15 @@ export function AdvancedSearchTextFields() {
 
     return (
         <Box
+            display={'flex'}
+            flexWrap={'wrap'}
+            gap={2}
             sx={{
-                display: 'flex',
-                gap: 2,
-                flexWrap: 'wrap',
                 marginBottom: '1rem',
             }}
         >
-            <Box
-                sx={{
-                    display: 'flex',
-                    gap: 2,
-                    flexWrap: 'wrap',
-                }}
-            >
-                <AdornedTextField
+            <Box display={'flex'} flexWrap={'wrap'} gap={2}>
+                <LabelledTextField
                     label="Instructor"
                     textFieldProps={{
                         type: 'search',
@@ -168,7 +162,7 @@ export function AdvancedSearchTextFields() {
                     }}
                 />
 
-                <AdornedTextField
+                <LabelledTextField
                     label="Units"
                     textFieldProps={{
                         value: units,
@@ -178,7 +172,7 @@ export function AdvancedSearchTextFields() {
                         placeholder: 'ex. 3, 4, or VAR',
                     }}
                 />
-                <AdornedSelect
+                <LabelledSelect
                     label="Class Full Option"
                     selectProps={{
                         value: coursesFull,
@@ -190,17 +184,11 @@ export function AdvancedSearchTextFields() {
                     <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
                     <MenuItem value={'FullOnly'}>Show only full or waitlisted courses</MenuItem>
                     <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
-                </AdornedSelect>
+                </LabelledSelect>
             </Box>
 
-            <Box
-                sx={{
-                    display: 'flex',
-                    gap: 2,
-                    flexWrap: 'wrap',
-                }}
-            >
-                <AdornedSelect
+            <Box display={'flex'} flexWrap={'wrap'} gap={2}>
+                <LabelledSelect
                     label="Course Level"
                     selectProps={{
                         value: division,
@@ -222,16 +210,9 @@ export function AdvancedSearchTextFields() {
                     <MenuItem value={'LowerDiv'}>Lower Division</MenuItem>
                     <MenuItem value={'UpperDiv'}>Upper Division</MenuItem>
                     <MenuItem value={'Graduate'}>Graduate/Professional</MenuItem>
-                </AdornedSelect>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        rowGap: 1,
-                        columnGap: 2,
-                        flexWrap: 'wrap',
-                    }}
-                >
-                    <AdornedSelect
+                </LabelledSelect>
+                <Box display={'flex'} flexWrap={'wrap'} gap={2}>
+                    <LabelledSelect
                         label="Starts After"
                         selectProps={{
                             value: startTime,
@@ -239,9 +220,9 @@ export function AdvancedSearchTextFields() {
                         }}
                     >
                         {startsAfterMenuItems}
-                    </AdornedSelect>
+                    </LabelledSelect>
 
-                    <AdornedSelect
+                    <LabelledSelect
                         label="Ends Before"
                         selectProps={{
                             value: endTime,
@@ -249,18 +230,12 @@ export function AdvancedSearchTextFields() {
                         }}
                     >
                         {endsBeforeMenuItems}
-                    </AdornedSelect>
+                    </LabelledSelect>
                 </Box>
             </Box>
 
-            <Box
-                sx={{
-                    display: 'flex',
-                    gap: 2,
-                    flexWrap: 'wrap',
-                }}
-            >
-                <AdornedSelect
+            <Box display={'flex'} flexWrap={'wrap'} gap={2}>
+                <LabelledSelect
                     label="Online Only"
                     selectProps={{
                         value: building === 'ON' ? 'true' : 'false',
@@ -269,8 +244,8 @@ export function AdvancedSearchTextFields() {
                 >
                     <MenuItem value="false">False</MenuItem>
                     <MenuItem value="true">True</MenuItem>
-                </AdornedSelect>
-                <AdornedTextField
+                </LabelledSelect>
+                <LabelledTextField
                     label="Building"
                     textFieldProps={{
                         id: 'building',
@@ -279,7 +254,7 @@ export function AdvancedSearchTextFields() {
                         onChange: changeHandlerFactory('building'),
                     }}
                 />
-                <AdornedTextField
+                <LabelledTextField
                     label="Room"
                     textFieldProps={{
                         id: 'room',
@@ -290,14 +265,8 @@ export function AdvancedSearchTextFields() {
                 />
             </Box>
 
-            <Box
-                sx={{
-                    display: 'flex',
-                    gap: 2,
-                    flexWrap: 'wrap',
-                }}
-            >
-                <AdornedSelect
+            <Box display={'flex'} flexWrap={'wrap'} gap={2}>
+                <LabelledSelect
                     label="Exclude Restrictions"
                     selectProps={{
                         multiple: true,
@@ -325,8 +294,8 @@ export function AdvancedSearchTextFields() {
                             </span>
                         </MenuItem>
                     ))}
-                </AdornedSelect>
-                <AdornedSelect
+                </LabelledSelect>
+                <LabelledSelect
                     label="Days"
                     selectProps={{
                         multiple: true,
@@ -361,7 +330,7 @@ export function AdvancedSearchTextFields() {
                             </span>
                         </MenuItem>
                     ))}
-                </AdornedSelect>
+                </LabelledSelect>
             </Box>
         </Box>
     );

@@ -1,7 +1,7 @@
 import { MenuItem, type SelectChangeEvent } from '@mui/material';
 import { useEffect, useCallback, useState } from 'react';
 
-import { AdornedSelect } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/AdornedSelect';
+import { LabelledSelect } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabelledSelect';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 const GE_LIST = [
@@ -55,14 +55,11 @@ export function GeSelector() {
     }, [resetField]);
 
     return (
-        <AdornedSelect
+        <LabelledSelect
             label="General Education"
             selectProps={{
                 value: ge,
                 onChange: handleChange,
-                variant: 'standard',
-            }}
-            formControlProps={{
                 fullWidth: true,
             }}
             isAligned={true}
@@ -74,6 +71,6 @@ export function GeSelector() {
                     </MenuItem>
                 );
             })}
-        </AdornedSelect>
+        </LabelledSelect>
     );
 }

@@ -1,10 +1,11 @@
-import { Autocomplete, type AutocompleteInputChangeReason } from '@mui/material';
+import { type AutocompleteInputChangeReason } from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
 import { PureComponent } from 'react';
 import UAParser from 'ua-parser-js';
 
-import { AdornedTextField } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/AdornedTextField';
+import { LabelledAutocomplete } from './LabelledInputs/LabelledAutocomplete';
+
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
@@ -184,35 +185,56 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
     render() {
         return (
-            <Autocomplete
-                loading={this.state.loading}
-                sx={{ width: '100%' }}
-                options={Object.keys(this.state.results ?? {})}
-                size="small"
-                renderInput={(params) => (
-                    <AdornedTextField
-                        label="Search"
-                        formControlProps={{
-                            fullWidth: true,
-                        }}
-                        textFieldProps={{
-                            ...params,
-                            autoFocus: !isMobile(),
-                            placeholder: 'Search for courses, departments, GEs...',
-                        }}
-                        isAligned={true}
-                    />
-                )}
-                autoHighlight={true}
-                filterOptions={this.filterOptions}
-                getOptionLabel={this.getOptionLabel}
-                id={'fuzzy-search'}
-                noOptionsText={'No results found! Please try broadening your search.'}
-                onClose={this.onClose}
-                onInputChange={this.onInputChange}
-                open={this.state.open}
-                popupIcon={''}
+            <LabelledAutocomplete
+                label="Search"
+                autocompleteProps={{
+                    loading: this.state.loading,
+                    fullWidth: true,
+                    options: Object.keys(this.state.results ?? {}),
+                    autoHighlight: true,
+                    filterOptions: this.filterOptions,
+                    getOptionLabel: this.getOptionLabel,
+                    id: 'fuzzy-search',
+                    noOptionsText: 'No results found! Please try broadening your search.',
+                    onClose: this.onClose,
+                    onInputChange: this.onInputChange,
+                    open: this.state.open,
+                    popupIcon: '',
+                }}
+                textFieldProps={{
+                    autoFocus: !isMobile(),
+                    placeholder: 'Search for courses, departments, GEs...',
+                    fullWidth: true,
+                }}
+                isAligned
             />
+            // <Autocomplete
+            //     loading={this.state.loading}
+            //     sx={{ width: '100%' }}
+            //     options={Object.keys(this.state.results ?? {})}
+            //     size="small"
+            //     renderInput={(params) => (
+            //         <LabelledTextField
+            //             label="Search"
+            //             textFieldProps={{
+            //                 ...params,
+            //                 autoFocus: !isMobile(),
+            //                 placeholder: 'Search for courses, departments, GEs...',
+            //                 fullWidth: true,
+            //             }}
+            //             isAligned={true}
+            //         />
+            //     )}
+            //     autoHighlight={true}
+            //     filterOptions={this.filterOptions}
+            //     getOptionLabel={this.getOptionLabel}
+            //     id={'fuzzy-search'}
+            //     noOptionsText={'No results found! Please try broadening your search.'}
+            //     onClose={this.onClose}
+            //     onInputChange={this.onInputChange}
+            //     open={this.state.open}
+            //     popupIcon={''}
+            // />
         );
     }
 }
