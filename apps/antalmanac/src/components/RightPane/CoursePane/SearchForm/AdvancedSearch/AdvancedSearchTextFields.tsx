@@ -1,4 +1,4 @@
-import { MenuItem, Box, type SelectChangeEvent } from '@mui/material';
+import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText } from '@mui/material';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 
 import {
@@ -301,22 +301,12 @@ export function AdvancedSearchTextFields() {
                         }}
                     >
                         {EXCLUDE_RESTRICTION_CODES_OPTIONS.map((option) => (
-                            <MenuItem
-                                key={option.value}
-                                value={option.value}
-                                sx={{
-                                    maxWidth: 240,
-                                }}
-                            >
-                                <span
-                                    style={{
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap',
-                                    }}
-                                >
-                                    {option.label}
-                                </span>
+                            <MenuItem key={option.value} value={option.value} sx={{ paddingY: 0.25 }}>
+                                <Checkbox
+                                    checked={excludeRestrictionCodes.includes(option.value)}
+                                    inputProps={{ 'aria-labelledby': `option-label-${option.value}` }}
+                                />
+                                <ListItemText id={`option-label-${option.value}`} primary={option.label} />
                             </MenuItem>
                         ))}
                     </LabelledSelect>
@@ -340,22 +330,12 @@ export function AdvancedSearchTextFields() {
                         }}
                     >
                         {DAYS_OPTIONS.map((option) => (
-                            <MenuItem
-                                key={option.value}
-                                value={option.value}
-                                sx={{
-                                    maxWidth: 240,
-                                }}
-                            >
-                                <span
-                                    style={{
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap',
-                                    }}
-                                >
-                                    {option.label}
-                                </span>
+                            <MenuItem key={option.value} value={option.value} sx={{ paddingY: 0.25 }}>
+                                <Checkbox
+                                    checked={days.includes(option.value)}
+                                    inputProps={{ 'aria-labelledby': `option-label-${option.value}` }}
+                                />
+                                <ListItemText id={`option-label-${option.value}`} primary={option.label} />
                             </MenuItem>
                         ))}
                     </LabelledSelect>
