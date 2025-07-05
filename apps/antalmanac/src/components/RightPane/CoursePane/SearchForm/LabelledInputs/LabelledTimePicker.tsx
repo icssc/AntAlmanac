@@ -1,7 +1,7 @@
-import { TextField, TextFieldProps } from '@mui/material';
+import { TextFieldProps } from '@mui/material';
 import { useId } from 'react';
 
-import { LabelledInput } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabelledInput';
+import { LabelledTextField } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabelledTextField';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface LabelledTimePickerProps {
@@ -15,21 +15,17 @@ export const LabelledTimePicker = ({ label, textFieldProps, isAligned }: Labelle
     const isDark = useThemeStore((store) => store.isDark);
 
     return (
-        <LabelledInput label={label} isAligned={isAligned} id={id}>
-            <TextField
-                size="small"
-                variant="outlined"
-                id={id}
-                {...textFieldProps}
-                type="time"
-                sx={{
+        <LabelledTextField
+            label={label}
+            isAligned={isAligned}
+            id={id}
+            textFieldProps={{
+                ...textFieldProps,
+                type: 'time',
+                sx: {
                     colorScheme: isDark ? 'dark' : 'light',
-                }}
-                inputProps={{
-                    ...textFieldProps?.inputProps,
-                    'aria-labelledby': `input-label-${id}`,
-                }}
-            />
-        </LabelledInput>
+                },
+            }}
+        />
     );
 };

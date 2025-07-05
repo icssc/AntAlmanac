@@ -1,7 +1,7 @@
-import { Autocomplete, AutocompleteProps, TextField, TextFieldProps } from '@mui/material';
+import { Autocomplete, AutocompleteProps, TextFieldProps } from '@mui/material';
 import { useId } from 'react';
 
-import { LabelledInput } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabelledInput';
+import { LabelledTextField } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabelledTextField';
 
 interface LabelledAutocompleteProps<
     T,
@@ -28,23 +28,23 @@ export const LabelledAutocomplete = <T,>({
             size="small"
             {...autocompleteProps}
             renderInput={(params) => (
-                <LabelledInput label={label} isAligned={isAligned} id={id}>
-                    <TextField
-                        size="small"
-                        variant="outlined"
-                        id={id}
-                        {...textFieldProps}
-                        inputProps={{
-                            ...textFieldProps?.inputProps,
-                            ...params.inputProps,
-                            'aria-labelledby': `input-label-${id}`,
-                        }}
-                        InputProps={{
-                            ...textFieldProps?.InputProps,
+                <LabelledTextField
+                    label={label}
+                    isAligned={isAligned}
+                    id={id}
+                    textFieldProps={{
+                        ...textFieldProps,
+                        InputProps: {
                             ...params.InputProps,
-                        }}
-                    />
-                </LabelledInput>
+                            ...textFieldProps?.InputProps,
+                        },
+                        inputProps: {
+                            ...params.inputProps,
+                            ...textFieldProps?.inputProps,
+                            'aria-labelledby': `input-label-${id}`,
+                        },
+                    }}
+                />
             )}
         ></Autocomplete>
     );

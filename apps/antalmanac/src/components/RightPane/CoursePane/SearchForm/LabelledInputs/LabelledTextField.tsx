@@ -4,24 +4,26 @@ import { useId } from 'react';
 import { LabelledInput } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabelledInput';
 
 interface LabelledTextFieldProps {
+    id?: string;
     label: string;
     textFieldProps?: TextFieldProps;
     isAligned?: boolean;
 }
 
-export const LabelledTextField = ({ label, textFieldProps, isAligned }: LabelledTextFieldProps) => {
-    const id = useId();
+export const LabelledTextField = ({ id, label, textFieldProps, isAligned }: LabelledTextFieldProps) => {
+    const generatedId = useId();
+    const textFieldId = id ?? generatedId;
 
     return (
-        <LabelledInput label={label} isAligned={isAligned} id={id}>
+        <LabelledInput label={label} isAligned={isAligned} id={textFieldId}>
             <TextField
                 size="small"
                 variant="outlined"
-                id={id}
+                id={textFieldId}
                 {...textFieldProps}
                 inputProps={{
                     ...textFieldProps?.inputProps,
-                    'aria-labelledby': `input-label-${id}`,
+                    'aria-labelledby': `input-label-${textFieldId}`,
                 }}
             />
         </LabelledInput>
