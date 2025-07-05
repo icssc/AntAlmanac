@@ -17,10 +17,10 @@ export const LabelledTextField = ({ label, textFieldProps, isAligned }: Labelled
             <TextField
                 size="small"
                 variant="outlined"
+                id={id}
                 {...textFieldProps}
                 inputProps={{
                     ...textFieldProps?.inputProps,
-                    id,
                     'aria-labelledby': `input-label-${id}`,
                 }}
             />

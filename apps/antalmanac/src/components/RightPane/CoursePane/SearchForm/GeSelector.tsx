@@ -60,7 +60,9 @@ export function GeSelector() {
             selectProps={{
                 value: ge,
                 onChange: handleChange,
-                fullWidth: true,
+                sx: {
+                    width: '100%',
+                },
             }}
             isAligned={true}
         >

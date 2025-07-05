@@ -19,6 +19,7 @@ export const LabelledTimePicker = ({ label, textFieldProps, isAligned }: Labelle
             <TextField
                 size="small"
                 variant="outlined"
+                id={id}
                 {...textFieldProps}
                 type="time"
                 sx={{
@@ -26,7 +27,6 @@ export const LabelledTimePicker = ({ label, textFieldProps, isAligned }: Labelle
                 }}
                 inputProps={{
                     ...textFieldProps?.inputProps,
-                    id,
                     'aria-labelledby': `input-label-${id}`,
                 }}
             />

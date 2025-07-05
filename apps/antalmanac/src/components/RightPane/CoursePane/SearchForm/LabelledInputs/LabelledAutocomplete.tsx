@@ -32,11 +32,11 @@ export const LabelledAutocomplete = <T,>({
                     <TextField
                         size="small"
                         variant="outlined"
+                        id={id}
                         {...textFieldProps}
                         inputProps={{
                             ...textFieldProps?.inputProps,
                             ...params.inputProps,
-                            id,
                             'aria-labelledby': `input-label-${id}`,
                         }}
                         InputProps={{
