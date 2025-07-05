@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
+import { AdornedTextField } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/AdornedTextField';
 import { DEPARTMENT_MAP } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/constants';
 import { LabelledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabelledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
