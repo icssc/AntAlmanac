@@ -1,7 +1,7 @@
 import { Autocomplete, AutocompleteProps, TextField, TextFieldProps } from '@mui/material';
 import { useId } from 'react';
 
-import { LabelledInput } from './LabelledInput';
+import { LabelledInput } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabelledInput';
 
 interface LabelledAutocompleteProps<
     T,

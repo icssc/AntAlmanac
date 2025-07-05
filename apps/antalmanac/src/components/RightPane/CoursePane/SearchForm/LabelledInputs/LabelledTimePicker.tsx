@@ -1,8 +1,7 @@
 import { TextField, TextFieldProps } from '@mui/material';
 import { useId } from 'react';
 
-import { LabelledInput } from './LabelledInput';
-
+import { LabelledInput } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabelledInput';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface LabelledTimePickerProps {

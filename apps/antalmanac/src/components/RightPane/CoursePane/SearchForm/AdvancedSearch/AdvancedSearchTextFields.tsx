@@ -1,7 +1,6 @@
 import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText } from '@mui/material';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 
-import { LabelledTimePicker } from '../LabelledInputs/LabelledTimePicker';
 
 import {
     EXCLUDE_RESTRICTION_CODES_OPTIONS,
@@ -9,6 +8,7 @@ import {
 } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import { LabelledSelect } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabelledSelect';
 import { LabelledTextField } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabelledTextField';
+import { LabelledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabelledTimePicker';
 import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { safeUnreachableCase } from '$lib/utils';

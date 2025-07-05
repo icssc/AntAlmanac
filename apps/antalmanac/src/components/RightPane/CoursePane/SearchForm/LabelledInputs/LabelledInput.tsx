@@ -1,8 +1,7 @@
 import { Box } from '@mui/material';
 import { grey } from '@mui/material/colors';
 
-import { CustomInputLabel } from './CustomInputLabel';
-
+import { CustomInputLabel } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/CustomInputLabel';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface LabelledInputProps {
