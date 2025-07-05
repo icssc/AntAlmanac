@@ -1,7 +1,6 @@
 import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText } from '@mui/material';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 
-
 import {
     EXCLUDE_RESTRICTION_CODES_OPTIONS,
     DAYS_OPTIONS,

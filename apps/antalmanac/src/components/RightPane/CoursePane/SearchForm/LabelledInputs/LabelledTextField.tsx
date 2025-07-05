@@ -16,16 +16,7 @@ export const LabelledTextField = ({ id, label, textFieldProps, isAligned }: Labe
 
     return (
         <LabelledInput label={label} isAligned={isAligned} id={textFieldId}>
-            <TextField
-                size="small"
-                variant="outlined"
-                id={textFieldId}
-                {...textFieldProps}
-                inputProps={{
-                    ...textFieldProps?.inputProps,
-                    'aria-labelledby': `input-label-${textFieldId}`,
-                }}
-            />
+            <TextField size="small" variant="outlined" id={textFieldId} {...textFieldProps} />
         </LabelledInput>
     );
 };
