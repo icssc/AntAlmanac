@@ -1,4 +1,4 @@
-import { Box, BoxProps } from '@mui/material';
+import { Box } from '@mui/material';
 import { grey } from '@mui/material/colors';
 
 import { CustomInputLabel } from './CustomInputLabel';
@@ -8,16 +8,15 @@ import { useThemeStore } from '$stores/SettingsStore';
 interface LabelledInputProps {
     label: string;
     children: React.ReactNode;
-    wrapperProps?: BoxProps;
     id: string;
     isAligned?: boolean;
 }
 
-export const LabelledInput = ({ label, children, wrapperProps, id, isAligned }: LabelledInputProps) => {
+export const LabelledInput = ({ label, children, id, isAligned }: LabelledInputProps) => {
     const isDark = useThemeStore((store) => store.isDark);
 
     return (
-        <Box display="flex" alignItems="center" {...wrapperProps}>
+        <Box display="flex" alignItems="center" sx={{ width: '100%' }}>
             <CustomInputLabel label={label} id={id} isAligned={isAligned} />
             <Box
                 flexGrow={1}

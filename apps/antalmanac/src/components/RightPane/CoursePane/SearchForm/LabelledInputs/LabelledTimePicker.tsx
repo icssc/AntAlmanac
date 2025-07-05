@@ -3,14 +3,17 @@ import { useId } from 'react';
 
 import { LabelledInput } from './LabelledInput';
 
-interface LabelledTextFieldProps {
+import { useThemeStore } from '$stores/SettingsStore';
+
+interface LabelledTimePickerProps {
     label: string;
     textFieldProps?: TextFieldProps;
     isAligned?: boolean;
 }
 
-export const LabelledTextField = ({ label, textFieldProps, isAligned }: LabelledTextFieldProps) => {
+export const LabelledTimePicker = ({ label, textFieldProps, isAligned }: LabelledTimePickerProps) => {
     const id = useId();
+    const isDark = useThemeStore((store) => store.isDark);
 
     return (
         <LabelledInput label={label} isAligned={isAligned} id={id}>
@@ -18,6 +21,10 @@ export const LabelledTextField = ({ label, textFieldProps, isAligned }: Labelled
                 size="small"
                 variant="outlined"
                 {...textFieldProps}
+                type="time"
+                sx={{
+                    colorScheme: isDark ? 'dark' : 'light',
+                }}
                 inputProps={{
                     ...textFieldProps?.inputProps,
                     id,

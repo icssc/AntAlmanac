@@ -19,13 +19,8 @@ export function LabelledSelect<T = string | string[]>({
     const id = useId();
 
     return (
-        <LabelledInput
-            label={label}
-            isAligned={isAligned}
-            id={id}
-            wrapperProps={selectProps?.fullWidth ? { sx: { width: '100%' } } : undefined}
-        >
-            <Select size="small" variant="outlined" aria-labelledby={`input-label-${id}`} {...selectProps}>
+        <LabelledInput label={label} isAligned={isAligned} id={id}>
+            <Select size="small" variant="outlined" labelId={`input-label-${id}`} inputProps={{ id }} {...selectProps}>
                 {children}
             </Select>
         </LabelledInput>

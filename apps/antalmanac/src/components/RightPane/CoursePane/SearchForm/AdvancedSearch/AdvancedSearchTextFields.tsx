@@ -1,6 +1,8 @@
 import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText } from '@mui/material';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 
+import { LabelledTimePicker } from '../LabelledInputs/LabelledTimePicker';
+
 import {
     EXCLUDE_RESTRICTION_CODES_OPTIONS,
     DAYS_OPTIONS,
@@ -126,22 +128,6 @@ export function AdvancedSearchTextFields() {
             RightPaneStore.updateFormValue(name, stringValue);
         };
 
-    // List of times from 2:00am-11:00pm
-    const menuItemTimes = [
-        ...[...Array(10).keys()].map((v) => `${v + 2}:00am`),
-        '12:00pm',
-        ...[...Array(11).keys()].map((v) => `${v + 1}:00pm`),
-    ];
-
-    const createdMenuItemTime = (time: string) => (
-        <MenuItem key={time} value={`${time}`}>
-            {time ? time : <em>None</em>}
-        </MenuItem>
-    );
-
-    const startsAfterMenuItems = ['', '1:00am', ...menuItemTimes].map((time) => createdMenuItemTime(time));
-    const endsBeforeMenuItems = ['', ...menuItemTimes].map((time) => createdMenuItemTime(time));
-
     return (
         <Box
             display={'flex'}
@@ -183,7 +169,9 @@ export function AdvancedSearchTextFields() {
                         selectProps={{
                             value: coursesFull,
                             onChange: changeHandlerFactory('coursesFull'),
-                            fullWidth: true,
+                            sx: {
+                                width: '100%',
+                            },
                         }}
                     >
                         <MenuItem value={'ANY'}>Include all classes</MenuItem>
@@ -213,7 +201,9 @@ export function AdvancedSearchTextFields() {
                                     horizontal: 'left',
                                 },
                             },
-                            fullWidth: true,
+                            sx: {
+                                width: '100%',
+                            },
                         }}
                     >
                         <MenuItem value={''}>Any Division</MenuItem>
@@ -223,28 +213,24 @@ export function AdvancedSearchTextFields() {
                     </LabelledSelect>
                 </Box>
                 <Box flex={1}>
-                    <LabelledSelect
+                    <LabelledTimePicker
                         label="Starts After"
-                        selectProps={{
+                        textFieldProps={{
                             value: startTime,
                             onChange: changeHandlerFactory('startTime'),
                             fullWidth: true,
                         }}
-                    >
-                        {startsAfterMenuItems}
-                    </LabelledSelect>
+                    />
                 </Box>
                 <Box flex={1}>
-                    <LabelledSelect
+                    <LabelledTimePicker
                         label="Ends Before"
-                        selectProps={{
+                        textFieldProps={{
                             value: endTime,
                             onChange: changeHandlerFactory('endTime'),
                             fullWidth: true,
                         }}
-                    >
-                        {endsBeforeMenuItems}
-                    </LabelledSelect>
+                    />
                 </Box>
             </Box>
 
@@ -255,7 +241,9 @@ export function AdvancedSearchTextFields() {
                         selectProps={{
                             value: building === 'ON' ? 'true' : 'false',
                             onChange: changeHandlerFactory('online'),
-                            fullWidth: true,
+                            sx: {
+                                width: '100%',
+                            },
                         }}
                     >
                         <MenuItem value="false">False</MenuItem>
@@ -297,7 +285,9 @@ export function AdvancedSearchTextFields() {
                             value: excludeRestrictionCodes.split(''),
                             onChange: changeHandlerFactory('excludeRestrictionCodes'),
                             renderValue: (selected) => (selected as string[]).join(', '),
-                            fullWidth: true,
+                            sx: {
+                                width: '100%',
+                            },
                         }}
                     >
                         {EXCLUDE_RESTRICTION_CODES_OPTIONS.map((option) => (
@@ -326,7 +316,9 @@ export function AdvancedSearchTextFields() {
                                         return orderA - orderB;
                                     })
                                     .join(', '),
-                            fullWidth: true,
+                            sx: {
+                                width: '100%',
+                            },
                         }}
                     >
                         {DAYS_OPTIONS.map((option) => (

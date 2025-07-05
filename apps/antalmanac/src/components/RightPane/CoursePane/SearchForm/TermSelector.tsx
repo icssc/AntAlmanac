@@ -37,7 +37,9 @@ export function TermSelector() {
             selectProps={{
                 value: term,
                 onChange: handleChange,
-                fullWidth: true,
+                sx: {
+                    width: '100%',
+                },
             }}
             isAligned={true}
         >
