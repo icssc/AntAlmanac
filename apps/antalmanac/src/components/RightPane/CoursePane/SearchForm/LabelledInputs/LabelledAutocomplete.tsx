@@ -26,6 +26,7 @@ export const LabelledAutocomplete = <T,>({
     return (
         <Autocomplete
             size="small"
+            id={id}
             {...autocompleteProps}
             renderInput={(params) => (
                 <LabelledTextField
@@ -41,7 +42,6 @@ export const LabelledAutocomplete = <T,>({
                         inputProps: {
                             ...params.inputProps,
                             ...textFieldProps?.inputProps,
-                            'aria-labelledby': `input-label-${id}`,
                         },
                     }}
                 />
