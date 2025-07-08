@@ -1,7 +1,7 @@
 import { TextField, TextFieldProps } from '@mui/material';
 import { useId } from 'react';
 
-import { LabelledInput } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabelledInput';
+import { LabelledInput } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabeledInput';
 
 interface LabelledTextFieldProps {
     id?: string;

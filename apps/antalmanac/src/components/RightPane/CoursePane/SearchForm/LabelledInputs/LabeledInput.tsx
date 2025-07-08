@@ -1,7 +1,6 @@
 import { Box } from '@mui/material';
 
-import { CustomInputBox } from './CustomInputBox';
-
+import { CustomInputBox } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/CustomInputBox';
 import { CustomInputLabel } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/CustomInputLabel';
 
 interface LabelledInputProps {

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { DEPARTMENT_MAP } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/constants';
-import { LabelledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabelledAutocomplete';
+import { LabelledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { getLocalStorageRecentlySearched, setLocalStorageRecentlySearched } from '$lib/localStorage';
 
