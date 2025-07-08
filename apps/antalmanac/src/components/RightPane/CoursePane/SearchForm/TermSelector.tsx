@@ -40,6 +40,9 @@ export function TermSelector() {
                 sx: {
                     width: '100%',
                 },
+                MenuProps: {
+                    marginThreshold: null,
+                },
             }}
             isAligned={true}
         >

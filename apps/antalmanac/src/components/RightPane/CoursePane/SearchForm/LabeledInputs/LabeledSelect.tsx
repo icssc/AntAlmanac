@@ -25,7 +25,7 @@ export function LabeledSelect<T = string | string[]>({
                 variant="outlined"
                 inputProps={{ id }}
                 MenuProps={{
-                    marginThreshold: null,
+                    marginThreshold: 4, // reduced from default 16 to disable unwanted dropdown shift caused the page margin being less than marginThreshold
                 }}
                 {...selectProps}
             >
