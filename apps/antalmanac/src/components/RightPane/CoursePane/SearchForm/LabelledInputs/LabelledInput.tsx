@@ -1,8 +1,8 @@
 import { Box } from '@mui/material';
-import { grey } from '@mui/material/colors';
+
+import { CustomInputBox } from './CustomInputBox';
 
 import { CustomInputLabel } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/CustomInputLabel';
-import { useThemeStore } from '$stores/SettingsStore';
 
 interface LabelledInputProps {
     label: string;
@@ -12,29 +12,10 @@ interface LabelledInputProps {
 }
 
 export const LabelledInput = ({ label, children, id, isAligned }: LabelledInputProps) => {
-    const isDark = useThemeStore((store) => store.isDark);
-
     return (
-        <Box display="flex" alignItems="center" sx={{ width: '100%' }}>
+        <Box sx={{ display: 'flex', width: '100%', flex: 1 }}>
             <CustomInputLabel label={label} id={id} isAligned={isAligned} />
-            <Box
-                flexGrow={1}
-                sx={{
-                    '& .MuiOutlinedInput-root': {
-                        minWidth: 100,
-                        borderTopLeftRadius: 0,
-                        borderBottomLeftRadius: 0,
-                        '&:hover:not(.Mui-focused) .MuiOutlinedInput-notchedOutline': {
-                            borderColor: isDark ? grey[500] : grey[600],
-                        },
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                            borderWidth: 1,
-                        },
-                    },
-                }}
-            >
-                {children}
-            </Box>
+            <CustomInputBox>{children}</CustomInputBox>
         </Box>
     );
 };

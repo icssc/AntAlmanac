@@ -27,6 +27,11 @@ export const LabelledAutocomplete = <T,>({
         <Autocomplete
             size="small"
             id={id}
+            sx={{
+                display: 'flex',
+                flex: 1,
+                width: '100%',
+            }}
             {...autocompleteProps}
             renderInput={(params) => (
                 <LabelledTextField

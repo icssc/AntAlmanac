@@ -19,13 +19,13 @@ export const CustomInputLabel = ({ label, id, isAligned }: CustomInputLabelProps
             sx={{
                 display: 'flex',
                 alignItems: 'center',
-                height: '34.25px',
+                height: '100%',
                 px: 1.5,
-                minWidth: isAligned ? '10.35rem' : '6rem',
+                minWidth: isAligned ? '10.5rem' : '7rem',
                 bgcolor: isDark ? grey[800] : grey[200],
                 whiteSpace: 'nowrap',
                 border: '1px solid',
-                borderColor: isDark ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)',
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)', // default border color for OutlinedInput
                 borderRight: 0,
                 userSelect: 'none',
                 borderTopLeftRadius: '4px',

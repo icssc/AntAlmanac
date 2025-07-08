@@ -13,29 +13,55 @@ interface ManualSearchProps {
 
 export function ManualSearch({ onSubmit, onReset }: ManualSearchProps) {
     return (
-        <Box display="flex" flexDirection="column" gap={0.5}>
-            <Box display="flex" flexDirection="column" gap={2}>
-                <Box display="flex" width="100%" gap={2} flexWrap={'wrap'}>
-                    <Box sx={{ flex: 1 }}>
-                        <DepartmentSearchBar />
-                    </Box>
-                    <Box sx={{ flex: 1 }}>
-                        <CourseNumberSearchBar />
-                    </Box>
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 0.5,
+            }}
+        >
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2,
+                }}
+            >
+                <Box
+                    sx={{
+                        display: 'flex',
+                        width: '100%',
+                        gap: 2,
+                        flexWrap: 'wrap',
+                    }}
+                >
+                    <DepartmentSearchBar />
+                    <CourseNumberSearchBar />
                 </Box>
-                <Box display="flex" width="100%" gap={2} flexWrap={'wrap'}>
-                    <Box flex={1}>
-                        <GeSelector />
-                    </Box>
-                    <Box flex={1}>
-                        <SectionCodeSearchBar />
-                    </Box>
+
+                <Box
+                    sx={{
+                        display: 'flex',
+                        width: '100%',
+                        gap: 2,
+                        flexWrap: 'wrap',
+                    }}
+                >
+                    <GeSelector />
+                    <SectionCodeSearchBar />
                 </Box>
             </Box>
 
             <AdvancedSearch />
 
-            <Box display="flex" width="100%" gap={2} justifyContent="center">
+            <Box
+                sx={{
+                    display: 'flex',
+                    width: '100%',
+                    gap: 2,
+                    justifyContent: 'center',
+                }}
+            >
                 <Button color="primary" variant="contained" type="submit" onClick={onSubmit} sx={{ width: '50%' }}>
                     Search
                 </Button>

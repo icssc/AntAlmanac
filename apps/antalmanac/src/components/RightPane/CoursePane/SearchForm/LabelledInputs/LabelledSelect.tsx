@@ -20,7 +20,15 @@ export function LabelledSelect<T = string | string[]>({
 
     return (
         <LabelledInput label={label} isAligned={isAligned} id={id}>
-            <Select size="small" variant="outlined" inputProps={{ id }} {...selectProps}>
+            <Select
+                size="small"
+                variant="outlined"
+                inputProps={{ id }}
+                MenuProps={{
+                    marginThreshold: null,
+                }}
+                {...selectProps}
+            >
                 {children}
             </Select>
         </LabelledInput>
