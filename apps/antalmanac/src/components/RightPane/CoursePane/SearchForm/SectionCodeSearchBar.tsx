@@ -1,6 +1,6 @@
 import { ChangeEvent, PureComponent } from 'react';
 
-import { LabelledTextField } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabeledTextField';
+import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 class SectionCodeSearchBar extends PureComponent {
@@ -48,7 +48,7 @@ class SectionCodeSearchBar extends PureComponent {
 
     render() {
         return (
-            <LabelledTextField
+            <LabeledTextField
                 label="Course Code"
                 textFieldProps={{
                     value: this.state.sectionCode,

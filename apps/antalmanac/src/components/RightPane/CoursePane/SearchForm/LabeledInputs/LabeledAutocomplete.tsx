@@ -1,9 +1,9 @@
 import { Autocomplete, AutocompleteProps, TextFieldProps } from '@mui/material';
 import { useId } from 'react';
 
-import { LabelledTextField } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabeledTextField';
+import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 
-interface LabelledAutocompleteProps<
+interface LabeledAutocompleteProps<
     T,
     Multiple extends boolean = false,
     DisableClearable extends boolean = false,
@@ -15,12 +15,12 @@ interface LabelledAutocompleteProps<
     isAligned?: boolean;
 }
 
-export const LabelledAutocomplete = <T,>({
+export const LabeledAutocomplete = <T,>({
     label,
     autocompleteProps,
     textFieldProps,
     isAligned,
-}: LabelledAutocompleteProps<T>) => {
+}: LabeledAutocompleteProps<T>) => {
     const id = useId();
 
     return (
@@ -34,7 +34,7 @@ export const LabelledAutocomplete = <T,>({
             }}
             {...autocompleteProps}
             renderInput={(params) => (
-                <LabelledTextField
+                <LabeledTextField
                     label={label}
                     isAligned={isAligned}
                     id={id}

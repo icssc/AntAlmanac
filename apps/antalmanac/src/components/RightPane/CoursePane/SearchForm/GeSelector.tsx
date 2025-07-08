@@ -1,7 +1,7 @@
 import { MenuItem, type SelectChangeEvent } from '@mui/material';
 import { useEffect, useCallback, useState } from 'react';
 
-import { LabelledSelect } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabeledSelect';
+import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 const GE_LIST = [
@@ -55,7 +55,7 @@ export function GeSelector() {
     }, [resetField]);
 
     return (
-        <LabelledSelect
+        <LabeledSelect
             label="General Education"
             selectProps={{
                 value: ge,
@@ -73,6 +73,6 @@ export function GeSelector() {
                     </MenuItem>
                 );
             })}
-        </LabelledSelect>
+        </LabeledSelect>
     );
 }

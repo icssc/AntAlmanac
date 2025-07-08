@@ -2,17 +2,17 @@ import { Box, TextField, TextFieldProps } from '@mui/material';
 import { DesktopTimePicker, TimePickerProps } from '@mui/x-date-pickers';
 import { useId, forwardRef, useState } from 'react';
 
-import { CustomInputBox } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/CustomInputBox';
-import { CustomInputLabel } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/CustomInputLabel';
+import { CustomInputBox } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/CustomInputBox';
+import { CustomInputLabel } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/CustomInputLabel';
 
-interface LabelledTimePickerProps {
+interface LabeledTimePickerProps {
     label: string;
     timePickerProps?: TimePickerProps;
     textFieldProps?: TextFieldProps;
     isAligned?: boolean;
 }
 
-export const LabelledTimePicker = ({ label, timePickerProps, textFieldProps, isAligned }: LabelledTimePickerProps) => {
+export const LabeledTimePicker = ({ label, timePickerProps, textFieldProps, isAligned }: LabeledTimePickerProps) => {
     const id = useId();
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 

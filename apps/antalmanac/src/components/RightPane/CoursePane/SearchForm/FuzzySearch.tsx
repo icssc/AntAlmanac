@@ -4,7 +4,7 @@ import { PostHog } from 'posthog-js/react';
 import { PureComponent } from 'react';
 import UAParser from 'ua-parser-js';
 
-import { LabelledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabeledAutocomplete';
+import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
@@ -184,7 +184,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
     render() {
         return (
-            <LabelledAutocomplete
+            <LabeledAutocomplete
                 label="Search"
                 autocompleteProps={{
                     loading: this.state.loading,

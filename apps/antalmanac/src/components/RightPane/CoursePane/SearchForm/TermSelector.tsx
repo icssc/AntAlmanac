@@ -1,7 +1,7 @@
 import { MenuItem, type SelectChangeEvent } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
-import { LabelledSelect } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabeledSelect';
+import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { termData } from '$lib/termData';
 
@@ -32,7 +32,7 @@ export function TermSelector() {
     }, [resetField]);
 
     return (
-        <LabelledSelect
+        <LabeledSelect
             label="Term"
             selectProps={{
                 value: term,
@@ -48,6 +48,6 @@ export function TermSelector() {
                     {term.longName}
                 </MenuItem>
             ))}
-        </LabelledSelect>
+        </LabeledSelect>
     );
 }

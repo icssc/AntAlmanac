@@ -1,6 +1,6 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
-import { LabelledTextField } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabeledTextField';
+import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 export function CourseNumberSearchBar() {
@@ -38,7 +38,7 @@ export function CourseNumberSearchBar() {
     }, [resetField]);
 
     return (
-        <LabelledTextField
+        <LabeledTextField
             label="Course Number(s)"
             textFieldProps={{
                 type: 'search',

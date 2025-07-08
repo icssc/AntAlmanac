@@ -6,9 +6,9 @@ import {
     EXCLUDE_RESTRICTION_CODES_OPTIONS,
     DAYS_OPTIONS,
 } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
-import { LabelledSelect } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabeledSelect';
-import { LabelledTextField } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabeledTextField';
-import { LabelledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabeledTimePicker';
+import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
+import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
+import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
 import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { safeUnreachableCase } from '$lib/utils';
@@ -166,7 +166,7 @@ export function AdvancedSearchTextFields() {
                     width: '100%',
                 }}
             >
-                <LabelledTextField
+                <LabeledTextField
                     label="Instructor"
                     textFieldProps={{
                         type: 'search',
@@ -177,7 +177,7 @@ export function AdvancedSearchTextFields() {
                     }}
                 />
 
-                <LabelledTextField
+                <LabeledTextField
                     label="Units"
                     textFieldProps={{
                         value: units,
@@ -188,7 +188,7 @@ export function AdvancedSearchTextFields() {
                     }}
                 />
 
-                <LabelledSelect
+                <LabeledSelect
                     label="Class Full Option"
                     selectProps={{
                         value: coursesFull,
@@ -203,7 +203,7 @@ export function AdvancedSearchTextFields() {
                     <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
                     <MenuItem value={'FullOnly'}>Show only full or waitlisted courses</MenuItem>
                     <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
-                </LabelledSelect>
+                </LabeledSelect>
             </Box>
 
             <Box
@@ -214,7 +214,7 @@ export function AdvancedSearchTextFields() {
                     width: '100%',
                 }}
             >
-                <LabelledSelect
+                <LabeledSelect
                     label="Course Level"
                     selectProps={{
                         value: division,
@@ -239,9 +239,9 @@ export function AdvancedSearchTextFields() {
                     <MenuItem value={'LowerDiv'}>Lower Division</MenuItem>
                     <MenuItem value={'UpperDiv'}>Upper Division</MenuItem>
                     <MenuItem value={'Graduate'}>Graduate/Professional</MenuItem>
-                </LabelledSelect>
+                </LabeledSelect>
 
-                <LabelledTimePicker
+                <LabeledTimePicker
                     label="Starts After"
                     timePickerProps={{
                         value: startTime ? parse(startTime, 'HH:mm', new Date()) : null,
@@ -256,7 +256,7 @@ export function AdvancedSearchTextFields() {
                     }}
                 />
 
-                <LabelledTimePicker
+                <LabeledTimePicker
                     label="Ends Before"
                     timePickerProps={{
                         value: endTime ? parse(endTime, 'HH:mm', new Date()) : null,
@@ -280,7 +280,7 @@ export function AdvancedSearchTextFields() {
                     width: '100%',
                 }}
             >
-                <LabelledSelect
+                <LabeledSelect
                     label="Online Only"
                     selectProps={{
                         value: building === 'ON' ? 'true' : 'false',
@@ -292,9 +292,9 @@ export function AdvancedSearchTextFields() {
                 >
                     <MenuItem value="false">False</MenuItem>
                     <MenuItem value="true">True</MenuItem>
-                </LabelledSelect>
+                </LabeledSelect>
 
-                <LabelledTextField
+                <LabeledTextField
                     label="Building"
                     textFieldProps={{
                         id: 'building',
@@ -305,7 +305,7 @@ export function AdvancedSearchTextFields() {
                     }}
                 />
 
-                <LabelledTextField
+                <LabeledTextField
                     label="Room"
                     textFieldProps={{
                         id: 'room',
@@ -325,7 +325,7 @@ export function AdvancedSearchTextFields() {
                     width: '100%',
                 }}
             >
-                <LabelledSelect
+                <LabeledSelect
                     label="Exclude Restrictions"
                     selectProps={{
                         multiple: true,
@@ -341,14 +341,14 @@ export function AdvancedSearchTextFields() {
                         <MenuItem key={option.value} value={option.value} sx={{ paddingY: 0.25 }}>
                             <Checkbox
                                 checked={excludeRestrictionCodes.includes(option.value)}
-                                inputProps={{ 'aria-labelledby': `option-label-${option.value}` }}
+                                inputProps={{ 'aria-Labeledby': `option-label-${option.value}` }}
                             />
                             <ListItemText id={`option-label-${option.value}`} primary={option.label} />
                         </MenuItem>
                     ))}
-                </LabelledSelect>
+                </LabeledSelect>
 
-                <LabelledSelect
+                <LabeledSelect
                     label="Days"
                     selectProps={{
                         multiple: true,
@@ -371,12 +371,12 @@ export function AdvancedSearchTextFields() {
                         <MenuItem key={option.value} value={option.value} sx={{ paddingY: 0.25 }}>
                             <Checkbox
                                 checked={days.includes(option.value)}
-                                inputProps={{ 'aria-labelledby': `option-label-${option.value}` }}
+                                inputProps={{ 'aria-Labeledby': `option-label-${option.value}` }}
                             />
                             <ListItemText id={`option-label-${option.value}`} primary={option.label} />
                         </MenuItem>
                     ))}
-                </LabelledSelect>
+                </LabeledSelect>
             </Box>
         </Box>
     );

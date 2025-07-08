@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { DEPARTMENT_MAP } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/constants';
-import { LabelledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabelledInputs/LabeledAutocomplete';
+import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { getLocalStorageRecentlySearched, setLocalStorageRecentlySearched } from '$lib/localStorage';
 
@@ -80,7 +80,7 @@ export function DepartmentSearchBar() {
     }, [recentSearches]);
 
     return (
-        <LabelledAutocomplete
+        <LabeledAutocomplete
             label="Department"
             autocompleteProps={{
                 value,
