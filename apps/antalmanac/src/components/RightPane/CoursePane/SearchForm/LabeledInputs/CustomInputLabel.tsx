@@ -25,7 +25,18 @@ export const CustomInputLabel = ({ label, id, isAligned }: CustomInputLabelProps
                 bgcolor: isDark ? grey[800] : grey[200],
                 whiteSpace: 'nowrap',
                 border: '1px solid',
-                borderColor: isDark ? 'rgba(255, 255, 255, 0.23)' : 'rgba(0, 0, 0, 0.23)', // default border color for OutlinedInput
+                // Adjusted borderColor to better match the background of CustomInputBox.
+                // The default theme.palette.divider values are:
+                // - Light mode: rgba(0, 0, 0, 0.12)
+                // - Dark mode: rgba(255, 255, 255, 0.12)
+                //
+                // These low-opacity borders tend to visually blend with the component’s background.
+                // However, because CustomInputLabel has a darker background than CustomInputBox,
+                // using the default divider color results in a visible mismatch.
+                //
+                // To address this, we slightly increase the opacity for both modes
+                // to achieve better visual consistency between label and input box.
+                borderColor: isDark ? 'rgba(255, 255, 255, 0.1525)' : 'rgba(0, 0, 0, 0.19)',
                 borderRight: 0,
                 userSelect: 'none',
                 borderTopLeftRadius: '4px',
