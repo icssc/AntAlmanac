@@ -6,7 +6,6 @@ import PeterPortalIcon from '$assets/peterportal-logo.png';
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
-import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
 import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/EnrollmentHistoryPopup';
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
@@ -15,6 +14,8 @@ import analyticsEnum from '$lib/analytics/analytics';
 import { MOBILE_BREAKPOINT } from '$src/globals';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import { useTabStore } from '$stores/TabStore';
+import { useTimeFormatStore } from '$stores/SettingsStore';
+import { EnrollmentColumnHeader } from './EnrollmentColumnHeader';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -72,11 +73,24 @@ function SectionTable(props: SectionTableProps) {
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
+    const { isMilitaryTime } = useTimeFormatStore()
     const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
     }, [courseDetails.deptCode, courseDetails.courseNumber]);
+
+    const formattedTime = useMemo(() => {
+        const raw = courseDetails.updatedAt ?? '';
+        const parsed = Date.parse(raw);
+        if (isNaN(parsed)) return null;
+
+        return new Date(parsed).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: !isMilitaryTime,
+        });
+    }, [courseDetails.updatedAt, isMilitaryTime]);
 
     /**
      * Limit table width to force side scrolling.
@@ -101,7 +115,7 @@ function SectionTable(props: SectionTableProps) {
                     marginBottom: '8px',
                     marginTop: '4px',
                 }}
-            >
+        >
                 <CourseInfoBar
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
@@ -154,7 +168,7 @@ function SectionTable(props: SectionTableProps) {
                     }
                 />
             </Box>
-
+    
             <TableContainer
                 component={Paper}
                 sx={{ margin: '8px 0px 8px 0px', width: '100%' }}
@@ -187,12 +201,12 @@ function SectionTable(props: SectionTableProps) {
                                             padding: 0,
                                         }}
                                     >
-                                        {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
+                                        {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} formattedTime={formattedTime}/> : label}
                                     </TableCell>
                                 ))}
                         </TableRow>
                     </TableHead>
-
+    
                     <SectionTableBody
                         courseDetails={courseDetails}
                         term={term}
@@ -203,7 +217,7 @@ function SectionTable(props: SectionTableProps) {
                 </Table>
             </TableContainer>
         </>
-    );
+    );    
 }
 
 export default SectionTable;
