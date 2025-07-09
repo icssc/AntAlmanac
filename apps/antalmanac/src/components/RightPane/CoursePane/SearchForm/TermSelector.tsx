@@ -1,7 +1,7 @@
 import { MenuItem, type SelectChangeEvent } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
-import { AdornedSelect } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/AdornedSelect';
+import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { termData } from '$lib/termData';
 
@@ -32,14 +32,17 @@ export function TermSelector() {
     }, [resetField]);
 
     return (
-        <AdornedSelect
+        <LabeledSelect
             label="Term"
             selectProps={{
                 value: term,
                 onChange: handleChange,
-            }}
-            formControlProps={{
-                fullWidth: true,
+                sx: {
+                    width: '100%',
+                },
+                MenuProps: {
+                    marginThreshold: null,
+                },
             }}
             isAligned={true}
         >
@@ -48,6 +51,6 @@ export function TermSelector() {
                     {term.longName}
                 </MenuItem>
             ))}
-        </AdornedSelect>
+        </LabeledSelect>
     );
 }

@@ -1,8 +1,7 @@
-import { Autocomplete } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
-import { AdornedTextField } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/AdornedTextField';
 import { DEPARTMENT_MAP } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/constants';
+import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { getLocalStorageRecentlySearched, setLocalStorageRecentlySearched } from '$lib/localStorage';
 
@@ -81,25 +80,23 @@ export function DepartmentSearchBar() {
     }, [recentSearches]);
 
     return (
-        <Autocomplete
-            value={value}
-            options={Array.from(new Set<string>([...recentSearches, ...options]))}
-            autoHighlight={true}
-            openOnFocus={true}
-            getOptionLabel={(option) => DEPARTMENT_MAP[option.toUpperCase() as keyof typeof DEPARTMENT_MAP]}
-            onChange={handleChange}
-            includeInputInList={true}
-            noOptionsText="No departments match the search"
-            groupBy={(option) => (recentSearches.includes(option) ? 'Recently Searched' : 'Departments')}
-            size="small"
-            renderInput={(params) => (
-                <AdornedTextField
-                    textFieldProps={params}
-                    label="Department"
-                    formControlProps={{ fullWidth: true }}
-                    isAligned={true}
-                />
-            )}
+        <LabeledAutocomplete
+            label="Department"
+            autocompleteProps={{
+                value,
+                options: Array.from(new Set<string>([...recentSearches, ...options])),
+                autoHighlight: true,
+                openOnFocus: true,
+                getOptionLabel: (option) => DEPARTMENT_MAP[option.toUpperCase() as keyof typeof DEPARTMENT_MAP],
+                onChange: handleChange,
+                includeInputInList: true,
+                noOptionsText: 'No departments match the search',
+                groupBy: (option) => (recentSearches.includes(option) ? 'Recently Searched' : 'Departments'),
+            }}
+            textFieldProps={{
+                fullWidth: true,
+            }}
+            isAligned
         />
     );
 }

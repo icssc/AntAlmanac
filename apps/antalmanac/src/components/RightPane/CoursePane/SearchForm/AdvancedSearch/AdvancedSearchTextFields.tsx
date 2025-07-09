@@ -1,15 +1,23 @@
-import { MenuItem, Box, type SelectChangeEvent } from '@mui/material';
+import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText } from '@mui/material';
+import { format, parse } from 'date-fns';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 
-import { AdornedSelect } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/AdornedSelect';
-import { AdornedTextField } from '$components/RightPane/CoursePane/SearchForm/AdornedInputs/AdornedTextField';
 import {
     EXCLUDE_RESTRICTION_CODES_OPTIONS,
     DAYS_OPTIONS,
 } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
+import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
+import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
+import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
 import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { safeUnreachableCase } from '$lib/utils';
+
+type InputEvent =
+    | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    | SelectChangeEvent<string | string[]>
+    | Date
+    | null;
 
 export function AdvancedSearchTextFields() {
     const [instructor, setInstructor] = useState(() => RightPaneStore.getFormData().instructor);
@@ -47,142 +55,147 @@ export function AdvancedSearchTextFields() {
         };
     }, [resetField]);
 
-    const changeHandlerFactory =
-        (name: AdvancedSearchParam | 'online') =>
-        (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string | string[]>) => {
-            const stateObj = { url: 'url' };
-            const url = new URL(window.location.href);
-            const urlParam = new URLSearchParams(url.search);
+    const updateValue = (name: AdvancedSearchParam, stringValue: string) => {
+        const stateObj = { url: 'url' };
+        const url = new URL(window.location.href);
+        const urlParam = new URLSearchParams(url.search);
+        if (stringValue !== '') {
+            urlParam.set(name, String(stringValue));
+        } else {
+            urlParam.delete(name);
+        }
 
-            if (name === 'online') {
-                const checked = event.target.value === 'true';
-                if (checked) {
-                    setBuilding('ON');
-                    setRoom('LINE');
-                    RightPaneStore.updateFormValue('building', 'ON');
-                    RightPaneStore.updateFormValue('room', 'LINE');
-                    urlParam.set('building', 'ON');
-                    urlParam.set('room', 'LINE');
+        const param = urlParam.toString();
+        const newUrl = `${param.trim() ? '?' : ''}${param}`;
+        history.replaceState(stateObj, 'url', '/' + newUrl);
+
+        RightPaneStore.updateFormValue(name, stringValue);
+    };
+
+    const changeHandlerFactory = (name: AdvancedSearchParam | 'online') => (event: InputEvent) => {
+        if (name === 'startTime' || name === 'endTime') {
+            // time picker event is Date | null
+            if (event instanceof Date || event === null) {
+                const stringTime = event ? format(event, 'HH:mm') : '';
+                if (name === 'startTime') {
+                    setStartTime(stringTime);
                 } else {
-                    setBuilding('');
-                    setRoom('');
-                    RightPaneStore.updateFormValue('building', '');
-                    RightPaneStore.updateFormValue('room', '');
-                    urlParam.delete('building');
-                    urlParam.delete('room');
+                    setEndTime(stringTime);
                 }
+                updateValue(name, stringTime);
                 return;
             }
+        }
 
-            const value = event.target.value;
-            const stringValue = Array.isArray(value) ? value.join('') : value;
-
-            switch (name) {
-                case 'instructor':
-                    setInstructor(stringValue);
-                    break;
-                case 'units':
-                    setUnits(stringValue);
-                    break;
-                case 'endTime':
-                    setEndTime(stringValue);
-                    break;
-                case 'startTime':
-                    setStartTime(stringValue);
-                    break;
-                case 'coursesFull':
-                    setCoursesFull(stringValue);
-                    break;
-                case 'building':
-                    setBuilding(stringValue);
-                    break;
-                case 'room':
-                    setRoom(stringValue);
-                    break;
-                case 'division':
-                    setDivision(stringValue);
-                    break;
-                case 'excludeRestrictionCodes':
-                    setExcludeRestrictionCodes(stringValue);
-                    break;
-                case 'days':
-                    setDays(stringValue);
-                    break;
-                default:
-                    safeUnreachableCase(name);
-                    break;
-            }
-
-            if (stringValue !== '') {
-                urlParam.set(name, String(stringValue));
+        if (name === 'online') {
+            const url = new URL(window.location.href);
+            const urlParam = new URLSearchParams(url.search);
+            const checked = (event as ChangeEvent<HTMLInputElement>).target.value === 'true';
+            if (checked) {
+                setBuilding('ON');
+                setRoom('LINE');
+                RightPaneStore.updateFormValue('building', 'ON');
+                RightPaneStore.updateFormValue('room', 'LINE');
+                urlParam.set('building', 'ON');
+                urlParam.set('room', 'LINE');
             } else {
-                urlParam.delete(name);
+                setBuilding('');
+                setRoom('');
+                RightPaneStore.updateFormValue('building', '');
+                RightPaneStore.updateFormValue('room', '');
+                urlParam.delete('building');
+                urlParam.delete('room');
             }
+            return;
+        }
 
-            const param = urlParam.toString();
-            const newUrl = `${param.trim() ? '?' : ''}${param}`;
-            history.replaceState(stateObj, 'url', '/' + newUrl);
+        const value = (event as Exclude<InputEvent, Date | null>).target.value;
+        const stringValue = Array.isArray(value) ? value.join('') : value;
 
-            RightPaneStore.updateFormValue(name, stringValue);
-        };
+        switch (name) {
+            case 'instructor':
+                setInstructor(stringValue);
+                break;
+            case 'units':
+                setUnits(stringValue);
+                break;
+            case 'coursesFull':
+                setCoursesFull(stringValue);
+                break;
+            case 'building':
+                setBuilding(stringValue);
+                break;
+            case 'room':
+                setRoom(stringValue);
+                break;
+            case 'division':
+                setDivision(stringValue);
+                break;
+            case 'excludeRestrictionCodes':
+                setExcludeRestrictionCodes(stringValue);
+                break;
+            case 'days':
+                setDays(stringValue);
+                break;
+            case 'startTime':
+                break;
+            case 'endTime':
+                break;
+            default:
+                safeUnreachableCase(name);
+                break;
+        }
 
-    // List of times from 2:00am-11:00pm
-    const menuItemTimes = [
-        ...[...Array(10).keys()].map((v) => `${v + 2}:00am`),
-        '12:00pm',
-        ...[...Array(11).keys()].map((v) => `${v + 1}:00pm`),
-    ];
-
-    const createdMenuItemTime = (time: string) => (
-        <MenuItem key={time} value={`${time}`}>
-            {time ? time : <em>None</em>}
-        </MenuItem>
-    );
-
-    const startsAfterMenuItems = ['', '1:00am', ...menuItemTimes].map((time) => createdMenuItemTime(time));
-    const endsBeforeMenuItems = ['', ...menuItemTimes].map((time) => createdMenuItemTime(time));
+        updateValue(name, stringValue);
+    };
 
     return (
         <Box
             sx={{
                 display: 'flex',
-                gap: 2,
                 flexWrap: 'wrap',
+                gap: 2,
                 marginBottom: '1rem',
             }}
         >
             <Box
                 sx={{
                     display: 'flex',
-                    gap: 2,
                     flexWrap: 'wrap',
+                    gap: 2,
+                    width: '100%',
                 }}
             >
-                <AdornedTextField
+                <LabeledTextField
                     label="Instructor"
                     textFieldProps={{
                         type: 'search',
                         value: instructor,
                         onChange: changeHandlerFactory('instructor'),
                         placeholder: 'Last name only',
+                        fullWidth: true,
                     }}
                 />
 
-                <AdornedTextField
+                <LabeledTextField
                     label="Units"
                     textFieldProps={{
                         value: units,
                         onChange: changeHandlerFactory('units'),
                         type: 'search',
-                        id: 'units',
                         placeholder: 'ex. 3, 4, or VAR',
+                        fullWidth: true,
                     }}
                 />
-                <AdornedSelect
+
+                <LabeledSelect
                     label="Class Full Option"
                     selectProps={{
                         value: coursesFull,
                         onChange: changeHandlerFactory('coursesFull'),
+                        sx: {
+                            width: '100%',
+                        },
                     }}
                 >
                     <MenuItem value={'ANY'}>Include all classes</MenuItem>
@@ -190,17 +203,18 @@ export function AdvancedSearchTextFields() {
                     <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
                     <MenuItem value={'FullOnly'}>Show only full or waitlisted courses</MenuItem>
                     <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
-                </AdornedSelect>
+                </LabeledSelect>
             </Box>
 
             <Box
                 sx={{
                     display: 'flex',
-                    gap: 2,
                     flexWrap: 'wrap',
+                    gap: 2,
+                    width: '100%',
                 }}
             >
-                <AdornedSelect
+                <LabeledSelect
                     label="Course Level"
                     selectProps={{
                         value: division,
@@ -216,76 +230,89 @@ export function AdvancedSearchTextFields() {
                                 horizontal: 'left',
                             },
                         },
+                        sx: {
+                            width: '100%',
+                        },
                     }}
                 >
                     <MenuItem value={''}>Any Division</MenuItem>
                     <MenuItem value={'LowerDiv'}>Lower Division</MenuItem>
                     <MenuItem value={'UpperDiv'}>Upper Division</MenuItem>
                     <MenuItem value={'Graduate'}>Graduate/Professional</MenuItem>
-                </AdornedSelect>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        rowGap: 1,
-                        columnGap: 2,
-                        flexWrap: 'wrap',
-                    }}
-                >
-                    <AdornedSelect
-                        label="Starts After"
-                        selectProps={{
-                            value: startTime,
-                            onChange: changeHandlerFactory('startTime'),
-                        }}
-                    >
-                        {startsAfterMenuItems}
-                    </AdornedSelect>
+                </LabeledSelect>
 
-                    <AdornedSelect
-                        label="Ends Before"
-                        selectProps={{
-                            value: endTime,
-                            onChange: changeHandlerFactory('endTime'),
-                        }}
-                    >
-                        {endsBeforeMenuItems}
-                    </AdornedSelect>
-                </Box>
+                <LabeledTimePicker
+                    label="Starts After"
+                    timePickerProps={{
+                        value: startTime ? parse(startTime, 'HH:mm', new Date()) : null,
+                        onChange: changeHandlerFactory('startTime'),
+                        timeSteps: { minutes: 10 },
+                    }}
+                    textFieldProps={{
+                        fullWidth: true,
+                        sx: {
+                            minWidth: 120,
+                        },
+                    }}
+                />
+
+                <LabeledTimePicker
+                    label="Ends Before"
+                    timePickerProps={{
+                        value: endTime ? parse(endTime, 'HH:mm', new Date()) : null,
+                        onChange: changeHandlerFactory('endTime'),
+                        timeSteps: { minutes: 10 },
+                    }}
+                    textFieldProps={{
+                        fullWidth: true,
+                        sx: {
+                            minWidth: 120,
+                        },
+                    }}
+                />
             </Box>
 
             <Box
                 sx={{
                     display: 'flex',
-                    gap: 2,
                     flexWrap: 'wrap',
+                    gap: 2,
+                    width: '100%',
                 }}
             >
-                <AdornedSelect
+                <LabeledSelect
                     label="Online Only"
                     selectProps={{
                         value: building === 'ON' ? 'true' : 'false',
                         onChange: changeHandlerFactory('online'),
+                        sx: {
+                            width: '100%',
+                        },
                     }}
                 >
                     <MenuItem value="false">False</MenuItem>
                     <MenuItem value="true">True</MenuItem>
-                </AdornedSelect>
-                <AdornedTextField
+                </LabeledSelect>
+
+                <LabeledTextField
                     label="Building"
                     textFieldProps={{
                         id: 'building',
                         type: 'search',
                         value: building,
                         onChange: changeHandlerFactory('building'),
+                        fullWidth: true,
                     }}
                 />
-                <AdornedTextField
+
+                <LabeledTextField
                     label="Room"
                     textFieldProps={{
                         id: 'room',
                         type: 'search',
                         value: room,
                         onChange: changeHandlerFactory('room'),
+                        fullWidth: true,
                     }}
                 />
             </Box>
@@ -293,40 +320,35 @@ export function AdvancedSearchTextFields() {
             <Box
                 sx={{
                     display: 'flex',
-                    gap: 2,
                     flexWrap: 'wrap',
+                    gap: 2,
+                    width: '100%',
                 }}
             >
-                <AdornedSelect
+                <LabeledSelect
                     label="Exclude Restrictions"
                     selectProps={{
                         multiple: true,
                         value: excludeRestrictionCodes.split(''),
                         onChange: changeHandlerFactory('excludeRestrictionCodes'),
                         renderValue: (selected) => (selected as string[]).join(', '),
+                        sx: {
+                            width: '100%',
+                        },
                     }}
                 >
                     {EXCLUDE_RESTRICTION_CODES_OPTIONS.map((option) => (
-                        <MenuItem
-                            key={option.value}
-                            value={option.value}
-                            sx={{
-                                maxWidth: 240,
-                            }}
-                        >
-                            <span
-                                style={{
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {option.label}
-                            </span>
+                        <MenuItem key={option.value} value={option.value} sx={{ paddingY: 0.25 }}>
+                            <Checkbox
+                                checked={excludeRestrictionCodes.includes(option.value)}
+                                inputProps={{ 'aria-Labeledby': `option-label-${option.value}` }}
+                            />
+                            <ListItemText id={`option-label-${option.value}`} primary={option.label} />
                         </MenuItem>
                     ))}
-                </AdornedSelect>
-                <AdornedSelect
+                </LabeledSelect>
+
+                <LabeledSelect
                     label="Days"
                     selectProps={{
                         multiple: true,
@@ -340,28 +362,21 @@ export function AdvancedSearchTextFields() {
                                     return orderA - orderB;
                                 })
                                 .join(', '),
+                        sx: {
+                            width: '100%',
+                        },
                     }}
                 >
                     {DAYS_OPTIONS.map((option) => (
-                        <MenuItem
-                            key={option.value}
-                            value={option.value}
-                            sx={{
-                                maxWidth: 240,
-                            }}
-                        >
-                            <span
-                                style={{
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {option.label}
-                            </span>
+                        <MenuItem key={option.value} value={option.value} sx={{ paddingY: 0.25 }}>
+                            <Checkbox
+                                checked={days.includes(option.value)}
+                                inputProps={{ 'aria-Labeledby': `option-label-${option.value}` }}
+                            />
+                            <ListItemText id={`option-label-${option.value}`} primary={option.label} />
                         </MenuItem>
                     ))}
-                </AdornedSelect>
+                </LabeledSelect>
             </Box>
         </Box>
     );

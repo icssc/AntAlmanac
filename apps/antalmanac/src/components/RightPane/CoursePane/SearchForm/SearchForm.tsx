@@ -65,7 +65,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                         <ToggleButton value="quick">Quick Search</ToggleButton>
                         <ToggleButton value="manual">Manual Search</ToggleButton>
                     </ToggleButtonGroup>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ display: 'flex', gap: 1 }}>
                         <TermSelector />
                     </Box>
 
