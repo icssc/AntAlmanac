@@ -369,10 +369,12 @@ export function Import() {
                     )}
 
                     {importSource !== ImportSource.AA_USERNAME_IMPORT && (
-                        <>
+                        <Stack spacing={1}>
                             <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
-                            <TermSelector />
-                        </>
+                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                <TermSelector />
+                            </Box>
+                        </Stack>
                     )}
                 </DialogContent>
                 <DialogActions>
