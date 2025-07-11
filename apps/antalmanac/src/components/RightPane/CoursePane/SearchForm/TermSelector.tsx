@@ -39,9 +39,10 @@ export function TermSelector() {
                 onChange: handleChange,
                 sx: {
                     width: '100%',
+                    maxHeight: 400,
                 },
                 MenuProps: {
-                    marginThreshold: 4,
+                    marginThreshold: null,
                 },
             }}
             isAligned={true}
