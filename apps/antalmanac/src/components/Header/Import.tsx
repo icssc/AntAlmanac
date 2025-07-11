@@ -372,7 +372,7 @@ export function Import() {
                         <Stack spacing={1}>
                             <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
                             <Box sx={{ display: 'flex' }}>
-                                <TermSelector />
+                                <TermSelector marginThreshold={4} />
                             </Box>
                         </Stack>
                     )}

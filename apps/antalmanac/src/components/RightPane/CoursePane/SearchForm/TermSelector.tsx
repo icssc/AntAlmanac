@@ -5,7 +5,11 @@ import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/Label
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { termData } from '$lib/termData';
 
-export function TermSelector() {
+interface TermSelectorProps {
+    marginThreshold?: number | null;
+}
+
+export function TermSelector({ marginThreshold = null }: TermSelectorProps) {
     const [term, setTerm] = useState<string>(() => RightPaneStore.getFormData().term);
 
     const handleChange = (event: SelectChangeEvent<string>) => {
@@ -37,13 +41,8 @@ export function TermSelector() {
             selectProps={{
                 value: term,
                 onChange: handleChange,
-                sx: {
-                    width: '100%',
-                    maxHeight: 400,
-                },
-                MenuProps: {
-                    marginThreshold: null,
-                },
+                sx: { width: '100%' },
+                MenuProps: { marginThreshold },
             }}
             isAligned={true}
         >
