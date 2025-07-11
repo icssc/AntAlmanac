@@ -1,19 +1,15 @@
-import { MenuItem, type SelectChangeEvent } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
-import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
+import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { termData } from '$lib/termData';
 
-interface TermSelectorProps {
-    marginThreshold?: number | null;
-}
-
-export function TermSelector({ marginThreshold = null }: TermSelectorProps) {
+export function TermSelector() {
     const [term, setTerm] = useState<string>(() => RightPaneStore.getFormData().term);
 
-    const handleChange = (event: SelectChangeEvent<string>) => {
-        const value = event.target.value;
+    const handleChange = (_: unknown, option: string | null) => {
+        const value = option ?? termData.at(0)?.shortName ?? '';
+
         setTerm(value);
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -36,21 +32,21 @@ export function TermSelector({ marginThreshold = null }: TermSelectorProps) {
     }, [resetField]);
 
     return (
-        <LabeledSelect
+        <LabeledAutocomplete
             label="Term"
-            selectProps={{
+            autocompleteProps={{
                 value: term,
+                options: termData.map((term) => term.shortName),
+                getOptionLabel: (option) => termData.find((term) => term.shortName === option)?.longName ?? '',
+                autoHighlight: true,
+                openOnFocus: true,
                 onChange: handleChange,
-                sx: { width: '100%' },
-                MenuProps: { marginThreshold },
+                noOptionsText: 'No terms match the search',
             }}
-            isAligned={true}
-        >
-            {termData.map((term, index) => (
-                <MenuItem key={index} value={term.shortName}>
-                    {term.longName}
-                </MenuItem>
-            ))}
-        </LabeledSelect>
+            textFieldProps={{
+                fullWidth: true,
+            }}
+            isAligned
+        />
     );
 }

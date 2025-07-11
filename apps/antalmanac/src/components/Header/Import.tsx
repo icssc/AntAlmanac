@@ -371,9 +371,7 @@ export function Import() {
                     {importSource !== ImportSource.AA_USERNAME_IMPORT && (
                         <Stack spacing={1}>
                             <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
-                            <Box sx={{ display: 'flex' }}>
-                                <TermSelector marginThreshold={4} />
-                            </Box>
+                            <TermSelector />
                         </Stack>
                     )}
                 </DialogContent>
