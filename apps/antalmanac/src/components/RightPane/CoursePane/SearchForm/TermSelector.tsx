@@ -41,7 +41,7 @@ export function TermSelector() {
                     width: '100%',
                 },
                 MenuProps: {
-                    marginThreshold: null,
+                    marginThreshold: 4,
                 },
             }}
             isAligned={true}
