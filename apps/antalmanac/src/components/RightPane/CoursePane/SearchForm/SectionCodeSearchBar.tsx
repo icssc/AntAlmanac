@@ -1,7 +1,7 @@
-import { TextField } from '@mui/material';
 import { ChangeEvent, PureComponent } from 'react';
 
-import RightPaneStore from '../../RightPaneStore';
+import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 class SectionCodeSearchBar extends PureComponent {
     updateCourseCodeAndGetFormData() {
@@ -48,16 +48,17 @@ class SectionCodeSearchBar extends PureComponent {
 
     render() {
         return (
-            <div>
-                <TextField
-                    label="Course Code or Range"
-                    value={this.state.sectionCode}
-                    onChange={this.handleChange}
-                    type="search"
-                    helperText="ex. 14200, 29000-29100"
-                    fullWidth
-                />
-            </div>
+            <LabeledTextField
+                label="Course Code"
+                textFieldProps={{
+                    value: this.state.sectionCode,
+                    onChange: this.handleChange,
+                    type: 'search',
+                    placeholder: 'ex. 14200, 29000-29100',
+                    fullWidth: true,
+                }}
+                isAligned={true}
+            />
         );
     }
 }

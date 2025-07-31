@@ -1,6 +1,7 @@
-import { FormControl, InputLabel, MenuItem, Select, type SelectChangeEvent } from '@mui/material';
+import { MenuItem, type SelectChangeEvent } from '@mui/material';
 import { useEffect, useCallback, useState } from 'react';
 
+import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 const GE_LIST = [
@@ -42,7 +43,7 @@ export function GeSelector() {
     };
 
     const resetField = useCallback(() => {
-        setGe(RightPaneStore.getFormData().term);
+        setGe(RightPaneStore.getFormData().ge);
     }, []);
 
     useEffect(() => {
@@ -54,32 +55,24 @@ export function GeSelector() {
     }, [resetField]);
 
     return (
-        <FormControl sx={{ flexGrow: 1, width: '50%' }}>
-            <InputLabel variant="standard">General Education</InputLabel>
-            <Select
-                value={ge}
-                onChange={handleChange}
-                fullWidth
-                MenuProps={{
-                    anchorOrigin: {
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    },
-                    transformOrigin: {
-                        vertical: 'top',
-                        horizontal: 'left',
-                    },
-                }}
-                variant="standard"
-            >
-                {GE_LIST.map((category) => {
-                    return (
-                        <MenuItem key={category.value} value={category.value}>
-                            {category.label}
-                        </MenuItem>
-                    );
-                })}
-            </Select>
-        </FormControl>
+        <LabeledSelect
+            label="General Education"
+            selectProps={{
+                value: ge,
+                onChange: handleChange,
+                sx: {
+                    width: '100%',
+                },
+            }}
+            isAligned={true}
+        >
+            {GE_LIST.map((category) => {
+                return (
+                    <MenuItem key={category.value} value={category.value}>
+                        {category.label}
+                    </MenuItem>
+                );
+            })}
+        </LabeledSelect>
     );
 }
