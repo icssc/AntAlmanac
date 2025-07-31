@@ -81,8 +81,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     }}
                 />
             </head>
-            {/* <body style={{ overflow: 'hidden' }}> */}
-            <body>
+            <body style={{ overflow: 'hidden' }}>
                 <noscript> You need to enable JavaScript to run this app. </noscript>
                 {children}
             </body>
