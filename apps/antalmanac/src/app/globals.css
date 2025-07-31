@@ -1,0 +1,15 @@
+@media (min-resolution: 120dpi) {
+    html {
+        font-size: 14px;
+    }
+}
+
+@media (min-resolution: 144dpi) {
+    html {
+        font-size: 12px;
+    }
+}
+
+body {
+    overflow: hidden;
+}
