@@ -1,19 +1,27 @@
 import { control } from 'leaflet';
 import 'leaflet.locatecontrol';
-import { useEffect } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import { useMap } from 'react-leaflet';
 
-export default function UserLocator() {
+export const UserLocator = memo(() => {
     const map = useMap();
+    const hasCreatedControl = useRef(false);
 
     useEffect(() => {
-        const userLocator = control.locate({
-            position: 'topleft',
-            flyTo: true,
-        });
+        if (!hasCreatedControl.current) {
+            const userLocator = control.locate({
+                position: 'topleft',
+                flyTo: true,
+            });
 
-        userLocator.addTo(map);
+            userLocator.addTo(map);
+            hasCreatedControl.current = true;
+        }
+
+        // NB: We let the MapContainer handle the cleanup of the control.
     }, [map]);
 
     return null;
-}
+});
+
+UserLocator.displayName = 'UserLocator';
