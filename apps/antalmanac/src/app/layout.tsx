@@ -1,4 +1,8 @@
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import type { Metadata } from 'next';
+
+import AppThemeProvider from '$src/app/Theme';
+import './globals.css';
 
 const ANTALMANAC_DESCRIPTION = 'A schedule planning and course exploration tool for UCI students.';
 
@@ -48,28 +52,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html lang="en">
             <head>
-                {/* <style>
-                    {`
-                @media (min-resolution: 120dpi) {
-                    html {
-                        font-size: 14px;
-                    }
-                }
-                @media (min-resolution: 144dpi) {
-                    html {
-                        font-size: 12px;
-                    }
-                }
-                `}
-                </style> */}
-
-                {/* NOTE: These static CSS files need to be in the 'public' directory */}
-                {/* <link rel="stylesheet" href="/google_font_roboto_300_400_500_700.css" />
-                <link
-                    rel="stylesheet"
-                    href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
-                /> */}
-
                 <script
                     dangerouslySetInnerHTML={{
                         __html: `
@@ -81,9 +63,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     }}
                 />
             </head>
-            <body style={{ overflow: 'hidden' }}>
+            <body>
                 <noscript> You need to enable JavaScript to run this app. </noscript>
-                {children}
+                <AppRouterCacheProvider options={{ enableCssLayer: true }}>
+                    <AppThemeProvider>{children}</AppThemeProvider>
+                </AppRouterCacheProvider>
             </body>
         </html>
     );

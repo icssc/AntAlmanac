@@ -1,9 +1,19 @@
-import { createTheme, CssBaseline, ThemeProvider, type PaletteOptions } from '@mui/material';
+'use client';
+
+import { CssBaseline, type PaletteOptions } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Roboto } from 'next/font/google';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useMemo } from 'react';
 
 import { BLUE, DODGER_BLUE } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
+
+const roboto = Roboto({
+    weight: ['300', '400', '500', '700'],
+    subsets: ['latin'],
+    display: 'swap',
+});
 
 const lightTheme: PaletteOptions = {
     primary: {
@@ -63,9 +73,12 @@ export default function AppThemeProvider(props: Props) {
         };
     }, [setAppTheme]);
 
-    const AppTheme = useMemo(
+    const theme = useMemo(
         () =>
             createTheme({
+                typography: {
+                    fontFamily: roboto.style.fontFamily,
+                },
                 components: {
                     MuiAppBar: {
                         styleOverrides: {
@@ -163,7 +176,7 @@ export default function AppThemeProvider(props: Props) {
     );
 
     return (
-        <ThemeProvider theme={AppTheme}>
+        <ThemeProvider theme={theme}>
             <CssBaseline />
             {props.children}
         </ThemeProvider>
