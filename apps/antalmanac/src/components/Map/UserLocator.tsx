@@ -1,43 +1,19 @@
-import { createElementHook, createElementObject, useLeafletContext } from '@react-leaflet/core';
-import type { LeafletContextInterface } from '@react-leaflet/core';
 import { control } from 'leaflet';
 import 'leaflet.locatecontrol';
 import { useEffect } from 'react';
+import { useMap } from 'react-leaflet';
 
-function createUserLocator(_props: unknown, context: LeafletContextInterface) {
-    const userLocator = createElementObject(
-        control.locate({
-            position: 'topleft',
-            flyTo: true,
-            strings: {
-                title: 'Look for your lost soul',
-            },
-        }),
-        context
-    );
-
-    return userLocator;
-}
-
-/**
- * Use react-leaflet's core API to manage lifecycle of leaflet elements properly.
- * @see {@link https://react-leaflet.js.org/docs/core-architecture/#element-hook-factory}
- */
-const useUserLocator = createElementHook(createUserLocator);
-
-/**
- * Initializes a leaflet locator to locate the user.
- */
 export default function UserLocator() {
-    const context = useLeafletContext();
-    const elementRef = useUserLocator(null, context);
+    const map = useMap();
 
     useEffect(() => {
-        elementRef.current.instance.addTo(context.map);
-        return () => {
-            elementRef.current.instance.remove();
-        };
-    }, []);
+        const userLocator = control.locate({
+            position: 'topleft',
+            flyTo: true,
+        });
+
+        userLocator.addTo(map);
+    }, [map]);
 
     return null;
 }
