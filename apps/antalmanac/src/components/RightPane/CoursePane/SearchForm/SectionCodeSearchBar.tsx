@@ -4,14 +4,14 @@ import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/La
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 class SectionCodeSearchBar extends PureComponent {
-    updateCourseCodeAndGetFormData() {
-        RightPaneStore.updateFormValue('sectionCode', RightPaneStore.getUrlCourseCodeValue());
+    updateSectionCodeAndGetFormData() {
+        RightPaneStore.updateFormValue('sectionCode', RightPaneStore.getUrlSectionCodeValue());
         return RightPaneStore.getFormData().sectionCode;
     }
 
     getSectionCode() {
-        return RightPaneStore.getUrlCourseCodeValue()
-            ? this.updateCourseCodeAndGetFormData()
+        return RightPaneStore.getUrlSectionCodeValue()
+            ? this.updateSectionCodeAndGetFormData()
             : RightPaneStore.getFormData().sectionCode;
     }
 
@@ -25,9 +25,9 @@ class SectionCodeSearchBar extends PureComponent {
         const stateObj = { url: 'url' };
         const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
-        urlParam.delete('courseCode');
+        urlParam.delete('sectionCode');
         if (event.target.value) {
-            urlParam.append('courseCode', event.target.value);
+            urlParam.append('sectionCode', event.target.value);
         }
         const param = urlParam.toString();
         const new_url = `${param.trim() ? '?' : ''}${param}`;
