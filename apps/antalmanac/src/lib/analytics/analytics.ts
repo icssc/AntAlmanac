@@ -22,7 +22,7 @@ const analyticsEnum: AnalyticsEnum = {
         actions: {
             DELETE_COURSE: 'Delete Course',
             CHANGE_COURSE_COLOR: 'Change Course Color',
-            COPY_COURSE_CODE: 'Copy Course Code',
+            COPY_COURSE_CODE: 'Copy Section Code',
             CLICK_CUSTOM_EVENT: 'Click Custom Event Button',
             ADD_CUSTOM_EVENT: 'Add Custom Event',
             DELETE_CUSTOM_EVENT: 'Delete Custom Event',
@@ -59,7 +59,7 @@ const analyticsEnum: AnalyticsEnum = {
             CLICK_REVIEWS: 'Click "Reviews"',
             CLICK_PAST_ENROLLMENT: 'Click "Past Enrollment"',
             ADD_SPECIFIC: 'Add Course to Specific Schedule',
-            COPY_COURSE_CODE: 'Copy Course Code',
+            COPY_COURSE_CODE: 'Copy Section Code',
             REFRESH: 'Refresh Results',
             TOGGLE_COLUMNS: 'Toggle Columns',
         },
@@ -72,7 +72,7 @@ const analyticsEnum: AnalyticsEnum = {
             COPY_SCHEDULE: 'Copy Schedule',
             CLEAR_SCHEDULE: 'Clear Schedule',
             CHANGE_COURSE_COLOR: 'Change Course Color',
-            COPY_COURSE_CODE: 'Copy Course Code',
+            COPY_COURSE_CODE: 'Copy Section Code',
         },
     },
     map: {

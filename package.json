@@ -35,5 +35,8 @@
     "engines": {
         "pnpm": "^9.0.0",
         "node": ">=22"
+    },
+    "dependencies": {
+        "pnpm": "^10.17.1"
     }
 }
