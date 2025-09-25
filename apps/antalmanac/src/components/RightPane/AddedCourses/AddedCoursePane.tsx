@@ -260,7 +260,7 @@ function SkeletonSchedule() {
                                             clickToCopy(event, section);
                                             logAnalytics(postHog, {
                                                 category: analyticsEnum.addedClasses,
-                                                action: analyticsEnum.addedClasses.actions.COPY_COURSE_CODE,
+                                                action: analyticsEnum.addedClasses.actions.COPY_SECTION_CODE,
                                             });
                                         }}
                                         label={section}

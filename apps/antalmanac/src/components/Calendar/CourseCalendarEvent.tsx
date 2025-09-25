@@ -172,7 +172,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                                             clickToCopy(event, sectionCode);
                                             logAnalytics(postHog, {
                                                 category: analyticsEnum.calendar,
-                                                action: analyticsEnum.calendar.actions.COPY_COURSE_CODE,
+                                                action: analyticsEnum.calendar.actions.COPY_SECTION_CODE,
                                             });
                                         }}
                                         label={sectionCode}
