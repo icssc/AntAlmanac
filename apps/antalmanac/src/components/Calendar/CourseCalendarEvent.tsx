@@ -165,14 +165,14 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                     <tbody>
                         <tr>
                             <td style={{ verticalAlign: 'top' }}>Section code</td>
-                            <Tooltip title="Click to copy course code" placement="right">
+                            <Tooltip title="Click to copy section code" placement="right">
                                 <td style={{ textAlign: 'right' }}>
                                     <Chip
                                         onClick={(event) => {
                                             clickToCopy(event, sectionCode);
                                             logAnalytics(postHog, {
                                                 category: analyticsEnum.calendar,
-                                                action: analyticsEnum.calendar.actions.COPY_COURSE_CODE,
+                                                action: analyticsEnum.calendar.actions.COPY_SECTION_CODE,
                                             });
                                         }}
                                         label={sectionCode}

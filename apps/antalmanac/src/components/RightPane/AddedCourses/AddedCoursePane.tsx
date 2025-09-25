@@ -254,13 +254,13 @@ function SkeletonSchedule() {
                         <Typography variant="h6">{term}</Typography>
                         <Paper key={term} elevation={1}>
                             {sections.map((section, index) => (
-                                <Tooltip title="Click to copy course code" placement="right" key={index}>
+                                <Tooltip title="Click to copy section code" placement="right" key={index}>
                                     <Chip
                                         onClick={(event) => {
                                             clickToCopy(event, section);
                                             logAnalytics(postHog, {
                                                 category: analyticsEnum.addedClasses,
-                                                action: analyticsEnum.addedClasses.actions.COPY_COURSE_CODE,
+                                                action: analyticsEnum.addedClasses.actions.COPY_SECTION_CODE,
                                             });
                                         }}
                                         label={section}
