@@ -10,7 +10,7 @@ import 'dotenv/config';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const MAX_COURSES = 10_000;
-const DELAY_MS = 250; // avoid rate limits from AAPI
+const DELAY_MS = 500; // avoid rate limits from AAPI
 
 const ALIASES: Record<string, string | undefined> = {
     COMPSCI: 'CS',
