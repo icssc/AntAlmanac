@@ -93,6 +93,7 @@ async function main() {
             const parsedTerm = `${quarter}_${year}`;
             const query = QUERY_TEMPLATE.replace('$$YEAR$$', year).replace('$$QUARTER$$', quarter);
 
+            // TODO (@kevin): remove delay once AAPI resolves OOM issues
             await new Promise((resolve) => setTimeout(resolve, DELAY_MS * index));
 
             const res = await queryGraphQL<SectionCodesGraphQLResponse>(query);
