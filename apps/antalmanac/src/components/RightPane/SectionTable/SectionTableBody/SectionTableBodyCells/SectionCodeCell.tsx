@@ -28,7 +28,7 @@ export const SectionCodeCell = ({ sectionCode, analyticsCategory }: SectionCodeC
 
     return (
         <TableBodyCellContainer sx={{ width: '8%' }}>
-            <Tooltip title="Click to copy Section code" placement="bottom" enterDelay={150}>
+            <Tooltip title="Click to copy section code" placement="bottom" enterDelay={150}>
                 <Chip
                     onClick={(event) => {
                         clickToCopy(event, sectionCode);
