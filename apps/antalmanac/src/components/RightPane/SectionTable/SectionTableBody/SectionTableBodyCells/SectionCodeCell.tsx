@@ -7,12 +7,12 @@ import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import { useThemeStore } from '$stores/SettingsStore';
 
-interface CourseCodeCellProps {
+interface SectionCodeCellProps {
     sectionCode: string;
     analyticsCategory: AnalyticsCategory;
 }
 
-export const CourseCodeCell = ({ sectionCode, analyticsCategory }: CourseCodeCellProps) => {
+export const SectionCodeCell = ({ sectionCode, analyticsCategory }: SectionCodeCellProps) => {
     const isDark = useThemeStore((store) => store.isDark);
     const [isHovered, setIsHovered] = useState(false);
 
