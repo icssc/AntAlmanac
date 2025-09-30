@@ -49,7 +49,7 @@ class SectionCodeSearchBar extends PureComponent {
     render() {
         return (
             <LabeledTextField
-                label="Course Code"
+                label="Section Code"
                 textFieldProps={{
                     value: this.state.sectionCode,
                     onChange: this.handleChange,

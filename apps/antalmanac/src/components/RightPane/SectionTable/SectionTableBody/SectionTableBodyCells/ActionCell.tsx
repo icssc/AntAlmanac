@@ -86,7 +86,7 @@ export function ColorAndDelete({ section, term }: ActionProps) {
 }
 
 /**
- * Copying a specific class's link will only copy its course code.
+ * Copying a specific class's link will only copy its section code.
  * If there is random value let in the url, it will interfere with the generated url.
  */
 const fieldsToReset = ['courseCode', 'courseNumber', 'deptValue', 'ge', 'term'];
