@@ -10,6 +10,7 @@ import 'dotenv/config';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const MAX_COURSES = 10_000;
+const DELAY_MS = 500; // avoid rate limits from AAPI
 
 const ALIASES: Record<string, string | undefined> = {
     COMPSCI: 'CS',
@@ -86,22 +87,38 @@ async function main() {
     `
     );
     let count = 0;
-    const termPromises = termData.map(async (term) => {
-        const [year, quarter] = term.shortName.split(' ');
-        const parsedTerm = `${quarter}_${year}`;
-        const query = QUERY_TEMPLATE.replace('$$YEAR$$', year).replace('$$QUARTER$$', quarter);
-        const res = await queryGraphQL<SectionCodesGraphQLResponse>(query);
-        if (!res) {
-            throw new Error(`Error fetching section codes for ${term.shortName}.`);
-        }
-        const parsedSectionData = parseSectionCodes(res);
-        console.log(
-            `Fetched ${Object.keys(parsedSectionData).length} course codes for ${term.shortName} from Anteater API.`
-        );
+    const termPromises = termData.map(async (term, index) => {
+        try {
+            const [year, quarter] = term.shortName.split(' ');
+            const parsedTerm = `${quarter}_${year}`;
+            const query = QUERY_TEMPLATE.replace('$$YEAR$$', year).replace('$$QUARTER$$', quarter);
 
-        const fileName = join(__dirname, `../src/generated/terms/${parsedTerm}.json`);
-        await writeFile(fileName, JSON.stringify(parsedSectionData, null, 2));
-        return Object.keys(parsedSectionData).length;
+            // TODO (@kevin): remove delay once AAPI resolves OOM issues
+            await new Promise((resolve) => setTimeout(resolve, DELAY_MS * index));
+
+            const res = await queryGraphQL<SectionCodesGraphQLResponse>(query);
+            if (!res) {
+                throw new Error(`Error fetching section codes for ${term.shortName}.`);
+            }
+            const parsedSectionData = parseSectionCodes(res);
+            console.log(
+                `Fetched ${Object.keys(parsedSectionData).length} course codes for ${term.shortName} from Anteater API.`
+            );
+
+            const fileName = join(__dirname, `../src/generated/terms/${parsedTerm}.json`);
+            await writeFile(fileName, JSON.stringify(parsedSectionData, null, 2));
+            return Object.keys(parsedSectionData).length;
+        } catch (error) {
+            console.error(`❌ ERROR in promise ${index} for term "${term.shortName}":`);
+            console.error(`Term details:`, {
+                shortName: term.shortName,
+                year: term.shortName.split(' ')[0],
+                quarter: term.shortName.split(' ')[1],
+                index,
+            });
+
+            throw error;
+        }
     });
 
     const results = await Promise.all(termPromises);
