@@ -1,5 +1,6 @@
 import { Event, FormatListBulleted, MyLocation, Search } from '@mui/icons-material';
 import { Paper, Tabs } from '@mui/material';
+import { useEffect } from 'react';
 
 import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleManagementTab';
 import { useTabStore } from '$stores/TabStore';
@@ -64,14 +65,26 @@ const scheduleManagementTabs: Array<ScheduleManagementTabInfo> = [
 
 export function ScheduleManagementTabs() {
     const { activeTab } = useTabStore();
+    // const { hasAsync, setHasAsync } = useState(false);
+    useEffect(() => {
+        return;
+    }, []);
 
     return (
-        <Paper elevation={0} variant="outlined" square sx={{ borderRadius: '4px 4px 0 0' }}>
-            <Tabs value={activeTab} indicatorColor="primary" variant="fullWidth" centered>
-                {scheduleManagementTabs.map((tab, index) => (
-                    <ScheduleManagementTab key={tab.label} tab={tab} value={index} />
-                ))}
-            </Tabs>
-        </Paper>
+        <div>
+            <h1>BEN LOOK EHRE</h1>
+            <Paper elevation={0} variant="outlined" square sx={{ borderRadius: '4px 4px 0 0' }}>
+                <h1> afte rsome outlined stuff</h1>
+                <Tabs value={activeTab} indicatorColor="primary" variant="fullWidth" centered>
+                    <h1>WE IN HERE NOW</h1>
+                    {scheduleManagementTabs.map((tab, index) => (
+                        <>
+                            <h2>11111</h2>
+                            <ScheduleManagementTab key={tab.label} tab={tab} value={index} />
+                        </>
+                    ))}
+                </Tabs>
+            </Paper>
+        </div>
     );
 }

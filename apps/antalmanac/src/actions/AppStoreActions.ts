@@ -291,6 +291,7 @@ export const loadSchedule = async (
                 const userDataResponse = await trpc.userData.getUserData.query({ userId: account.userId });
                 const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
 
+                //ben herer
                 if (await AppStore.loadSchedule(scheduleSaveState)) {
                     openSnackbar('success', `Schedule loaded.`);
                 } else {
