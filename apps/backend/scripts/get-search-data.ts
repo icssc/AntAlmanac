@@ -124,7 +124,7 @@ async function main() {
     const results = await Promise.all(termPromises);
     count = results.reduce((acc, numKeys) => acc + numKeys, 0);
 
-    console.log(`Fetched ${count} course codes for ${termData.length} terms from Anteater API.`);
+    console.log(`Fetched ${count} section codes for ${termData.length} terms from Anteater API.`);
     console.log('Cache generated.');
 }
 

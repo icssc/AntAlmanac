@@ -86,10 +86,10 @@ export function ColorAndDelete({ section, term }: ActionProps) {
 }
 
 /**
- * Copying a specific class's link will only copy its course code.
+ * Copying a specific class's link will only copy its section code.
  * If there is random value let in the url, it will interfere with the generated url.
  */
-const fieldsToReset = ['courseCode', 'courseNumber', 'deptValue', 'ge', 'term'];
+const fieldsToReset = ['sectionCode', 'courseNumber', 'deptValue', 'ge', 'term'];
 
 /**
  * Sections that have not been added to a schedule can be added to a schedule.
@@ -132,7 +132,7 @@ export function ScheduleAddCell({ section, courseDetails, term, scheduleNames, s
         const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
         fieldsToReset.forEach((field) => urlParam.delete(field));
-        urlParam.append('courseCode', String(section.sectionCode));
+        urlParam.append('sectionCode', String(section.sectionCode));
         const new_url = `${url.origin.toString()}/?${urlParam.toString()}`;
         navigator.clipboard.writeText(new_url.toString()).then(
             () => {

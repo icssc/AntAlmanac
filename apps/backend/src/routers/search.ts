@@ -59,17 +59,17 @@ const searchRouter = router({
             const num = Number(input.query);
             const matchedSections: SectionSearchResult[] = [];
             if (!isNaN(num) && num >= 0 && Number.isInteger(num)) {
-                const baseCourseCode = input.query;
+                const baseSectionCode = input.query;
                 if (input.query.length === 4) {
                     for (let i = 0; i < 10; i++) {
-                        const possibleCourseCode = `${baseCourseCode}${i}`;
-                        if (termSectionCodes[possibleCourseCode]) {
-                            matchedSections.push(termSectionCodes[possibleCourseCode]);
+                        const possibleSectionCode = `${baseSectionCode}${i}`;
+                        if (termSectionCodes[possibleSectionCode]) {
+                            matchedSections.push(termSectionCodes[possibleSectionCode]);
                         }
                     }
                 } else if (input.query.length === 5) {
-                    if (termSectionCodes[baseCourseCode]) {
-                        matchedSections.push(termSectionCodes[baseCourseCode]);
+                    if (termSectionCodes[baseSectionCode]) {
+                        matchedSections.push(termSectionCodes[baseSectionCode]);
                     }
                 }
             }

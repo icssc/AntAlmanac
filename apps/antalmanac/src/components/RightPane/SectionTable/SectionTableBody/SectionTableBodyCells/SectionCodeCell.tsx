@@ -7,12 +7,12 @@ import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import { useThemeStore } from '$stores/SettingsStore';
 
-interface CourseCodeCellProps {
+interface SectionCodeCellProps {
     sectionCode: string;
     analyticsCategory: AnalyticsCategory;
 }
 
-export const CourseCodeCell = ({ sectionCode, analyticsCategory }: CourseCodeCellProps) => {
+export const SectionCodeCell = ({ sectionCode, analyticsCategory }: SectionCodeCellProps) => {
     const isDark = useThemeStore((store) => store.isDark);
     const [isHovered, setIsHovered] = useState(false);
 
@@ -28,7 +28,7 @@ export const CourseCodeCell = ({ sectionCode, analyticsCategory }: CourseCodeCel
 
     return (
         <TableBodyCellContainer sx={{ width: '8%' }}>
-            <Tooltip title="Click to copy course code" placement="bottom" enterDelay={150}>
+            <Tooltip title="Click to copy section code" placement="bottom" enterDelay={150}>
                 <Chip
                     onClick={(event) => {
                         clickToCopy(event, sectionCode);

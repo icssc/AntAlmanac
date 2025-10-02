@@ -29,7 +29,7 @@ export function CoursePaneRoot() {
         } else {
             openSnackbar(
                 'error',
-                `Please provide one of the following: Department, GE, Course Code/Range, or Instructor`
+                `Please provide one of the following: Department, GE, Section Code/Range, or Instructor`
             );
         }
     }, [advancedSearchEnabled, displaySections, forceUpdate]);
