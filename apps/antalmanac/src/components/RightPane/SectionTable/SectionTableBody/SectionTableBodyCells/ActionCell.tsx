@@ -107,7 +107,6 @@ export function ScheduleAddCell({ section, courseDetails, term, scheduleNames, s
         setAnchorEl(null);
 
         for (const meeting of section.meetings) {
-            console.log('BEN INTERESTEING LOGIN HERE');
             if (meeting.timeIsTBA) {
                 openSnackbar('success', 'Online/TBA class added');
                 break;
