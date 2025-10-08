@@ -187,10 +187,10 @@ const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = 
     },
 };
 
-export const Load = () => {
+export const Signin = () => {
     const isDark = useThemeStore((store) => store.isDark);
 
-    const { updateSession, sessionIsValid } = useSessionStore();
+    const { updateSession } = useSessionStore();
 
     const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = scheduleComponentsToggleStore();
 
@@ -280,9 +280,6 @@ export const Load = () => {
         }
     }, [loadScheduleAndSetLoadingAuth]);
 
-    if (sessionIsValid) {
-        return;
-    }
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
             <SignInButton
