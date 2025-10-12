@@ -1,5 +1,6 @@
 import {
     amber,
+    brown,
     blue,
     cyan,
     deepOrange,
@@ -22,24 +23,24 @@ export interface HSLColor {
     l: number;
 }
 
-const defaultColors = [blue[300], pink[300], purple[300], green[300], amber[300], deepPurple[300], deepOrange[300]];
+const defaultColors = [blue[200], pink[200], purple[200], green[200], amber[200], deepPurple[200], deepOrange[200]];
 
 export const colorPickerPresetColors = [
-    red[300],
-    blue[300],
-    deepOrange[300],
-    amber[300],
-    yellow[300],
+    brown[200],
+    red[200],
+    deepOrange[200],
+    amber[200],
+    yellow[200],
+    green[200],
+    teal[200],
+    cyan[100],
+    lightBlue[200],
+    indigo[200],
+    deepPurple[200],
+    pink[200],
     green[300],
-    teal[300],
-    cyan[300],
-    lightBlue[300],
-    indigo[300],
-    deepPurple[300],
-    pink[300],
-    green[900],
-    grey[800],
-    grey[400],
+    grey[600],
+    grey[300],
     grey[50],
 ];
 /**
@@ -160,7 +161,7 @@ function colorIsContained(color: HSLColor, usedColors: Iterable<HSLColor>, delta
  *
  * @return Unused hex color that is close to the original color ("#RRGGBB").
  */
-function generateCloseColor(originalColor: string, usedColors: Set<string>, variation = 0.05): string {
+function generateCloseColor(originalColor: string, usedColors: Set<string>, variation = 0.1): string {
     const usedColorsHSL = [...usedColors].map(HexToHSL);
 
     // Generate a color that is slightly different from the original color and that is not already used
