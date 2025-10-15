@@ -11,7 +11,6 @@ AntAlmanac is a schedule planner website for classes at UC Irvine. These are som
 
 ![project screenshot](https://github.com/user-attachments/assets/1e76c77c-a24d-459e-8ec8-8e9f3fa9a6bc)
 
-
 ## Technology
 Our website is a single page React application hosted on Github Pages.
 A summary of the libraries we use are listed below.
