@@ -102,7 +102,7 @@ async function main() {
             }
             const parsedSectionData = parseSectionCodes(res);
             console.log(
-                `Fetched ${Object.keys(parsedSectionData).length} course codes for ${term.shortName} from Anteater API.`
+                `Fetched ${Object.keys(parsedSectionData).length} section codes for ${term.shortName} from Anteater API.`
             );
 
             const fileName = join(__dirname, `../src/generated/terms/${parsedTerm}.json`);
@@ -124,7 +124,7 @@ async function main() {
     const results = await Promise.all(termPromises);
     count = results.reduce((acc, numKeys) => acc + numKeys, 0);
 
-    console.log(`Fetched ${count} course codes for ${termData.length} terms from Anteater API.`);
+    console.log(`Fetched ${count} section codes for ${termData.length} terms from Anteater API.`);
     console.log('Cache generated.');
 }
 
