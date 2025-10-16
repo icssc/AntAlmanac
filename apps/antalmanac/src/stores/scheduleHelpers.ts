@@ -1,4 +1,20 @@
-import { amber, blue, deepOrange, deepPurple, green, pink, purple } from '@mui/material/colors';
+import {
+    amber,
+    brown,
+    blue,
+    cyan,
+    deepOrange,
+    deepPurple,
+    green,
+    grey,
+    indigo,
+    lightBlue,
+    pink,
+    purple,
+    red,
+    teal,
+    yellow,
+} from '@mui/material/colors';
 import { ScheduleCourse } from '@packages/antalmanac-types';
 
 export interface HSLColor {
@@ -7,8 +23,26 @@ export interface HSLColor {
     l: number;
 }
 
-const defaultColors = [blue[500], pink[500], purple[500], green[500], amber[500], deepPurple[500], deepOrange[500]];
+const defaultColors = [blue[200], pink[200], purple[200], green[200], amber[200], deepPurple[200], deepOrange[200]];
 
+export const colorPickerPresetColors = [
+    brown[200],
+    red[200],
+    deepOrange[200],
+    amber[200],
+    yellow[200],
+    green[200],
+    teal[200],
+    cyan[100],
+    lightBlue[200],
+    indigo[200],
+    deepPurple[200],
+    pink[200],
+    green[300],
+    grey[600],
+    grey[300],
+    grey[50],
+];
 /**
  * Converts a hex color to HSL
  * Assumes the hex color is in the format #RRGGBB
