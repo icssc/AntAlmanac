@@ -119,7 +119,6 @@ export function ScheduleManagementTabs() {
 
     return (
         <div>
-            <h1>BEN LOOK EHRE</h1>
             <Paper elevation={0} variant="outlined" square sx={{ borderRadius: '4px 4px 0 0' }}>
                 <Tabs value={activeTab} indicatorColor="primary" variant="fullWidth" centered>
                     {scheduleManagementTabs.map((tab, index) => (
