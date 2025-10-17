@@ -15,6 +15,7 @@ import { ErrorPage } from '$routes/ErrorPage';
 import Feedback from '$routes/Feedback';
 import Home from '$routes/Home';
 import { OutagePage } from '$routes/OutagePage';
+import { useSessionStore } from '$stores/SessionStore';
 
 /**
  * Do not edit this unless you know what you're doing.
@@ -85,11 +86,26 @@ const ROUTER = OUTAGE ? OUTAGE_ROUTER : BROWSER_ROUTER;
  * Renders the single page application.
  */
 export default function App() {
+    const { session, validateIdpSession } = useSessionStore();
+
     useEffect(() => {
         document.addEventListener('keydown', undoDelete, false);
         return () => {
             document.removeEventListener('keydown', undoDelete, false);
         };
+    }, []);
+
+    // Validate IdP session on app load to support single sign-out across clients
+    useEffect(() => {
+        if (session) {
+            validateIdpSession().then((valid) => {
+                if (!valid) {
+                    console.log('IdP session expired - user signed out from another client');
+                }
+            });
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
