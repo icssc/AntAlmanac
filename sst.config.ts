@@ -5,14 +5,14 @@ export default $config({
         return {
             name: 'antalmanac',
             removal: input?.stage === 'production' ? 'retain' : 'remove',
-            protect: ['production'].includes(input?.stage),
+            // protect: ['production'].includes(input?.stage),
             home: 'aws',
         };
     },
     async run() {
         new sst.aws.Nextjs('Website', {
             path: 'apps/antalmanac',
-            domain: 'sst2.antalmanac.com',
+            domain: 'sst.antalmanac.com',
         });
     },
 });

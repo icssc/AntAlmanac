@@ -79,8 +79,8 @@ export function Logo() {
     return (
         <Image
             src={isMobileScreen ? currentLogo?.mobileLogo : currentLogo?.desktopLogo}
-            height={32}
-            width={32}
+            height={64}
+            width={340}
             style={{
                 width: 'auto',
                 height: '32px',
