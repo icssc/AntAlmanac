@@ -8,17 +8,23 @@
         "url": "https://github.com/icssc/Antalmanac"
     },
     "scripts": {
-        "prepare": "husky install",
-        "start:aa": "turbo start --filter=antalmanac",
-        "start": "cross-env VITE_LOCAL_SERVER=true turbo start",
-        "build:aa": "turbo build --filter=antalmanac --env-mode=loose",
-        "build": "turbo build --env-mode=loose",
-        "deploy:aa": "turbo deploy --filter=antalmanac",
-        "deploy:cdk": "turbo deploy --filter=cdk",
-        "deploy": "turbo deploy",
-        "test": "vitest"
+        "_build": "turbo build --env-mode=loose",
+        "_build:aa": "turbo build --filter=antalmanac --env-mode=loose",
+        "_deploy": "turbo deploy",
+        "_deploy:aa": "turbo deploy --filter=antalmanac",
+        "_deploy:cdk": "turbo deploy --filter=cdk",
+        "_prepare": "husky install",
+        "_start": "cross-env VITE_LOCAL_SERVER=true turbo start",
+        "_start:aa": "turbo start --filter=antalmanac",
+        "test": "vitest",
+        "dev": "sst dev",
+        "deploy": "sst deploy --stage production"
+    },
+    "dependencies": {
+        "sst": "3.17.19"
     },
     "devDependencies": {
+        "@types/aws-lambda": "8.10.156",
         "@types/eslint": "^8.56.5",
         "@types/node": "^20.11.6",
         "cross-env": "^7.0.3",
@@ -33,7 +39,7 @@
     },
     "packageManager": "pnpm@10.22.0",
     "engines": {
-        "pnpm": "^10.0.0",
-        "node": ">=22"
-    }
+        "node": ">=22",
+        "pnpm": "^10.0.0"
+    },
 }
