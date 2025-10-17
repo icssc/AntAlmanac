@@ -63,7 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </head>
             <body>
                 <noscript>You need to enable JavaScript to run this app.</noscript>
-                <div id={'WTF2'}>{children}</div>
+                {children}
             </body>
         </html>
     );
