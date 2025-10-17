@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 import { openSnackbar } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
 import { Import } from '$components/Header/Import';
-import { Load } from '$components/Header/Load';
-import { Login } from '$components/Header/Login';
 import { Logo } from '$components/Header/Logo';
 import { Save } from '$components/Header/Save';
 import AppDrawer from '$components/Header/SettingsMenu';
+import { Signin } from '$components/Header/Signin';
+import { Signout } from '$components/Header/Signout';
 import {
     getLocalStorageDataCache,
     removeLocalStorageImportedUser,
@@ -21,7 +21,7 @@ import { useSessionStore } from '$stores/SessionStore';
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const importedUser = getLocalStorageImportedUser() ?? '';
-    const { session } = useSessionStore();
+    const { session, sessionIsValid } = useSessionStore();
 
     const clearStorage = () => {
         removeLocalStorageImportedUser();
@@ -66,9 +66,8 @@ export function Header() {
 
                 <Stack direction="row">
                     <Save />
-                    <Load />
                     <Import key="studylist" />
-                    <Login />
+                    {sessionIsValid ? <Signout /> : <Signin />}
                     <AppDrawer key="settings" />
                 </Stack>
 
