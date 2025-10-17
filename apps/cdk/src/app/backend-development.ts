@@ -1,7 +1,7 @@
 import { App } from 'aws-cdk-lib';
 
-import { BackendStack } from '../stacks/backend';
 import { waitForStackIdle } from '../lib/wait-for-stack-idle';
+import { BackendStack } from '../stacks/backend';
 
 /**
  * When a new production backend is deployed, a development backend is also deployed

@@ -12,9 +12,9 @@ import 'leaflet-routing-machine';
 
 import LocationMarker from './Marker';
 import ClassRoutes from './Routes';
-import UserLocator from './UserLocator';
 
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { UserLocator } from '$components/Map/UserLocator';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { TILES_URL } from '$lib/api/endpoints';
