@@ -1,7 +1,5 @@
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import type { Metadata } from 'next';
 
-import AppThemeProvider from '$src/app/Theme';
 import './globals.css';
 
 const ANTALMANAC_DESCRIPTION = 'A schedule planning and course exploration tool for UCI students.';
@@ -64,10 +62,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 />
             </head>
             <body>
-                <noscript> You need to enable JavaScript to run this app. </noscript>
-                <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-                    <AppThemeProvider>{children}</AppThemeProvider>
-                </AppRouterCacheProvider>
+                <noscript>You need to enable JavaScript to run this app.</noscript>
+                <div id={'WTF2'}>{children}</div>
             </body>
         </html>
     );

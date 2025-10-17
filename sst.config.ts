@@ -12,7 +12,7 @@ export default $config({
     async run() {
         new sst.aws.Nextjs('Website', {
             path: 'apps/antalmanac',
-            domain: 'sst.antalmanac.com',
+            domain: 'sst2.antalmanac.com',
         });
     },
 });
