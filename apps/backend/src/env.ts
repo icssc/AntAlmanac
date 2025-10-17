@@ -3,10 +3,13 @@ import { z } from 'zod';
 
 dotenv.config();
 
-export const googleOAuthEnvSchema = z.object({
-    GOOGLE_CLIENT_ID: z.string(),
-    GOOGLE_CLIENT_SECRET: z.string(),
+/**
+ * Environment variables required by the backend for OIDC authentication.
+ */
+export const oidcEnvSchema = z.object({
+    OIDC_CLIENT_ID: z.string().default('antalmanac'),
     GOOGLE_REDIRECT_URI: z.string(),
+    OIDC_ISSUER_URL: z.string(),
 });
 
 /**
@@ -35,7 +38,7 @@ export const aapiEnvSchema = z.object({
  */
 export const backendEnvSchema = z
     .object({ STAGE: z.string() })
-    .merge(googleOAuthEnvSchema)
+    .merge(oidcEnvSchema)
     .merge(rdsEnvSchema)
     .merge(mapboxEnvSchema)
     .merge(aapiEnvSchema);

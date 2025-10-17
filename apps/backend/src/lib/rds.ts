@@ -143,15 +143,64 @@ export class RDS {
     ) {
         const existingAccount = await this.getAccountByProviderId(db, accountType, providerId);
         if (!existingAccount) {
-            const { userId } = await db
-                .insert(users)
-                .values({
-                    avatar: avatar ?? '',
-                    name: name,
-                    email: email ?? '',
-                })
-                .returning({ userId: users.id })
-                .then((res) => res[0]);
+            // Check if a user with this email already exists (for account merging)
+            let userId: string;
+            let isNewUser = true;
+
+            if (email) {
+                const existingUser = await this.getUserByEmail(db, email);
+                if (existingUser) {
+                    // User with this email exists - update provider ID for existing account or create new link
+                    userId = existingUser.id;
+                    isNewUser = false;
+                    console.log(`[RDS] Found existing user ${userId} with email ${email}`);
+
+                    // Check if they already have an account with this accountType
+                    const existingAccountForType = await db
+                        .select()
+                        .from(accounts)
+                        .where(and(eq(accounts.userId, userId), eq(accounts.accountType, accountType)))
+                        .limit(1)
+                        .then((res) => res[0]);
+
+                    if (existingAccountForType) {
+                        // Update the providerAccountId (migrating from old provider to new)
+                        console.log(
+                            `[RDS] Updating provider ID for existing ${accountType} account from ${existingAccountForType.providerAccountId} to ${providerId}`
+                        );
+                        const account = await db
+                            .update(accounts)
+                            .set({ providerAccountId: providerId })
+                            .where(and(eq(accounts.userId, userId), eq(accounts.accountType, accountType)))
+                            .returning()
+                            .then((res) => res[0]);
+                        return { ...account, newUser: false };
+                    }
+                    // Otherwise, will create new account link below
+                } else {
+                    // Create new user
+                    userId = await db
+                        .insert(users)
+                        .values({
+                            avatar: avatar ?? '',
+                            name: name,
+                            email: email ?? '',
+                        })
+                        .returning({ userId: users.id })
+                        .then((res) => res[0].userId);
+                }
+            } else {
+                // No email provided, create new user
+                userId = await db
+                    .insert(users)
+                    .values({
+                        avatar: avatar ?? '',
+                        name: name,
+                        email: '',
+                    })
+                    .returning({ userId: users.id })
+                    .then((res) => res[0].userId);
+            }
 
             const account = await db
                 .insert(accounts)
@@ -159,7 +208,7 @@ export class RDS {
                 .returning()
                 .then((res) => res[0]);
 
-            return { ...account, newUser: true };
+            return { ...account, newUser: isNewUser };
         }
 
         return { ...existingAccount, newUser: false };

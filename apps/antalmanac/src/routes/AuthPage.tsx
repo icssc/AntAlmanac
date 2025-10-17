@@ -29,9 +29,25 @@ export function AuthPage() {
                 return;
             }
 
-            const { sessionToken, userId, providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
+            // Retrieve PKCE parameters from sessionStorage
+            const code_verifier = sessionStorage.getItem('oidc_code_verifier') || '';
+            const state = sessionStorage.getItem('oidc_state') || '';
+
+            // Clean up sessionStorage
+            sessionStorage.removeItem('oidc_code_verifier');
+            sessionStorage.removeItem('oidc_state');
+
+            if (!code_verifier || !state) {
+                console.error('Missing PKCE parameters');
+                window.location.href = '/';
+                return;
+            }
+
+            const { sessionToken, userId, providerId, newUser } = await trpc.userData.handleOidcCallback.mutate({
                 code: code,
                 token: '',
+                code_verifier,
+                state,
             });
 
             const fromLoading = getLocalStorageFromLoading() ?? '';

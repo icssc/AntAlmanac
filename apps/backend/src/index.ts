@@ -4,7 +4,7 @@ import type { CorsOptions } from 'cors';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import AppRouter from './routers';
 import createContext from './context';
-import { backendEnvSchema } from "./env";
+import { backendEnvSchema } from './env';
 
 const corsOptions: CorsOptions = {
     origin: ['https://antalmanac.com', 'https://www.antalmanac.com', 'https://icssc-projects.github.io/AntAlmanac'],
@@ -21,8 +21,12 @@ function getAndCheckEnv() {
         console.error('ANTEATER_API_KEY is not set');
     }
 
-    if (!env.GOOGLE_CLIENT_SECRET) {
+    if (!env.MAPBOX_ACCESS_TOKEN) {
         console.error('MAPBOX_ACCESS_TOKEN is not set');
+    }
+
+    if (!env.OIDC_ISSUER_URL) {
+        console.error('OIDC_ISSUER_URL is not set');
     }
 
     return env;
@@ -46,16 +50,18 @@ export async function start(corsEnabled = false) {
     app.use('/mapbox/tiles/*', async (req, res) => {
         const searchParams = new URLSearchParams(req.query as any);
         searchParams.set('access_token', env.MAPBOX_ACCESS_TOKEN);
-        const url = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/tiles/${(req.params as any)[0]}?${searchParams.toString()}`;
+        const url = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/tiles/${
+            (req.params as any)[0]
+        }?${searchParams.toString()}`;
         const buffer = await fetch(url).then((res) => res.arrayBuffer());
-        res.type('image/png')
-        res.send(Buffer.from(buffer))
+        res.type('image/png');
+        res.send(Buffer.from(buffer));
         // // res.header('Content-Security-Policy', "img-src 'self'"); // https://stackoverflow.com/questions/56386307/loading-of-a-resource-blocked-by-content-security-policy
         // // res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
         // res.type('image/png')
         // res.send(result)
     });
-    
+
     app.use(
         '/trpc',
         createExpressMiddleware({
