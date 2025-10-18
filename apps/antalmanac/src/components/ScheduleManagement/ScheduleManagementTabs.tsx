@@ -57,6 +57,7 @@ export function ScheduleManagementTabs() {
             label: 'Added',
             href: '/added',
             icon: hasAsync ? (
+                // when have async, creates a flashing red animation
                 <Box
                     sx={{
                         position: 'relative',
@@ -69,7 +70,7 @@ export function ScheduleManagementTabs() {
                             width: '2rem',
                             height: '2rem',
                             borderRadius: '50%',
-                            backgroundColor: 'orange',
+                            backgroundColor: 'red',
                             zIndex: -1,
                             animation: 'pulse 2s infinite',
                             '@keyframes pulse': {
@@ -80,7 +81,7 @@ export function ScheduleManagementTabs() {
                         },
                     }}
                 >
-                    <FormatListBulleted sx={{ color: '#00AAAA' }} />
+                    <FormatListBulleted />
                 </Box>
             ) : (
                 <FormatListBulleted />
@@ -99,12 +100,9 @@ export function ScheduleManagementTabs() {
         const updateAsync = () => {
             let hasAsyncCourse = false;
             const courses = store.getAddedCourses();
-            console.log('in the fuction');
-            console.log(courses);
 
             courses.forEach((course) => {
                 if (course.section.meetings[0].timeIsTBA) {
-                    console.log("WE've FOUND ONE");
                     hasAsyncCourse = true;
                 }
             });
