@@ -363,10 +363,14 @@ const cacheSchedule = () => {
 
 export const loginUser = async () => {
     try {
-        const authUrl = await trpc.userData.getGoogleAuthUrl.query();
-        if (authUrl) {
+        const response = await trpc.userData.getOidcAuthUrl.query();
+        if (response?.url) {
+            // Store PKCE parameters in sessionStorage for the callback
+            sessionStorage.setItem('oidc_code_verifier', response.code_verifier);
+            sessionStorage.setItem('oidc_state', response.state);
+
             cacheSchedule();
-            window.location.href = authUrl;
+            window.location.href = response.url;
         }
     } catch (error) {
         console.error('Error during login initiation', error);
