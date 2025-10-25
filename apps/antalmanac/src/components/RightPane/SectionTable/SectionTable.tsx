@@ -199,6 +199,7 @@ function SectionTable(props: SectionTableProps) {
                                         sx={{
                                             width: width,
                                             padding: 0,
+                                            overflow: 'hidden',
                                         }}
                                     >
                                         {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} formattedTime={formattedTime}/> : label}
