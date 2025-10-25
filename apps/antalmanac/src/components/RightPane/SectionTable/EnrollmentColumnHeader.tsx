@@ -13,7 +13,7 @@ export function EnrollmentColumnHeader(props : EnrollmentColumnHeaderProps) {
     return (
         <Box display='flex'>
             {!isMobile && props.formattedTime && (
-                <Tooltip title={<Typography> Last updated at {props.formattedTime}</Typography>}>
+                <Tooltip title={<Typography fontSize="small"> Last updated at {props.formattedTime}</Typography>}>
                     <AccessTimeFilled fontSize="small"/>
                 </Tooltip>
             )}
