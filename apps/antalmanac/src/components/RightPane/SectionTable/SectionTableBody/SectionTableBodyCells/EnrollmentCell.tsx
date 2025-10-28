@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Tooltip } from '@mui/material';
 import { WebsocSectionEnrollment } from '@packages/antalmanac-types';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
@@ -40,7 +40,9 @@ export const EnrollmentCell = ({
                         WL: {numOnWaitlist} / {numWaitlistCap}
                     </Box>
                 )}
-                {numNewOnlyReserved !== '' && <Box>NOR: {numNewOnlyReserved}</Box>}
+                <Tooltip title="New-Only Reserved">
+                    <Box component="span">NOR: {numNewOnlyReserved}</Box>
+                </Tooltip>
             </Box>
         </TableBodyCellContainer>
     );

@@ -1,8 +1,9 @@
-import { Help } from '@mui/icons-material';
+import { AccessTimeFilled } from '@mui/icons-material';
 import { Box, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 
 interface EnrollmentColumnHeaderProps {
     label: string;
+    formattedTime: string | null;
 }
 
 export function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
@@ -11,22 +12,12 @@ export function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
 
     return (
         <Box display="flex">
-            {props.label}
-            {!isMobile && (
-                <Tooltip
-                    title={
-                        <Typography>
-                            Enrolled/Capacity
-                            <br />
-                            Waitlist/Capacity
-                            <br />
-                            New-Only Reserved
-                        </Typography>
-                    }
-                >
-                    <Help fontSize="small" />
+            {!isMobile && props.formattedTime && (
+                <Tooltip title={<Typography> Last updated at {props.formattedTime}</Typography>}>
+                    <AccessTimeFilled fontSize="small"/>
                 </Tooltip>
             )}
+            {props.label} 
         </Box>
     );
 }
