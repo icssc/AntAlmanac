@@ -40,9 +40,11 @@ export const EnrollmentCell = ({
                         WL: {numOnWaitlist} / {numWaitlistCap}
                     </Box>
                 )}
-                <Tooltip title="New-Only Reserved">
-                    <Box component="span">NOR: {numNewOnlyReserved}</Box>
-                </Tooltip>
+                {numNewOnlyReserved && (
+                    <Tooltip title="New-Only Reserved">
+                        <Box component="span">NOR: {numNewOnlyReserved}</Box>
+                    </Tooltip>
+                )}
             </Box>
         </TableBodyCellContainer>
     );

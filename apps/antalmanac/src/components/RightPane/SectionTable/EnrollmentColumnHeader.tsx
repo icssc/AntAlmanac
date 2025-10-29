@@ -11,13 +11,13 @@ export function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     return (
-        <Box display="flex" alignItems="center" gap={0.5}>
+        <Box display="flex" alignItems="center">
+            {props.label} 
             {!isMobile && props.formattedTime && (
                 <Tooltip title={<Typography fontSize={'small'}> Last updated at {props.formattedTime}</Typography>}>
                     <AccessTimeFilled fontSize='small'/>
                 </Tooltip>
             )}
-            {props.label} 
         </Box>
     );
 }

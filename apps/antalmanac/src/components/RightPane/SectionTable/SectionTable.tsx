@@ -95,7 +95,7 @@ function SectionTable(props: SectionTableProps) {
     /**
      * Limit table width to force side scrolling.
      */
-    const width = 780;
+    const width = 920;
     const tableMinWidth = useMemo(() => {
         const numActiveColumns = activeColumns.length;
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
