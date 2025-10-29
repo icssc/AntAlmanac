@@ -49,7 +49,7 @@ function getCourses() {
                 needleCourse.courseTitle === course.courseTitle
         );
 
-        const sectionUpdatedAt = (course.section as any)?.updatedAt ?? null;
+        const sectionUpdatedAt = course.section?.updatedAt ?? null;
 
         if (formattedCourse) {
             formattedCourse.sections.push({

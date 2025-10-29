@@ -81,14 +81,15 @@ function SectionTable(props: SectionTableProps) {
     }, [courseDetails.deptCode, courseDetails.courseNumber]);
 
     const formattedTime = useMemo(() => {
-        const raw = courseDetails.updatedAt ?? '';
-        const parsed = Date.parse(raw);
-        if (isNaN(parsed)) return null;
-        return new Date(parsed).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: !isMilitaryTime,
-        });
+        if (!courseDetails.updatedAt) return null;
+        const date = new Date(courseDetails.updatedAt);
+        return isNaN(date.getTime())
+            ? null
+            : date.toLocaleTimeString(undefined, {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: !isMilitaryTime,
+            });
     }, [courseDetails.updatedAt, isMilitaryTime]);
 
     /**
@@ -198,7 +199,6 @@ function SectionTable(props: SectionTableProps) {
                                         sx={{
                                             width: width,
                                             padding: 0,
-                                            overflow: 'hidden',
                                         }}
                                     >
                                         {label === 'Enrollment' && formattedTime ? <EnrollmentColumnHeader label={label} formattedTime={formattedTime}/> : label}
