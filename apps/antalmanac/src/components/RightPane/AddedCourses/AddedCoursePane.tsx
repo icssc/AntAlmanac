@@ -49,10 +49,17 @@ function getCourses() {
                 needleCourse.courseTitle === course.courseTitle
         );
 
+        const sectionUpdatedAt = (course.section as any)?.updatedAt ?? null;
+        const courseUpdatedAt = (course as any)?.updatedAt ?? null;
+
         if (formattedCourse) {
             formattedCourse.sections.push({
                 ...course.section,
             });
+            formattedCourse.updatedAt =
+                Date.parse(sectionUpdatedAt) > Date.parse(formattedCourse.updatedAt ?? '')
+                ? sectionUpdatedAt
+                : formattedCourse.updatedAt;
         } else {
             formattedCourse = {
                 term: course.term,
@@ -66,7 +73,7 @@ function getCourses() {
                         ...course.section,
                     },
                 ],
-                updatedAt: null,
+                updatedAt: courseUpdatedAt ?? sectionUpdatedAt ?? null,
             };
             formattedCourses.push(formattedCourse);
         }
@@ -385,7 +392,7 @@ export function AddedCoursePane() {
             setSkeletonMode(AppStore.getSkeletonMode());
         };
 
-        console.log('Opened added ourse');
+        console.log('Opened added course');
 
         logAnalytics(postHog, {
             category: analyticsEnum.addedClasses,

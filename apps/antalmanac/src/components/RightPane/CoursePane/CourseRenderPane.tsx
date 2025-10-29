@@ -146,7 +146,6 @@ const SectionTableWrapped = (
                 allowHighlight={true}
                 scheduleNames={scheduleNames}
                 analyticsCategory={analyticsEnum.classSearch}
-                updatedAt={course.updatedAt ?? undefined}
             />
         );
     }
