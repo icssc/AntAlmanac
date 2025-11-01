@@ -17,7 +17,6 @@ import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 function MobileHome() {
     return (
         <Stack component="main" height="100dvh">
-            <Header />
             <ScheduleManagement />
         </Stack>
     );
@@ -51,8 +50,6 @@ function DesktopHome() {
     return (
         <>
             <Stack height="100dvh">
-                <Header />
-
                 <Split
                     sizes={[45, 55]}
                     minSize={400}
@@ -94,6 +91,7 @@ export default function Home() {
             <PatchNotes />
             <InstallPWABanner />
 
+            <Header />
             {isMobileScreen ? <MobileHome /> : <DesktopHome />}
 
             <NotificationSnackbar />
