@@ -535,9 +535,6 @@ export class Schedules {
         this.addUndoState();
 
         try {
-            this.schedules.length = 0;
-            this.currentScheduleIndex = saveState.scheduleIndex;
-
             // Get a dictionary of all unique courses
             const courseDict: { [key: string]: Set<string> } = {};
             for (const schedule of saveState.schedules) {
@@ -560,6 +557,9 @@ export class Schedules {
             });
 
             await Promise.all(websocRequests);
+
+            this.schedules.length = 0;
+            this.currentScheduleIndex = saveState.scheduleIndex;
 
             // Map course info to courses and transform shortened schedule to normal schedule
             for (const shortCourseSchedule of saveState.schedules) {
