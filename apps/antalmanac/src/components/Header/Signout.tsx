@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
 
-export function Login() {
+export function Signout() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<null | User>(null);
     const navigate = useNavigate();
@@ -43,9 +43,6 @@ export function Login() {
         }
     }, [handleAuthChange, sessionIsValid]);
 
-    if (!sessionIsValid) {
-        return;
-    }
     return (
         <div id="load-save-container">
             <IconButton
