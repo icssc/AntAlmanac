@@ -4,12 +4,12 @@
 
 AntAlmanac is a schedule planner website for classes at UC Irvine. These are some of its features:
 
-- ___Search bar___ to easily find classes by department (e.g COMPSCI), course code (e.g. ICS 31), and keywords (e.g. artificial intelligence).
+- ___Search bar___ to easily find classes by department (e.g COMPSCI), section code (e.g. ICS 31), and keywords (e.g. artificial intelligence).
 - ___Integrated calendar___ to preview class times.
 - ___Quick links___ to professor reviews, prerequisites, grade distributions, and past enrollment data.
 - ___Interactive map___ with markers for your class locations.
 
-![project screenshot](https://user-images.githubusercontent.com/48658337/177026240-be0f79b4-e909-486b-aa52-c1a435983781.png)
+![project screenshot](https://github.com/user-attachments/assets/e1f8d3ce-8188-41ab-817a-850e51e6bd1a)
 
 ## Technology
 Our website is a single page React application hosted on Github Pages.
@@ -54,8 +54,10 @@ Since then, the project has continued to evolve and grow with successive generat
 | 2021 - 2022    | @ChaseC99            |
 | 2022 - 2024    | @EricPedley          |
 | 2023 - 2024    | @ap0nia              |
-| 2024 - Present | @MinhxNguyen7        |
-| 2024 - Present | @adcockdalton        |
+| 2024 - 2025    | @MinhxNguyen7        |
+| 2024 - 2025    | @adcockdalton        |
+| 2025 - Present | @alexespejo          |
+
 
 
 # Contributing
@@ -95,7 +97,6 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
    If none of those work for any reason, you can defer to your Operating System's
    package manager or [the downloads from the official website](https://nodejs.org/en/download).
-   We will be using the latest LTS version, 20.10.0, lts/iron.
 
 2. Install `pnpm`. This is our package manager of choice for this project.
    It's responsible for installing, uninstalling, and keeping track of the app's dependencies.
@@ -110,6 +111,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
 3. Start the development server for the frontend.
   `pnpm start:aa` or `cd apps/antalmanac && pnpm dev`
+  - Note that signing in with Google does not work for local development. We are actively working on a fix.
 
 4. View the local website at http://localhost:5173.
    As you make changes to the React application, those changes will be automatically reflected on the local website.

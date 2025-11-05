@@ -17,10 +17,8 @@ import {
     setLocalStorageOnFirstSignin,
 } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
-import { useSessionStore } from '$stores/SessionStore';
 
 export function AuthPage() {
-    const { session } = useSessionStore();
     const [searchParams] = useSearchParams();
 
     const handleSearchParamsChange = useCallback(async () => {
@@ -33,7 +31,7 @@ export function AuthPage() {
 
             const { sessionToken, userId, providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
                 code: code,
-                token: session ?? '',
+                token: '',
             });
 
             const fromLoading = getLocalStorageFromLoading() ?? '';
@@ -103,7 +101,7 @@ export function AuthPage() {
         } catch (error) {
             console.error('Error during authentication', error);
         }
-    }, [searchParams, session]);
+    }, [searchParams]);
 
     useEffect(() => {
         handleSearchParamsChange();

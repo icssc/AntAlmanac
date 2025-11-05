@@ -23,6 +23,7 @@ import type {
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
+import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 
 class AppStore extends EventEmitter {
     schedule: Schedules;
@@ -348,13 +349,18 @@ class AppStore extends EventEmitter {
     private async loadScheduleFromSaveState(savedSchedule: ScheduleSaveState) {
         try {
             await this.schedule.fromScheduleSaveState(savedSchedule);
+            return true;
         } catch {
             return false;
         }
     }
 
     async loadSchedule(savedSchedule: ScheduleSaveState) {
-        await this.loadScheduleFromSaveState(savedSchedule);
+        const hasDataChanged = JSON.stringify(this.schedule.getScheduleAsSaveState()) === JSON.stringify(savedSchedule);
+        const loadSuccess = await this.loadScheduleFromSaveState(savedSchedule);
+        if (!loadSuccess) {
+            return false;
+        }
         this.unsavedChanges = false;
 
         /**
@@ -371,6 +377,12 @@ class AppStore extends EventEmitter {
         }
 
         this.schedule.clearPreviousStates();
+
+        if (hasDataChanged) {
+            deleteTempSaveData();
+        } else {
+            loadTempSaveData(savedSchedule.schedules.length);
+        }
 
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
@@ -399,6 +411,7 @@ class AppStore extends EventEmitter {
 
     changeCurrentSchedule(newScheduleIndex: number) {
         this.schedule.setCurrentScheduleIndex(newScheduleIndex);
+        setTempSaveData({ currentScheduleIndex: newScheduleIndex });
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNotesChange');
     }

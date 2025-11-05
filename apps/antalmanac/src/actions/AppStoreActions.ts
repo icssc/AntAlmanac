@@ -19,6 +19,7 @@ import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
     onError: (scheduleName: string) => unknown;
@@ -123,6 +124,7 @@ export const saveSchedule = async (providerId: string, rememberMe: boolean, post
                         `Schedule saved under username "${providerId}". Don't forget to sign up for classes on WebReg!`
                     );
                 }
+                deleteTempSaveData();
                 logAnalytics(postHog, {
                     category: analyticsEnum.auth,
                     action: analyticsEnum.auth.actions.SAVE_SCHEDULE,
@@ -164,6 +166,7 @@ export async function autoSaveSchedule(providerID: string, postHog?: PostHog) {
                 userData: scheduleSaveState,
             },
         });
+        deleteTempSaveData();
         AppStore.saveSchedule();
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
