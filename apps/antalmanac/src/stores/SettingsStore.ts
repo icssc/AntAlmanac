@@ -54,7 +54,9 @@ export const useThemeStore = create<ThemeStore>((set) => {
             logAnalytics(postHog, {
                 category: analyticsEnum.nav,
                 action: analyticsEnum.nav.actions.CHANGE_THEME,
-                label: themeSetting,
+                customProps: {
+                    themeSetting,
+                },
             });
         },
     };

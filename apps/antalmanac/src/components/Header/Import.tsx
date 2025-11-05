@@ -185,7 +185,9 @@ export function Import() {
                     importSource === ImportSource.STUDY_LIST_IMPORT
                         ? analyticsEnum.nav.actions.IMPORT_STUDY_LIST
                         : analyticsEnum.nav.actions.IMPORT_ZOTCOURSE,
-                value: sectionsAdded / (sectionCodes.length || 1),
+                customProps: {
+                    percentImported: sectionsAdded / (sectionCodes.length || 1),
+                },
             });
 
             if (sectionsAdded === sectionCodes.length) {

@@ -19,7 +19,7 @@ export function Signout() {
     const handleLogout = async () => {
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
-            action: analyticsEnum.auth.actions.LOG_OUT,
+            action: analyticsEnum.auth.actions.SIGN_OUT,
         });
         clearSession();
         navigate('/');

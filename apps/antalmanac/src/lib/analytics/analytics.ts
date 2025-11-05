@@ -38,14 +38,14 @@ const analyticsEnum: AnalyticsEnum = {
     auth: {
         title: 'Auth',
         actions: {
-            LOG_IN: 'Log In',
-            LOG_IN_FAIL: 'Log In Failure',
-            LOG_OUT: 'Log Out',
+            SIGN_IN: 'Sign In',
+            SIGN_IN_FAIL: 'Sign In Failure',
+            SIGN_OUT: 'Sign Out',
             LOAD_SCHEDULE: 'Load Schedule',
             LOAD_SCHEDULE_FAIL: 'Load Schedule Failure',
-            LOAD_SCHEDULE_LEGACY: 'Load Schedule Legacy', // Value is 1 if the user checked "remember me", 0 otherwise
+            LOAD_SCHEDULE_LEGACY: 'Load Schedule Legacy',
             LOAD_SCHEDULE_LEGACY_FAIL: 'Load Schedule Legacy Failure',
-            SAVE_SCHEDULE: 'Save Schedule', // Value is 1 if autosave is turned on, 0 otherwise
+            SAVE_SCHEDULE: 'Save Schedule',
             SAVE_SCHEDULE_FAIL: 'Save Schedule Failure',
         },
     },
@@ -56,9 +56,9 @@ const analyticsEnum: AnalyticsEnum = {
             CLICK_ABOUT: 'Click About Page',
             CLICK_SAVE: 'Click Save Button',
             CLICK_LOAD: 'Click Load Button',
-            CHANGE_THEME: 'Change Theme', // Label is the theme changed to
-            IMPORT_STUDY_LIST: 'Import Study List', // Value is the percentage of courses successfully imported (decimal value)
-            IMPORT_ZOTCOURSE: 'Import Zotcourse Schedule', // Value is the percentage of courses successfully imported (decimal value)
+            CHANGE_THEME: 'Change Theme',
+            IMPORT_STUDY_LIST: 'Import Study List',
+            IMPORT_ZOTCOURSE: 'Import Zotcourse Schedule',
             IMPORT_LEGACY: 'Import From Legacy Username',
         },
     },
@@ -67,7 +67,7 @@ const analyticsEnum: AnalyticsEnum = {
         actions: {
             MANUAL_SEARCH: 'Manual Search',
             FUZZY_SEARCH: 'Fuzzy Search',
-            ADD_COURSE: 'Add Course', //Label is department, value is 1 if lower div, else 0
+            ADD_COURSE: 'Add Course',
             CLICK_INFO: 'Click "Info"',
             CLICK_PREREQUISITES: 'Click "Prerequisites"',
             CLICK_GRADES: 'Click "Grades"',
@@ -102,21 +102,25 @@ const analyticsEnum: AnalyticsEnum = {
 
 export default analyticsEnum;
 
+// There is no explicit type for what PostHog accepts as a property value
+// A list of accepted types: https://posthog.com/docs/data/events#event-properties
+export type PostHogPropertyValue = string | number | boolean | Date | undefined | PostHogPropertyValue[];
+
 interface AnalyticsProps {
     category: AnalyticsCategory;
     action: string;
-    label?: string;
-    value?: number;
+    error?: string;
+    customProps?: Record<string, PostHogPropertyValue>;
 }
 
 /**
  * Logs event to PostHog instance
  */
-export function logAnalytics(postHog: PostHog | undefined, { category, action, label, value }: AnalyticsProps) {
+export function logAnalytics(postHog: PostHog | undefined, { category, action, error, customProps }: AnalyticsProps) {
     postHog?.capture(action, {
         category: category.title,
-        label,
-        value,
+        error,
+        ...customProps,
     });
 }
 

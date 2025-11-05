@@ -11,7 +11,7 @@ import { TRPCError } from '@trpc/server';
 import { SnackbarOrigin, VariantType } from 'notistack';
 import { PostHog } from 'posthog-js/react';
 
-import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
@@ -36,8 +36,10 @@ export const addCourse = (
     logAnalytics(postHog, {
         category: analyticsEnum.classSearch,
         action: analyticsEnum.classSearch.actions.ADD_COURSE,
-        label: courseDetails.deptCode,
-        value: courseNumAsDecimal(courseDetails.courseNumber),
+        customProps: {
+            courseDept: courseDetails.deptCode,
+            courseNumber: courseDetails.courseNumber,
+        },
     });
     const terms = AppStore.termsInSchedule(term);
 
@@ -128,7 +130,9 @@ export const saveSchedule = async (providerId: string, rememberMe: boolean, post
                 logAnalytics(postHog, {
                     category: analyticsEnum.auth,
                     action: analyticsEnum.auth.actions.SAVE_SCHEDULE,
-                    value: 0,
+                    customProps: {
+                        autoSave: false,
+                    },
                 });
                 AppStore.saveSchedule();
             } catch (e) {
@@ -144,8 +148,10 @@ export const saveSchedule = async (providerId: string, rememberMe: boolean, post
                 logAnalytics(postHog, {
                     category: analyticsEnum.auth,
                     action: analyticsEnum.auth.actions.SAVE_SCHEDULE_FAIL,
-                    label: getErrorMessage(e),
-                    value: 0,
+                    error: getErrorMessage(e),
+                    customProps: {
+                        autoSave: false,
+                    },
                 });
             }
         }
@@ -171,8 +177,10 @@ export async function autoSaveSchedule(providerID: string, postHog?: PostHog) {
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
             action: analyticsEnum.auth.actions.SAVE_SCHEDULE,
-            label: providerID,
-            value: 1,
+            customProps: {
+                providerID,
+                autoSave: true,
+            },
         });
     } catch (e) {
         if (e instanceof TRPCError) {
@@ -183,8 +191,10 @@ export async function autoSaveSchedule(providerID: string, postHog?: PostHog) {
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
             action: analyticsEnum.auth.actions.SAVE_SCHEDULE_LEGACY,
-            label: getErrorMessage(e),
-            value: 1,
+            error: getErrorMessage(e),
+            customProps: {
+                autoSave: true,
+            },
         });
     }
 }
@@ -318,7 +328,9 @@ export const loadSchedule = async (
                         logAnalytics(postHog, {
                             category: analyticsEnum.auth,
                             action: analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY,
-                            value: rememberMe ? 1 : 0,
+                            customProps: {
+                                rememberMe,
+                            },
                         });
                     }
                     openSnackbar('success', `Schedule loaded.`);
@@ -328,14 +340,20 @@ export const loadSchedule = async (
                         logAnalytics(postHog, {
                             category: analyticsEnum.auth,
                             action: analyticsEnum.auth.actions.LOAD_SCHEDULE_FAIL,
-                            label: 'Network error',
+                            error: 'Network error',
+                            customProps: {
+                                providerId,
+                            },
                         });
                     } else {
                         logAnalytics(postHog, {
                             category: analyticsEnum.auth,
                             action: analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY_FAIL,
-                            label: 'Network error',
-                            value: rememberMe ? 1 : 0,
+                            error: 'Network error',
+                            customProps: {
+                                providerId,
+                                rememberMe,
+                            },
                         });
                     }
                     openSnackbar(
@@ -351,8 +369,8 @@ export const loadSchedule = async (
                         accountType === 'GOOGLE'
                             ? analyticsEnum.auth.actions.LOAD_SCHEDULE_FAIL
                             : analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY_FAIL,
-                    label: getErrorMessage(e),
-                    value: accountType === 'GOOGLE' ? undefined : rememberMe ? 1 : 0,
+                    error: getErrorMessage(e),
+                    ...(accountType !== 'GOOGLE' && { customProps: { rememberMe } }),
                 });
                 if (e instanceof TRPCClientError) {
                     if (e.data.httpStatus === 404) {
@@ -412,7 +430,7 @@ export const loadScheduleWithSessionToken = async (postHog?: PostHog) => {
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
             action: analyticsEnum.auth.actions.LOAD_SCHEDULE_FAIL,
-            label: analyticsErrorMessage,
+            error: analyticsErrorMessage,
         });
         return false;
     } catch (e) {
@@ -420,7 +438,7 @@ export const loadScheduleWithSessionToken = async (postHog?: PostHog) => {
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
             action: analyticsEnum.auth.actions.LOAD_SCHEDULE_FAIL,
-            label: getErrorMessage(e),
+            error: getErrorMessage(e),
         });
         openSnackbar('error', `Failed to load schedules. If this continues to happen, please submit a feedback form.`);
         return false;
@@ -440,7 +458,7 @@ export const loginUser = async (postHog?: PostHog) => {
         if (authUrl) {
             logAnalytics(postHog, {
                 category: analyticsEnum.auth,
-                action: analyticsEnum.auth.actions.LOG_IN,
+                action: analyticsEnum.auth.actions.SIGN_IN,
             });
             cacheSchedule();
             window.location.href = authUrl;
@@ -448,8 +466,8 @@ export const loginUser = async (postHog?: PostHog) => {
     } catch (error) {
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
-            action: analyticsEnum.auth.actions.LOG_IN_FAIL,
-            label: getErrorMessage(error),
+            action: analyticsEnum.auth.actions.SIGN_IN_FAIL,
+            error: getErrorMessage(error),
         });
         console.error('Error during login initiation', error);
         openSnackbar('error', 'Error during login initiation. Please Try Again.');
