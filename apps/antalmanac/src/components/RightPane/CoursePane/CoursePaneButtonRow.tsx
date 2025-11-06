@@ -160,7 +160,6 @@ export function CoursePaneButtonRow(props: CoursePaneButtonRowProps) {
         <Box
             sx={{
                 display: props.showSearch ? 'block' : 'none',
-                width: '100%',
                 zIndex: 3,
                 position: 'absolute',
             }}
