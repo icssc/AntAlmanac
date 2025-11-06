@@ -184,14 +184,14 @@ function generateCloseColor(originalColor: string, usedColors: Set<string>, vari
     let iterations = 0;
     while (Math.abs(delta) <= 1 && iterations < MAX_ITERATIONS) {
         const lighterHSLColor = { ...originalHSLColor, l: originalHSLColor.l + delta };
-        const darkerColorHSL = { ...originalHSLColor, l: originalHSLColor.l - delta };
+        const darkerHSLColor = { ...originalHSLColor, l: originalHSLColor.l - delta };
 
         if (!isColorUsed(lighterHSLColor, usedHSLColors, variation) && isColorVisible(lighterHSLColor)) {
             return HSLToHex(lighterHSLColor);
         }
 
-        if (!isColorUsed(darkerColorHSL, usedHSLColors, variation) && isColorVisible(darkerColorHSL)) {
-            return HSLToHex(darkerColorHSL);
+        if (!isColorUsed(darkerHSLColor, usedHSLColors, variation) && isColorVisible(darkerHSLColor)) {
+            return HSLToHex(darkerHSLColor);
         }
 
         delta += variation;
