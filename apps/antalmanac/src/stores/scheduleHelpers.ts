@@ -102,9 +102,9 @@ function HSLToHex({ h, s, l }: HSLColor): string {
 }
 
 /**
- * Checks if an HSL color is contained in an array of colors, within a delta
+ * Checks if an HSL color has already been used, given an array of used colors and a delta.
  */
-function colorIsContained(color: HSLColor, usedColors: Iterable<HSLColor>, delta: number): boolean {
+function isColorUsed(color: HSLColor, usedColors: Iterable<HSLColor>, delta: number): boolean {
     for (const usedColor of usedColors) {
         if (
             Math.abs(usedColor.h - color.h) < delta &&
@@ -117,8 +117,21 @@ function colorIsContained(color: HSLColor, usedColors: Iterable<HSLColor>, delta
 }
 
 /**
+ * Checks if an HSL color is visible and provides enough contrast against the background.
+ *
+ * @param color HSLColor: The color to check.
+ * @param minimum_luminance number: The minimum luminance value to consider the color visible, defaults to 0.2.
+ * @param maximum_luminance number: The maximum luminance value to consider the color visible, defaults to 0.8.
+ * @returns boolean: True if the color is visible enough, false otherwise.
+ */
+function isColorVisible(color: HSLColor, minimum_luminance = 0.2, maximum_luminance = 0.8): boolean {
+    return color.l >= minimum_luminance && color.l <= maximum_luminance;
+}
+
+/**
  * Takes in a hex color and returns a hex color that is close to the original but not already used.
- * Takes changes the lightness of the color by a small amount until a color that is not already used is found.
+ * Change the luminance of the color by a small amount until a color that is not already used is found.
+ * Prefers lighter colors over darker.
  *
  * @param originalColor string: Hex color ("#RRGGBB") as a basis.
  * @param usedColors Set<string>: A set of hex colors that are already used.
@@ -128,24 +141,31 @@ function colorIsContained(color: HSLColor, usedColors: Iterable<HSLColor>, delta
  * @return Unused hex color that is close to the original color ("#RRGGBB").
  */
 function generateCloseColor(originalColor: string, usedColors: Set<string>, variation = 0.1): string {
-    const usedColorsHSL = [...usedColors].map(HexToHSL);
+    const usedHSLColors = [...usedColors].map(HexToHSL);
+    const originalHSLColor: HSLColor = HexToHSL(originalColor);
 
-    // Generate a color that is slightly different from the original color and that is not already used
-    // Keep generating until color doesn't match any of the used colors
-    let color: HSLColor = HexToHSL(originalColor);
+    const MAX_ITERATIONS = 20; // prevent infinite loop when variation <= 0
 
-    for (
-        let delta = variation;
-        colorIsContained(color, usedColorsHSL, 0.01); // Checks if color is contained in usedColorsHSL
-        delta += variation
-    ) {
-        color = {
-            ...color,
-            l: Math.round(((color.l + delta) * 100) % 100) / 100,
-        };
+    let delta = variation;
+    let iterations = 0;
+    while (Math.abs(delta) <= 1 && iterations < MAX_ITERATIONS) {
+        const lighterHSLColor = { ...originalHSLColor, l: originalHSLColor.l + delta };
+        const darkerColorHSL = { ...originalHSLColor, l: originalHSLColor.l - delta };
+
+        if (!isColorUsed(lighterHSLColor, usedHSLColors, variation) && isColorVisible(lighterHSLColor)) {
+            return HSLToHex(lighterHSLColor);
+        }
+
+        if (!isColorUsed(darkerColorHSL, usedHSLColors, variation) && isColorVisible(darkerColorHSL)) {
+            return HSLToHex(darkerColorHSL);
+        }
+
+        delta += variation;
+        iterations++;
     }
 
-    return HSLToHex(color);
+    // If no suitable color is found, fallback to original color
+    return HSLToHex(originalHSLColor);
 }
 
 export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSchedule: ScheduleCourse[]): string {
