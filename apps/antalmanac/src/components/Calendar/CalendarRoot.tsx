@@ -18,6 +18,7 @@ import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import AsyncCalendarCard from './AsyncCalendarCard';
 
 /*
  * Always start week on Saturday for finals potentially on weekends.
@@ -218,6 +219,7 @@ export const ScheduleCalendar = memo(() => {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
+            <AsyncCalendarCard />
             <CalendarToolbar
                 currentScheduleIndex={currentScheduleIndex}
                 toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
