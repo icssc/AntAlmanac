@@ -6,7 +6,7 @@ import { ZoneContextManager } from '@opentelemetry/context-zone';
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
 
 const exporter = new OTLPTraceExporter({
-  url: 'http://localhost:8081/v1/traces',
+  url: 'http://localhost:4318/v1/traces',
 });
 
 const provider = new WebTracerProvider({
