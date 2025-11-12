@@ -104,7 +104,7 @@ export default analyticsEnum;
 
 // There is no explicit type for what PostHog accepts as a property value
 // A list of accepted types: https://posthog.com/docs/data/events#event-properties
-export type PostHogPropertyValue = string | number | boolean | Date | undefined | PostHogPropertyValue[];
+export type PostHogPropertyValue = string | number | boolean | Date | PostHogPropertyValue[];
 
 interface AnalyticsProps {
     category: AnalyticsCategory;
@@ -117,11 +117,21 @@ interface AnalyticsProps {
  * Logs event to PostHog instance
  */
 export function logAnalytics(postHog: PostHog | undefined, { category, action, error, customProps }: AnalyticsProps) {
+    if (!postHog) return;
     postHog?.capture(action, {
         category: category.title,
         error,
         ...customProps,
     });
+}
+
+export function analyticsIdentifyUser(postHog: PostHog | undefined, userId?: string) {
+    if (!postHog || !userId) return;
+
+    const currentId = postHog.get_distinct_id();
+    if (currentId !== userId) {
+        postHog.identify(userId);
+    }
 }
 
 /**

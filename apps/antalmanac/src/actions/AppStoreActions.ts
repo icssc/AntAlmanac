@@ -190,9 +190,10 @@ export async function autoSaveSchedule(providerID: string, postHog?: PostHog) {
         }
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
-            action: analyticsEnum.auth.actions.SAVE_SCHEDULE_LEGACY,
+            action: analyticsEnum.auth.actions.SAVE_SCHEDULE_FAIL,
             error: getErrorMessage(e),
             customProps: {
+                providerID,
                 autoSave: true,
             },
         });
@@ -314,10 +315,6 @@ export const loadSchedule = async (
                 const userDataResponse = await trpc.userData.getUserData.query({ userId: account.userId });
                 const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
 
-                if (postHog && account.userId) {
-                    postHog.identify(account.userId);
-                }
-
                 if (await AppStore.loadSchedule(scheduleSaveState)) {
                     if (accountType === 'GOOGLE') {
                         logAnalytics(postHog, {
@@ -393,12 +390,7 @@ export const loadScheduleWithSessionToken = async (postHog?: PostHog) => {
         const userDataResponse = await trpc.userData.getUserDataWithSession.query({
             refreshToken: useSessionStore.getState().session ?? '',
         });
-        const userId = userDataResponse?.id;
         const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
-
-        if (postHog && userId) {
-            postHog.identify(userId);
-        }
 
         if (isEmptySchedule(scheduleSaveState.schedules)) {
             logAnalytics(postHog, {
@@ -456,13 +448,13 @@ export const loginUser = async (postHog?: PostHog) => {
     try {
         const authUrl = await trpc.userData.getGoogleAuthUrl.query();
         if (authUrl) {
-            logAnalytics(postHog, {
-                category: analyticsEnum.auth,
-                action: analyticsEnum.auth.actions.SIGN_IN,
-            });
             cacheSchedule();
             window.location.href = authUrl;
         }
+        logAnalytics(postHog, {
+            category: analyticsEnum.auth,
+            action: analyticsEnum.auth.actions.SIGN_IN,
+        });
     } catch (error) {
         logAnalytics(postHog, {
             category: analyticsEnum.auth,

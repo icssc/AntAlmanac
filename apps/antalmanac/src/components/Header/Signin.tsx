@@ -15,10 +15,12 @@ import {
     TextField,
     AlertColor,
 } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useEffect, useState, useCallback } from 'react';
 
 import { loadSchedule, saveSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
+import { analyticsIdentifyUser } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
@@ -201,6 +203,8 @@ export const Signin = () => {
         ALERT_MESSAGES.SCHEDULE_IMPORTED
     );
 
+    const postHog = usePostHog();
+
     const validateImportedUser = useCallback(async (userID: string) => {
         try {
             const res = await trpc.userData.getGuestAccountAndUserByName
@@ -220,11 +224,11 @@ export const Signin = () => {
     const loadScheduleAndSetLoading = useCallback(
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
-            await loadSchedule(userID, rememberMe, 'GUEST');
+            await loadSchedule(userID, rememberMe, 'GUEST', postHog);
             await validateImportedUser(userID);
             setOpenLoadingSchedule(false);
         },
-        [setOpenLoadingSchedule, validateImportedUser]
+        [setOpenLoadingSchedule, validateImportedUser, postHog]
     );
 
     const loadScheduleAndSetLoadingAuth = useCallback(
@@ -240,20 +244,21 @@ export const Signin = () => {
             if (!validSession) {
                 setOpenalert(true);
                 setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
-            } else if (sessionToken && (await loadScheduleWithSessionToken())) {
+            } else if (sessionToken && (await loadScheduleWithSessionToken(postHog))) {
+                analyticsIdentifyUser(postHog, userID);
                 updateSession(sessionToken);
             } else if (sessionToken === '' && userID && userID !== '') {
                 await validateImportedUser(userID);
-                await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
+                await loadSchedule(userID, rememberMe, 'GUEST', postHog); // fallback to guest
             }
 
             setOpenLoadingSchedule(false);
         },
-        [setOpenLoadingSchedule, updateSession, validateImportedUser]
+        [setOpenLoadingSchedule, updateSession, validateImportedUser, postHog]
     );
 
     const handleLogin = () => {
-        loginUser();
+        loginUser(postHog);
         setLocalStorageFromLoading('true');
     };
 
