@@ -1,11 +1,6 @@
-import { integer, pgEnum, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
+import { integer, boolean, pgTable, primaryKey, text, pg } from 'drizzle-orm/pg-core';
+
 import { users } from './auth/user';
-
-
-export const subscriptionTargetStatus = pgEnum(
-    'subscription_target_status',
-    ['OPEN', 'WAITLISTED']
-)
 
 export const subscriptions = pgTable(
     'subscriptions',
@@ -18,17 +13,61 @@ export const subscriptions = pgTable(
         /**
          * Section code.
          */
-        sectionCode: integer('sectionCode'),
+        sectionCode: integer('sectionCode').notNull(),
 
         /**
-         * @example "OPEN" could indicate that the user wants to be notified when this
-         * section changes from "WAITLISTED" to "OPEN".
+         * Year of subscription
+         * @example 2024, 2025, etc.
          */
-        status: subscriptionTargetStatus('status'),
+
+        year: text('year').notNull(),
+
+        /**
+         * Quarter of subscription
+         * @example Fall, Winter, Spring, Summer, etc.
+         */
+
+        quarter: text('quarter').notNull(),
+
+        /**
+         * Status since polling script last updated 
+         * @example "OPEN" | "Waitl" | "FULL" | 
+         */
+
+        lastUpdated: text('lastUpdated'),
+
+        /**
+         * Restriction codes since polling script last updated 
+         * @example "A,L" | "B" | None
+         */
+
+        lastCodes: text('lastCodes').default(""),
+
+        /**
+         * Boolean if user wants to be notified when the section is OPEN
+         */
+        openStatus: boolean('openStatus').default(false),
+
+        /**
+         * Boolean if user wants to be notified when the section is WAITLISTED
+         */
+        waitlistStatus: boolean('waitlistStatus').default(false),
+
+        /**
+         * Boolean if user wants to be notified when the section is FULL
+         */
+        fullStatus: boolean('fullStatus').default(false),
+
+          /**
+         * Boolean if user wants to be notified when the section has RESTRICTION CODE CHANGES
+         */
+        restrictionStatus: boolean('restrictionStatus').default(false),
+
+
     },
     (table) => [
         primaryKey({
-            columns: [table.userId, table.sectionCode],
+            columns: [table.userId, table.sectionCode, table.year, table.quarter],
         }),
     ]
 );
