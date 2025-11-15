@@ -8,75 +8,76 @@ interface TbaSection {
   sectionCode: string;
 }
 
-const COLLAPSE_KEY = (idx: number | null | undefined) =>
-  `aa:tbaSnack:collapsed:${idx ?? 'none'}`;
+function getCollapseKey(scheduleIndex: number | null | undefined): string {
+  return `aa:tbaSnack:collapsed:${scheduleIndex ?? 'none'}`;
+}
 
 export default function AsyncCalendarCard() {
-  const [rev, setRev] = useState(0);
+  const [updateTrigger, setUpdateTrigger] = useState(0);
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const bump = () => setRev(v => v + 1);
-    AppStore.on('addedCoursesChange', bump);
-    AppStore.on('removedCoursesChange', bump);
-    AppStore.on('clearSchedule', bump);
-    AppStore.on('currentScheduleIndexChange', bump);
-    return () => {
-      AppStore.off('addedCoursesChange', bump);
-      AppStore.off('removedCoursesChange', bump);
-      AppStore.off('clearSchedule', bump);
-      AppStore.off('currentScheduleIndexChange', bump);
-    };
-  }, []);
 
   const scheduleIndex = AppStore.getCurrentScheduleIndex();
 
   useEffect(() => {
-    const wasCollapsed = localStorage.getItem(COLLAPSE_KEY(scheduleIndex)) === '1';
-    setCollapsed(wasCollapsed);
+    const handleUpdate = () => setUpdateTrigger((prev) => prev + 1);
+    AppStore.on('addedCoursesChange', handleUpdate);
+    AppStore.on('removedCoursesChange', handleUpdate);
+    AppStore.on('clearSchedule', handleUpdate);
+    AppStore.on('currentScheduleIndexChange', handleUpdate);
+    return () => {
+      AppStore.off('addedCoursesChange', handleUpdate);
+      AppStore.off('removedCoursesChange', handleUpdate);
+      AppStore.off('clearSchedule', handleUpdate);
+      AppStore.off('currentScheduleIndexChange', handleUpdate);
+    };
+  }, []);
+
+  useEffect(() => {
+    const storedValue = localStorage.getItem(getCollapseKey(scheduleIndex));
+    setCollapsed(storedValue === '1');
   }, [scheduleIndex]);
 
   const tbaSections: TbaSection[] = useMemo(() => {
     if (scheduleIndex == null) return [];
 
     const courses = AppStore.schedule.getCurrentCourses();
-    const flagged: TbaSection[] = [];
+    const sectionsWithTBA: TbaSection[] = [];
 
     for (const course of courses) {
       const section = course.section;
       if (!section) continue;
       const meetings = section.meetings ?? [];
       if (meetings.some((m) => m.timeIsTBA)) {
-        flagged.push({
+        sectionsWithTBA.push({
           courseTitle: course.courseTitle,
           sectionCode: section.sectionCode,
         });
       }
     }
-    return flagged;
-  }, [rev, scheduleIndex]);
+    return sectionsWithTBA;
+  }, [updateTrigger, scheduleIndex]);
 
   useEffect(() => {
     setVisible(tbaSections.length > 0);
   }, [tbaSections]);
-  
+
   useEffect(() => {
     if (visible) {
       setCollapsed(false);
-      localStorage.setItem(COLLAPSE_KEY(scheduleIndex), '0');
+      localStorage.setItem(getCollapseKey(scheduleIndex), '0');
     }
   }, [visible, scheduleIndex]);
 
-  if (!visible) return null;
-
   const handleToggleCollapse = () => {
-    setCollapsed(prev => {
-      const next = !prev;
-      localStorage.setItem(COLLAPSE_KEY(scheduleIndex), next ? '1' : '0');
-      return next;
+    setCollapsed((prev) => {
+      const newValue = !prev;
+      localStorage.setItem(getCollapseKey(scheduleIndex), newValue ? '1' : '0');
+      return newValue;
     });
   };
+
+  if (!visible) return null;
 
   return (
     <Box
@@ -110,11 +111,11 @@ export default function AsyncCalendarCard() {
         </AlertTitle>
 
         <Collapse in={!collapsed} timeout="auto" unmountOnExit>
-          <List dense disablePadding sx={{mt: 0.25, py: 0.25, whiteSpace: 'nowrap'}}>
-            {tbaSections.map((c, idx) => (
-              <ListItem key={`${c.courseTitle}-${c.sectionCode}-${idx}`} sx={{ py: 0.25 }}>
+          <List dense disablePadding sx={{ mt: 0.25, py: 0.25 }}>
+            {tbaSections.map((section, idx) => (
+              <ListItem key={`${section.courseTitle}-${section.sectionCode}-${idx}`} sx={{ py: 0.25 }}>
                 <ListItemText
-                  primary={`${c.courseTitle} — ${c.sectionCode}`}
+                  primary={`${section.courseTitle} — ${section.sectionCode}`}
                   primaryTypographyProps={{ variant: 'body2' }}
                   sx={{ my: 0 }}
                 />
