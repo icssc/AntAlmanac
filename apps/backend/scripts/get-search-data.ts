@@ -22,6 +22,18 @@ const ALIASES: Record<string, string | undefined> = {
 async function main() {
     const apiKey = process.env.ANTEATER_API_KEY;
     if (!apiKey) throw new Error('ANTEATER_API_KEY is required');
+
+    // Check if cache already exists
+    const cacheDir = join(__dirname, '../src/generated/');
+    try {
+        const fs = await import('node:fs/promises');
+        await fs.access(join(cacheDir, 'searchData.ts'));
+        console.log('Cache already exists, skipping generation.');
+        return;
+    } catch {
+        // Cache doesn't exist, continue with generation
+    }
+
     console.log('Generating cache for fuzzy search.');
     console.log('Fetching courses from Anteater API...');
     const headers = { Authorization: `Bearer ${apiKey}` };
@@ -102,7 +114,9 @@ async function main() {
             }
             const parsedSectionData = parseSectionCodes(res);
             console.log(
-                `Fetched ${Object.keys(parsedSectionData).length} section codes for ${term.shortName} from Anteater API.`
+                `Fetched ${Object.keys(parsedSectionData).length} section codes for ${
+                    term.shortName
+                } from Anteater API.`
             );
 
             const fileName = join(__dirname, `../src/generated/terms/${parsedTerm}.json`);
