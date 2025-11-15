@@ -1,4 +1,4 @@
-import { List, ListItem, ListItemText, Stack,  Collapse, IconButton, AlertTitle, Snackbar, Alert } from '@mui/material';
+import { List, ListItem, ListItemText, Collapse, IconButton, Alert, AlertTitle, Box } from '@mui/material';
 import { ExpandMore, InfoOutlined } from '@mui/icons-material';
 import { useEffect, useMemo, useState } from 'react';
 import AppStore from '$stores/AppStore';
@@ -13,10 +13,9 @@ const COLLAPSE_KEY = (idx: number | null | undefined) =>
 
 export default function AsyncCalendarCard() {
   const [rev, setRev] = useState(0);
-  const [open, setOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [visible, setVisible] = useState(false);
 
-  // Re-renders
   useEffect(() => {
     const bump = () => setRev(v => v + 1);
     AppStore.on('addedCoursesChange', bump);
@@ -33,17 +32,17 @@ export default function AsyncCalendarCard() {
 
   const scheduleIndex = AppStore.getCurrentScheduleIndex();
 
-  // Restore per-schedule collapsed preference
   useEffect(() => {
     const wasCollapsed = localStorage.getItem(COLLAPSE_KEY(scheduleIndex)) === '1';
     setCollapsed(wasCollapsed);
   }, [scheduleIndex]);
 
-  // Compute TBA entries for the current schedule context
   const tbaSections: TbaSection[] = useMemo(() => {
     if (scheduleIndex == null) return [];
+
     const courses = AppStore.schedule.getCurrentCourses();
     const flagged: TbaSection[] = [];
+
     for (const course of courses) {
       const section = course.section;
       if (!section) continue;
@@ -58,12 +57,18 @@ export default function AsyncCalendarCard() {
     return flagged;
   }, [rev, scheduleIndex]);
 
-  // Open/close behavior driven by TBA presence + dismissal flag
   useEffect(() => {
-    setOpen(tbaSections.length > 0);
+    setVisible(tbaSections.length > 0);
   }, [tbaSections]);
+  
+  useEffect(() => {
+    if (visible) {
+      setCollapsed(false);
+      localStorage.setItem(COLLAPSE_KEY(scheduleIndex), '0');
+    }
+  }, [visible, scheduleIndex]);
 
-  if (tbaSections.length === 0) return null;
+  if (!visible) return null;
 
   const handleToggleCollapse = () => {
     setCollapsed(prev => {
@@ -74,15 +79,15 @@ export default function AsyncCalendarCard() {
   };
 
   return (
-    <Snackbar
-      key={`tba-${scheduleIndex}`}
-      open={open}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-      autoHideDuration={null}
-      sx={{ 
-        zIndex: theme => theme.zIndex.snackbar - 1, 
-        transform: 'translate(40px)'
-    }}
+    <Box
+      sx={{
+        position: 'absolute',
+        bottom: 16,
+        left: { xs: 16, sm: 'auto' },
+        right: { xs: 'auto', sm: 16 },
+        zIndex: theme => theme.zIndex.modal - 1,
+        width: '22rem',
+      }}
     >
       <Alert
         icon={<InfoOutlined fontSize="small" />}
@@ -90,35 +95,34 @@ export default function AsyncCalendarCard() {
         variant="outlined"
         sx={{
           bgcolor: 'rgba(255,255,255,0.9)',
-          backdropFilter: 'blur(6px)',
-          py: collapsed ? 0.5 : 0.75,
+          py: 0.5,
           px: 1,
+          width: '100%',
         }}
         action={
-        <IconButton size="small" aria-label="toggle details" onClick={handleToggleCollapse}>
-            {collapsed ? <ExpandMore fontSize="small" /> : <ExpandMore fontSize="small" style={{ transform: 'rotate(180deg)' }} />}
+        <IconButton size="small" onClick={handleToggleCollapse}>
+            {collapsed ? <ExpandMore fontSize="small" /> : <ExpandMore fontSize="small" sx={{ transform: 'rotate(180deg)' }} />}
         </IconButton>
         }
       >
-        <AlertTitle sx={{ mb: collapsed ? 0 : 1, pr: 0.5 }}>
-          You’ve got classes with TBA times
+        <AlertTitle sx={{ fontSize: '1em' }}>
+          You've got sections with TBA times:
         </AlertTitle>
 
         <Collapse in={!collapsed} timeout="auto" unmountOnExit>
-          <List dense disablePadding sx={{mt: 0.25, py: 0.25}}>
+          <List dense disablePadding sx={{mt: 0.25, py: 0.25, whiteSpace: 'nowrap'}}>
             {tbaSections.map((c, idx) => (
               <ListItem key={`${c.courseTitle}-${c.sectionCode}-${idx}`} sx={{ py: 0.25 }}>
                 <ListItemText
                   primary={`${c.courseTitle} — ${c.sectionCode}`}
-                  secondary="TBA time"
                   primaryTypographyProps={{ variant: 'body2' }}
-                  secondaryTypographyProps={{ variant: 'caption' }}
+                  sx={{ my: 0 }}
                 />
               </ListItem>
             ))}
           </List>
         </Collapse>
       </Alert>
-    </Snackbar>
+    </Box>
   );
 }
