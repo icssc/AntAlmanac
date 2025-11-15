@@ -60,7 +60,7 @@ export function CoursePaneRoot() {
     }, [handleKeydown]);
 
     return (
-        <Box height={'0px'} flexGrow={1}>
+        <Box sx={{ height: 0, flexGrow: 1 }}>
             <CoursePaneButtonRow
                 showSearch={!searchFormIsDisplayed}
                 onDismissSearchResults={displaySearch}

@@ -18,6 +18,7 @@ import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStora
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
     onError: (scheduleName: string) => unknown;
@@ -129,6 +130,7 @@ export const saveSchedule = async (providerId: string, rememberMe: boolean, post
                         `Schedule saved under username "${providerId}". Don't forget to sign up for classes on WebReg!`
                     );
                 }
+                deleteTempSaveData();
                 AppStore.saveSchedule();
             } catch (e) {
                 if (e instanceof TRPCError) {
@@ -165,6 +167,7 @@ export async function autoSaveSchedule(providerID: string, postHog?: PostHog) {
             },
         });
 
+        deleteTempSaveData();
         AppStore.saveSchedule();
     } catch (e) {
         if (e instanceof TRPCError) {
