@@ -1,3 +1,5 @@
+'use client';
+
 import { Popover } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { shallow } from 'zustand/shallow';
