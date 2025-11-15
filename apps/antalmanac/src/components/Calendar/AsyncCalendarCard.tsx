@@ -1,15 +1,12 @@
-import { List, ListItem, ListItemText, Collapse, IconButton, Alert, AlertTitle, Box } from '@mui/material';
+import { Collapse, IconButton, Alert, AlertTitle, Box, Typography } from '@mui/material';
 import { ExpandMore, InfoOutlined } from '@mui/icons-material';
 import { useEffect, useMemo, useState } from 'react';
 import AppStore from '$stores/AppStore';
+import { getLocalStorageTbaCollapsed, setLocalStorageTbaCollapsed } from '$lib/localStorage';
 
 interface TbaSection {
   courseTitle: string;
   sectionCode: string;
-}
-
-function getCollapseKey(scheduleIndex: number | null | undefined): string {
-  return `aa:tbaSnack:collapsed:${scheduleIndex ?? 'none'}`;
 }
 
 export default function AsyncCalendarCard() {
@@ -34,7 +31,7 @@ export default function AsyncCalendarCard() {
   }, []);
 
   useEffect(() => {
-    const storedValue = localStorage.getItem(getCollapseKey(scheduleIndex));
+    const storedValue = getLocalStorageTbaCollapsed(scheduleIndex);
     setCollapsed(storedValue === '1');
   }, [scheduleIndex]);
 
@@ -65,14 +62,14 @@ export default function AsyncCalendarCard() {
   useEffect(() => {
     if (visible) {
       setCollapsed(false);
-      localStorage.setItem(getCollapseKey(scheduleIndex), '0');
+      setLocalStorageTbaCollapsed(scheduleIndex, '0');
     }
   }, [visible, scheduleIndex]);
 
   const handleToggleCollapse = () => {
     setCollapsed((prev) => {
       const newValue = !prev;
-      localStorage.setItem(getCollapseKey(scheduleIndex), newValue ? '1' : '0');
+      setLocalStorageTbaCollapsed(scheduleIndex, newValue ? '1' : '0');
       return newValue;
     });
   };
@@ -107,21 +104,17 @@ export default function AsyncCalendarCard() {
         }
       >
         <AlertTitle sx={{ fontSize: '1em' }}>
-          You've got sections with TBA times:
+          Sections with TBA times added:
         </AlertTitle>
 
         <Collapse in={!collapsed} timeout="auto" unmountOnExit>
-          <List dense disablePadding sx={{ mt: 0.25, py: 0.25 }}>
+          <Box sx={{ mt: 0.25, py: 0.25 }}>
             {tbaSections.map((section, idx) => (
-              <ListItem key={`${section.courseTitle}-${section.sectionCode}-${idx}`} sx={{ py: 0.25 }}>
-                <ListItemText
-                  primary={`${section.courseTitle} — ${section.sectionCode}`}
-                  primaryTypographyProps={{ variant: 'body2' }}
-                  sx={{ my: 0 }}
-                />
-              </ListItem>
+              <Typography key={`${section.courseTitle}-${section.sectionCode}-${idx}`} variant="body2" sx={{ py: 0.25 }}>
+                {section.courseTitle} — {section.sectionCode}
+              </Typography>
             ))}
-          </List>
+          </Box>
         </Collapse>
       </Alert>
     </Box>
