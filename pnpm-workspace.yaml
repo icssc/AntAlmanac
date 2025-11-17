@@ -3,4 +3,4 @@ packages:
     - packages/*
     - .github/actions/*
 
-minimumReleaseAge: 4320
+minimumReleaseAge: 1440
