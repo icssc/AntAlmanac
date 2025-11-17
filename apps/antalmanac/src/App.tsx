@@ -118,7 +118,7 @@ export default function App() {
                             }),
                         }}
                     >
-                        <SnackbarProvider>
+                        <SnackbarProvider classes={{ containerRoot: 'notification-snackbar-container' }}>
                             <RouterProvider router={ROUTER} />
                         </SnackbarProvider>
                     </TourProvider>
