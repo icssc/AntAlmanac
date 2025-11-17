@@ -57,15 +57,11 @@ jobs:
 
         outputs:
             # A staging backend should only be deployed if either the backend or CDK changed.
-            # should-deploy-backend: ${{ steps.changed.outputs.backend == 'true' ||  steps.changed.outputs.cdk == 'true' || steps.changed.outputs.aants=='true' }}
+            should-deploy-backend: ${{ steps.changed.outputs.backend == 'true' ||  steps.changed.outputs.cdk == 'true' }}
 
             # If a staging backend is deployed, then the frontend should use its URL.
             # Otherwise use the default development API endpoint.
-            # antalmanac-api-endpoint: ${{ ((steps.changed.outputs.backend == 'true' ||  steps.changed.outputs.cdk == 'true' || steps.changed.outputs.aants=='true') && format('staging-{0}', github.event.pull_request.number)) || 'dev' }}
-            
-            # Temporarily always deploy the backend.
-            should-deploy-backend: 'true'
-            antalmanac-api-endpoint: ${{ ( format('staging-{0}', github.event.pull_request.number))}}
+            antalmanac-api-endpoint: ${{ ((steps.changed.outputs.backend == 'true' ||  steps.changed.outputs.cdk == 'true') && format('staging-{0}', github.event.pull_request.number)) || 'dev' }}
 
             frontend_environment: frontend-staging-${{ github.event.pull_request.number }}
             frontend_environment_url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
