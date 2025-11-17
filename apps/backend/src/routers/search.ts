@@ -4,14 +4,15 @@ import { z } from 'zod';
 import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
 import uFuzzy from '@leeoniya/ufuzzy';
 import * as fuzzysort from 'fuzzysort';
+import { env } from 'src/env';
 import { procedure, router } from '../trpc';
-import { backendEnvSchema } from '../env';
 import * as searchData from '$generated/searchData';
+
+const { STAGE } = env;
 
 const MAX_AUTOCOMPLETE_RESULTS = 12;
 
-const env = backendEnvSchema.parse(process.env);
-const isLambda = env.STAGE !== 'local';
+const isLambda = STAGE !== 'local';
 
 const termsFolderPath = isLambda ? '/var/task/terms' : join(process.cwd(), 'src', 'generated', 'terms');
 

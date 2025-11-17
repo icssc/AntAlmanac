@@ -1,13 +1,11 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
-import { rdsEnvSchema } from '../env';
+import { env } from 'src/env';
+import * as schema from 'src/db/schema';
 
-import * as schema from './schema/index.js';
-
-const { DB_URL } = rdsEnvSchema.parse(process.env);
-
-export const client = postgres(DB_URL);
+const { DATABASE_URL } = env;
+export const client = postgres(DATABASE_URL);
 
 export const db = drizzle(client, { schema });
 

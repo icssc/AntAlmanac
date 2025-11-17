@@ -1,6 +1,9 @@
 import type { AggregateGrades, AggregateGradesByOffering } from '@packages/antalmanac-types';
 import { z } from 'zod';
+import { env } from 'src/env';
 import { procedure, router } from '../trpc';
+
+const { ANTEATER_API_KEY } = env;
 
 const gradesRouter = router({
     aggregateGrades: procedure
@@ -16,8 +19,8 @@ const gradesRouter = router({
             async ({ input }) =>
                 await fetch(`https://anteaterapi.com/v2/rest/grades/aggregate?${new URLSearchParams(input)}`, {
                     headers: {
-                        ...(process.env.ANTEATER_API_KEY && {
-                            Authorization: `Bearer ${process.env.ANTEATER_API_KEY}`,
+                        ...(ANTEATER_API_KEY && {
+                            Authorization: `Bearer ${ANTEATER_API_KEY}`,
                         }),
                     },
                 })
@@ -47,8 +50,8 @@ const gradesRouter = router({
                     )}`,
                     {
                         headers: {
-                            ...(process.env.ANTEATER_API_KEY && {
-                                Authorization: `Bearer ${process.env.ANTEATER_API_KEY}`,
+                            ...(ANTEATER_API_KEY && {
+                                Authorization: `Bearer ${ANTEATER_API_KEY}`,
                             }),
                         },
                     }
