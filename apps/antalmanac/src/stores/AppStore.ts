@@ -50,8 +50,6 @@ class AppStore extends EventEmitter {
 
     skeletonMode: boolean;
 
-    private static readonly DEFAULT_SNACKBAR_DURATION = 3000;
-
     constructor() {
         super();
         this.setMaxListeners(300);
@@ -60,7 +58,7 @@ class AppStore extends EventEmitter {
         this.colorPickers = {};
         this.snackbarMessage = '';
         this.snackbarVariant = 'info';
-        this.snackbarDuration = AppStore.DEFAULT_SNACKBAR_DURATION;
+        this.snackbarDuration = 3000;
         this.snackbarPosition = { vertical: 'bottom', horizontal: 'left' };
         this.snackbarStyle = {};
         this.eventsInCalendar = [];
@@ -467,7 +465,7 @@ class AppStore extends EventEmitter {
     ) {
         this.snackbarVariant = variant;
         this.snackbarMessage = message;
-        this.snackbarDuration = duration != null ? duration * 1000 : AppStore.DEFAULT_SNACKBAR_DURATION;
+        this.snackbarDuration = duration != null ? duration * 1000 : 3000;
         this.snackbarPosition = position ? position : this.snackbarPosition;
         this.snackbarStyle = style ? style : this.snackbarStyle;
         this.emit('openSnackbar');
