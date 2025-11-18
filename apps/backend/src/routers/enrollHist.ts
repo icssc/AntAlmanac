@@ -1,16 +1,14 @@
 import { EnrollmentHistory } from '@packages/antalmanac-types';
 import { z } from 'zod';
-import { env } from 'src/env';
-import { procedure, router } from '../trpc';
 
-const { ANTEATER_API_KEY } = env;
+import { procedure, router } from '../trpc';
 
 const enrollHistRouter = router({
     get: procedure.input(z.object({ department: z.string(), courseNumber: z.string(), sectionType: z.string() })).query(
         async ({ input }) =>
             await fetch(`https://anteaterapi.com/v2/rest/enrollmentHistory?${new URLSearchParams(input)}`, {
                 headers: {
-                    ...(ANTEATER_API_KEY && { Authorization: `Bearer ${ANTEATER_API_KEY}` }),
+                    ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
                 },
             })
                 .then((x) => x.json())

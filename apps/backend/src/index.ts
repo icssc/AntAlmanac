@@ -1,10 +1,9 @@
-import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import type { CorsOptions } from 'cors';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
-import { env } from 'src/env';
+import { backendEnvSchema } from './env';
 import AppRouter from './routers';
 import createContext from './context';
 
@@ -20,28 +19,36 @@ const corsOptions: CorsOptions = {
 
 const MAPBOX_API_URL = 'https://api.mapbox.com';
 const PORT = 3000;
-const { MAPBOX_ACCESS_TOKEN } = env;
+
+function getAndCheckEnv() {
+    const env = backendEnvSchema.parse(process.env);
+
+    if (!env.ANTEATER_API_KEY) {
+        console.error('ANTEATER_API_KEY is not set');
+    }
+
+    return env;
+}
 
 export async function start(corsEnabled = true) {
+    const env = getAndCheckEnv();
     const app = express();
     app.use(cors(corsEnabled ? corsOptions : undefined));
     app.use(express.json());
     app.use(cookieParser());
 
     app.use('/mapbox/directions/*', async (req, res) => {
-        const searchParams = new URLSearchParams(req.query as never);
-        searchParams.set('access_token', MAPBOX_ACCESS_TOKEN);
-        const url = `${MAPBOX_API_URL}/directions/v5/${(req.params as never)[0]}?${searchParams.toString()}`;
+        const searchParams = new URLSearchParams(req.query as any);
+        searchParams.set('access_token', env.MAPBOX_ACCESS_TOKEN);
+        const url = `${MAPBOX_API_URL}/directions/v5/${(req.params as any)[0]}?${searchParams.toString()}`;
         const result = await fetch(url).then((res) => res.text());
         res.send(result);
     });
 
     app.use('/mapbox/tiles/*', async (req, res) => {
-        const searchParams = new URLSearchParams(req.query as never);
-        searchParams.set('access_token', MAPBOX_ACCESS_TOKEN);
-        const url = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/tiles/${
-            (req.params as never)[0]
-        }?${searchParams.toString()}`;
+        const searchParams = new URLSearchParams(req.query as any);
+        searchParams.set('access_token', env.MAPBOX_ACCESS_TOKEN);
+        const url = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/tiles/${(req.params as any)[0]}?${searchParams.toString()}`;
         const buffer = await fetch(url).then((res) => res.arrayBuffer());
         res.type('image/png');
         res.send(Buffer.from(buffer));

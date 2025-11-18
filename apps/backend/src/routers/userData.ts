@@ -4,14 +4,15 @@ import { type } from 'arktype';
 import { z } from 'zod';
 
 import { db } from 'src/db';
+import { oidcOAuthEnvSchema } from 'src/env';
 import { mangleDuplicateScheduleNames } from 'src/lib/formatting';
 import { RDS } from 'src/lib/rds';
 import { oauth } from 'src/lib/auth/oauth';
 import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState, OAuth2Tokens } from 'arctic';
-import { env } from 'src/env';
 import { procedure, router } from '../trpc';
 
-const { NODE_ENV } = env;
+const { OIDC_ISSUER_URL, GOOGLE_OAUTH_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
+const NODE_ENV = process.env.NODE_ENV;
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
 
@@ -293,8 +294,8 @@ const userDataRouter = router({
             }
 
             // Build OIDC logout URL
-            const oidcLogoutUrl = new URL(`${env.OIDC_ISSUER_URL}/logout`);
-            const redirectTo = input.redirectUrl || 'http://localhost:5173';
+            const oidcLogoutUrl = new URL(`${OIDC_ISSUER_URL}/logout`);
+            const redirectTo = input.redirectUrl || GOOGLE_OAUTH_REDIRECT_URI.replace('/auth', '');
             oidcLogoutUrl.searchParams.set('post_logout_redirect_uri', redirectTo);
 
             return {

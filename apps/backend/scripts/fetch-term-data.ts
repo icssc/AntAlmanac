@@ -9,8 +9,11 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { CalendarTerm } from '@packages/antalmanac-types';
+import { aapiEnvSchema } from 'src/env';
 
 import 'dotenv/config';
+
+const env = aapiEnvSchema.parse(process.env);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -36,7 +39,7 @@ function sanitizeTermName(year: string, quarter: keyof typeof QUARTER_MAP): `${s
 async function fetchCalendarTerms(): Promise<CalendarTerm[]> {
     const res = await fetch(API_URL, {
         headers: {
-            Authorization: `Bearer ${process.env.ANTEATER_API_KEY || ''}`,
+            Authorization: `Bearer ${env.ANTEATER_API_KEY}`,
             Origin: ORIGIN,
         },
     });

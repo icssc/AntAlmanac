@@ -1,11 +1,14 @@
 import { defineConfig } from 'drizzle-kit';
-import 'dotenv/config';
+
+import { rdsEnvSchema } from './src/env';
+
+const { DB_URL } = rdsEnvSchema.parse(process.env);
 
 export default defineConfig({
     dialect: 'postgresql',
     schema: './src/db/schema/index.ts',
     out: './drizzle',
     dbCredentials: {
-        url: process.env.DB_URL!,
+        url: DB_URL,
     },
 });

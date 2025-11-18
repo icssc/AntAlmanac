@@ -4,41 +4,26 @@
 
 import { drizzle } from 'drizzle-orm/postgres-js';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
-import postgres from 'postgres';
 
-import 'dotenv/config';
+import { client } from '$db/index';
 
 /**
  * Migrates the current drizzle schema to the PostgreSQL database associated
  * with the drizzle client.
  */
 export async function migratePostgresDb() {
-    const dbUrl = process.env.DB_URL;
-    if (!dbUrl) {
-        throw new Error('DB_URL is required for migrations');
-    }
-    
-    const client = postgres(dbUrl);
-    
     await migrate(drizzle(client), {
         migrationsFolder: './drizzle'
     });
-    
-    return client;
 }
 
 async function main() {
-    let client;
     try {
-        client = await migratePostgresDb();
-        console.log('✅ Migration completed successfully');
+        await migratePostgresDb();
     } catch (error) {
-        console.error('❌ Migration failed:', error);
-        process.exit(1);
+        console.log(error);
     } finally {
-        if (client) {
-            await client.end();
-        }
+        await client.end();
     }
 }
 

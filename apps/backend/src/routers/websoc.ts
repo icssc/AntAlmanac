@@ -1,9 +1,7 @@
 import { z } from 'zod';
 import type { WebsocAPIResponse, CourseInfo, WebsocCourse } from '@packages/antalmanac-types';
-import { env } from 'src/env';
-import { procedure, router } from '../trpc';
 
-const { ANTEATER_API_KEY } = env;
+import { procedure, router } from '../trpc';
 
 function sanitizeSearchParams(params: Record<string, string>) {
     if ('term' in params) {
@@ -68,7 +66,7 @@ const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
 
     const response = await fetch(url, {
         headers: {
-            ...(ANTEATER_API_KEY && { Authorization: `Bearer ${ANTEATER_API_KEY}` }),
+            ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
         },
     });
     const data = await response.json();
