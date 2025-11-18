@@ -11,7 +11,6 @@ import { fileURLToPath } from 'node:url';
 import { CalendarTerm } from '@packages/antalmanac-types';
 
 import 'dotenv/config';
-import { env } from 'src/env';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -37,7 +36,7 @@ function sanitizeTermName(year: string, quarter: keyof typeof QUARTER_MAP): `${s
 async function fetchCalendarTerms(): Promise<CalendarTerm[]> {
     const res = await fetch(API_URL, {
         headers: {
-            Authorization: `Bearer ${env.ANTEATER_API_KEY}`,
+            Authorization: `Bearer ${process.env.ANTEATER_API_KEY || ''}`,
             Origin: ORIGIN,
         },
     });
