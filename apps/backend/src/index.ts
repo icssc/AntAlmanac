@@ -8,12 +8,23 @@ import AppRouter from './routers';
 import createContext from './context';
 
 const corsOptions: CorsOptions = {
-    origin: [
-        'https://antalmanac.com',
-        'https://www.antalmanac.com',
-        'https://icssc-projects.github.io/AntAlmanac',
-        'http://localhost:5173',
-    ],
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+            'https://antalmanac.com',
+            'https://www.antalmanac.com',
+            'https://icssc-projects.github.io/AntAlmanac',
+            'http://localhost:5173',
+        ];
+
+        // Allow staging deployments: https://staging-{PR_NUM}.antalmanac.com
+        const stagingPattern = /^https:\/\/staging-\d+\.antalmanac\.com$/;
+
+        if (!origin || allowedOrigins.includes(origin) || stagingPattern.test(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true, // Allow cookies to be sent cross-origin
 };
 
@@ -48,7 +59,9 @@ export async function start(corsEnabled = true) {
     app.use('/mapbox/tiles/*', async (req, res) => {
         const searchParams = new URLSearchParams(req.query as any);
         searchParams.set('access_token', env.MAPBOX_ACCESS_TOKEN);
-        const url = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/tiles/${(req.params as any)[0]}?${searchParams.toString()}`;
+        const url = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/tiles/${
+            (req.params as any)[0]
+        }?${searchParams.toString()}`;
         const buffer = await fetch(url).then((res) => res.arrayBuffer());
         res.type('image/png');
         res.send(Buffer.from(buffer));
