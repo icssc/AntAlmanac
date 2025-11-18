@@ -1,5 +1,7 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import type { CorsOptions } from 'cors';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
 import { env } from 'src/env';
@@ -7,17 +9,24 @@ import AppRouter from './routers';
 import createContext from './context';
 
 const corsOptions: CorsOptions = {
-    origin: ['https://antalmanac.com', 'https://www.antalmanac.com', 'https://icssc-projects.github.io/AntAlmanac'],
+    origin: [
+        'https://antalmanac.com',
+        'https://www.antalmanac.com',
+        'https://icssc-projects.github.io/AntAlmanac',
+        'http://localhost:5173',
+    ],
+    credentials: true, // Allow cookies to be sent cross-origin
 };
 
 const MAPBOX_API_URL = 'https://api.mapbox.com';
 const PORT = 3000;
 const { MAPBOX_ACCESS_TOKEN } = env;
 
-export async function start(corsEnabled = false) {
+export async function start(corsEnabled = true) {
     const app = express();
     app.use(cors(corsEnabled ? corsOptions : undefined));
     app.use(express.json());
+    app.use(cookieParser());
 
     app.use('/mapbox/directions/*', async (req, res) => {
         const searchParams = new URLSearchParams(req.query as never);

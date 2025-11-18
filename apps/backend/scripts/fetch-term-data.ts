@@ -9,11 +9,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { CalendarTerm } from '@packages/antalmanac-types';
-import { aapiEnvSchema } from 'src/env';
 
 import 'dotenv/config';
-
-const env = aapiEnvSchema.parse(process.env);
+import { env } from 'src/env';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

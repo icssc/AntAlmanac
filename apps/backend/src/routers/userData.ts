@@ -1,20 +1,19 @@
 import { UserSchema } from '@packages/antalmanac-types';
 import { TRPCError } from '@trpc/server';
 import { type } from 'arktype';
-import { OAuth2Client } from 'google-auth-library';
 import { z } from 'zod';
 
 import { db } from 'src/db';
-import { googleOAuthEnvSchema } from 'src/env';
 import { mangleDuplicateScheduleNames } from 'src/lib/formatting';
 import { RDS } from 'src/lib/rds';
+import { oauth } from 'src/lib/auth/oauth';
+import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState, OAuth2Tokens } from 'arctic';
+import { env } from 'src/env';
 import { procedure, router } from '../trpc';
 
-const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } = googleOAuthEnvSchema.parse(process.env);
+const { NODE_ENV } = env;
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
-
-const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI);
 
 const saveInputSchema = type({
     /**
@@ -33,7 +32,7 @@ const saveInputSchema = type({
 
 const saveGoogleSchema = type({
     code: 'string',
-    token: 'string',
+    state: 'string',
 });
 
 const userDataRouter = router({
@@ -115,62 +114,142 @@ const userDataRouter = router({
      * Retrieves Google authentication URL for login/sign up.
      * Retrieves Google auth url to login/sign up
      */
-    getGoogleAuthUrl: procedure.query(async () => {
-        const url = oauth2Client.generateAuthUrl({
-            access_type: 'offline',
-            scope: ['profile', 'email'],
-        });
+    getGoogleAuthUrl: procedure.query(async ({ ctx }) => {
+        const state = generateState();
+        const codeVerifier = generateCodeVerifier();
+
+        const url = oauth.createAuthorizationURLWithPKCE(
+            'https://auth.icssc.club/authorize',
+            state,
+            CodeChallengeMethod.S256,
+            codeVerifier,
+            [
+                'openid',
+                'profile',
+                'email',
+                // 'https://www.googleapis.com/auth/calendar.readonly'
+            ]
+        );
+
+        const res = ctx.res;
+
+        const isProduction = NODE_ENV === 'production';
+        const cookieOptions = {
+            path: '/',
+            httpOnly: true,
+            secure: isProduction,
+            maxAge: 60 * 10 * 1000, // 10 minutes
+            sameSite: isProduction ? ('none' as const) : ('lax' as const),
+        };
+
+        res.cookie('oauth_state', state, cookieOptions);
+        res.cookie('oauth_code_verifier', codeVerifier, cookieOptions);
+
+        const referer = ctx.req.headers.referer;
+
+        if (referer) {
+            res.cookie('auth_redirect_url', referer, cookieOptions);
+        }
+
         return url;
     }),
     /**
      * Logs in or signs up a user and creates user's session
      */
-    handleGoogleCallback: procedure.input(saveGoogleSchema.assert).mutation(async ({ input }) => {
-        const { tokens } = await oauth2Client.getToken({ code: input.code });
-        if (!tokens || !tokens.id_token) {
+    handleGoogleCallback: procedure.input(saveGoogleSchema.assert).mutation(async ({ input, ctx }) => {
+        const { req, res } = ctx;
+
+        const storedState = req.cookies.oauth_state ?? null;
+        const codeVerifier = req.cookies.oauth_code_verifier ?? null;
+        const redirectUrl = req.cookies.auth_redirect_url ?? '/';
+
+        res.clearCookie('auth_redirect_url');
+        res.clearCookie('oauth_state');
+        res.clearCookie('oauth_code_verifier');
+
+        if (!input.code || !input.state || !storedState || !codeVerifier) {
             throw new TRPCError({
-                code: 'UNAUTHORIZED',
-                message: 'Invalid token',
+                code: 'BAD_REQUEST',
+                message: 'Missing required OAuth parameters',
             });
         }
-        oauth2Client.setCredentials(tokens);
 
-        const ticket = await oauth2Client.verifyIdToken({
-            idToken: tokens.id_token ?? '',
-            audience: GOOGLE_CLIENT_ID,
-        });
-
-        const payload = ticket.getPayload();
-        if (!payload) {
+        if (input.state !== storedState) {
             throw new TRPCError({
-                code: 'UNAUTHORIZED',
-                message: 'Invalid ID token',
+                code: 'BAD_REQUEST',
+                message: 'State mismatch',
             });
         }
+
+        let tokens: OAuth2Tokens;
+        try {
+            tokens = await oauth.validateAuthorizationCode('https://auth.icssc.club/token', input.code, codeVerifier);
+        } catch (error) {
+            console.error('OAuth Callback - Invalid credentials:', error);
+            throw new TRPCError({
+                code: 'UNAUTHORIZED',
+                message: 'Invalid authorization code',
+            });
+        }
+
+        const claims = decodeIdToken(tokens.idToken()) as {
+            sub: string;
+            name: string;
+            email: string;
+            picture?: string;
+        };
+
+        const oidcRefreshToken = tokens.refreshToken();
+        if (!oidcRefreshToken) {
+            console.error('OAuth Callback - Missing OIDC refresh token in response');
+        }
+
+        const tokenData = tokens.data as {
+            google_access_token?: string;
+            google_refresh_token?: string;
+            google_token_expiry?: number;
+        };
+        const googleAccessToken = tokenData.google_access_token;
+        const googleRefreshToken = tokenData.google_refresh_token;
+        if (!googleAccessToken || !googleRefreshToken) {
+            console.error('OAuth Callback - Missing Google tokens in OIDC response:', tokenData);
+        }
+
+        const oauthUserId = claims.sub;
+        const username = claims.name;
+        const email = claims.email;
+        const picture = claims.picture;
 
         const account = await RDS.registerUserAccount(
             db,
-            payload.sub,
-            payload.name ?? '',
+            oauthUserId,
+            username ?? '',
             'GOOGLE',
-            payload.email ?? '',
-            payload.picture ?? ''
+            email ?? '',
+            picture ?? ''
         );
 
         const userId: string = account.userId;
 
         if (userId.length > 0) {
-            const session = await RDS.upsertSession(db, userId, input.token);
+            // Create session with OIDC and Google tokens
+            const session = await RDS.upsertSession(db, userId, oidcRefreshToken ?? '');
+
             return {
                 sessionToken: session?.refreshToken,
                 userId: userId,
-                providerId: payload.sub,
+                providerId: oauthUserId,
                 newUser: account.newUser,
+                redirectUrl,
             };
         }
 
-        return { sessionToken: null, userId: null, providerId: null, newUser: account.newUser };
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Failed to create user session',
+        });
     }),
+
     /**
      * Logs in or signs up existing user
      */
@@ -200,6 +279,28 @@ const userDataRouter = router({
     flagImportedSchedule: procedure.input(z.object({ providerId: z.string() })).mutation(async ({ input }) => {
         return await RDS.flagImportedUser(db, input.providerId);
     }),
+
+    /**
+     * Logs out a user by invalidating their session and redirecting to OIDC logout
+     */
+    logout: procedure
+        .input(z.object({ sessionToken: z.string(), redirectUrl: z.string().optional() }))
+        .mutation(async ({ input }) => {
+            // Invalidate the local session
+            const session = await RDS.getCurrentSession(db, input.sessionToken);
+            if (session) {
+                await RDS.removeSession(db, session.userId, session.refreshToken);
+            }
+
+            // Build OIDC logout URL
+            const oidcLogoutUrl = new URL(`${env.OIDC_ISSUER_URL}/logout`);
+            const redirectTo = input.redirectUrl || 'http://localhost:5173';
+            oidcLogoutUrl.searchParams.set('post_logout_redirect_uri', redirectTo);
+
+            return {
+                logoutUrl: oidcLogoutUrl.toString(),
+            };
+        }),
 });
 
 export default userDataRouter;

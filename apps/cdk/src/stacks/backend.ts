@@ -8,7 +8,7 @@ import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import type { Construct } from 'constructs';
 import { z } from 'zod';
 
-import { backendEnvSchema } from '../../../backend/src/env';
+import { env } from '../../../backend/src/env';
 import { zoneName } from '../lib/constants';
 
 export class BackendStack extends Stack {
@@ -29,7 +29,6 @@ export class BackendStack extends Stack {
         super(scope, id, props);
 
         const cdkEnv = BackendStack.CDKEnvironment.parse(process.env);
-        const backendEnv = backendEnvSchema.parse(process.env);
 
         /**
          * The domain that the backend API will be hosted on.
@@ -63,7 +62,7 @@ export class BackendStack extends Stack {
             timeout: Duration.seconds(20),
             memorySize: 256,
             environment: {
-                ...backendEnv,
+                ...env,
                 USERDATA_TABLE_NAME: userDataDDB.tableName,
             },
         });

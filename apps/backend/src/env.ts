@@ -8,6 +8,7 @@ export const env = createEnv({
 
         // OAuth
         OIDC_CLIENT_ID: z.string().min(1),
+        OIDC_ISSUER_URL: z.string().url(),
         GOOGLE_OAUTH_REDIRECT_URI: z.string().url(),
 
         // API Keys
