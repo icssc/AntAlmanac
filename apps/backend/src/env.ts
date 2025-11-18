@@ -39,7 +39,6 @@ export const aapiEnvSchema = z.object({
 export const backendEnvSchema = z
     .object({
         STAGE: z.string(),
-        NODE_ENV: z.enum(['development', 'production', 'test']).optional(),
     })
     .merge(oidcOAuthEnvSchema)
     .merge(rdsEnvSchema)
