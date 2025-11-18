@@ -7,7 +7,8 @@ let cachedHandler: Handler;
 
 export async function handler(event: any, context: Context, callback: any) {
     if (!cachedHandler) {
-        const app = await start(process.env.NODE_ENV === 'production');
+        // Always enable CORS in production and staging environments
+        const app = await start(true);
         cachedHandler = serverlessExpress({ app });
     }
     return cachedHandler(event, context, callback);
