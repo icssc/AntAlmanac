@@ -126,6 +126,10 @@ jobs:
             - name: Deploy backend production CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" backend-production deploy
               env:
+                  DB_URL: ${{ secrets.PROD_DB_URL }}
+                  OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID }}
+                  OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
+                  GOOGLE_OAUTH_REDIRECT_URI: https://antalmanac.com/auth
                   GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
                   GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
                   GOOGLE_REDIRECT_URI: https://antalmanac.com/auth
@@ -161,7 +165,9 @@ jobs:
               env:
                   NODE_ENV: development
                   DB_URL: ${{ secrets.PROD_DB_URL }}
-                  
+                  OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID }}
+                  OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
+                  GOOGLE_OAUTH_REDIRECT_URI: https://antalmanac.com/auth
                   GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
                   GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
                   GOOGLE_REDIRECT_URI: https://antalmanac.com/auth

@@ -62,9 +62,9 @@ jobs:
             # If a staging backend is deployed, then the frontend should use its URL.
             # Otherwise use the default development API endpoint.
             # antalmanac-api-endpoint: ${{ ((steps.changed.outputs.backend == 'true' ||  steps.changed.outputs.cdk == 'true' || steps.changed.outputs.aants=='true') && format('staging-{0}', github.event.pull_request.number)) || 'dev' }}
-            
+
             # Temporarily always deploy the backend.
-            should-deploy-backend: 'true'
+            should-deploy-backend: "true"
             antalmanac-api-endpoint: ${{ ( format('staging-{0}', github.event.pull_request.number))}}
 
             frontend_environment: frontend-staging-${{ github.event.pull_request.number }}
@@ -183,6 +183,10 @@ jobs:
             - name: Deploy backend staging CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" backend-staging deploy
               env:
+                  DB_URL: ${{ secrets.STAGING_DB_URL }}
+                  OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID_STAGING }}
+                  OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
+                  GOOGLE_OAUTH_REDIRECT_URI: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}/auth
                   GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
                   GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
                   GOOGLE_REDIRECT_URI: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}/auth

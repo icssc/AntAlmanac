@@ -4,7 +4,7 @@ import { z } from 'zod';
 export const env = createEnv({
     server: {
         // Database
-        DATABASE_URL: z.string().url(),
+        DB_URL: z.string().url(),
 
         // OAuth
         OIDC_CLIENT_ID: z.string().min(1),
