@@ -224,7 +224,7 @@ const userDataRouter = router({
             db,
             oauthUserId,
             username ?? '',
-            'GOOGLE',
+            'OIDC',
             email ?? '',
             picture ?? ''
         );
