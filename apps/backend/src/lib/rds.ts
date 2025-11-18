@@ -157,13 +157,29 @@ export class RDS {
         let userId: string;
 
         if (existingUser) {
-            // User exists with this email - this is a migration scenario
             userId = existingUser.id;
-            console.log(
-                `Migrating user ${email} from legacy auth to ${accountType} provider with new providerId: ${providerId}`
-            );
 
-            // Check if they already have an account of this type
+            const existingGoogleAccount = await db
+                .select()
+                .from(accounts)
+                .where(and(eq(accounts.userId, userId), eq(accounts.accountType, 'GOOGLE')))
+                .then((res) => res[0]);
+
+            if (existingGoogleAccount && accountType === 'OIDC') {
+                console.log(
+                    `Migrating user ${email}: Converting GOOGLE account (providerId: ${existingGoogleAccount.providerAccountId}) to OIDC account (providerId: ${providerId})`
+                );
+
+                const updatedAccount = await db
+                    .update(accounts)
+                    .set({ providerAccountId: providerId, accountType: 'OIDC' })
+                    .where(and(eq(accounts.userId, userId), eq(accounts.accountType, 'GOOGLE')))
+                    .returning()
+                    .then((res) => res[0]);
+
+                return { ...updatedAccount, newUser: false };
+            }
+
             const existingAccountByType = await db
                 .select()
                 .from(accounts)
@@ -171,20 +187,9 @@ export class RDS {
                 .then((res) => res[0]);
 
             if (existingAccountByType) {
-                // Update the existing account with new providerId
-                console.log(
-                    `Updating existing ${accountType} account providerId from ${existingAccountByType.providerAccountId} to ${providerId}`
-                );
-                const updatedAccount = await db
-                    .update(accounts)
-                    .set({ providerAccountId: providerId })
-                    .where(and(eq(accounts.userId, userId), eq(accounts.accountType, accountType)))
-                    .returning()
-                    .then((res) => res[0]);
-
-                return { ...updatedAccount, newUser: false };
+                return { ...existingAccountByType, newUser: false };
             } else {
-                // Create new account entry for this account type
+                console.log(`Creating new ${accountType} account for existing user ${email}`);
                 const account = await db
                     .insert(accounts)
                     .values({ userId, providerAccountId: providerId, accountType })

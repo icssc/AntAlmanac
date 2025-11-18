@@ -14,7 +14,7 @@
         "format": "prettier --write src",
         "lint": "eslint --fix src",
         "studio": "drizzle-kit studio",
-        "migrate": "drizzle-kit generate && tsx scripts/migrate.ts"
+        "migrate": "drizzle-kit generate && tsx --env-file=.env scripts/migrate.ts"
     },
     "dependencies": {
         "@leeoniya/ufuzzy": "1.0.14",
