@@ -385,7 +385,7 @@ export function AddedCoursePane() {
             setSkeletonMode(AppStore.getSkeletonMode());
         };
 
-        console.log('Opened added ourse');
+        console.log('Opened added course');
 
         logAnalytics(postHog, {
             category: analyticsEnum.addedClasses,
