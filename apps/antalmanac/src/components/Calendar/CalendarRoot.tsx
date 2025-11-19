@@ -1,7 +1,7 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
 
-import { Box, Backdrop, CircularProgress, useTheme } from '@mui/material';
+import { Box, Backdrop, useTheme } from '@mui/material';
 import moment from 'moment';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
@@ -11,13 +11,14 @@ import { shallow } from 'zustand/shallow';
 import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
 import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
 import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
-import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CalendarEvent, CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import { COURSE_WEEK_DAYS } from '$stores/calendarizeHelpers';
 
 /*
  * Always start week on Saturday for finals potentially on weekends.
@@ -55,6 +56,11 @@ export const ScheduleCalendar = memo(() => {
 
     const { openLoadingSchedule: loadingSchedule } = scheduleComponentsToggleStore();
 
+    const onlyCourseEvents = useMemo(
+        () => eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[],
+        [eventsInCalendar]
+    );
+
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
         if (showFinalsSchedule)
             return hoveredCalendarizedFinal
@@ -70,7 +76,68 @@ export const ScheduleCalendar = memo(() => {
         showFinalsSchedule,
     ]);
 
-    const events = getEventsForCalendar();
+    const createSkeletonEvents = useCallback((): CustomEvent[] => {
+        const baseDate = new Date(2018, 0, 1);
+        const weekStart = new Date(baseDate);
+
+        const skeletonBlueprints = [
+            { dayOffset: 0, startHour: 12, durationMinutes: 60 },
+            { dayOffset: 0, startHour: 13, durationMinutes: 60 },
+            { dayOffset: 0, startHour: 14, durationMinutes: 60 },
+            { dayOffset: 0, startHour: 15, durationMinutes: 60 },
+
+            { dayOffset: 1, startHour: 11, durationMinutes: 60 },
+            { dayOffset: 1, startHour: 12, durationMinutes: 60 },
+            { dayOffset: 1, startHour: 13, durationMinutes: 60 },
+            { dayOffset: 1, startHour: 14, durationMinutes: 60 },
+            { dayOffset: 1, startHour: 15, durationMinutes: 60 },
+            { dayOffset: 1, startHour: 16, durationMinutes: 60 },
+
+            { dayOffset: 2, startHour: 12, durationMinutes: 60 },
+            { dayOffset: 2, startHour: 13, durationMinutes: 60 },
+            { dayOffset: 2, startHour: 14, durationMinutes: 60 },
+            { dayOffset: 2, startHour: 15, durationMinutes: 60 },
+            { dayOffset: 2, startHour: 16, durationMinutes: 60 },
+            { dayOffset: 2, startHour: 17, durationMinutes: 60 },
+            { dayOffset: 2, startHour: 18, durationMinutes: 60 },
+
+            { dayOffset: 3, startHour: 11, durationMinutes: 60 },
+            { dayOffset: 3, startHour: 12, durationMinutes: 60 },
+            { dayOffset: 3, startHour: 13, durationMinutes: 60 },
+            { dayOffset: 3, startHour: 14, durationMinutes: 60 },
+            { dayOffset: 3, startHour: 15, durationMinutes: 60 },
+            { dayOffset: 3, startHour: 16, durationMinutes: 60 },
+
+            { dayOffset: 4, startHour: 12, durationMinutes: 60 },
+            { dayOffset: 4, startHour: 13, durationMinutes: 60 },
+            { dayOffset: 4, startHour: 14, durationMinutes: 60 },
+            { dayOffset: 4, startHour: 15, durationMinutes: 60 },
+        ];
+
+        return skeletonBlueprints.map((blueprint, index) => {
+            const start = new Date(weekStart);
+            start.setDate(start.getDate() + blueprint.dayOffset);
+            start.setHours(blueprint.startHour, 0, 0, 0);
+
+            const end = new Date(start);
+            end.setMinutes(end.getMinutes() + blueprint.durationMinutes);
+
+            const dayString = COURSE_WEEK_DAYS[start.getDay()];
+
+            return {
+                customEventID: index + 1,
+                color: '#2563eb',
+                start,
+                end,
+                title: 'Loading...',
+                isCustomEvent: true,
+                building: '',
+                days: [dayString],
+            } as CustomEvent;
+        });
+    }, [showFinalsSchedule, isDark, hoveredCalendarizedFinal]);
+
+    const events = loadingSchedule ? createSkeletonEvents() : getEventsForCalendar();
 
     const toggleDisplayFinalsSchedule = useCallback(() => {
         setShowFinalsSchedule((prevState) => !prevState);
@@ -86,15 +153,21 @@ export const ScheduleCalendar = memo(() => {
     }, [events]);
 
     const eventStyleGetter = useCallback((event: CalendarEvent) => {
+        const isSkeletonEvent = event.title === 'Loading...';
+
         const style = {
             backgroundColor: event.color,
-            cursor: 'pointer',
+            cursor: isSkeletonEvent ? 'default' : 'pointer',
             borderStyle: 'none',
             borderRadius: '4px',
             color: colorContrastSufficient(event.color) ? 'white' : 'black',
+            opacity: isSkeletonEvent ? 0.85 : 1,
         };
 
-        return { style };
+        return {
+            style,
+            className: isSkeletonEvent ? 'calendar-loading-event' : undefined,
+        };
     }, []);
 
     /**
@@ -141,8 +214,6 @@ export const ScheduleCalendar = memo(() => {
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
     const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
     const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
-
-    const onlyCourseEvents = eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[];
 
     const finalsDate = hoveredCalendarizedFinal
         ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
@@ -215,9 +286,7 @@ export const ScheduleCalendar = memo(() => {
                     padding: ' 0',
                 })}
                 open={loadingSchedule}
-            >
-                <CircularProgress color="inherit" />
-            </Backdrop>
+            />
             <CalendarToolbar
                 currentScheduleIndex={currentScheduleIndex}
                 toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}

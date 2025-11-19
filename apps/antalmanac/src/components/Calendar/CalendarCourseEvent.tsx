@@ -9,14 +9,20 @@ import { useSelectedEventStore } from '$stores/SelectedEventStore';
 export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) => {
     const setSelectedEvent = useSelectedEventStore((state) => state.setSelectedEvent, shallow);
 
+    const isSkeletonEvent = event.title === 'Loading...' && !event.isCustomEvent;
+
     const handleClick = (e: React.MouseEvent) => {
+        if (isSkeletonEvent) {
+            return;
+        }
+
         e.preventDefault();
         e.stopPropagation();
 
         setSelectedEvent(e, event);
     };
 
-    if (event.isCustomEvent) {
+    if (event.isCustomEvent || isSkeletonEvent) {
         return (
             <Box onClick={handleClick}>
                 <Box

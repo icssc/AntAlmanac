@@ -86,6 +86,24 @@
     background: #555;
 }
 
+@keyframes calendar-loading-pulse {
+    0% {
+        filter: brightness(0.85);
+    }
+
+    50% {
+        filter: brightness(1.15);
+    }
+
+    100% {
+        filter: brightness(0.85);
+    }
+}
+
+.rbc-event.calendar-loading-event {
+    animation: calendar-loading-pulse 1.4s ease-in-out infinite;
+}
+
 /*.menu-button:hover,*/
 /*.menu-button:focus {*/
 /*    background-color: unset !important;*/

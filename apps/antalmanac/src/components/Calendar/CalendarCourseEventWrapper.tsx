@@ -20,8 +20,14 @@ export const CalendarCourseEventWrapper = ({ children, ...props }: CalendarCours
 
     const setSelectedEvent = useSelectedEventStore(useShallow((state) => state.setSelectedEvent));
 
+    const isSkeletonEvent = props.event.title === 'Loading...';
+
     const handleClick = useCallback(
         (e: React.MouseEvent) => {
+            if (!props.event || isSkeletonEvent) {
+                return;
+            }
+
             e.preventDefault();
             e.stopPropagation();
 
