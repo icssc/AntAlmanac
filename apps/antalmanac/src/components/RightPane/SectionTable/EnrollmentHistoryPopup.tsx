@@ -1,5 +1,5 @@
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
-import { Box, IconButton, Link, Typography, Skeleton, Tooltip, useMediaQuery } from '@mui/material';
+import { Box, IconButton, Typography, Skeleton, Tooltip, useMediaQuery } from '@mui/material';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
     LineChart,
@@ -95,7 +95,6 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
         } | ${currEnrollmentHistory.instructors.join(', ')}`;
     }, [courseNumber, department, enrollmentHistory, graphIndex]);
     const isDark = useThemeStore((state) => state.isDark);
-    const encodedDept = useMemo(() => encodeURIComponent(department), [department]);
     const axisColor = isDark ? '#fff' : '#111';
     const tooltipDateColor = '#111';
 
@@ -153,12 +152,7 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
                 popupTitle={popupTitle}
                 enrollmentHistory={enrollmentHistory}
             />
-            <Link
-                href={`https://zot-tracker.herokuapp.com/?dept=${encodedDept}&number=${courseNumber}&courseType=all`}
-                target="_blank"
-                rel="noopener noreferrer"
-                sx={{ display: 'flex', height: graphHeight, width: graphWidth }}
-            >
+            <Box sx={{ display: 'flex', height: graphHeight, width: graphWidth }}>
                 <ResponsiveContainer width="95%" height="95%">
                     <LineChart data={lineChartData} style={{ cursor: 'pointer' }}>
                         <CartesianGrid strokeDasharray="3 3" />
@@ -171,7 +165,7 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
                         <Line type="monotone" dataKey="waitlist" stroke="#ffc658" name="Waitlist" dot={{ r: 2 }} />
                     </LineChart>
                 </ResponsiveContainer>
-            </Link>
+            </Box>
         </Box>
     );
 }
