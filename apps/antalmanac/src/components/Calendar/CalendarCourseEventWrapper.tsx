@@ -3,7 +3,8 @@ import { useCallback, useEffect, useRef } from 'react';
 import { EventWrapperProps } from 'react-big-calendar';
 import { useShallow } from 'zustand/react/shallow';
 
-import type { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
 import { useQuickSearch } from '$src/hooks/useQuickSearch';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 
@@ -20,19 +21,17 @@ export const CalendarCourseEventWrapper = ({ children, ...props }: CalendarCours
 
     const setSelectedEvent = useSelectedEventStore(useShallow((state) => state.setSelectedEvent));
 
-    const isSkeletonEvent = props.event.title === 'Loading...';
-
     const handleClick = useCallback(
         (e: React.MouseEvent) => {
-            if (!props.event || isSkeletonEvent) {
+            if (!props.event || isSkeletonEvent(props.event)) {
                 return;
             }
 
             e.preventDefault();
             e.stopPropagation();
 
-            if (props.event && !props.event.isCustomEvent && (e.metaKey || e.ctrlKey)) {
-                const courseInfo = props.event;
+            if (!props.event.isCustomEvent && (e.metaKey || e.ctrlKey)) {
+                const courseInfo = props.event as CourseEvent;
                 quickSearch(courseInfo.deptValue, courseInfo.courseNumber, courseInfo.term);
             } else {
                 setSelectedEvent(e, props.event);

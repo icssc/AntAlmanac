@@ -11,14 +11,13 @@ import { shallow } from 'zustand/shallow';
 import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
 import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
 import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
-import type { CalendarEvent, CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
-import { COURSE_WEEK_DAYS } from '$stores/calendarizeHelpers';
 
 /*
  * Always start week on Saturday for finals potentially on weekends.
@@ -76,66 +75,48 @@ export const ScheduleCalendar = memo(() => {
         showFinalsSchedule,
     ]);
 
-    const createSkeletonEvents = useCallback((): CustomEvent[] => {
+    const createSkeletonEvents = useCallback((): SkeletonEvent[] => {
         const baseDate = new Date(2018, 0, 1);
         const weekStart = new Date(baseDate);
 
         const skeletonBlueprints = [
-            { dayOffset: 0, startHour: 12, durationMinutes: 60 },
-            { dayOffset: 0, startHour: 13, durationMinutes: 60 },
-            { dayOffset: 0, startHour: 14, durationMinutes: 60 },
-            { dayOffset: 0, startHour: 15, durationMinutes: 60 },
+            { dayOffset: 0, startHour: 12, startMinute: 0, endHour: 12, endMinute: 50 },
+            { dayOffset: 0, startHour: 13, startMinute: 30, endHour: 14, endMinute: 50 },
+            { dayOffset: 0, startHour: 15, startMinute: 30, endHour: 16, endMinute: 50 },
 
-            { dayOffset: 1, startHour: 11, durationMinutes: 60 },
-            { dayOffset: 1, startHour: 12, durationMinutes: 60 },
-            { dayOffset: 1, startHour: 13, durationMinutes: 60 },
-            { dayOffset: 1, startHour: 14, durationMinutes: 60 },
-            { dayOffset: 1, startHour: 15, durationMinutes: 60 },
-            { dayOffset: 1, startHour: 16, durationMinutes: 60 },
+            { dayOffset: 1, startHour: 11, startMinute: 0, endHour: 12, endMinute: 20 },
+            { dayOffset: 1, startHour: 14, startMinute: 0, endHour: 15, endMinute: 20 },
+            { dayOffset: 1, startHour: 17, startMinute: 0, endHour: 18, endMinute: 20 },
 
-            { dayOffset: 2, startHour: 12, durationMinutes: 60 },
-            { dayOffset: 2, startHour: 13, durationMinutes: 60 },
-            { dayOffset: 2, startHour: 14, durationMinutes: 60 },
-            { dayOffset: 2, startHour: 15, durationMinutes: 60 },
-            { dayOffset: 2, startHour: 16, durationMinutes: 60 },
-            { dayOffset: 2, startHour: 17, durationMinutes: 60 },
-            { dayOffset: 2, startHour: 18, durationMinutes: 60 },
+            { dayOffset: 2, startHour: 13, startMinute: 30, endHour: 14, endMinute: 50 },
+            { dayOffset: 2, startHour: 15, startMinute: 30, endHour: 16, endMinute: 50 },
 
-            { dayOffset: 3, startHour: 11, durationMinutes: 60 },
-            { dayOffset: 3, startHour: 12, durationMinutes: 60 },
-            { dayOffset: 3, startHour: 13, durationMinutes: 60 },
-            { dayOffset: 3, startHour: 14, durationMinutes: 60 },
-            { dayOffset: 3, startHour: 15, durationMinutes: 60 },
-            { dayOffset: 3, startHour: 16, durationMinutes: 60 },
+            { dayOffset: 3, startHour: 11, startMinute: 0, endHour: 12, endMinute: 20 },
+            { dayOffset: 3, startHour: 14, startMinute: 0, endHour: 15, endMinute: 20 },
+            { dayOffset: 3, startHour: 17, startMinute: 0, endHour: 18, endMinute: 20 },
 
-            { dayOffset: 4, startHour: 12, durationMinutes: 60 },
-            { dayOffset: 4, startHour: 13, durationMinutes: 60 },
-            { dayOffset: 4, startHour: 14, durationMinutes: 60 },
-            { dayOffset: 4, startHour: 15, durationMinutes: 60 },
+            { dayOffset: 4, startHour: 9, startMinute: 0, endHour: 9, endMinute: 50 },
+            { dayOffset: 4, startHour: 13, startMinute: 0, endHour: 13, endMinute: 50 },
+            { dayOffset: 4, startHour: 15, startMinute: 0, endHour: 15, endMinute: 50 },
         ];
 
-        return skeletonBlueprints.map((blueprint, index) => {
+        return skeletonBlueprints.map((blueprint) => {
             const start = new Date(weekStart);
             start.setDate(start.getDate() + blueprint.dayOffset);
-            start.setHours(blueprint.startHour, 0, 0, 0);
+            start.setHours(blueprint.startHour, blueprint.startMinute, 0, 0);
 
             const end = new Date(start);
-            end.setMinutes(end.getMinutes() + blueprint.durationMinutes);
-
-            const dayString = COURSE_WEEK_DAYS[start.getDay()];
+            end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
 
             return {
-                customEventID: index + 1,
                 color: '#2563eb',
                 start,
                 end,
-                title: 'Loading...',
-                isCustomEvent: true,
-                building: '',
-                days: [dayString],
-            } as CustomEvent;
+                title: '',
+                isSkeletonEvent: true,
+            } as SkeletonEvent;
         });
-    }, [showFinalsSchedule, isDark, hoveredCalendarizedFinal]);
+    }, []);
 
     const events = loadingSchedule ? createSkeletonEvents() : getEventsForCalendar();
 
@@ -152,22 +133,18 @@ export const ScheduleCalendar = memo(() => {
         return new Date(2018, 0, 1, Math.min(7, Math.min(...eventStartHours)));
     }, [events]);
 
-    const eventStyleGetter = useCallback((event: CalendarEvent) => {
-        const isSkeletonEvent = event.title === 'Loading...';
+    const eventStyleGetter = useCallback((event: CalendarEvent | SkeletonEvent) => {
+        const isSkeletonEvent = 'isSkeletonEvent' in event && event.isSkeletonEvent;
 
         const style = {
             backgroundColor: event.color,
-            cursor: isSkeletonEvent ? 'default' : 'pointer',
+            cursor: 'pointer',
             borderStyle: 'none',
             borderRadius: '4px',
             color: colorContrastSufficient(event.color) ? 'white' : 'black',
-            opacity: isSkeletonEvent ? 0.85 : 1,
         };
 
-        return {
-            style,
-            className: isSkeletonEvent ? 'calendar-loading-event' : undefined,
-        };
+        return isSkeletonEvent ? { style, className: 'calendar-loading-event' } : { style };
     }, []);
 
     /**
