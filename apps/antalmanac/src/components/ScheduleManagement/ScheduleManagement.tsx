@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
-import { getLocalStorageUserId } from '$lib/localStorage';
+import { getLocalStorageSessionId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { paramsAreInURL } from '$stores/CoursePaneStore';
 import { useTabStore } from '$stores/TabStore';
@@ -50,7 +50,7 @@ export function ScheduleManagement() {
             return;
         }
 
-        const userId = getLocalStorageUserId();
+        const sessionId = getLocalStorageSessionId();
         const urlHasManualSearchParams = paramsAreInURL();
         const hasLocalScheduleData = () =>
             AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
@@ -61,7 +61,7 @@ export function ScheduleManagement() {
         }
 
         if (!isMobile) {
-            if (userId === null) {
+            if (sessionId === null) {
                 setActiveTab('search');
             } else {
                 setActiveTab('added');
@@ -69,7 +69,7 @@ export function ScheduleManagement() {
             return;
         }
 
-        if (userId !== null || hasLocalScheduleData()) {
+        if (sessionId !== null || hasLocalScheduleData()) {
             setActiveTab('calendar');
             return;
         }
