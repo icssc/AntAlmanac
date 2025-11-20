@@ -141,9 +141,66 @@ export class RDS {
         email?: string,
         avatar?: string
     ) {
+        // First check if an account with this providerId already exists
         const existingAccount = await this.getAccountByProviderId(db, accountType, providerId);
-        if (!existingAccount) {
-            const { userId } = await db
+        if (existingAccount) {
+            // Account with this OIDC provider ID already exists
+            return { ...existingAccount, newUser: false };
+        }
+
+        // Check if a user with this email already exists (for migration from old Google auth)
+        let existingUser;
+        if (email) {
+            existingUser = await this.getUserByEmail(db, email);
+        }
+
+        let userId: string;
+
+        if (existingUser) {
+            userId = existingUser.id;
+
+            const existingGoogleAccount = await db
+                .select()
+                .from(accounts)
+                .where(and(eq(accounts.userId, userId), eq(accounts.accountType, 'GOOGLE')))
+                .then((res) => res[0]);
+
+            if (existingGoogleAccount && accountType === 'OIDC') {
+                console.log(
+                    `Migrating user ${email}: Converting GOOGLE account (providerId: ${existingGoogleAccount.providerAccountId}) to OIDC account (providerId: ${providerId})`
+                );
+
+                const updatedAccount = await db
+                    .update(accounts)
+                    .set({ providerAccountId: providerId, accountType: 'OIDC' })
+                    .where(and(eq(accounts.userId, userId), eq(accounts.accountType, 'GOOGLE')))
+                    .returning()
+                    .then((res) => res[0]);
+
+                return { ...updatedAccount, newUser: false };
+            }
+
+            const existingAccountByType = await db
+                .select()
+                .from(accounts)
+                .where(and(eq(accounts.userId, userId), eq(accounts.accountType, accountType)))
+                .then((res) => res[0]);
+
+            if (existingAccountByType) {
+                return { ...existingAccountByType, newUser: false };
+            } else {
+                console.log(`Creating new ${accountType} account for existing user ${email}`);
+                const account = await db
+                    .insert(accounts)
+                    .values({ userId, providerAccountId: providerId, accountType })
+                    .returning()
+                    .then((res) => res[0]);
+
+                return { ...account, newUser: false };
+            }
+        } else {
+            // Completely new user
+            const result = await db
                 .insert(users)
                 .values({
                     avatar: avatar ?? '',
@@ -152,17 +209,16 @@ export class RDS {
                 })
                 .returning({ userId: users.id })
                 .then((res) => res[0]);
+            userId = result.userId;
 
             const account = await db
                 .insert(accounts)
-                .values({ userId: userId, providerAccountId: providerId, accountType: accountType })
+                .values({ userId, providerAccountId: providerId, accountType })
                 .returning()
                 .then((res) => res[0]);
 
             return { ...account, newUser: true };
         }
-
-        return { ...existingAccount, newUser: false };
     }
 
     /**
