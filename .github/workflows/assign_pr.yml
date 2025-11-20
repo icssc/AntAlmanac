@@ -1,0 +1,33 @@
+# .github/
+name: Auto-assign PR to author
+
+on:
+  pull_request_target:          # safer version of pull_request
+    types:
+      - opened
+      - ready_for_review        # only assigns when ready for review
+
+jobs:
+  assign-author:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Assign PR to author
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const author = context.payload.pull_request.user.login;
+            
+            // Avoid assigning bots
+            if (author.endsWith('[bot]')) return;
+            
+            // Avoid assigning if PR is already been assigned to author
+            if (context.payload.pull_request.assignees?.some(a => a.login === author)) return;
+            
+            await github.rest.issues.addAssignees({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              assignees: [author]
+            });
