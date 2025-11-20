@@ -5,6 +5,7 @@ import { User } from '@packages/antalmanac-types';
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { openSnackbar } from '$actions/AppStoreActions';
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
 
@@ -14,8 +15,26 @@ export function Signout() {
     const navigate = useNavigate();
 
     const handleLogout = async () => {
-        clearSession();
-        navigate('/');
+        // Store the user's name/email before logout
+        const accountName = user?.name || user?.email || 'your account';
+
+        // Close the menu
+        setAnchorEl(null);
+
+        // Show notification FIRST, before clearing session
+        openSnackbar(
+            'info',
+            `Signed out of ${accountName}`,
+            4000, // ** Important: Show for 4 seconds (adjust as needed)
+            { vertical: 'top', horizontal: 'right' } // Position at top-right
+        );
+
+        // Wait a brief moment for notification to appear, then clear session
+        // The clearSession will reload the page, which is fine since notification already showed
+        setTimeout(async () => {
+            await clearSession();
+            navigate('/');
+        }, 800); // ** Important: Small delay to ensure notification renders
     };
 
     const { session, sessionIsValid, clearSession } = useSessionStore();
