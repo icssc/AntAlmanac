@@ -1,4 +1,4 @@
-# .github/
+# .github/workflows/assign_pr.yml
 name: Auto-assign PR to author
 
 on:
