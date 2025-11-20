@@ -21,6 +21,7 @@ enum LocalStorageKeys {
     importedUser = 'importedUser',
     fromLoading = 'fromLoading',
     tempSaveData = 'tempSaveData',
+    tbaAddedCollapsed = 'tbaAddedCollapsed',
 }
 
 const LSK = LocalStorageKeys;
@@ -268,6 +269,19 @@ export function setLocalStoragePWADismissalTime(value: string) {
 
 export function getLocalStoragePWADismissalTime() {
     return window.localStorage.getItem(LSK.pwaDismissalTime);
+}
+
+// Helper functions for tbaSnackCollapsed
+export function getTbaAddedCollapsedKey(scheduleIndex: number | null | undefined): string {
+    return `${LSK.tbaAddedCollapsed}${scheduleIndex ?? 'none'}`;
+}
+
+export function getLocalStorageTbaAddedCollapsed(scheduleIndex: number | null | undefined) {
+    return window.localStorage.getItem(getTbaAddedCollapsedKey(scheduleIndex));
+}
+
+export function setLocalStorageTbaAddedCollapsed(scheduleIndex: number | null | undefined, value: string) {
+    window.localStorage.setItem(getTbaAddedCollapsedKey(scheduleIndex), value);
 }
 
 export function setLocalStorageTempSaveData(value: string) {
