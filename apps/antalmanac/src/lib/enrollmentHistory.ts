@@ -89,16 +89,15 @@ export class DepartmentEnrollmentHistory {
             const enrollmentDays: EnrollmentHistoryDay[] = [];
 
             for (const [i, dateString] of enrollmentHistory.dates.entries()) {
-                const [day = '', month = '', year = ''] = dateString.split('-');
-                const date = new Date(Number(day), Number(month), Number(year));
-                const formattedDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+                const date = new Date(dateString); // dateString is formatted YYYY-MM-DD
+                const formattedDateString = date.toLocaleDateString();
 
                 enrollmentDays.push({
-                    date: formattedDate,
+                    date: formattedDateString,
                     totalEnrolled: Number(enrollmentHistory.totalEnrolledHistory[i]),
                     maxCapacity: Number(enrollmentHistory.maxCapacityHistory[i]),
                     waitlist:
-                        enrollmentHistory.waitlistHistory[i] === 'n/a'
+                        enrollmentHistory.waitlistHistory[i] === '-1'
                             ? null
                             : Number(enrollmentHistory.waitlistHistory[i]),
                 });
