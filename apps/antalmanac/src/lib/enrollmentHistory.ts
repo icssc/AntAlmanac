@@ -94,7 +94,7 @@ export class DepartmentEnrollmentHistory {
 
             const startIndex = hasEnrollment
                 ? Math.max(0, firstEnrollmentIndex - 1) // include the day before first enrollment
-                : 0; // No enrollment ever → show all days
+                : 0; // show all days when enrollment period hasn't started
 
             const enrollmentDays: EnrollmentHistoryDay[] = enrollmentHistory.dates
                 .slice(startIndex)
