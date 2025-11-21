@@ -86,22 +86,32 @@ export class DepartmentEnrollmentHistory {
         const parsedEnrollmentHistory: EnrollmentHistory[] = [];
 
         for (const enrollmentHistory of res) {
-            const enrollmentDays: EnrollmentHistoryDay[] = [];
+            const totalEnrolledNumbers = enrollmentHistory.totalEnrolledHistory.map(Number);
 
-            for (const [i, dateString] of enrollmentHistory.dates.entries()) {
-                const date = new Date(dateString); // dateString is formatted YYYY-MM-DD
-                const formattedDateString = date.toLocaleDateString();
+            const hasEnrollment = totalEnrolledNumbers.some((count) => count > 0);
 
-                enrollmentDays.push({
-                    date: formattedDateString,
-                    totalEnrolled: Number(enrollmentHistory.totalEnrolledHistory[i]),
-                    maxCapacity: Number(enrollmentHistory.maxCapacityHistory[i]),
-                    waitlist:
-                        enrollmentHistory.waitlistHistory[i] === '-1'
-                            ? null
-                            : Number(enrollmentHistory.waitlistHistory[i]),
+            const firstEnrollmentIndex = totalEnrolledNumbers.findIndex((count) => count > 0);
+
+            const startIndex = hasEnrollment
+                ? Math.max(0, firstEnrollmentIndex - 1) // include the day before first enrollment
+                : 0; // No enrollment ever → show all days
+
+            const enrollmentDays: EnrollmentHistoryDay[] = enrollmentHistory.dates
+                .slice(startIndex)
+                .map((dateString, i) => {
+                    const originalIndex = startIndex + i;
+
+                    const date = new Date(dateString);
+                    return {
+                        date: date.toLocaleDateString(),
+                        totalEnrolled: totalEnrolledNumbers[originalIndex],
+                        maxCapacity: Number(enrollmentHistory.maxCapacityHistory[originalIndex]),
+                        waitlist:
+                            enrollmentHistory.waitlistHistory[originalIndex] === '-1'
+                                ? null
+                                : Number(enrollmentHistory.waitlistHistory[originalIndex]),
+                    };
                 });
-            }
 
             parsedEnrollmentHistory.push({
                 year: enrollmentHistory.year,
