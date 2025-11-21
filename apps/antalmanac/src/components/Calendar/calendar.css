@@ -86,22 +86,43 @@
     background: #555;
 }
 
-@keyframes calendar-loading-pulse {
+@keyframes calendar-loading-shimmer {
     0% {
-        filter: brightness(0.85);
-    }
-
-    50% {
-        filter: brightness(1.15);
+        background-position: 200% 0;
     }
 
     100% {
-        filter: brightness(0.85);
+        background-position: -200% 0;
     }
 }
 
 .rbc-event.calendar-loading-event {
-    animation: calendar-loading-pulse 1.4s ease-in-out infinite;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: calendar-loading-shimmer 2s ease-in-out infinite;
+}
+
+.rbc-event.calendar-loading-event::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: inherit;
+    background-size: 200% 100%;
+    animation: calendar-loading-shimmer 3s ease-in-out infinite;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+}
+
+.rbc-event.calendar-loading-event .rbc-event-label {
+    display: none;
 }
 
 /*.menu-button:hover,*/

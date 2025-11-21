@@ -81,22 +81,14 @@ export const ScheduleCalendar = memo(() => {
 
         const skeletonBlueprints = [
             { dayOffset: 0, startHour: 12, startMinute: 0, endHour: 12, endMinute: 50 },
-            { dayOffset: 0, startHour: 13, startMinute: 30, endHour: 14, endMinute: 50 },
-            { dayOffset: 0, startHour: 15, startMinute: 30, endHour: 16, endMinute: 50 },
 
             { dayOffset: 1, startHour: 11, startMinute: 0, endHour: 12, endMinute: 20 },
-            { dayOffset: 1, startHour: 14, startMinute: 0, endHour: 15, endMinute: 20 },
             { dayOffset: 1, startHour: 17, startMinute: 0, endHour: 18, endMinute: 20 },
 
-            { dayOffset: 2, startHour: 13, startMinute: 30, endHour: 14, endMinute: 50 },
-            { dayOffset: 2, startHour: 15, startMinute: 30, endHour: 16, endMinute: 50 },
-
             { dayOffset: 3, startHour: 11, startMinute: 0, endHour: 12, endMinute: 20 },
-            { dayOffset: 3, startHour: 14, startMinute: 0, endHour: 15, endMinute: 20 },
             { dayOffset: 3, startHour: 17, startMinute: 0, endHour: 18, endMinute: 20 },
 
             { dayOffset: 4, startHour: 9, startMinute: 0, endHour: 9, endMinute: 50 },
-            { dayOffset: 4, startHour: 13, startMinute: 0, endHour: 13, endMinute: 50 },
             { dayOffset: 4, startHour: 15, startMinute: 0, endHour: 15, endMinute: 50 },
         ];
 
@@ -109,7 +101,7 @@ export const ScheduleCalendar = memo(() => {
             end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
 
             return {
-                color: '#2563eb',
+                color: '#6d6d6d',
                 start,
                 end,
                 title: '',
