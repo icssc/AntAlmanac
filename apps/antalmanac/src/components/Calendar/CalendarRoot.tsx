@@ -1,9 +1,9 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
 
-import { Box, Backdrop, CircularProgress, useTheme } from '@mui/material';
+import { Box, Backdrop, useTheme } from '@mui/material';
 import moment from 'moment';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
 import { useShallow } from 'zustand/react/shallow';
 import { shallow } from 'zustand/shallow';
@@ -11,13 +11,15 @@ import { shallow } from 'zustand/shallow';
 import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
 import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
 import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
-import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
+import { getLocalStorageTempSaveData } from '$lib/localStorage';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import { deleteTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 
 /*
  * Always start week on Saturday for finals potentially on weekends.
@@ -54,6 +56,12 @@ export const ScheduleCalendar = memo(() => {
     const isDark = useThemeStore(useShallow((store) => store.isDark));
 
     const { openLoadingSchedule: loadingSchedule } = scheduleComponentsToggleStore();
+    const hasHadEventsRef = useRef(false);
+
+    const onlyCourseEvents = useMemo(
+        () => eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[],
+        [eventsInCalendar]
+    );
 
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
         if (showFinalsSchedule)
@@ -70,7 +78,157 @@ export const ScheduleCalendar = memo(() => {
         showFinalsSchedule,
     ]);
 
-    const events = getEventsForCalendar();
+    useEffect(() => {
+        if (!loadingSchedule) {
+            const courseEvents = eventsInCalendar.filter((event) => !event.isCustomEvent);
+
+            if (courseEvents.length > 0) {
+                hasHadEventsRef.current = true;
+                const baseDate = new Date(2018, 0, 1);
+                const skeletonBlueprint = courseEvents
+                    .map((event) => {
+                        const dayOffset = event.start.getDate() - baseDate.getDate();
+                        return {
+                            dayOffset,
+                            startHour: event.start.getHours(),
+                            startMinute: event.start.getMinutes(),
+                            endHour: event.end.getHours(),
+                            endMinute: event.end.getMinutes(),
+                        };
+                    })
+                    .filter((blueprint) => blueprint.dayOffset >= 0 && blueprint.dayOffset <= 6);
+
+                if (skeletonBlueprint.length > 0) {
+                    setTempSaveData({ skeletonBlueprint });
+                }
+            } else if (hasHadEventsRef.current) {
+                deleteTempSaveData();
+                hasHadEventsRef.current = false;
+            }
+        }
+    }, [eventsInCalendar, loadingSchedule]);
+
+    const createSkeletonEvents = useCallback((): SkeletonEvent[] => {
+        const baseDate = new Date(2018, 0, 1);
+        const weekStart = new Date(baseDate);
+
+        const savedDataString = getLocalStorageTempSaveData();
+
+        let skeletonBlueprints: Array<{
+            dayOffset: number;
+            startHour: number;
+            startMinute: number;
+            endHour: number;
+            endMinute: number;
+        }> | null = null;
+
+        if (savedDataString) {
+            const parsedData = JSON.parse(savedDataString);
+            if (
+                parsedData.skeletonBlueprint &&
+                Array.isArray(parsedData.skeletonBlueprint) &&
+                parsedData.skeletonBlueprint.length > 0
+            ) {
+                skeletonBlueprints = parsedData.skeletonBlueprint;
+            }
+        }
+
+        if (skeletonBlueprints) {
+            return skeletonBlueprints.map((blueprint) => {
+                const start = new Date(weekStart);
+                start.setDate(start.getDate() + blueprint.dayOffset);
+                start.setHours(blueprint.startHour, blueprint.startMinute, 0, 0);
+
+                const end = new Date(start);
+                end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
+
+                return {
+                    color: '#6d6d6d',
+                    start,
+                    end,
+                    title: '',
+                    isSkeletonEvent: true,
+                } as SkeletonEvent;
+            });
+        }
+
+        const skeletonBlueprintVariations = [
+            [
+                { dayOffset: 0, startHour: 12, startMinute: 0, endHour: 12, endMinute: 50 },
+
+                { dayOffset: 1, startHour: 11, startMinute: 0, endHour: 12, endMinute: 20 },
+                { dayOffset: 1, startHour: 17, startMinute: 0, endHour: 18, endMinute: 20 },
+
+                { dayOffset: 3, startHour: 11, startMinute: 0, endHour: 12, endMinute: 20 },
+                { dayOffset: 3, startHour: 17, startMinute: 0, endHour: 18, endMinute: 20 },
+
+                { dayOffset: 4, startHour: 9, startMinute: 0, endHour: 9, endMinute: 50 },
+                { dayOffset: 4, startHour: 15, startMinute: 0, endHour: 15, endMinute: 50 },
+            ],
+            [
+                { dayOffset: 0, startHour: 9, startMinute: 0, endHour: 9, endMinute: 50 },
+                { dayOffset: 0, startHour: 11, startMinute: 0, endHour: 11, endMinute: 50 },
+                { dayOffset: 0, startHour: 17, startMinute: 0, endHour: 18, endMinute: 50 },
+
+                { dayOffset: 2, startHour: 9, startMinute: 0, endHour: 9, endMinute: 50 },
+                { dayOffset: 2, startHour: 11, startMinute: 0, endHour: 11, endMinute: 50 },
+
+                { dayOffset: 3, startHour: 14, startMinute: 0, endHour: 15, endMinute: 20 },
+
+                { dayOffset: 4, startHour: 9, startMinute: 0, endHour: 9, endMinute: 50 },
+                { dayOffset: 4, startHour: 11, startMinute: 0, endHour: 11, endMinute: 50 },
+            ],
+            [
+                { dayOffset: 0, startHour: 9, startMinute: 0, endHour: 9, endMinute: 50 },
+                { dayOffset: 0, startHour: 18, startMinute: 0, endHour: 18, endMinute: 50 },
+
+                { dayOffset: 1, startHour: 8, startMinute: 0, endHour: 9, endMinute: 20 },
+                { dayOffset: 1, startHour: 12, startMinute: 30, endHour: 13, endMinute: 50 },
+                { dayOffset: 1, startHour: 18, startMinute: 30, endHour: 19, endMinute: 50 },
+
+                { dayOffset: 3, startHour: 8, startMinute: 0, endHour: 9, endMinute: 20 },
+                { dayOffset: 3, startHour: 12, startMinute: 30, endHour: 13, endMinute: 50 },
+                { dayOffset: 3, startHour: 18, startMinute: 0, endHour: 18, endMinute: 50 },
+
+                { dayOffset: 4, startHour: 13, startMinute: 0, endHour: 13, endMinute: 50 },
+            ],
+            [
+                { dayOffset: 0, startHour: 12, startMinute: 0, endHour: 12, endMinute: 50 },
+
+                { dayOffset: 1, startHour: 9, startMinute: 30, endHour: 10, endMinute: 50 },
+                { dayOffset: 1, startHour: 15, startMinute: 30, endHour: 16, endMinute: 50 },
+                { dayOffset: 1, startHour: 17, startMinute: 0, endHour: 18, endMinute: 20 },
+
+                { dayOffset: 2, startHour: 13, startMinute: 0, endHour: 13, endMinute: 50 },
+
+                { dayOffset: 3, startHour: 9, startMinute: 30, endHour: 10, endMinute: 50 },
+                { dayOffset: 3, startHour: 15, startMinute: 30, endHour: 16, endMinute: 50 },
+                { dayOffset: 3, startHour: 17, startMinute: 0, endHour: 18, endMinute: 20 },
+            ],
+        ];
+
+        const randomIndex = Math.floor(Math.random() * skeletonBlueprintVariations.length);
+        const fallbackBlueprints = skeletonBlueprintVariations[randomIndex];
+
+        return fallbackBlueprints.map((blueprint) => {
+            const start = new Date(weekStart);
+            start.setDate(start.getDate() + blueprint.dayOffset);
+            start.setHours(blueprint.startHour, blueprint.startMinute, 0, 0);
+
+            const end = new Date(start);
+            end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
+
+            return {
+                color: '#6d6d6d',
+                start,
+                end,
+                title: '',
+                isSkeletonEvent: true,
+            } as SkeletonEvent;
+        });
+    }, []);
+
+    const events = loadingSchedule ? createSkeletonEvents() : getEventsForCalendar();
 
     const toggleDisplayFinalsSchedule = useCallback(() => {
         setShowFinalsSchedule((prevState) => !prevState);
@@ -85,7 +243,9 @@ export const ScheduleCalendar = memo(() => {
         return new Date(2018, 0, 1, Math.min(7, Math.min(...eventStartHours)));
     }, [events]);
 
-    const eventStyleGetter = useCallback((event: CalendarEvent) => {
+    const eventStyleGetter = useCallback((event: CalendarEvent | SkeletonEvent) => {
+        const isSkeletonEvent = 'isSkeletonEvent' in event && event.isSkeletonEvent;
+
         const style = {
             backgroundColor: event.color,
             cursor: 'pointer',
@@ -94,7 +254,7 @@ export const ScheduleCalendar = memo(() => {
             color: colorContrastSufficient(event.color) ? 'white' : 'black',
         };
 
-        return { style };
+        return isSkeletonEvent ? { style, className: 'calendar-loading-event' } : { style };
     }, []);
 
     /**
@@ -141,8 +301,6 @@ export const ScheduleCalendar = memo(() => {
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
     const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
     const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
-
-    const onlyCourseEvents = eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[];
 
     const finalsDate = hoveredCalendarizedFinal
         ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
@@ -215,9 +373,7 @@ export const ScheduleCalendar = memo(() => {
                     padding: ' 0',
                 })}
                 open={loadingSchedule}
-            >
-                <CircularProgress color="inherit" />
-            </Backdrop>
+            />
             <CalendarToolbar
                 currentScheduleIndex={currentScheduleIndex}
                 toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
