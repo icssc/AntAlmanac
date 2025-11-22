@@ -179,7 +179,6 @@ export const ScheduleCalendar = memo(() => {
                 { dayOffset: 3, startHour: 8, startMinute: 0, endHour: 9, endMinute: 20 },
                 { dayOffset: 3, startHour: 12, startMinute: 30, endHour: 13, endMinute: 50 },
                 { dayOffset: 3, startHour: 18, startMinute: 0, endHour: 18, endMinute: 50 },
-                { dayOffset: 3, startHour: 18, startMinute: 30, endHour: 19, endMinute: 50 },
 
                 { dayOffset: 4, startHour: 13, startMinute: 0, endHour: 13, endMinute: 50 },
             ],
