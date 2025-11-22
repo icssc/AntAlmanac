@@ -3,7 +3,7 @@ import './calendar.css';
 
 import { Box, Backdrop, useTheme } from '@mui/material';
 import moment from 'moment';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
 import { useShallow } from 'zustand/react/shallow';
 import { shallow } from 'zustand/shallow';
@@ -19,7 +19,7 @@ import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
-import { setTempSaveData } from '$stores/localTempSaveDataHelpers';
+import { deleteTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 
 /*
  * Always start week on Saturday for finals potentially on weekends.
@@ -56,6 +56,7 @@ export const ScheduleCalendar = memo(() => {
     const isDark = useThemeStore(useShallow((store) => store.isDark));
 
     const { openLoadingSchedule: loadingSchedule } = scheduleComponentsToggleStore();
+    const hasHadEventsRef = useRef(false);
 
     const onlyCourseEvents = useMemo(
         () => eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[],
@@ -78,24 +79,31 @@ export const ScheduleCalendar = memo(() => {
     ]);
 
     useEffect(() => {
-        if (!loadingSchedule && eventsInCalendar.length > 0) {
-            const baseDate = new Date(2018, 0, 1);
-            const skeletonBlueprint = eventsInCalendar
-                .filter((event) => !event.isCustomEvent)
-                .map((event) => {
-                    const dayOffset = event.start.getDate() - baseDate.getDate();
-                    return {
-                        dayOffset,
-                        startHour: event.start.getHours(),
-                        startMinute: event.start.getMinutes(),
-                        endHour: event.end.getHours(),
-                        endMinute: event.end.getMinutes(),
-                    };
-                })
-                .filter((blueprint) => blueprint.dayOffset >= 0 && blueprint.dayOffset <= 6);
+        if (!loadingSchedule) {
+            const courseEvents = eventsInCalendar.filter((event) => !event.isCustomEvent);
 
-            if (skeletonBlueprint.length > 0) {
-                setTempSaveData({ skeletonBlueprint });
+            if (courseEvents.length > 0) {
+                hasHadEventsRef.current = true;
+                const baseDate = new Date(2018, 0, 1);
+                const skeletonBlueprint = courseEvents
+                    .map((event) => {
+                        const dayOffset = event.start.getDate() - baseDate.getDate();
+                        return {
+                            dayOffset,
+                            startHour: event.start.getHours(),
+                            startMinute: event.start.getMinutes(),
+                            endHour: event.end.getHours(),
+                            endMinute: event.end.getMinutes(),
+                        };
+                    })
+                    .filter((blueprint) => blueprint.dayOffset >= 0 && blueprint.dayOffset <= 6);
+
+                if (skeletonBlueprint.length > 0) {
+                    setTempSaveData({ skeletonBlueprint });
+                }
+            } else if (hasHadEventsRef.current) {
+                deleteTempSaveData();
+                hasHadEventsRef.current = false;
             }
         }
     }, [eventsInCalendar, loadingSchedule]);
@@ -105,6 +113,7 @@ export const ScheduleCalendar = memo(() => {
         const weekStart = new Date(baseDate);
 
         const savedDataString = getLocalStorageTempSaveData();
+
         let skeletonBlueprints: Array<{
             dayOffset: number;
             startHour: number;
@@ -123,6 +132,7 @@ export const ScheduleCalendar = memo(() => {
                 skeletonBlueprints = parsedData.skeletonBlueprint;
             }
         }
+
         if (skeletonBlueprints) {
             return skeletonBlueprints.map((blueprint) => {
                 const start = new Date(weekStart);
