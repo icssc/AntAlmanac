@@ -16,7 +16,6 @@ import { clickToCopy } from '$lib/helpers';
 import { WebSOC } from '$lib/websoc';
 import AppStore from '$stores/AppStore';
 
-
 /**
  * All the interactive buttons have the same styles.
  */
@@ -416,7 +415,7 @@ function AddedSectionsGrid() {
                         const missing = missingTypes[courseKey] || [];
                         const missingLabels = [];
 
-                        for (const section in missing) {
+                        for (const section of missing) {
                             if (section === 'dis') {
                                 missingLabels.push('Discussion');
                             } else if (section === 'lab') {
