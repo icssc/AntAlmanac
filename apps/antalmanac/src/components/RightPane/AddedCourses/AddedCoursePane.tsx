@@ -1,4 +1,4 @@
-import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
+import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography, Alert } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -13,7 +13,9 @@ import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
+import { WebSOC } from '$lib/websoc';
 import AppStore from '$stores/AppStore';
+
 
 /**
  * All the interactive buttons have the same styles.
@@ -36,6 +38,39 @@ interface CourseWithTerm extends AACourse {
 
 const NOTE_MAX_LEN = 5000;
 
+//Checks added courses for missing sections
+const checkCompleteSections = async (userCourses: CourseWithTerm): Promise<string[]> => {
+    try {
+        const websocParams = {
+            department: userCourses.deptCode,
+            courseNumber: userCourses.courseNumber,
+            term: userCourses.term,
+        };
+
+        const fullCourseData = await WebSOC.query(websocParams);
+        console.log('hi');
+        console.log(fullCourseData);
+
+        const sections = fullCourseData?.schools?.[0]?.departments?.[0]?.courses?.[0]?.sections;
+
+        //Return an empty array if the API behaves unexpectedly. No warning will be shown in the UI in this case
+        if (!sections || !Array.isArray(sections)) {
+            console.log('Cannot show section warnings. WebSOC response unexpected: ', fullCourseData);
+            return [];
+        }
+
+        //Get all of the unique section types
+        const requiredTypes = new Set(sections.map((section) => section.sectionType.trim().toLowerCase()));
+        const userTypes = new Set(userCourses.sections.map((section) => section.sectionType.trim().toLowerCase()));
+
+        const missingTypes = [...requiredTypes].filter((type) => !userTypes.has(type));
+        return missingTypes;
+    } catch (error) {
+        console.error('Error fetching course data from WebSOC:', error);
+        return [];
+    }
+};
+
 function getCourses() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
 
@@ -49,6 +84,8 @@ function getCourses() {
                 needleCourse.courseTitle === course.courseTitle
         );
 
+        //If the course already exists (if the user is already taking a section of this course),
+        //then group them together so they display on top of each other
         if (formattedCourse) {
             formattedCourse.sections.push({
                 ...course.section,
@@ -290,6 +327,7 @@ function AddedSectionsGrid() {
     const [courses, setCourses] = useState(getCourses());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+    const [missingTypes, setMissingTypes] = useState<Record<string, string[]>>({});
 
     useEffect(() => {
         const handleCoursesChange = () => {
@@ -316,6 +354,26 @@ function AddedSectionsGrid() {
             AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
         };
     }, []);
+    console.log('Courses: ' + courses);
+
+    //Check for any missing sections for each added course
+    useEffect(() => {
+        const checkCourses = async () => {
+            const missing: Record<string, string[]> = {};
+
+            //Check the sections in every course the user has scheduled
+            for (const course of courses) {
+                const courseKey = `${course.deptCode}${course.courseNumber}`;
+                const missingSections = await checkCompleteSections(course);
+                missing[courseKey] = missingSections;
+            }
+
+            setMissingTypes(missing);
+        };
+        if (courses.length > 0) {
+            checkCourses();
+        }
+    }, [courses]);
 
     const scheduleUnits = useMemo(() => {
         let result = 0;
@@ -354,8 +412,31 @@ function AddedSectionsGrid() {
                 {courses.length < 1 ? NoCoursesBox : null}
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
+                        const courseKey = `${course.deptCode}${course.courseNumber}`;
+                        const missing = missingTypes[courseKey] || [];
+                        const missingLabels = [];
+
+                        for (const section in missing) {
+                            if (section === 'dis') {
+                                missingLabels.push('Discussion');
+                            } else if (section === 'lab') {
+                                missingLabels.push('Lab');
+                            } else if (section === 'lec') {
+                                missingLabels.push('Lecture');
+                            } else if (section === 'sem') {
+                                missingLabels.push('Seminar');
+                            } else if (section === 'rec') {
+                                missingLabels.push('Recitation');
+                            }
+                        }
+
                         return (
                             <Box key={course.deptCode + course.courseNumber + course.courseTitle}>
+                                {missing.length > 0 && (
+                                    <Alert severity="warning" sx={{ mb: 1 }}>
+                                        Missing required sections: {missingLabels.join(',')}
+                                    </Alert>
+                                )}
                                 <SectionTableLazyWrapper
                                     courseDetails={course}
                                     term={course.term}
