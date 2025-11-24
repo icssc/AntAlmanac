@@ -1,6 +1,7 @@
 import { ScheduleCourse, HourMinute, WebsocSectionFinalExam, WebsocSectionMeeting } from '@packages/antalmanac-types';
 
 import AppStore from '$stores/AppStore';
+import { SectionColorSetting } from '$stores/SettingsStore';
 
 const CURRENT_TERM = '2024 Winter'; // TODO: Check the current term when that PR's in
 let sampleClassesSectionCodes: Array<string> = [];
@@ -9,7 +10,7 @@ const finalsDaysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as co
 
 type FinalsDaysOfWeek = (typeof finalsDaysOfWeek)[number];
 
-export function addSampleClasses() {
+export function addSampleClasses(sectionColor: SectionColorSetting) {
     if (AppStore.getAddedCourses().length > 0) return;
 
     const sampleClassesOptions: sampleClassOptions[] = [

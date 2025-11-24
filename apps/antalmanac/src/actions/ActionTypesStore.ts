@@ -13,6 +13,7 @@ import {
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { SectionColorSetting } from '$stores/SettingsStore';
 
 const MAX_UNSAVED_ACTIONS = 1000;
 
@@ -165,7 +166,7 @@ class ActionTypesStore extends EventEmitter {
         }
     }
 
-    async loadScheduleFromUnsavedActions() {
+    async loadScheduleFromUnsavedActions(sectionColor: SectionColorSetting) {
         const unsavedActionsString = getLocalStorageUnsavedActions();
         if (unsavedActionsString == null) {
             return;
@@ -180,7 +181,7 @@ class ActionTypesStore extends EventEmitter {
         actions.forEach((action) => {
             switch (action.type) {
                 case 'addCourse':
-                    AppStore.schedule.addCourse(action.course, action.scheduleIndex);
+                    AppStore.schedule.addCourse(action.course, sectionColor, action.scheduleIndex);
                     break;
                 case 'deleteCourse':
                     AppStore.schedule.deleteCourse(action.sectionCode, action.term, action.scheduleIndex);

@@ -111,14 +111,14 @@ class AppStore extends EventEmitter {
 
     addCourse(
         newCourse: ScheduleCourse,
-        scheduleIndex: number = this.schedule.getCurrentScheduleIndex(),
-        sectionColor: SectionColorSetting
+        sectionColor: SectionColorSetting,
+        scheduleIndex: number = this.schedule.getCurrentScheduleIndex()
     ) {
         let addedCourse: ScheduleCourse;
         if (scheduleIndex === this.schedule.getNumberOfSchedules()) {
             addedCourse = this.schedule.addCourseToAllSchedules(newCourse, sectionColor);
         } else {
-            addedCourse = this.schedule.addCourse(newCourse, scheduleIndex, sectionColor);
+            addedCourse = this.schedule.addCourse(newCourse, sectionColor, scheduleIndex);
         }
         this.unsavedChanges = true;
         const action: AddCourseAction = {
@@ -322,8 +322,8 @@ class AppStore extends EventEmitter {
         window.localStorage.removeItem('unsavedActions');
     }
 
-    copySchedule(scheduleIndex: number, newScheduleName: string) {
-        this.schedule.copySchedule(scheduleIndex, newScheduleName);
+    copySchedule(scheduleIndex: number, newScheduleName: string, sectionColor: SectionColorSetting) {
+        this.schedule.copySchedule(scheduleIndex, newScheduleName, sectionColor);
         this.unsavedChanges = true;
         const action: CopyScheduleAction = {
             type: 'copySchedule',
@@ -361,7 +361,7 @@ class AppStore extends EventEmitter {
         }
     }
 
-    async loadSchedule(savedSchedule: ScheduleSaveState) {
+    async loadSchedule(savedSchedule: ScheduleSaveState, sectionColor: SectionColorSetting) {
         const hasDataChanged = JSON.stringify(this.schedule.getScheduleAsSaveState()) === JSON.stringify(savedSchedule);
         const loadSuccess = await this.loadScheduleFromSaveState(savedSchedule);
         if (!loadSuccess) {
@@ -374,7 +374,7 @@ class AppStore extends EventEmitter {
          * On failure, quietly reload from save state (essentially undoing any partially loaded unsaved actions)
          */
         try {
-            await actionTypesStore.loadScheduleFromUnsavedActions();
+            await actionTypesStore.loadScheduleFromUnsavedActions(sectionColor);
         } catch (e: unknown) {
             if (e instanceof Error) {
                 console.error('Unsaved actions could not be loaded:', e.message);

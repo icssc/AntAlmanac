@@ -55,7 +55,7 @@ export const addCourse = (
         section: { ...section, color: '' },
     };
 
-    return AppStore.addCourse(newCourse, scheduleIndex, sectionColor);
+    return AppStore.addCourse(newCourse, sectionColor, scheduleIndex);
 };
 /**
  * @param variant usually 'info', 'error', 'warning', or 'success'

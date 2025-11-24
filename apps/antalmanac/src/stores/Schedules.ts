@@ -149,13 +149,13 @@ export class Schedules {
     /**
      * Copy the schedule at the provided index to a newly created schedule with the specified name.
      */
-    copySchedule(scheduleIndex: number, newScheduleName: string) {
+    copySchedule(scheduleIndex: number, newScheduleName: string, sectionColor: SectionColorSetting) {
         this.addNewSchedule(newScheduleName);
         this.currentScheduleIndex = scheduleIndex; // temporarily set current schedule to the one being copied
         const to = this.getNumberOfSchedules() - 1;
 
         for (const course of this.getCurrentCourses()) {
-            this.addCourse(course, to, false);
+            this.addCourse(course, sectionColor, to, false);
         }
 
         for (const customEvent of this.getCurrentCustomEvents()) {
@@ -233,8 +233,8 @@ export class Schedules {
      */
     addCourse(
         newCourse: ScheduleCourse,
-        scheduleIndex: number,
         sectionColor: SectionColorSetting,
+        scheduleIndex: number,
         addUndoState = true
     ) {
         if (addUndoState) {
@@ -284,7 +284,7 @@ export class Schedules {
     addCourseToAllSchedules(newCourse: ScheduleCourse, sectionColor: SectionColorSetting) {
         this.addUndoState();
         for (let i = 0; i < this.getNumberOfSchedules(); i++) {
-            this.addCourse(newCourse, i, sectionColor, false);
+            this.addCourse(newCourse, sectionColor, i, false);
         }
         return newCourse;
     }
