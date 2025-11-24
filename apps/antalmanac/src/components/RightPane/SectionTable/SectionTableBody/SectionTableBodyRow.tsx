@@ -4,7 +4,6 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { ActionCell } from './SectionTableBodyCells/ActionCell';
 
-import { CourseCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/CourseCodeCell';
 import { DayAndTimeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DayAndTimeCell';
 import { DetailsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell';
 import { EnrollmentCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/EnrollmentCell';
@@ -12,6 +11,7 @@ import { GpaCell } from '$components/RightPane/SectionTable/SectionTableBody/Sec
 import { InstructorsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/InstructorsCell';
 import { LocationsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/LocationsCell';
 import { RestrictionsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/RestrictionsCell';
+import { SectionCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SectionCodeCell';
 import { StatusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/StatusCell';
 import { SyllabusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SyllabusCell';
 import { AnalyticsCategory } from '$lib/analytics/analytics';
@@ -34,7 +34,7 @@ interface SectionTableBodyRowProps {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     action: ActionCell,
-    sectionCode: CourseCodeCell,
+    sectionCode: SectionCodeCell,
     sectionDetails: DetailsCell,
     instructors: InstructorsCell,
     gpa: GpaCell,

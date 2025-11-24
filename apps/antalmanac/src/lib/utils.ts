@@ -28,3 +28,11 @@ export function notNull<T>(value: T): value is NonNullable<T> {
 export function getReferencesOccurring(reference: string[], input?: string | string[] | null): boolean[] {
     return input ? reference.map((reference) => input.includes(reference)) : reference.map(() => false);
 }
+
+export const safeUnreachableCase = <T>(v: never, retVal?: T): T | undefined => {
+    // if this code is running, v didn't turn out to be `never` after all, so tell TS that
+    const castedV = v as unknown;
+
+    console.error(`Reached a (safe) unreachable case: ${castedV}`);
+    return retVal;
+};

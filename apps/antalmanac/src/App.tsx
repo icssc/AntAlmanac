@@ -130,6 +130,8 @@ export default function App() {
                                 borderRadius: 5,
                                 boxShadow: '0 0 10px #000',
                                 padding: 20,
+                                paddingTop: 40,
+                                margin: 20,
                             }),
                         }}
                     >

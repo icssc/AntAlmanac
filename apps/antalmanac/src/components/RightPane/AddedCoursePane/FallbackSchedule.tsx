@@ -61,7 +61,7 @@ export function FallbackSchedule() {
                         <Typography variant="h6">Quarter: {term}</Typography>
                         <Paper key={term}>
                             {sections.map((section, index) => (
-                                <Tooltip title="Click to copy course code" placement="right" key={index}>
+                                <Tooltip title="Click to copy section code" placement="right" key={index}>
                                     <Chip
                                         onClick={(event) => handleSectionClick(event, section)}
                                         label={section}

@@ -7,6 +7,7 @@ import { SketchPicker } from 'react-color';
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
 import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
+import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 
 interface ColorPickerProps {
     color: string;
@@ -101,7 +102,11 @@ export const ColorPicker = memo(
                         horizontal: 'left',
                     }}
                 >
-                    <SketchPicker color={currColor} onChange={handleColorChange} />
+                    <SketchPicker
+                        color={currColor}
+                        onChange={handleColorChange}
+                        presetColors={colorPickerPresetColors}
+                    />
                 </Popover>
             </>
         );

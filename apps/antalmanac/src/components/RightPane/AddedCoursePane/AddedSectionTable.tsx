@@ -132,13 +132,13 @@ export function AddedSectionTable() {
     );
 
     return (
-        <Box display="flex" flexDirection="column" gap={1}>
-            <Box display="flex" width={1} position="absolute" zIndex="2">
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Box sx={{ display: 'flex', width: 'fit-content', position: 'absolute', zIndex: 2 }}>
                 <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
                 <ClearScheduleButton sx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />
                 <ColumnToggleDropdown />
             </Box>
-            <Box style={{ marginTop: 56 }}>
+            <Box sx={{ marginTop: 7 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
                 {courses.length < 1 ? NoCoursesBox : null}
                 <Box display="flex" flexDirection="column" gap={1}>

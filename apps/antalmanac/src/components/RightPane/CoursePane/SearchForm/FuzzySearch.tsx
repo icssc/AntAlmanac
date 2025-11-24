@@ -1,11 +1,11 @@
-import { Autocomplete, type AutocompleteInputChangeReason, TextField } from '@mui/material';
+import { type AutocompleteInputChangeReason } from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
 import { PureComponent } from 'react';
 import UAParser from 'ua-parser-js';
 
-import RightPaneStore from '../../RightPaneStore';
-
+import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 
@@ -31,7 +31,7 @@ const isIpad = () => {
 
 interface FuzzySearchProps {
     toggleSearch: () => void;
-    toggleShowLegacySearch: () => void;
+    toggleShowManualSearch: () => void;
     postHog?: PostHog;
 }
 
@@ -184,29 +184,28 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
     render() {
         return (
-            <Autocomplete
-                loading={this.state.loading}
-                style={{ width: '100%' }}
-                options={Object.keys(this.state.results ?? {})}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        // eslint-disable-next-line jsx-a11y/no-autofocus
-                        autoFocus={!isMobile()}
-                        fullWidth
-                        label={'Search'}
-                        placeholder="Search for courses, departments, GEs..."
-                    />
-                )}
-                autoHighlight={true}
-                filterOptions={this.filterOptions}
-                getOptionLabel={this.getOptionLabel}
-                id={'fuzzy-search'}
-                noOptionsText={'No results found! Please try broadening your search.'}
-                onClose={this.onClose}
-                onInputChange={this.onInputChange}
-                open={this.state.open}
-                popupIcon={''}
+            <LabeledAutocomplete
+                label="Search"
+                autocompleteProps={{
+                    loading: this.state.loading,
+                    fullWidth: true,
+                    options: Object.keys(this.state.results ?? {}),
+                    autoHighlight: true,
+                    filterOptions: this.filterOptions,
+                    getOptionLabel: this.getOptionLabel,
+                    id: 'fuzzy-search',
+                    noOptionsText: 'No results found! Please try broadening your search.',
+                    onClose: this.onClose,
+                    onInputChange: this.onInputChange,
+                    open: this.state.open,
+                    popupIcon: '',
+                }}
+                textFieldProps={{
+                    autoFocus: !isMobile(),
+                    placeholder: 'Search for courses, departments, GEs...',
+                    fullWidth: true,
+                }}
+                isAligned
             />
         );
     }

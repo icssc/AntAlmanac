@@ -1,4 +1,6 @@
 packages:
-  - apps/*
-  - packages/*
-  - .github/actions/*
+    - apps/*
+    - packages/*
+    - .github/actions/*
+
+minimumReleaseAge: 1440

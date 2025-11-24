@@ -6,20 +6,47 @@ import { DepartmentSearchBar } from '$components/RightPane/CoursePane/SearchForm
 import { GeSelector } from '$components/RightPane/CoursePane/SearchForm/GeSelector';
 import SectionCodeSearchBar from '$components/RightPane/CoursePane/SearchForm/SectionCodeSearchBar';
 
-interface LegacySearchProps {
+interface ManualSearchProps {
     onSubmit: VoidFunction;
     onReset: VoidFunction;
 }
 
-export function LegacySearch({ onSubmit, onReset }: LegacySearchProps) {
+export function ManualSearch({ onSubmit, onReset }: ManualSearchProps) {
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-            <Box>
-                <Box sx={{ display: 'flex', width: '100%', gap: 2 }}>
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 0.5,
+            }}
+        >
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2,
+                }}
+            >
+                <Box
+                    sx={{
+                        display: 'flex',
+                        width: '100%',
+                        gap: 2,
+                        flexWrap: 'wrap',
+                    }}
+                >
                     <DepartmentSearchBar />
                     <CourseNumberSearchBar />
                 </Box>
-                <Box sx={{ display: 'flex', width: '100%', gap: 2 }}>
+
+                <Box
+                    sx={{
+                        display: 'flex',
+                        width: '100%',
+                        gap: 2,
+                        flexWrap: 'wrap',
+                    }}
+                >
                     <GeSelector />
                     <SectionCodeSearchBar />
                 </Box>
@@ -27,7 +54,14 @@ export function LegacySearch({ onSubmit, onReset }: LegacySearchProps) {
 
             <AdvancedSearch />
 
-            <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', gap: 2 }}>
+            <Box
+                sx={{
+                    display: 'flex',
+                    width: '100%',
+                    gap: 2,
+                    justifyContent: 'center',
+                }}
+            >
                 <Button color="primary" variant="contained" type="submit" onClick={onSubmit} sx={{ width: '50%' }}>
                     Search
                 </Button>

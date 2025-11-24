@@ -14,10 +14,11 @@ import { PostHog } from 'posthog-js/react';
 import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
-import { setLocalStorageUserId, setLocalStorageDataCache, removeLocalStorageSessionId } from '$lib/localStorage';
+import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
     onError: (scheduleName: string) => unknown;
@@ -129,6 +130,7 @@ export const saveSchedule = async (providerId: string, rememberMe: boolean, post
                         `Schedule saved under username "${providerId}". Don't forget to sign up for classes on WebReg!`
                     );
                 }
+                deleteTempSaveData();
                 AppStore.saveSchedule();
             } catch (e) {
                 if (e instanceof TRPCError) {
@@ -165,6 +167,7 @@ export async function autoSaveSchedule(providerID: string, postHog?: PostHog) {
             },
         });
 
+        deleteTempSaveData();
         AppStore.saveSchedule();
     } catch (e) {
         if (e instanceof TRPCError) {
@@ -360,7 +363,6 @@ export const loadScheduleWithSessionToken = async () => {
     } catch (e) {
         console.error(e);
         openSnackbar('error', `Failed to load schedules. If this continues to happen, please submit a feedback form.`);
-        removeLocalStorageSessionId();
         return false;
     }
 };
