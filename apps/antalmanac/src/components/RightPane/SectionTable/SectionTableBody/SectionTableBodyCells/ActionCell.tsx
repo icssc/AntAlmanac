@@ -3,6 +3,7 @@ import { Box, IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
@@ -10,6 +11,7 @@ import { TableBodyCellContainer } from '$components/RightPane/SectionTable/Secti
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
+import { SectionColorSetting, useSectionColorStore } from '$stores/SettingsStore';
 
 /**
  * Props received by components that perform actions on a specified section.
@@ -39,6 +41,8 @@ interface ActionProps {
      * Whether the section has a schedule conflict with another event in the calendar.
      */
     scheduleConflict: boolean;
+
+    sectionColor: SectionColorSetting;
 }
 
 /**
@@ -95,6 +99,7 @@ const fieldsToReset = ['sectionCode', 'courseNumber', 'deptValue', 'ge', 'term']
  * Sections that have not been added to a schedule can be added to a schedule.
  */
 export function ScheduleAddCell({ section, courseDetails, term, scheduleNames, scheduleConflict }: ActionProps) {
+    const sectionColor = useSectionColorStore(useShallow((store) => store.sectionColor));
     const isMobile = useIsMobile();
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -120,7 +125,7 @@ export function ScheduleAddCell({ section, courseDetails, term, scheduleNames, s
             });
         }
 
-        const newCourse = addCourse(section, courseDetails, term, scheduleIndex);
+        const newCourse = addCourse(section, courseDetails, term, scheduleIndex, sectionColor);
         section.color = newCourse.section.color;
     };
 

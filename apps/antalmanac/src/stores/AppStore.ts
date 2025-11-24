@@ -3,6 +3,8 @@ import { EventEmitter } from 'events';
 import type { ScheduleCourse, ScheduleSaveState, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { SnackbarOrigin, VariantType } from 'notistack';
 
+import { SectionColorSetting } from './SettingsStore';
+
 import actionTypesStore from '$actions/ActionTypesStore';
 import type {
     AddCourseAction,
@@ -107,12 +109,16 @@ class AppStore extends EventEmitter {
         return this.schedule.getSkeletonScheduleNames();
     }
 
-    addCourse(newCourse: ScheduleCourse, scheduleIndex: number = this.schedule.getCurrentScheduleIndex()) {
+    addCourse(
+        newCourse: ScheduleCourse,
+        scheduleIndex: number = this.schedule.getCurrentScheduleIndex(),
+        sectionColor: SectionColorSetting
+    ) {
         let addedCourse: ScheduleCourse;
         if (scheduleIndex === this.schedule.getNumberOfSchedules()) {
-            addedCourse = this.schedule.addCourseToAllSchedules(newCourse);
+            addedCourse = this.schedule.addCourseToAllSchedules(newCourse, sectionColor);
         } else {
-            addedCourse = this.schedule.addCourse(newCourse, scheduleIndex);
+            addedCourse = this.schedule.addCourse(newCourse, scheduleIndex, sectionColor);
         }
         this.unsavedChanges = true;
         const action: AddCourseAction = {
@@ -125,16 +131,16 @@ class AppStore extends EventEmitter {
         return addedCourse;
     }
 
-    getEventsInCalendar() {
-        return this.schedule.getCalendarizedEvents();
+    getEventsInCalendar(sectionColor: SectionColorSetting) {
+        return this.schedule.getCalendarizedEvents(sectionColor);
     }
 
-    getEventsWithFinalsInCalendar() {
-        return [...this.schedule.getCalendarizedEvents(), ...this.schedule.getCalendarizedFinals()];
+    getEventsWithFinalsInCalendar(sectionColor: SectionColorSetting) {
+        return [...this.schedule.getCalendarizedEvents(sectionColor), ...this.schedule.getCalendarizedFinals()];
     }
 
-    getCourseEventsInCalendar() {
-        return this.schedule.getCalendarizedCourseEvents();
+    getCourseEventsInCalendar(sectionColor: SectionColorSetting) {
+        return this.schedule.getCalendarizedCourseEvents(sectionColor);
     }
 
     getCustomEventsInCalendar() {

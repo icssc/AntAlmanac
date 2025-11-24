@@ -25,7 +25,14 @@ import appStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
+import {
+    usePreviewStore,
+    useThemeStore,
+    useSectionColorStore,
+    useTimeFormatStore,
+    useAutoSaveStore,
+    SectionColorSetting,
+} from '$stores/SettingsStore';
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',
@@ -101,6 +108,80 @@ function ThemeMenu() {
                     onClick={handleThemeChange}
                 >
                     Dark
+                </Button>
+            </ButtonGroup>
+        </Box>
+    );
+}
+
+function SectionColorMenu() {
+    const [sectionColor, setSectionColor] = useSectionColorStore((store) => [
+        store.sectionColor,
+        store.setSectionColor,
+    ]);
+    const isDark = useThemeStore((store) => store.isDark);
+    const { forceUpdate } = useCoursePaneStore();
+    const postHog = usePostHog();
+
+    const handleSectionColorChange = (event: React.MouseEvent<HTMLButtonElement>) => {
+        forceUpdate();
+        setSectionColor(event.currentTarget.value as SectionColorSetting, postHog);
+    };
+
+    return (
+        <Box sx={{ padding: '0 1rem', width: '100%' }}>
+            <Typography variant="h6" style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
+                Section Color
+            </Typography>
+
+            <ButtonGroup
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    placeContent: 'center',
+                    width: '100%',
+                    borderColor: 'unset',
+                    gap: '10px',
+                }}
+            >
+                <Button
+                    startIcon={<LightMode fontSize="small" />}
+                    style={{
+                        padding: '1rem 2rem',
+                        borderRadius: '12px',
+                        width: '100%',
+                        ...getSelectedStyle('default', sectionColor, isDark),
+                    }}
+                    value="default"
+                    onClick={handleSectionColorChange}
+                >
+                    Default
+                </Button>
+                <Button
+                    startIcon={<SettingsBrightness fontSize="small" />}
+                    style={{
+                        padding: '1rem 2rem',
+                        borderRadius: '12px',
+                        width: '100%',
+                        ...getSelectedStyle('legacy', sectionColor, isDark),
+                    }}
+                    value="legacy"
+                    onClick={handleSectionColorChange}
+                >
+                    Legacy
+                </Button>
+                <Button
+                    startIcon={<DarkMode fontSize="small" />}
+                    style={{
+                        padding: '1rem 2rem',
+                        borderRadius: '12px',
+                        width: '100%',
+                        ...getSelectedStyle('catppuccin', sectionColor, isDark),
+                    }}
+                    value="catppuccin"
+                    onClick={handleSectionColorChange}
+                >
+                    Catppuccin
                 </Button>
             </ButtonGroup>
         </Box>
@@ -224,6 +305,7 @@ function SettingsMenu() {
     return (
         <Box>
             <ThemeMenu />
+            <SectionColorMenu />
             <TimeMenu />
 
             <Divider style={{ marginTop: '16px' }}>

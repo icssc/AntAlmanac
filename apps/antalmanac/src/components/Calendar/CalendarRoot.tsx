@@ -17,7 +17,7 @@ import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termD
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import { useSectionColorStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 
 /*
  * Always start week on Saturday for finals potentially on weekends.
@@ -39,8 +39,9 @@ const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
 const CALENDAR_MAX_DATE = new Date(2018, 0, 1, 23);
 
 export const ScheduleCalendar = memo(() => {
+    const sectionColor = useSectionColorStore(useShallow((store) => store.sectionColor));
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
-    const [eventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
+    const [eventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar(sectionColor));
     const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
@@ -170,13 +171,15 @@ export const ScheduleCalendar = memo(() => {
         [calendarGutterTimeFormat, calendarTimeFormat, finalsDateFormat, showFinalsSchedule]
     );
 
-    useEffect(() => {
-        const updateEventsInCalendar = () => {
-            setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
-            setEventsInCalendar(AppStore.getEventsInCalendar());
-            setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
-        };
+    const updateEventsInCalendar = useCallback(() => {
+        setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
+        // Pass the CURRENT sectionColor. Because this is in useCallback with [sectionColor],
+        // this function is recreated whenever sectionColor changes.
+        setEventsInCalendar(AppStore.getEventsInCalendar(sectionColor));
+        setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
+    }, [sectionColor]);
 
+    useEffect(() => {
         const updateScheduleNames = () => {
             setScheduleNames(AppStore.getScheduleNames());
         };
@@ -195,6 +198,10 @@ export const ScheduleCalendar = memo(() => {
             AppStore.off('scheduleNamesChange', updateScheduleNames);
         };
     }, []);
+
+    useEffect(() => {
+        updateEventsInCalendar();
+    }, [sectionColor]);
 
     return (
         <Box

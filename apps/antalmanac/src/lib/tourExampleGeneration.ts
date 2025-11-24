@@ -90,7 +90,7 @@ export function addSampleClasses() {
     const sampleClasses: Array<ScheduleCourse> = sampleClassesOptions.map(sampleClassFactory);
 
     sampleClasses.forEach((sampleClass) => {
-        AppStore.addCourse(sampleClass);
+        AppStore.addCourse(sampleClass, sectionColor);
         sampleClassesSectionCodes.push(sampleClass.section.sectionCode);
     });
 }

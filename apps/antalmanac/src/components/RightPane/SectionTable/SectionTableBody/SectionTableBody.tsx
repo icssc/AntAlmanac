@@ -1,10 +1,12 @@
 import { TableBody } from '@mui/material';
 import { AACourse, AASection } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { SectionTableBodyRow } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRow';
 import { AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
+import { useSectionColorStore } from '$stores/SettingsStore';
 import { normalizeTime, parseDaysString } from '$stores/calendarizeHelpers';
 
 interface SectionTableBodyProps {
@@ -22,7 +24,8 @@ export function SectionTableBody({
     allowHighlight,
     analyticsCategory,
 }: SectionTableBodyProps) {
-    const [calendarEvents, setCalendarEvents] = useState(() => AppStore.getCourseEventsInCalendar());
+    const sectionColor = useSectionColorStore(useShallow((store) => store.sectionColor));
+    const [calendarEvents, setCalendarEvents] = useState(() => AppStore.getCourseEventsInCalendar(sectionColor));
 
     /**
      * Additional information about the current section being rendered.
@@ -67,8 +70,8 @@ export function SectionTableBody({
     );
 
     const updateCalendarEvents = useCallback(() => {
-        setCalendarEvents(AppStore.getCourseEventsInCalendar());
-    }, [setCalendarEvents]);
+        setCalendarEvents(AppStore.getCourseEventsInCalendar(sectionColor));
+    }, [setCalendarEvents, sectionColor]);
 
     useEffect(() => {
         AppStore.on('addedCoursesChange', updateCalendarEvents);

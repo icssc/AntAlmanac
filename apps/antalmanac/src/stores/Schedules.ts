@@ -8,6 +8,7 @@ import type {
     CourseInfo,
 } from '@packages/antalmanac-types';
 
+import { SectionColorSetting } from './SettingsStore';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 
 import { getDefaultTerm } from '$lib/termData';
@@ -230,7 +231,12 @@ export class Schedules {
      * @param addUndoState Defaults to true
      * @returns The course object that was added.
      */
-    addCourse(newCourse: ScheduleCourse, scheduleIndex: number, addUndoState = true) {
+    addCourse(
+        newCourse: ScheduleCourse,
+        scheduleIndex: number,
+        sectionColor: SectionColorSetting,
+        addUndoState = true
+    ) {
         if (addUndoState) {
             this.addUndoState();
         }
@@ -260,7 +266,8 @@ export class Schedules {
                 // New colors are drawn from a Set of unused colors across the newCourse's term
                 color: getColorForNewSection(
                     newCourse,
-                    this.getAllCourses().filter((course) => course.term === newCourse.term)
+                    this.getAllCourses().filter((course) => course.term === newCourse.term),
+                    sectionColor
                 ),
             },
         };
@@ -274,10 +281,10 @@ export class Schedules {
      * Add a course to every schedule.
      * @returns the course object that was added.
      */
-    addCourseToAllSchedules(newCourse: ScheduleCourse) {
+    addCourseToAllSchedules(newCourse: ScheduleCourse, sectionColor: SectionColorSetting) {
         this.addUndoState();
         for (let i = 0; i < this.getNumberOfSchedules(); i++) {
-            this.addCourse(newCourse, i, false);
+            this.addCourse(newCourse, i, sectionColor, false);
         }
         return newCourse;
     }
@@ -438,9 +445,9 @@ export class Schedules {
     /**
      * Convert courses and custom events into calendar friendly format.
      */
-    getCalendarizedEvents() {
+    getCalendarizedEvents(sectionColor: SectionColorSetting) {
         return [
-            ...calendarizeCourseEvents(this.getCurrentCourses()),
+            ...calendarizeCourseEvents(this.getCurrentCourses(), sectionColor),
             ...calendarizeCustomEvents(this.getCurrentCustomEvents()),
         ];
     }
@@ -448,8 +455,8 @@ export class Schedules {
     /**
      * Convert just courses into calendar compatible format.
      */
-    getCalendarizedCourseEvents() {
-        return calendarizeCourseEvents(this.getCurrentCourses());
+    getCalendarizedCourseEvents(sectionColor: SectionColorSetting) {
+        return calendarizeCourseEvents(this.getCurrentCourses(), sectionColor);
     }
 
     /**

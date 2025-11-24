@@ -18,6 +18,7 @@ import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStora
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { SectionColorSetting } from '$stores/SettingsStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
@@ -29,6 +30,7 @@ export const addCourse = (
     courseDetails: CourseDetails,
     term: string,
     scheduleIndex: number,
+    sectionColor: SectionColorSetting,
     quiet?: boolean,
     postHog?: PostHog
 ) => {
@@ -53,7 +55,7 @@ export const addCourse = (
         section: { ...section, color: '' },
     };
 
-    return AppStore.addCourse(newCourse, scheduleIndex);
+    return AppStore.addCourse(newCourse, scheduleIndex, sectionColor);
 };
 /**
  * @param variant usually 'info', 'error', 'warning', or 'success'
