@@ -1,5 +1,6 @@
 import {
     Undo as UndoIcon,
+    Redo as RedoIcon,
     Description as DescriptionIcon,
     DescriptionOutlined as DescriptionOutlinedIcon,
 } from '@mui/icons-material';
@@ -7,7 +8,7 @@ import { useTheme, useMediaQuery, Box, Button, IconButton, Paper, Tooltip } from
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { useState, useCallback, useEffect, memo } from 'react';
 
-import { undoDelete } from '$actions/AppStoreActions';
+import { redoAction, undoDelete } from '$actions/AppStoreActions';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
 import { ClearScheduleButton } from '$components/buttons/Clear';
@@ -23,6 +24,16 @@ function handleUndo(postHog?: PostHog) {
             action: analyticsEnum.calendar.actions.UNDO,
         });
         undoDelete(null);
+    };
+}
+
+function handleRedo(postHog?: PostHog) {
+    return () => {
+        logAnalytics(postHog, {
+            category: analyticsEnum.calendar,
+            action: analyticsEnum.calendar.actions.REDO,
+        });
+        redoAction();
     };
 }
 
@@ -122,6 +133,11 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                 <Tooltip title="Undo last action">
                     <IconButton onClick={handleUndo(postHog)} size="medium" disabled={skeletonMode}>
                         <UndoIcon fontSize="small" />
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title="Redo last action">
+                    <IconButton onClick={handleRedo(postHog)} size="medium" disabled={skeletonMode}>
+                        <RedoIcon fontSize="small" />
                     </IconButton>
                 </Tooltip>
 
