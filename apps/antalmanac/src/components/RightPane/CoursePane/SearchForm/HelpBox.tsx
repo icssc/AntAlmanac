@@ -1,5 +1,5 @@
 import { Close, OpenInNew } from '@mui/icons-material';
-import { Paper, Typography, Link, Box, IconButton, Button, Stack, useTheme } from '@mui/material';
+import { Paper, Typography, Box, IconButton, Button, Stack, useTheme } from '@mui/material';
 import { useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -44,8 +44,8 @@ export function HelpBox() {
                         Need help planning your schedule?
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                        Check out <b>PeterPortal</b>, a web application designed to aid UCI students with course discovery
-                        and planning.
+                        Check out <b>PeterPortal</b>, a web application designed to aid UCI students with course
+                        discovery and planning.
                     </Typography>
                 </Box>
                 <IconButton aria-label="close" size="small" onClick={handleClick} sx={{ color: 'text.disabled' }}>
