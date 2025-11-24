@@ -9,7 +9,6 @@ import { ErrorMessage } from '$components/RightPane/CoursePane/messages/ErrorMes
 import { LoadingMessage } from '$components/RightPane/CoursePane/messages/LoadingMessage';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { SectionTableWrapped } from '$components/RightPane/SectionTable/SectionTableWrapped';
-import analyticsEnum from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { WebSOC } from '$lib/websoc';
 import AppStore from '$stores/AppStore';

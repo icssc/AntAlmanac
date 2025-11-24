@@ -4,7 +4,7 @@ import RightPaneStore from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import { SchoolDeptCard } from '$components/RightPane/SectionTable/SchoolDeptCard';
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
-import analyticsEnum from '$lib/analytics';
+import analyticsEnum from '$lib/analytics/analytics';
 
 interface SectionTableWrappedProps {
     index: number;
@@ -35,7 +35,7 @@ export function SectionTableWrapped({ index, scheduleNames, courseData }: Sectio
                 courseDetails={course}
                 allowHighlight={true}
                 scheduleNames={scheduleNames}
-                analyticsCategory={analyticsEnum.classSearch.title}
+                analyticsCategory={analyticsEnum.classSearch}
             />
         );
     } else {
@@ -46,7 +46,7 @@ export function SectionTableWrapped({ index, scheduleNames, courseData }: Sectio
                 courseDetails={course}
                 allowHighlight={true}
                 scheduleNames={scheduleNames}
-                analyticsCategory={analyticsEnum.classSearch.title}
+                analyticsCategory={analyticsEnum.classSearch}
             />
         );
     }
