@@ -253,7 +253,7 @@ describe('calendarize-helpers', () => {
     ];
 
     test('calendarizeCourseEvents', () => {
-        const result = calendarizeCourseEvents(courses);
+        const result = calendarizeCourseEvents(courses, 'default');
         expect(result).toStrictEqual(calendarizedCourses);
     });
 

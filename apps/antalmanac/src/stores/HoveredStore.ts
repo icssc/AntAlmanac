@@ -3,11 +3,17 @@ import { create } from 'zustand';
 
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { calendarizeCourseEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
+import { SectionColorSetting } from './SettingsStore';
 
 const HOVERED_SECTION_COLOR = '#80808080';
 export interface HoveredStore {
     hoveredEvent: ScheduleCourse | undefined;
-    setHoveredEvent: (section?: AASection, courseDetails?: CourseDetails, term?: string) => void;
+    setHoveredEvent: (
+        sectionColor: SectionColorSetting,
+        section?: AASection,
+        courseDetails?: CourseDetails,
+        term?: string
+    ) => void;
     hoveredCalendarizedCourses: CourseEvent[] | undefined;
     hoveredCalendarizedFinal: CourseEvent | undefined;
 }
@@ -21,7 +27,7 @@ const DEFAULT_HOVERED_STORE = {
 export const useHoveredStore = create<HoveredStore>((set) => {
     return {
         ...DEFAULT_HOVERED_STORE,
-        setHoveredEvent: (section, courseDetails, term) => {
+        setHoveredEvent: (sectionColor, section, courseDetails, term) => {
             if (section == null || courseDetails == null || term == null) {
                 set({ ...DEFAULT_HOVERED_STORE });
                 return;
@@ -38,7 +44,7 @@ export const useHoveredStore = create<HoveredStore>((set) => {
 
             set({
                 hoveredEvent: event,
-                hoveredCalendarizedCourses: calendarizeCourseEvents([event]),
+                hoveredCalendarizedCourses: calendarizeCourseEvents([event], sectionColor),
                 hoveredCalendarizedFinal: calendarizeFinals([event])[0],
             });
         },

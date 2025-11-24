@@ -18,7 +18,8 @@ import { AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
-import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
+import { usePreviewStore, useSectionColorStore, useThemeStore } from '$stores/SettingsStore';
+import { useShallow } from 'zustand/react/shallow';
 
 interface SectionTableBodyRowProps {
     section: AASection;
@@ -51,6 +52,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
 
     const theme = useTheme();
     const isDark = useThemeStore((store) => store.isDark);
+    const sectionColor = useSectionColorStore(useShallow((store) => store.sectionColor));
     const activeColumns = useColumnStore((store) => store.activeColumns);
     const previewMode = usePreviewStore((store) => store.previewMode);
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
@@ -67,14 +69,14 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
 
     const handleMouseEnter = useCallback(() => {
         if (!previewMode || addedCourse) {
-            setHoveredEvent(undefined);
+            setHoveredEvent(sectionColor, undefined);
         } else {
-            setHoveredEvent(section, courseDetails, term);
+            setHoveredEvent(sectionColor, section, courseDetails, term);
         }
     }, [previewMode, addedCourse, setHoveredEvent, section, courseDetails, term]);
 
     const handleMouseLeave = useCallback(() => {
-        setHoveredEvent(undefined);
+        setHoveredEvent(sectionColor, undefined);
     }, [setHoveredEvent]);
 
     // Attach event listeners to the store.

@@ -171,15 +171,13 @@ export const ScheduleCalendar = memo(() => {
         [calendarGutterTimeFormat, calendarTimeFormat, finalsDateFormat, showFinalsSchedule]
     );
 
-    const updateEventsInCalendar = useCallback(() => {
-        setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
-        // Pass the CURRENT sectionColor. Because this is in useCallback with [sectionColor],
-        // this function is recreated whenever sectionColor changes.
-        setEventsInCalendar(AppStore.getEventsInCalendar(sectionColor));
-        setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
-    }, [sectionColor]);
-
     useEffect(() => {
+        const updateEventsInCalendar = () => {
+            setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
+            setEventsInCalendar(AppStore.getEventsInCalendar(sectionColor));
+            setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
+        };
+
         const updateScheduleNames = () => {
             setScheduleNames(AppStore.getScheduleNames());
         };
@@ -200,7 +198,7 @@ export const ScheduleCalendar = memo(() => {
     }, []);
 
     useEffect(() => {
-        updateEventsInCalendar();
+        setEventsInCalendar(AppStore.getEventsInCalendar(sectionColor));
     }, [sectionColor]);
 
     return (

@@ -213,6 +213,7 @@ const ErrorMessage = () => {
 };
 
 export default function CourseRenderPane(props: { id?: number }) {
+    const sectionColor = useSectionColorStore(useShallow((store) => store.sectionColor));
     const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
     const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
     const [loading, setLoading] = useState(true);
@@ -311,7 +312,7 @@ export default function CourseRenderPane(props: { id?: number }) {
      */
     useEffect(() => {
         return () => {
-            setHoveredEvent(undefined);
+            setHoveredEvent(sectionColor, undefined);
         };
     }, [setHoveredEvent]);
 
