@@ -109,9 +109,11 @@ export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSche
         return generateColorVariant(existingSections[0].section.color, new Set(usedColors));
     }
 
-    // If there are no existing sections with the same course title, generate a new color. If we run out of unique colors, return the next color up after the last default color in use, looping after reaching the end.
-    return (
-        defaultColors.find((materialColor) => !usedColors.includes(materialColor)) ||
-        defaultColors[(defaultColors.indexOf(lastDefaultColor) + 1) % defaultColors.length]
+    const unusedColors = Object.values(colorVariants).find((variants) =>
+        variants.every((variant) => !usedColors.includes(variant))
     );
+
+    // If there are no existing sections with the same course title, pick an unused color.
+    // If we run out of unique colors, return the next color up after the last default color in use, looping after reaching the end.
+    return unusedColors?.[0] || defaultColors[(defaultColors.indexOf(lastDefaultColor) + 1) % defaultColors.length];
 }
