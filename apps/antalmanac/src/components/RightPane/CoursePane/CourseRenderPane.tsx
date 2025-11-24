@@ -3,6 +3,7 @@ import { Alert, Box, IconButton, Link, useMediaQuery, useTheme } from '@mui/mate
 import { AACourse, AASection, WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
+import { useShallow } from 'zustand/react/shallow';
 
 import RightPaneStore from '../RightPaneStore';
 import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
@@ -22,7 +23,7 @@ import { WebSOC } from '$lib/websoc';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
-import { useThemeStore } from '$stores/SettingsStore';
+import { useSectionColorStore, useThemeStore } from '$stores/SettingsStore';
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();

@@ -1,4 +1,14 @@
-import { LightMode, Close, SettingsBrightness, DarkMode, Help, MenuRounded } from '@mui/icons-material';
+import {
+    LightMode,
+    Close,
+    History,
+    SettingsBrightness,
+    DarkMode,
+    Help,
+    MenuRounded,
+    Pets,
+    Palette,
+} from '@mui/icons-material';
 import {
     Box,
     Button,
@@ -145,7 +155,7 @@ function SectionColorMenu() {
                 }}
             >
                 <Button
-                    startIcon={<LightMode fontSize="small" />}
+                    startIcon={<Palette fontSize="small" />}
                     style={{
                         padding: '1rem 2rem',
                         borderRadius: '12px',
@@ -158,7 +168,7 @@ function SectionColorMenu() {
                     Default
                 </Button>
                 <Button
-                    startIcon={<SettingsBrightness fontSize="small" />}
+                    startIcon={<History fontSize="small" />}
                     style={{
                         padding: '1rem 2rem',
                         borderRadius: '12px',
@@ -171,7 +181,7 @@ function SectionColorMenu() {
                     Legacy
                 </Button>
                 <Button
-                    startIcon={<DarkMode fontSize="small" />}
+                    startIcon={<Pets fontSize="small" />}
                     style={{
                         padding: '1rem 2rem',
                         borderRadius: '12px',
