@@ -75,24 +75,6 @@ export function ScheduleManagement() {
         }
 
         setActiveTab('search');
-
-        const tryToShowCalendar = () => {
-            if (!hasLocalScheduleData()) {
-                return;
-            }
-
-            setActiveTab('calendar');
-            AppStore.off('addedCoursesChange', tryToShowCalendar);
-            AppStore.off('customEventsChange', tryToShowCalendar);
-        };
-
-        AppStore.on('addedCoursesChange', tryToShowCalendar);
-        AppStore.on('customEventsChange', tryToShowCalendar);
-
-        return () => {
-            AppStore.off('addedCoursesChange', tryToShowCalendar);
-            AppStore.off('customEventsChange', tryToShowCalendar);
-        };
         // NB: We disable exhaustive deps here as `tab` is a dependency, but we only want this effect to run on mount
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isMobile, setActiveTab]);
