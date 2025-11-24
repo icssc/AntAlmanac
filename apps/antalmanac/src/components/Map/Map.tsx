@@ -10,6 +10,8 @@ import { MapContainer, TileLayer } from 'react-leaflet';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import 'leaflet-routing-machine';
 
+import { useShallow } from 'zustand/react/shallow';
+
 import LocationMarker from './Marker';
 import ClassRoutes from './Routes';
 import UserLocator from './UserLocator';
@@ -22,6 +24,7 @@ import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
 import locationIds from '$lib/locations/locations';
 import { notNull } from '$lib/utils';
 import AppStore from '$stores/AppStore';
+import { SectionColorSetting, useSectionColorStore } from '$stores/SettingsStore';
 
 const ATTRIBUTION_MARKUP =
     '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors | Images from <a href="https://map.uci.edu/?id=463">UCI Map</a>';
@@ -42,8 +45,8 @@ interface MarkerContent {
  * Get an array of courses that occur in every building.
  * Each course's info is used to render a marker to the map.
  */
-export function getCoursesPerBuilding() {
-    const courseEvents = AppStore.getCourseEventsInCalendar();
+export function getCoursesPerBuilding(sectionColor: SectionColorSetting) {
+    const courseEvents = AppStore.getCourseEventsInCalendar(sectionColor);
 
     const courseBuildings = courseEvents.flatMap((event) => event.locations.map((location) => location.building));
 
@@ -148,20 +151,21 @@ export function getCustomEventPerBuilding() {
  * Map of all course locations on UCI campus.
  */
 export default function CourseMap() {
+    const sectionColor = useSectionColorStore(useShallow((store) => store.sectionColor));
     const navigate = useNavigate();
     const map = useRef<Map | null>(null);
     const markerRef = createRef<Marker>();
     const [searchParams] = useSearchParams();
     const [selectedDayIndex, setSelectedDay] = useState(0);
-    const [markers, setMarkers] = useState(getCoursesPerBuilding());
+    const [markers, setMarkers] = useState(getCoursesPerBuilding(sectionColor));
     const [customEventMarkers, setCustomEventMarkers] = useState(getCustomEventPerBuilding());
-    const [calendarEvents, setCalendarEvents] = useState(AppStore.getEventsInCalendar());
+    const [calendarEvents, setCalendarEvents] = useState(AppStore.getEventsInCalendar(sectionColor));
 
     const postHog = usePostHog();
 
     useEffect(() => {
         const updateAllMarkers = () => {
-            setMarkers(getCoursesPerBuilding());
+            setMarkers(getCoursesPerBuilding(sectionColor));
             setCustomEventMarkers(getCustomEventPerBuilding());
         };
 
@@ -185,7 +189,7 @@ export default function CourseMap() {
 
     useEffect(() => {
         const updateCalendarEvents = () => {
-            setCalendarEvents(AppStore.getEventsInCalendar());
+            setCalendarEvents(AppStore.getEventsInCalendar(sectionColor));
         };
 
         AppStore.on('addedCoursesChange', updateCalendarEvents);

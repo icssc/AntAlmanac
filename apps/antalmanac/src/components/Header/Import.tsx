@@ -21,6 +21,7 @@ import { CourseInfo } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useShallow } from 'zustand/react/shallow';
 
 import {
     addCustomEvent,
@@ -48,7 +49,7 @@ import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
+import { SectionColorSetting, useSectionColorStore, useThemeStore } from '$stores/SettingsStore';
 
 enum ImportSource {
     ZOT_COURSE_IMPORT = 'zotcourse',
@@ -71,6 +72,7 @@ export function Import() {
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
 
     const { isDark } = useThemeStore();
+    const sectionColor = useSectionColorStore(useShallow((store) => store.sectionColor));
 
     const postHog = usePostHog();
 
@@ -206,7 +208,7 @@ export function Import() {
         scheduleIndex: number
     ) => {
         for (const section of Object.values(courseInfo)) {
-            addCourse(section.section, section.courseDetails, term, scheduleIndex, true, postHog);
+            addCourse(section.section, section.courseDetails, term, scheduleIndex, sectionColor, true, postHog);
         }
 
         const terms = AppStore.termsInSchedule(term);
