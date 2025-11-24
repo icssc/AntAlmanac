@@ -47,8 +47,6 @@ const checkCompleteSections = async (userCourses: CourseWithTerm): Promise<strin
         };
 
         const fullCourseData = await WebSOC.query(websocParams);
-        console.log('hi');
-        console.log(fullCourseData);
 
         const sections = fullCourseData?.schools?.[0]?.departments?.[0]?.courses?.[0]?.sections;
 
@@ -353,7 +351,6 @@ function AddedSectionsGrid() {
             AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
         };
     }, []);
-    console.log('Courses: ' + courses);
 
     //Check for any missing sections for each added course
     useEffect(() => {
