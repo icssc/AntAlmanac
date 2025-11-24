@@ -1,6 +1,6 @@
-import { TextField } from '@mui/material';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
+import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 export function CourseNumberSearchBar() {
@@ -38,14 +38,19 @@ export function CourseNumberSearchBar() {
     }, [resetField]);
 
     return (
-        <div>
-            <TextField
-                label="Course Number(s)"
-                type="search"
-                value={value}
-                onChange={handleChange}
-                helperText="ex. 6B, 17, 30-40"
-            />
-        </div>
+        <LabeledTextField
+            label="Course Number(s)"
+            textFieldProps={{
+                type: 'search',
+                value,
+                onChange: handleChange,
+                placeholder: 'ex. 6B, 17, 30-40',
+                fullWidth: true,
+                sx: {
+                    minWidth: 200,
+                },
+            }}
+            isAligned={true}
+        />
     );
 }

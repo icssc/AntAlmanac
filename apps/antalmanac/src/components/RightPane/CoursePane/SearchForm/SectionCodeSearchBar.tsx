@@ -1,17 +1,17 @@
-import { TextField } from '@mui/material';
 import { ChangeEvent, PureComponent } from 'react';
 
-import RightPaneStore from '../../RightPaneStore';
+import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 class SectionCodeSearchBar extends PureComponent {
-    updateCourseCodeAndGetFormData() {
-        RightPaneStore.updateFormValue('sectionCode', RightPaneStore.getUrlCourseCodeValue());
+    updateSectionCodeAndGetFormData() {
+        RightPaneStore.updateFormValue('sectionCode', RightPaneStore.getUrlSectionCodeValue());
         return RightPaneStore.getFormData().sectionCode;
     }
 
     getSectionCode() {
-        return RightPaneStore.getUrlCourseCodeValue()
-            ? this.updateCourseCodeAndGetFormData()
+        return RightPaneStore.getUrlSectionCodeValue()
+            ? this.updateSectionCodeAndGetFormData()
             : RightPaneStore.getFormData().sectionCode;
     }
 
@@ -25,9 +25,9 @@ class SectionCodeSearchBar extends PureComponent {
         const stateObj = { url: 'url' };
         const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
-        urlParam.delete('courseCode');
+        urlParam.delete('sectionCode');
         if (event.target.value) {
-            urlParam.append('courseCode', event.target.value);
+            urlParam.append('sectionCode', event.target.value);
         }
         const param = urlParam.toString();
         const new_url = `${param.trim() ? '?' : ''}${param}`;
@@ -48,16 +48,17 @@ class SectionCodeSearchBar extends PureComponent {
 
     render() {
         return (
-            <div>
-                <TextField
-                    label="Course Code or Range"
-                    value={this.state.sectionCode}
-                    onChange={this.handleChange}
-                    type="search"
-                    helperText="ex. 14200, 29000-29100"
-                    fullWidth
-                />
-            </div>
+            <LabeledTextField
+                label="Section Code"
+                textFieldProps={{
+                    value: this.state.sectionCode,
+                    onChange: this.handleChange,
+                    type: 'search',
+                    placeholder: 'ex. 14200, 29000-29100',
+                    fullWidth: true,
+                }}
+                isAligned={true}
+            />
         );
     }
 }

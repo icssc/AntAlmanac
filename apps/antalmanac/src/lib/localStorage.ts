@@ -20,6 +20,7 @@ enum LocalStorageKeys {
     newUser = 'newUser',
     importedUser = 'importedUser',
     fromLoading = 'fromLoading',
+    tempSaveData = 'tempSaveData',
 }
 
 const LSK = LocalStorageKeys;
@@ -267,4 +268,16 @@ export function setLocalStoragePWADismissalTime(value: string) {
 
 export function getLocalStoragePWADismissalTime() {
     return window.localStorage.getItem(LSK.pwaDismissalTime);
+}
+
+export function setLocalStorageTempSaveData(value: string) {
+    window.localStorage.setItem(LSK.tempSaveData, value);
+}
+
+export function getLocalStorageTempSaveData() {
+    return window.localStorage.getItem(LSK.tempSaveData);
+}
+
+export function removeLocalStorageTempSaveData() {
+    window.localStorage.removeItem(LSK.tempSaveData);
 }
