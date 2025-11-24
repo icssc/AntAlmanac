@@ -1,6 +1,7 @@
 import { TableRow, useTheme } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { ActionCell } from './SectionTableBodyCells/ActionCell';
 
@@ -19,7 +20,6 @@ import AppStore from '$stores/AppStore';
 import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { usePreviewStore, useSectionColorStore, useThemeStore } from '$stores/SettingsStore';
-import { useShallow } from 'zustand/react/shallow';
 
 interface SectionTableBodyRowProps {
     section: AASection;
