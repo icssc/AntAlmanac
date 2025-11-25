@@ -49,7 +49,7 @@ import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { SectionColorSetting, useSectionColorStore, useThemeStore } from '$stores/SettingsStore';
+import { useSectionColorStore, useThemeStore } from '$stores/SettingsStore';
 
 enum ImportSource {
     ZOT_COURSE_IMPORT = 'zotcourse',
