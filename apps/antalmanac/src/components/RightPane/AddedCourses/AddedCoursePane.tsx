@@ -421,8 +421,20 @@ function AddedSectionsGrid() {
                                 missingLabels.push('Lecture');
                             } else if (section === 'sem') {
                                 missingLabels.push('Seminar');
-                            } else if (section === 'rec') {
-                                missingLabels.push('Recitation');
+                            } else if (section === 'res') {
+                                missingLabels.push('Research');
+                            } else if (section == 'qiz') {
+                                missingLabels.push('Quiz');
+                            } else if (section == 'tap') {
+                                missingLabels.push('Tutorial Assistance Program');
+                            } else if (section == 'col') {
+                                missingLabels.push('Colloquium');
+                            } else if (section == 'act') {
+                                missingLabels.push('Activity');
+                            } else if (section == 'stu') {
+                                missingLabels.push('Studio');
+                            } else if (section == 'tut') {
+                                missingLabels.push('Tutorial');
                             }
                         }
 
