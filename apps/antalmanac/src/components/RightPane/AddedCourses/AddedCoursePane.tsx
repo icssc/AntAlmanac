@@ -1,4 +1,4 @@
-import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography, Alert } from '@mui/material';
+import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -428,17 +428,13 @@ function AddedSectionsGrid() {
 
                         return (
                             <Box key={course.deptCode + course.courseNumber + course.courseTitle}>
-                                {missing.length > 0 && (
-                                    <Alert severity="warning" sx={{ mb: 1 }}>
-                                        Missing required sections: {missingLabels.join(',')}
-                                    </Alert>
-                                )}
                                 <SectionTableLazyWrapper
                                     courseDetails={course}
                                     term={course.term}
                                     allowHighlight={false}
                                     analyticsCategory={analyticsEnum.addedClasses}
                                     scheduleNames={scheduleNames}
+                                    missingSections={missingLabels}
                                 />
                             </Box>
                         );
