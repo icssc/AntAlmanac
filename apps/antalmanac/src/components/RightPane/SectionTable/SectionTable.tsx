@@ -17,7 +17,6 @@ import { MOBILE_BREAKPOINT } from '$src/globals';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import { useTabStore } from '$stores/TabStore';
 
-
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
 interface TableHeaderColumnDetails {
@@ -159,7 +158,7 @@ function SectionTable(props: SectionTableProps) {
 
             {missingSections && missingSections.length > 0 && (
                 <Alert severity="warning" sx={{ mb: 1 }}>
-                    Missing required sections: {missingSections.join(',')}
+                    Missing required sections: {missingSections.join(', ')}
                 </Alert>
             )}
 
