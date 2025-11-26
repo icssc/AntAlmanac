@@ -13,13 +13,17 @@ import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseE
 import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
 import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
-import { getLocalStorageTempSaveData } from '$lib/localStorage';
+import { skeletonBlueprintVariations } from '$components/Calendar/skeletonBlueprintVariations';
+import {
+    getLocalStorageSkeletonBlueprint,
+    removeLocalStorageSkeletonBlueprint,
+    setLocalStorageSkeletonBlueprint,
+} from '$lib/localStorage';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
-import { deleteTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 
 /*
  * Always start week on Saturday for finals potentially on weekends.
@@ -38,6 +42,7 @@ const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
     event: CalendarCourseEvent,
     eventWrapper: CalendarCourseEventWrapper,
 };
+const BASE_DATE = new Date(2018, 0, 1);
 const CALENDAR_MAX_DATE = new Date(2018, 0, 1, 23);
 
 export const ScheduleCalendar = memo(() => {
@@ -84,10 +89,9 @@ export const ScheduleCalendar = memo(() => {
 
             if (courseEvents.length > 0) {
                 hasHadEventsRef.current = true;
-                const baseDate = new Date(2018, 0, 1);
                 const skeletonBlueprint = courseEvents
                     .map((event) => {
-                        const dayOffset = event.start.getDate() - baseDate.getDate();
+                        const dayOffset = event.start.getDate() - BASE_DATE.getDate();
                         return {
                             dayOffset,
                             startHour: event.start.getHours(),
@@ -99,20 +103,17 @@ export const ScheduleCalendar = memo(() => {
                     .filter((blueprint) => blueprint.dayOffset >= 0 && blueprint.dayOffset <= 6);
 
                 if (skeletonBlueprint.length > 0) {
-                    setTempSaveData({ skeletonBlueprint });
+                    setLocalStorageSkeletonBlueprint(JSON.stringify(skeletonBlueprint));
                 }
             } else if (hasHadEventsRef.current) {
-                deleteTempSaveData();
+                removeLocalStorageSkeletonBlueprint();
                 hasHadEventsRef.current = false;
             }
         }
     }, [eventsInCalendar, loadingSchedule]);
 
     const createSkeletonEvents = useCallback((): SkeletonEvent[] => {
-        const baseDate = new Date(2018, 0, 1);
-        const weekStart = new Date(baseDate);
-
-        const savedDataString = getLocalStorageTempSaveData();
+        const savedDataString = getLocalStorageSkeletonBlueprint();
 
         let skeletonBlueprints: Array<{
             dayOffset: number;
@@ -124,18 +125,14 @@ export const ScheduleCalendar = memo(() => {
 
         if (savedDataString) {
             const parsedData = JSON.parse(savedDataString);
-            if (
-                parsedData.skeletonBlueprint &&
-                Array.isArray(parsedData.skeletonBlueprint) &&
-                parsedData.skeletonBlueprint.length > 0
-            ) {
-                skeletonBlueprints = parsedData.skeletonBlueprint;
+            if (Array.isArray(parsedData) && parsedData.length > 0) {
+                skeletonBlueprints = parsedData;
             }
         }
 
         if (skeletonBlueprints) {
             return skeletonBlueprints.map((blueprint) => {
-                const start = new Date(weekStart);
+                const start = new Date(BASE_DATE);
                 start.setDate(start.getDate() + blueprint.dayOffset);
                 start.setHours(blueprint.startHour, blueprint.startMinute, 0, 0);
 
@@ -152,66 +149,11 @@ export const ScheduleCalendar = memo(() => {
             });
         }
 
-        const skeletonBlueprintVariations = [
-            [
-                { dayOffset: 0, startHour: 12, startMinute: 0, endHour: 12, endMinute: 50 },
-
-                { dayOffset: 1, startHour: 11, startMinute: 0, endHour: 12, endMinute: 20 },
-                { dayOffset: 1, startHour: 17, startMinute: 0, endHour: 18, endMinute: 20 },
-
-                { dayOffset: 3, startHour: 11, startMinute: 0, endHour: 12, endMinute: 20 },
-                { dayOffset: 3, startHour: 17, startMinute: 0, endHour: 18, endMinute: 20 },
-
-                { dayOffset: 4, startHour: 9, startMinute: 0, endHour: 9, endMinute: 50 },
-                { dayOffset: 4, startHour: 15, startMinute: 0, endHour: 15, endMinute: 50 },
-            ],
-            [
-                { dayOffset: 0, startHour: 9, startMinute: 0, endHour: 9, endMinute: 50 },
-                { dayOffset: 0, startHour: 11, startMinute: 0, endHour: 11, endMinute: 50 },
-                { dayOffset: 0, startHour: 17, startMinute: 0, endHour: 18, endMinute: 50 },
-
-                { dayOffset: 2, startHour: 9, startMinute: 0, endHour: 9, endMinute: 50 },
-                { dayOffset: 2, startHour: 11, startMinute: 0, endHour: 11, endMinute: 50 },
-
-                { dayOffset: 3, startHour: 14, startMinute: 0, endHour: 15, endMinute: 20 },
-
-                { dayOffset: 4, startHour: 9, startMinute: 0, endHour: 9, endMinute: 50 },
-                { dayOffset: 4, startHour: 11, startMinute: 0, endHour: 11, endMinute: 50 },
-            ],
-            [
-                { dayOffset: 0, startHour: 9, startMinute: 0, endHour: 9, endMinute: 50 },
-                { dayOffset: 0, startHour: 18, startMinute: 0, endHour: 18, endMinute: 50 },
-
-                { dayOffset: 1, startHour: 8, startMinute: 0, endHour: 9, endMinute: 20 },
-                { dayOffset: 1, startHour: 12, startMinute: 30, endHour: 13, endMinute: 50 },
-                { dayOffset: 1, startHour: 18, startMinute: 30, endHour: 19, endMinute: 50 },
-
-                { dayOffset: 3, startHour: 8, startMinute: 0, endHour: 9, endMinute: 20 },
-                { dayOffset: 3, startHour: 12, startMinute: 30, endHour: 13, endMinute: 50 },
-                { dayOffset: 3, startHour: 18, startMinute: 0, endHour: 18, endMinute: 50 },
-
-                { dayOffset: 4, startHour: 13, startMinute: 0, endHour: 13, endMinute: 50 },
-            ],
-            [
-                { dayOffset: 0, startHour: 12, startMinute: 0, endHour: 12, endMinute: 50 },
-
-                { dayOffset: 1, startHour: 9, startMinute: 30, endHour: 10, endMinute: 50 },
-                { dayOffset: 1, startHour: 15, startMinute: 30, endHour: 16, endMinute: 50 },
-                { dayOffset: 1, startHour: 17, startMinute: 0, endHour: 18, endMinute: 20 },
-
-                { dayOffset: 2, startHour: 13, startMinute: 0, endHour: 13, endMinute: 50 },
-
-                { dayOffset: 3, startHour: 9, startMinute: 30, endHour: 10, endMinute: 50 },
-                { dayOffset: 3, startHour: 15, startMinute: 30, endHour: 16, endMinute: 50 },
-                { dayOffset: 3, startHour: 17, startMinute: 0, endHour: 18, endMinute: 20 },
-            ],
-        ];
-
         const randomIndex = Math.floor(Math.random() * skeletonBlueprintVariations.length);
         const fallbackBlueprints = skeletonBlueprintVariations[randomIndex];
 
         return fallbackBlueprints.map((blueprint) => {
-            const start = new Date(weekStart);
+            const start = new Date(BASE_DATE);
             start.setDate(start.getDate() + blueprint.dayOffset);
             start.setHours(blueprint.startHour, blueprint.startMinute, 0, 0);
 
