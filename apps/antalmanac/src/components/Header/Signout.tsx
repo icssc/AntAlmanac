@@ -5,36 +5,26 @@ import { User } from '@packages/antalmanac-types';
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { openSnackbar } from '$actions/AppStoreActions';
+import { AlertDialog } from '$components/AlertDialog';
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
 
 export function Signout() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<null | User>(null);
+    const [isSignoutDialogOpen, setIsSignoutDialogOpen] = useState(false);
+    const [accountName, setAccountName] = useState('your account');
     const navigate = useNavigate();
 
     const handleLogout = async () => {
         // Store the user's name/email before logout
-        const accountName = user?.name || user?.email || 'your account';
+        const name = user?.name || user?.email || 'your account';
 
         // Close the menu
         setAnchorEl(null);
 
-        // Show notification FIRST, before clearing session
-        openSnackbar(
-            'info',
-            `Signed out of ${accountName}`,
-            4000, // ** Important: Show for 4 seconds (adjust as needed)
-            { vertical: 'top', horizontal: 'right' } // Position at top-right
-        );
-
-        // Wait a brief moment for notification to appear, then clear session
-        // The clearSession will reload the page, which is fine since notification already showed
-        setTimeout(async () => {
-            await clearSession();
-            navigate('/');
-        }, 800); // ** Important: Small delay to ensure notification renders
+        setAccountName(name);
+        setIsSignoutDialogOpen(true);
     };
 
     const { session, sessionIsValid, clearSession } = useSessionStore();
@@ -98,6 +88,18 @@ export function Signout() {
                     <ListItemText>Log out</ListItemText>
                 </MenuItem>
             </Menu>
+            <AlertDialog
+                open={isSignoutDialogOpen}
+                title={`Signed out of ${accountName}`}
+                severity="info"
+                onClose={async () => {
+                    setIsSignoutDialogOpen(false);
+                    await clearSession();
+                    navigate('/');
+                }}
+            >
+                You have successfully signed out. Close this dialog to continue browsing AntAlmanac.
+            </AlertDialog>
         </div>
     );
 }
