@@ -155,7 +155,7 @@ function SectionTable(props: SectionTableProps) {
                 />
             </Box>
 
-            {missingSections && missingSections.length > 0 && (
+            {missingSections?.length && (
                 <Alert severity="warning" sx={{ mb: 1 }}>
                     Missing required sections: {missingSections.join(', ')}
                 </Alert>

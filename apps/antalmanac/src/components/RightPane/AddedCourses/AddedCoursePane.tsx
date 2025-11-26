@@ -81,8 +81,6 @@ function getCourses() {
                 needleCourse.courseTitle === course.courseTitle
         );
 
-        //If the course already exists (if the user is already taking a section of this course),
-        //then group them together so they display on top of each other
         if (formattedCourse) {
             formattedCourse.sections.push({
                 ...course.section,
