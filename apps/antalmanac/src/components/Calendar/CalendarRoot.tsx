@@ -219,7 +219,6 @@ export const ScheduleCalendar = memo(() => {
             >
                 <CircularProgress color="inherit" />
             </Backdrop>
-            <AsyncCalendarCard />
             <CalendarToolbar
                 currentScheduleIndex={currentScheduleIndex}
                 toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
@@ -227,6 +226,7 @@ export const ScheduleCalendar = memo(() => {
                 scheduleNames={scheduleNames}
             />
             <Box id="screenshot" height="0" flexGrow={1}>
+                <AsyncCalendarCard />
                 <CalendarEventPopover />
 
                 <Calendar<CalendarEvent, object>

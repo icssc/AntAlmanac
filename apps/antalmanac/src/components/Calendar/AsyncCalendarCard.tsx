@@ -107,7 +107,7 @@ export default function AsyncCalendarCard() {
         bottom: 16,
         left: { xs: 16, sm: 'auto' },
         right: { xs: 'auto', sm: 16 },
-        zIndex: theme => theme.zIndex.modal - 1,
+        zIndex: (theme) => theme.zIndex.drawer - 1,
         width: '22rem',
       }}
     >
