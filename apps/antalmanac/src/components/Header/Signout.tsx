@@ -14,6 +14,7 @@ interface SignoutProps {
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<null | User>(null);
+    const { session, sessionIsValid, clearSession } = useSessionStore();
 
     const handleLogout = async () => {
         setAnchorEl(null);
@@ -24,8 +25,6 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
             console.error('Failed to sign out', error);
         }
     };
-
-    const { session, sessionIsValid, clearSession } = useSessionStore();
 
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -89,3 +88,4 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
         </div>
     );
 }
+
