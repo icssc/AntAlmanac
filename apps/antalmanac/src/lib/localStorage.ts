@@ -271,19 +271,7 @@ export function getLocalStoragePWADismissalTime() {
     return window.localStorage.getItem(LSK.pwaDismissalTime);
 }
 
-// Helper functions for tbaSnackCollapsed
-export function getTbaAddedCollapsedKey(scheduleIndex: number | null | undefined): string {
-    return `${LSK.tbaAddedCollapsed}${scheduleIndex ?? 'none'}`;
-}
-
-export function getLocalStorageTbaAddedCollapsed(scheduleIndex: number | null | undefined) {
-    return window.localStorage.getItem(getTbaAddedCollapsedKey(scheduleIndex));
-}
-
-export function setLocalStorageTbaAddedCollapsed(scheduleIndex: number | null | undefined, value: string) {
-    window.localStorage.setItem(getTbaAddedCollapsedKey(scheduleIndex), value);
-}
-
+// Helper functions for temporary data
 export function setLocalStorageTempSaveData(value: string) {
     window.localStorage.setItem(LSK.tempSaveData, value);
 }

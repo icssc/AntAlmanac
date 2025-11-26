@@ -2,7 +2,7 @@ import { Collapse, IconButton, Alert, AlertTitle, Box, Typography, useTheme } fr
 import { ExpandMore, InfoOutlined } from '@mui/icons-material';
 import { useEffect, useMemo, useState } from 'react';
 import AppStore from '$stores/AppStore';
-import { getLocalStorageTbaAddedCollapsed, setLocalStorageTbaAddedCollapsed } from '$lib/localStorage';
+import { getLocalStorageTempSaveData, setLocalStorageTempSaveData} from '$lib/localStorage';
 
 interface TbaSection {
   courseTitle: string;
@@ -44,8 +44,15 @@ export default function AsyncCalendarCard() {
   }, [collapsed, visible]);
 
   useEffect(() => {
-    const storedValue = getLocalStorageTbaAddedCollapsed(scheduleIndex);
-    setCollapsed(storedValue === '1');
+    const temp = getLocalStorageTempSaveData();
+    if (!temp) return;
+
+    try {
+      const parsed = JSON.parse(temp);
+      setCollapsed(parsed.currentScheduleIndex === scheduleIndex);
+    } catch {
+      setCollapsed(false);
+    }
   }, [scheduleIndex]);
 
   const tbaSections: TbaSection[] = useMemo(() => {
@@ -75,14 +82,18 @@ export default function AsyncCalendarCard() {
   useEffect(() => {
     if (visible) {
       setCollapsed(false);
-      setLocalStorageTbaAddedCollapsed(scheduleIndex, '0');
+      setLocalStorageTempSaveData(
+        JSON.stringify({ currentScheduleIndex: scheduleIndex })
+      );
     }
   }, [visible, scheduleIndex]);
 
   const handleToggleCollapse = () => {
     setCollapsed((prev) => {
       const newValue = !prev;
-      setLocalStorageTbaAddedCollapsed(scheduleIndex, newValue ? '1' : '0');
+      setLocalStorageTempSaveData(
+        JSON.stringify({ currentScheduleIndex: scheduleIndex })
+      );
       return newValue;
     });
   };
