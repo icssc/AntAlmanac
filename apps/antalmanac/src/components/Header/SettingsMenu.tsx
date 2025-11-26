@@ -144,18 +144,16 @@ function SectionColorMenu() {
                 Section Color
             </Typography>
 
-            <ButtonGroup
+            <Stack
+                spacing="10px"
                 style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    placeContent: 'center',
                     width: '100%',
-                    borderColor: 'unset',
-                    gap: '10px',
+                    justifyContent: 'center',
                 }}
             >
                 <Button
                     startIcon={<Palette fontSize="small" />}
+                    variant="outlined"
                     style={{
                         padding: '1rem 2rem',
                         borderRadius: '12px',
@@ -169,6 +167,7 @@ function SectionColorMenu() {
                 </Button>
                 <Button
                     startIcon={<History fontSize="small" />}
+                    variant="outlined"
                     style={{
                         padding: '1rem 2rem',
                         borderRadius: '12px',
@@ -182,6 +181,7 @@ function SectionColorMenu() {
                 </Button>
                 <Button
                     startIcon={<Pets fontSize="small" />}
+                    variant="outlined"
                     style={{
                         padding: '1rem 2rem',
                         borderRadius: '12px',
@@ -193,7 +193,7 @@ function SectionColorMenu() {
                 >
                     Catppuccin
                 </Button>
-            </ButtonGroup>
+            </Stack>
         </Box>
     );
 }
