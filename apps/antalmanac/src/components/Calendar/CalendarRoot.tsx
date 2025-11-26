@@ -199,7 +199,6 @@ export const ScheduleCalendar = memo(() => {
 
     useEffect(() => {
         setEventsInCalendar(AppStore.getEventsInCalendar());
-        setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
     }, [sectionColor]);
 
     return (

@@ -103,7 +103,11 @@ function generateColorVariant(
     return originalColor;
 }
 
-export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSchedule: ScheduleCourse[]): string {
+export function getColorForNewSection(
+    newSection: ScheduleCourse,
+    sectionsInSchedule: ScheduleCourse[],
+    sectionColor = useSectionColorStore.getState().sectionColor
+): string {
     // Use the color of the closest section with the same title
 
     // Array of sections that have the same course title (i.e., they're under the same course),
@@ -121,7 +125,6 @@ export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSche
     const existingSectionsType = existingSections.filter(
         (course) => course.section.sectionType === newSection.section.sectionType
     );
-    const sectionColor = useSectionColorStore.getState().sectionColor;
     const defaultColors = Object.values(colorVariants[sectionColor]).map((variants) => variants[0]);
     const usedColors = sectionsInSchedule.map((course) => course.section.color);
     const lastDefaultColor = usedColors.findLast((materialColor) =>
