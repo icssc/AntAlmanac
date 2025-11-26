@@ -1,4 +1,4 @@
-import { Collapse, IconButton, Alert, AlertTitle, Box, Typography } from '@mui/material';
+import { Collapse, IconButton, Alert, AlertTitle, Box, Typography, useTheme } from '@mui/material';
 import { ExpandMore, InfoOutlined } from '@mui/icons-material';
 import { useEffect, useMemo, useState } from 'react';
 import AppStore from '$stores/AppStore';
@@ -15,6 +15,7 @@ export default function AsyncCalendarCard() {
   const [visible, setVisible] = useState(false);
 
   const scheduleIndex = AppStore.getCurrentScheduleIndex();
+  const theme = useTheme();
 
   useEffect(() => {
     const handleUpdate = () => setUpdateTrigger((prev) => prev + 1);
@@ -104,7 +105,7 @@ export default function AsyncCalendarCard() {
         severity="info"
         variant="outlined"
         sx={{
-          bgcolor: 'rgba(255,255,255,0.9)',
+          bgcolor: theme.palette.background.paper,
           py: 0.5,
           px: 1,
           width: '100%',
@@ -115,14 +116,14 @@ export default function AsyncCalendarCard() {
         </IconButton>
         }
       >
-        <AlertTitle sx={{ fontSize: '1em' }}>
-          You've added TBA sections:
+        <AlertTitle sx={{ fontSize: '1em', my: 'auto'}}>
+          You've added Async/TBA sections:
         </AlertTitle>
 
         <Collapse in={!collapsed} timeout="auto" unmountOnExit>
           <Box sx={{ mt: 0.25, py: 0.25 }}>
             {tbaSections.map((section, idx) => (
-              <Typography key={`${section.courseTitle}-${section.sectionCode}-${idx}`} variant="body2" sx={{ py: 0.25 }}>
+              <Typography key={`${section.courseTitle}-${section.sectionCode}-${idx}`} variant="body2">
                 {section.courseTitle} — {section.sectionCode}
               </Typography>
             ))}
