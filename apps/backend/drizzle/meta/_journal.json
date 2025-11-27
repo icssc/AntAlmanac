@@ -43,6 +43,13 @@
             "when": 1747424649430,
             "tag": "0005_smooth_millenium_guard",
             "breakpoints": true
+        },
+        {
+            "idx": 6,
+            "version": "7",
+            "when": 1747781405034,
+            "tag": "0006_colossal_ultron",
+            "breakpoints": true
         }
     ]
 }
