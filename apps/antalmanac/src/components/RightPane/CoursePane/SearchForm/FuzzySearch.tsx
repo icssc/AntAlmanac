@@ -1,4 +1,4 @@
-import { type AutocompleteInputChangeReason, Box, Typography } from '@mui/material';
+import { type AutocompleteInputChangeReason, Box } from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
 import { PureComponent } from 'react';
@@ -187,10 +187,10 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         const object = this.state.results?.[option];
         if (!object) return <li {...props}>{option}</li>;
 
-        const label = this.getOptionLabel(option)
+        const label = this.getOptionLabel(option);
         const isCourse = object.type === 'COURSE';
 
-        const isOffered = isCourse === true && "isOffered" in object && object.isOffered === true;
+        const isOffered = isCourse && 'isOffered' in object && object.isOffered;
 
         return (
             <Box
@@ -198,23 +198,21 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 {...props}
                 sx={{
                     display: 'flex',
-                    justifyContent: 'space-between',
                     alignItems: 'center',
-                    opacity: isCourse && !isOffered ? 0.5 : 1,
+                    opacity: isCourse && !isOffered ? 0.75 : 1,
                 }}
             >
-                <Typography variant='body2'>{label}</Typography>
+                {label}
                 {isCourse && (
-                    <Typography
-                        variant='body2'
+                    <Box
+                    component="span"
                         sx={{
-                            ml: 1,
+                            marginLeft: 'auto',
                             color: isOffered ? '#a6e3a1' : '#f38ba8',
-                            fontWeight: 500,
                         }}
                     >
                         {isOffered ? 'Offered' : 'Not Offered'}
-                    </Typography>
+                    </Box>
                 )}
             </Box>
         )
