@@ -2,7 +2,9 @@ import { type AutocompleteInputChangeReason, Box } from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
 import { PureComponent } from 'react';
+import { useThemeStore } from '$stores/SettingsStore'
 import UAParser from 'ua-parser-js';
+
 
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
@@ -191,6 +193,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         const isCourse = object.type === 'COURSE';
 
         const isOffered = isCourse && 'isOffered' in object && object.isOffered;
+        const isDark = useThemeStore.getState().isDark;
 
         return (
             <Box
@@ -199,7 +202,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    opacity: isCourse && !isOffered ? 0.75 : 1,
+                    opacity: isCourse && !isOffered ? 0.6 : 1,
                 }}
             >
                 {label}
@@ -208,7 +211,10 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                     component="span"
                         sx={{
                             marginLeft: 'auto',
-                            color: isOffered ? '#a6e3a1' : '#f38ba8',
+                            color: isOffered 
+                            ? (isDark ? '#a6e3a1' : '#40a02b') 
+                            : (isDark ? '#f38ba8': '#d20f39'),
+                            fontWeight: 500,
                         }}
                     >
                         {isOffered ? 'Offered' : 'Not Offered'}
