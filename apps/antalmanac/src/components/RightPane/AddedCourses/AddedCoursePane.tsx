@@ -408,31 +408,31 @@ function AddedSectionsGrid() {
                     {courses.map((course) => {
                         const courseKey = `${course.deptCode}${course.courseNumber}`;
                         const missing = missingTypes[courseKey] || [];
-                        const missingLabels = [];
+                        const missingSections = [];
 
                         for (const section of missing) {
                             if (section === 'dis') {
-                                missingLabels.push('Discussion');
+                                missingSections.push('Discussion');
                             } else if (section === 'lab') {
-                                missingLabels.push('Lab');
+                                missingSections.push('Lab');
                             } else if (section === 'lec') {
-                                missingLabels.push('Lecture');
+                                missingSections.push('Lecture');
                             } else if (section === 'sem') {
-                                missingLabels.push('Seminar');
+                                missingSections.push('Seminar');
                             } else if (section === 'res') {
-                                missingLabels.push('Research');
+                                missingSections.push('Research');
                             } else if (section == 'qiz') {
-                                missingLabels.push('Quiz');
+                                missingSections.push('Quiz');
                             } else if (section == 'tap') {
-                                missingLabels.push('Tutorial Assistance Program');
+                                missingSections.push('Tutorial Assistance Program');
                             } else if (section == 'col') {
-                                missingLabels.push('Colloquium');
+                                missingSections.push('Colloquium');
                             } else if (section == 'act') {
-                                missingLabels.push('Activity');
+                                missingSections.push('Activity');
                             } else if (section == 'stu') {
-                                missingLabels.push('Studio');
+                                missingSections.push('Studio');
                             } else if (section == 'tut') {
-                                missingLabels.push('Tutorial');
+                                missingSections.push('Tutorial');
                             }
                         }
 
@@ -444,7 +444,7 @@ function AddedSectionsGrid() {
                                     allowHighlight={false}
                                     analyticsCategory={analyticsEnum.addedClasses}
                                     scheduleNames={scheduleNames}
-                                    missingSections={missingLabels}
+                                    missingSections={missingSections}
                                 />
                             </Box>
                         );
@@ -467,8 +467,6 @@ export function AddedCoursePane() {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
         };
-
-        console.log('Opened added course');
 
         logAnalytics(postHog, {
             category: analyticsEnum.addedClasses,
