@@ -45,7 +45,7 @@ const isCourseOffered = (
     termSectionCodes: Record<string, SectionSearchResult>): boolean => {
         return Object.values(termSectionCodes).some(
             (section) => {
-                section.department === department && section.courseNumber === courseNumber;
+                return section.department === department && section.courseNumber === courseNumber;
         })
 }
 
