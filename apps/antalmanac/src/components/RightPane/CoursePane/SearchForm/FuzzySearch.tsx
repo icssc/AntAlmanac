@@ -1,4 +1,4 @@
-import { type AutocompleteInputChangeReason } from '@mui/material';
+import { type AutocompleteInputChangeReason, Box, Typography } from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
 import { PureComponent } from 'react';
@@ -182,6 +182,44 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         this.setState({ open: false });
     };
 
+    // Renders each autocomplete option as a custom list item. Shows availability status if item is a course.
+    renderOption = (props: React.HTMLAttributes<HTMLLIElement>, option: string) => {
+        const object = this.state.results?.[option];
+        if (!object) return <li {...props}>{option}</li>;
+
+        const label = this.getOptionLabel(option)
+        const isCourse = object.type === 'COURSE';
+
+        const isOffered = isCourse === true && "isOffered" in object && object.isOffered === true;
+
+        return (
+            <Box
+                component="li"
+                {...props}
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    opacity: isCourse && !isOffered ? 0.5 : 1,
+                }}
+            >
+                <Typography variant='body2'>{label}</Typography>
+                {isCourse && (
+                    <Typography
+                        variant='body2'
+                        sx={{
+                            ml: 1,
+                            color: isOffered ? '#a6e3a1' : '#f38ba8',
+                            fontWeight: 500,
+                        }}
+                    >
+                        {isOffered ? 'Offered' : 'Not Offered'}
+                    </Typography>
+                )}
+            </Box>
+        )
+    }
+
     render() {
         return (
             <LabeledAutocomplete
@@ -193,6 +231,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                     autoHighlight: true,
                     filterOptions: this.filterOptions,
                     getOptionLabel: this.getOptionLabel,
+                    renderOption: this.renderOption,
                     id: 'fuzzy-search',
                     noOptionsText: 'No results found! Please try broadening your search.',
                     onClose: this.onClose,
