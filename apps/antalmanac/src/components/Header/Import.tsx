@@ -46,6 +46,7 @@ import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -57,6 +58,11 @@ enum ImportSource {
 }
 
 export function Import() {
+    const { isDark } = useThemeStore();
+    const { fallback } = useFallbackStore();
+    const { sessionIsValid } = useSessionStore();
+    const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
+
     const [alertDialogTitle, setAlertDialogTitle] = useState('');
     const [alertDialogSeverity, setAlertDialogSeverity] = useState<AlertColor>('error');
     const [alertDialog, setAlertDialog] = useState(false);
@@ -64,13 +70,6 @@ export function Import() {
     const [studyListText, setStudyListText] = useState('');
     const [zotcourseScheduleName, setZotcourseScheduleName] = useState('');
     const [aaUsername, setAAUsername] = useState('');
-
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-
-    const { sessionIsValid } = useSessionStore();
-    const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
-
-    const { isDark } = useThemeStore();
 
     const postHog = usePostHog();
 
@@ -246,17 +245,9 @@ export function Import() {
     }, [handleOpen]);
 
     useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
         if (sessionIsValid && getLocalStorageDataCache() === null) {
             handleFirstTimeSignin();
         }
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
     }, [handleFirstTimeSignin, sessionIsValid]);
 
     return (
@@ -266,7 +257,7 @@ export function Import() {
                     onClick={handleOpen}
                     color="inherit"
                     startIcon={<ContentPasteGo />}
-                    disabled={skeletonMode}
+                    disabled={fallback}
                     id="import-button"
                 >
                     Import

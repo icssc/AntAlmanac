@@ -16,6 +16,15 @@ import Feedback from '$routes/Feedback';
 import Home from '$routes/Home';
 import { OutagePage } from '$routes/OutagePage';
 
+const FUTURE_CONFIG = {
+    v7_fetcherPersist: true,
+    v7_normalizeFormMethod: true,
+    v7_partialHydration: true,
+    v7_relativeSplatPath: true,
+    v7_skipActionErrorRevalidation: true,
+    v7_startTransition: true,
+};
+
 /**
  * Do not edit this unless you know what you're doing.
  */
@@ -30,54 +39,60 @@ function RouteLayout() {
 
 const OUTAGE = false;
 
-const BROWSER_ROUTER = createBrowserRouter([
-    {
-        element: <RouteLayout />,
-        children: [
-            {
-                path: '/',
-                element: <Home />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '/:tab',
-                element: <Home />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '/feedback',
-                element: <Feedback />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '/auth',
-                element: <AuthPage />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '*',
-                element: <Navigate to="/" replace />,
-            },
-        ],
-    },
-]);
+const BROWSER_ROUTER = createBrowserRouter(
+    [
+        {
+            element: <RouteLayout />,
+            children: [
+                {
+                    path: '/',
+                    element: <Home />,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '/:tab',
+                    element: <Home />,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '/feedback',
+                    element: <Feedback />,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '/auth',
+                    element: <AuthPage />,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '*',
+                    element: <Navigate to="/" replace />,
+                },
+            ],
+        },
+    ],
+    { future: FUTURE_CONFIG }
+);
 
-const OUTAGE_ROUTER = createBrowserRouter([
-    {
-        element: <RouteLayout />,
-        children: [
-            {
-                path: '/outage',
-                element: <OutagePage />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                path: '*',
-                element: <Navigate to="/outage" replace />,
-            },
-        ],
-    },
-]);
+const OUTAGE_ROUTER = createBrowserRouter(
+    [
+        {
+            element: <RouteLayout />,
+            children: [
+                {
+                    path: '/outage',
+                    element: <OutagePage />,
+                    errorElement: <ErrorPage />,
+                },
+                {
+                    path: '*',
+                    element: <Navigate to="/outage" replace />,
+                },
+            ],
+        },
+    ],
+    { future: FUTURE_CONFIG }
+);
 
 const ROUTER = OUTAGE ? OUTAGE_ROUTER : BROWSER_ROUTER;
 
@@ -121,7 +136,12 @@ export default function App() {
                         }}
                     >
                         <SnackbarProvider>
-                            <RouterProvider router={ROUTER} />
+                            <RouterProvider
+                                router={ROUTER}
+                                future={{
+                                    v7_startTransition: true,
+                                }}
+                            />
                         </SnackbarProvider>
                     </TourProvider>
                 </AppThemeProvider>

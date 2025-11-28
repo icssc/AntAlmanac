@@ -5,7 +5,7 @@ import {
 } from '@mui/icons-material';
 import { useTheme, useMediaQuery, Box, Button, IconButton, Paper, Tooltip } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
-import { useState, useCallback, useEffect, memo } from 'react';
+import { useCallback, memo } from 'react';
 
 import { undoDelete } from '$actions/AppStoreActions';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
@@ -15,6 +15,7 @@ import DownloadButton from '$components/buttons/Download';
 import ScreenshotButton from '$components/buttons/Screenshot';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
+import { useFallbackStore } from '$stores/FallbackStore';
 
 function handleUndo(postHog?: PostHog) {
     return () => {
@@ -39,7 +40,7 @@ export interface CalendarPaneToolbarProps {
 export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const theme = useTheme();
     const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const { fallback } = useFallbackStore();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('xxs'));
 
     const postHog = usePostHog();
@@ -52,19 +53,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             });
         }
         toggleDisplayFinalsSchedule();
-    }, [toggleDisplayFinalsSchedule]);
-
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
+    }, [postHog, showFinalsSchedule, toggleDisplayFinalsSchedule]);
 
     return (
         <Paper
@@ -87,7 +76,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             color={showFinalsSchedule ? 'primary' : 'inherit'}
                             onClick={handleToggleFinals}
                             id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
-                            disabled={skeletonMode}
+                            disabled={fallback}
                             size="small"
                             sx={{
                                 border: '1px solid',
@@ -105,7 +94,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             onClick={handleToggleFinals}
                             size="small"
                             id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
-                            disabled={skeletonMode}
+                            disabled={fallback}
                         >
                             Finals
                         </Button>
@@ -120,17 +109,12 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                 <DownloadButton />
 
                 <Tooltip title="Undo last action">
-                    <IconButton onClick={handleUndo(postHog)} size="medium" disabled={skeletonMode}>
+                    <IconButton onClick={handleUndo(postHog)} size="medium" disabled={fallback}>
                         <UndoIcon fontSize="small" />
                     </IconButton>
                 </Tooltip>
 
-                <ClearScheduleButton
-                    size="medium"
-                    fontSize="small"
-                    skeletonMode={skeletonMode}
-                    analyticsCategory={analyticsEnum.calendar}
-                />
+                <ClearScheduleButton fontSize="small" disabled={fallback} analyticsCategory={analyticsEnum.calendar} />
 
                 <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
             </Box>
