@@ -465,7 +465,7 @@ class AppStore extends EventEmitter {
     ) {
         this.snackbarVariant = variant;
         this.snackbarMessage = message;
-        this.snackbarDuration = duration ? duration : this.snackbarDuration;
+        this.snackbarDuration = duration != null ? duration * 1000 : 3000;
         this.snackbarPosition = position ? position : this.snackbarPosition;
         this.snackbarStyle = style ? style : this.snackbarStyle;
         this.emit('openSnackbar');
