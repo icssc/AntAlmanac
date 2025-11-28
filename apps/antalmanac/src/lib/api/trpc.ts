@@ -17,6 +17,12 @@ const trpc = createTRPCProxyClient<AppRouter>({
     links: [
         httpBatchLink({
             url: getEndpoint() + '/trpc',
+            fetch: (url, options) => {
+                return fetch(url, {
+                    ...options,
+                    credentials: 'include',
+                });
+            },
         }),
     ],
     transformer: superjson,
