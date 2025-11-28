@@ -3,6 +3,7 @@ import type { SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
 import { PureComponent } from 'react';
 import { useThemeStore } from '$stores/SettingsStore'
+import { Check, Clear } from '@mui/icons-material';
 import UAParser from 'ua-parser-js';
 
 
@@ -195,6 +196,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         const isOffered = isCourse && 'isOffered' in object && object.isOffered;
         const isDark = useThemeStore.getState().isDark;
 
+        // Returns a single colored indicator if on mobile, but colored text if not on mobile
         return (
             <Box
                 component="li"
@@ -207,18 +209,40 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
             >
                 {label}
                 {isCourse && (
-                    <Box
-                    component="span"
-                        sx={{
-                            marginLeft: 'auto',
-                            color: isOffered 
-                            ? (isDark ? '#a6e3a1' : '#40a02b') 
-                            : (isDark ? '#f38ba8': '#d20f39'),
-                            fontWeight: 500,
-                        }}
-                    >
-                        {isOffered ? 'Offered' : 'Not Offered'}
-                    </Box>
+                    isMobile() ? (
+                        isOffered ? (
+                            <Check
+                                sx={{
+                                    marginLeft: 'auto',
+                                    fontSize: 16,
+                                    color: isDark ? '#a6e3a1' : '#40a02b',
+                                    flexShrink: 0,
+                                }}
+                            />
+                        ) : (
+                            <Clear
+                                sx={{
+                                    marginLeft: 'auto',
+                                    fontSize: 16,
+                                    color: isDark ? '#f38ba8' : '#d20f39',
+                                    flexShrink: 0,
+                                }}
+                            />
+                        )
+                    ) : (
+                        <Box
+                        component="span"
+                            sx={{
+                                marginLeft: 'auto',
+                                color: isOffered 
+                                ? (isDark ? '#a6e3a1' : '#40a02b') 
+                                : (isDark ? '#f38ba8': '#d20f39'),
+                                fontWeight: 500,
+                            }}
+                        >
+                            {isOffered ? 'Offered' : 'Not Offered'}
+                        </Box>
+                    )
                 )}
             </Box>
         )
