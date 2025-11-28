@@ -403,6 +403,10 @@ export const undoDelete = (event: KeyboardEvent | null) => {
     }
 };
 
+export const redoAction = () => {
+    AppStore.redoAction();
+};
+
 export const changeCurrentSchedule = (newScheduleIndex: number) => {
     AppStore.changeCurrentSchedule(newScheduleIndex);
 };

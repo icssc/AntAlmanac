@@ -4,7 +4,8 @@ import { useParams } from 'react-router-dom';
 
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
-import { getLocalStorageUserId } from '$lib/localStorage';
+import { getLocalStorageSessionId } from '$lib/localStorage';
+import AppStore from '$stores/AppStore';
 import { paramsAreInURL } from '$stores/CoursePaneStore';
 import { useTabStore } from '$stores/TabStore';
 
@@ -49,15 +50,31 @@ export function ScheduleManagement() {
             return;
         }
 
-        const userId = getLocalStorageUserId();
+        const sessionId = getLocalStorageSessionId();
+        const urlHasManualSearchParams = paramsAreInURL();
+        const hasLocalScheduleData = () =>
+            AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
 
-        if (userId === null || paramsAreInURL()) {
+        if (urlHasManualSearchParams) {
             setActiveTab('search');
-        } else if (isMobile) {
-            setActiveTab('calendar');
-        } else {
-            setActiveTab('added');
+            return;
         }
+
+        if (!isMobile) {
+            if (sessionId === null) {
+                setActiveTab('search');
+            } else {
+                setActiveTab('added');
+            }
+            return;
+        }
+
+        if (sessionId !== null || hasLocalScheduleData()) {
+            setActiveTab('calendar');
+            return;
+        }
+
+        setActiveTab('search');
         // NB: We disable exhaustive deps here as `tab` is a dependency, but we only want this effect to run on mount
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isMobile, setActiveTab]);
