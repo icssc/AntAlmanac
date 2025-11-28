@@ -2,6 +2,7 @@ import { type AutocompleteInputChangeReason, Box } from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
 import { PureComponent } from 'react';
+import { useThemeStore } from '$stores/SettingsStore';
 import UAParser from 'ua-parser-js';
 
 
@@ -192,8 +193,9 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         const isCourse = object.type === 'COURSE';
 
         const isOffered = isCourse && 'isOffered' in object && object.isOffered;
+        const isDark = useThemeStore.getState().isDark;
+        const mobile = isMobile();
 
-        // Returns a single colored indicator if on mobile, but colored text if not on mobile
         return (
             <Box
                 component="li"
@@ -205,6 +207,25 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 }}
             >
                 {label}
+                {isCourse && !mobile && (
+                    <Box
+                        component="span"
+                        sx={{
+                            marginLeft: 'auto',
+                            color: isOffered 
+                                ? (isDark ? '#a6e3a1' : '#40a02b') 
+                                : (isDark ? '#f38ba8': '#d20f39'),
+                            fontWeight: 500,
+                            opacity: 0,
+                            transition: 'opacity 0.2s',
+                            '.MuiAutocomplete-option:hover &': {
+                                opacity: 1,
+                            },
+                        }}
+                    >
+                        {isOffered ? 'Offered' : 'Not Offered'}
+                    </Box>
+                )}
             </Box>
         )
     }
