@@ -13,6 +13,7 @@ import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
+import { WebSOC } from '$lib/websoc';
 import AppStore from '$stores/AppStore';
 
 /**
@@ -35,6 +36,37 @@ interface CourseWithTerm extends AACourse {
 }
 
 const NOTE_MAX_LEN = 5000;
+
+//Checks added courses for missing sections
+const checkCompleteSections = async (userCourses: CourseWithTerm): Promise<string[]> => {
+    try {
+        const websocParams = {
+            department: userCourses.deptCode,
+            courseNumber: userCourses.courseNumber,
+            term: userCourses.term,
+        };
+
+        const fullCourseData = await WebSOC.query(websocParams);
+
+        const sections = fullCourseData?.schools?.[0]?.departments?.[0]?.courses?.[0]?.sections;
+
+        //Return an empty array if the API behaves unexpectedly. No warning will be shown in the UI in this case
+        if (!sections || !Array.isArray(sections)) {
+            console.log('Cannot show section warnings. WebSOC response unexpected: ', fullCourseData);
+            return [];
+        }
+
+        //Get all of the unique section types
+        const requiredTypes = new Set(sections.map((section) => section.sectionType.trim().toLowerCase()));
+        const userTypes = new Set(userCourses.sections.map((section) => section.sectionType.trim().toLowerCase()));
+
+        const missingTypes = [...requiredTypes].filter((type) => !userTypes.has(type));
+        return missingTypes;
+    } catch (error) {
+        console.error('Error fetching course data from WebSOC:', error);
+        return [];
+    }
+};
 
 function getCourses() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
@@ -290,6 +322,7 @@ function AddedSectionsGrid() {
     const [courses, setCourses] = useState(getCourses());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+    const [missingTypes, setMissingTypes] = useState<Record<string, string[]>>({});
 
     useEffect(() => {
         const handleCoursesChange = () => {
@@ -316,6 +349,25 @@ function AddedSectionsGrid() {
             AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
         };
     }, []);
+
+    //Check for any missing sections for each added course
+    useEffect(() => {
+        const checkCourses = async () => {
+            const missing: Record<string, string[]> = {};
+
+            //Check the sections in every course the user has scheduled
+            for (const course of courses) {
+                const courseKey = `${course.deptCode}${course.courseNumber}`;
+                const missingSections = await checkCompleteSections(course);
+                missing[courseKey] = missingSections;
+            }
+
+            setMissingTypes(missing);
+        };
+        if (courses.length > 0) {
+            checkCourses();
+        }
+    }, [courses]);
 
     const scheduleUnits = useMemo(() => {
         let result = 0;
@@ -354,6 +406,36 @@ function AddedSectionsGrid() {
                 {courses.length < 1 ? NoCoursesBox : null}
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
+                        const courseKey = `${course.deptCode}${course.courseNumber}`;
+                        const missing = missingTypes[courseKey] || [];
+                        const missingSections = [];
+
+                        for (const section of missing) {
+                            if (section === 'dis') {
+                                missingSections.push('Discussion');
+                            } else if (section === 'lab') {
+                                missingSections.push('Lab');
+                            } else if (section === 'lec') {
+                                missingSections.push('Lecture');
+                            } else if (section === 'sem') {
+                                missingSections.push('Seminar');
+                            } else if (section === 'res') {
+                                missingSections.push('Research');
+                            } else if (section == 'qiz') {
+                                missingSections.push('Quiz');
+                            } else if (section == 'tap') {
+                                missingSections.push('Tutorial Assistance Program');
+                            } else if (section == 'col') {
+                                missingSections.push('Colloquium');
+                            } else if (section == 'act') {
+                                missingSections.push('Activity');
+                            } else if (section == 'stu') {
+                                missingSections.push('Studio');
+                            } else if (section == 'tut') {
+                                missingSections.push('Tutorial');
+                            }
+                        }
+
                         return (
                             <Box key={course.deptCode + course.courseNumber + course.courseTitle}>
                                 <SectionTableLazyWrapper
@@ -362,6 +444,7 @@ function AddedSectionsGrid() {
                                     allowHighlight={false}
                                     analyticsCategory={analyticsEnum.addedClasses}
                                     scheduleNames={scheduleNames}
+                                    missingSections={missingSections}
                                 />
                             </Box>
                         );
@@ -384,8 +467,6 @@ export function AddedCoursePane() {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
         };
-
-        console.log('Opened added ourse');
 
         logAnalytics(postHog, {
             category: analyticsEnum.addedClasses,

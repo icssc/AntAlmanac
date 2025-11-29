@@ -1,5 +1,5 @@
 import { Assessment, ShowChart as ShowChartIcon } from '@mui/icons-material';
-import { Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow, useMediaQuery } from '@mui/material';
+import { Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow, useMediaQuery, Alert } from '@mui/material';
 import { useMemo } from 'react';
 
 import PeterPortalIcon from '$assets/peterportal-logo.png';
@@ -68,7 +68,7 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
 function SectionTable(props: SectionTableProps) {
-    const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory } = props;
+    const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory, missingSections } = props;
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
@@ -154,6 +154,12 @@ function SectionTable(props: SectionTableProps) {
                     }
                 />
             </Box>
+
+            {missingSections?.length && (
+                <Alert severity="warning" sx={{ mb: 1 }}>
+                    Missing required sections: {missingSections.join(', ')}
+                </Alert>
+            )}
 
             <TableContainer
                 component={Paper}
