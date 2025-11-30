@@ -112,6 +112,32 @@ export const ScheduleCalendar = memo(() => {
         }
     }, [eventsInCalendar, loadingSchedule]);
 
+    const blueprintToSkeletonEvent = useCallback(
+        (blueprint: {
+            dayOffset: number;
+            startHour: number;
+            startMinute: number;
+            endHour: number;
+            endMinute: number;
+        }): SkeletonEvent => {
+            const start = new Date(BASE_DATE);
+            start.setDate(start.getDate() + blueprint.dayOffset);
+            start.setHours(blueprint.startHour, blueprint.startMinute, 0, 0);
+
+            const end = new Date(start);
+            end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
+
+            return {
+                color: '#6d6d6d',
+                start,
+                end,
+                title: '',
+                isSkeletonEvent: true,
+            } as SkeletonEvent;
+        },
+        []
+    );
+
     const createSkeletonEvents = useCallback((): SkeletonEvent[] => {
         const savedDataString = getLocalStorageSkeletonBlueprint();
 
@@ -131,44 +157,14 @@ export const ScheduleCalendar = memo(() => {
         }
 
         if (skeletonBlueprints) {
-            return skeletonBlueprints.map((blueprint) => {
-                const start = new Date(BASE_DATE);
-                start.setDate(start.getDate() + blueprint.dayOffset);
-                start.setHours(blueprint.startHour, blueprint.startMinute, 0, 0);
-
-                const end = new Date(start);
-                end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
-
-                return {
-                    color: '#6d6d6d',
-                    start,
-                    end,
-                    title: '',
-                    isSkeletonEvent: true,
-                } as SkeletonEvent;
-            });
+            return skeletonBlueprints.map(blueprintToSkeletonEvent);
         }
 
         const randomIndex = Math.floor(Math.random() * skeletonBlueprintVariations.length);
         const fallbackBlueprints = skeletonBlueprintVariations[randomIndex];
 
-        return fallbackBlueprints.map((blueprint) => {
-            const start = new Date(BASE_DATE);
-            start.setDate(start.getDate() + blueprint.dayOffset);
-            start.setHours(blueprint.startHour, blueprint.startMinute, 0, 0);
-
-            const end = new Date(start);
-            end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
-
-            return {
-                color: '#6d6d6d',
-                start,
-                end,
-                title: '',
-                isSkeletonEvent: true,
-            } as SkeletonEvent;
-        });
-    }, []);
+        return fallbackBlueprints.map(blueprintToSkeletonEvent);
+    }, [blueprintToSkeletonEvent]);
 
     const events = loadingSchedule ? createSkeletonEvents() : getEventsForCalendar();
 
