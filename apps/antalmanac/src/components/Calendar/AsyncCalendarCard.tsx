@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import AppStore from '$stores/AppStore';
 import { getLocalStorageTempSaveData } from '$lib/localStorage';
 import { setTempSaveData } from '$stores/localTempSaveDataHelpers';
+import { useIsMobile } from '$hooks/useIsMobile';
 
 interface TbaSection {
   courseTitle: string;
@@ -11,6 +12,8 @@ interface TbaSection {
 }
 
 export default function AsyncCalendarCard() {
+  const isMobile = useIsMobile();
+
   const [updateTrigger, setUpdateTrigger] = useState(0);
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -109,9 +112,9 @@ export default function AsyncCalendarCard() {
     <Box
       sx={{
         position: 'absolute',
-        bottom: 16,
-        left: { xs: 16, sm: 'auto' },
-        right: { xs: 'auto', sm: 16 },
+        bottom: isMobile ? 0 : 16,
+        left: isMobile ? 45 : 'auto',
+        right: 16,
         zIndex: (theme) => theme.zIndex.drawer - 1,
         width: '22rem',
       }}
