@@ -21,7 +21,6 @@ enum LocalStorageKeys {
     importedUser = 'importedUser',
     fromLoading = 'fromLoading',
     tempSaveData = 'tempSaveData',
-    tbaAddedCollapsed = 'tbaAddedCollapsed',
 }
 
 const LSK = LocalStorageKeys;
