@@ -4,12 +4,18 @@ import { BLUE } from '$src/globals';
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
+        id: 'https://antalmanac.com',
+        scope: 'https://antalmanac.com',
         name: 'AntAlmanac',
-        description: 'A Progressive Web App for AntAlmanac',
+        description: 'A course exploration and scheduling tool for UCI Anteaters',
+        lang: 'en',
+        dir: 'ltr',
         start_url: '/',
         display: 'standalone',
-        background_color: '#ffffff',
         theme_color: BLUE,
+        background_color: '#303030',
+        orientation: 'portrait',
+        categories: ['education', 'productivity', 'utilities'],
         icons: [
             {
                 src: '/icons/icon-192.png',
@@ -21,6 +27,16 @@ export default function manifest(): MetadataRoute.Manifest {
                 sizes: '512x512',
                 type: 'image/png',
             },
+        ],
+        screenshots: [
+            {
+                src: '/screenshots/desktop.png',
+                sizes: '1280x630',
+                type: 'image/png',
+                form_factor: 'wide',
+                label: 'Schedule and course search',
+            },
+            // Add iphone screenshots (with graphics?)
         ],
     };
 }
