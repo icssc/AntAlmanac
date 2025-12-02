@@ -15,7 +15,7 @@ export function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
             {props.label} 
             {!isMobile && props.formattedTime && (
                 <Tooltip title={<Typography fontSize={'small'}> Last updated at {props.formattedTime}</Typography>}>
-                    <AccessTimeFilled fontSize='small'/>
+                    <AccessTimeFilled sx={{ fontSize:"1rem", marginBottom:0.25}}/>
                 </Tooltip>
             )}
         </Box>
