@@ -64,7 +64,7 @@ export function HelpMenu() {
         <Stack
             sx={{
                 position: 'fixed',
-                bottom: isMobile ? 65 : 16, // Magic number
+                bottom: `calc(${isMobile ? 65 : 16}px + env(safe-area-inset-bottom))`, // Magic number
                 right: 8,
             }}
             spacing={1}

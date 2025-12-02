@@ -256,7 +256,13 @@ function AppDrawer() {
                 anchor="right"
                 open={drawerOpen}
                 onClose={handleDrawerClose}
-                PaperProps={{ style: { borderRadius: '10px 0 0 10px' } }}
+                PaperProps={{
+                    style: {
+                        borderRadius: '10px 0 0 10px',
+                        paddingTop: 'env(safe-area-inset-top)',
+                        paddingBottom: 'env(safe-area-inset-bottom)',
+                    },
+                }}
                 variant="temporary"
             >
                 <Box style={{ width: isMobileScreen ? '300px' : '360px', height: '100%' }}>
