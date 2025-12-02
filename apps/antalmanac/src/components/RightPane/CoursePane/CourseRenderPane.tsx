@@ -50,6 +50,15 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
                 for (const section of course.sections) {
                     (section as AASection).color = courseColors[section.sectionCode];
                 }
+
+                const sectionTypes = new Set<string>();
+                course.sections.forEach((section) => {
+                    sectionTypes.add(section.sectionType);
+                });
+
+                (course as AACourse).sectionTypes = sectionTypes;
+                console.log(`${course.courseTitle}:`, (course as AACourse).sectionTypes);
+
                 accumulator.push(course as AACourse);
             });
         });

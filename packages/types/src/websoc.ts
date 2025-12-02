@@ -8,6 +8,7 @@ export type AASection = WebsocSection & AASectionExtendedProperties;
 
 type AACourseExtendedProperties = {
     sections: AASection[];
+    sectionTypes: Set<string>;
 };
 
 export type AACourse = Omit<WebsocCourse, 'sections'> & AACourseExtendedProperties;
