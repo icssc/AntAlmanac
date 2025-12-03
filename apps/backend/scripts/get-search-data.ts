@@ -4,6 +4,12 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 import { queryGraphQL } from 'src/lib/helpers';
 import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from 'src/lib/term-section-codes';
+import {
+    normalizeDepartment,
+    normalizeCourseNumber,
+    normalizeCourseCode,
+    normalizeText,
+} from 'src/lib/helpers';
 
 import 'dotenv/config';
 
@@ -35,6 +41,19 @@ async function main() {
     const courseMap = new Map<string, CourseSearchResult & { id: string }>();
     const deptMap = new Map<string, DepartmentSearchResult & { id: string }>();
     for (const course of courses) {
+        const normDept = normalizeDepartment(course.department);
+        const normNumber = normalizeCourseNumber(course.courseNumber);
+        const normCourseCode = normalizeCourseCode(course.department, course.courseNumber);
+        const normTitle = normalizeText(course.title);
+        // Create a searchable blob from department, number, title, and alias
+        const blobParts = [
+            course.department,
+            course.courseNumber,
+            course.title,
+            ALIASES[course.department],
+        ].filter(Boolean);
+        const normBlob = normalizeText(blobParts.join(' '));
+
         courseMap.set(course.id, {
             id: course.id,
             type: 'COURSE',
@@ -44,6 +63,11 @@ async function main() {
                 department: course.department,
                 number: course.courseNumber,
             },
+            normDept,
+            normNumber,
+            normCourseCode,
+            normTitle,
+            normBlob,
         });
         deptMap.set(course.department, {
             id: course.department,
