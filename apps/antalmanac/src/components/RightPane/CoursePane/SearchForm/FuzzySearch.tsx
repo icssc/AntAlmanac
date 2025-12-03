@@ -183,7 +183,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     };
 
     onFocus = () => {
-        if (this.state.value || Object.keys(this.state.results ?? {}).length > 0) {
+        if (this.state.value.length >= 2) {
             this.setState({ open: true });
         }
     };
