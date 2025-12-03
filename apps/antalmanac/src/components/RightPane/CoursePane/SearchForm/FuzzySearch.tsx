@@ -218,6 +218,15 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         )
     }
 
+    // use MUI groupBy to group options of type 'COURSE' by availability. All other options are ungrouped.
+    groupBy = (option: SearchOption) => {
+        const isCourse = option.result.type === 'COURSE';
+        if (!isCourse) return '__ungrouped__';
+
+        const isOffered = 'isOffered' in option.result && option.result.isOffered;
+        return isOffered ? '__offered__' : '__notOffered__';
+    }
+
     render() {
         return (
             <LabeledAutocomplete
