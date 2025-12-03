@@ -57,7 +57,6 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
                 });
 
                 (course as AACourse).sectionTypes = sectionTypes;
-                console.log(`${course.courseTitle}:`, (course as AACourse).sectionTypes);
 
                 accumulator.push(course as AACourse);
             });

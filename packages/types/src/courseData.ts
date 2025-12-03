@@ -6,6 +6,7 @@ export interface CourseDetails {
     courseTitle: string;
     courseComment: string;
     prerequisiteLink: string;
+    sectionTypes: Set<string>;
 }
 
 export interface CourseInfo {

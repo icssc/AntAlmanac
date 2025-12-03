@@ -10,6 +10,7 @@ export type ScheduleCourse = {
     prerequisiteLink: string;
     section: AASection;
     term: string;
+    sectionTypes: Set<string>;
 };
 
 export type Schedule = {
