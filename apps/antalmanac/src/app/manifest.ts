@@ -29,6 +29,7 @@ export default function manifest(): MetadataRoute.Manifest {
             },
         ],
         screenshots: [
+            // We should probably add nicer screenshots later
             {
                 src: '/screenshots/desktop.png',
                 sizes: '1280x630',
@@ -36,7 +37,20 @@ export default function manifest(): MetadataRoute.Manifest {
                 form_factor: 'wide',
                 label: 'Schedule and course search',
             },
-            // Add iphone screenshots (with graphics?)
+            {
+                src: '/screenshots/mobile_calendar.png',
+                sizes: '750x1626',
+                type: 'image/png',
+                form_factor: 'narrow',
+                label: 'Calendar with schedule',
+            },
+            {
+                src: '/screenshots/mobile_classes.png',
+                sizes: '750x1626',
+                type: 'image/png',
+                form_factor: 'narrow',
+                label: 'Course search result',
+            },
         ],
     };
 }
