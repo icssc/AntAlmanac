@@ -13,7 +13,6 @@ import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
-import { WebSOC } from '$lib/websoc';
 import AppStore from '$stores/AppStore';
 
 /**
@@ -38,38 +37,41 @@ interface CourseWithTerm extends AACourse {
 const NOTE_MAX_LEN = 5000;
 
 //Checks added courses for missing sections
-const checkCompleteSections = async (userCourses: CourseWithTerm): Promise<string[]> => {
+const checkCompleteSections = (userCourses: CourseWithTerm): string[] => {
     try {
-        const websocParams = {
-            department: userCourses.deptCode,
-            courseNumber: userCourses.courseNumber,
-            term: userCourses.term,
-        };
+        console.log('aaaaaa user course section Types: ', userCourses.sectionTypes);
+        //Get required types from stored section types
+        const requiredTypes = userCourses.sectionTypes
+            ? new Set([...userCourses.sectionTypes].map((t) => t.toLowerCase()))
+            : new Set<string>();
+        console.log('Required Types:', requiredTypes);
 
-        const fullCourseData = await WebSOC.query(websocParams);
-
-        const sections = fullCourseData?.schools?.[0]?.departments?.[0]?.courses?.[0]?.sections;
-
-        //Return an empty array if the API behaves unexpectedly. No warning will be shown in the UI in this case
-        if (!sections || !Array.isArray(sections)) {
-            console.log('Cannot show section warnings. WebSOC response unexpected: ', fullCourseData);
-            return [];
-        }
-
-        //Get all of the unique section types
-        const requiredTypes = new Set(sections.map((section) => section.sectionType.trim().toLowerCase()));
+        //Get the section types the user has added
         const userTypes = new Set(userCourses.sections.map((section) => section.sectionType.trim().toLowerCase()));
-
+        console.log('User Types:', userTypes);
+        //Compare types the user added with the required types
         const missingTypes = [...requiredTypes].filter((type) => !userTypes.has(type));
+        console.log('Missing Types:', missingTypes);
+
         return missingTypes;
     } catch (error) {
-        console.error('Error fetching course data from WebSOC:', error);
+        console.error(error);
         return [];
     }
 };
 
 function getCourses() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
+    console.log('Current Courses:', currentCourses);
+    console.log('Current Courses Length:', currentCourses.length);
+    console.log(
+        'Current Courses Section Types:',
+        currentCourses.map((c) => c.sectionTypes)
+    );
+    console.log(
+        'Current Courses Section Types Details:',
+        currentCourses.map((c) => [...c.sectionTypes])
+    );
 
     const formattedCourses: CourseWithTerm[] = [];
 
@@ -93,6 +95,7 @@ function getCourses() {
                 prerequisiteLink: course.prerequisiteLink,
                 courseNumber: course.courseNumber,
                 courseTitle: course.courseTitle,
+                sectionTypes: course.sectionTypes,
                 sections: [
                     {
                         ...course.section,

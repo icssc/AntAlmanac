@@ -68,7 +68,7 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
 function SectionTable(props: SectionTableProps) {
-    const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory, missingSections } = props;
+    const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory, missingSections = [] } = props;
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
@@ -155,12 +155,11 @@ function SectionTable(props: SectionTableProps) {
                 />
             </Box>
 
-            {missingSections?.length && (
-                <Alert severity="warning" sx={{ mb: 1 }}>
+            {missingSections?.length > 0 && (
+                <Alert severity="warning" sx={{ mb: 1, backgroundColor: '#fff4e5ff', color: '#856404ff' }}>
                     Missing required sections: {missingSections.join(', ')}
                 </Alert>
             )}
-
             <TableContainer
                 component={Paper}
                 sx={{ margin: '8px 0px 8px 0px', width: '100%' }}

@@ -122,6 +122,8 @@ class AppStore extends EventEmitter {
         };
         actionTypesStore.autoSaveSchedule(action);
         this.emit('addedCoursesChange');
+        console.log('Added course:', addedCourse);
+        console.log('course.sectionTypes:', addedCourse.sectionTypes);
         return addedCourse;
     }
 
