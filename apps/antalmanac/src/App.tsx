@@ -5,11 +5,13 @@ import { SnackbarProvider } from 'notistack';
 import { useEffect } from 'react';
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
-import { undoDelete } from '$actions/AppStoreActions';
+import { undoDelete } from './actions/AppStoreActions';
+import AppQueryProvider from './providers/Query';
+import AppThemeProvider from './providers/Theme';
+import { Unsubscribe } from './routes/UnsubscribePage';
+
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
 import AppPostHogProvider from '$providers/PostHog';
-import AppQueryProvider from '$providers/Query';
-import AppThemeProvider from '$providers/Theme';
 import { AuthPage } from '$routes/AuthPage';
 import { ErrorPage } from '$routes/ErrorPage';
 import Feedback from '$routes/Feedback';
@@ -37,6 +39,11 @@ const BROWSER_ROUTER = createBrowserRouter([
             {
                 path: '/',
                 element: <Home />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: '/unsubscribe/:userId',
+                element: <Unsubscribe />,
                 errorElement: <ErrorPage />,
             },
             {
