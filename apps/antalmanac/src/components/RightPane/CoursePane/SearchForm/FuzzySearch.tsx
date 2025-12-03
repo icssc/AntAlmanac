@@ -107,14 +107,14 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         if (!object) return option.key;
         switch (object.type) {
             case 'GE_CATEGORY': {
-                const cat = option.split('-')[1].toLowerCase();
+                const cat = option.key.split('-')[1].toLowerCase();
                 const num = parseInt(cat);
                 return `${emojiMap.GE_CATEGORY} GE ${cat.replace(num.toString(), romanArr[num - 1])} (${cat}): ${
                     object.name
                 }`;
             }
             case 'DEPARTMENT':
-                return `${emojiMap.DEPARTMENT} ${option}: ${object.name}`;
+                return `${emojiMap.DEPARTMENT} ${option.key}: ${object.name}`;
             case 'COURSE':
                 return `${emojiMap.COURSE} ${object.metadata.department} ${object.metadata.number}: ${object.name}`;
             case 'SECTION':
@@ -203,7 +203,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     }
 
     // Group rendering logic for group headers.
-    renderGroup = (params: {key: string, group: string, children: React.ReactNode}) => {
+    renderGroup = (params: {key: string, group: string, children?: React.ReactNode}) => {
         // Don't show headers for non-course items
         if (params.group === '__ungrouped__') {
             return <Box key={params.key}>{params.children}</Box>
