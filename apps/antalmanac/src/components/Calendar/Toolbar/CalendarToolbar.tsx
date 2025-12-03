@@ -3,10 +3,27 @@ import {
     Redo as RedoIcon,
     Description as DescriptionIcon,
     DescriptionOutlined as DescriptionOutlinedIcon,
+    MoreVert as MoreVertIcon,
+    Panorama,
+    Download,
+    DeleteOutline,
+    Add,
 } from '@mui/icons-material';
-import { useTheme, useMediaQuery, Box, Button, IconButton, Paper, Tooltip } from '@mui/material';
+import {
+    useTheme,
+    useMediaQuery,
+    Box,
+    Button,
+    IconButton,
+    Paper,
+    Tooltip,
+    Menu,
+    MenuItem,
+    ListItemIcon,
+    ListItemText,
+} from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
-import { useState, useCallback, useEffect, memo } from 'react';
+import { useState, useCallback, useEffect, memo, useRef } from 'react';
 
 import { redoAction, undoDelete } from '$actions/AppStoreActions';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
@@ -14,6 +31,7 @@ import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSele
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import DownloadButton from '$components/buttons/Download';
 import ScreenshotButton from '$components/buttons/Screenshot';
+import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 
@@ -52,8 +70,16 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const { showFinalsSchedule, toggleDisplayFinalsSchedule } = props;
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('xxs'));
+    const isMobile = useIsMobile();
+    const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+    const menuOpen = Boolean(menuAnchorEl);
 
     const postHog = usePostHog();
+
+    // Refs to trigger existing button components
+    const screenshotButtonRef = useRef<HTMLDivElement>(null);
+    const downloadButtonRef = useRef<HTMLDivElement>(null);
+    const clearButtonRef = useRef<HTMLDivElement>(null);
 
     const handleToggleFinals = useCallback(() => {
         if (!showFinalsSchedule) {
@@ -76,6 +102,51 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
     }, []);
+
+    const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setMenuAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setMenuAnchorEl(null);
+    };
+
+    const handleScreenshot = () => {
+        handleMenuClose();
+        const button = screenshotButtonRef.current?.querySelector('button');
+        if (button) {
+            button.click();
+        }
+    };
+
+    const handleDownload = () => {
+        handleMenuClose();
+        const button = downloadButtonRef.current?.querySelector('button');
+        if (button) {
+            button.click();
+        }
+    };
+
+    const handleClearSchedule = () => {
+        handleMenuClose();
+        const button = clearButtonRef.current?.querySelector('button');
+        if (button) {
+            button.click();
+        }
+    };
+
+    const customEventButtonRef = useRef<HTMLDivElement>(null);
+
+    const handleCustomEventOpen = () => {
+        handleMenuClose();
+        // Trigger the hidden CustomEventDialog button
+        setTimeout(() => {
+            const button = customEventButtonRef.current?.querySelector('button');
+            if (button) {
+                button.click();
+            }
+        }, 0);
+    };
 
     return (
         <Paper
@@ -125,31 +196,111 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             </Box>
             <Box flexGrow={1} />
 
-            <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
-                <ScreenshotButton />
+            {isMobile ? (
+                <>
+                    <Tooltip title="More options">
+                        <IconButton onClick={handleMenuOpen} size="medium" disabled={skeletonMode}>
+                            <MoreVertIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                    <Menu
+                        anchorEl={menuAnchorEl}
+                        open={menuOpen}
+                        onClose={handleMenuClose}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                    >
+                        <MenuItem onClick={handleScreenshot}>
+                            <ListItemIcon>
+                                <Panorama fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText>Get Screenshot</ListItemText>
+                        </MenuItem>
+                        <MenuItem onClick={handleDownload}>
+                            <ListItemIcon>
+                                <Download fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText>Download Calendar</ListItemText>
+                        </MenuItem>
+                        <MenuItem onClick={handleUndo(postHog)} disabled={skeletonMode}>
+                            <ListItemIcon>
+                                <UndoIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText>Undo</ListItemText>
+                        </MenuItem>
+                        <MenuItem onClick={handleRedo(postHog)} disabled={skeletonMode}>
+                            <ListItemIcon>
+                                <RedoIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText>Redo</ListItemText>
+                        </MenuItem>
+                        <MenuItem onClick={handleClearSchedule}>
+                            <ListItemIcon>
+                                <DeleteOutline fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText>Clear Schedule</ListItemText>
+                        </MenuItem>
+                        <MenuItem onClick={handleCustomEventOpen}>
+                            <ListItemIcon>
+                                <Add fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText>Add Custom Event</ListItemText>
+                        </MenuItem>
+                    </Menu>
+                    {/* Hidden button components for mobile menu to trigger */}
+                    <Box sx={{ display: 'none' }}>
+                        <Box ref={screenshotButtonRef}>
+                            <ScreenshotButton />
+                        </Box>
+                        <Box ref={downloadButtonRef}>
+                            <DownloadButton />
+                        </Box>
+                        <Box ref={clearButtonRef}>
+                            <ClearScheduleButton
+                                size="medium"
+                                fontSize="small"
+                                skeletonMode={skeletonMode}
+                                analyticsCategory={analyticsEnum.calendar}
+                            />
+                        </Box>
+                        <Box ref={customEventButtonRef}>
+                            <CustomEventDialog key="custom-mobile" scheduleNames={AppStore.getScheduleNames()} />
+                        </Box>
+                    </Box>
+                </>
+            ) : (
+                <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
+                    <ScreenshotButton />
 
-                <DownloadButton />
+                    <DownloadButton />
 
-                <Tooltip title="Undo last action">
-                    <IconButton onClick={handleUndo(postHog)} size="medium" disabled={skeletonMode}>
-                        <UndoIcon fontSize="small" />
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title="Redo last action">
-                    <IconButton onClick={handleRedo(postHog)} size="medium" disabled={skeletonMode}>
-                        <RedoIcon fontSize="small" />
-                    </IconButton>
-                </Tooltip>
+                    <Tooltip title="Undo last action">
+                        <IconButton onClick={handleUndo(postHog)} size="medium" disabled={skeletonMode}>
+                            <UndoIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Redo last action">
+                        <IconButton onClick={handleRedo(postHog)} size="medium" disabled={skeletonMode}>
+                            <RedoIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
 
-                <ClearScheduleButton
-                    size="medium"
-                    fontSize="small"
-                    skeletonMode={skeletonMode}
-                    analyticsCategory={analyticsEnum.calendar}
-                />
+                    <ClearScheduleButton
+                        size="medium"
+                        fontSize="small"
+                        skeletonMode={skeletonMode}
+                        analyticsCategory={analyticsEnum.calendar}
+                    />
 
-                <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
-            </Box>
+                    <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
+                </Box>
+            )}
         </Paper>
     );
 });
