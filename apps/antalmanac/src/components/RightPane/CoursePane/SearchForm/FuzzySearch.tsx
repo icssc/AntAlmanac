@@ -182,6 +182,12 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         this.setState({ open: false });
     };
 
+    onFocus = () => {
+        if (this.state.value || Object.keys(this.state.results ?? {}).length > 0) {
+            this.setState({ open: true });
+        }
+    };
+
     render() {
         return (
             <LabeledAutocomplete
@@ -199,11 +205,13 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                     onInputChange: this.onInputChange,
                     open: this.state.open,
                     popupIcon: '',
+                    clearOnBlur: false,
                 }}
                 textFieldProps={{
                     autoFocus: !isMobile(),
                     placeholder: 'Search for courses, departments, GEs...',
                     fullWidth: true,
+                    onFocus: this.onFocus,
                 }}
                 isAligned
             />
