@@ -178,10 +178,6 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                     }
                 }
             );
-        } else if (reason === 'reset') {
-            this.setState({ open: false, value: '' }, () => {
-                this.doSearch(lowerCaseValue);
-            });
         }
     };
 
