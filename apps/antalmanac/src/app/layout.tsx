@@ -1,5 +1,5 @@
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 
 import AppThemeProvider from '$src/app/Theme';
 import './globals.css';
@@ -44,8 +44,12 @@ export const metadata: Metadata = {
     ],
 };
 
-export const viewport = {
+export const viewport: Viewport = {
     themeColor: '#305db7',
+    width: 'device-width',
+    initialScale: 1,
+    userScalable: false,
+    viewportFit: 'cover',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
