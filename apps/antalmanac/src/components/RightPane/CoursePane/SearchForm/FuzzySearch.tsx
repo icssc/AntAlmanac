@@ -100,7 +100,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         });
     };
 
-    filterOptions = (options: string[]) => options;
+    filterOptions = (options: SearchOption[]) => options;
 
     getOptionLabel = (option: string) => {
         const object = this.state.results?.[option];
