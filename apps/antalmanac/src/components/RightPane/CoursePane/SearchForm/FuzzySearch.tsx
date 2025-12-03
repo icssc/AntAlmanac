@@ -47,6 +47,10 @@ interface FuzzySearchState {
     pendingRequest?: number;
 }
 
+interface SearchOption {
+    key: string;
+    result: SearchResult;
+}
 class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     state: FuzzySearchState = {
         cache: {},
