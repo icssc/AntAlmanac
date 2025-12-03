@@ -1,4 +1,4 @@
-import { type AutocompleteInputChangeReason, Box } from '@mui/material';
+import { type AutocompleteInputChangeReason, Box, Divider, Typography} from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
 import { PureComponent } from 'react';
