@@ -184,7 +184,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         this.setState({ open: false });
     };
 
-    // Renders each autocomplete option as a custom list item. Shows availability status if item is a course.
+    // Renders each autocomplete option as a custom list item. Grays out course if it's not offered. 
     renderOption = (props: React.HTMLAttributes<HTMLLIElement>, option: string) => {
         const object = this.state.results?.[option];
         if (!object) return <li {...props}>{option}</li>;
@@ -193,8 +193,6 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         const isCourse = object.type === 'COURSE';
 
         const isOffered = isCourse && 'isOffered' in object && object.isOffered;
-        const isDark = useThemeStore.getState().isDark;
-        const mobile = isMobile();
 
         return (
             <Box
@@ -207,25 +205,6 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 }}
             >
                 {label}
-                {isCourse && !mobile && (
-                    <Box
-                        component="span"
-                        sx={{
-                            marginLeft: 'auto',
-                            color: isOffered 
-                                ? (isDark ? '#a6e3a1' : '#40a02b') 
-                                : (isDark ? '#f38ba8': '#d20f39'),
-                            fontWeight: 500,
-                            opacity: 0,
-                            transition: 'opacity 0.2s',
-                            '.MuiAutocomplete-option:hover &': {
-                                opacity: 1,
-                            },
-                        }}
-                    >
-                        {isOffered ? 'Offered' : 'Not Offered'}
-                    </Box>
-                )}
             </Box>
         )
     }
