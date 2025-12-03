@@ -13,6 +13,7 @@ interface TbaSection {
 
 export default function AsyncCalendarCard() {
   const isMobile = useIsMobile();
+  if (isMobile) return null;
 
   const [updateTrigger, setUpdateTrigger] = useState(0);
   const [collapsed, setCollapsed] = useState(false);
@@ -112,8 +113,8 @@ export default function AsyncCalendarCard() {
     <Box
       sx={{
         position: 'absolute',
-        bottom: isMobile ? 0 : 16,
-        left: isMobile ? 45 : 'auto',
+        bottom: 16,
+        left: 'auto',
         right: 16,
         zIndex: (theme) => theme.zIndex.drawer - 1,
         width: '22rem',
