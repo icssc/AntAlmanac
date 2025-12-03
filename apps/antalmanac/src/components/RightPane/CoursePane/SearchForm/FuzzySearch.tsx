@@ -181,6 +181,14 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         }
     };
 
+    onChange = (_event: unknown, option: SearchOption | null) => {
+        if (option) {
+            this.setState({ open: false, value: ''}, () => {
+                this.doSearch(option)
+            })
+        }
+    }
+
     onClose = () => {
         this.setState({ open: false });
     };
