@@ -1,5 +1,5 @@
 import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
-import { AACourse } from '@packages/antalmanac-types';
+import { AACourse, WebsocSectionType } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -41,7 +41,7 @@ const checkCompleteSections = (userCourses: CourseWithTerm): string[] => {
     //Get required types from stored section types
     const requiredTypes = userCourses.sectionTypes
         ? new Set([...userCourses.sectionTypes].map((t) => t.toLowerCase()))
-        : new Set<string>();
+        : new Set<WebsocSectionType>();
 
     //Get the section types the user has added
     const userTypes = new Set(userCourses.sections.map((section) => section.sectionType.trim().toLowerCase()));
