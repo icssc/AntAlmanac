@@ -193,6 +193,37 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         this.setState({ open: false });
     };
 
+    // use MUI groupBy to group options of type 'COURSE' by availability. All other options are ungrouped.
+    groupBy = (option: SearchOption) => {
+        const isCourse = option.result.type === 'COURSE';
+        if (!isCourse) return '__ungrouped__';
+
+        const isOffered = 'isOffered' in option.result && option.result.isOffered;
+        return isOffered ? '__offered__' : '__notOffered__';
+    }
+
+    // Group rendering logic for group headers.
+    renderGroup = (params: {key: string, group: string, children: React.ReactNode}) => {
+        // Don't show headers for non-course items
+        if (params.group === '__ungrouped__') {
+            return <Box key={params.key}>{params.children}</Box>
+        }
+
+        const term = RightPaneStore.getFormData().term;
+        const label = params.group === '__offered__' ? `Offered in ${term}` : `Not Offered`
+
+        return (
+            <Box key={params.key}>
+                <Divider sx={{ mt: 2, mb: 1}}>
+                    <Typography variant="h5" sx={{ pl: '2px', textAlign: 'left'}}>
+                        {label}
+                    </Typography>
+                </Divider>
+                {params.children
+                }
+            </Box>
+        )
+    } 
     // Renders each autocomplete option as a custom list item. Grays out course if it's not offered. 
     renderOption = (props: React.HTMLAttributes<HTMLLIElement>, option: SearchOption) => {
         const object = option.result;
@@ -216,15 +247,6 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 {label}
             </Box>
         )
-    }
-
-    // use MUI groupBy to group options of type 'COURSE' by availability. All other options are ungrouped.
-    groupBy = (option: SearchOption) => {
-        const isCourse = option.result.type === 'COURSE';
-        if (!isCourse) return '__ungrouped__';
-
-        const isOffered = 'isOffered' in option.result && option.result.isOffered;
-        return isOffered ? '__offered__' : '__notOffered__';
     }
 
     render() {
