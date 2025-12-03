@@ -1,5 +1,5 @@
 import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
-import { AACourse, WebsocSectionType } from '@packages/antalmanac-types';
+import { AACourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -7,6 +7,7 @@ import { ColumnToggleDropdown } from '../CoursePane/CoursePaneButtonRow';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 
 import CustomEventDetailView from './CustomEventDetailView';
+import { getMissingSections } from './getMissingSections';
 
 import { updateScheduleNote } from '$actions/AppStoreActions';
 import { ClearScheduleButton } from '$components/buttons/Clear';
@@ -30,26 +31,11 @@ const buttonSx: SxProps = {
     pointerEvents: 'auto',
 };
 
-interface CourseWithTerm extends AACourse {
+export interface CourseWithTerm extends AACourse {
     term: string;
 }
 
 const NOTE_MAX_LEN = 5000;
-
-//Checks added courses for missing sections
-const checkCompleteSections = (userCourses: CourseWithTerm): string[] => {
-    //Get required types from stored section types
-    const requiredTypes = userCourses.sectionTypes
-        ? new Set([...userCourses.sectionTypes].map((t) => t.toLowerCase()))
-        : new Set<WebsocSectionType>();
-
-    //Get the section types the user has added
-    const userTypes = new Set(userCourses.sections.map((section) => section.sectionType.trim().toLowerCase()));
-    //Compare types the user added with the required types
-    const missingTypes = [...requiredTypes].filter((type) => !userTypes.has(type));
-
-    return missingTypes;
-};
 
 function getCourses() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
@@ -370,35 +356,7 @@ function AddedSectionsGrid() {
                 {courses.length < 1 ? NoCoursesBox : null}
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
-                        const missing = checkCompleteSections(course);
-                        const missingSections = missing.map((section) => {
-                            switch (section) {
-                                case 'dis':
-                                    return 'Discussion';
-                                case 'lab':
-                                    return 'Lab';
-                                case 'lec':
-                                    return 'Lecture';
-                                case 'sem':
-                                    return 'Seminar';
-                                case 'res':
-                                    return 'Research';
-                                case 'qiz':
-                                    return 'Quiz';
-                                case 'tap':
-                                    return 'Tutorial Assistance Program';
-                                case 'col':
-                                    return 'Colloquium';
-                                case 'act':
-                                    return 'Activity';
-                                case 'stu':
-                                    return 'Studio';
-                                case 'tut':
-                                    return 'Tutorial';
-                                default:
-                                    return section;
-                            }
-                        });
+                        const missingSections = getMissingSections(course);
 
                         return (
                             <Box key={course.deptCode + course.courseNumber + course.courseTitle}>

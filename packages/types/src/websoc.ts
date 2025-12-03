@@ -4,8 +4,6 @@ type AASectionExtendedProperties = {
     color: string;
 };
 
-export type { WebsocSectionType };
-
 export type AASection = WebsocSection & AASectionExtendedProperties;
 
 type AACourseExtendedProperties = {

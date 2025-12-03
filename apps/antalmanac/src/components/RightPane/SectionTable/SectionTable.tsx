@@ -1,5 +1,5 @@
 import { Assessment, ShowChart as ShowChartIcon } from '@mui/icons-material';
-import { Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow, useMediaQuery, Alert } from '@mui/material';
+import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow, useMediaQuery } from '@mui/material';
 import { useMemo } from 'react';
 
 import PeterPortalIcon from '$assets/peterportal-logo.png';
