@@ -306,7 +306,6 @@ function AddedSectionsGrid() {
     const [courses, setCourses] = useState(getCourses());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
-    const [missingTypes, setMissingTypes] = useState<Record<string, string[]>>({});
 
     useEffect(() => {
         const handleCoursesChange = () => {
@@ -333,25 +332,6 @@ function AddedSectionsGrid() {
             AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
         };
     }, []);
-
-    //Check for any missing sections for each added course
-    useEffect(() => {
-        const checkCourses = async () => {
-            const missing: Record<string, string[]> = {};
-
-            //Check the sections in every course the user has scheduled
-            for (const course of courses) {
-                const courseKey = `${course.deptCode}${course.courseNumber}`;
-                const missingSections = await checkCompleteSections(course);
-                missing[courseKey] = missingSections;
-            }
-
-            setMissingTypes(missing);
-        };
-        if (courses.length > 0) {
-            checkCourses();
-        }
-    }, [courses]);
 
     const scheduleUnits = useMemo(() => {
         let result = 0;
@@ -390,35 +370,35 @@ function AddedSectionsGrid() {
                 {courses.length < 1 ? NoCoursesBox : null}
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
-                        const courseKey = `${course.deptCode}${course.courseNumber}`;
-                        const missing = missingTypes[courseKey] || [];
-                        const missingSections = [];
-
-                        for (const section of missing) {
-                            if (section === 'dis') {
-                                missingSections.push('Discussion');
-                            } else if (section === 'lab') {
-                                missingSections.push('Lab');
-                            } else if (section === 'lec') {
-                                missingSections.push('Lecture');
-                            } else if (section === 'sem') {
-                                missingSections.push('Seminar');
-                            } else if (section === 'res') {
-                                missingSections.push('Research');
-                            } else if (section == 'qiz') {
-                                missingSections.push('Quiz');
-                            } else if (section == 'tap') {
-                                missingSections.push('Tutorial Assistance Program');
-                            } else if (section == 'col') {
-                                missingSections.push('Colloquium');
-                            } else if (section == 'act') {
-                                missingSections.push('Activity');
-                            } else if (section == 'stu') {
-                                missingSections.push('Studio');
-                            } else if (section == 'tut') {
-                                missingSections.push('Tutorial');
+                        const missing = checkCompleteSections(course);
+                        const missingSections = missing.map((section) => {
+                            switch (section) {
+                                case 'dis':
+                                    return 'Discussion';
+                                case 'lab':
+                                    return 'Lab';
+                                case 'lec':
+                                    return 'Lecture';
+                                case 'sem':
+                                    return 'Seminar';
+                                case 'res':
+                                    return 'Research';
+                                case 'qiz':
+                                    return 'Quiz';
+                                case 'tap':
+                                    return 'Tutorial Assistance Program';
+                                case 'col':
+                                    return 'Colloquium';
+                                case 'act':
+                                    return 'Activity';
+                                case 'stu':
+                                    return 'Studio';
+                                case 'tut':
+                                    return 'Tutorial';
+                                default:
+                                    return section;
                             }
-                        }
+                        });
 
                         return (
                             <Box key={course.deptCode + course.courseNumber + course.courseTitle}>
