@@ -42,7 +42,6 @@ export const addCourse = (
 
     if (terms.size > 1 && !quiet) warnMultipleTerms(terms);
 
-    console.log('Making new Course');
     // The color will be set properly in Schedules
     const newCourse: ScheduleCourse = {
         term: term,
@@ -54,11 +53,6 @@ export const addCourse = (
         section: { ...section, color: '' },
         sectionTypes: courseDetails.sectionTypes,
     };
-    console.log('newCourse :', newCourse);
-    console.log('Course section types: ', courseDetails.sectionTypes);
-    console.log('Is set? ', newCourse.sectionTypes instanceof Set);
-    console.log('Size: ', newCourse.sectionTypes.size);
-    console.log('Values:', [...newCourse.sectionTypes]);
 
     return AppStore.addCourse(newCourse, scheduleIndex);
 };

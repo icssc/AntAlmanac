@@ -38,40 +38,21 @@ const NOTE_MAX_LEN = 5000;
 
 //Checks added courses for missing sections
 const checkCompleteSections = (userCourses: CourseWithTerm): string[] => {
-    try {
-        console.log('aaaaaa user course section Types: ', userCourses.sectionTypes);
-        //Get required types from stored section types
-        const requiredTypes = userCourses.sectionTypes
-            ? new Set([...userCourses.sectionTypes].map((t) => t.toLowerCase()))
-            : new Set<string>();
-        console.log('Required Types:', requiredTypes);
+    //Get required types from stored section types
+    const requiredTypes = userCourses.sectionTypes
+        ? new Set([...userCourses.sectionTypes].map((t) => t.toLowerCase()))
+        : new Set<string>();
 
-        //Get the section types the user has added
-        const userTypes = new Set(userCourses.sections.map((section) => section.sectionType.trim().toLowerCase()));
-        console.log('User Types:', userTypes);
-        //Compare types the user added with the required types
-        const missingTypes = [...requiredTypes].filter((type) => !userTypes.has(type));
-        console.log('Missing Types:', missingTypes);
+    //Get the section types the user has added
+    const userTypes = new Set(userCourses.sections.map((section) => section.sectionType.trim().toLowerCase()));
+    //Compare types the user added with the required types
+    const missingTypes = [...requiredTypes].filter((type) => !userTypes.has(type));
 
-        return missingTypes;
-    } catch (error) {
-        console.error(error);
-        return [];
-    }
+    return missingTypes;
 };
 
 function getCourses() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
-    console.log('Current Courses:', currentCourses);
-    console.log('Current Courses Length:', currentCourses.length);
-    console.log(
-        'Current Courses Section Types:',
-        currentCourses.map((c) => c.sectionTypes)
-    );
-    console.log(
-        'Current Courses Section Types Details:',
-        currentCourses.map((c) => [...c.sectionTypes])
-    );
 
     const formattedCourses: CourseWithTerm[] = [];
 
