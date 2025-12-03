@@ -102,9 +102,9 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
     filterOptions = (options: SearchOption[]) => options;
 
-    getOptionLabel = (option: string) => {
-        const object = this.state.results?.[option];
-        if (!object) return option;
+    getOptionLabel = (option: SearchOption) => {
+        const object = option.result;
+        if (!object) return option.key;
         switch (object.type) {
             case 'GE_CATEGORY': {
                 const cat = option.split('-')[1].toLowerCase();
