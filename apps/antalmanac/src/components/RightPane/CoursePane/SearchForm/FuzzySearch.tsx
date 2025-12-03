@@ -62,7 +62,8 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         pendingRequest: undefined,
     };
 
-    doSearch = (value: string) => {
+    doSearch = (option: SearchOption) => {
+        const value = option.key;
         if (!value) return;
         const emoji = value.slice(0, 2);
         const ident = value.slice(3).split(':');
