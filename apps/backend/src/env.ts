@@ -31,6 +31,13 @@ export const aapiEnvSchema = z.object({
 });
 
 /**
+ * Environment variables required by the backend to connect to the PeterPortal API.
+ */
+export const ppEnvSchema = z.object({
+    PETERPORTAL_CLIENT_API_KEY: z.string(),
+});
+
+/**
  * Environment variables required by the backend during runtime.
  */
 export const backendEnvSchema = z

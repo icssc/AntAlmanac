@@ -63,6 +63,17 @@ const userDataRouter = router({
     }),
 
     /**
+     * Retrieves google ID by user ID.
+     * @param input - An object containing the user ID.
+     * @returns The user's google ID associated with the user ID.
+     */
+    getGoogleIdByUserId: procedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ input }) => {
+        return await RDS.getGoogleIdByUserId(db, input.userId);
+    }),
+
+    /**
      * Retrieves user data by user ID.
      * @param input - An object containing the user ID.
      * @returns The user data associated with the user ID.
