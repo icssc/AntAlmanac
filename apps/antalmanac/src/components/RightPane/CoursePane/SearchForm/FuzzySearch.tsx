@@ -190,9 +190,9 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     };
 
     // Renders each autocomplete option as a custom list item. Grays out course if it's not offered. 
-    renderOption = (props: React.HTMLAttributes<HTMLLIElement>, option: string) => {
-        const object = this.state.results?.[option];
-        if (!object) return <li {...props}>{option}</li>;
+    renderOption = (props: React.HTMLAttributes<HTMLLIElement>, option: SearchOption) => {
+        const object = option.result;
+        if (!object) return <li {...props}>{option.key}</li>;
 
         const label = this.getOptionLabel(option);
         const isCourse = object.type === 'COURSE';
