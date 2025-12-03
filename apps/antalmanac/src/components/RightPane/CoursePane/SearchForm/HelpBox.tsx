@@ -9,11 +9,11 @@ import { useHelpMenuStore } from '$stores/HelpMenuStore';
 const images = [
     {
         src: '/roadmap.png',
-        alt: 'PeterPortal Roadmap',
+        alt: 'PeterPortal Roadmap Page',
     },
     {
-        src: '/coursepage.png',
-        alt: 'PeterPortal Course Page',
+        src: '/professors.png',
+        alt: 'PeterPortal Professors Page',
     },
 ];
 
