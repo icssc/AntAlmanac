@@ -1,18 +1,18 @@
-import { Chip, Tooltip } from '@mui/material';
+import { Chip, SxProps, TableCellProps, Tooltip } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import { useThemeStore } from '$stores/SettingsStore';
 
-interface SectionCodeCellProps {
+interface CourseCodeCellProps extends TableCellProps {
     sectionCode: string;
-    analyticsCategory: AnalyticsCategory;
+    sx?: SxProps;
 }
 
-export const SectionCodeCell = ({ sectionCode, analyticsCategory }: SectionCodeCellProps) => {
+export const CourseCodeCell = ({ sectionCode, sx, ...rest }: CourseCodeCellProps) => {
     const isDark = useThemeStore((store) => store.isDark);
     const [isHovered, setIsHovered] = useState(false);
 
@@ -27,16 +27,17 @@ export const SectionCodeCell = ({ sectionCode, analyticsCategory }: SectionCodeC
     };
 
     return (
-        <TableBodyCellContainer sx={{ width: '8%' }}>
-            <Tooltip title="Click to copy section code" placement="bottom" enterDelay={150}>
+        <TableBodyCellContainer sx={{ width: '8%', ...sx }} {...rest}>
+            <Tooltip title="Click to copy course code" placement="bottom" enterDelay={150}>
                 <Chip
                     onClick={(event) => {
                         clickToCopy(event, sectionCode);
                         logAnalytics(postHog, {
-                            category: analyticsCategory,
-                            action: analyticsCategory.actions.COPY_COURSE_CODE,
+                            category: analyticsEnum.classSearch,
+                            action: analyticsEnum.classSearch.actions.COPY_COURSE_CODE,
                         });
                     }}
+                    // className={classes.sectionCode}
                     label={sectionCode}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
@@ -49,3 +50,14 @@ export const SectionCodeCell = ({ sectionCode, analyticsCategory }: SectionCodeC
         </TableBodyCellContainer>
     );
 };
+
+/**
+ * {
+        display: 'inline-flex',
+        cursor: 'pointer',
+        '&:hover': {
+            cursor: 'pointer',
+        },
+        alignSelf: 'center',
+    },
+ */

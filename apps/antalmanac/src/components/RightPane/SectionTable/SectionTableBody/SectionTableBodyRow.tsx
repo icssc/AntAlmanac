@@ -2,7 +2,7 @@ import { TableRow, useTheme } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { ActionCell } from './SectionTableBodyCells/ActionCell';
+import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
 
 import { DayAndTimeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DayAndTimeCell';
 import { DetailsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell';

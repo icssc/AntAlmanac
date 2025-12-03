@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, SxProps } from '@mui/material';
 import { WebsocSectionType } from '@packages/antalmanac-types';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
@@ -20,8 +20,9 @@ const SECTION_COLORS = {
 
 interface DetailCellProps {
     sectionType: WebsocSectionType;
-    sectionNum: string;
-    units: number;
+    sectionNum: string | undefined;
+    units: number | undefined;
+    sx?: SxProps;
 }
 
 export const DetailsCell = ({ sectionType, sectionNum, units }: DetailCellProps) => {
