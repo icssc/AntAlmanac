@@ -198,6 +198,15 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
 
             {isMobile ? (
                 <>
+                    <Box display="flex" flexWrap="wrap" alignItems="center" gap={0}>
+                        <MenuItem onClick={handleUndo(postHog)} disabled={skeletonMode}>
+                            <UndoIcon fontSize="small" />
+                        </MenuItem>
+                        <MenuItem onClick={handleRedo(postHog)} disabled={skeletonMode}>
+                            <RedoIcon fontSize="small" />
+                        </MenuItem>
+                    </Box>
+
                     <Tooltip title="More options">
                         <IconButton onClick={handleMenuOpen} size="medium" disabled={skeletonMode}>
                             <MoreVertIcon fontSize="small" />
@@ -227,18 +236,6 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                                 <Download fontSize="small" />
                             </ListItemIcon>
                             <ListItemText>Download Calendar</ListItemText>
-                        </MenuItem>
-                        <MenuItem onClick={handleUndo(postHog)} disabled={skeletonMode}>
-                            <ListItemIcon>
-                                <UndoIcon fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText>Undo</ListItemText>
-                        </MenuItem>
-                        <MenuItem onClick={handleRedo(postHog)} disabled={skeletonMode}>
-                            <ListItemIcon>
-                                <RedoIcon fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText>Redo</ListItemText>
                         </MenuItem>
                         <MenuItem onClick={handleClearSchedule}>
                             <ListItemIcon>
