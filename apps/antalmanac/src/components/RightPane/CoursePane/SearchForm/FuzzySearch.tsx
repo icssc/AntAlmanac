@@ -63,31 +63,31 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     };
 
     doSearch = (option: SearchOption) => {
-        const value = option.key;
-        if (!value) return;
-        const emoji = value.slice(0, 2);
-        const ident = value.slice(3).split(':');
+        const result = option.result;
+        if (!result) return;
+
         const term = RightPaneStore.getFormData().term;
         RightPaneStore.resetFormValues();
         RightPaneStore.updateFormValue('term', term);
-        switch (emoji) {
-            case emojiMap.GE_CATEGORY:
+        switch (result.type) {
+            case 'GE_CATEGORY':
+                const geCode = option.key.split('-')[1].toUpperCase();
                 RightPaneStore.updateFormValue(
                     'ge',
-                    `GE-${ident[0].split(' ')[2].replace('(', '').replace(')', '').toUpperCase()}`
+                    `GE-${geCode}`
                 );
                 break;
-            case emojiMap.DEPARTMENT:
-                RightPaneStore.updateFormValue('deptValue', ident[0]);
+            case 'DEPARTMENT':
+                RightPaneStore.updateFormValue('deptValue', option.key);
                 break;
-            case emojiMap.COURSE: {
-                const deptValue = ident[0].split(' ').slice(0, -1).join(' ');
-                RightPaneStore.updateFormValue('deptValue', deptValue);
-                RightPaneStore.updateFormValue('courseNumber', ident[0].split(' ').slice(-1)[0]);
+            case 'COURSE': {
+                const { department, number } = result.metadata
+                RightPaneStore.updateFormValue('deptValue', department);
+                RightPaneStore.updateFormValue('courseNumber', number);
                 break;
             }
-            case emojiMap.SECTION: {
-                RightPaneStore.updateFormValue('sectionCode', ident[0].split(' ')[0]);
+            case 'SECTION': {
+                RightPaneStore.updateFormValue('sectionCode', result.sectionCode);
                 break;
             }
             default:
@@ -214,7 +214,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
         return (
             <Box key={params.key}>
-                <Divider textAlign="left" sx={{ mt: 2, mb: 1, '&::before': { width: '20px' } }}>
+                <Divider textAlign="left" sx={{ mt: 1, mb: 1, '&::before': { width: '20px' } }}>
                     <Typography variant="subtitle1">
                         {label}
                     </Typography>
@@ -227,7 +227,8 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     // Renders each autocomplete option as a custom list item. Grays out course if it's not offered. 
     renderOption = (props: React.HTMLAttributes<HTMLLIElement>, option: SearchOption) => {
         const object = option.result;
-        if (!object) return <li {...props}>{option.key}</li>;
+        const { key, ...restProps} = props as React.HTMLAttributes<HTMLLIElement> & { key: string }
+        if (!object) return <li key={key} {...restProps}>{option.key}</li>;
 
         const label = this.getOptionLabel(option);
         const isCourse = object.type === 'COURSE';
@@ -237,7 +238,8 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         return (
             <Box
                 component="li"
-                {...props}
+                key={key}
+                {...restProps}
                 sx={{
                     display: 'flex',
                     alignItems: 'center',
