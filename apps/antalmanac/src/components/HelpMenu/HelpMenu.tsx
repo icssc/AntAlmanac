@@ -69,10 +69,12 @@ export function HelpMenu() {
             }}
             spacing={1}
             alignItems="center"
+            // If there's a higher zIndex than this, then that other zIndex is the real problem
+            zIndex={1000}
         >
             <Backdrop
                 sx={{
-                    zIndex: 1000, // If there's a higher zIndex than this, then that other zIndex is the real problem
+                    zIndex: 'inherit',
                 }}
                 open={open}
                 onClick={handleClose}
