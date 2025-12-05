@@ -138,6 +138,14 @@ export default function AppThemeProvider(props: Props) {
                             variant: 'standard',
                         },
                     },
+                    MuiAlert: {
+                        styleOverrides: {
+                            standardWarning: {
+                                backgroundColor: appTheme === 'dark' ? '#fff4e5ff' : '#FFEA99',
+                                color: appTheme === 'dark' ? '#856404ff' : '#302800ff',
+                            },
+                        },
+                    },
                 },
                 breakpoints: {
                     /**
