@@ -398,9 +398,19 @@ export const addCustomEvent = (customEvent: RepeatingCustomEvent, scheduleIndice
 };
 
 export const undoDelete = (event: KeyboardEvent | null) => {
-    if (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey))) {
+    if (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey) && !event.shiftKey)) {
         AppStore.undoAction();
     }
+};
+
+export const redoDelete = (event: KeyboardEvent | null) => {
+    if (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey) && event.shiftKey)) {
+        AppStore.redoAction();
+    }
+};
+
+export const redoAction = () => {
+    AppStore.redoAction();
 };
 
 export const changeCurrentSchedule = (newScheduleIndex: number) => {
