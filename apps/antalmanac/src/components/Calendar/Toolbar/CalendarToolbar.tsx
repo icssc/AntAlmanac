@@ -205,6 +205,9 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                         <MenuItem onClick={handleRedo(postHog)} disabled={skeletonMode}>
                             <RedoIcon fontSize="small" />
                         </MenuItem>
+                        <MenuItem onClick={handleCustomEventOpen}>
+                            <Add fontSize="small" />
+                        </MenuItem>
                     </Box>
 
                     <Tooltip title="More options">
@@ -242,12 +245,6 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                                 <DeleteOutline fontSize="small" />
                             </ListItemIcon>
                             <ListItemText>Clear Schedule</ListItemText>
-                        </MenuItem>
-                        <MenuItem onClick={handleCustomEventOpen}>
-                            <ListItemIcon>
-                                <Add fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText>Add Custom Event</ListItemText>
                         </MenuItem>
                     </Menu>
                     {/* Hidden button components for mobile menu to trigger */}
