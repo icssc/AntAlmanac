@@ -7,7 +7,6 @@ import { ColumnToggleDropdown } from '../CoursePane/CoursePaneButtonRow';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
 
 import CustomEventDetailView from './CustomEventDetailView';
-import { getMissingSections } from './getMissingSections';
 
 import { updateScheduleNote } from '$actions/AppStoreActions';
 import { ClearScheduleButton } from '$components/buttons/Clear';
@@ -31,7 +30,7 @@ const buttonSx: SxProps = {
     pointerEvents: 'auto',
 };
 
-export interface CourseWithTerm extends AACourse {
+interface CourseWithTerm extends AACourse {
     term: string;
 }
 
@@ -62,7 +61,6 @@ function getCourses() {
                 prerequisiteLink: course.prerequisiteLink,
                 courseNumber: course.courseNumber,
                 courseTitle: course.courseTitle,
-                sectionTypes: course.sectionTypes,
                 sections: [
                     {
                         ...course.section,
@@ -356,8 +354,6 @@ function AddedSectionsGrid() {
                 {courses.length < 1 ? NoCoursesBox : null}
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
-                        const missingSections = getMissingSections(course);
-
                         return (
                             <Box key={course.deptCode + course.courseNumber + course.courseTitle}>
                                 <SectionTableLazyWrapper
@@ -366,7 +362,6 @@ function AddedSectionsGrid() {
                                     allowHighlight={false}
                                     analyticsCategory={analyticsEnum.addedClasses}
                                     scheduleNames={scheduleNames}
-                                    missingSections={missingSections}
                                 />
                             </Box>
                         );
@@ -389,6 +384,8 @@ export function AddedCoursePane() {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
         };
+
+        console.log('Opened added ourse');
 
         logAnalytics(postHog, {
             category: analyticsEnum.addedClasses,

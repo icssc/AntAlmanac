@@ -1,4 +1,4 @@
-import { WebsocSection, WebsocSectionType } from '@packages/anteater-api-types';
+import { WebsocSection } from '@packages/anteater-api-types';
 
 export interface CourseDetails {
     deptCode: string;
@@ -6,7 +6,6 @@ export interface CourseDetails {
     courseTitle: string;
     courseComment: string;
     prerequisiteLink: string;
-    sectionTypes: Set<WebsocSectionType>;
 }
 
 export interface CourseInfo {
