@@ -1,5 +1,6 @@
 import { integer, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core';
-import { schedules } from '.';
+
+import { schedules } from './index';
 
 /**
  * coursesInSchedule have a N:1 relation with schedules.
@@ -36,7 +37,7 @@ export const coursesInSchedule = pgTable(
     (table) => [
         primaryKey({
             columns: [table.scheduleId, table.sectionCode, table.term],
-        }),    
+        }),
     ]
 );
 

@@ -1,11 +1,8 @@
 import { integer, pgEnum, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
-import { users } from './auth/user';
 
+import { users } from './auth';
 
-export const subscriptionTargetStatus = pgEnum(
-    'subscription_target_status',
-    ['OPEN', 'WAITLISTED']
-)
+export const subscriptionTargetStatus = pgEnum('subscription_target_status', ['OPEN', 'WAITLISTED']);
 
 export const subscriptions = pgTable(
     'subscriptions',

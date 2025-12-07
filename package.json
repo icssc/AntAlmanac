@@ -17,7 +17,6 @@
         "_start": "cross-env VITE_LOCAL_SERVER=true turbo start",
         "_start:aa": "turbo start --filter=antalmanac",
         "test": "vitest",
-        "dev": "sst dev",
         "deploy": "sst deploy --stage production"
     },
     "dependencies": {
