@@ -1,4 +1,4 @@
-import { CourseWithTerm } from './AddedCoursePane';
+import { CourseWithTerm } from '$components/RightPane/AddedCourses/AddedCoursePane';
 
 export const getMissingSections = (userCourses: CourseWithTerm): string[] => {
     const requiredTypes = userCourses.sectionTypes;
