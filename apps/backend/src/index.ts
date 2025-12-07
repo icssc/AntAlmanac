@@ -65,9 +65,22 @@ export async function start(corsEnabled = false) {
     );
 
     if (env.STAGE === 'local') {
-        app.listen(PORT, async () => {
-            console.log(`🚀 Server listening at http://localhost:${PORT}`);
+        const server = app.listen(PORT, () => {
+            console.log(`🚀 Backend listening on port ${PORT}`);
+            console.log('────────────────────────────────');
+            console.log(`tRPC    → http://localhost:${PORT}/trpc`);
+            console.log(`Mapbox  → http://localhost:${PORT}/mapbox/directions/*`);
+            console.log(`Mapbox  → http://localhost:${PORT}/mapbox/tiles/*`);
+            console.log('────────────────────────────────');
         });
+
+        function closeServer() {
+            console.log('Closing AntAlmanac backend...');
+            server.close();
+        }
+
+        process.on('SIGTERM', closeServer);
+        process.on('SIGINT', closeServer);
     }
 
     return app;

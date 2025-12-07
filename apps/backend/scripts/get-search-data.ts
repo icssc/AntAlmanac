@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, stat } from 'node:fs/promises';
 import { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 import { queryGraphQL } from 'src/lib/helpers';
 import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from 'src/lib/term-section-codes';
@@ -10,6 +10,7 @@ import 'dotenv/config';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const MAX_COURSES = 10_000;
+const VALID_CACHE_TIME_DAYS = 14;
 const DELAY_MS = 500; // avoid rate limits from AAPI
 
 const ALIASES: Record<string, string | undefined> = {
@@ -22,6 +23,22 @@ const ALIASES: Record<string, string | undefined> = {
 async function main() {
     const apiKey = process.env.ANTEATER_API_KEY;
     if (!apiKey) throw new Error('ANTEATER_API_KEY is required');
+
+    try {
+        const cacheFolderStatistics = await stat(join(__dirname, '../src/generated/searchData.ts'));
+
+        const lastModifiedDate = cacheFolderStatistics.mtime;
+        const currentDate = new Date();
+        const validCacheMs = VALID_CACHE_TIME_DAYS * 24 * 60 * 60 * 1000;
+
+        if (process.env.STAGE == 'local' && currentDate.getTime() - lastModifiedDate.getTime() < validCacheMs) {
+            console.log('Using existing search cache, last updated ' + lastModifiedDate.toLocaleString() + '.');
+            return;
+        }
+    } catch {
+        console.log('Cache is empty or unreachable, rebuilding from scratch...');
+    }
+
     console.log('Generating cache for fuzzy search.');
     console.log('Fetching courses from Anteater API...');
     const headers = { Authorization: `Bearer ${apiKey}` };
