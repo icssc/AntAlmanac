@@ -7,7 +7,6 @@ import {
     Panorama,
     Download,
     DeleteOutline,
-    Add,
 } from '@mui/icons-material';
 import {
     useTheme,
@@ -135,19 +134,6 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
         }
     };
 
-    const customEventButtonRef = useRef<HTMLDivElement>(null);
-
-    const handleCustomEventOpen = () => {
-        handleMenuClose();
-        // Trigger the hidden CustomEventDialog button
-        setTimeout(() => {
-            const button = customEventButtonRef.current?.querySelector('button');
-            if (button) {
-                button.click();
-            }
-        }, 0);
-    };
-
     return (
         <Paper
             elevation={0}
@@ -197,18 +183,19 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             <Box flexGrow={1} />
 
             {isMobile ? (
-                <>
-                    <Box display="flex" flexWrap="wrap" alignItems="center" gap={0}>
-                        <MenuItem onClick={handleUndo(postHog)} disabled={skeletonMode}>
+                <Box display="flex" flexDirection="row" gap={0.5}>
+                    <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
+                        <IconButton onClick={handleUndo(postHog)} disabled={skeletonMode}>
                             <UndoIcon fontSize="small" />
-                        </MenuItem>
-                        <MenuItem onClick={handleRedo(postHog)} disabled={skeletonMode}>
+                        </IconButton>
+                        <IconButton onClick={handleRedo(postHog)} disabled={skeletonMode}>
                             <RedoIcon fontSize="small" />
-                        </MenuItem>
+                        </IconButton>
+                        <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
                     </Box>
 
                     <Tooltip title="More options">
-                        <IconButton onClick={handleMenuOpen} size="medium" disabled={skeletonMode}>
+                        <IconButton onClick={handleMenuOpen} disabled={skeletonMode}>
                             <MoreVertIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
@@ -243,12 +230,6 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             </ListItemIcon>
                             <ListItemText>Clear Schedule</ListItemText>
                         </MenuItem>
-                        <MenuItem onClick={handleCustomEventOpen}>
-                            <ListItemIcon>
-                                <Add fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText>Add Custom Event</ListItemText>
-                        </MenuItem>
                     </Menu>
                     {/* Hidden button components for mobile menu to trigger */}
                     <Box sx={{ display: 'none' }}>
@@ -266,11 +247,8 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                                 analyticsCategory={analyticsEnum.calendar}
                             />
                         </Box>
-                        <Box ref={customEventButtonRef}>
-                            <CustomEventDialog key="custom-mobile" scheduleNames={AppStore.getScheduleNames()} />
-                        </Box>
                     </Box>
-                </>
+                </Box>
             ) : (
                 <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
                     <ScreenshotButton />
