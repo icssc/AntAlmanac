@@ -25,7 +25,7 @@ async function main() {
     if (!apiKey) throw new Error('ANTEATER_API_KEY is required');
 
     try {
-        const cacheFolderStatistics = await stat(join(__dirname, '../src/generated/terms/'));
+        const cacheFolderStatistics = await stat(join(__dirname, '../src/generated/searchData.ts'));
 
         const lastModifiedDate = cacheFolderStatistics.mtime;
         const currentDate = new Date();
