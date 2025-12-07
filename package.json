@@ -9,6 +9,7 @@
     },
     "scripts": {
         "prepare": "husky install",
+        "dev": "pnpm --filter antalmanac dev",
         "test": "vitest",
         "deploy": "sst deploy --stage production"
     },
