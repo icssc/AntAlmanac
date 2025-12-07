@@ -1,5 +1,6 @@
 import type { AggregateGrades, AggregateGradesByOffering } from '@packages/antalmanac-types';
 import { z } from 'zod';
+
 import { procedure, router } from '../trpc';
 
 const gradesRouter = router({

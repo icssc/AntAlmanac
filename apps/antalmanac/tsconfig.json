@@ -1,73 +1,40 @@
 {
-  "compilerOptions": {
-    "target": "es2015",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "incremental": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "preserve",
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "baseUrl": ".",
-    "paths": {
-      "$assets/*": [
-        "src/assets/*"
-      ],
-      "$actions/*": [
-        "src/actions/*"
-      ],
-      "$api/*": [
-        "src/api/*"
-      ],
-      "$components/*": [
-        "src/components/*"
-      ],
-      "$generated/*": [
-        "src/generated/*"
-      ],
-      "$lib/*": [
-        "src/lib/*"
-      ],
-      "$hooks/*": [
-        "src/hooks/*"
-      ],
-      "$providers/*": [
-        "src/providers/*"
-      ],
-      "$routes/*": [
-        "src/routes/*"
-      ],
-      "$stores/*": [
-        "src/stores/*"
-      ],
-      "$src/*": [
-        "src/*"
-      ]
-    }
-  },
-  "include": [
-    "./dist/types/**/*.ts",
-    "./next-env.d.ts",
-    "./src",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "./node_modules"
-  ]
+    "compilerOptions": {
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "node",
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "allowJs": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "incremental": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "jsx": "preserve",
+        "plugins": [
+            {
+                "name": "next"
+            }
+        ],
+        "baseUrl": ".",
+        "paths": {
+            "$assets/*": ["src/assets/*"],
+            "$actions/*": ["src/actions/*"],
+            "$api/*": ["src/api/*"],
+            "$components/*": ["src/components/*"],
+            "$generated/*": ["src/generated/*"],
+            "$lib/*": ["src/lib/*"],
+            "$hooks/*": ["src/hooks/*"],
+            "$providers/*": ["src/providers/*"],
+            "$routes/*": ["src/routes/*"],
+            "$stores/*": ["src/stores/*"],
+            "$src/*": ["src/*"]
+        }
+    },
+    "include": ["./dist/types/**/*.ts", "./next-env.d.ts", "./src", ".next/types/**/*.ts"],
+    "exclude": ["./node_modules"]
 }

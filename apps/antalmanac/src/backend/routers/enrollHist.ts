@@ -1,5 +1,6 @@
 import { EnrollmentHistory } from '@packages/antalmanac-types';
 import { z } from 'zod';
+
 import { procedure, router } from '../trpc';
 
 const enrollHistRouter = router({
@@ -12,7 +13,7 @@ const enrollHistRouter = router({
             })
                 .then((x) => x.json())
                 .then((x) => x.data as EnrollmentHistory)
-                .then((xs) => xs.filter(x => x.dates.length)) // FIXME remove this shim once this is fixed on the API end
+                .then((xs) => xs.filter((x) => x.dates.length)) // FIXME remove this shim once this is fixed on the API end
     ),
 });
 

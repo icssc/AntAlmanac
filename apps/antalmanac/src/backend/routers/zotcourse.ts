@@ -1,4 +1,5 @@
 import { type } from 'arktype';
+
 import { procedure, router } from '../trpc';
 
 const zotcourseUrl = 'https://zotcourse.appspot.com/schedule/load';

@@ -1,5 +1,6 @@
-import { z } from 'zod';
 import type { WebsocAPIResponse, CourseInfo, WebsocCourse } from '@packages/antalmanac-types';
+import { z } from 'zod';
+
 import { procedure, router } from '../trpc';
 
 function sanitizeSearchParams(params: Record<string, string>) {
@@ -62,15 +63,12 @@ function sortWebsocResponse(response: WebsocAPIResponse) {
 const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
     const url = `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`;
     console.log('queryWebSoc', url);
-    
-    const response = await fetch(
-        url,
-        {
-            headers: {
-                ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
-            },
-        }
-    );
+
+    const response = await fetch(url, {
+        headers: {
+            ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
+        },
+    });
     const data = await response.json();
     console.log('queryWebSoc', data);
     return sortWebsocResponse(data.data as WebsocAPIResponse);

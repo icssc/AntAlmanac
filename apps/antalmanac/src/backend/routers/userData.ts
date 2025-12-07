@@ -1,14 +1,15 @@
 import { UserSchema } from '@packages/antalmanac-types';
+import { db } from '@packages/db/src';
 import { TRPCError } from '@trpc/server';
 import { type } from 'arktype';
 import { OAuth2Client } from 'google-auth-library';
 import { z } from 'zod';
 
-import { db } from 'src/db';
-import { googleOAuthEnvSchema } from 'src/env';
-import { mangleDuplicateScheduleNames } from 'src/lib/formatting';
-import { RDS } from 'src/lib/rds';
+import { RDS } from '../lib/rds';
 import { procedure, router } from '../trpc';
+
+import { googleOAuthEnvSchema } from '$src/backend/env';
+import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
 
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } = googleOAuthEnvSchema.parse(process.env);
 

@@ -1,11 +1,14 @@
 import { readFile } from 'fs/promises';
 import { join } from 'node:path';
-import { z } from 'zod';
-import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
+
 import uFuzzy from '@leeoniya/ufuzzy';
+import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
 import * as fuzzysort from 'fuzzysort';
-import { procedure, router } from '../trpc';
+import { z } from 'zod';
+
 import { backendEnvSchema } from '../env';
+import { procedure, router } from '../trpc';
+
 import * as searchData from '$generated/searchData';
 
 const MAX_AUTOCOMPLETE_RESULTS = 12;

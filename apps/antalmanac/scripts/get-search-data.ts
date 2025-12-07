@@ -1,9 +1,11 @@
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
 import { mkdir, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
-import { queryGraphQL } from 'src/lib/helpers';
-import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from 'src/lib/term-section-codes';
+
+import { queryGraphQL } from '../src/backend/lib/helpers';
+import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';
 
 import 'dotenv/config';
 

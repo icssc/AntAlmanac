@@ -5,6 +5,7 @@ import {
     WebsocSchool,
     WebsocSection,
 } from '@packages/antalmanac-types';
+
 import { terms } from '$generated/termData';
 export interface SectionCodesGraphQLResponse {
     data: {

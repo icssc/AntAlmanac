@@ -1,6 +1,7 @@
+import { createWriteStream } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createWriteStream } from 'node:fs';
+
 import archiver from 'archiver';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
