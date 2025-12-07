@@ -66,13 +66,12 @@ export async function start(corsEnabled = false) {
 
     if (env.STAGE === 'local') {
         const server = app.listen(PORT, async () => {
-            console.log('AntAlmanac Backend');
+            console.log("🚀 Ready. These are routes for AntAlmanac backend (not the Vite frontend).")
             console.log('────────────────────────────────');
             console.log(`tRPC    → http://localhost:${PORT}/trpc`);
             console.log(`Mapbox  → http://localhost:${PORT}/mapbox/directions/*`);
             console.log(`Mapbox  → http://localhost:${PORT}/mapbox/tiles/*`);
             console.log('────────────────────────────────');
-            console.log('Ready. This is the AntAlmanac backend (not the Vite frontend).');
         });
 
         process.on('SIGTERM', () => server.close());
