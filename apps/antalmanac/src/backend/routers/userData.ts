@@ -1,4 +1,4 @@
-import { UserSchema } from '@packages/antalmanac-types';
+import { type User } from '@packages/antalmanac-types';
 import { db } from '@packages/db/src';
 import { TRPCError } from '@trpc/server';
 import { type } from 'arktype';
@@ -17,11 +17,11 @@ const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]
 
 const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI);
 
-const saveInputSchema = type({
+const saveInputSchema = z.object({
     /**
      * ID of the requester.
      */
-    id: 'string',
+    id: z.string(),
 
     /**
      * Schedule data being saved.
@@ -29,7 +29,7 @@ const saveInputSchema = type({
      * The ID of the requester and user ID in the schedule data may differ,
      * i.e. if the user is editing and saving another user's schedule.
      */
-    data: UserSchema,
+    data: z.custom<User>(),
 });
 
 const saveGoogleSchema = type({
@@ -187,7 +187,7 @@ const userDataRouter = router({
     /**
      * Loads schedule data for a user that's logged in.
      */
-    saveUserData: procedure.input(saveInputSchema.assert).mutation(async ({ input }) => {
+    saveUserData: procedure.input(saveInputSchema).mutation(async ({ input }) => {
         const data = input.data;
 
         // Mangle duplicate schedule names
