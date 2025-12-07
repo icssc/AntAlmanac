@@ -6,17 +6,13 @@ import type { GESearchResult, SearchResult, SectionSearchResult } from '@package
 import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';
 
-import { backendEnvSchema } from '../env';
 import { procedure, router } from '../trpc';
 
 import * as searchData from '$generated/searchData';
 
 const MAX_AUTOCOMPLETE_RESULTS = 12;
 
-const env = backendEnvSchema.parse(process.env);
-const isLambda = env.STAGE !== 'local';
-
-const termsFolderPath = isLambda ? '/var/task/terms' : join(process.cwd(), 'src', 'generated', 'terms');
+const termsFolderPath = join(process.cwd(), 'src', 'generated', 'terms');
 
 const geCategoryKeys = ['ge1a', 'ge1b', 'ge2', 'ge3', 'ge4', 'ge5a', 'ge5b', 'ge6', 'ge7', 'ge8'] as const;
 
