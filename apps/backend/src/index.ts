@@ -65,9 +65,14 @@ export async function start(corsEnabled = false) {
     );
 
     if (env.STAGE === 'local') {
-        app.listen(PORT, async () => {
-            console.log(`🚀 Server listening at http://localhost:${PORT}`);
+        const server = app.listen(PORT, async () => {
+            console.log('AntAlmanac Backend');
+            console.log(`-> Local: http://localhost:${PORT}`);
+            console.log(`-> Environment: ${env.STAGE || 'not set'}`);
         });
+
+        process.on('SIGTERM', () => server.close());
+        process.on('SIGINT', () => server.close());
     }
 
     return app;
