@@ -1,5 +1,8 @@
-import type { CreateExpressContextOptions } from '@trpc/server/adapters/express';
+import type { inferAsyncReturnType } from '@trpc/server';
+import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
 
-const createContext = (opts: CreateExpressContextOptions) => opts;
-export type context = typeof createContext;
-export default createContext;
+export const createContext = async (_opts: FetchCreateContextFnOptions) => {
+    return {};
+};
+
+export type Context = inferAsyncReturnType<typeof createContext>;
