@@ -12,5 +12,4 @@ export interface SectionTableProps {
     allowHighlight: boolean;
     scheduleNames: string[];
     analyticsCategory: AnalyticsCategory;
-    missingSections?: string[];
 }
