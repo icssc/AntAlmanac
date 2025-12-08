@@ -14,6 +14,17 @@ const config = {
         'plugin:react/jsx-runtime',
         'plugin:jsx-a11y/recommended',
     ],
+    rules: {
+        'sort-imports': [
+            'error',
+            {
+                ignoreCase: true,
+                ignoreDeclarationSort: true,
+                memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
+                allowSeparatedGroups: true,
+            },
+        ],
+    },
     globals: {
         React: true,
     },

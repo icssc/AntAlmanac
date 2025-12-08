@@ -15,6 +15,12 @@ extends:
 
 rules:
     import/order: error
+    sort-imports:
+        - error
+        - ignoreCase: true
+          ignoreDeclarationSort: true
+          memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single']
+          allowSeparatedGroups: true
 
 ignorePatterns:
     - 'vite.config.ts'

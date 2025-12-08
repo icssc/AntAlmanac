@@ -43,6 +43,15 @@ const config = {
                 project: ['tsconfig.json', 'apps/*/tsconfig.json'],
             },
         },
+        'sort-imports': [
+            'error',
+            {
+                ignoreCase: true,
+                ignoreDeclarationSort: true,
+                memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
+                allowSeparatedGroups: true,
+            },
+        ],
     },
     env: {
         browser: true,
