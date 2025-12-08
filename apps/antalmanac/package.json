@@ -20,8 +20,8 @@
         "preview": "vite preview",
         "predeploy": "npm run build",
         "deploy": "gh-pages -d build",
-        "format": "prettier --write src",
-        "lint": "eslint src"
+        "format": "prettier --write src scripts tests tools",
+        "lint": "eslint --fix src scripts tests tools"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.3.1",

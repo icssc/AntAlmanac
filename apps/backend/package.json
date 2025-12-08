@@ -11,8 +11,8 @@
         "build": "node scripts/build.mjs && pnpm zip-dist",
         "prestart": "pnpm get-data",
         "start": "pnpm dev",
-        "format": "prettier --write src",
-        "lint": "eslint --fix src",
+        "format": "prettier --write src scripts",
+        "lint": "eslint --fix src scripts",
         "studio": "drizzle-kit studio",
         "migrate": "drizzle-kit generate && tsx scripts/migrate.ts"
     },
