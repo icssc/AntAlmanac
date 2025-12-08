@@ -6,8 +6,8 @@ import { start } from '.';
 
 let cachedHandler: Handler;
 
-export async function handler(event: any, context: Context, callback: any) {
-    const env = backendEnvSchema.parse(process.env)
+export async function handler(event: unknown, context: Context, callback: unknown) {
+    const env = backendEnvSchema.parse(process.env);
     if (!cachedHandler) {
         const app = await start(env.NODE_ENV === 'production');
         cachedHandler = serverlessExpress({ app });
