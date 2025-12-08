@@ -223,7 +223,8 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 }
             </Box>
         )
-    } 
+    }
+
     // Renders each autocomplete option as a custom list item. Grays out course if it's not offered. 
     renderOption = (props: React.HTMLAttributes<HTMLLIElement>, option: SearchOption) => {
         const object = option.result;
@@ -251,6 +252,12 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         )
     }
 
+    onFocus = () => {
+        if (this.state.value.length >= 2) {
+            this.setState({ open: true });
+        }
+    };
+
     render() {
         return (
             <LabeledAutocomplete
@@ -272,11 +279,13 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                     onInputChange: this.onInputChange,
                     open: this.state.open,
                     popupIcon: '',
+                    clearOnBlur: false,
                 }}
                 textFieldProps={{
                     autoFocus: !isMobile(),
                     placeholder: 'Search for courses, departments, GEs...',
                     fullWidth: true,
+                    onFocus: this.onFocus,
                 }}
                 isAligned
             />
