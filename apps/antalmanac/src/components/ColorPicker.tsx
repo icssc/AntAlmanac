@@ -1,7 +1,7 @@
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, PopoverProps, Tooltip } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
-import { memo, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
 
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
@@ -35,6 +35,10 @@ const ColorPicker = memo(function ColorPicker({
 
     const postHog = usePostHog();
 
+    const updateColor = useCallback((newColor: string) => {
+        setCurrColor(newColor);
+    }, []);
+
     useEffect(() => {
         let colorPickerId;
         if (isCustomEvent && customEventID) colorPickerId = customEventID.toString();
@@ -45,7 +49,7 @@ const ColorPicker = memo(function ColorPicker({
         return () => {
             AppStore.unregisterColorPicker(colorPickerId, updateColor);
         };
-    }, [isCustomEvent, customEventID, sectionCode]);
+    }, [isCustomEvent, customEventID, sectionCode, updateColor]);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>, postHog?: PostHog) => {
         event.stopPropagation();
@@ -67,12 +71,6 @@ const ColorPicker = memo(function ColorPicker({
         setCurrColor(newColor.hex);
         if (isCustomEvent && customEventID) changeCustomEventColor(customEventID, newColor.hex);
         else if (sectionCode && term) changeCourseColor(sectionCode, term, newColor.hex);
-    };
-
-    const updateColor = (newColor: string) => {
-        if (currColor !== newColor) {
-            setCurrColor(newColor);
-        }
     };
 
     return (

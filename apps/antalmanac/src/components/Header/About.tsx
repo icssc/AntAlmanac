@@ -30,7 +30,7 @@ const AboutButton = () => {
             category: analyticsEnum.nav,
             action: analyticsEnum.nav.actions.CLICK_ABOUT,
         });
-    }, []);
+    }, [postHog]);
 
     const handleClose = useCallback(() => {
         setOpen(false);

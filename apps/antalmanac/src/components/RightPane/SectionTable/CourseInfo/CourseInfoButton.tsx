@@ -48,7 +48,7 @@ export const CourseInfoButton = ({
                 setAnchorEl(anchorEl ? null : event.currentTarget);
             }
         },
-        [analyticsAction, analyticsCategory, anchorEl, popupContent, redirectLink]
+        [postHog, analyticsAction, analyticsCategory, anchorEl, popupContent, redirectLink]
     );
 
     const handleClose = useCallback(() => {

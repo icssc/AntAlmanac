@@ -142,10 +142,11 @@ export default function ClassRoutes(props: ClassRoutesProps) {
     const routerRef = useRouter(props, context);
 
     useEffect(() => {
-        routerRef.current.instance.addTo(context.map);
-        routerRef.current.instance.hide();
+        const router = routerRef.current;
+        router.instance.addTo(context.map);
+        router.instance.hide();
         return () => {
-            routerRef.current.instance.remove();
+            router.instance.remove();
         };
     }, [context.map, routerRef]);
 

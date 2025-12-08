@@ -88,7 +88,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             });
         }
         toggleDisplayFinalsSchedule();
-    }, [toggleDisplayFinalsSchedule]);
+    }, [postHog, showFinalsSchedule, toggleDisplayFinalsSchedule]);
 
     useEffect(() => {
         const handleSkeletonModeChange = () => {

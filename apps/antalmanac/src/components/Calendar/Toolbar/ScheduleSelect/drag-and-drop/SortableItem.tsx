@@ -10,7 +10,7 @@ interface Props {
 }
 
 interface Context {
-    attributes: Record<string, any>;
+    attributes: Record<string, unknown>;
     listeners: DraggableSyntheticListeners;
     ref(node: HTMLElement | null): void;
 }

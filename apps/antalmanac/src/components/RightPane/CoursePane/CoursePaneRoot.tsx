@@ -42,7 +42,7 @@ export function CoursePaneRoot() {
         WebSOC.clearCache();
         Grades.clearCache();
         forceUpdate();
-    }, [forceUpdate]);
+    }, [postHog, forceUpdate]);
 
     const handleKeydown = useCallback(
         (event: KeyboardEvent) => {

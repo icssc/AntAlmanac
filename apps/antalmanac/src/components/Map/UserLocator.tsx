@@ -33,11 +33,12 @@ export default function UserLocator() {
     const elementRef = useUserLocator(null, context);
 
     useEffect(() => {
-        elementRef.current.instance.addTo(context.map);
+        const element = elementRef.current;
+        element.instance.addTo(context.map);
         return () => {
-            elementRef.current.instance.remove();
+            element.instance.remove();
         };
-    }, []);
+    }, [context.map, elementRef]);
 
     return null;
 }
