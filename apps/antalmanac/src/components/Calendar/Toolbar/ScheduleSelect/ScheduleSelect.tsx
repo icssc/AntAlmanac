@@ -1,5 +1,5 @@
 import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
-import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
+import { Box, Button, Popover, Tooltip, Typography, useTheme } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 

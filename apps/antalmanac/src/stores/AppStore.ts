@@ -1,24 +1,24 @@
 import { EventEmitter } from 'events';
 
-import type { ScheduleCourse, ScheduleSaveState, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import type { RepeatingCustomEvent, ScheduleCourse, ScheduleSaveState } from '@packages/antalmanac-types';
 import { SnackbarOrigin, VariantType } from 'notistack';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import type {
     AddCourseAction,
-    DeleteCourseAction,
     AddCustomEventAction,
-    DeleteCustomEventAction,
-    EditCustomEventAction,
+    AddScheduleAction,
+    ChangeCourseColorAction,
     ChangeCustomEventColorAction,
     ClearScheduleAction,
     CopyScheduleAction,
-    RenameScheduleAction,
+    DeleteCourseAction,
+    DeleteCustomEventAction,
     DeleteScheduleAction,
+    EditCustomEventAction,
+    RenameScheduleAction,
     ReorderScheduleAction,
-    ChangeCourseColorAction,
     UndoRedoAction,
-    AddScheduleAction,
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { Schedules } from '$stores/Schedules';

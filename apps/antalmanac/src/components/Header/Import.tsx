@@ -23,11 +23,11 @@ import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import {
-    addCustomEvent,
-    openSnackbar,
     addCourse,
+    addCustomEvent,
     importScheduleWithUsername,
     importValidatedSchedule,
+    openSnackbar,
 } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
@@ -43,7 +43,7 @@ import {
     removeLocalStorageUserId,
 } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
-import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
+import { queryZotcourse, ZotcourseResponse } from '$lib/zotcourse';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';

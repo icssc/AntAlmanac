@@ -1,5 +1,5 @@
-import { Box, Link, Typography, Skeleton } from '@mui/material';
-import { useState, useEffect, useMemo } from 'react';
+import { Box, Link, Skeleton, Typography } from '@mui/material';
+import { useEffect, useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 import { Grades, type GradesProps } from '$lib/grades';

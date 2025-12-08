@@ -1,5 +1,5 @@
 import GoogleIcon from '@mui/icons-material/Google';
-import { Button, Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
+import { Alert, Button, Dialog, DialogContent, DialogTitle, Stack } from '@mui/material';
 
 import { loginUser } from '$actions/AppStoreActions';
 

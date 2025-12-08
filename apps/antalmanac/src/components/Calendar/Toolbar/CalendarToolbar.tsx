@@ -1,28 +1,28 @@
 import {
-    Undo as UndoIcon,
-    Redo as RedoIcon,
+    DeleteOutline,
     Description as DescriptionIcon,
     DescriptionOutlined as DescriptionOutlinedIcon,
+    Download,
     MoreVert as MoreVertIcon,
     Panorama,
-    Download,
-    DeleteOutline,
+    Redo as RedoIcon,
+    Undo as UndoIcon,
 } from '@mui/icons-material';
 import {
-    useTheme,
-    useMediaQuery,
     Box,
     Button,
     IconButton,
-    Paper,
-    Tooltip,
-    Menu,
-    MenuItem,
     ListItemIcon,
     ListItemText,
+    Menu,
+    MenuItem,
+    Paper,
+    Tooltip,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
-import { useState, useCallback, useEffect, memo, useRef } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 import { redoAction, undoDelete } from '$actions/AppStoreActions';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';

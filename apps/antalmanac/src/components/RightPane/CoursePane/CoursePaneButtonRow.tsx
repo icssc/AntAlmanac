@@ -1,4 +1,4 @@
-import { ArrowBack, Visibility, Refresh } from '@mui/icons-material';
+import { ArrowBack, Refresh, Visibility } from '@mui/icons-material';
 import {
     Box,
     Checkbox,
@@ -6,17 +6,17 @@ import {
     IconButton,
     ListItemText,
     MenuItem,
+    Popover,
     Select,
-    Tooltip,
     type SelectChangeEvent,
     type SxProps,
-    Popover,
+    Tooltip,
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useMemo, useState } from 'react';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
+import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 
 /**
  * All the interactive buttons have the same styles.

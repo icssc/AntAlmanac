@@ -1,4 +1,4 @@
-import { useMediaQuery, useTheme, Stack } from '@mui/material';
+import { Stack, useMediaQuery, useTheme } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
 import { useCallback, useEffect, useRef } from 'react';

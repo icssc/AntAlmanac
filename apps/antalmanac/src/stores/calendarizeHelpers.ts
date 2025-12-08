@@ -1,13 +1,13 @@
 import type {
-    ScheduleCourse,
-    RepeatingCustomEvent,
     HourMinute,
+    RepeatingCustomEvent,
+    ScheduleCourse,
     WebsocSectionFinalExam,
 } from '@packages/antalmanac-types';
 
 import type { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { getFinalsStartDateForTerm } from '$lib/termData';
-import { notNull, getReferencesOccurring } from '$lib/utils';
+import { getReferencesOccurring, notNull } from '$lib/utils';
 
 export const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 

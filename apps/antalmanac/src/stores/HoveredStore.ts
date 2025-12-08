@@ -1,4 +1,4 @@
-import { AASection, ScheduleCourse, CourseDetails } from '@packages/antalmanac-types';
+import { AASection, CourseDetails, ScheduleCourse } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';

@@ -1,15 +1,15 @@
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
-import { Box, IconButton, Typography, Skeleton, Tooltip, useMediaQuery } from '@mui/material';
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Box, IconButton, Skeleton, Tooltip, Typography, useMediaQuery } from '@mui/material';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-    LineChart,
-    Line,
     CartesianGrid,
+    Legend,
+    Line,
+    LineChart,
+    Tooltip as RechartsTooltip,
     ResponsiveContainer,
     XAxis,
     YAxis,
-    Tooltip as RechartsTooltip,
-    Legend,
 } from 'recharts';
 
 import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';

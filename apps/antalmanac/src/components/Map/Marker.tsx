@@ -1,9 +1,9 @@
 import { DirectionsWalk as DirectionsWalkIcon, Info } from '@mui/icons-material';
 import { Box, Button, IconButton, Typography } from '@mui/material';
-import { type Marker, divIcon } from 'leaflet';
+import { divIcon, type Marker } from 'leaflet';
 import { usePostHog } from 'posthog-js/react';
 import { forwardRef, type Ref } from 'react';
-import { Marker as ReactLeafletMarker, Popup } from 'react-leaflet';
+import { Popup, Marker as ReactLeafletMarker } from 'react-leaflet';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 

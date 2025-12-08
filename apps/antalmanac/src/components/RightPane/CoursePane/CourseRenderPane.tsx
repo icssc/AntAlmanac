@@ -1,6 +1,6 @@
 import { Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, Link, useMediaQuery, useTheme } from '@mui/material';
-import { AACourse, AASection, WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from '@packages/antalmanac-types';
+import { AACourse, AASection, GE, WebsocAPIResponse, WebsocDepartment, WebsocSchool } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 

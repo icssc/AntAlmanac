@@ -3,11 +3,11 @@ import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import './Map.css';
 
 import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
-import { Marker, type Map, type LatLngTuple } from 'leaflet';
+import { type LatLngTuple, type Map, Marker } from 'leaflet';
 import { usePostHog } from 'posthog-js/react';
-import { Fragment, useEffect, useRef, useCallback, useState, createRef, useMemo } from 'react';
+import { createRef, Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import 'leaflet-routing-machine';
 
 import LocationMarker from './Marker';

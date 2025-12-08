@@ -1,4 +1,4 @@
-import { Info, Assignment, FavoriteRounded } from '@mui/icons-material';
+import { Assignment, FavoriteRounded, Info } from '@mui/icons-material';
 import {
     Button,
     Dialog,

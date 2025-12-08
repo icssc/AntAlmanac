@@ -4,12 +4,12 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
+    type DialogProps,
     DialogTitle,
     TextField,
-    type DialogProps,
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { copySchedule } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';

@@ -1,4 +1,4 @@
-import { createTheme, CssBaseline, ThemeProvider, type PaletteOptions } from '@mui/material';
+import { createTheme, CssBaseline, type PaletteOptions, ThemeProvider } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useMemo } from 'react';
 

@@ -16,7 +16,7 @@ import { StatusCell } from '$components/RightPane/SectionTable/SectionTableBody/
 import { SyllabusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SyllabusCell';
 import { AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
-import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
+import { type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
 

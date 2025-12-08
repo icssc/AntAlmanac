@@ -1,5 +1,5 @@
 import { ExpandMore } from '@mui/icons-material';
-import { Box, Accordion, AccordionDetails, AccordionSummary, Typography, Button, Stack } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Stack, Typography } from '@mui/material';
 import { Link, useLocation, useRouteError } from 'react-router-dom';
 
 export const ErrorPage = () => {

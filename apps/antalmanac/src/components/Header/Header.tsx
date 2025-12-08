@@ -11,9 +11,9 @@ import { Signin } from '$components/Header/Signin';
 import { Signout } from '$components/Header/Signout';
 import {
     getLocalStorageDataCache,
-    removeLocalStorageImportedUser,
-    removeLocalStorageDataCache,
     getLocalStorageImportedUser,
+    removeLocalStorageDataCache,
+    removeLocalStorageImportedUser,
 } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
 import { useSessionStore } from '$stores/SessionStore';

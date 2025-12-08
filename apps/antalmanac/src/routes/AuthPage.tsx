@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { isEmptySchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
@@ -7,14 +7,14 @@ import trpc from '$lib/api/trpc';
 import {
     getLocalStorageDataCache,
     getLocalStorageFromLoading,
-    setLocalStorageImportedUser,
     getLocalStorageUserId,
-    removeLocalStorageUserId,
-    removeLocalStorageImportedUser,
     removeLocalStorageDataCache,
     removeLocalStorageFromLoading,
-    setLocalStorageSessionId,
+    removeLocalStorageImportedUser,
+    removeLocalStorageUserId,
+    setLocalStorageImportedUser,
     setLocalStorageOnFirstSignin,
+    setLocalStorageSessionId,
 } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 

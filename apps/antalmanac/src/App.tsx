@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack';
 import { useEffect } from 'react';
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
-import { undoDelete, redoDelete } from '$actions/AppStoreActions';
+import { redoDelete, undoDelete } from '$actions/AppStoreActions';
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
 import AppPostHogProvider from '$providers/PostHog';
 import AppQueryProvider from '$providers/Query';

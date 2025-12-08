@@ -1,10 +1,10 @@
-import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText } from '@mui/material';
+import { Box, Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
 import { format, parse } from 'date-fns';
-import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
+import { type ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 import {
-    EXCLUDE_RESTRICTION_CODES_OPTIONS,
     DAYS_OPTIONS,
+    EXCLUDE_RESTRICTION_CODES_OPTIONS,
 } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';

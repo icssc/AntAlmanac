@@ -4,11 +4,11 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
+    type DialogProps,
     DialogTitle,
     TextField,
-    type DialogProps,
 } from '@mui/material';
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { renameSchedule } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';

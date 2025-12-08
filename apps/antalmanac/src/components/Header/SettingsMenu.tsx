@@ -1,4 +1,4 @@
-import { LightMode, Close, SettingsBrightness, DarkMode, Help, MenuRounded } from '@mui/icons-material';
+import { Close, DarkMode, Help, LightMode, MenuRounded, SettingsBrightness } from '@mui/icons-material';
 import {
     Box,
     Button,
@@ -25,7 +25,7 @@ import appStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
+import { useAutoSaveStore, usePreviewStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',

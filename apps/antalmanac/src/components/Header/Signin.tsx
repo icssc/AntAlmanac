@@ -1,23 +1,23 @@
 import { AccountCircle, Google } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
-    Divider,
-    Stack,
     Alert,
+    AlertColor,
     AlertTitle,
-    CircularProgress,
     Button,
+    CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
     DialogContentText,
     DialogTitle,
+    Divider,
+    Stack,
     TextField,
-    AlertColor,
 } from '@mui/material';
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { loadSchedule, saveSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
+import { loadSchedule, loadScheduleWithSessionToken, loginUser, saveSchedule } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';

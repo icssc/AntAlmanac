@@ -11,10 +11,10 @@ import { TRPCError } from '@trpc/server';
 import { SnackbarOrigin, VariantType } from 'notistack';
 import { PostHog } from 'posthog-js/react';
 
-import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/analytics';
+import analyticsEnum, { courseNumAsDecimal, logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
-import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { setLocalStorageDataCache, setLocalStorageUserId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
