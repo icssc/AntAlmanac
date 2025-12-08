@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { mkdir, writeFile, stat } from 'node:fs/promises';
+import { mkdir, stat, writeFile } from 'node:fs/promises';
 import { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 import { queryGraphQL } from 'src/lib/helpers';
 import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from 'src/lib/term-section-codes';

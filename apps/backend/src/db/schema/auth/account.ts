@@ -1,4 +1,4 @@
-import { primaryKey, pgTable, text, pgEnum } from 'drizzle-orm/pg-core';
+import { pgEnum, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
 
 import { users } from './user';
 
