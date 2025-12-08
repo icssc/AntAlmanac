@@ -76,13 +76,8 @@ export async function start(corsEnabled = false) {
             console.log('────────────────────────────────');
         });
 
-        function closeServer() {
-            console.log('Closing AntAlmanac backend...');
-            server.close();
-        }
-
-        process.on('SIGTERM', closeServer);
-        process.on('SIGINT', closeServer);
+        process.on('SIGTERM', server.close);
+        process.on('SIGINT', server.close);
     }
 
     return app;
