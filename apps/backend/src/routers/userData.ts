@@ -221,14 +221,7 @@ const userDataRouter = router({
         const email = claims.email;
         const picture = claims.picture;
 
-        const account = await RDS.registerUserAccount(
-            db,
-            oauthUserId,
-            username ?? '',
-            'OIDC',
-            email ?? '',
-            picture ?? ''
-        );
+        const account = await RDS.registerUserAccount(db, 'OIDC', oauthUserId, username, email, picture ?? '');
 
         const userId: string = account.userId;
 
