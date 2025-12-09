@@ -7,6 +7,12 @@ const trpc = createTRPCProxyClient<AppRouter>({
     links: [
         httpBatchLink({
             url: '/api/trpc',
+            fetch(url, options) {
+                return fetch(url, {
+                    ...options,
+                    credentials: 'include', // Send cookies with requests
+                });
+            },
         }),
     ],
     transformer: superjson,
