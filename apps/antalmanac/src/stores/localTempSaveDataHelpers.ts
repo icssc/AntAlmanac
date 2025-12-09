@@ -10,6 +10,13 @@ import {
  */
 interface TempSaveData {
     currentScheduleIndex?: number;
+    skeletonBlueprint?: Array<{
+        dayOffset: number;
+        startHour: number;
+        startMinute: number;
+        endHour: number;
+        endMinute: number;
+    }>;
 }
 
 let dataToSave: TempSaveData = {};

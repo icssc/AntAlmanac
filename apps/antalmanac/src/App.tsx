@@ -5,7 +5,7 @@ import { SnackbarProvider } from 'notistack';
 import { useEffect } from 'react';
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
-import { undoDelete } from '$actions/AppStoreActions';
+import { undoDelete, redoDelete } from '$actions/AppStoreActions';
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
 import AppPostHogProvider from '$providers/PostHog';
 import AppQueryProvider from '$providers/Query';
@@ -87,8 +87,10 @@ const ROUTER = OUTAGE ? OUTAGE_ROUTER : BROWSER_ROUTER;
 export default function App() {
     useEffect(() => {
         document.addEventListener('keydown', undoDelete, false);
+        document.addEventListener('keydown', redoDelete, false);
         return () => {
             document.removeEventListener('keydown', undoDelete, false);
+            document.removeEventListener('keydown', redoDelete, false);
         };
     }, []);
 
@@ -115,10 +117,12 @@ export default function App() {
                                 borderRadius: 5,
                                 boxShadow: '0 0 10px #000',
                                 padding: 20,
+                                paddingTop: 40,
+                                margin: 20,
                             }),
                         }}
                     >
-                        <SnackbarProvider>
+                        <SnackbarProvider classes={{ containerRoot: 'notification-snackbar-container' }}>
                             <RouterProvider router={ROUTER} />
                         </SnackbarProvider>
                     </TourProvider>
