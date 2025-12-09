@@ -29,7 +29,7 @@ function isOriginAllowed(origin: string | null): boolean {
     return false;
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
     const origin = request.headers.get('origin');
 
     // Handle preflight OPTIONS request
