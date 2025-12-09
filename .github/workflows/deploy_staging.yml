@@ -26,8 +26,6 @@ env:
     MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
     MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
     VITE_TILES_ENDPOINT: ${{ secrets.VITE_TILES_ENDPOINT}}
-    GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-    GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
     DB_URL: ${{ secrets.STAGING_DB_URL }}
     ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
 
@@ -187,8 +185,6 @@ jobs:
                   OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID }}
                   OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
                   GOOGLE_OAUTH_REDIRECT_URI: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}/auth
-                  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-                  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
                   GOOGLE_REDIRECT_URI: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}/auth
 
             - name: Create success deployment
