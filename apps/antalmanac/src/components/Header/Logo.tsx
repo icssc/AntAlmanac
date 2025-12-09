@@ -1,6 +1,3 @@
-import { useMediaQuery } from '@mui/material';
-import { useMemo } from 'react';
-
 import ChristmasLogo from '$assets/christmas-logo.png';
 import MobileChristmasLogo from '$assets/christmas-mobile-logo.png';
 import HalloweenLogo from '$assets/halloween-logo.png';
@@ -9,6 +6,7 @@ import DefaultLogo from '$assets/logo.svg';
 import MobileDefaultLogo from '$assets/mobile-logo.svg';
 import ThanksgivingLogo from '$assets/thanksgiving-logo.png';
 import MobileThanksgivingLogo from '$assets/thanksgiving-mobile-logo.png';
+import { useIsMobile } from '$hooks/useIsMobile';
 
 type Logo = {
     name: string;
@@ -16,7 +14,7 @@ type Logo = {
     desktopLogo: string;
     startDay: number; // inclusive
     startMonthIndex: number;
-    endDay: number; // exclusive
+    endDay: number; // inclusive
     endMonthIndex: number;
     attribution?: string;
 };
@@ -38,8 +36,8 @@ const logos: Logo[] = [
         desktopLogo: ChristmasLogo,
         startDay: 1,
         startMonthIndex: 11,
-        endDay: 1,
-        endMonthIndex: 1,
+        endDay: 31,
+        endMonthIndex: 11,
         attribution: 'Thanks Aejin for designing this seasonal logo!',
     },
     {
@@ -48,8 +46,8 @@ const logos: Logo[] = [
         desktopLogo: ThanksgivingLogo,
         startDay: 1,
         startMonthIndex: 10,
-        endDay: 1,
-        endMonthIndex: 11,
+        endDay: 30,
+        endMonthIndex: 10,
         attribution: 'Thanks Aejin for designing this seasonal logo!',
     },
     {
@@ -58,8 +56,8 @@ const logos: Logo[] = [
         desktopLogo: HalloweenLogo,
         startDay: 1,
         startMonthIndex: 9,
-        endDay: 1,
-        endMonthIndex: 10,
+        endDay: 31,
+        endMonthIndex: 9,
         attribution: 'Thanks Aejin for designing this seasonal logo!',
     },
     defaultLogo,
@@ -68,26 +66,21 @@ const logos: Logo[] = [
 function logoIsForCurrentSeason(logo: Logo) {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
+    const startDate = new Date(currentYear, logo.startMonthIndex, logo.startDay);
+    const endDate = new Date(currentYear, logo.endMonthIndex, logo.endDay);
 
-    const endYear = currentYear;
-    const startYear = logo.startMonthIndex > logo.endMonthIndex ? endYear - 1 : endYear;
-    const endDate = new Date(endYear, logo.endMonthIndex, logo.endDay);
-    const startDate = new Date(startYear, logo.startMonthIndex, logo.startDay);
-
-    return currentDate >= startDate && currentDate < endDate;
+    return currentDate >= startDate && currentDate <= endDate;
 }
 
 export function Logo() {
-    const isMobileScreen = useMediaQuery('(max-width:750px)');
+    const isMobile = useIsMobile();
 
-    const currentLogo = useMemo(() => {
-        return logos.find((logo) => logoIsForCurrentSeason(logo)) ?? defaultLogo;
-    }, []);
+    const currentLogo = logos.find((logo) => logoIsForCurrentSeason(logo)) ?? defaultLogo;
 
     return (
         <img
             height={32}
-            src={isMobileScreen ? currentLogo?.mobileLogo : currentLogo?.desktopLogo}
+            src={isMobile ? currentLogo?.mobileLogo : currentLogo?.desktopLogo}
             title={currentLogo?.attribution}
             alt="logo"
         />
