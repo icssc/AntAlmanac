@@ -20,6 +20,12 @@ const resultType = {
     SECTION: 'SECTION',
 } as const;
 
+const groupType = {
+    UNGROUPED: '__ungrgouped__',
+    NOT_OFFERED: '__notOffered__',
+    OFFERED: '__offered__',
+}
+
 const emojiMap: Record<string, string> = {
     GE_CATEGORY: '🏫', // U+1F3EB :school:
     DEPARTMENT: '🏢', // U+1F3E2 :office:
