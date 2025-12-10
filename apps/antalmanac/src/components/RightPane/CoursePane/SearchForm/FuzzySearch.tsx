@@ -200,7 +200,6 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         this.setState({ open: false });
     };
 
-    // use MUI groupBy to group options of type 'COURSE' by availability. All other options are ungrouped.
     groupBy = (option: SearchOption) => {
         const isCourse = option.result.type === 'COURSE';
         if (!isCourse) return '__ungrouped__';
@@ -209,9 +208,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         return isOffered ? '__offered__' : '__notOffered__';
     }
 
-    // Group rendering logic for group headers.
     renderGroup = (params: {key: string, group: string, children?: React.ReactNode}) => {
-        // Don't show headers for non-course items
         if (params.group === '__ungrouped__') {
             return <Box key={params.key}>{params.children}</Box>
         }
@@ -232,7 +229,6 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         )
     }
 
-    // Renders each autocomplete option as a custom list item. Grays out course if it's not offered. 
     renderOption = (props: React.HTMLAttributes<HTMLLIElement>, option: SearchOption) => {
         const object = option.result;
         const { key, ...restProps} = props as React.HTMLAttributes<HTMLLIElement> & { key: string }
