@@ -1,8 +1,10 @@
-import { type AutocompleteInputChangeReason } from '@mui/material';
+import { type AutocompleteInputChangeReason, Box, Divider, Typography} from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
 import { PureComponent } from 'react';
+import { useThemeStore } from '$stores/SettingsStore';
 import UAParser from 'ua-parser-js';
+
 
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
@@ -10,6 +12,19 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 
 const SEARCH_TIMEOUT_MS = 150;
+
+const resultType = {
+    GE_CATEGORY: 'GE_CATEGORY',
+    DEPARTMENT: 'DEPARTMENT',
+    COURSE: 'COURSE',
+    SECTION: 'SECTION',
+} as const;
+
+const groupType = {
+    UNGROUPED: '__ungrgouped__',
+    NOT_OFFERED: '__notOffered__',
+    OFFERED: '__offered__',
+} as const;
 
 const emojiMap: Record<string, string> = {
     GE_CATEGORY: '🏫', // U+1F3EB :school:
@@ -45,6 +60,10 @@ interface FuzzySearchState {
     pendingRequest?: number;
 }
 
+interface SearchOption {
+    key: string;
+    result: SearchResult;
+}
 class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     state: FuzzySearchState = {
         cache: {},
@@ -56,31 +75,32 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         pendingRequest: undefined,
     };
 
-    doSearch = (value: string) => {
-        if (!value) return;
-        const emoji = value.slice(0, 2);
-        const ident = value.slice(3).split(':');
+    doSearch = (option: SearchOption) => {
+        const result = option.result;
+        if (!result) return;
+
         const term = RightPaneStore.getFormData().term;
         RightPaneStore.resetFormValues();
         RightPaneStore.updateFormValue('term', term);
-        switch (emoji) {
-            case emojiMap.GE_CATEGORY:
+        switch (result.type) {
+            case resultType.GE_CATEGORY:
+                const geCode = option.key.split('-')[1].toUpperCase();
                 RightPaneStore.updateFormValue(
                     'ge',
-                    `GE-${ident[0].split(' ')[2].replace('(', '').replace(')', '').toUpperCase()}`
+                    `GE-${geCode}`
                 );
                 break;
-            case emojiMap.DEPARTMENT:
-                RightPaneStore.updateFormValue('deptValue', ident[0]);
+            case resultType.DEPARTMENT:
+                RightPaneStore.updateFormValue('deptValue', option.key);
                 break;
-            case emojiMap.COURSE: {
-                const deptValue = ident[0].split(' ').slice(0, -1).join(' ');
-                RightPaneStore.updateFormValue('deptValue', deptValue);
-                RightPaneStore.updateFormValue('courseNumber', ident[0].split(' ').slice(-1)[0]);
+            case resultType.COURSE: {
+                const { department, number } = result.metadata
+                RightPaneStore.updateFormValue('deptValue', department);
+                RightPaneStore.updateFormValue('courseNumber', number);
                 break;
             }
-            case emojiMap.SECTION: {
-                RightPaneStore.updateFormValue('sectionCode', ident[0].split(' ')[0]);
+            case resultType.SECTION: {
+                RightPaneStore.updateFormValue('sectionCode', result.sectionCode);
                 break;
             }
             default:
@@ -93,24 +113,24 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         });
     };
 
-    filterOptions = (options: string[]) => options;
+    filterOptions = (options: SearchOption[]) => options;
 
-    getOptionLabel = (option: string) => {
-        const object = this.state.results?.[option];
-        if (!object) return option;
+    getOptionLabel = (option: SearchOption) => {
+        const object = option.result;
+        if (!object) return option.key;
         switch (object.type) {
-            case 'GE_CATEGORY': {
-                const cat = option.split('-')[1].toLowerCase();
+            case resultType.GE_CATEGORY: {
+                const cat = option.key.split('-')[1].toLowerCase();
                 const num = parseInt(cat);
                 return `${emojiMap.GE_CATEGORY} GE ${cat.replace(num.toString(), romanArr[num - 1])} (${cat}): ${
                     object.name
                 }`;
             }
-            case 'DEPARTMENT':
-                return `${emojiMap.DEPARTMENT} ${option}: ${object.name}`;
-            case 'COURSE':
+            case resultType.DEPARTMENT:
+                return `${emojiMap.DEPARTMENT} ${option.key}: ${object.name}`;
+            case resultType.COURSE:
                 return `${emojiMap.COURSE} ${object.metadata.department} ${object.metadata.number}: ${object.name}`;
-            case 'SECTION':
+            case resultType.SECTION:
                 return `${emojiMap.SECTION} ${object.sectionCode} ${object.sectionType} ${object.sectionNum}: ${object.department} ${object.courseNumber}`;
             default:
                 return '';
@@ -171,16 +191,75 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                     }
                 }
             );
-        } else if (reason === 'reset') {
-            this.setState({ open: false, value: '' }, () => {
-                this.doSearch(lowerCaseValue);
-            });
         }
     };
+
+    onChange = (_event: unknown, option: SearchOption | null) => {
+        if (option) {
+            this.setState({ open: false, value: ''}, () => {
+                this.doSearch(option)
+            })
+        }
+    }
 
     onClose = () => {
         this.setState({ open: false });
     };
+
+    groupBy = (option: SearchOption) => {
+        const isCourse = option.result.type === resultType.COURSE;
+        if (!isCourse) return groupType.UNGROUPED;
+
+        const isOffered = 'isOffered' in option.result && option.result.isOffered;
+        return isOffered ? groupType.OFFERED : groupType.NOT_OFFERED;
+    }
+
+    renderGroup = (params: {key: string, group: string, children?: React.ReactNode}) => {
+        if (params.group === groupType.UNGROUPED) {
+            return <Box key={params.key}>{params.children}</Box>
+        }
+
+        const term = RightPaneStore.getFormData().term;
+        const label = params.group === groupType.OFFERED ? `Offered in ${term}` : `Not Offered`
+
+        return (
+            <Box key={params.key}>
+                <Divider textAlign="left" sx={{ mt: 1, mb: 1, '&::before': { width: '20px' } }}>
+                    <Typography variant="subtitle1">
+                        {label}
+                    </Typography>
+                </Divider>
+                {params.children
+                }
+            </Box>
+        )
+    }
+
+    renderOption = (props: React.HTMLAttributes<HTMLLIElement>, option: SearchOption) => {
+        const object = option.result;
+        const { key, ...restProps} = props as React.HTMLAttributes<HTMLLIElement> & { key: string }
+        if (!object) return <Box component="li" key={key} {...restProps}>{option.key}</Box>;
+
+        const label = this.getOptionLabel(option);
+        const isCourse = object.type === resultType.COURSE;
+
+        const isOffered = isCourse && 'isOffered' in object && object.isOffered;
+
+        return (
+            <Box
+                component="li"
+                key={key}
+                {...restProps}
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    opacity: isCourse && !isOffered ? 0.6 : 1,
+                }}
+            >
+                {label}
+            </Box>
+        )
+    }
 
     onFocus = () => {
         if (this.state.value.length >= 2) {
@@ -195,10 +274,14 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 autocompleteProps={{
                     loading: this.state.loading,
                     fullWidth: true,
-                    options: Object.keys(this.state.results ?? {}),
+                    options: Object.entries(this.state.results ?? {}).map(([key, result]) => ({key, result})),
                     autoHighlight: true,
                     filterOptions: this.filterOptions,
                     getOptionLabel: this.getOptionLabel,
+                    renderOption: this.renderOption,
+                    groupBy: this.groupBy,
+                    renderGroup: this.renderGroup,
+                    onChange: this.onChange,
                     id: 'fuzzy-search',
                     noOptionsText: 'No results found! Please try broadening your search.',
                     onClose: this.onClose,
