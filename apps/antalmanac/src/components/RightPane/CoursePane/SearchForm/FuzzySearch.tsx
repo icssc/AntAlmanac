@@ -13,6 +13,13 @@ import trpc from '$lib/api/trpc';
 
 const SEARCH_TIMEOUT_MS = 150;
 
+const resultType = {
+    GE_CATEGORY: 'GE_CATEGORY',
+    DEPARTMENT: 'DEPARTMENT',
+    COURSE: 'COURSE',
+    SECTION: 'SECTION',
+} as const;
+
 const emojiMap: Record<string, string> = {
     GE_CATEGORY: '🏫', // U+1F3EB :school:
     DEPARTMENT: '🏢', // U+1F3E2 :office:
@@ -70,23 +77,23 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         RightPaneStore.resetFormValues();
         RightPaneStore.updateFormValue('term', term);
         switch (result.type) {
-            case 'GE_CATEGORY':
+            case resultType.GE_CATEGORY:
                 const geCode = option.key.split('-')[1].toUpperCase();
                 RightPaneStore.updateFormValue(
                     'ge',
                     `GE-${geCode}`
                 );
                 break;
-            case 'DEPARTMENT':
+            case resultType.DEPARTMENT:
                 RightPaneStore.updateFormValue('deptValue', option.key);
                 break;
-            case 'COURSE': {
+            case resultType.COURSE: {
                 const { department, number } = result.metadata
                 RightPaneStore.updateFormValue('deptValue', department);
                 RightPaneStore.updateFormValue('courseNumber', number);
                 break;
             }
-            case 'SECTION': {
+            case resultType.SECTION: {
                 RightPaneStore.updateFormValue('sectionCode', result.sectionCode);
                 break;
             }
@@ -106,18 +113,18 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         const object = option.result;
         if (!object) return option.key;
         switch (object.type) {
-            case 'GE_CATEGORY': {
+            case resultType.GE_CATEGORY: {
                 const cat = option.key.split('-')[1].toLowerCase();
                 const num = parseInt(cat);
                 return `${emojiMap.GE_CATEGORY} GE ${cat.replace(num.toString(), romanArr[num - 1])} (${cat}): ${
                     object.name
                 }`;
             }
-            case 'DEPARTMENT':
+            case resultType.DEPARTMENT:
                 return `${emojiMap.DEPARTMENT} ${option.key}: ${object.name}`;
-            case 'COURSE':
+            case resultType.COURSE:
                 return `${emojiMap.COURSE} ${object.metadata.department} ${object.metadata.number}: ${object.name}`;
-            case 'SECTION':
+            case resultType.SECTION:
                 return `${emojiMap.SECTION} ${object.sectionCode} ${object.sectionType} ${object.sectionNum}: ${object.department} ${object.courseNumber}`;
             default:
                 return '';
