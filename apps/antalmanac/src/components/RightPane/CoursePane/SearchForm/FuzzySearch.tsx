@@ -24,7 +24,7 @@ const groupType = {
     UNGROUPED: '__ungrgouped__',
     NOT_OFFERED: '__notOffered__',
     OFFERED: '__offered__',
-}
+} as const;
 
 const emojiMap: Record<string, string> = {
     GE_CATEGORY: '🏫', // U+1F3EB :school:
@@ -207,20 +207,20 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     };
 
     groupBy = (option: SearchOption) => {
-        const isCourse = option.result.type === 'COURSE';
-        if (!isCourse) return '__ungrouped__';
+        const isCourse = option.result.type === resultType.COURSE;
+        if (!isCourse) return groupType.UNGROUPED;
 
         const isOffered = 'isOffered' in option.result && option.result.isOffered;
-        return isOffered ? '__offered__' : '__notOffered__';
+        return isOffered ? groupType.OFFERED : groupType.NOT_OFFERED;
     }
 
     renderGroup = (params: {key: string, group: string, children?: React.ReactNode}) => {
-        if (params.group === '__ungrouped__') {
+        if (params.group === groupType.UNGROUPED) {
             return <Box key={params.key}>{params.children}</Box>
         }
 
         const term = RightPaneStore.getFormData().term;
-        const label = params.group === '__offered__' ? `Offered in ${term}` : `Not Offered`
+        const label = params.group === groupType.OFFERED ? `Offered in ${term}` : `Not Offered`
 
         return (
             <Box key={params.key}>
@@ -241,7 +241,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         if (!object) return <li key={key} {...restProps}>{option.key}</li>;
 
         const label = this.getOptionLabel(option);
-        const isCourse = object.type === 'COURSE';
+        const isCourse = object.type === resultType.COURSE;
 
         const isOffered = isCourse && 'isOffered' in object && object.isOffered;
 
