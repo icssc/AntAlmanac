@@ -50,20 +50,6 @@
             "when": 1763425968486,
             "tag": "0006_cuddly_hulk",
             "breakpoints": true
-        },
-        {
-            "idx": 7,
-            "version": "7",
-            "when": 1765275993095,
-            "tag": "0007_harsh_norrin_radd",
-            "breakpoints": true
-        },
-        {
-            "idx": 8,
-            "version": "7",
-            "when": 1765314483980,
-            "tag": "0008_furry_tana_nile",
-            "breakpoints": true
         }
     ]
 }
