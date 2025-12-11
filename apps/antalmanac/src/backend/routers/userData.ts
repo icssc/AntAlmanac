@@ -1,21 +1,21 @@
 import { type User } from '@packages/antalmanac-types';
 import { db } from '@packages/db/src';
 import { TRPCError } from '@trpc/server';
+import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState, OAuth2Tokens } from 'arctic';
 import { type } from 'arktype';
-import { OAuth2Client } from 'google-auth-library';
 import { z } from 'zod';
 
-import { RDS } from '../lib/rds';
 import { procedure, router } from '../trpc';
 
-import { googleOAuthEnvSchema } from '$src/backend/env';
+import { oidcOAuthEnvSchema } from '$src/backend/env';
+import { oauth } from '$src/backend/lib/auth/oauth';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
+import { RDS } from '$src/backend/lib/rds';
 
-const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } = googleOAuthEnvSchema.parse(process.env);
+const { OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
+const NODE_ENV = process.env.NODE_ENV;
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
-
-const oauth2Client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI);
 
 const saveInputSchema = z.object({
     /**
@@ -34,7 +34,7 @@ const saveInputSchema = z.object({
 
 const saveGoogleSchema = type({
     code: 'string',
-    token: 'string',
+    state: 'string',
 });
 
 const userDataRouter = router({
@@ -116,62 +116,174 @@ const userDataRouter = router({
      * Retrieves Google authentication URL for login/sign up.
      * Retrieves Google auth url to login/sign up
      */
-    getGoogleAuthUrl: procedure.query(async () => {
-        const url = oauth2Client.generateAuthUrl({
-            access_type: 'offline',
-            scope: ['profile', 'email'],
-        });
+    getGoogleAuthUrl: procedure.query(async ({ ctx }) => {
+        const state = generateState();
+        const codeVerifier = generateCodeVerifier();
+
+        const url = oauth.createAuthorizationURLWithPKCE(
+            'https://auth.icssc.club/authorize',
+            state,
+            CodeChallengeMethod.S256,
+            codeVerifier,
+            [
+                'openid',
+                'profile',
+                'email',
+                // 'https://www.googleapis.com/auth/calendar.readonly'
+            ]
+        );
+
+        const isProduction = NODE_ENV === 'production';
+        const cookieOptions = `Path=/; HttpOnly; ${
+            isProduction ? 'Secure; SameSite=None' : 'SameSite=Lax'
+        }; Max-Age=600`;
+
+        // Set cookies via response headers (Next.js cookies() doesn't work in TRPC)
+        ctx.resHeaders?.append('Set-Cookie', `oauth_state=${state}; ${cookieOptions}`);
+        ctx.resHeaders?.append('Set-Cookie', `oauth_code_verifier=${codeVerifier}; ${cookieOptions}`);
+
+        const referer = ctx.req.headers.get('referer');
+        if (referer) {
+            ctx.resHeaders?.append('Set-Cookie', `auth_redirect_url=${encodeURIComponent(referer)}; ${cookieOptions}`);
+        }
+
         return url;
     }),
     /**
      * Logs in or signs up a user and creates user's session
      */
-    handleGoogleCallback: procedure.input(saveGoogleSchema.assert).mutation(async ({ input }) => {
-        const { tokens } = await oauth2Client.getToken({ code: input.code });
-        if (!tokens || !tokens.id_token) {
-            throw new TRPCError({
-                code: 'UNAUTHORIZED',
-                message: 'Invalid token',
-            });
-        }
-        oauth2Client.setCredentials(tokens);
+    handleGoogleCallback: procedure.input(saveGoogleSchema.assert).mutation(async ({ input, ctx }) => {
+        try {
+            // Parse cookies from request headers
+            const cookieHeader = ctx.req.headers.get('cookie') ?? '';
+            const cookies = Object.fromEntries(
+                cookieHeader
+                    .split('; ')
+                    .filter((c) => c.includes('='))
+                    .map((c) => {
+                        const [key, ...v] = c.split('=');
+                        return [key, v.join('=')];
+                    })
+            );
 
-        const ticket = await oauth2Client.verifyIdToken({
-            idToken: tokens.id_token ?? '',
-            audience: GOOGLE_CLIENT_ID,
-        });
+            const storedState = cookies['oauth_state'] ?? null;
+            const codeVerifier = cookies['oauth_code_verifier'] ?? null;
+            const redirectUrl = decodeURIComponent(cookies['auth_redirect_url'] ?? '/');
 
-        const payload = ticket.getPayload();
-        if (!payload) {
-            throw new TRPCError({
-                code: 'UNAUTHORIZED',
-                message: 'Invalid ID token',
-            });
-        }
+            console.log(
+                '[OAuth Callback] Retrieved from cookies - state:',
+                storedState,
+                'verifier:',
+                codeVerifier ? codeVerifier.substring(0, 10) + '...' : null
+            );
+            console.log('[OAuth Callback] All cookies:', Object.keys(cookies));
 
-        const account = await RDS.registerUserAccount(
-            db,
-            payload.sub,
-            payload.name ?? '',
-            'GOOGLE',
-            payload.email ?? '',
-            payload.picture ?? ''
-        );
+            // Delete cookies via response headers
+            const isProduction = NODE_ENV === 'production';
+            const deleteCookieOptions = `Path=/; HttpOnly; ${
+                isProduction ? 'Secure; SameSite=None' : 'SameSite=Lax'
+            }; Max-Age=0`;
+            ctx.resHeaders?.append('Set-Cookie', `oauth_state=; ${deleteCookieOptions}`);
+            ctx.resHeaders?.append('Set-Cookie', `oauth_code_verifier=; ${deleteCookieOptions}`);
+            ctx.resHeaders?.append('Set-Cookie', `auth_redirect_url=; ${deleteCookieOptions}`);
 
-        const userId: string = account.userId;
+            if (!input.code || !input.state || !storedState || !codeVerifier) {
+                console.error('[OAuth Callback] Missing parameters:', {
+                    hasCode: !!input.code,
+                    hasState: !!input.state,
+                    hasStoredState: !!storedState,
+                    hasCodeVerifier: !!codeVerifier,
+                });
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: 'Missing required OAuth parameters',
+                });
+            }
 
-        if (userId.length > 0) {
-            const session = await RDS.upsertSession(db, userId, input.token);
-            return {
-                sessionToken: session?.refreshToken,
-                userId: userId,
-                providerId: payload.sub,
-                newUser: account.newUser,
+            if (input.state !== storedState) {
+                console.error('[OAuth Callback] State mismatch:', {
+                    received: input.state,
+                    stored: storedState,
+                });
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: 'State mismatch',
+                });
+            }
+
+            let tokens: OAuth2Tokens;
+            try {
+                tokens = await oauth.validateAuthorizationCode(
+                    'https://auth.icssc.club/token',
+                    input.code,
+                    codeVerifier
+                );
+            } catch (error) {
+                console.error('OAuth Callback - Invalid credentials:', error);
+                throw new TRPCError({
+                    code: 'UNAUTHORIZED',
+                    message: 'Invalid authorization code',
+                });
+            }
+
+            const claims = decodeIdToken(tokens.idToken()) as {
+                sub: string;
+                name: string;
+                email: string;
+                picture?: string;
             };
-        }
 
-        return { sessionToken: null, userId: null, providerId: null, newUser: account.newUser };
+            const oidcRefreshToken = tokens.refreshToken();
+            if (!oidcRefreshToken) {
+                console.error('OAuth Callback - Missing OIDC refresh token in response');
+            }
+
+            const tokenData = tokens.data as {
+                google_access_token?: string;
+                google_refresh_token?: string;
+                google_token_expiry?: number;
+            };
+            const googleAccessToken = tokenData.google_access_token;
+            const googleRefreshToken = tokenData.google_refresh_token;
+            if (!googleAccessToken || !googleRefreshToken) {
+                console.error('OAuth Callback - Missing Google tokens in OIDC response:', tokenData);
+            }
+
+            const oauthUserId = claims.sub;
+            const username = claims.name;
+            const email = claims.email;
+            const picture = claims.picture;
+
+            const account = await RDS.registerUserAccount(db, 'OIDC', oauthUserId, username, email, picture ?? '');
+
+            const userId: string = account.userId;
+
+            if (userId.length > 0) {
+                // Create session with OIDC and Google tokens
+                const session = await RDS.upsertSession(db, userId, oidcRefreshToken ?? '');
+
+                return {
+                    sessionToken: session?.refreshToken,
+                    userId: userId,
+                    providerId: oauthUserId,
+                    newUser: account.newUser,
+                    redirectUrl,
+                };
+            }
+
+            throw new TRPCError({
+                code: 'INTERNAL_SERVER_ERROR',
+                message: 'Failed to create user session',
+            });
+        } catch (error) {
+            console.error('OAuth Callback - Error:', error);
+            throw new TRPCError({
+                code: 'INTERNAL_SERVER_ERROR',
+                message: 'Failed to handle OAuth callback',
+            });
+        }
     }),
+
     /**
      * Logs in or signs up existing user
      */
@@ -201,6 +313,28 @@ const userDataRouter = router({
     flagImportedSchedule: procedure.input(z.object({ providerId: z.string() })).mutation(async ({ input }) => {
         return await RDS.flagImportedUser(db, input.providerId);
     }),
+
+    /**
+     * Logs out a user by invalidating their session and redirecting to OIDC logout
+     */
+    logout: procedure
+        .input(z.object({ sessionToken: z.string(), redirectUrl: z.string().optional() }))
+        .mutation(async ({ input }) => {
+            // Invalidate the local session
+            const session = await RDS.getCurrentSession(db, input.sessionToken);
+            if (session) {
+                await RDS.removeSession(db, session.userId, session.refreshToken);
+            }
+
+            // Build OIDC logout URL
+            const oidcLogoutUrl = new URL(`${OIDC_ISSUER_URL}/logout`);
+            const redirectTo = input.redirectUrl || GOOGLE_REDIRECT_URI.replace('/auth', '');
+            oidcLogoutUrl.searchParams.set('post_logout_redirect_uri', redirectTo);
+
+            return {
+                logoutUrl: oidcLogoutUrl.toString(),
+            };
+        }),
 });
 
 export default userDataRouter;
