@@ -58,6 +58,7 @@ interface FuzzySearchState {
     loading: boolean;
     requestTimestamp?: number;
     pendingRequest?: number;
+    currentTerm: string;
 }
 
 interface SearchOption {
@@ -73,6 +74,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         loading: false,
         requestTimestamp: undefined,
         pendingRequest: undefined,
+        currentTerm: RightPaneStore.getFormData().term
     };
 
     doSearch = (option: SearchOption) => {
@@ -148,10 +150,13 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
             .query({ query: this.state.value, term: RightPaneStore.getFormData().term })
             .then((result) => {
                 if (!this.requestIsCurrent(requestTimestamp)) return;
+
+                const cacheKey = `${this.state.currentTerm}:${this.state.value}`
+
                 this.setState({
                     cache: {
                         ...this.state.cache,
-                        [this.state.value]: result,
+                        [cacheKey]: result,
                     },
                     results: result,
                     loading: false,
@@ -176,8 +181,11 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 },
                 () => {
                     if (lowerCaseValue.length < 2) return;
-                    if (this.state.cache[this.state.value]) {
-                        this.setState({ results: this.state.cache[this.state.value] });
+
+                    const cacheKey = `${this.state.currentTerm}:${this.state.value}`
+
+                    if (this.state.cache[cacheKey]) {
+                        this.setState({ results: this.state.cache[cacheKey] });
                     } else {
                         const requestTimestamp = Date.now();
                         this.setState({ results: {}, loading: true, requestTimestamp }, () => {
