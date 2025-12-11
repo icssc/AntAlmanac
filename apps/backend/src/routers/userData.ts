@@ -200,6 +200,41 @@ const userDataRouter = router({
     flagImportedSchedule: procedure.input(z.object({ providerId: z.string() })).mutation(async ({ input }) => {
         return await RDS.flagImportedUser(db, input.providerId);
     }),
+
+    /**
+     * Retrieves a shared schedule by schedule ID.
+     * All schedules are publicly accessible via their ID.
+     * @param input - An object containing the schedule ID.
+     * @returns The schedule data associated with the schedule ID, or null if not found.
+     */
+    getSharedSchedule: procedure.input(z.object({ scheduleId: z.string() })).query(async ({ input }) => {
+        const schedule = await RDS.getSharedScheduleById(db, input.scheduleId);
+        if (!schedule) {
+            throw new TRPCError({
+                code: 'NOT_FOUND',
+                message: 'Schedule not found',
+            });
+        }
+        return schedule;
+    }),
+
+    /**
+     * Gets the schedule ID for a schedule by userId and schedule name.
+     * @param input - An object containing the userId and scheduleName.
+     * @returns The schedule ID, or null if not found.
+     */
+    getScheduleIdByName: procedure
+        .input(z.object({ userId: z.string(), scheduleName: z.string() }))
+        .query(async ({ input }) => {
+            const scheduleId = await RDS.getScheduleIdByName(db, input.userId, input.scheduleName);
+            if (!scheduleId) {
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                    message: 'Schedule not found',
+                });
+            }
+            return scheduleId;
+        }),
 });
 
 export default userDataRouter;

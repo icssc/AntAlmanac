@@ -55,6 +55,11 @@ const BROWSER_ROUTER = createBrowserRouter([
                 errorElement: <ErrorPage />,
             },
             {
+                path: '/share/:scheduleId',
+                element: <Home />,
+                errorElement: <ErrorPage />,
+            },
+            {
                 path: '*',
                 element: <Navigate to="/" replace />,
             },

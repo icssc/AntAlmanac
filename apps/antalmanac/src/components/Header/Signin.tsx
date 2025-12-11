@@ -15,9 +15,17 @@ import {
     TextField,
     AlertColor,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { useEffect, useState, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 
-import { loadSchedule, saveSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
+import {
+    loadSchedule,
+    saveSchedule,
+    loginUser,
+    loadScheduleWithSessionToken,
+    importSharedScheduleById,
+} from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
@@ -201,6 +209,9 @@ export const Signin = () => {
         ALERT_MESSAGES.SCHEDULE_IMPORTED
     );
 
+    const { scheduleId } = useParams<{ scheduleId?: string }>();
+    const { enqueueSnackbar } = useSnackbar();
+
     const validateImportedUser = useCallback(async (userID: string) => {
         try {
             const res = await trpc.userData.getGuestAccountAndUserByName
@@ -247,9 +258,18 @@ export const Signin = () => {
                 await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
             }
 
+            if (scheduleId) {
+                try {
+                    await importSharedScheduleById(scheduleId);
+                } catch (error) {
+                    console.error('Failed to import shared schedule after sign-in:', error);
+                    enqueueSnackbar('Failed to import shared schedule from link.', { variant: 'error' });
+                }
+            }
+
             setOpenLoadingSchedule(false);
         },
-        [setOpenLoadingSchedule, updateSession, validateImportedUser]
+        [setOpenLoadingSchedule, updateSession, validateImportedUser, scheduleId, enqueueSnackbar]
     );
 
     const handleLogin = () => {
