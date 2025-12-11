@@ -36,6 +36,11 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
+            - name: Migrate database
+              env:
+                  DB_URL: ${{ secrets.PROD_DB_URL }}
+              run: pnpm --filter=db migrate
+
             - name: Deploy SST (production)
               env:
                   SST_STAGE: production

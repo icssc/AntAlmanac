@@ -41,6 +41,8 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - name: Migrate database
+              env:
+                  DB_URL: ${{ secrets.DEV_DB_URL }}
               run: pnpm --filter=db migrate
 
             - name: Deploy SST (staging)
