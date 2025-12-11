@@ -43,7 +43,7 @@ jobs:
             - name: Migrate database
               env:
                   DB_URL: ${{ secrets.DEV_DB_URL }}
-              run: pnpm --filter=db migrate
+              run: pnpm db:migrate
 
             - name: Deploy SST (staging)
               run: |

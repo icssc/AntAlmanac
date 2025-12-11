@@ -3,9 +3,9 @@
     "version": "0.0.1",
     "description": "Antalmanac database",
     "scripts": {
-        "generate": "drizzle-kit generate",
-        "studio": "drizzle-kit studio",
-        "migrate": "drizzle-kit migrate"
+        "db:generate": "drizzle-kit generate",
+        "db:migrate": "drizzle-kit migrate",
+        "db:studio": "drizzle-kit studio"
     },
     "dependencies": {
         "@paralleldrive/cuid2": "^2.2.2",

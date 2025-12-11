@@ -101,7 +101,7 @@ const userDataRouter = router({
     }),
 
     getAccountByProviderId: procedure
-        .input(z.object({ accountType: z.enum(['GOOGLE', 'GUEST']), providerId: z.string() }))
+        .input(z.object({ accountType: z.enum(['OIDC', 'GOOGLE', 'GUEST']), providerId: z.string() }))
         .query(async ({ input }) => {
             const account = await RDS.getAccountByProviderId(db, input.accountType, input.providerId);
             if (!account) {
@@ -169,14 +169,6 @@ const userDataRouter = router({
             const storedState = cookies['oauth_state'] ?? null;
             const codeVerifier = cookies['oauth_code_verifier'] ?? null;
             const redirectUrl = decodeURIComponent(cookies['auth_redirect_url'] ?? '/');
-
-            console.log(
-                '[OAuth Callback] Retrieved from cookies - state:',
-                storedState,
-                'verifier:',
-                codeVerifier ? codeVerifier.substring(0, 10) + '...' : null
-            );
-            console.log('[OAuth Callback] All cookies:', Object.keys(cookies));
 
             // Delete cookies via response headers
             const isProduction = NODE_ENV === 'production';

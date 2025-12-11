@@ -265,7 +265,7 @@ export const importScheduleWithUsername = async (username: string) => {
 export const loadSchedule = async (
     providerId: string,
     rememberMe: boolean,
-    accountType: 'GOOGLE' | 'GUEST',
+    accountType: 'OIDC' | 'GOOGLE' | 'GUEST',
     postHog?: PostHog
 ) => {
     logAnalytics(postHog, {
@@ -351,7 +351,7 @@ export const loadScheduleWithSessionToken = async () => {
         }
         return false;
     } catch (e) {
-        console.error(e);
+        console.error('❌ Error in loadScheduleWithSessionToken:', e);
         openSnackbar('error', `Failed to load schedules. If this continues to happen, please submit a feedback form.`);
         return false;
     }

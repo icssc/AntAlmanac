@@ -243,7 +243,7 @@ export class RDS {
         return db.transaction(async (tx) => {
             const account = await this.registerUserAccount(
                 db,
-                'GOOGLE',
+                'OIDC',
                 userData.id,
                 userData.name,
                 userData.email,

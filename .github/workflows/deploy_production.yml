@@ -39,7 +39,7 @@ jobs:
             - name: Migrate database
               env:
                   DB_URL: ${{ secrets.PROD_DB_URL }}
-              run: pnpm --filter=db migrate
+              run: pnpm db:migrate
 
             - name: Deploy SST (production)
               env:

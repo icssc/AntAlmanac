@@ -10,6 +10,9 @@
     "scripts": {
         "prepare": "husky install",
         "dev": "pnpm --filter antalmanac dev",
+        "db:generate": "pnpm --filter db db:generate",
+        "db:migrate": "pnpm --filter db db:migrate",
+        "db:studio": "pnpm --filter db db:studio",
         "test": "vitest",
         "deploy": "sst deploy --stage production"
     },
