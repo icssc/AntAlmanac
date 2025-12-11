@@ -144,6 +144,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         justifyContent: 'space-between',
                         alignItems: 'center',
                         marginBottom: '0.25rem',
+                        color: 'orange',
                     }}
                 >
                     <Tooltip title="Quick Search">
