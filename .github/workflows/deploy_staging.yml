@@ -40,6 +40,9 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
+            - name: Migrate database
+              run: pnpm --filter=db migrate
+
             - name: Deploy SST (staging)
               run: |
                   echo "Deploying stage: $SST_STAGE"
