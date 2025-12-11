@@ -9,7 +9,7 @@ dotenv.config();
 export const oidcOAuthEnvSchema = z.object({
     OIDC_CLIENT_ID: z.string(),
     OIDC_ISSUER_URL: z.string(),
-    GOOGLE_OAUTH_REDIRECT_URI: z.string(),
+    GOOGLE_REDIRECT_URI: z.string(),
 });
 
 /**

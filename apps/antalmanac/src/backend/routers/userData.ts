@@ -12,7 +12,7 @@ import { oauth } from '$src/backend/lib/auth/oauth';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
 import { RDS } from '$src/backend/lib/rds';
 
-const { OIDC_ISSUER_URL, GOOGLE_OAUTH_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
+const { OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
 const NODE_ENV = process.env.NODE_ENV;
 
 const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
@@ -328,7 +328,7 @@ const userDataRouter = router({
 
             // Build OIDC logout URL
             const oidcLogoutUrl = new URL(`${OIDC_ISSUER_URL}/logout`);
-            const redirectTo = input.redirectUrl || GOOGLE_OAUTH_REDIRECT_URI.replace('/auth', '');
+            const redirectTo = input.redirectUrl || GOOGLE_REDIRECT_URI.replace('/auth', '');
             oidcLogoutUrl.searchParams.set('post_logout_redirect_uri', redirectTo);
 
             return {
