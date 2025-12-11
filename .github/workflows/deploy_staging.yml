@@ -26,8 +26,6 @@ env:
     MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
     MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
     VITE_TILES_ENDPOINT: ${{ secrets.VITE_TILES_ENDPOINT}}
-    GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-    GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
     DB_URL: ${{ secrets.STAGING_DB_URL }}
     ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
 
@@ -62,9 +60,9 @@ jobs:
             # If a staging backend is deployed, then the frontend should use its URL.
             # Otherwise use the default development API endpoint.
             # antalmanac-api-endpoint: ${{ ((steps.changed.outputs.backend == 'true' ||  steps.changed.outputs.cdk == 'true' || steps.changed.outputs.aants=='true') && format('staging-{0}', github.event.pull_request.number)) || 'dev' }}
-            
+
             # Temporarily always deploy the backend.
-            should-deploy-backend: 'true'
+            should-deploy-backend: "true"
             antalmanac-api-endpoint: ${{ ( format('staging-{0}', github.event.pull_request.number))}}
 
             frontend_environment: frontend-staging-${{ github.event.pull_request.number }}
@@ -183,8 +181,10 @@ jobs:
             - name: Deploy backend staging CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" backend-staging deploy
               env:
-                  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-                  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+                  DB_URL: ${{ secrets.STAGING_DB_URL }}
+                  OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID }}
+                  OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
+                  GOOGLE_OAUTH_REDIRECT_URI: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}/auth
                   GOOGLE_REDIRECT_URI: ${{ needs.get_staging_configuration.outputs.frontend_environment_url }}/auth
 
             - name: Create success deployment

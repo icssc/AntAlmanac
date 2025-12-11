@@ -24,8 +24,6 @@ env:
     MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
     MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
     VITE_TILES_ENDPOINT: ${{ secrets.VITE_TILES_ENDPOINT}}
-    GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-    GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
     ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
     DB_URL: ${{ secrets.STAGING_DB_URL }}
 
@@ -97,8 +95,6 @@ jobs:
             - name: Destroy backend staging CloudFormation stack
               run: pnpm --filter "antalmanac-cdk" backend-staging destroy --force
               env: # Placeholder values because they shouldn't be necessary
-                  GOOGLE_CLIENT_ID: ""
-                  GOOGLE_CLIENT_SECRET: ""
                   GOOGLE_REDIRECT_URI: ""
 
             - name: Delete deployment

@@ -1,17 +1,34 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import type { CorsOptions } from 'cors';
 import { createExpressMiddleware } from '@trpc/server/adapters/express';
+import { backendEnvSchema } from './env';
 import AppRouter from './routers';
 import createContext from './context';
-import { backendEnvSchema } from "./env";
 
 const corsOptions: CorsOptions = {
-    origin: ['https://antalmanac.com', 'https://www.antalmanac.com', 'https://icssc-projects.github.io/AntAlmanac'],
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+            'https://antalmanac.com',
+            'https://www.antalmanac.com',
+            'https://icssc-projects.github.io/AntAlmanac',
+            'http://localhost:5173',
+        ];
+
+        // Allow staging deployments: https://staging-{PR_NUM}.antalmanac.com
+        const stagingPattern = /^https:\/\/staging-\d+\.antalmanac\.com$/;
+
+        if (!origin || allowedOrigins.includes(origin) || stagingPattern.test(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true, // Allow cookies to be sent cross-origin
 };
 
 const MAPBOX_API_URL = 'https://api.mapbox.com';
-
 const PORT = 3000;
 
 function getAndCheckEnv() {
@@ -21,19 +38,15 @@ function getAndCheckEnv() {
         console.error('ANTEATER_API_KEY is not set');
     }
 
-    if (!env.GOOGLE_CLIENT_SECRET) {
-        console.error('MAPBOX_ACCESS_TOKEN is not set');
-    }
-
     return env;
 }
 
-export async function start(corsEnabled = false) {
+export async function start(corsEnabled = true) {
     const env = getAndCheckEnv();
-
     const app = express();
     app.use(cors(corsEnabled ? corsOptions : undefined));
     app.use(express.json());
+    app.use(cookieParser());
 
     app.use('/mapbox/directions/*', async (req, res) => {
         const searchParams = new URLSearchParams(req.query as any);
@@ -46,16 +59,18 @@ export async function start(corsEnabled = false) {
     app.use('/mapbox/tiles/*', async (req, res) => {
         const searchParams = new URLSearchParams(req.query as any);
         searchParams.set('access_token', env.MAPBOX_ACCESS_TOKEN);
-        const url = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/tiles/${(req.params as any)[0]}?${searchParams.toString()}`;
+        const url = `${MAPBOX_API_URL}/styles/v1/mapbox/streets-v11/tiles/${
+            (req.params as any)[0]
+        }?${searchParams.toString()}`;
         const buffer = await fetch(url).then((res) => res.arrayBuffer());
-        res.type('image/png')
-        res.send(Buffer.from(buffer))
+        res.type('image/png');
+        res.send(Buffer.from(buffer));
         // // res.header('Content-Security-Policy', "img-src 'self'"); // https://stackoverflow.com/questions/56386307/loading-of-a-resource-blocked-by-content-security-policy
         // // res.header('Access-Control-Allow-Methods', 'GET, OPTIONS')
         // res.type('image/png')
         // res.send(result)
     });
-    
+
     app.use(
         '/trpc',
         createExpressMiddleware({

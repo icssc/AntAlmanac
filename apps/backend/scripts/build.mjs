@@ -5,10 +5,13 @@ async function main() {
         bundle: true,
         minify: true,
         platform: 'node',
+        target: 'node20',
+        format: 'cjs',
         outdir: 'dist',
         entryPoints: {
             lambda: 'src/lambda.ts',
         },
+        external: ['crypto'],
     });
 }
 
