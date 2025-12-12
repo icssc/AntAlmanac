@@ -19,6 +19,9 @@ env:
 jobs:
     deploy-staging:
         runs-on: ubuntu-latest
+        environment:
+            name: staging
+            url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
 
         env:
             SST_STAGE: staging-${{ github.event.pull_request.number }}
