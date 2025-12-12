@@ -77,6 +77,40 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         currentTerm: RightPaneStore.getFormData().term
     };
 
+    handleFormDataChange() {
+        const newTerm = RightPaneStore.getFormData().term;
+
+        if (newTerm !== this.state.currentTerm && this.state.value.length >= 2) {
+            const cacheKey = `${newTerm}:${this.state.value}`
+
+            if (this.state.cache[cacheKey]) {
+                this.setState({
+                    currentTerm: newTerm,
+                    results: this.state.cache[cacheKey],
+                })
+            }
+            else {
+                const requestTimestamp = Date.now();
+
+                this.setState(
+                    {
+                        currentTerm: newTerm,
+                        results: {},
+                        loading: true,
+                        requestTimestamp,
+                    },
+                    () => {
+                        window.clearTimeout(this.state.pendingRequest)
+
+                        this.maybeDoSearchFactory(requestTimestamp)
+                    }
+                )
+            }
+        } else if (newTerm !== this.state.currentTerm) {
+            this.setState({ currentTerm: newTerm });
+        }
+    }
+
     doSearch = (option: SearchOption) => {
         const result = option.result;
         if (!result) return;
