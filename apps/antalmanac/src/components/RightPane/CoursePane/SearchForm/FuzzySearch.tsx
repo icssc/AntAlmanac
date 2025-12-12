@@ -275,7 +275,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
         return (
             <Box key={params.key}>
-                <Divider textAlign="left" sx={{ mt: 1, mb: 1, '&::before': { width: '20px' } }}>
+                <Divider textAlign="left" sx={{ mt: 1, mb: 1, ml: 0.5, '&::before': { width: '0px' } }}>
                     <Typography variant="subtitle1">
                         {label}
                     </Typography>
