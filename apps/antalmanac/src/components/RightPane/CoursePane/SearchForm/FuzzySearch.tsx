@@ -77,15 +77,15 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         currentTerm: RightPaneStore.getFormData().term
     };
 
-    componentDidMount(): void {
+    componentDidMount() {
         RightPaneStore.on('formDataChange', this.handleFormDataChange)
     }
 
-    componentWillUnmount(): void {
+    componentWillUnmount() {
         RightPaneStore.off('formDataChange', this.handleFormDataChange)
     }
 
-    handleFormDataChange() {
+    handleFormDataChange = () => {
         const newTerm = RightPaneStore.getFormData().term;
 
         if (newTerm !== this.state.currentTerm && this.state.value.length >= 2) {
@@ -95,23 +95,24 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 this.setState({
                     currentTerm: newTerm,
                     results: this.state.cache[cacheKey],
+                    open: false,
                 })
             }
             else {
                 const requestTimestamp = Date.now();
 
-                this.setState(
-                    {
-                        currentTerm: newTerm,
-                        results: {},
-                        loading: true,
-                        requestTimestamp,
-                    },
-                    () => {
-                        window.clearTimeout(this.state.pendingRequest)
+                this.setState({
+                    currentTerm: newTerm,
+                    results: {},
+                    loading: true,
+                    requestTimestamp,
+                    open: false,
+                },
+                () => {
+                    window.clearTimeout(this.state.pendingRequest)
 
-                        this.maybeDoSearchFactory(requestTimestamp)
-                    }
+                    this.maybeDoSearchFactory(requestTimestamp)()
+                }
                 )
             }
         } else if (newTerm !== this.state.currentTerm) {
