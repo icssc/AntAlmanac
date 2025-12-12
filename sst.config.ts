@@ -31,6 +31,7 @@ export default $config({
             environment: {
                 DB_URL: $app.stage === 'production' ? process.env.PROD_DB_URL : process.env.DEV_DB_URL,
                 MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
+                NEXT_PUBLIC_TILES_ENDPOINT: process.env.NEXT_PUBLIC_TILES_ENDPOINT,
                 ANTEATER_API_KEY: process.env.ANTEATER_API_KEY,
                 OIDC_CLIENT_ID: process.env.OIDC_CLIENT_ID,
                 OIDC_ISSUER_URL: process.env.OIDC_ISSUER_URL,
