@@ -141,8 +141,17 @@ export class RDS {
         email?: string,
         avatar?: string
     ) {
+        // ! TODO @KevinWu098
+        // ! Auth uses hardcoded migration logic to handle cases in which stale userIDs
+        // ! still contain non OIDC google ids. This is not correct and needs to be fixed.
+        // ! Auth and operations upon users and accounts should not depend on localStorage. This is a hack.
+        const oidcProviderId = providerId.startsWith('google_') ? providerId : `google_${providerId}`;
+        if (accountType !== 'OIDC') {
+            throw new Error('Invalid account type. Must be OIDC.');
+        }
+
         // First check if an account with OIDC providerId already exists
-        const existingAccount = await this.getAccountByProviderId(db, accountType, providerId);
+        const existingAccount = await this.getAccountByProviderId(db, accountType, oidcProviderId);
         if (existingAccount && accountType === 'OIDC') {
             return { ...existingAccount, newUser: false };
         }
