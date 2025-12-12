@@ -77,6 +77,14 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         currentTerm: RightPaneStore.getFormData().term
     };
 
+    componentDidMount(): void {
+        RightPaneStore.on('formDataChange', this.handleFormDataChange)
+    }
+
+    componentWillUnmount(): void {
+        RightPaneStore.off('formDataChange', this.handleFormDataChange)
+    }
+
     handleFormDataChange() {
         const newTerm = RightPaneStore.getFormData().term;
 
