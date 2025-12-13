@@ -50,20 +50,12 @@ jobs:
 
             - name: Create deployment
               id: create-deployment
-              uses: ./.github/actions/deployment-status
+              uses: chrnorm/deployment-action@v2
               with:
-                  step: create
+                  token: ${{ secrets.GITHUB_TOKEN }}
                   environment: staging
+                  ref: ${{ github.event.pull_request.head.sha }}
                   description: Staging deployment for PR #${{ github.event.pull_request.number }}
-                  sha: ${{ github.event.pull_request.head.sha }}
-                  production: false
-
-            - name: Set deployment to in_progress
-              uses: ./.github/actions/deployment-status
-              with:
-                  step: in_progress
-                  deployment-id: ${{ steps.create-deployment.outputs.deployment-id }}
-                  description: Deploying to staging...
 
             - name: Deploy SST (staging)
               id: deploy
@@ -73,17 +65,17 @@ jobs:
 
             - name: Update deployment status (success)
               if: success()
-              uses: ./.github/actions/deployment-status
+              uses: chrnorm/deployment-status@v2
               with:
-                  step: success
-                  deployment-id: ${{ steps.create-deployment.outputs.deployment-id }}
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  deployment-id: ${{ steps.create-deployment.outputs.deployment_id }}
+                  state: success
                   environment-url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
-                  description: Deployment succeeded
 
             - name: Update deployment status (failure)
               if: failure()
-              uses: ./.github/actions/deployment-status
+              uses: chrnorm/deployment-status@v2
               with:
-                  step: failure
-                  deployment-id: ${{ steps.create-deployment.outputs.deployment-id }}
-                  description: Deployment failed
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  deployment-id: ${{ steps.create-deployment.outputs.deployment_id }}
+                  state: failure
