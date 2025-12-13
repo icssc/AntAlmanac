@@ -74,7 +74,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         loading: false,
         requestTimestamp: undefined,
         pendingRequest: undefined,
-        currentTerm: RightPaneStore.getFormData().term
+        currentTerm: RightPaneStore.getFormData().term,
     };
 
     componentDidMount() {
@@ -141,7 +141,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 RightPaneStore.updateFormValue('deptValue', option.key);
                 break;
             case resultType.COURSE: {
-                const { department, number } = result.metadata
+                const { department, number } = result.metadata;
                 RightPaneStore.updateFormValue('deptValue', department);
                 RightPaneStore.updateFormValue('courseNumber', number);
                 break;
@@ -273,7 +273,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
     renderGroup = (params: {key: string; group: string; children?: React.ReactNode }) => {
         if (params.group === groupType.UNGROUPED) {
-            return <Box key={params.key}>{params.children}</Box>
+            return <Box key={params.key}>{params.children}</Box>;
         }
 
         const term = RightPaneStore.getFormData().term;
