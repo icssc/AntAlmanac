@@ -97,7 +97,7 @@ ${termEntries}
     await mkdir(OUTPUT_DIR, { recursive: true });
     await writeFile(OUTPUT_FILE, fileContent);
 
-    console.log('Term data generated.');
+    console.log('Term data generated. Written to ', OUTPUT_FILE);
 }
 
 main();

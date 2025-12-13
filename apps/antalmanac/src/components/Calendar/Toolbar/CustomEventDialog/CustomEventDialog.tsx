@@ -126,8 +126,6 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
 
         resetForm();
 
-        console.log(props.customEvent);
-
         props.customEvent
             ? editCustomEvent(newCustomEvent, scheduleIndices)
             : addCustomEvent(newCustomEvent, scheduleIndices);

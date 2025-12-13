@@ -11,6 +11,7 @@ import {
     Box,
     IconButton,
 } from '@mui/material';
+import Image from 'next/image';
 import { useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -90,7 +91,13 @@ export function HelpBox() {
             <ImageList gap={10} cols={3}>
                 {images.map((image) => (
                     <ImageListItem key={image.src}>
-                        <img src={image.src} alt={image.alt} />
+                        <Image
+                            src={image.src}
+                            alt={image.alt}
+                            width={500}
+                            height={300}
+                            style={{ width: '100%', height: 'auto' }}
+                        />
                     </ImageListItem>
                 ))}
             </ImageList>

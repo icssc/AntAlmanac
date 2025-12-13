@@ -342,7 +342,6 @@ export class Schedules {
      */
     getIndexesOfCustomEvent(customEventId: number) {
         const indices: number[] = [];
-        console.log(this.schedules);
 
         for (const scheduleIndex of this.schedules.keys()) {
             if (this.doesCustomEventExistInSchedule(customEventId, scheduleIndex)) {

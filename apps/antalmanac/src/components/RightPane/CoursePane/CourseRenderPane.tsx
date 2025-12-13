@@ -1,6 +1,7 @@
 import { Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, Link, useMediaQuery, useTheme } from '@mui/material';
 import { AACourse, AASection, WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from '@packages/antalmanac-types';
+import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
@@ -157,7 +158,7 @@ const LoadingMessage = () => {
     const isDark = useThemeStore((store) => store.isDark);
     return (
         <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <img src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading courses" />
+            <Image src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading courses" unoptimized />
         </Box>
     );
 };
@@ -203,7 +204,7 @@ const ErrorMessage = () => {
                 </Link>
             ) : null}
 
-            <img
+            <Image
                 src={isDark ? darkNoNothing : noNothing}
                 alt="No Results Found"
                 style={{ objectFit: 'contain', width: '80%', height: '80%', pointerEvents: 'none' }}

@@ -1,3 +1,5 @@
+'use client';
+
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
 
@@ -30,7 +32,7 @@ import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
  * CALENDAR_VIEWS will set the correct day range
  */
 // eslint-disable-next-line import/no-named-as-default-member
-moment.updateLocale('es-us', {
+moment.updateLocale('en-us', {
     week: {
         dow: 6,
     },

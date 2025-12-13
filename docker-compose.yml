@@ -1,0 +1,13 @@
+name: antalmanac
+
+services:
+    db:
+        build:
+            context: packages/db
+            dockerfile: Dockerfile
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: antalmanac

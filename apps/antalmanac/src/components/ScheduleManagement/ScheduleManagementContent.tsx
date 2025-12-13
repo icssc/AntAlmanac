@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { lazy, Suspense } from 'react';
 
 import darkModeLoadingGif from '../RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
@@ -35,7 +36,7 @@ export function ScheduleManagementContent() {
                                 alignItems: 'center',
                             }}
                         >
-                            <img src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading map" />
+                            <Image src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading map" unoptimized />
                         </div>
                     }
                 >

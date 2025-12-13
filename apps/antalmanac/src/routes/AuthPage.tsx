@@ -24,14 +24,15 @@ export function AuthPage() {
     const handleSearchParamsChange = useCallback(async () => {
         try {
             const code = searchParams.get('code');
-            if (!code) {
+            const state = searchParams.get('state');
+            if (!code || !state) {
                 window.location.href = '/';
                 return;
             }
 
             const { sessionToken, userId, providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
                 code: code,
-                token: '',
+                state: state,
             });
 
             const fromLoading = getLocalStorageFromLoading() ?? '';
