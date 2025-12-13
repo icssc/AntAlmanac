@@ -48,7 +48,42 @@ jobs:
                   DB_URL: ${{ secrets.DEV_DB_URL }}
               run: pnpm db:migrate
 
+            - name: Create deployment
+              id: create-deployment
+              uses: ./.github/actions/deployment-status
+              with:
+                  step: create
+                  environment: staging
+                  description: Staging deployment for PR #${{ github.event.pull_request.number }}
+                  sha: ${{ github.event.pull_request.head.sha }}
+                  production: false
+
+            - name: Set deployment to in_progress
+              uses: ./.github/actions/deployment-status
+              with:
+                  step: in_progress
+                  deployment-id: ${{ steps.create-deployment.outputs.deployment-id }}
+                  description: Deploying to staging...
+
             - name: Deploy SST (staging)
+              id: deploy
               run: |
                   echo "Deploying stage: $SST_STAGE"
                   npx sst deploy --stage "$SST_STAGE"
+
+            - name: Update deployment status (success)
+              if: success()
+              uses: ./.github/actions/deployment-status
+              with:
+                  step: success
+                  deployment-id: ${{ steps.create-deployment.outputs.deployment-id }}
+                  environment-url: https://staging-${{ github.event.pull_request.number }}.antalmanac.com
+                  description: Deployment succeeded
+
+            - name: Update deployment status (failure)
+              if: failure()
+              uses: ./.github/actions/deployment-status
+              with:
+                  step: failure
+                  deployment-id: ${{ steps.create-deployment.outputs.deployment-id }}
+                  description: Deployment failed
