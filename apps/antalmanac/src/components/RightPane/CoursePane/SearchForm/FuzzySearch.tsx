@@ -85,11 +85,15 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         RightPaneStore.off('formDataChange', this.handleFormDataChange);
     }
 
+    private getCacheKey = (term: string, query: string): string => {
+        return `${term}:${query}`;
+    };
+
     handleFormDataChange = () => {
         const newTerm = RightPaneStore.getFormData().term;
 
         if (newTerm !== this.state.currentTerm && this.state.value.length >= 2) {
-            const cacheKey = `${newTerm}:${this.state.value}`;
+            const cacheKey = this.getCacheKey(newTerm, this.state.value);
 
             if (this.state.cache[cacheKey]) {
                 this.setState({
@@ -97,28 +101,26 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                     results: this.state.cache[cacheKey],
                     open: false,
                 });
-            }
-            else {
+            } else {
                 const requestTimestamp = Date.now();
 
                 this.setState({
-                    currentTerm: newTerm,
-                    results: {},
-                    loading: true,
-                    requestTimestamp,
-                    open: false,
-                },
-                () => {
-                    window.clearTimeout(this.state.pendingRequest);
-
-                    this.maybeDoSearchFactory(requestTimestamp)();
-                }
+                        currentTerm: newTerm,
+                        results: {},
+                        loading: true,
+                        requestTimestamp,
+                        open: false,
+                    },
+                    () => {
+                        window.clearTimeout(this.state.pendingRequest);
+                        this.maybeDoSearchFactory(requestTimestamp)();
+                    }
                 );
             }
         } else if (newTerm !== this.state.currentTerm) {
             this.setState({ currentTerm: newTerm });
         }
-    }
+    };
 
     doSearch = (option: SearchOption) => {
         const result = option.result;
@@ -189,12 +191,16 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     // state to reflect the results of the query.
     maybeDoSearchFactory = (requestTimestamp: number) => () => {
         if (!this.requestIsCurrent(requestTimestamp)) return;
+
+        const requestTerm = RightPaneStore.getFormData().term;
+        const requestQuery = this.state.value;
+
         trpc.search.doSearch
-            .query({ query: this.state.value, term: RightPaneStore.getFormData().term })
+            .query({ query: requestQuery, term: requestTerm})
             .then((result) => {
                 if (!this.requestIsCurrent(requestTimestamp)) return;
 
-                const cacheKey = `${this.state.currentTerm}:${this.state.value}`;
+                const cacheKey = this.getCacheKey(requestTerm, requestQuery);
 
                 this.setState({
                     cache: {
@@ -225,7 +231,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 () => {
                     if (lowerCaseValue.length < 2) return;
 
-                    const cacheKey = `${this.state.currentTerm}:${this.state.value}`;
+                    const cacheKey = this.getCacheKey(this.state.currentTerm, this.state.value);
 
                     if (this.state.cache[cacheKey]) {
                         this.setState({ results: this.state.cache[cacheKey] });
@@ -265,7 +271,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         return isOffered ? groupType.OFFERED : groupType.NOT_OFFERED;
     };
 
-    renderGroup = (params: {key: string, group: string, children?: React.ReactNode}) => {
+    renderGroup = (params: {key: string; group: string; children?: React.ReactNode }) => {
         if (params.group === groupType.UNGROUPED) {
             return <Box key={params.key}>{params.children}</Box>
         }
@@ -275,18 +281,17 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
         return (
             <Box key={params.key}>
-                <Divider textAlign="left" 
-                sx={{ 
-                    mt: 1, 
-                    mb: 1, 
-                    ml: 0.5, 
-                    '&::before': { width: '0px' }, 
-                    '&::after': { borderColor: 'text.primary', opacity: 0.45 },
-                }}
+                <Divider 
+                    textAlign="left" 
+                    sx={{ 
+                        mt: 1, 
+                        mb: 1, 
+                        ml: 0.5, 
+                        '&::before': { width: '0px' }, 
+                        '&::after': { borderColor: 'text.primary', opacity: 0.45 },
+                    }}
                 >
-                    <Typography variant="subtitle1">
-                        {label}
-                    </Typography>
+                    <Typography variant="subtitle1">{label}</Typography>
                 </Divider>
                 {params.children}
             </Box>
