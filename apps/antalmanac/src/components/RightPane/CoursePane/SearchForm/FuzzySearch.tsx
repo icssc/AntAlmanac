@@ -78,25 +78,25 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     };
 
     componentDidMount() {
-        RightPaneStore.on('formDataChange', this.handleFormDataChange)
+        RightPaneStore.on('formDataChange', this.handleFormDataChange);
     }
 
     componentWillUnmount() {
-        RightPaneStore.off('formDataChange', this.handleFormDataChange)
+        RightPaneStore.off('formDataChange', this.handleFormDataChange);
     }
 
     handleFormDataChange = () => {
         const newTerm = RightPaneStore.getFormData().term;
 
         if (newTerm !== this.state.currentTerm && this.state.value.length >= 2) {
-            const cacheKey = `${newTerm}:${this.state.value}`
+            const cacheKey = `${newTerm}:${this.state.value}`;
 
             if (this.state.cache[cacheKey]) {
                 this.setState({
                     currentTerm: newTerm,
                     results: this.state.cache[cacheKey],
                     open: false,
-                })
+                });
             }
             else {
                 const requestTimestamp = Date.now();
@@ -109,11 +109,11 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                     open: false,
                 },
                 () => {
-                    window.clearTimeout(this.state.pendingRequest)
+                    window.clearTimeout(this.state.pendingRequest);
 
-                    this.maybeDoSearchFactory(requestTimestamp)()
+                    this.maybeDoSearchFactory(requestTimestamp)();
                 }
-                )
+                );
             }
         } else if (newTerm !== this.state.currentTerm) {
             this.setState({ currentTerm: newTerm });
@@ -194,7 +194,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
             .then((result) => {
                 if (!this.requestIsCurrent(requestTimestamp)) return;
 
-                const cacheKey = `${this.state.currentTerm}:${this.state.value}`
+                const cacheKey = `${this.state.currentTerm}:${this.state.value}`;
 
                 this.setState({
                     cache: {
@@ -225,7 +225,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 () => {
                     if (lowerCaseValue.length < 2) return;
 
-                    const cacheKey = `${this.state.currentTerm}:${this.state.value}`
+                    const cacheKey = `${this.state.currentTerm}:${this.state.value}`;
 
                     if (this.state.cache[cacheKey]) {
                         this.setState({ results: this.state.cache[cacheKey] });
@@ -248,10 +248,10 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     onChange = (_event: unknown, option: SearchOption | null) => {
         if (option) {
             this.setState({ open: false, value: ''}, () => {
-                this.doSearch(option)
-            })
+                this.doSearch(option);
+            });
         }
-    }
+    };
 
     onClose = () => {
         this.setState({ open: false });
@@ -263,7 +263,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
         const isOffered = 'isOffered' in option.result && option.result.isOffered;
         return isOffered ? groupType.OFFERED : groupType.NOT_OFFERED;
-    }
+    };
 
     renderGroup = (params: {key: string, group: string, children?: React.ReactNode}) => {
         if (params.group === groupType.UNGROUPED) {
@@ -271,7 +271,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         }
 
         const term = RightPaneStore.getFormData().term;
-        const label = params.group === groupType.OFFERED ? `Offered in ${term}` : `Not Offered`
+        const label = params.group === groupType.OFFERED ? `Offered in ${term}` : `Not Offered`;
 
         return (
             <Box key={params.key}>
@@ -281,18 +281,17 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                     mb: 1, 
                     ml: 0.5, 
                     '&::before': { width: '0px' }, 
-                    '&::after': { borderColor: 'text.primary', borderBottomWidth: '2px', opacity: 0.45 } 
-                    }}
+                    '&::after': { borderColor: 'text.primary', opacity: 0.45 },
+                }}
                 >
                     <Typography variant="subtitle1">
                         {label}
                     </Typography>
                 </Divider>
-                {params.children
-                }
+                {params.children}
             </Box>
-        )
-    }
+        );
+    };
 
     renderOption = (props: React.HTMLAttributes<HTMLLIElement>, option: SearchOption) => {
         const object = option.result;
@@ -317,8 +316,8 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
             >
                 {label}
             </Box>
-        )
-    }
+        );
+    };
 
     onFocus = () => {
         if (this.state.value.length >= 2) {
