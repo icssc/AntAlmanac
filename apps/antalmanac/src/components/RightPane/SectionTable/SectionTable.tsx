@@ -15,6 +15,7 @@ import analyticsEnum from '$lib/analytics/analytics';
 import { MOBILE_BREAKPOINT } from '$src/globals';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import { useTabStore } from '$stores/TabStore';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -69,6 +70,7 @@ const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
 function SectionTable(props: SectionTableProps) {
     const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory } = props;
+    const { isMilitaryTime } = useTimeFormatStore()
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
@@ -78,10 +80,22 @@ function SectionTable(props: SectionTableProps) {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
     }, [courseDetails.deptCode, courseDetails.courseNumber]);
 
+    const formattedTime = useMemo(() => {
+        if (!courseDetails.updatedAt) return null;
+        const date = new Date(courseDetails.updatedAt);
+        return isNaN(date.getTime())
+            ? null
+            : date.toLocaleTimeString(undefined, {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: !isMilitaryTime,
+            });
+    }, [courseDetails.updatedAt, isMilitaryTime]);
+
     /**
      * Limit table width to force side scrolling.
      */
-    const width = 780;
+    const width = 920;
     const tableMinWidth = useMemo(() => {
         const numActiveColumns = activeColumns.length;
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
@@ -187,7 +201,7 @@ function SectionTable(props: SectionTableProps) {
                                             padding: 0,
                                         }}
                                     >
-                                        {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
+                                        {label === 'Enrollment' && formattedTime ? <EnrollmentColumnHeader label={label} formattedTime={formattedTime}/> : label}
                                     </TableCell>
                                 ))}
                         </TableRow>
