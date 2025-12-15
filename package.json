@@ -16,11 +16,7 @@
         "test": "vitest",
         "deploy": "sst deploy --stage production"
     },
-    "dependencies": {
-        "sst": "3.17.19"
-    },
     "devDependencies": {
-        "@types/aws-lambda": "8.10.156",
         "@types/eslint": "^8.56.5",
         "@types/node": "^20.11.6",
         "cross-env": "^7.0.3",
@@ -30,8 +26,8 @@
         "jsdom": "^22.1.0",
         "lint-staged": "^13.1.1",
         "prettier": "^3.1.0",
+        "sst": "3.17.25",
         "tsx": "^4.19.2",
-        "turbo": "latest",
         "vitest": "^0.34.4"
     },
     "packageManager": "pnpm@10.22.0",
