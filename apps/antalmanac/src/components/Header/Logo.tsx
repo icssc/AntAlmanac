@@ -1,11 +1,5 @@
-import ChristmasLogo from '$assets/christmas-logo.png';
-import MobileChristmasLogo from '$assets/christmas-mobile-logo.png';
-import HalloweenLogo from '$assets/halloween-logo.png';
-import MobileHalloweenLogo from '$assets/halloween-mobile-logo.png';
-import DefaultLogo from '$assets/logo.svg';
-import MobileDefaultLogo from '$assets/mobile-logo.svg';
-import ThanksgivingLogo from '$assets/thanksgiving-logo.png';
-import MobileThanksgivingLogo from '$assets/thanksgiving-mobile-logo.png';
+import Image from 'next/image';
+
 import { useIsMobile } from '$hooks/useIsMobile';
 
 type Logo = {
@@ -21,8 +15,8 @@ type Logo = {
 
 const defaultLogo: Logo = {
     name: 'Default',
-    mobileLogo: MobileDefaultLogo,
-    desktopLogo: DefaultLogo,
+    mobileLogo: '/assets/mobile-logo.svg',
+    desktopLogo: '/assets/logo.svg',
     startDay: 0,
     startMonthIndex: 0,
     endDay: 31,
@@ -32,8 +26,8 @@ const defaultLogo: Logo = {
 const logos: Logo[] = [
     {
         name: 'Christmas',
-        mobileLogo: MobileChristmasLogo,
-        desktopLogo: ChristmasLogo,
+        mobileLogo: '/assets/christmas-mobile-logo.png',
+        desktopLogo: '/assets/christmas-logo.png',
         startDay: 1,
         startMonthIndex: 11,
         endDay: 31,
@@ -42,8 +36,8 @@ const logos: Logo[] = [
     },
     {
         name: 'Thanksgiving',
-        mobileLogo: MobileThanksgivingLogo,
-        desktopLogo: ThanksgivingLogo,
+        mobileLogo: '/assets/thanksgiving-mobile-logo.png',
+        desktopLogo: '/assets/thanksgiving-logo.png',
         startDay: 1,
         startMonthIndex: 10,
         endDay: 30,
@@ -52,8 +46,8 @@ const logos: Logo[] = [
     },
     {
         name: 'Halloween',
-        mobileLogo: MobileHalloweenLogo,
-        desktopLogo: HalloweenLogo,
+        mobileLogo: '/assets/halloween-mobile-logo.png',
+        desktopLogo: '/assets/halloween-logo.png',
         startDay: 1,
         startMonthIndex: 9,
         endDay: 31,
@@ -78,9 +72,14 @@ export function Logo() {
     const currentLogo = logos.find((logo) => logoIsForCurrentSeason(logo)) ?? defaultLogo;
 
     return (
-        <img
-            height={32}
+        <Image
             src={isMobile ? currentLogo?.mobileLogo : currentLogo?.desktopLogo}
+            height={64}
+            width={340}
+            style={{
+                width: 'auto',
+                height: '32px',
+            }}
             title={currentLogo?.attribution}
             alt="logo"
         />
