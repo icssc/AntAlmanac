@@ -2,7 +2,7 @@
 
 function getDomain() {
     if ($app.stage === 'production') {
-        return 'sst.antalmanac.com';
+        return 'antalmanac.com';
     } else if ($app.stage.match(/^staging-(\d+)$/)) {
         return `${$app.stage}.antalmanac.com`;
     }
