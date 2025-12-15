@@ -351,7 +351,7 @@ export const loadScheduleWithSessionToken = async () => {
         }
         return false;
     } catch (e) {
-        console.error('❌ Error in loadScheduleWithSessionToken:', e);
+        console.error('Error in loadScheduleWithSessionToken:', e);
         openSnackbar('error', `Failed to load schedules. If this continues to happen, please submit a feedback form.`);
         return false;
     }

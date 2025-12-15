@@ -130,7 +130,7 @@ async function main() {
             await writeFile(fileName, JSON.stringify(parsedSectionData, null, 2));
             return Object.keys(parsedSectionData).length;
         } catch (error) {
-            console.error(`❌ ERROR in promise ${index} for term "${term.shortName}":`);
+            console.error(`ERROR in promise ${index} for term "${term.shortName}":`);
             console.error(`Term details:`, {
                 shortName: term.shortName,
                 year: term.shortName.split(' ')[0],
