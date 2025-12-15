@@ -26,7 +26,7 @@ export default $config({
             path: 'apps/antalmanac',
             domain: {
                 name: domain,
-                redirects: [`www.${domain}`],
+                redirects: $app.stage.match(/^staging-(\d+)$/) ? [] : [`www.${domain}`],
             },
             environment: {
                 DB_URL: $app.stage === 'production' ? process.env.PROD_DB_URL : process.env.DEV_DB_URL,
