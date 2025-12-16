@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import type { WebsocAPIResponse, CourseInfo, WebsocCourse } from '@packages/antalmanac-types';
+import type { WebsocAPIResponse, CourseInfo, WebsocCourse, WebsocSectionType } from '@packages/antalmanac-types';
 import { procedure, router } from '../trpc';
+
 
 function sanitizeSearchParams(params: Record<string, string>) {
     if ('term' in params) {
@@ -125,6 +126,12 @@ const websocRouter = router({
         for (const school of res.schools) {
             for (const department of school.departments) {
                 for (const course of department.courses) {
+
+                    const sectionTypes = new Set<WebsocSectionType>();
+                    course.sections.forEach((section) => {
+                        sectionTypes.add(section.sectionType);
+                    });
+                    
                     for (const section of course.sections) {
                         courseInfo[section.sectionCode] = {
                             courseDetails: {
@@ -133,6 +140,7 @@ const websocRouter = router({
                                 courseTitle: course.courseTitle,
                                 courseComment: course.courseComment,
                                 prerequisiteLink: course.prerequisiteLink,
+                                sectionTypes: sectionTypes
                             },
                             section: section,
                         };
