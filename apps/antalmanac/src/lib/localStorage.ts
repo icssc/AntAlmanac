@@ -21,6 +21,7 @@ enum LocalStorageKeys {
     importedUser = 'importedUser',
     fromLoading = 'fromLoading',
     tempSaveData = 'tempSaveData',
+    signoutNotice = 'signoutNotice',
 }
 
 const LSK = LocalStorageKeys;
@@ -95,6 +96,18 @@ export function getLocalStorageSessionId() {
 
 export function removeLocalStorageSessionId() {
     window.localStorage.removeItem(LSK.sessionId);
+}
+
+export function setLocalStorageSignoutNotice(value: string) {
+    window.localStorage.setItem(LSK.signoutNotice, value);
+}
+
+export function getLocalStorageSignoutNotice() {
+    return window.localStorage.getItem(LSK.signoutNotice);
+}
+
+export function removeLocalStorageSignoutNotice() {
+    window.localStorage.removeItem(LSK.signoutNotice);
 }
 // Helper functions for patchNotesKey
 export function setLocalStoragePatchNotesKey(value: string) {

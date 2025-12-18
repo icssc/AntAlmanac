@@ -2,7 +2,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Avatar, Menu, ListItemIcon, ListItemText, MenuItem, IconButton } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, type MouseEvent } from 'react';
 
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
@@ -16,6 +16,14 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
     const [user, setUser] = useState<null | User>(null);
     const { session, sessionIsValid, clearSession } = useSessionStore();
 
+    const open = Boolean(anchorEl);
+    const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
     const handleLogout = async () => {
         setAnchorEl(null);
         try {
@@ -24,14 +32,6 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
         } catch (error) {
             console.error('Failed to sign out', error);
         }
-    };
-
-    const open = Boolean(anchorEl);
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
     };
 
     const handleAuthChange = useCallback(async () => {
