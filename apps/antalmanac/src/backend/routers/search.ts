@@ -95,8 +95,6 @@ const searchRouter = router({
                           limit: MAX_AUTOCOMPLETE_RESULTS - matchedSections.length,
                       });
             
-            // 'COURSE' has additional behavior to apply "isOffered" field to results and sorts offered courses to the top
-            // and not offered courses follow below. 
             const matchedCourses =
                 matchedSections.length + matchedDepts.length === MAX_AUTOCOMPLETE_RESULTS
                     ? []
