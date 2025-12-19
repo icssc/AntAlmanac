@@ -1,109 +1,48 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json
----
-name: Destroy CloudFormation stacks for staging
+name: Delete - Staging (PR closed)
 
 on:
     pull_request:
-        types:
-            - closed
-
-concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}
-    cancel-in-progress: true
-
-permissions:
-    contents: read
-    deployments: write
+        branches: [main]
+        types: [closed]
 
 env:
-    # Tooling settings.
-    HUSKY: 0
-    NODE_ENV: staging
+    AWS_REGION: ${{ secrets.AWS_REGION }}
 
-    # Application information.
-    MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
+    PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+    DEV_DB_URL: ${{ secrets.DEV_DB_URL }}
     MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
-    VITE_TILES_ENDPOINT: ${{ secrets.VITE_TILES_ENDPOINT}}
-    GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-    GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
     ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
-    DB_URL: ${{ secrets.STAGING_DB_URL }}
-
-    # Turborepo credentials.
-    TURBO_API: ${{ vars.TURBO_API }}
-    TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-    TURBO_TEAM: team_antalmanac
-
-    # AWS credentials.
-    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    AWS_DEFAULT_REGION: us-east-1
-
-    # Information used by AWS CDK stacks.
-    HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
-    CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
-    PR_NUM: ${{ github.event.pull_request.number }}
-    STAGE: dev
+    OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID }}
+    OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
+    GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
 
 jobs:
-    destroy_staging_frontend:
-        name: Destroy frontend staging CloudFormation stack and environment
-
+    delete-staging:
         runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v3
-
-            - name: Setup Node.js and pnpm
-              uses: ./.github/actions/setup-node-and-pnpm
-
-            - name: Install dependencies
-              run: pnpm install --frozen-lockfile
-
-            - name: Build frontend
-              run: pnpm --filter "antalmanac" build
-
-            - name: Destroy frontend staging CloudFormation stack
-              run: pnpm --filter "antalmanac-cdk" frontend-staging destroy --force
-
-            - name: Delete deployment
-              uses: ./.github/actions/delete-deployment
-              with:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  environment: staging-backend
-                  name: frontend-staging-${{ github.event.pull_request.number }}
-
-    destroy_staging_backend:
-        name: Destroy backend staging CloudFormation stack and environment
-
-        runs-on: ubuntu-latest
+        env:
+            SST_STAGE: staging-${{ github.event.pull_request.number }}
 
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v3
+            - name: Checkout
+              uses: actions/checkout@v4
 
-            - name: Setup Node.js and pnpm
-              uses: ./.github/actions/setup-node-and-pnpm
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                  role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+                  aws-region: ${{ env.AWS_REGION }}
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: npm
 
             - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+              run: npm ci
 
-            - name: Build backend
-              run: pnpm --filter "antalmanac-backend" build
-              env:
-                  ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
-
-            - name: Destroy backend staging CloudFormation stack
-              run: pnpm --filter "antalmanac-cdk" backend-staging destroy --force
-              env: # Placeholder values because they shouldn't be necessary
-                  GOOGLE_CLIENT_ID: ""
-                  GOOGLE_CLIENT_SECRET: ""
-                  GOOGLE_REDIRECT_URI: ""
-
-            - name: Delete deployment
-              uses: ./.github/actions/delete-deployment
-              with:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  environment: staging-backend
-                  name: backend-staging-${{ github.event.pull_request.number }}
+            - name: Remove SST staging stage
+              run: |
+                  echo "Removing stage: $SST_STAGE"
+                  npx sst remove --stage "$SST_STAGE"
