@@ -16,7 +16,7 @@ import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
 function MobileHome() {
     return (
-        <Stack component="main" height="100dvh">
+        <Stack component="main" height="calc(100svh + env(safe-area-inset-top))">
             <Header />
             <ScheduleManagement />
         </Stack>
