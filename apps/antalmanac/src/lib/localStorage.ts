@@ -13,6 +13,7 @@ enum LocalStorageKeys {
     autoSave = 'autoSave',
     unsavedActions = 'unsavedActions',
     helpBoxDismissalTime = 'helpBoxDismissalTime',
+    aboutBoxDismissalTime = 'aboutBoxDismissalTime',
     columnToggles = 'columnToggles',
     pwaDismissalTime = 'pwaDismissalTime',
     sessionId = 'sessionId',
@@ -251,6 +252,19 @@ export function getLocalStorageHelpBoxDismissalTime() {
 
 export function removeLocalStorageHelpBoxDismissalTime() {
     window.localStorage.removeItem(LSK.helpBoxDismissalTime);
+}
+
+// Helper functions for aboutBoxDismissalTime
+export function setLocalStorageAboutBoxDismissalTime(value: string) {
+    window.localStorage.setItem(LSK.aboutBoxDismissalTime, value);
+}
+
+export function getLocalStorageAboutBoxDismissalTime() {
+    return window.localStorage.getItem(LSK.aboutBoxDismissalTime);
+}
+
+export function removeLocalStorageAboutBoxDismissalTime() {
+    window.localStorage.removeItem(LSK.aboutBoxDismissalTime);
 }
 
 // Helper functions for columnToggles
