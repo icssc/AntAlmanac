@@ -124,8 +124,9 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
     doSearch = (option: SearchOption) => {
         const result = option.result;
-        if (!result) return;
-
+        if (!result) {
+            return;
+        }
         const term = RightPaneStore.getFormData().term;
         RightPaneStore.resetFormValues();
         RightPaneStore.updateFormValue('term', term);
