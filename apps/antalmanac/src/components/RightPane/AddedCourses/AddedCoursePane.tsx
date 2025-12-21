@@ -232,14 +232,11 @@ function SkeletonSchedule() {
     }, []);
 
     const sectionsByTerm: [string, string[]][] = useMemo(() => {
-        const result = skeletonSchedule.courses.reduce(
-            (accumulated, course) => {
-                accumulated[course.term] ??= [];
-                accumulated[course.term].push(course.sectionCode);
-                return accumulated;
-            },
-            {} as Record<string, string[]>
-        );
+        const result = skeletonSchedule.courses.reduce((accumulated, course) => {
+            accumulated[course.term] ??= [];
+            accumulated[course.term].push(course.sectionCode);
+            return accumulated;
+        }, {} as Record<string, string[]>);
 
         return Object.entries(result);
     }, [skeletonSchedule.courses]);
@@ -384,8 +381,6 @@ export function AddedCoursePane() {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
         };
-
-        console.log('Opened added ourse');
 
         logAnalytics(postHog, {
             category: analyticsEnum.addedClasses,

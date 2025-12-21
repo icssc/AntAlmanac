@@ -265,7 +265,7 @@ export const importScheduleWithUsername = async (username: string) => {
 export const loadSchedule = async (
     providerId: string,
     rememberMe: boolean,
-    accountType: 'GOOGLE' | 'GUEST',
+    accountType: 'OIDC' | 'GOOGLE' | 'GUEST',
     postHog?: PostHog
 ) => {
     logAnalytics(postHog, {
@@ -351,7 +351,7 @@ export const loadScheduleWithSessionToken = async () => {
         }
         return false;
     } catch (e) {
-        console.error(e);
+        console.error('Error in loadScheduleWithSessionToken:', e);
         openSnackbar('error', `Failed to load schedules. If this continues to happen, please submit a feedback form.`);
         return false;
     }
@@ -398,9 +398,19 @@ export const addCustomEvent = (customEvent: RepeatingCustomEvent, scheduleIndice
 };
 
 export const undoDelete = (event: KeyboardEvent | null) => {
-    if (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey))) {
+    if (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey) && !event.shiftKey)) {
         AppStore.undoAction();
     }
+};
+
+export const redoDelete = (event: KeyboardEvent | null) => {
+    if (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey) && event.shiftKey)) {
+        AppStore.redoAction();
+    }
+};
+
+export const redoAction = () => {
+    AppStore.redoAction();
 };
 
 export const changeCurrentSchedule = (newScheduleIndex: number) => {

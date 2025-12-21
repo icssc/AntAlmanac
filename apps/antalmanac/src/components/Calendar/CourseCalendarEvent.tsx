@@ -71,10 +71,18 @@ export interface CustomEvent extends CommonCalendarEvent {
     days: string[];
 }
 
-export type CalendarEvent = CourseEvent | CustomEvent;
+export interface SkeletonEvent extends CommonCalendarEvent {
+    isSkeletonEvent: true;
+}
+
+export type CalendarEvent = CourseEvent | CustomEvent | SkeletonEvent;
+
+export const isSkeletonEvent = (event: CalendarEvent): event is SkeletonEvent => {
+    return 'isSkeletonEvent' in event && event.isSkeletonEvent;
+};
 
 interface CourseCalendarEventProps {
-    selectedEvent: CalendarEvent;
+    selectedEvent: CourseEvent | CustomEvent;
     scheduleNames: string[];
     closePopover: () => void;
 }

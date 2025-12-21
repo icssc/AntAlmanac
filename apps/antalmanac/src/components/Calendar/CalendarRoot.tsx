@@ -1,9 +1,11 @@
+'use client';
+
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
 
-import { Box, Backdrop, CircularProgress, useTheme } from '@mui/material';
+import { Box, Backdrop, useTheme } from '@mui/material';
 import moment from 'moment';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
 import { useShallow } from 'zustand/react/shallow';
 import { shallow } from 'zustand/shallow';
@@ -11,8 +13,14 @@ import { shallow } from 'zustand/shallow';
 import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
 import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
 import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
-import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
+import { skeletonBlueprintVariations } from '$components/Calendar/skeletonBlueprintVariations';
+import {
+    getLocalStorageSkeletonBlueprint,
+    removeLocalStorageSkeletonBlueprint,
+    setLocalStorageSkeletonBlueprint,
+} from '$lib/localStorage';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
@@ -24,7 +32,7 @@ import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
  * CALENDAR_VIEWS will set the correct day range
  */
 // eslint-disable-next-line import/no-named-as-default-member
-moment.updateLocale('es-us', {
+moment.updateLocale('en-us', {
     week: {
         dow: 6,
     },
@@ -36,6 +44,7 @@ const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
     event: CalendarCourseEvent,
     eventWrapper: CalendarCourseEventWrapper,
 };
+const BASE_DATE = new Date(2018, 0, 1);
 const CALENDAR_MAX_DATE = new Date(2018, 0, 1, 23);
 
 export const ScheduleCalendar = memo(() => {
@@ -54,6 +63,12 @@ export const ScheduleCalendar = memo(() => {
     const isDark = useThemeStore(useShallow((store) => store.isDark));
 
     const { openLoadingSchedule: loadingSchedule } = scheduleComponentsToggleStore();
+    const hasHadEventsRef = useRef(false);
+
+    const onlyCourseEvents = useMemo(
+        () => eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[],
+        [eventsInCalendar]
+    );
 
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
         if (showFinalsSchedule)
@@ -70,7 +85,90 @@ export const ScheduleCalendar = memo(() => {
         showFinalsSchedule,
     ]);
 
-    const events = getEventsForCalendar();
+    useEffect(() => {
+        if (!loadingSchedule) {
+            const courseEvents = eventsInCalendar.filter((event) => !event.isCustomEvent);
+
+            if (courseEvents.length > 0) {
+                hasHadEventsRef.current = true;
+                const skeletonBlueprint = courseEvents
+                    .map((event) => {
+                        const dayOffset = event.start.getDate() - BASE_DATE.getDate();
+                        return {
+                            dayOffset,
+                            startHour: event.start.getHours(),
+                            startMinute: event.start.getMinutes(),
+                            endHour: event.end.getHours(),
+                            endMinute: event.end.getMinutes(),
+                        };
+                    })
+                    .filter((blueprint) => blueprint.dayOffset >= 0 && blueprint.dayOffset <= 6);
+
+                if (skeletonBlueprint.length > 0) {
+                    setLocalStorageSkeletonBlueprint(JSON.stringify(skeletonBlueprint));
+                }
+            } else if (hasHadEventsRef.current) {
+                removeLocalStorageSkeletonBlueprint();
+                hasHadEventsRef.current = false;
+            }
+        }
+    }, [eventsInCalendar, loadingSchedule]);
+
+    const blueprintToSkeletonEvent = useCallback(
+        (blueprint: {
+            dayOffset: number;
+            startHour: number;
+            startMinute: number;
+            endHour: number;
+            endMinute: number;
+        }): SkeletonEvent => {
+            const start = new Date(BASE_DATE);
+            start.setDate(start.getDate() + blueprint.dayOffset);
+            start.setHours(blueprint.startHour, blueprint.startMinute, 0, 0);
+
+            const end = new Date(start);
+            end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
+
+            return {
+                color: '#6d6d6d',
+                start,
+                end,
+                title: '',
+                isSkeletonEvent: true,
+            } as SkeletonEvent;
+        },
+        []
+    );
+
+    const createSkeletonEvents = useCallback((): SkeletonEvent[] => {
+        const savedDataString = getLocalStorageSkeletonBlueprint();
+
+        let skeletonBlueprints: Array<{
+            dayOffset: number;
+            startHour: number;
+            startMinute: number;
+            endHour: number;
+            endMinute: number;
+        }> | null = null;
+
+        if (savedDataString) {
+            const parsedData = JSON.parse(savedDataString);
+            if (Array.isArray(parsedData) && parsedData.length > 0) {
+                skeletonBlueprints = parsedData;
+            }
+        }
+
+        if (skeletonBlueprints) {
+            return skeletonBlueprints.map(blueprintToSkeletonEvent);
+        }
+
+        const randomIndex = Math.floor(Math.random() * skeletonBlueprintVariations.length);
+        const fallbackBlueprints = skeletonBlueprintVariations[randomIndex];
+
+        return fallbackBlueprints.map(blueprintToSkeletonEvent);
+    }, [blueprintToSkeletonEvent]);
+
+    const events = loadingSchedule ? createSkeletonEvents() : getEventsForCalendar();
 
     const toggleDisplayFinalsSchedule = useCallback(() => {
         setShowFinalsSchedule((prevState) => !prevState);
@@ -85,7 +183,9 @@ export const ScheduleCalendar = memo(() => {
         return new Date(2018, 0, 1, Math.min(7, Math.min(...eventStartHours)));
     }, [events]);
 
-    const eventStyleGetter = useCallback((event: CalendarEvent) => {
+    const eventStyleGetter = useCallback((event: CalendarEvent | SkeletonEvent) => {
+        const isSkeletonEvent = 'isSkeletonEvent' in event && event.isSkeletonEvent;
+
         const style = {
             backgroundColor: event.color,
             cursor: 'pointer',
@@ -94,7 +194,7 @@ export const ScheduleCalendar = memo(() => {
             color: colorContrastSufficient(event.color) ? 'white' : 'black',
         };
 
-        return { style };
+        return isSkeletonEvent ? { style, className: 'calendar-loading-event' } : { style };
     }, []);
 
     /**
@@ -142,13 +242,11 @@ export const ScheduleCalendar = memo(() => {
     const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
     const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
 
-    const onlyCourseEvents = eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[];
-
     const finalsDate = hoveredCalendarizedFinal
         ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
         : onlyCourseEvents.length > 0
-          ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
-          : getDefaultFinalsStartDate();
+        ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
+        : getDefaultFinalsStartDate();
 
     const finalsDateFormat = 'ddd MM/DD';
     const date = showFinalsSchedule ? finalsDate : new Date(2018, 0, 1);
@@ -215,9 +313,7 @@ export const ScheduleCalendar = memo(() => {
                     padding: ' 0',
                 })}
                 open={loadingSchedule}
-            >
-                <CircularProgress color="inherit" />
-            </Backdrop>
+            />
             <CalendarToolbar
                 currentScheduleIndex={currentScheduleIndex}
                 toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
