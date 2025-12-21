@@ -5,7 +5,6 @@ import { PureComponent } from 'react';
 import { useThemeStore } from '$stores/SettingsStore';
 import UAParser from 'ua-parser-js';
 
-
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
