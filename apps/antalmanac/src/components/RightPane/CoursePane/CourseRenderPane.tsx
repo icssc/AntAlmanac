@@ -27,13 +27,10 @@ import { useThemeStore } from '$stores/SettingsStore';
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
-    const courseColors = currentCourses.reduce(
-        (accumulator, { section }) => {
-            accumulator[section.sectionCode] = section.color;
-            return accumulator;
-        },
-        {} as Record<string, string>
-    );
+    const courseColors = currentCourses.reduce((accumulator, { section }) => {
+        accumulator[section.sectionCode] = section.color;
+        return accumulator;
+    }, {} as Record<string, string>);
 
     return courseColors;
 }
