@@ -43,7 +43,7 @@ export default $config({
 
         const aantsLambda = new sst.aws.Function('AantsLambda', {
             handler: 'apps/aants/src/lambda.handler',
-            timeout: '20 seconds', // TODO: Test how long AANTS takes to run and change accordingly
+            timeout: '20 seconds', // TODO (@IsaacNguyen): Test how long AANTS takes to run and change accordingly
             memory: '256 MB',
             environment: {
                 DB_URL: dbUrl,
@@ -52,7 +52,7 @@ export default $config({
         });
 
         new sst.aws.Cron('NotificationCronRule', {
-            schedule: 'rate(5 minutes)', // AANTS runs every 5 minutes - TODO: Might change in future
+            schedule: 'rate(5 minutes)', // AANTS runs every 5 minutes - TODO (@IsaacNguyen): Might change in future
             job: aantsLambda.arn,
         });
     },
