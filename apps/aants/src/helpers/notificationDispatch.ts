@@ -100,10 +100,10 @@ async function sendNotification(
         const time = getFormattedTime();
 
         const bulkEmailEntries = users
-            .filter((user) => user.email !== null)
+            .filter((user): user is User & { email: string } => user.email !== null)
             .map((user) => ({
                 Destination: {
-                    ToAddresses: [user.email!],
+                    ToAddresses: [user.email],
                 },
                 ReplacementEmailContent: {
                     ReplacementTemplate: {
