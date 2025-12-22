@@ -57,6 +57,13 @@
       "when": 1766276367775,
       "tag": "0007_real_rage",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1766379695677,
+      "tag": "0008_misty_titania",
+      "breakpoints": true
     }
   ]
 }

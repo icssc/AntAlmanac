@@ -684,7 +684,7 @@ export class RDS {
                     waitlistStatus: notification.notificationStatus.waitlistStatus,
                     fullStatus: notification.notificationStatus.fullStatus,
                     restrictionStatus: notification.notificationStatus.restrictionStatus,
-                    lastUpdated: notification.lastUpdated,
+                    lastUpdatedStatus: notification.lastUpdatedStatus,
                     lastCodes: notification.lastCodes,
                 })
                 .onConflictDoUpdate({
@@ -699,7 +699,7 @@ export class RDS {
                         waitlistStatus: notification.notificationStatus.waitlistStatus,
                         fullStatus: notification.notificationStatus.fullStatus,
                         restrictionStatus: notification.notificationStatus.restrictionStatus,
-                        lastUpdated: notification.lastUpdated,
+                        lastUpdatedStatus: notification.lastUpdatedStatus,
                         lastCodes: notification.lastCodes,
                     },
                 })
@@ -707,7 +707,7 @@ export class RDS {
     }
 
     /**
-     * Updates lastUpdated and lastCodes of ALL notifications with a shared sectionCode, year, and quarter
+     * Updates lastUpdatedStatus and lastCodes of ALL notifications with a shared sectionCode, year, and quarter
      *
      * @param db - The database or transaction object to use for the operation.
      * @param notification - The notification object type we are updating.
@@ -718,7 +718,7 @@ export class RDS {
             tx
                 .update(subscriptions)
                 .set({
-                    lastUpdated: notification.lastUpdated,
+                    lastUpdatedStatus: notification.lastUpdatedStatus,
                     lastCodes: notification.lastCodes,
                 })
                 .where(

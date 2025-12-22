@@ -11,6 +11,6 @@ export type Notification = {
     courseTitle: string;
     sectionType: string;
     notificationStatus: NotificationStatus;
-    lastUpdated: string;
+    lastUpdatedStatus: string;
     lastCodes: string;
 };
