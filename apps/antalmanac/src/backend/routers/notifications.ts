@@ -15,21 +15,21 @@ const NotificationSchema = z.object({
     sectionCode: z.string(),
     courseTitle: z.string(),
     sectionType: z.string(),
-    lastUpdated: z.string(),
+    lastUpdatedStatus: z.string(),
     lastCodes: z.string(),
     notificationStatus: NotificationStatusSchema,
 });
 
 const notificationsRouter = router({
-    get: procedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
-        return await RDS.retrieveNotifications(db, input.id);
+    get: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
+        return await RDS.retrieveNotifications(db, input.userId);
     }),
 
     set: procedure
-        .input(z.object({ id: z.string(), notifications: z.array(NotificationSchema) }))
+        .input(z.object({ userId: z.string(), notifications: z.array(NotificationSchema) }))
         .mutation(async ({ input }) => {
             await Promise.all(
-                input.notifications.map((notification) => RDS.upsertNotification(db, input.id, notification))
+                input.notifications.map((notification) => RDS.upsertNotification(db, input.userId, notification))
             );
         }),
 
@@ -38,13 +38,13 @@ const notificationsRouter = router({
     }),
 
     deleteNotification: procedure
-        .input(z.object({ id: z.string(), notification: NotificationSchema }))
+        .input(z.object({ userId: z.string(), notification: NotificationSchema }))
         .mutation(async ({ input }) => {
-            await RDS.deleteNotification(db, input.notification, input.id);
+            await RDS.deleteNotification(db, input.notification, input.userId);
         }),
 
-    deleteAllNotifications: procedure.input(z.object({ id: z.string() })).mutation(async ({ input }) => {
-        await RDS.deleteAllNotifications(db, input.id);
+    deleteAllNotifications: procedure.input(z.object({ userId: z.string() })).mutation(async ({ input }) => {
+        await RDS.deleteAllNotifications(db, input.userId);
     }),
 });
 
