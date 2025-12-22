@@ -21,7 +21,7 @@ export default $config({
     },
     async run() {
         const domain = getDomain();
-        const dbUrl = $app.stage === 'production' ? process.env.PROD_DB_URL : process.env.DEV_DB_URL;
+        const dbUrl = process.env.DB_URL;
 
         new sst.aws.Nextjs('Website', {
             path: 'apps/antalmanac',

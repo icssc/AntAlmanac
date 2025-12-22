@@ -7,7 +7,7 @@ on:
 env:
     AWS_REGION: ${{ secrets.AWS_REGION }}
 
-    PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+    DB_URL: ${{ secrets.PROD_DB_URL }}
     MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
     NEXT_PUBLIC_TILES_ENDPOINT: ${{ secrets.NEXT_PUBLIC_TILES_ENDPOINT }}
     ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
