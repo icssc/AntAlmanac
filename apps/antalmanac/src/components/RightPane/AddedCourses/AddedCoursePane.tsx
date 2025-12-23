@@ -3,13 +3,11 @@ import { AACourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { ColumnToggleDropdown } from '../CoursePane/CoursePaneButtonRow';
-import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
-
-import CustomEventDetailView from './CustomEventDetailView';
-import { getMissingSections } from './getMissingSections';
-
 import { updateScheduleNote } from '$actions/AppStoreActions';
+import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEventDetailView';
+import { getMissingSections } from '$components/RightPane/AddedCourses/GetMissingSections';
+import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
+import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
