@@ -90,10 +90,16 @@ export function AuthPage() {
                     scheduleSaveState.scheduleIndex = saveState.schedules.length - 1;
                 }
 
+                // Fetch user info to enable proper account migration
+                const userInfo = await trpc.userData.getUserByUid.query({ userId });
+
                 await trpc.userData.saveUserData.mutate({
                     id: providerId,
                     data: {
                         id: providerId,
+                        email: userInfo?.email ?? undefined,
+                        name: userInfo?.name ?? undefined,
+                        avatar: userInfo?.avatar ?? undefined,
                         userData: scheduleSaveState,
                     },
                 });

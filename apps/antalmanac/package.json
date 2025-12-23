@@ -48,7 +48,7 @@
         "arktype": "1.0.14-alpha",
         "date-fns": "^2.29.3",
         "dayjs": "^1.11.7",
-        "drizzle-orm": "^0.36.3",
+        "drizzle-orm": "^0.45.1",
         "events": "^3.3.0",
         "file-saver": "^2.0.5",
         "fuzzysort": "3.1.0",
