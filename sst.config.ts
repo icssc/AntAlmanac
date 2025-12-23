@@ -28,6 +28,7 @@ export default $config({
                 name: domain,
                 redirects: $app.stage.match(/^staging-(\d+)$/) ? [] : [`www.${domain}`],
             },
+            cachePolicy: '92d18877-845e-47e7-97e6-895382b1bf7c',
             environment: {
                 DB_URL: $app.stage === 'production' ? process.env.PROD_DB_URL : process.env.DEV_DB_URL,
                 MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
