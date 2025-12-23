@@ -90,7 +90,12 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
     return true;
 }
 
-export const saveSchedule = async (providerId: string, rememberMe: boolean, postHog?: PostHog) => {
+export const saveSchedule = async (
+    providerId: string,
+    rememberMe: boolean,
+    userInfo?: { email?: string; name?: string; avatar?: string },
+    postHog?: PostHog
+) => {
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
@@ -118,6 +123,9 @@ export const saveSchedule = async (providerId: string, rememberMe: boolean, post
                     id: providerId,
                     data: {
                         id: providerId,
+                        email: userInfo?.email,
+                        name: userInfo?.name,
+                        avatar: userInfo?.avatar,
                         userData: scheduleSaveState,
                     },
                 });
@@ -147,7 +155,11 @@ export const saveSchedule = async (providerId: string, rememberMe: boolean, post
     }
 };
 
-export async function autoSaveSchedule(providerID: string, postHog?: PostHog) {
+export async function autoSaveSchedule(
+    providerID: string,
+    userInfo?: { email?: string; name?: string; avatar?: string },
+    postHog?: PostHog
+) {
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
@@ -163,6 +175,9 @@ export async function autoSaveSchedule(providerID: string, postHog?: PostHog) {
             id: providerID,
             data: {
                 id: providerID,
+                email: userInfo?.email,
+                name: userInfo?.name,
+                avatar: userInfo?.avatar,
                 userData: scheduleSaveState,
             },
         });
@@ -214,9 +229,10 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
         return { imported: true, error: null };
     }
 
-    const accounts = await trpc.userData.getUserAndAccountBySessionToken
-        .query({ token: session.session ?? '' })
-        .then((res) => res.accounts);
+    const userAndAccount = await trpc.userData.getUserAndAccountBySessionToken.query({
+        token: session.session ?? '',
+    });
+    const { users, accounts } = userAndAccount as any;
 
     const incomingData: User = await trpc.userData.getUserData.query({ userId: incomingUser.id });
     const scheduleSaveState = 'userData' in incomingData ? incomingData.userData : incomingData;
@@ -235,7 +251,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
 
             scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
 
-            await saveSchedule(accounts.providerAccountId, true);
+            await saveSchedule(accounts.providerAccountId, true, users);
 
             await trpc.userData.flagImportedSchedule.mutate({
                 providerId: username,
