@@ -28,13 +28,15 @@ import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleS
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 
 /*
- * Always start week on Saturday for finals potentially on weekends.
- * CALENDAR_VIEWS will set the correct day range
+//  * Always start week on Saturday for finals potentially on weekends.
+//  * CALENDAR_VIEWS will set the correct day range
+ * Start week on Sunday so Saturday appears after Friday.
+ * This ensures the standard week layout: Su, M, Tu, W, Th, F, Sa
  */
 // eslint-disable-next-line import/no-named-as-default-member
 moment.updateLocale('en-us', {
     week: {
-        dow: 6,
+        dow: 0, // Sunday = 0, Monday = 1, ..., Saturday = 6
     },
 });
 
