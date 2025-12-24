@@ -38,6 +38,16 @@ const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
 
 const toMutable = <T>(arr: readonly T[]): T[] => arr as T[];
 
+const isCourseOffered = (
+    department: string, 
+    courseNumber: string, 
+    termSectionCodes: Record<string, SectionSearchResult>): boolean => {
+        return Object.values(termSectionCodes).some(
+            (section) => {
+                return section.department === department && section.courseNumber === courseNumber;
+        })
+}
+
 const searchRouter = router({
     doSearch: procedure
         .input(z.object({ query: z.string(), term: z.string() }))
@@ -84,14 +94,25 @@ const searchRouter = router({
                           keys: ['id', 'alias'],
                           limit: MAX_AUTOCOMPLETE_RESULTS - matchedSections.length,
                       });
-
+            
             const matchedCourses =
                 matchedSections.length + matchedDepts.length === MAX_AUTOCOMPLETE_RESULTS
                     ? []
                     : fuzzysort.go(query, searchData.courses, {
                           keys: ['id', 'name', 'alias', 'metadata.department', 'metadata.number'],
                           limit: MAX_AUTOCOMPLETE_RESULTS - matchedDepts.length - matchedSections.length,
+                      }).map((course) => {
+                        return {...course, obj: {...course.obj, isOffered: isCourseOffered(
+                            course.obj.metadata.department, 
+                            course.obj.metadata.number,
+                            termSectionCodes)
+                        }}
+                      }).sort((a, b) => {
+                        if (a.obj.isOffered === b.obj.isOffered) return 0;
+                        return a.obj.isOffered ? -1 : 1;
                       });
+
+
 
             return Object.fromEntries([
                 ...matchedSections.map((x) => [x.sectionCode, x]),
