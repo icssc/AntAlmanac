@@ -15,7 +15,6 @@ import {
 import { useSnackbar } from 'notistack';
 import { useState, useCallback, useEffect } from 'react';
 
-import trpc from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 
@@ -31,7 +30,7 @@ export default function ShareScheduleDialog({ open, onClose, index, fullWidth }:
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
-    const { session, sessionIsValid } = useSessionStore();
+    const { sessionIsValid } = useSessionStore();
     const { enqueueSnackbar } = useSnackbar();
 
     const scheduleName = AppStore.schedule.getScheduleName(index);
@@ -43,38 +42,23 @@ export default function ShareScheduleDialog({ open, onClose, index, fullWidth }:
             setScheduleId(null);
             setCopied(false);
 
-            const fetchScheduleId = async () => {
-                try {
-                    if (!sessionIsValid || !session) {
-                        setError('Please sign in to share schedules');
-                        setLoading(false);
-                        return;
-                    }
+            if (!sessionIsValid) {
+                setError('Please sign in to share schedules');
+                setLoading(false);
+                return;
+            }
 
-                    // Get user ID from session
-                    const userAndAccount = await trpc.userData.getUserAndAccountBySessionToken.query({
-                        token: session,
-                    });
-                    const userId = userAndAccount.users.id;
+            const id = AppStore.getScheduleId(index);
+            if (!id) {
+                setError('Unable to find a shareable ID for this schedule. Try saving your schedule first.');
+                setLoading(false);
+                return;
+            }
 
-                    // Get schedule ID
-                    const id = await trpc.userData.getScheduleIdByName.query({
-                        userId,
-                        scheduleName,
-                    });
-
-                    setScheduleId(id);
-                    setLoading(false);
-                } catch (err) {
-                    console.error('Error fetching schedule ID:', err);
-                    setError('Failed to get schedule ID. Please try again.');
-                    setLoading(false);
-                }
-            };
-
-            fetchScheduleId();
+            setScheduleId(id);
+            setLoading(false);
         }
-    }, [open, scheduleName, session, sessionIsValid]);
+    }, [open, scheduleName, sessionIsValid, index]);
 
     const shareUrl = scheduleId ? `${window.location.origin}/share/${scheduleId}` : '';
 
