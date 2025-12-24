@@ -31,9 +31,8 @@ export const useSessionStore = create<SessionState>((set) => {
             if (currentSession) {
                 await trpc.auth.invalidateSession.mutate({ token: currentSession });
                 removeLocalStorageSessionId();
-                set({ session: null, sessionIsValid: false });
-                window.location.reload();
             }
+            set({ session: null, sessionIsValid: false });
         },
     };
 });

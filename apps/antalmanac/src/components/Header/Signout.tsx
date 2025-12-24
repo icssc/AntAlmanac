@@ -3,28 +3,26 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { Avatar, Menu, ListItemIcon, ListItemText, MenuItem, IconButton } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
 import { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 
-import { AlertDialog } from '$components/AlertDialog';
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
 
-export function Signout() {
+interface SignoutProps {
+    onLogoutComplete?: () => void;
+}
+
+export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<null | User>(null);
-    const [isSignoutDialogOpen, setIsSignoutDialogOpen] = useState(false);
-    const [accountName, setAccountName] = useState('your account');
-    const navigate = useNavigate();
 
     const handleLogout = async () => {
-        // Store the user's name/email before logout
-        const name = user?.name || user?.email || 'your account';
-
-        // Close the menu
         setAnchorEl(null);
-
-        setAccountName(name);
-        setIsSignoutDialogOpen(true);
+        try {
+            await clearSession();
+            onLogoutComplete?.();
+        } catch (error) {
+            console.error('Failed to sign out', error);
+        }
     };
 
     const { session, sessionIsValid, clearSession } = useSessionStore();
@@ -88,18 +86,6 @@ export function Signout() {
                     <ListItemText>Log out</ListItemText>
                 </MenuItem>
             </Menu>
-            <AlertDialog
-                open={isSignoutDialogOpen}
-                title={`Signed out of ${accountName}`}
-                severity="info"
-                onClose={async () => {
-                    setIsSignoutDialogOpen(false);
-                    await clearSession();
-                    navigate('/');
-                }}
-            >
-                You have successfully signed out. Close this dialog to continue browsing AntAlmanac.
-            </AlertDialog>
         </div>
     );
 }
