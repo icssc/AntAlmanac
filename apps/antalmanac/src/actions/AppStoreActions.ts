@@ -230,17 +230,21 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
         scheduleComponentsToggleStore.setState({ openImportDialog: false, openLoadingSchedule: true });
 
         const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
-        if (isScheduleLoaded) {
-            openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
 
-            scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
-
-            await saveSchedule(accounts.providerAccountId, true);
-
-            await trpc.userData.flagImportedSchedule.mutate({
-                providerId: username,
-            });
+        if (!isScheduleLoaded) {
+            scheduleComponentsToggleStore.setState({ openLoadingSchedule: false });
+            return { imported: false, error: new Error('Failed to load imported schedule') };
         }
+
+        openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
+
+        scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
+
+        await saveSchedule(accounts.providerAccountId, true, users);
+
+        await trpc.userData.flagImportedSchedule.mutate({
+            providerId: username,
+        });
     }
 
     return { imported: false, error: null };
@@ -280,18 +284,19 @@ export const importSharedScheduleById = async (scheduleId: string) => {
     scheduleComponentsToggleStore.setState({ openLoadingSchedule: true });
 
     const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
-    if (isScheduleLoaded) {
-        openSnackbar('success', `Shared schedule "${incomingSchedule.scheduleName}" added to your account!`);
 
-        scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
-
-        changeCurrentSchedule(currentSchedules.scheduleIndex);
-
-        return { imported: true, error: null };
+    if (!isScheduleLoaded) {
+        scheduleComponentsToggleStore.setState({ openLoadingSchedule: false });
+        return { imported: false, error: new Error('Failed to load shared schedule') };
     }
 
-    scheduleComponentsToggleStore.setState({ openLoadingSchedule: false });
-    return { imported: false, error: new Error('Failed to load shared schedule') };
+    openSnackbar('success', `Shared schedule "${incomingSchedule.scheduleName}" added to your account!`);
+
+    scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
+
+    changeCurrentSchedule(currentSchedules.scheduleIndex);
+
+    return { imported: true, error: null };
 };
 
 export const loadSchedule = async (
