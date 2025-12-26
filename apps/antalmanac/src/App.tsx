@@ -15,6 +15,7 @@ import { ErrorPage } from '$routes/ErrorPage';
 import Feedback from '$routes/Feedback';
 import Home from '$routes/Home';
 import { OutagePage } from '$routes/OutagePage';
+import { SharedSchedulePage } from '$routes/SharedSchedulePage';
 import AppThemeProvider from '$src/app/Theme';
 
 /**
@@ -57,7 +58,7 @@ const BROWSER_ROUTER = createBrowserRouter([
             },
             {
                 path: '/share/:scheduleId',
-                element: <Home />,
+                element: <SharedSchedulePage />,
                 errorElement: <ErrorPage />,
             },
             {

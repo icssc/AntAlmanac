@@ -662,11 +662,25 @@ export class Schedules {
     }
 
     getCurrentSkeletonSchedule(): ShortCourseSchedule {
-        return this.skeletonSchedules[this.currentScheduleIndex];
+        const schedule = this.skeletonSchedules[this.currentScheduleIndex];
+        if (!schedule) {
+            // Return empty schedule if index is out of bounds
+            return {
+                scheduleName: '',
+                courses: [],
+                customEvents: [],
+                scheduleNote: '',
+            };
+        }
+        return schedule;
     }
 
     getSkeletonScheduleNames(): string[] {
         return this.skeletonSchedules.map((schedule) => schedule.scheduleName);
+    }
+
+    getSchedules(): Schedule[] {
+        return this.schedules;
     }
 
     setSkeletonSchedules(skeletonSchedules: ShortCourseSchedule[]) {

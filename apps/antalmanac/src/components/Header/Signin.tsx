@@ -15,17 +15,10 @@ import {
     TextField,
     AlertColor,
 } from '@mui/material';
-import { useSnackbar } from 'notistack';
 import { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
-import {
-    loadSchedule,
-    saveSchedule,
-    loginUser,
-    loadScheduleWithSessionToken,
-    importSharedScheduleById,
-} from '$actions/AppStoreActions';
+import { loadSchedule, saveSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
@@ -197,6 +190,7 @@ const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = 
 
 export const Signin = () => {
     const isDark = useThemeStore((store) => store.isDark);
+    const location = useLocation();
 
     const { updateSession } = useSessionStore();
 
@@ -209,8 +203,7 @@ export const Signin = () => {
         ALERT_MESSAGES.SCHEDULE_IMPORTED
     );
 
-    const { scheduleId } = useParams<{ scheduleId?: string }>();
-    const { enqueueSnackbar } = useSnackbar();
+    const isSharedSchedulePage = location.pathname.startsWith('/share/');
 
     const validateImportedUser = useCallback(async (userID: string) => {
         try {
@@ -258,18 +251,9 @@ export const Signin = () => {
                 await loadSchedule(userID, rememberMe, 'GUEST'); // fallback to guest
             }
 
-            if (scheduleId) {
-                try {
-                    await importSharedScheduleById(scheduleId);
-                } catch (error) {
-                    console.error('Failed to import shared schedule after sign-in:', error);
-                    enqueueSnackbar('Failed to import shared schedule from link.', { variant: 'error' });
-                }
-            }
-
             setOpenLoadingSchedule(false);
         },
-        [setOpenLoadingSchedule, updateSession, validateImportedUser, scheduleId, enqueueSnackbar]
+        [setOpenLoadingSchedule, updateSession, validateImportedUser]
     );
 
     const handleLogin = () => {
@@ -290,6 +274,11 @@ export const Signin = () => {
     }, []);
 
     useEffect(() => {
+        // Don't auto-load schedules if we're on a shared schedule page
+        if (isSharedSchedulePage) {
+            return;
+        }
+
         if (typeof Storage !== 'undefined') {
             const savedUserID = getLocalStorageUserId();
             const sessionID = getLocalStorageSessionId();
@@ -298,7 +287,7 @@ export const Signin = () => {
                 void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
             }
         }
-    }, [loadScheduleAndSetLoadingAuth]);
+    }, [loadScheduleAndSetLoadingAuth, isSharedSchedulePage]);
 
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>

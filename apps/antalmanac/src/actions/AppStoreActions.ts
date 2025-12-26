@@ -114,13 +114,21 @@ export const saveSchedule = async (providerId: string, rememberMe: boolean, post
             }
 
             try {
-                await trpc.userData.saveUserData.mutate({
+                const result = await trpc.userData.saveUserData.mutate({
                     id: providerId,
                     data: {
                         id: providerId,
                         userData: scheduleSaveState,
                     },
                 });
+
+                if (result && 'scheduleIds' in result && Array.isArray(result.scheduleIds)) {
+                    const schedules = AppStore.getSchedules();
+                    for (let i = 0; i < Math.min(schedules.length, result.scheduleIds.length); i++) {
+                        schedules[i].id = result.scheduleIds[i];
+                    }
+                    AppStore.emit('scheduleNamesChange');
+                }
 
                 if (useSessionStore.getState().sessionIsValid) {
                     openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
@@ -159,13 +167,23 @@ export async function autoSaveSchedule(providerID: string, postHog?: PostHog) {
 
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
     try {
-        await trpc.userData.saveUserData.mutate({
+        const result = await trpc.userData.saveUserData.mutate({
             id: providerID,
             data: {
                 id: providerID,
                 userData: scheduleSaveState,
             },
         });
+
+        // Update schedule IDs in AppStore after saving
+        if (result && 'scheduleIds' in result && Array.isArray(result.scheduleIds)) {
+            const schedules = AppStore.getSchedules();
+            for (let i = 0; i < Math.min(schedules.length, result.scheduleIds.length); i++) {
+                schedules[i].id = result.scheduleIds[i];
+            }
+            // Emit events to notify components of the ID updates
+            AppStore.emit('scheduleNamesChange');
+        }
 
         deleteTempSaveData();
         AppStore.saveSchedule();

@@ -248,7 +248,10 @@ export class RDS {
      * @param userData The object of data containing the user's schedules and courses
      * @returns The user's ID
      */
-    static async upsertUserData(db: DatabaseOrTransaction, userData: User): Promise<string> {
+    static async upsertUserData(
+        db: DatabaseOrTransaction,
+        userData: User
+    ): Promise<{ userId: string; scheduleIds: string[] }> {
         return db.transaction(async (tx) => {
             const account = await this.registerUserAccount(
                 db,
@@ -276,7 +279,7 @@ export class RDS {
                 await tx.update(users).set({ currentScheduleId: currentScheduleId }).where(eq(users.id, userId));
             }
 
-            return userId;
+            return { userId, scheduleIds };
         });
     }
 
@@ -380,7 +383,10 @@ export class RDS {
      * @param scheduleId - The unique identifier of the schedule.
      * @returns A promise that resolves to a ShortCourseSchedule object, or null if the schedule is not found.
      */
-    static async getSharedScheduleById(db: DatabaseOrTransaction, scheduleId: string): Promise<(ShortCourseSchedule & { id: string; index: number }) | null> {
+    static async getSharedScheduleById(
+        db: DatabaseOrTransaction,
+        scheduleId: string
+    ): Promise<(ShortCourseSchedule & { id: string; index: number }) | null> {
         return db.transaction(async (tx) => {
             const schedule = await tx
                 .select()
