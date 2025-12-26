@@ -1,5 +1,5 @@
 import { Tab, useMediaQuery, useTheme } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { ScheduleManagementTabInfo } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useTabStore } from '$stores/TabStore';
@@ -13,10 +13,44 @@ export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps
     const { setActiveTabValue } = useTabStore();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const location = useLocation();
 
-    const handleClick = () => {
+    const isSharedSchedulePage = location.pathname.startsWith('/share/');
+
+    const handleClick = (e: React.MouseEvent) => {
         setActiveTabValue(value);
+        if (isSharedSchedulePage) {
+            e.preventDefault();
+        }
     };
+
+    if (isSharedSchedulePage) {
+        return (
+            <Tab
+                id={tab.id}
+                icon={tab.icon}
+                iconPosition={isMobile ? 'top' : 'start'}
+                sx={{
+                    ...(isMobile
+                        ? {
+                              minHeight: 'unset',
+                              minWidth: '25%',
+                              height: 56,
+                          }
+                        : {
+                              minHeight: 'auto',
+                              height: '44px',
+                              padding: 3,
+                              minWidth: '33%',
+                          }),
+                    display: isMobile || !tab.mobile ? 'flex' : 'none',
+                }}
+                label={tab.label}
+                onClick={handleClick}
+                value={value}
+            />
+        );
+    }
 
     return (
         <Tab

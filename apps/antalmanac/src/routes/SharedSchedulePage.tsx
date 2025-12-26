@@ -199,7 +199,7 @@ export function SharedSchedulePage() {
                     >
                         <Stack direction="row" justifyContent="space-between" alignItems="center">
                             <Typography variant="h6" component="h1">
-                                Viewing: {scheduleName}
+                                Viewing Shared Schedule: {scheduleName}
                             </Typography>
                             {sessionIsValid && (
                                 <Button variant="contained" onClick={handleAddToMySchedules}>
