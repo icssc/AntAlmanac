@@ -24,14 +24,15 @@ export function AuthPage() {
     const handleSearchParamsChange = useCallback(async () => {
         try {
             const code = searchParams.get('code');
-            if (!code) {
+            const state = searchParams.get('state');
+            if (!code || !state) {
                 window.location.href = '/';
                 return;
             }
 
             const { sessionToken, userId, providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
                 code: code,
-                token: '',
+                state: state,
             });
 
             const fromLoading = getLocalStorageFromLoading() ?? '';
@@ -89,10 +90,16 @@ export function AuthPage() {
                     scheduleSaveState.scheduleIndex = saveState.schedules.length - 1;
                 }
 
+                // Fetch user info to enable proper account migration
+                const userInfo = await trpc.userData.getUserByUid.query({ userId });
+
                 await trpc.userData.saveUserData.mutate({
                     id: providerId,
                     data: {
                         id: providerId,
+                        email: userInfo?.email ?? undefined,
+                        name: userInfo?.name ?? undefined,
+                        avatar: userInfo?.avatar ?? undefined,
                         userData: scheduleSaveState,
                     },
                 });

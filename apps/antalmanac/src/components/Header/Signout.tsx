@@ -3,6 +3,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { Avatar, Menu, ListItemIcon, ListItemText, MenuItem, IconButton } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
 import { useEffect, useState, useCallback, type MouseEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
@@ -15,6 +16,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<null | User>(null);
     const { session, sessionIsValid, clearSession } = useSessionStore();
+    const navigate = useNavigate();
 
     const open = Boolean(anchorEl);
     const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
@@ -26,11 +28,25 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
 
     const handleLogout = async () => {
         setAnchorEl(null);
+        if (!session) {
+            onLogoutComplete?.();
+            navigate('/');
+            return;
+        }
+
         try {
+            const { logoutUrl } = await trpc.userData.logout.mutate({
+                sessionToken: session,
+                redirectUrl: window.location.origin,
+            });
             await clearSession();
             onLogoutComplete?.();
+            window.location.href = logoutUrl;
         } catch (error) {
-            console.error('Failed to sign out', error);
+            console.error('Error during logout', error);
+            await clearSession();
+            onLogoutComplete?.();
+            navigate('/');
         }
     };
 
@@ -88,4 +104,3 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
         </div>
     );
 }
-

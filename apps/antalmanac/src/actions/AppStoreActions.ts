@@ -90,7 +90,12 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
     return true;
 }
 
-export const saveSchedule = async (providerId: string, rememberMe: boolean, postHog?: PostHog) => {
+export const saveSchedule = async (
+    providerId: string,
+    rememberMe: boolean,
+    userInfo?: { email?: string; name?: string; avatar?: string },
+    postHog?: PostHog
+) => {
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
@@ -118,6 +123,9 @@ export const saveSchedule = async (providerId: string, rememberMe: boolean, post
                     id: providerId,
                     data: {
                         id: providerId,
+                        email: userInfo?.email,
+                        name: userInfo?.name,
+                        avatar: userInfo?.avatar,
                         userData: scheduleSaveState,
                     },
                 });
@@ -147,7 +155,11 @@ export const saveSchedule = async (providerId: string, rememberMe: boolean, post
     }
 };
 
-export async function autoSaveSchedule(providerID: string, postHog?: PostHog) {
+export async function autoSaveSchedule(
+    providerID: string,
+    userInfo?: { email?: string; name?: string; avatar?: string },
+    postHog?: PostHog
+) {
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
@@ -163,6 +175,9 @@ export async function autoSaveSchedule(providerID: string, postHog?: PostHog) {
             id: providerID,
             data: {
                 id: providerID,
+                email: userInfo?.email,
+                name: userInfo?.name,
+                avatar: userInfo?.avatar,
                 userData: scheduleSaveState,
             },
         });
@@ -214,9 +229,10 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
         return { imported: true, error: null };
     }
 
-    const accounts = await trpc.userData.getUserAndAccountBySessionToken
-        .query({ token: session.session ?? '' })
-        .then((res) => res.accounts);
+    const userAndAccount = await trpc.userData.getUserAndAccountBySessionToken.query({
+        token: session.session ?? '',
+    });
+    const { users, accounts } = userAndAccount as any;
 
     const incomingData: User = await trpc.userData.getUserData.query({ userId: incomingUser.id });
     const scheduleSaveState = 'userData' in incomingData ? incomingData.userData : incomingData;
@@ -235,7 +251,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
 
             scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
 
-            await saveSchedule(accounts.providerAccountId, true);
+            await saveSchedule(accounts.providerAccountId, true, users);
 
             await trpc.userData.flagImportedSchedule.mutate({
                 providerId: username,
@@ -265,7 +281,7 @@ export const importScheduleWithUsername = async (username: string) => {
 export const loadSchedule = async (
     providerId: string,
     rememberMe: boolean,
-    accountType: 'GOOGLE' | 'GUEST',
+    accountType: 'OIDC' | 'GOOGLE' | 'GUEST',
     postHog?: PostHog
 ) => {
     logAnalytics(postHog, {
@@ -351,7 +367,7 @@ export const loadScheduleWithSessionToken = async () => {
         }
         return false;
     } catch (e) {
-        console.error(e);
+        console.error('Error in loadScheduleWithSessionToken:', e);
         openSnackbar('error', `Failed to load schedules. If this continues to happen, please submit a feedback form.`);
         return false;
     }
@@ -398,9 +414,19 @@ export const addCustomEvent = (customEvent: RepeatingCustomEvent, scheduleIndice
 };
 
 export const undoDelete = (event: KeyboardEvent | null) => {
-    if (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey))) {
+    if (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey) && !event.shiftKey)) {
         AppStore.undoAction();
     }
+};
+
+export const redoDelete = (event: KeyboardEvent | null) => {
+    if (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey) && event.shiftKey)) {
+        AppStore.redoAction();
+    }
+};
+
+export const redoAction = () => {
+    AppStore.redoAction();
 };
 
 export const changeCurrentSchedule = (newScheduleIndex: number) => {
