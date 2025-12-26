@@ -203,13 +203,13 @@ export const mergeShortCourseSchedules = (
 ) => {
     const existingScheduleNames = new Set(currentSchedules.map((s: ShortCourseSchedule) => s.scheduleName));
     const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
-        let scheduleName = schedule.scheduleName;
-        if (existingScheduleNames.has(schedule.scheduleName)) {
-            scheduleName = scheduleName + '(1)';
+        let scheduleName = `${importMessage}${schedule.scheduleName}`;
+        if (existingScheduleNames.has(scheduleName)) {
+            scheduleName = `${scheduleName}(1)`;
         }
         return {
             ...schedule,
-            scheduleName: `${importMessage}${scheduleName}`,
+            scheduleName: scheduleName,
         };
     });
     currentSchedules.push(...cacheSchedule);

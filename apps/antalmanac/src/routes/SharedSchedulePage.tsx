@@ -1,6 +1,7 @@
 import { useMediaQuery, useTheme, Stack, Alert, Button, Box, Typography } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
+import type { ScheduleSaveState } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Split from 'react-split';
@@ -138,9 +139,6 @@ export function SharedSchedulePage() {
 
         return () => {
             setOpenLoadingSchedule(false);
-            if (AppStore.getSkeletonMode()) {
-                AppStore.exitSkeletonMode();
-            }
         };
     }, [scheduleId, sessionIsValid, setOpenLoadingSchedule]);
 
@@ -150,12 +148,40 @@ export function SharedSchedulePage() {
         }
 
         try {
+            if (AppStore.getSkeletonMode()) {
+                AppStore.exitSkeletonMode();
+            }
+
+            const sessionToken = useSessionStore.getState().session;
+            if (!sessionToken) {
+                throw new Error('No session token available');
+            }
+
+            setOpenLoadingSchedule(true);
+
+            const userDataResponse = await trpc.userData.getUserDataWithSession.query({
+                refreshToken: sessionToken,
+            });
+            const scheduleSaveState =
+                (userDataResponse as { userData?: ScheduleSaveState }).userData ?? userDataResponse;
+
+            if (scheduleSaveState) {
+                await AppStore.loadSchedule(scheduleSaveState as ScheduleSaveState);
+            }
+
+            setOpenLoadingSchedule(false);
+
             await importSharedScheduleById(scheduleId);
             navigate('/');
         } catch (err) {
             console.error('Error adding schedule to account:', err);
+            setOpenLoadingSchedule(false);
+            if (AppStore.getSkeletonMode()) {
+                AppStore.exitSkeletonMode();
+            }
+            navigate('/');
         }
-    }, [scheduleId, sessionIsValid, navigate]);
+    }, [scheduleId, sessionIsValid, navigate, setOpenLoadingSchedule]);
 
     if (error) {
         return (
