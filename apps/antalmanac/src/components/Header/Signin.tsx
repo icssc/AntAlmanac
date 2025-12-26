@@ -274,20 +274,32 @@ export const Signin = () => {
     }, []);
 
     useEffect(() => {
-        // Don't auto-load schedules if we're on a shared schedule page
-        if (isSharedSchedulePage) {
-            return;
-        }
-
         if (typeof Storage !== 'undefined') {
             const savedUserID = getLocalStorageUserId();
             const sessionID = getLocalStorageSessionId();
 
             if (savedUserID != null || sessionID !== null) {
-                void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
+                if (isSharedSchedulePage) {
+                    const sessionToken = getLocalStorageSessionId() ?? '';
+                    if (sessionToken) {
+                        trpc.auth.validateSession
+                            .query({ token: sessionToken })
+                            .then((validSession) => {
+                                if (validSession) {
+                                    updateSession(sessionToken);
+                                }
+                            })
+                            .catch((err) => {
+                                console.error('Error validating session:', err);
+                            });
+                    }
+                } else {
+                    // Normal behavior: load schedules
+                    void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
+                }
             }
         }
-    }, [loadScheduleAndSetLoadingAuth, isSharedSchedulePage]);
+    }, [loadScheduleAndSetLoadingAuth, isSharedSchedulePage, updateSession]);
 
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
@@ -295,7 +307,7 @@ export const Signin = () => {
                 id="load-button"
                 action={loadScheduleAndSetLoading}
                 actionSecondary={handleLogin}
-                disabled={skeletonMode}
+                disabled={skeletonMode && !isSharedSchedulePage}
                 loading={loadingSchedule}
                 colorType={isDark ? 'secondary' : 'primary'}
                 isDark={isDark}

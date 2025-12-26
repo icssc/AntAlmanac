@@ -10,13 +10,13 @@ import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { Header } from '$components/Header/Header';
 import { HelpMenu } from '$components/HelpMenu/HelpMenu';
 import InstallPWABanner from '$components/InstallPWABanner';
-import { LoadingScreen } from '$components/LoadingScreen';
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
 import trpc from '$lib/api/trpc';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 import { useSessionStore } from '$stores/SessionStore';
 
@@ -83,7 +83,7 @@ export function SharedSchedulePage() {
     const navigate = useNavigate();
     const { scheduleId } = useParams<{ scheduleId: string }>();
     const { sessionIsValid } = useSessionStore();
-    const [loading, setLoading] = useState(true);
+    const { setOpenLoadingSchedule } = scheduleComponentsToggleStore();
     const [error, setError] = useState<string | null>(null);
     const [scheduleName, setScheduleName] = useState<string | null>(null);
 
@@ -93,21 +93,18 @@ export function SharedSchedulePage() {
         const loadSharedSchedule = async () => {
             if (!scheduleId) {
                 setError('Invalid schedule ID');
-                setLoading(false);
+                setOpenLoadingSchedule(false);
                 return;
             }
 
             try {
-                setLoading(true);
+                setOpenLoadingSchedule(true);
                 setError(null);
 
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const sharedSchedule: any = await trpc.userData.getSharedSchedule.query({
+                const sharedSchedule = await trpc.userData.getSharedSchedule.query({
                     scheduleId,
                 });
 
-                // Load the shared schedule as a full schedule so it shows on the calendar
-                // We'll keep skeleton mode enabled to prevent editing
                 const scheduleSaveState = {
                     schedules: [
                         {
@@ -121,34 +118,31 @@ export function SharedSchedulePage() {
                     scheduleIndex: 0,
                 };
 
-                // Load as full schedule so calendar can display it (fetches course details from WebSOC)
                 const loadSuccess = await AppStore.loadSchedule(scheduleSaveState);
 
                 if (!loadSuccess) {
                     throw new Error('Failed to load shared schedule');
                 }
-                // Re-enable skeleton mode after loading to prevent editing
                 AppStore.skeletonMode = true;
                 AppStore.emit('skeletonModeChange');
                 setScheduleName(sharedSchedule.scheduleName);
-                setLoading(false);
+                setOpenLoadingSchedule(false);
             } catch (err) {
                 console.error('Error loading shared schedule:', err);
                 setError('Failed to load shared schedule. It may not exist or may have been deleted.');
-                setLoading(false);
+                setOpenLoadingSchedule(false);
             }
         };
 
         loadSharedSchedule();
 
-        // Cleanup: exit skeleton mode when leaving the page
         return () => {
-            // Only cleanup if we're still in skeleton mode (user navigated away)
+            setOpenLoadingSchedule(false);
             if (AppStore.getSkeletonMode()) {
                 AppStore.exitSkeletonMode();
             }
         };
-    }, [scheduleId, sessionIsValid]); // Re-load if session status changes (user logs in/out)
+    }, [scheduleId, sessionIsValid, setOpenLoadingSchedule]);
 
     const handleAddToMySchedules = useCallback(async () => {
         if (!scheduleId || !sessionIsValid) {
@@ -162,10 +156,6 @@ export function SharedSchedulePage() {
             console.error('Error adding schedule to account:', err);
         }
     }, [scheduleId, sessionIsValid, navigate]);
-
-    if (loading) {
-        return <LoadingScreen open={true} />;
-    }
 
     if (error) {
         return (
