@@ -102,6 +102,10 @@ export function SharedSchedulePage() {
                 setOpenLoadingSchedule(true);
                 setError(null);
 
+                if (AppStore.getSkeletonMode()) {
+                    AppStore.exitSkeletonMode();
+                }
+
                 const sharedSchedule = await trpc.userData.getSharedSchedule.query({
                     scheduleId,
                 });
@@ -123,6 +127,9 @@ export function SharedSchedulePage() {
 
                 if (!loadSuccess) {
                     throw new Error('Failed to load shared schedule');
+                }
+                if (AppStore.getCurrentScheduleIndex() !== 0) {
+                    AppStore.changeCurrentSchedule(0);
                 }
                 AppStore.skeletonMode = true;
                 AppStore.emit('skeletonModeChange');
