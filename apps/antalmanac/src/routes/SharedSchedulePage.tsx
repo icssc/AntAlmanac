@@ -2,12 +2,13 @@ import { Close } from '@mui/icons-material';
 import { useMediaQuery, useTheme, Stack, Alert, Button, Box, Typography, IconButton } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
-import type { ScheduleSaveState } from '@packages/antalmanac-types';
+import type { ScheduleSaveState, ShortCourseSchedule, ShortCourse } from '@packages/antalmanac-types';
+import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Split from 'react-split';
 
-import { importSharedScheduleById } from '$actions/AppStoreActions';
+import { importSharedScheduleById, openSnackbar } from '$actions/AppStoreActions';
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { Header } from '$components/Header/Header';
 import { HelpMenu } from '$components/HelpMenu/HelpMenu';
@@ -16,6 +17,7 @@ import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
 import trpc from '$lib/api/trpc';
+import { getDefaultTerm } from '$lib/termData';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -172,6 +174,19 @@ export function SharedSchedulePage() {
                         await AppStore.loadSchedule(scheduleSaveState as ScheduleSaveState);
                     }
                 }
+            } else {
+                const defaultTerm = getDefaultTerm();
+                const emptyScheduleData = {
+                    scheduleName: defaultTerm.shortName.replaceAll(' ', '-'),
+                    courses: [] as ShortCourse[],
+                    customEvents: [] as RepeatingCustomEvent[],
+                    scheduleNote: '',
+                } as ShortCourseSchedule;
+                const emptySchedule: ScheduleSaveState = {
+                    schedules: [emptyScheduleData],
+                    scheduleIndex: 0,
+                };
+                await AppStore.loadSchedule(emptySchedule);
             }
 
             setOpenLoadingSchedule(false);
@@ -184,7 +199,7 @@ export function SharedSchedulePage() {
     }, [navigate, sessionIsValid, setOpenLoadingSchedule]);
 
     const handleAddToMySchedules = useCallback(async () => {
-        if (!scheduleId || !sessionIsValid) {
+        if (!scheduleId) {
             return;
         }
 
@@ -195,22 +210,42 @@ export function SharedSchedulePage() {
                 AppStore.exitSkeletonMode();
             }
 
-            const sessionToken = useSessionStore.getState().session;
-            if (!sessionToken) {
-                throw new Error('No session token available');
+            // For logged-in users, load their saved schedules first
+            if (sessionIsValid) {
+                const sessionToken = useSessionStore.getState().session;
+                if (!sessionToken) {
+                    throw new Error('No session token available');
+                }
+
+                const userDataResponse = await trpc.userData.getUserDataWithSession.query({
+                    refreshToken: sessionToken,
+                });
+                const scheduleSaveState =
+                    (userDataResponse as { userData?: ScheduleSaveState }).userData ?? userDataResponse;
+
+                if (scheduleSaveState) {
+                    await AppStore.loadSchedule(scheduleSaveState as ScheduleSaveState);
+                }
+
+                await importSharedScheduleById(scheduleId);
+            } else {
+                const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
+                const sharedSchedule = await trpc.userData.getSharedSchedule.query({ scheduleId });
+                const currentSchedule = currentSchedules.schedules[currentSchedules.scheduleIndex];
+
+                // TODO find a better way to stop the duplicate schedule from being added when not logged in
+                if (currentSchedule && currentSchedule.scheduleName === sharedSchedule.scheduleName) {
+                    const prefixedName = `(shared)-${sharedSchedule.scheduleName}`;
+                    AppStore.renameSchedule(currentSchedules.scheduleIndex, prefixedName);
+                    openSnackbar(
+                        'success',
+                        `Shared schedule "${sharedSchedule.scheduleName}" added to your schedules!`
+                    );
+                } else {
+                    // Otherwise, import it normally
+                    await importSharedScheduleById(scheduleId);
+                }
             }
-
-            const userDataResponse = await trpc.userData.getUserDataWithSession.query({
-                refreshToken: sessionToken,
-            });
-            const scheduleSaveState =
-                (userDataResponse as { userData?: ScheduleSaveState }).userData ?? userDataResponse;
-
-            if (scheduleSaveState) {
-                await AppStore.loadSchedule(scheduleSaveState as ScheduleSaveState);
-            }
-
-            await importSharedScheduleById(scheduleId);
 
             setOpenLoadingSchedule(false);
             navigate('/');
@@ -259,11 +294,9 @@ export function SharedSchedulePage() {
                                 Viewing Shared Schedule: {scheduleName}
                             </Typography>
                             <Stack direction="row" spacing={1} alignItems="center">
-                                {sessionIsValid && (
-                                    <Button variant="contained" onClick={handleAddToMySchedules}>
-                                        Add to My Schedules
-                                    </Button>
-                                )}
+                                <Button variant="contained" onClick={handleAddToMySchedules}>
+                                    Add to My Schedules
+                                </Button>
                                 <IconButton
                                     aria-label="Exit shared schedule"
                                     onClick={handleExitSharedSchedule}
