@@ -1,4 +1,5 @@
-import { useMediaQuery, useTheme, Stack, Alert, Button, Box, Typography } from '@mui/material';
+import { Close } from '@mui/icons-material';
+import { useMediaQuery, useTheme, Stack, Alert, Button, Box, Typography, IconButton } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
 import type { ScheduleSaveState } from '@packages/antalmanac-types';
@@ -149,12 +150,47 @@ export function SharedSchedulePage() {
         };
     }, [scheduleId, sessionIsValid, setOpenLoadingSchedule]);
 
+    const handleExitSharedSchedule = useCallback(async () => {
+        try {
+            setOpenLoadingSchedule(true);
+
+            if (AppStore.getSkeletonMode()) {
+                AppStore.exitSkeletonMode();
+            }
+
+            if (sessionIsValid) {
+                const sessionToken = useSessionStore.getState().session;
+
+                if (sessionToken) {
+                    const userDataResponse = await trpc.userData.getUserDataWithSession.query({
+                        refreshToken: sessionToken,
+                    });
+                    const scheduleSaveState =
+                        (userDataResponse as { userData?: ScheduleSaveState }).userData ?? userDataResponse;
+
+                    if (scheduleSaveState) {
+                        await AppStore.loadSchedule(scheduleSaveState as ScheduleSaveState);
+                    }
+                }
+            }
+
+            setOpenLoadingSchedule(false);
+            navigate('/');
+        } catch (err) {
+            console.error('Error exiting shared schedule:', err);
+            setOpenLoadingSchedule(false);
+            navigate('/');
+        }
+    }, [navigate, sessionIsValid, setOpenLoadingSchedule]);
+
     const handleAddToMySchedules = useCallback(async () => {
         if (!scheduleId || !sessionIsValid) {
             return;
         }
 
         try {
+            setOpenLoadingSchedule(true);
+
             if (AppStore.getSkeletonMode()) {
                 AppStore.exitSkeletonMode();
             }
@@ -163,8 +199,6 @@ export function SharedSchedulePage() {
             if (!sessionToken) {
                 throw new Error('No session token available');
             }
-
-            setOpenLoadingSchedule(true);
 
             const userDataResponse = await trpc.userData.getUserDataWithSession.query({
                 refreshToken: sessionToken,
@@ -176,9 +210,9 @@ export function SharedSchedulePage() {
                 await AppStore.loadSchedule(scheduleSaveState as ScheduleSaveState);
             }
 
-            setOpenLoadingSchedule(false);
-
             await importSharedScheduleById(scheduleId);
+
+            setOpenLoadingSchedule(false);
             navigate('/');
         } catch (err) {
             console.error('Error adding schedule to account:', err);
@@ -224,11 +258,20 @@ export function SharedSchedulePage() {
                             <Typography variant="h6" component="h1">
                                 Viewing Shared Schedule: {scheduleName}
                             </Typography>
-                            {sessionIsValid && (
-                                <Button variant="contained" onClick={handleAddToMySchedules}>
-                                    Add to My Schedules
-                                </Button>
-                            )}
+                            <Stack direction="row" spacing={1} alignItems="center">
+                                {sessionIsValid && (
+                                    <Button variant="contained" onClick={handleAddToMySchedules}>
+                                        Add to My Schedules
+                                    </Button>
+                                )}
+                                <IconButton
+                                    aria-label="Exit shared schedule"
+                                    onClick={handleExitSharedSchedule}
+                                    color="inherit"
+                                >
+                                    <Close />
+                                </IconButton>
+                            </Stack>
                         </Stack>
                     </Box>
                 )}
