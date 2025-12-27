@@ -262,6 +262,38 @@ export const importScheduleWithUsername = async (username: string) => {
     }
 };
 
+export const importSharedScheduleById = async (scheduleId: string) => {
+    const sharedSchedule = await trpc.userData.getSharedSchedule.query({ scheduleId });
+
+    const incomingSchedule: ShortCourseSchedule = {
+        scheduleName: sharedSchedule.scheduleName,
+        scheduleNote: sharedSchedule.scheduleNote || '',
+        courses: sharedSchedule.courses,
+        customEvents: sharedSchedule.customEvents,
+    };
+
+    const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
+
+    mergeShortCourseSchedules(currentSchedules.schedules, [incomingSchedule], '(shared)-');
+    currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
+
+    scheduleComponentsToggleStore.setState({ openLoadingSchedule: true });
+
+    const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
+    if (isScheduleLoaded) {
+        openSnackbar('success', `Shared schedule "${incomingSchedule.scheduleName}" added to your account!`);
+
+        scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
+
+        changeCurrentSchedule(currentSchedules.scheduleIndex);
+
+        return { imported: true, error: null };
+    }
+
+    scheduleComponentsToggleStore.setState({ openLoadingSchedule: false });
+    return { imported: false, error: new Error('Failed to load shared schedule') };
+};
+
 export const loadSchedule = async (
     providerId: string,
     rememberMe: boolean,

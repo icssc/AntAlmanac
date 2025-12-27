@@ -349,6 +349,67 @@ export class RDS {
     }
 
     /**
+     * Gets the schedule ID for a schedule by userId and schedule name.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param userId - The ID of the user who owns the schedule.
+     * @param scheduleName - The name of the schedule.
+     * @returns A promise that resolves to the schedule ID, or null if not found.
+     */
+    static async getScheduleIdByName(
+        db: DatabaseOrTransaction,
+        userId: string,
+        scheduleName: string
+    ): Promise<string | null> {
+        return db.transaction(async (tx) => {
+            const schedule = await tx
+                .select({ id: schedules.id })
+                .from(schedules)
+                .where(and(eq(schedules.userId, userId), eq(schedules.name, scheduleName)))
+                .limit(1)
+                .then((res) => res[0]);
+
+            return schedule?.id ?? null;
+        });
+    }
+
+    /**
+     * Retrieves a schedule by schedule ID. All schedules are publicly accessible via their ID.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param scheduleId - The unique identifier of the schedule.
+     * @returns A promise that resolves to a ShortCourseSchedule object, or null if the schedule is not found.
+     */
+    static async getSharedScheduleById(db: DatabaseOrTransaction, scheduleId: string): Promise<(ShortCourseSchedule & { id: string; index: number }) | null> {
+        return db.transaction(async (tx) => {
+            const schedule = await tx
+                .select()
+                .from(schedules)
+                .where(eq(schedules.id, scheduleId))
+                .then((res) => res[0]);
+
+            if (!schedule) {
+                return null;
+            }
+
+            const sectionResults = await tx
+                .select()
+                .from(schedules)
+                .where(eq(schedules.id, scheduleId))
+                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+
+            const customEventResults = await tx
+                .select()
+                .from(schedules)
+                .where(eq(schedules.id, scheduleId))
+                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+
+            const scheduleArray = RDS.aggregateUserData(sectionResults, customEventResults);
+            return scheduleArray[0] ?? null;
+        });
+    }
+
+    /**
      * Retrieves user data by user ID, including schedules and custom events.
      *
      * @param db - The database or transaction object to use for the query.

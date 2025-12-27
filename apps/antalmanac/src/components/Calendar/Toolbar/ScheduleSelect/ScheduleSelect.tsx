@@ -8,6 +8,7 @@ import { SortableList } from '$components/Calendar/Toolbar/ScheduleSelect/drag-a
 import { AddScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton';
 import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/DeleteScheduleButton';
 import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
+import { ShareScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/ShareScheduleButton';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
@@ -221,6 +222,7 @@ export function SelectSchedulePopover() {
                                         </Box>
 
                                         <Box display="flex" alignItems="center" gap={0.5}>
+                                            <ShareScheduleButton index={index} disabled={skeletonMode} />
                                             <CopyScheduleButton index={index} disabled={skeletonMode} />
                                             <RenameScheduleButton index={index} disabled={skeletonMode} />
                                             <DeleteScheduleButton index={index} disabled={skeletonMode} />
