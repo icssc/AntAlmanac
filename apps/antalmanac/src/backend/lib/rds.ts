@@ -300,7 +300,6 @@ export class RDS {
      * deduplicating by section code and term.
      * */
     private static async upsertCourses(tx: Transaction, scheduleId: string, courses: ShortCourse[]) {
-
         if (courses.length === 0) {
             return;
         }
@@ -679,10 +678,10 @@ export class RDS {
                     sectionCode: notification.sectionCode,
                     year: notification.term.split(' ')[0],
                     quarter: notification.term.split(' ')[1],
-                    openStatus: notification.notificationStatus.openStatus,
-                    waitlistStatus: notification.notificationStatus.waitlistStatus,
-                    fullStatus: notification.notificationStatus.fullStatus,
-                    restrictionStatus: notification.notificationStatus.restrictionStatus,
+                    notifyOnOpen: notification.notifyOn.notifyOnOpen,
+                    notifyOnWaitlist: notification.notifyOn.notifyOnWaitlist,
+                    notifyOnFull: notification.notifyOn.notifyOnFull,
+                    notifyOnRestriction: notification.notifyOn.notifyOnRestriction,
                     lastUpdatedStatus: notification.lastUpdatedStatus,
                     lastCodes: notification.lastCodes,
                 })
@@ -694,10 +693,10 @@ export class RDS {
                         subscriptions.sectionCode,
                     ],
                     set: {
-                        openStatus: notification.notificationStatus.openStatus,
-                        waitlistStatus: notification.notificationStatus.waitlistStatus,
-                        fullStatus: notification.notificationStatus.fullStatus,
-                        restrictionStatus: notification.notificationStatus.restrictionStatus,
+                        notifyOnOpen: notification.notifyOn.notifyOnOpen,
+                        notifyOnWaitlist: notification.notifyOn.notifyOnWaitlist,
+                        notifyOnFull: notification.notifyOn.notifyOnFull,
+                        notifyOnRestriction: notification.notifyOn.notifyOnRestriction,
                         lastUpdatedStatus: notification.lastUpdatedStatus,
                         lastCodes: notification.lastCodes,
                     },

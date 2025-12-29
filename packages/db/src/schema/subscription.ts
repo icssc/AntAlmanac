@@ -46,22 +46,22 @@ export const subscriptions = pgTable(
         /**
          * Boolean if user wants to be notified when the section is OPEN
          */
-        openStatus: boolean('openStatus').default(false),
+        notifyOnOpen: boolean('notifyOnOpen').default(false),
 
         /**
          * Boolean if user wants to be notified when the section is WAITLISTED
          */
-        waitlistStatus: boolean('waitlistStatus').default(false),
+        notifyOnWaitlist: boolean('notifyOnWaitlist').default(false),
 
         /**
          * Boolean if user wants to be notified when the section is FULL
          */
-        fullStatus: boolean('fullStatus').default(false),
+        notifyOnFull: boolean('notifyOnFull').default(false),
 
           /**
          * Boolean if user wants to be notified when the section has RESTRICTION CODE CHANGES
          */
-        restrictionStatus: boolean('restrictionStatus').default(false),
+        notifyOnRestriction: boolean('notifyOnRestriction').default(false),
 
 
     },

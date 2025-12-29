@@ -164,9 +164,9 @@ async function getUsers(
 ): Promise<User[] | undefined> {
     try {
         const statusColumnMap: Record<WebsocSection['status'], any> = {
-            OPEN: subscriptions.openStatus,
-            Waitl: subscriptions.waitlistStatus,
-            FULL: subscriptions.fullStatus,
+            OPEN: subscriptions.notifyOnOpen,
+            Waitl: subscriptions.notifyOnWaitlist,
+            FULL: subscriptions.notifyOnFull,
             NewOnly: null,
         };
 
@@ -186,11 +186,11 @@ async function getUsers(
             .$dynamic();
 
         if (statusChanged == true && codesChanged == true) {
-            query = query.where(or(eq(statusColumn, true), eq(subscriptions.restrictionStatus, true)));
+            query = query.where(or(eq(statusColumn, true), eq(subscriptions.notifyOnRestriction, true)));
         } else if (statusChanged == true) {
             query = query.where(eq(statusColumn, true));
         } else if (codesChanged == true) {
-            query = query.where(eq(subscriptions.restrictionStatus, true));
+            query = query.where(eq(subscriptions.notifyOnRestriction, true));
         }
         const result = await query;
         return result;

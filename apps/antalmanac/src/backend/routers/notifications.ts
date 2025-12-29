@@ -3,11 +3,11 @@ import { db } from '@packages/db/src/index';
 import { RDS } from '../../backend/lib/rds';
 import { procedure, router } from '../trpc';
 
-const NotificationStatusSchema = z.object({
-    openStatus: z.boolean(),
-    waitlistStatus: z.boolean(),
-    fullStatus: z.boolean(),
-    restrictionStatus: z.boolean(),
+const NotifyOnSchema = z.object({
+    notifyOnOpen: z.boolean(),
+    notifyOnWaitlist: z.boolean(),
+    notifyOnFull: z.boolean(),
+    notifyOnRestriction: z.boolean(),
 });
 
 const NotificationSchema = z.object({
@@ -17,7 +17,7 @@ const NotificationSchema = z.object({
     sectionType: z.string(),
     lastUpdatedStatus: z.string(),
     lastCodes: z.string(),
-    notificationStatus: NotificationStatusSchema,
+    notifyOn: NotifyOnSchema,
 });
 
 const notificationsRouter = router({
