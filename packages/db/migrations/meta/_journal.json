@@ -64,6 +64,13 @@
       "when": 1766379695677,
       "tag": "0008_misty_titania",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1767048247484,
+      "tag": "0009_narrow_mac_gargan",
+      "breakpoints": true
     }
   ]
 }

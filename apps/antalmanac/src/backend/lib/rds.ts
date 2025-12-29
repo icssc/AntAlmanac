@@ -676,7 +676,7 @@ export class RDS {
                 .insert(subscriptions)
                 .values({
                     userId,
-                    sectionCode: Number(notification.sectionCode),
+                    sectionCode: notification.sectionCode,
                     year: notification.term.split(' ')[0],
                     quarter: notification.term.split(' ')[1],
                     openStatus: notification.notificationStatus.openStatus,
@@ -722,7 +722,7 @@ export class RDS {
                 })
                 .where(
                     and(
-                        eq(subscriptions.sectionCode, Number(notification.sectionCode)),
+                        eq(subscriptions.sectionCode, notification.sectionCode),
                         eq(subscriptions.year, notification.term.split(' ')[0]),
                         eq(subscriptions.quarter, notification.term.split(' ')[1])
                     )
@@ -745,7 +745,7 @@ export class RDS {
                 .where(
                     and(
                         eq(subscriptions.userId, userId),
-                        eq(subscriptions.sectionCode, Number(notification.sectionCode)),
+                        eq(subscriptions.sectionCode, notification.sectionCode),
                         eq(subscriptions.year, notification.term.split(' ')[0]),
                         eq(subscriptions.quarter, notification.term.split(' ')[1])
                     )

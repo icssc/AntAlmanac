@@ -1,0 +1,1 @@
+ALTER TABLE "subscriptions" ALTER COLUMN "sectionCode" SET DATA TYPE text;

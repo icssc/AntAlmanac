@@ -13,7 +13,7 @@ export const subscriptions = pgTable(
         /**
          * Section code.
          */
-        sectionCode: integer('sectionCode').notNull(),
+        sectionCode: text('sectionCode').notNull(),
 
         /**
          * Year of subscription
