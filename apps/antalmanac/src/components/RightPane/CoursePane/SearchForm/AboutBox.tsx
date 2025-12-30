@@ -61,7 +61,6 @@ export function AboutBox() {
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
-                        marginBottom: '10px',
                     }}
                 >
                     <Box>
