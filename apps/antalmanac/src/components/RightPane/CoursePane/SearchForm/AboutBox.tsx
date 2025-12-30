@@ -12,19 +12,24 @@ import { setLocalStorageAboutBoxDismissalTime } from '$lib/localStorage';
 import { useHelpMenuStore } from '$stores/HelpMenuStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
-// TODO: Replace helpbox images
 const images = [
     {
         src: '/helpbox1.png',
-        alt: '1. Enter a department or course name to search',
+        title: 'Search',
+        caption: 'Enter a department or course name to search.',
+        alt: 'Search Box image',
     },
     {
         src: '/helpbox2.png',
-        alt: '2. Add courses to your schedule',
+        title: 'Add',
+        caption: 'Add courses to your schedule.',
+        alt: 'Add Course image',
     },
     {
         src: '/helpbox3.png',
-        alt: '3. Save your schedule and access from anywhere!',
+        title: 'Save',
+        caption: 'Save your schedule and access from anywhere!',
+        alt: 'Save Schedule image',
     },
 ];
 
@@ -49,19 +54,38 @@ export function AboutBox() {
     }
 
     return (
-        <Paper variant="outlined" sx={{ padding: 2, marginBottom: '10px', marginRight: '5px' }}>
+        <Paper variant="outlined" sx={{ padding: 3, marginBottom: '10px', marginRight: '5px' }}>
             <Stack gap={2}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography variant="h5" fontWeight="bold">
-                        About AntAlmanac Scheduler
-                    </Typography>
-                    <IconButton aria-label="close" size="large" color="inherit" onClick={handleClick}>
-                        <Close fontSize="inherit" />
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '10px',
+                    }}
+                >
+                    <Box>
+                        <Typography variant="h5" style={{ fontWeight: 500 }} gutterBottom>
+                            Using AntAlmanac Scheduler
+                        </Typography>
+                    </Box>
+                    <IconButton onClick={handleClick} size="small" sx={{ mt: -1 }}>
+                        <Close />
                     </IconButton>
                 </Box>
                 <Stack direction="row" gap={2}>
                     {images.map((image) => (
-                        <Card sx={{ border: '1px solid #ccc' }} elevation={0} key={image.src}>
+                        <Card
+                            sx={{
+                                border: '1px solid #ccc',
+                                transition: 'transform 0.2s',
+                                '&:hover': {
+                                    transform: 'scale(1.02)',
+                                },
+                            }}
+                            elevation={0}
+                            key={image.src}
+                        >
                             <CardMedia
                                 component="img"
                                 image={image.src}
@@ -69,8 +93,11 @@ export function AboutBox() {
                                 style={{ width: '100%', height: 'auto' }}
                             />
                             <CardContent>
-                                <Typography variant="body1" fontWeight="bold">
-                                    {image.alt}
+                                <Typography variant="h6" color="text.primary" sx={{ marginBottom: '5px' }}>
+                                    {image.title}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    {image.caption}
                                 </Typography>
                             </CardContent>
                         </Card>
@@ -79,7 +106,10 @@ export function AboutBox() {
                 <Stack gap={1}>
                     <Typography variant="body1">
                         Need help <i>discovering</i> courses? Check out{' '}
-                        <Link href={'/planner'}>AntAlmanac Planner</Link>
+                        <Link style={{ color: isDark ? 'white' : grey[700] }} href={'/planner'}>
+                            AntAlmanac Planner
+                        </Link>
+                        .
                     </Typography>
 
                     <Stack direction="row" color={isDark ? 'white' : grey[600]}>
