@@ -307,7 +307,7 @@ export const Signin = () => {
                     onClick={handleLogin}
                     size="large"
                 >
-                    Sign in with Google test lint
+                    Sign in with Google
                 </LoadingButton>
             </AlertDialog>
         </div>
