@@ -1,5 +1,5 @@
 {
-  "id": "e67ac6d6-1de5-48af-91ab-a87a3630a9e6",
+  "id": "805bce5d-65f1-41b7-8070-19b91087227e",
   "prevId": "989f0557-31bc-441f-bd90-97e1edaa126c",
   "version": "7",
   "dialect": "postgresql",
@@ -427,7 +427,7 @@
         },
         "sectionCode": {
           "name": "sectionCode",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -443,8 +443,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "lastUpdated": {
-          "name": "lastUpdated",
+        "lastUpdatedStatus": {
+          "name": "lastUpdatedStatus",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -456,29 +456,29 @@
           "notNull": false,
           "default": "''"
         },
-        "openStatus": {
-          "name": "openStatus",
+        "notifyOnOpen": {
+          "name": "notifyOnOpen",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
           "default": false
         },
-        "waitlistStatus": {
-          "name": "waitlistStatus",
+        "notifyOnWaitlist": {
+          "name": "notifyOnWaitlist",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
           "default": false
         },
-        "fullStatus": {
-          "name": "fullStatus",
+        "notifyOnFull": {
+          "name": "notifyOnFull",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,
           "default": false
         },
-        "restrictionStatus": {
-          "name": "restrictionStatus",
+        "notifyOnRestriction": {
+          "name": "notifyOnRestriction",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false,

@@ -54,29 +54,8 @@
     {
       "idx": 7,
       "version": "7",
-      "when": 1766276367775,
-      "tag": "0007_real_rage",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1766379695677,
-      "tag": "0008_misty_titania",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1767048247484,
-      "tag": "0009_narrow_mac_gargan",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "7",
-      "when": 1767146983209,
-      "tag": "0010_dark_excalibur",
+      "when": 1767148182052,
+      "tag": "0007_productive_landau",
       "breakpoints": true
     }
   ]

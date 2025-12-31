@@ -1,1 +1,0 @@
-ALTER TABLE "subscriptions" RENAME COLUMN "lastUpdated" TO "lastUpdatedStatus";
