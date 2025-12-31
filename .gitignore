@@ -57,3 +57,6 @@ Desktop.ini
 
 # sst
 .sst
+
+# generated
+/apps/backend
