@@ -15,19 +15,7 @@ BEGIN
   );
 
   IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'subscriptions') THEN
-    INSERT INTO "subscriptions_new" (
-      "userId", "sectionCode", "year", "quarter", "lastUpdatedStatus"
-    )
-    SELECT 
-      "userId", 
-      "sectionCode", 
-      COALESCE("year", '2024'), -- Provide defaults for new NOT NULL columns
-      COALESCE("quarter", '1'), 
-      "status"                  -- Mapping old 'status' to new 'lastUpdatedStatus'
-    FROM "subscriptions"
-    ON CONFLICT DO NOTHING;
-
-    DROP TABLE "subscriptions";
+   DROP TABLE "subscriptions";
   END IF;
 
   ALTER TABLE "subscriptions_new" RENAME TO "subscriptions";

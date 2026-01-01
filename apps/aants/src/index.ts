@@ -122,5 +122,3 @@ export async function scanAndNotify() {
         process.exit(0);
     }
 }
-
-scanAndNotify();
