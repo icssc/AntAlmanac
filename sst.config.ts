@@ -50,20 +50,19 @@ export default $config({
                 DB_URL: dbUrl,
                 NODE_ENV: $app.stage === 'production' ? 'production' : 'development',
             },
+            permissions: [
+                {
+                  actions: [
+                    'ses:SendEmail',
+                    'ses:SendRawEmail',
+                    'ses:SendBulkEmail',
+                  ],
+                  resources: [
+                    'arn:aws:ses:us-east-2:990864464737:identity/icssc@uci.edu',
+                  ],
+                },
+              ],
         });
-
-        aantsLambda.attachPermissions([
-            {
-              actions: [
-                'ses:SendEmail',
-                'ses:SendRawEmail',
-                'ses:SendBulkEmail',
-              ],
-              resources: [
-                'arn:aws:ses:us-east-2:990864464737:identity/icssc@uci.edu',
-              ],
-            },
-          ]);
 
         new sst.aws.Cron('NotificationCronRule', {
             schedule: 'rate(5 minutes)', // AANTS runs every 5 minutes - TODO (@IsaacNguyen): Might change in future
