@@ -26,8 +26,8 @@ async function processSection(section: WebsocSection, course: WebsocCourse, quar
     const { sectionCode, instructors, meetings, status, restrictions } = section;
     const instructor = instructors.join(', ');
 
-    const previousState = await getLastUpdatedStatus(year, quarter, Number(sectionCode));
-    const previousStatus = previousState?.lastUpdated || null;
+    const previousState = await getLastUpdatedStatus(year, quarter, sectionCode);
+    const previousStatus = previousState?.lastUpdatedStatus || null;
     const previousRestrictions = previousState?.lastCodes || '';
 
     const statusChanged = previousStatus !== status;
@@ -35,10 +35,10 @@ async function processSection(section: WebsocSection, course: WebsocCourse, quar
 
     if (!statusChanged && !codesChanged) return;
 
-    const users = await getUsers(quarter, year, Number(sectionCode), status, statusChanged, codesChanged);
+    const users = await getUsers(quarter, year, sectionCode, status, statusChanged, codesChanged);
 
     const courseDetails: CourseDetails = {
-        sectionCode: Number(sectionCode),
+        sectionCode: sectionCode,
         instructor,
         days: meetings[0].days,
         hours: meetings[0].time,
@@ -55,7 +55,7 @@ async function processSection(section: WebsocSection, course: WebsocCourse, quar
         await sendNotification(courseDetails, users, statusChanged, codesChanged);
     }
 
-    await updateSubscriptionStatus(year, quarter, Number(sectionCode), status, restrictions);
+    await updateSubscriptionStatus(year, quarter, sectionCode, status, restrictions);
 }
 
 /**
@@ -122,3 +122,5 @@ export async function scanAndNotify() {
         process.exit(0);
     }
 }
+
+scanAndNotify();

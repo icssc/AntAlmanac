@@ -1,16 +1,16 @@
 import { request, Term, Quarter, WebsocSection, WebsocResponse } from '@icssc/libwebsoc-next';
 import { eq, and, or } from 'drizzle-orm';
 
-import { db } from '../../../backend/src/db/index';
-import { users } from '../../../backend/src/db/schema/auth/user';
-import { subscriptions } from '../../../backend/src/db/schema/subscription';
+import { db } from '../../../../packages/db/src/index';
+import { users } from '../../../../packages/db/src/schema/auth/user';
+import { subscriptions } from '../../../../packages/db/src/schema/subscription';
 
 interface TermGrouping {
-    [term: string]: number[];
+    [term: string]: string[];
 }
 
 interface ClassStatus {
-    lastUpdated: WebsocSection['status'] | null;
+    lastUpdatedStatus: WebsocSection['status'] | null;
     lastCodes: string | null;
 }
 
@@ -81,20 +81,20 @@ async function getSubscriptionSectionCodes(): Promise<TermGrouping | undefined> 
  * @param year - The academic year of the subscription.
  * @param quarter - The academic quarter of the subscription.
  * @param sectionCode - The section code of the class.
- * @param lastUpdated - The new status of the class.
+ * @param lastUpdatedStatus - The new status of the class.
  * @param lastCodes - The new restriction codes of the class.
  */
 async function updateSubscriptionStatus(
     year: string,
     quarter: string,
-    sectionCode: number,
-    lastUpdated: WebsocSection['status'],
+    sectionCode: string,
+    lastUpdatedStatus: WebsocSection['status'],
     lastCodes: string
 ): Promise<void> {
     try {
         await db
             .update(subscriptions)
-            .set({ lastUpdated: lastUpdated, lastCodes: lastCodes })
+            .set({ lastUpdatedStatus: lastUpdatedStatus, lastCodes: lastCodes })
             .where(
                 and(
                     eq(subscriptions.year, year),
@@ -118,12 +118,12 @@ async function updateSubscriptionStatus(
 async function getLastUpdatedStatus(
     year: string,
     quarter: string,
-    sectionCode: number
+    sectionCode: string
 ): Promise<ClassStatus | undefined> {
     try {
         const result = await db
             .select({
-                lastUpdated: subscriptions.lastUpdated,
+                lastUpdatedStatus: subscriptions.lastUpdatedStatus,
                 lastCodes: subscriptions.lastCodes,
             })
             .from(subscriptions)
@@ -157,7 +157,7 @@ async function getLastUpdatedStatus(
 async function getUsers(
     quarter: string,
     year: string,
-    sectionCode: number,
+    sectionCode: string,
     status: WebsocSection['status'],
     statusChanged: boolean,
     codesChanged: boolean
@@ -193,6 +193,7 @@ async function getUsers(
             query = query.where(eq(subscriptions.notifyOnRestriction, true));
         }
         const result = await query;
+
         return result;
     } catch (error) {
         console.error('Error getting users:', error);

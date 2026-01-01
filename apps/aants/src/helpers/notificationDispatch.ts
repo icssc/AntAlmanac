@@ -3,7 +3,7 @@ import { WebsocSection } from '@icssc/libwebsoc-next';
 import { User } from './subscriptionData';
 
 export interface CourseDetails {
-    sectionCode: number;
+    sectionCode: string;
     instructor: string;
     days: string;
     hours: string;
