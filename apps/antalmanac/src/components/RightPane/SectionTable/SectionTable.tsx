@@ -156,7 +156,16 @@ function SectionTable(props: SectionTableProps) {
             </Box>
 
             {missingSections?.length > 0 && (
-                <Alert severity="warning" sx={{ mb: 1 }}>
+                <Alert
+                    severity="warning"
+                    sx={{
+                        mb: 1,
+                        '& .MuiAlert-message': {
+                            display: 'flex',
+                            alignItems: 'center',
+                        },
+                    }}
+                >
                     Missing required sections: {missingSections.join(', ')}
                 </Alert>
             )}
