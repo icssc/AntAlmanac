@@ -2,7 +2,6 @@ import { Assessment, ShowChart as ShowChartIcon } from '@mui/icons-material';
 import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow, useMediaQuery } from '@mui/material';
 import { useMemo } from 'react';
 
-import PeterPortalIcon from '$assets/peterportal-logo.png';
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
@@ -118,7 +117,7 @@ function SectionTable(props: SectionTableProps) {
                     text="PeterPortal"
                     icon={
                         <img
-                            src={PeterPortalIcon}
+                            src={'assets/peterportal-logo.png'}
                             alt="PeterPortal Icon"
                             width={customIconSize}
                             height={customIconSize}

@@ -17,7 +17,7 @@ import type {
     DeleteScheduleAction,
     ReorderScheduleAction,
     ChangeCourseColorAction,
-    UndoAction,
+    UndoRedoAction,
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
@@ -220,19 +220,41 @@ class AppStore extends EventEmitter {
         this.emit('addedCoursesChange');
     }
 
-    undoAction() {
-        this.schedule.revertState();
-        this.unsavedChanges = true;
-        const action: UndoAction = {
-            type: 'undoAction',
-        };
-        actionTypesStore.autoSaveSchedule(action);
+    private emitHistoryRelatedChanges() {
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
         this.emit('colorChange', false);
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNotesChange');
+    }
+
+    undoAction() {
+        const reverted = this.schedule.revertState();
+        if (!reverted) {
+            return;
+        }
+        this.unsavedChanges = true;
+        const action: UndoRedoAction = {
+            type: 'undoRedoAction',
+            direction: 'undo',
+        };
+        actionTypesStore.autoSaveSchedule(action);
+        this.emitHistoryRelatedChanges();
+    }
+
+    redoAction() {
+        const advanced = this.schedule.advanceState();
+        if (!advanced) {
+            return;
+        }
+        this.unsavedChanges = true;
+        const action: UndoRedoAction = {
+            type: 'undoRedoAction',
+            direction: 'redo',
+        };
+        actionTypesStore.autoSaveSchedule(action);
+        this.emitHistoryRelatedChanges();
     }
 
     addCustomEvent(customEvent: RepeatingCustomEvent, scheduleIndices: number[]) {
@@ -466,7 +488,7 @@ class AppStore extends EventEmitter {
     ) {
         this.snackbarVariant = variant;
         this.snackbarMessage = message;
-        this.snackbarDuration = duration ? duration : this.snackbarDuration;
+        this.snackbarDuration = duration != null ? duration * 1000 : 3000;
         this.snackbarPosition = position ? position : this.snackbarPosition;
         this.snackbarStyle = style ? style : this.snackbarStyle;
         this.emit('openSnackbar');

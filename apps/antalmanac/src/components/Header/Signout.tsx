@@ -14,8 +14,24 @@ export function Signout() {
     const navigate = useNavigate();
 
     const handleLogout = async () => {
-        clearSession();
-        navigate('/');
+        if (!session) {
+            navigate('/');
+            return;
+        }
+
+        try {
+            const { logoutUrl } = await trpc.userData.logout.mutate({
+                sessionToken: session,
+                redirectUrl: window.location.origin,
+            });
+            clearSession();
+
+            window.location.href = logoutUrl;
+        } catch (error) {
+            console.error('Error during logout', error);
+            clearSession();
+            navigate('/');
+        }
     };
 
     const { session, sessionIsValid, clearSession } = useSessionStore();
