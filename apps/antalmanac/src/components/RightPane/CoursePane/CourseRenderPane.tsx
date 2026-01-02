@@ -4,17 +4,15 @@ import { AACourse, AASection, WebsocDepartment, WebsocSchool, WebsocAPIResponse,
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
-import RightPaneStore from '../RightPaneStore';
-import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
-import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
-
-import { SchoolDeptCard } from './SchoolDeptCard';
-import darkModeLoadingGif from './SearchForm/Gifs/dark-loading.gif';
-import loadingGif from './SearchForm/Gifs/loading.gif';
-import darkNoNothing from './static/dark-no_results.png';
-import noNothing from './static/no_results.png';
-
 import { openSnackbar } from '$actions/AppStoreActions';
+import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
+import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
+import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
+import darkNoNothing from '$components/RightPane/CoursePane/static/dark-no_results.png';
+import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
+import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
+import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import analyticsEnum from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
