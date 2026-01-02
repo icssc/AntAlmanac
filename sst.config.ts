@@ -52,13 +52,7 @@ export default $config({
             },
             permissions: [
                 {
-                    actions: [
-                        'ses:SendEmail',
-                        'ses:SendRawEmail',
-                        'ses:SendBulkEmail',
-                        'ses:SendBulkTemplatedEmail',
-                        'ses:GetTemplate',
-                    ],
+                    actions: ['ses:SendEmail', 'ses:SendRawEmail', 'ses:SendBulkEmail', 'ses:SendBulkTemplatedEmail'],
                     resources: [
                         'arn:aws:ses:us-east-2:990864464737:identity/icssc@uci.edu',
                         'arn:aws:ses:us-east-2:990864464737:template/*',

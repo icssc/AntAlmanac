@@ -1,6 +1,8 @@
 import { scanAndNotify } from '.';
 
 export async function handler() {
+    // No-op function
+    const noop = () => {};
     await scanAndNotify();
 
     return {
