@@ -56,6 +56,7 @@ export default $config({
                     'ses:SendEmail',
                     'ses:SendRawEmail',
                     'ses:SendBulkEmail',
+                    'ses:SendBulkTemplatedEmail',
                   ],
                   resources: [
                     'arn:aws:ses:us-east-2:990864464737:identity/icssc@uci.edu',
