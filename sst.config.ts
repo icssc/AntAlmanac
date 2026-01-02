@@ -56,6 +56,7 @@ export default $config({
                     resources: [
                         'arn:aws:ses:us-east-2:990864464737:identity/icssc@uci.edu',
                         'arn:aws:ses:us-east-2:990864464737:template/*',
+                        'arn:aws:ses:us-east-2:990864464737:configuration-set/*',
                     ],
                 },
             ],
