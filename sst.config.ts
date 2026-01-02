@@ -52,17 +52,19 @@ export default $config({
             },
             permissions: [
                 {
-                  actions: [
-                    'ses:SendEmail',
-                    'ses:SendRawEmail',
-                    'ses:SendBulkEmail',
-                    'ses:SendBulkTemplatedEmail',
-                  ],
-                  resources: [
-                    'arn:aws:ses:us-east-2:990864464737:identity/icssc@uci.edu',
-                  ],
+                    actions: [
+                        'ses:SendEmail',
+                        'ses:SendRawEmail',
+                        'ses:SendBulkEmail',
+                        'ses:SendBulkTemplatedEmail',
+                        'ses:GetTemplate',
+                    ],
+                    resources: [
+                        'arn:aws:ses:us-east-2:990864464737:identity/icssc@uci.edu',
+                        'arn:aws:ses:us-east-2:990864464737:template/*',
+                    ],
                 },
-              ],
+            ],
         });
 
         new sst.aws.Cron('NotificationCronRule', {
