@@ -1,6 +1,14 @@
 import { Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, Link, useMediaQuery, useTheme } from '@mui/material';
-import { AACourse, AASection, WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from '@packages/antalmanac-types';
+import {
+    AACourse,
+    AASection,
+    WebsocDepartment,
+    WebsocSchool,
+    WebsocAPIResponse,
+    WebsocSectionType,
+    GE,
+} from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
@@ -48,6 +56,13 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
                 for (const section of course.sections) {
                     (section as AASection).color = courseColors[section.sectionCode];
                 }
+
+                const sectionTypes = new Set<WebsocSectionType>();
+                course.sections.forEach((section) => {
+                    sectionTypes.add(section.sectionType);
+                });
+
+                (course as AACourse).sectionTypes = sectionTypes;
 
                 accumulator.push(course as AACourse);
             });
