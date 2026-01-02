@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { updateScheduleNote } from '$actions/AppStoreActions';
 import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEventDetailView';
-import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
+import { getMissingSections } from '$components/RightPane/AddedCourses/GetMissingSections';
 import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import { ClearScheduleButton } from '$components/buttons/Clear';

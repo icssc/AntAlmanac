@@ -21,12 +21,11 @@
         "@types/node": "^20.11.6",
         "cross-env": "^7.0.3",
         "dotenv": "^16.0.3",
-        "eslint": "^9.39.2",
         "eslint-import-resolver-typescript": "^3.6.1",
         "husky": "^8.0.3",
         "jsdom": "^22.1.0",
         "lint-staged": "^13.1.1",
-        "prettier": "^3.3.3",
+        "prettier": "^3.1.0",
         "sst": "3.17.25",
         "tsx": "^4.19.2",
         "vitest": "^0.34.4"
