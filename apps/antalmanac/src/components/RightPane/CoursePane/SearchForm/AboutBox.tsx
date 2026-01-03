@@ -24,15 +24,18 @@ import { useThemeStore } from '$stores/SettingsStore';
 const images = [
     {
         src: '/about-box/aboutbox1.png',
-        alt: '1. Enter a department or course name to search',
+        title: 'Search',
+        alt: 'Enter a department or course name to search',
     },
     {
         src: '/about-box/aboutbox2.png',
-        alt: '2. Add courses to your schedule',
+        title: 'Add',
+        alt: 'Add courses to your schedule',
     },
     {
         src: '/about-box/aboutbox3.png',
-        alt: '3. Save your schedule and access from anywhere!',
+        title: 'Save',
+        alt: 'Save your schedule and access from anywhere!',
     },
 ];
 
@@ -85,9 +88,12 @@ export function AboutBox() {
                                     sx={{ width: '100%', height: 'auto' }}
                                 />
                                 <CardContent>
-                                    <Typography variant="body1" fontWeight="bold">
-                                        {image.alt}
-                                    </Typography>
+                                    <Stack direction="column" gap={1}>
+                                        <Typography variant="h6" fontWeight="bold">
+                                            {image.title}
+                                        </Typography>
+                                        <Typography variant="body2">{image.alt}</Typography>
+                                    </Stack>
                                 </CardContent>
                             </Card>
                         ))}
