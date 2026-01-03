@@ -33,23 +33,26 @@ function batchCourseCodes(codes: string[]): string[][] {
 }
 
 /**
- * Returns a formatted timestamp string for the current date and time.
- * @returns A string representing the current date and time in the format "HH:MM AM/PM on MM/DD/YYYY".
+ * Returns a formatted timestamp string for the current date and time in PST/PDT.
+ * @returns A string representing the current date and time in the format "HH:MM AM/PM on MM/DD/YYYY" in Pacific time.
  */
 function getFormattedTime(): string {
     const now = new Date();
+    const timeZone = 'America/Los_Angeles'; // PST/PDT
 
     return (
         new Intl.DateTimeFormat('en-US', {
             hour: 'numeric',
             minute: '2-digit',
             hour12: true,
+            timeZone,
         }).format(now) +
         ' on ' +
         new Intl.DateTimeFormat('en-US', {
             month: 'numeric',
             day: 'numeric',
             year: 'numeric',
+            timeZone,
         }).format(now)
     );
 }
