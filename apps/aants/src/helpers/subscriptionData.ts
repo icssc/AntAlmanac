@@ -172,27 +172,37 @@ async function getUsers(
 
         const statusColumn = statusColumnMap[status];
 
-        let query = db
+        const baseConditions = [
+            eq(subscriptions.year, year),
+            eq(subscriptions.quarter, quarter),
+            eq(subscriptions.sectionCode, sectionCode),
+        ];
+
+        let notificationCondition;
+        if (statusChanged === true && codesChanged === true) {
+            if (statusColumn) {
+                notificationCondition = or(eq(statusColumn, true), eq(subscriptions.notifyOnRestriction, true));
+            } else {
+                notificationCondition = eq(subscriptions.notifyOnRestriction, true);
+            }
+        } else if (statusChanged === true) {
+            if (statusColumn) {
+                notificationCondition = eq(statusColumn, true);
+            } else {
+                // TODO (@IsaacNguyen): Handle NewOnly status if that's something we want to support
+                return [];
+            }
+        } else if (codesChanged === true) {
+            notificationCondition = eq(subscriptions.notifyOnRestriction, true);
+        }
+
+        const allConditions = notificationCondition ? [...baseConditions, notificationCondition] : baseConditions;
+
+        const result = await db
             .select({ userName: users.name, email: users.email, userId: users.id })
             .from(subscriptions)
             .innerJoin(users, eq(subscriptions.userId, users.id))
-            .where(
-                and(
-                    eq(subscriptions.year, year),
-                    eq(subscriptions.quarter, quarter),
-                    eq(subscriptions.sectionCode, sectionCode)
-                )
-            )
-            .$dynamic();
-
-        if (statusChanged == true && codesChanged == true) {
-            query = query.where(or(eq(statusColumn, true), eq(subscriptions.notifyOnRestriction, true)));
-        } else if (statusChanged == true) {
-            query = query.where(eq(statusColumn, true));
-        } else if (codesChanged == true) {
-            query = query.where(eq(subscriptions.notifyOnRestriction, true));
-        }
-        const result = await query;
+            .where(and(...allConditions));
 
         return result;
     } catch (error) {
