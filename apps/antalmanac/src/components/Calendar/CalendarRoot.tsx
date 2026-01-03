@@ -245,8 +245,8 @@ export const ScheduleCalendar = memo(() => {
     const finalsDate = hoveredCalendarizedFinal
         ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
         : onlyCourseEvents.length > 0
-          ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
-          : getDefaultFinalsStartDate();
+        ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
+        : getDefaultFinalsStartDate();
 
     const finalsDateFormat = 'ddd MM/DD';
     const date = showFinalsSchedule ? finalsDate : new Date(2018, 0, 1);
