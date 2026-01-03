@@ -16,6 +16,7 @@ import {
     AlertColor,
 } from '@mui/material';
 import { useEffect, useState, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { loadSchedule, saveSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
@@ -189,6 +190,7 @@ const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = 
 
 export const Signin = () => {
     const isDark = useThemeStore((store) => store.isDark);
+    const location = useLocation();
 
     const { updateSession } = useSessionStore();
 
@@ -200,6 +202,8 @@ export const Signin = () => {
     const [alertMessage, setAlertMessage] = useState<{ title: string; severity: AlertColor }>(
         ALERT_MESSAGES.SCHEDULE_IMPORTED
     );
+
+    const isSharedSchedulePage = location.pathname.startsWith('/share/');
 
     const validateImportedUser = useCallback(async (userID: string) => {
         try {
@@ -275,10 +279,27 @@ export const Signin = () => {
             const sessionID = getLocalStorageSessionId();
 
             if (savedUserID != null || sessionID !== null) {
-                void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
+                if (isSharedSchedulePage) {
+                    const sessionToken = getLocalStorageSessionId() ?? '';
+                    if (sessionToken) {
+                        trpc.auth.validateSession
+                            .query({ token: sessionToken })
+                            .then((validSession) => {
+                                if (validSession) {
+                                    updateSession(sessionToken);
+                                }
+                            })
+                            .catch((err) => {
+                                console.error('Error validating session:', err);
+                            });
+                    }
+                } else {
+                    // Normal behavior: load schedules
+                    void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
+                }
             }
         }
-    }, [loadScheduleAndSetLoadingAuth]);
+    }, [loadScheduleAndSetLoadingAuth, isSharedSchedulePage, updateSession]);
 
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
@@ -286,7 +307,7 @@ export const Signin = () => {
                 id="load-button"
                 action={loadScheduleAndSetLoading}
                 actionSecondary={handleLogin}
-                disabled={skeletonMode}
+                disabled={skeletonMode && !isSharedSchedulePage}
                 loading={loadingSchedule}
                 colorType={isDark ? 'secondary' : 'primary'}
                 isDark={isDark}
