@@ -21,6 +21,7 @@ import { About } from './About';
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
 import { PlannerButton } from '$components/buttons/Planner';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import appStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -164,7 +165,11 @@ function TimeMenu() {
 function PlannerMenu() {
     return (
         <Box sx={{ padding: '0 1rem', width: '100%', display: 'flex', justifyContent: 'center' }}>
-            <PlannerButton />
+            <PlannerButton
+                buttonSx={{
+                    width: '100%',
+                }}
+            />
         </Box>
     );
 }
@@ -230,18 +235,22 @@ function ExperimentalMenu() {
 }
 
 function SettingsMenu() {
+    const isMobile = useIsMobile();
+
     return (
         <Stack gap={2}>
             <ThemeMenu />
             <TimeMenu />
 
-            <Stack gap={2}>
-                <Divider>
-                    <Typography variant="subtitle2">Want a 4-year plan?</Typography>
-                </Divider>
+            {isMobile && (
+                <Stack gap={2}>
+                    <Divider>
+                        <Typography variant="subtitle2">Want a 4-year plan?</Typography>
+                    </Divider>
 
-                <PlannerMenu />
-            </Stack>
+                    <PlannerMenu />
+                </Stack>
+            )}
 
             <Stack gap={2}>
                 <Divider>
