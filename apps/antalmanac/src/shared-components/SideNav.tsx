@@ -28,7 +28,7 @@ const SideNav = () => {
     return (
         <Paper elevation={0} sx={paperStyleOverrides}>
             <Stack direction="column" alignItems="center" sx={{ gap: '16px', paddingTop: '8px' }}>
-                <Link href="https://antalmanac.com" style={{ textDecoration: 'none', color: 'primary' }}>
+                <Link href="https://antalmanac.com" style={{ textDecoration: 'none' }}>
                     <Stack direction="column" alignItems="center">
                         <EventNoteIcon fontSize="medium" />
                         <Typography fontSize={11}>Scheduler</Typography>
