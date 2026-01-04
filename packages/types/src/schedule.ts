@@ -17,7 +17,7 @@ export type Schedule = {
      * Optional unique identifier for the schedule.
      * Present when schedules are loaded from the backend.
      */
-    id?: string;
+    id: string | undefined;
     scheduleName: string;
     courses: ScheduleCourse[];
     customEvents: RepeatingCustomEvent[];
@@ -37,7 +37,7 @@ export const ShortCourseScheduleSchema = type([
          * Optional unique identifier for the schedule.
          * Present when schedules are loaded from the backend.
          */
-        id: 'string?',
+        id: 'string | undefined',
         scheduleName: 'string',
         courses: arrayOf(ShortCourseSchema),
         customEvents: arrayOf(RepeatingCustomEventSchema),
