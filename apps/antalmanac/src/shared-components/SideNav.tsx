@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useThemeStore } from '$stores/SettingsStore';
 
+// Ported from PeterPortal
+// https://github.com/icssc/peterportal-client/blob/branding-changes/site/src/shared-components/SideNav.tsx
 export const SideNav = () => {
     const isMobile = useIsMobile();
     const isDark = useThemeStore((store) => store.isDark);
@@ -27,14 +29,15 @@ export const SideNav = () => {
     return (
         <Paper elevation={0} sx={paperStyleOverrides}>
             <Stack direction="column" alignItems="center" sx={{ gap: '16px', paddingTop: '8px' }}>
-                <Link href="https://antalmanac.com" style={{ textDecoration: 'none' }}>
+                <Link href="/" style={{ textDecoration: 'none' }}>
                     <Stack direction="column" alignItems="center">
                         <EventNote fontSize="medium" />
                         <Typography fontSize={11}>Scheduler</Typography>
                     </Stack>
                 </Link>
 
-                <Link href="/" style={{ textDecoration: 'none' }}>
+                {/* TODO: Fix PP link after merge */}
+                <Link href="https://peterportal.org" style={{ textDecoration: 'none' }}>
                     <Stack direction="column" alignItems="center" sx={{ color: isDark ? 'white' : 'black' }}>
                         <Route fontSize="medium" />
                         <Typography fontSize={11}>Planner</Typography>
