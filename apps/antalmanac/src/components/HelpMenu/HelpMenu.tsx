@@ -32,10 +32,12 @@ export type HelpMenuAction = {
 export function HelpMenu() {
     const isMobile = useIsMobile();
     const [open, setOpen] = useState(false);
-    const { sessionIsValid } = useSessionStore();
-    const { openAutoSaveWarning, setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
+    const { sessionIsValid, session } = useSessionStore();
+    const { openAutoSaveWarning, setOpenAutoSaveWarning, openLoadingSchedule } = scheduleComponentsToggleStore();
 
     const autoSave = getLocalStorageAutoSave() ?? 'false';
+
+    const isWaitingToLogin = session !== null && !sessionIsValid;
 
     const isDark = useThemeStore((state) => state.isDark);
 
@@ -120,7 +122,7 @@ export function HelpMenu() {
                 ))}
             </SpeedDial>
 
-            {!sessionIsValid && autoSave === 'true' && (
+            {!sessionIsValid && autoSave === 'true' && !openLoadingSchedule && !isWaitingToLogin && (
                 <IconButton
                     aria-label="warning"
                     color="warning"
