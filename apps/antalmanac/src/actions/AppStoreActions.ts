@@ -304,6 +304,7 @@ export const importSharedScheduleById = async (scheduleId: string) => {
     const sharedSchedule = await trpc.userData.getSharedSchedule.query({ scheduleId });
 
     const incomingSchedule: ShortCourseSchedule = {
+        id: undefined,
         scheduleName: sharedSchedule.scheduleName,
         scheduleNote: sharedSchedule.scheduleNote || '',
         courses: sharedSchedule.courses,
@@ -322,6 +323,23 @@ export const importSharedScheduleById = async (scheduleId: string) => {
     if (!isScheduleLoaded) {
         scheduleComponentsToggleStore.setState({ openLoadingSchedule: false });
         return { imported: false, error: new Error('Failed to load shared schedule') };
+    }
+
+    const session = useSessionStore.getState();
+    if (session.sessionIsValid && session.session) {
+        try {
+            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
+                token: session.session,
+            });
+
+            await autoSaveSchedule(accounts.providerAccountId, {
+                email: users.email,
+                name: users.name,
+                avatar: users.avatar,
+            });
+        } catch (err) {
+            console.error('Failed to auto-save after importing shared schedule:', err);
+        }
     }
 
     openSnackbar('success', `Shared schedule "${incomingSchedule.scheduleName}" added to your account!`);

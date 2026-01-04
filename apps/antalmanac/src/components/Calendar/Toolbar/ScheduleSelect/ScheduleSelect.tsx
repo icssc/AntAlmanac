@@ -222,9 +222,9 @@ export function SelectSchedulePopover() {
                                         </Box>
 
                                         <Box display="flex" alignItems="center" gap={0.5}>
-                                            <ShareScheduleButton index={index} disabled={skeletonMode} />
                                             <CopyScheduleButton index={index} disabled={skeletonMode} />
                                             <RenameScheduleButton index={index} disabled={skeletonMode} />
+                                            <ShareScheduleButton index={index} disabled={skeletonMode} />
                                             <DeleteScheduleButton index={index} disabled={skeletonMode} />
                                         </Box>
                                     </Box>
