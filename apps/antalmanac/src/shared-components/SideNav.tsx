@@ -3,6 +3,7 @@ import { Paper, Stack, SxProps, Typography, useTheme } from '@mui/material';
 import Link from 'next/link';
 
 import { useIsMobile } from '$hooks/useIsMobile';
+import { PLANNER_LINK } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 
 // Ported from PeterPortal
@@ -37,7 +38,7 @@ export const SideNav = () => {
                 </Link>
 
                 {/* TODO: Fix PP link after merge */}
-                <Link href="https://peterportal.org" style={{ textDecoration: 'none' }}>
+                <Link href={PLANNER_LINK} style={{ textDecoration: 'none' }}>
                     <Stack direction="column" alignItems="center" sx={{ color: isDark ? 'white' : 'black' }}>
                         <Route fontSize="medium" />
                         <Typography fontSize={11}>Planner</Typography>
