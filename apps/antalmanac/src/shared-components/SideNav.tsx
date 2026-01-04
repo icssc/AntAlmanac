@@ -1,12 +1,11 @@
-import EventNoteIcon from '@mui/icons-material/EventNote';
-import RouteIcon from '@mui/icons-material/Route';
+import { EventNote, Route } from '@mui/icons-material';
 import { Paper, Stack, SxProps, Typography, useTheme } from '@mui/material';
 import Link from 'next/link';
 
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useThemeStore } from '$stores/SettingsStore';
 
-const SideNav = () => {
+export const SideNav = () => {
     const isMobile = useIsMobile();
     const isDark = useThemeStore((store) => store.isDark);
     const theme = useTheme();
@@ -30,14 +29,14 @@ const SideNav = () => {
             <Stack direction="column" alignItems="center" sx={{ gap: '16px', paddingTop: '8px' }}>
                 <Link href="https://antalmanac.com" style={{ textDecoration: 'none' }}>
                     <Stack direction="column" alignItems="center">
-                        <EventNoteIcon fontSize="medium" />
+                        <EventNote fontSize="medium" />
                         <Typography fontSize={11}>Scheduler</Typography>
                     </Stack>
                 </Link>
 
                 <Link href="/" style={{ textDecoration: 'none' }}>
                     <Stack direction="column" alignItems="center" sx={{ color: isDark ? 'white' : 'black' }}>
-                        <RouteIcon fontSize="medium" />
+                        <Route fontSize="medium" />
                         <Typography fontSize={11}>Planner</Typography>
                     </Stack>
                 </Link>
@@ -45,5 +44,3 @@ const SideNav = () => {
         </Paper>
     );
 };
-
-export default SideNav;
