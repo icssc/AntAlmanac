@@ -23,7 +23,6 @@ const SideNav = () => {
         left: 0,
         borderRight: `1px solid ${theme.palette.divider}`,
         borderRadius: 0,
-        flexShrink: 0,
     };
 
     return (
