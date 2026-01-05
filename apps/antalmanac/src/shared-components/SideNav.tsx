@@ -32,15 +32,15 @@ export const SideNav = () => {
             <Stack direction="column" alignItems="center" sx={{ gap: '16px', paddingTop: '8px' }}>
                 <Link href="/" style={{ textDecoration: 'none' }}>
                     <Stack direction="column" alignItems="center">
-                        <EventNote fontSize="medium" />
+                        <EventNote sx={{ fontSize: 24 }} />
                         <Typography fontSize={11}>Scheduler</Typography>
                     </Stack>
                 </Link>
 
-                {/* TODO: Fix PP link after merge */}
+                {/* TODO (@xgraceyan): Fix PP link after merge */}
                 <Link href={PLANNER_LINK} style={{ textDecoration: 'none' }}>
                     <Stack direction="column" alignItems="center" sx={{ color: isDark ? 'white' : 'black' }}>
-                        <Route fontSize="medium" />
+                        <Route sx={{ fontSize: 24 }} />
                         <Typography fontSize={11}>Planner</Typography>
                     </Stack>
                 </Link>
