@@ -1,5 +1,6 @@
+import { NotificationAddOutlined } from '@mui/icons-material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Box, Tab, Paper } from '@mui/material';
+import { Box, Tab, Paper, CircularProgress, Typography } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -30,12 +31,46 @@ export function NotificationsTabs() {
         setActiveTab(newValue);
     };
 
-    if (!activeTab) {
-        return null;
+    if (!initialized) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}>
+                <CircularProgress />
+            </Box>
+        );
     }
 
-    if (!initialized) {
-        return 'Loading notifications...';
+    if (sortedTerms.length === 0) {
+        return (
+            <Box
+                sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 4 }}
+            >
+                <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center' }}>
+                    You don't have any notifications enabled.
+                </Typography>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 0.5,
+                        mt: 1,
+                        flexWrap: 'wrap',
+                    }}
+                >
+                    <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                        Enable notifications for courses from the course table using the
+                    </Typography>
+                    <NotificationAddOutlined fontSize="small" sx={{ color: 'text.secondary' }} />
+                    <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                        icon to get notified about status changes.
+                    </Typography>
+                </Box>
+            </Box>
+        );
+    }
+
+    if (!activeTab) {
+        return null;
     }
 
     return (
