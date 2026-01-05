@@ -150,6 +150,11 @@ export const useNotificationStore = create<NotificationStore>((set) => {
 
             try {
                 const existingNotifications = await Notifications.getNotifications();
+                if (!existingNotifications) {
+                    set({ notifications: {}, initialized: true });
+                    return;
+                }
+
                 const courseDict: { [key: string]: Set<string> } = {};
 
                 for (const notification of existingNotifications) {
