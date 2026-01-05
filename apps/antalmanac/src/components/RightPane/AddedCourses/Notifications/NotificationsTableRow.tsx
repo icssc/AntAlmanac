@@ -5,7 +5,7 @@ import { NotificationTableDeleteCell } from '$components/RightPane/AddedCourses/
 import { NotificationTableRowCheckbox } from '$components/RightPane/AddedCourses/Notifications/NotificationTableRowCheckbox';
 import { CourseCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/CourseCodeCell';
 import { DetailsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell';
-import { NotificationStatus, useNotificationStore } from '$stores/NotificationStore';
+import { NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 
 interface NotificationTableRowProps {
     notificationKey: string;
@@ -31,7 +31,7 @@ export const NotificationTableRow = memo(({ notificationKey }: NotificationTable
             />
             <TableCell>{courseTitle}</TableCell>
 
-            {Object.keys(notification.notificationStatus).map((statusKey) => (
+            {Object.keys(notification.notifyOn).map((statusKey) => (
                 <NotificationTableRowCheckbox
                     key={statusKey}
                     courseTitle={courseTitle}
@@ -43,7 +43,7 @@ export const NotificationTableRow = memo(({ notificationKey }: NotificationTable
                     lastCodes={lastCodes}
                     term={term}
                     notificationKey={notificationKey}
-                    statusKey={statusKey as keyof NotificationStatus}
+                    statusKey={statusKey as keyof NotifyOn}
                 />
             ))}
         </TableRow>

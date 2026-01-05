@@ -10,7 +10,7 @@ import { DeleteAndNotifications } from '$components/RightPane/SectionTable/Secti
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
-import { type NotificationStatus } from '$stores/NotificationStore';
+import { type NotifyOn } from '$stores/NotificationStore';
 
 /**
  * Props received by components that perform actions on a specified section.
@@ -41,7 +41,7 @@ interface ActionProps {
      */
     scheduleConflict: boolean;
 
-    notificationStatus: NotificationStatus | undefined;
+    notifyOn: NotifyOn | undefined;
     lastUpdated: string;
     lastCodes: string;
 }

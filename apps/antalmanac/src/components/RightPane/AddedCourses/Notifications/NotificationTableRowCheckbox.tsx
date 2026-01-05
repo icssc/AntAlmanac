@@ -1,11 +1,11 @@
 import { TableCell, Checkbox } from '@mui/material';
 import { memo, useCallback } from 'react';
 
-import { Notification, NotificationStatus, useNotificationStore } from '$stores/NotificationStore';
+import { Notification, NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 
-type NotificationTableRowCheckboxProps = Omit<Notification, 'notificationStatus'> & {
+type NotificationTableRowCheckboxProps = Omit<Notification, 'notifyOn'> & {
     notificationKey: string;
-    statusKey: keyof NotificationStatus;
+    statusKey: keyof NotifyOn;
 };
 
 export const NotificationTableRowCheckbox = memo(
@@ -22,7 +22,7 @@ export const NotificationTableRowCheckbox = memo(
         lastCodes,
     }: NotificationTableRowCheckboxProps) => {
         const status = useNotificationStore(
-            (state) => state.notifications[notificationKey]?.notificationStatus[statusKey] ?? false
+            (state) => state.notifications[notificationKey]?.notifyOn[statusKey] ?? false
         );
         const setNotifications = useNotificationStore((state) => state.setNotifications);
 

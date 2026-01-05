@@ -6,11 +6,11 @@ import { Notifications } from '$lib/notifications';
 import { WebSOC } from '$lib/websoc';
 import { useSessionStore } from '$stores/SessionStore';
 
-export type NotificationStatus = {
-    openStatus: boolean;
-    waitlistStatus: boolean;
-    fullStatus: boolean;
-    restrictionStatus: boolean;
+export type NotifyOn = {
+    notifyOnOpen: boolean;
+    notifyOnWaitlist: boolean;
+    notifyOnFull: boolean;
+    notifyOnRestriction: boolean;
 };
 
 export type Notification = {
@@ -20,7 +20,7 @@ export type Notification = {
     sectionNum: string;
     courseTitle: Course['title'];
     sectionType: AASection['sectionType'];
-    notificationStatus: NotificationStatus;
+    notifyOn: NotifyOn;
     lastUpdated: string;
     lastCodes: string;
 };
@@ -28,15 +28,13 @@ export type Notification = {
 interface RawNotification {
     year: string;
     quarter: string;
-    sectionCode: number;
+    sectionCode: string;
 }
 
 export interface NotificationStore {
     initialized: boolean;
     notifications: Partial<Record<string, Notification>>;
-    setNotifications: (
-        notification: Omit<Notification, 'notificationStatus'> & { status: keyof NotificationStatus }
-    ) => void;
+    setNotifications: (notification: Omit<Notification, 'notifyOn'> & { status: keyof NotifyOn }) => void;
     deleteNotification: (notificationKey: string) => void;
     loadNotifications: () => Promise<void>;
 }
@@ -83,9 +81,9 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                 const newNotification = existingNotification
                     ? {
                           ...existingNotification,
-                          notificationStatus: {
-                              ...existingNotification.notificationStatus,
-                              [status]: !existingNotification.notificationStatus[status],
+                          notifyOn: {
+                              ...existingNotification.notifyOn,
+                              [status]: !existingNotification.notifyOn[status],
                           },
                           lastUpdated,
                           lastCodes,
@@ -97,11 +95,11 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                           sectionType,
                           units,
                           sectionNum,
-                          notificationStatus: {
-                              openStatus: false,
-                              waitlistStatus: false,
-                              fullStatus: false,
-                              restrictionStatus: false,
+                          notifyOn: {
+                              notifyOnOpen: false,
+                              notifyOnWaitlist: false,
+                              notifyOnFull: false,
+                              notifyOnRestriction: false,
                               [status]: true, // Toggle the given (now-initialized) status to true
                           },
                           lastUpdated,
@@ -183,7 +181,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
 
                         const existingNotification = existingNotifications.find(
                             (notification: RawNotification) =>
-                                notification.sectionCode.toString() === sectionCode &&
+                                notification.sectionCode === sectionCode &&
                                 notification.year === term.split(' ')[0] &&
                                 notification.quarter === term.split(' ')[1]
                         );
@@ -196,13 +194,13 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                                 sectionType: course.section.sectionType,
                                 units: Number(course.section.units),
                                 sectionNum: course.section.sectionNum,
-                                notificationStatus: {
-                                    openStatus: existingNotification.openStatus ?? false,
-                                    waitlistStatus: existingNotification.waitlistStatus ?? false,
-                                    fullStatus: existingNotification.fullStatus ?? false,
-                                    restrictionStatus: existingNotification.restrictionStatus ?? false,
+                                notifyOn: {
+                                    notifyOnOpen: existingNotification.notifyOnOpen ?? false,
+                                    notifyOnWaitlist: existingNotification.notifyOnWaitlist ?? false,
+                                    notifyOnFull: existingNotification.notifyOnFull ?? false,
+                                    notifyOnRestriction: existingNotification.notifyOnRestriction ?? false,
                                 },
-                                lastUpdated: existingNotification.lastUpdated ?? course.section.status,
+                                lastUpdated: existingNotification.lastUpdatedStatus ?? course.section.status,
                                 lastCodes: existingNotification.lastCodes ?? course.section.restrictions,
                             };
                         }

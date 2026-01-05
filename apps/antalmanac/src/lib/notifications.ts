@@ -2,7 +2,6 @@ import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId } from '$lib/localStorage';
 import { Notification } from '$stores/NotificationStore';
 
-
 function _transformNotificationToApiFormat(notification: Notification) {
     return {
         term: notification.term,
@@ -11,12 +10,7 @@ function _transformNotificationToApiFormat(notification: Notification) {
         sectionType: notification.sectionType,
         lastUpdatedStatus: notification.lastUpdated,
         lastCodes: notification.lastCodes,
-        notifyOn: {
-            notifyOnOpen: notification.notificationStatus.openStatus,
-            notifyOnWaitlist: notification.notificationStatus.waitlistStatus,
-            notifyOnFull: notification.notificationStatus.fullStatus,
-            notifyOnRestriction: notification.notificationStatus.restrictionStatus,
-        },
+        notifyOn: notification.notifyOn,
     };
 }
 

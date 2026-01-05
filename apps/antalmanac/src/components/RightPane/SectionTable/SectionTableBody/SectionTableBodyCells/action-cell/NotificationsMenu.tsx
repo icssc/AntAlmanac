@@ -5,15 +5,15 @@ import { useState, useCallback, memo, useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import { NotificationStatus, useNotificationStore } from '$stores/NotificationStore';
+import { NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
-const MENU_ITEMS: { status: keyof NotificationStatus; label: string }[] = [
-    { status: 'openStatus', label: 'Section is OPEN' },
-    { status: 'waitlistStatus', label: 'Section is WAITLIST' },
-    { status: 'fullStatus', label: 'Section is FULL' },
-    { status: 'restrictionStatus', label: 'Restriction Codes have Changed' },
+const MENU_ITEMS: { status: keyof NotifyOn; label: string }[] = [
+    { status: 'notifyOnOpen', label: 'Section is OPEN' },
+    { status: 'notifyOnWaitlist', label: 'Section is WAITLIST' },
+    { status: 'notifyOnFull', label: 'Section is FULL' },
+    { status: 'notifyOnRestriction', label: 'Restriction Codes have Changed' },
 ];
 
 interface NotificationsMenuProps {
@@ -51,11 +51,11 @@ export const NotificationsMenu = memo(({ section, term, courseTitle }: Notificat
         fetchUserData(session);
     }, [session, fetchUserData]);
 
-    const notificationStatus = notification?.notificationStatus;
-    const hasNotifications = notificationStatus && Object.values(notificationStatus).some((n) => n);
+    const notifyOn = notification?.notifyOn;
+    const hasNotifications = notifyOn && Object.values(notifyOn).some((n) => n);
 
     const handleClick = useCallback(
-        (status: keyof NotificationStatus) => {
+        (status: keyof NotifyOn) => {
             const { sectionType, sectionCode, restrictions, units, sectionNum } = section;
             const currStatus = section.status;
             setNotifications({
@@ -125,7 +125,7 @@ export const NotificationsMenu = memo(({ section, term, courseTitle }: Notificat
                     <Typography sx={{ fontWeight: 600 }}>Notify When</Typography>
                 </ListItemButton>
                 {MENU_ITEMS.map((item) => {
-                    const selected = notificationStatus?.[item.status];
+                    const selected = notifyOn?.[item.status];
                     return (
                         <MenuItem
                             key={item.status}

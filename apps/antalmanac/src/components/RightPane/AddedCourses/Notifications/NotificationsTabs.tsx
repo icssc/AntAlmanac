@@ -58,7 +58,7 @@ export function NotificationsTabs() {
                     }}
                 >
                     <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
-                        Enable notifications for courses from the course table using the
+                        Enable notifications for courses using the
                     </Typography>
                     <NotificationAddOutlined fontSize="small" sx={{ color: 'text.secondary' }} />
                     <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
