@@ -1,0 +1,28 @@
+name: Slash Command Dispatch
+
+on:
+    issue_comment:
+        types: [created]
+
+jobs:
+    slash-command-dispatch:
+        # Only run on PR comments from authorized users
+        if: |
+            github.event.issue.pull_request &&
+            (
+                github.event.comment.author_association == 'OWNER' ||
+                github.event.comment.author_association == 'MEMBER' ||
+                github.event.comment.author_association == 'COLLABORATOR'
+            )
+        runs-on: ubuntu-latest
+        steps:
+            - name: Dispatch slash commands
+              uses: peter-evans/slash-command-dispatch@v4
+              with:
+                  token: ${{ secrets.SLASH_COMMAND_PAT }}
+                  commands: |
+                      unlock
+                      remove
+                  dispatch-type: repository
+                  issue-type: pull-request
+                  permission: none
