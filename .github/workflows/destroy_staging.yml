@@ -19,6 +19,17 @@ env:
 
 jobs:
     delete-staging:
+        if: |
+            github.event_name == 'pull_request' ||
+            (
+                github.event.issue.pull_request &&
+                contains(github.event.comment.body, '/remove') &&
+                (
+                    github.event.comment.author_association == 'OWNER' ||
+                    github.event.comment.author_association == 'MEMBER' ||
+                    github.event.comment.author_association == 'COLLABORATOR'
+                )
+            )
         runs-on: ubuntu-latest
         env:
             # Use pull_request number for PR close events, client_payload for slash commands
