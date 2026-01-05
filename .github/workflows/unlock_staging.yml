@@ -11,13 +11,13 @@ jobs:
     unlock-staging:
         runs-on: ubuntu-latest
         env:
-            SST_STAGE: staging-${{ github.event.client_payload.pull_request.number }}
+            SST_STAGE: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
 
         steps:
             - name: Checkout PR branch
               uses: actions/checkout@v4
               with:
-                  ref: ${{ github.event.client_payload.pull_request.head.sha }}
+                  ref: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v4
