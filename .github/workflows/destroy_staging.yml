@@ -29,6 +29,15 @@ jobs:
               with:
                   ref: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
 
+            - name: Create deployment
+              id: create-deployment
+              uses: chrnorm/deployment-action@v2
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  environment: staging
+                  ref: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
+                  description: Removing staging environment for PR #${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
+
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v4
               with:
@@ -46,6 +55,23 @@ jobs:
               run: |
                   echo "Removing stage: $SST_STAGE"
                   npx sst remove --stage "$SST_STAGE"
+
+            - name: Update deployment status (inactive)
+              if: success()
+              uses: chrnorm/deployment-status@v2
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  deployment-id: ${{ steps.create-deployment.outputs.deployment_id }}
+                  state: inactive
+                  description: Staging environment removed
+
+            - name: Update deployment status (failure)
+              if: failure()
+              uses: chrnorm/deployment-status@v2
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  deployment-id: ${{ steps.create-deployment.outputs.deployment_id }}
+                  state: failure
 
             - name: Add reaction to comment
               if: github.event_name == 'repository_dispatch'
