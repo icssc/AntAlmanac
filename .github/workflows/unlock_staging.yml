@@ -19,13 +19,13 @@ jobs:
             )
         runs-on: ubuntu-latest
         env:
-            SST_STAGE: staging-${{ github.event.issue.number }}
+            SST_STAGE: staging-${{ github.event.issue.number || github.event.pull_request.number }}
 
         steps:
             - name: Checkout PR branch
               uses: actions/checkout@v4
               with:
-                  ref: refs/pull/${{ github.event.issue.number }}/head
+                  ref: refs/pull/${{ github.event.issue.number || github.event.pull_request.number }}/head
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v4
