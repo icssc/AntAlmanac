@@ -19,27 +19,14 @@ env:
 
 jobs:
     delete-staging:
-        if: |
-            github.event_name == 'pull_request' ||
-            (
-                github.event.issue.pull_request &&
-                contains(github.event.comment.body, '/remove') &&
-                (
-                    github.event.comment.author_association == 'OWNER' ||
-                    github.event.comment.author_association == 'MEMBER' ||
-                    github.event.comment.author_association == 'COLLABORATOR'
-                )
-            )
         runs-on: ubuntu-latest
         env:
-            # Use pull_request number for PR close events, client_payload for slash commands
             SST_STAGE: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
 
         steps:
             - name: Checkout
               uses: actions/checkout@v4
               with:
-                  # Use appropriate ref based on trigger type
                   ref: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
 
             - name: Configure AWS credentials
