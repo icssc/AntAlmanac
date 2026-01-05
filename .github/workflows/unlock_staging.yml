@@ -1,0 +1,46 @@
+name: Unlock - Staging
+
+on:
+    issue_comment:
+        types: [created]
+
+env:
+    AWS_REGION: ${{ secrets.AWS_REGION }}
+
+jobs:
+    unlock-staging:
+        if: |
+            github.event.issue.pull_request &&
+            contains(github.event.comment.body, '/unlock') &&
+            (
+                github.event.comment.author_association == 'OWNER' ||
+                github.event.comment.author_association == 'MEMBER' ||
+                github.event.comment.author_association == 'COLLABORATOR'
+            )
+        runs-on: ubuntu-latest
+        env:
+            SST_STAGE: staging-${{ github.event.issue.number || github.event.pull_request.number }}
+
+        steps:
+            - name: Checkout PR branch
+              uses: actions/checkout@v4
+              with:
+                  ref: refs/pull/${{ github.event.issue.number || github.event.pull_request.number }}/head
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ env.AWS_REGION }}
+
+            - name: Setup Node.js and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Unlock SST staging stage
+              run: |
+                  echo "Unlocking stage: $SST_STAGE"
+                  npx sst unlock --stage "$SST_STAGE"
