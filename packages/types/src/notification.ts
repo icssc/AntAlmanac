@@ -1,16 +1,16 @@
-export type NotificationStatus = {
-    openStatus: boolean;
-    waitlistStatus: boolean;
-    fullStatus: boolean;
-    restrictionStatus: boolean;
-};
+export type notifyOn = {
+    notifyOnOpen: boolean;
+    notifyOnWaitlist: boolean;
+    notifyOnFull: boolean;
+    notifyOnRestriction: boolean;
+};  
 
 export type Notification = {
     term: string;
     sectionCode: string;
     courseTitle: string;
     sectionType: string;
-    notificationStatus: NotificationStatus;
-    lastUpdated: string;
+    notifyOn: notifyOn;
+    lastUpdatedStatus: string;
     lastCodes: string;
 };

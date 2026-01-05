@@ -9,31 +9,36 @@
     },
     "scripts": {
         "prepare": "husky install",
-        "start:aa": "turbo start --filter=antalmanac",
-        "start": "cross-env VITE_LOCAL_SERVER=true turbo start",
-        "build:aa": "turbo build --filter=antalmanac --env-mode=loose",
-        "build": "turbo build --env-mode=loose",
-        "deploy:aa": "turbo deploy --filter=antalmanac",
-        "deploy:cdk": "turbo deploy --filter=cdk",
-        "deploy": "turbo deploy",
-        "test": "vitest"
+        "dev": "pnpm --filter antalmanac dev",
+        "db:generate": "pnpm --filter db db:generate",
+        "db:migrate": "pnpm --filter db db:migrate",
+        "db:studio": "pnpm --filter db db:studio",
+        "test": "vitest",
+        "deploy": "sst deploy --stage production"
     },
     "devDependencies": {
         "@types/eslint": "^8.56.5",
         "@types/node": "^20.11.6",
         "cross-env": "^7.0.3",
+        "dotenv": "^16.0.3",
         "eslint-import-resolver-typescript": "^3.6.1",
         "husky": "^8.0.3",
         "jsdom": "^22.1.0",
         "lint-staged": "^13.1.1",
         "prettier": "^3.1.0",
+        "sst": "3.17.25",
         "tsx": "^4.19.2",
-        "turbo": "latest",
         "vitest": "^0.34.4"
     },
-    "packageManager": "pnpm@9.11.0",
+    "packageManager": "pnpm@10.22.0",
     "engines": {
-        "pnpm": "^9.0.0",
-        "node": ">=22"
+        "node": ">=22",
+        "pnpm": "^10.0.0"
+    },
+    "pnpm": {
+        "overrides": {
+            "@types/react": "19.2.7",
+            "@types/react-dom": "19.2.3"
+        }
     }
 }

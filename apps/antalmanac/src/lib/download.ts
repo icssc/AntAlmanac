@@ -357,7 +357,7 @@ export function exportCalendar() {
 
         // Inject the VTIMEZONE section into the .ics file.
         const data = new Blob([icsString.replace('BEGIN:VEVENT', vTimeZoneSection)], {
-            type: 'text/plain;charset=utf-8',
+            type: 'text/calendar;charset=utf-8',
         });
 
         // Download the .ics file

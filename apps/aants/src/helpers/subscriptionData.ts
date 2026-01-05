@@ -1,16 +1,16 @@
 import { request, Term, Quarter, WebsocSection, WebsocResponse } from '@icssc/libwebsoc-next';
 import { eq, and, or } from 'drizzle-orm';
 
-import { db } from '../../../backend/src/db/index';
-import { users } from '../../../backend/src/db/schema/auth/user';
-import { subscriptions } from '../../../backend/src/db/schema/subscription';
+import { db } from '../../../../packages/db/src/index';
+import { users } from '../../../../packages/db/src/schema/auth/user';
+import { subscriptions } from '../../../../packages/db/src/schema/subscription';
 
 interface TermGrouping {
-    [term: string]: number[];
+    [term: string]: string[];
 }
 
 interface ClassStatus {
-    lastUpdated: WebsocSection['status'] | null;
+    lastUpdatedStatus: WebsocSection['status'] | null;
     lastCodes: string | null;
 }
 
@@ -81,20 +81,20 @@ async function getSubscriptionSectionCodes(): Promise<TermGrouping | undefined> 
  * @param year - The academic year of the subscription.
  * @param quarter - The academic quarter of the subscription.
  * @param sectionCode - The section code of the class.
- * @param lastUpdated - The new status of the class.
+ * @param lastUpdatedStatus - The new status of the class.
  * @param lastCodes - The new restriction codes of the class.
  */
 async function updateSubscriptionStatus(
     year: string,
     quarter: string,
-    sectionCode: number,
-    lastUpdated: WebsocSection['status'],
+    sectionCode: string,
+    lastUpdatedStatus: WebsocSection['status'],
     lastCodes: string
 ): Promise<void> {
     try {
         await db
             .update(subscriptions)
-            .set({ lastUpdated: lastUpdated, lastCodes: lastCodes })
+            .set({ lastUpdatedStatus: lastUpdatedStatus, lastCodes: lastCodes })
             .where(
                 and(
                     eq(subscriptions.year, year),
@@ -118,12 +118,12 @@ async function updateSubscriptionStatus(
 async function getLastUpdatedStatus(
     year: string,
     quarter: string,
-    sectionCode: number
+    sectionCode: string
 ): Promise<ClassStatus | undefined> {
     try {
         const result = await db
             .select({
-                lastUpdated: subscriptions.lastUpdated,
+                lastUpdatedStatus: subscriptions.lastUpdatedStatus,
                 lastCodes: subscriptions.lastCodes,
             })
             .from(subscriptions)
@@ -157,42 +157,53 @@ async function getLastUpdatedStatus(
 async function getUsers(
     quarter: string,
     year: string,
-    sectionCode: number,
+    sectionCode: string,
     status: WebsocSection['status'],
     statusChanged: boolean,
     codesChanged: boolean
 ): Promise<User[] | undefined> {
     try {
         const statusColumnMap: Record<WebsocSection['status'], any> = {
-            OPEN: subscriptions.openStatus,
-            Waitl: subscriptions.waitlistStatus,
-            FULL: subscriptions.fullStatus,
+            OPEN: subscriptions.notifyOnOpen,
+            Waitl: subscriptions.notifyOnWaitlist,
+            FULL: subscriptions.notifyOnFull,
             NewOnly: null,
         };
 
         const statusColumn = statusColumnMap[status];
 
-        let query = db
+        const baseConditions = [
+            eq(subscriptions.year, year),
+            eq(subscriptions.quarter, quarter),
+            eq(subscriptions.sectionCode, sectionCode),
+        ];
+
+        let notificationCondition;
+        if (statusChanged === true && codesChanged === true) {
+            if (statusColumn) {
+                notificationCondition = or(eq(statusColumn, true), eq(subscriptions.notifyOnRestriction, true));
+            } else {
+                notificationCondition = eq(subscriptions.notifyOnRestriction, true);
+            }
+        } else if (statusChanged === true) {
+            if (statusColumn) {
+                notificationCondition = eq(statusColumn, true);
+            } else {
+                // TODO (@IsaacNguyen): Handle NewOnly status if that's something we want to support
+                return [];
+            }
+        } else if (codesChanged === true) {
+            notificationCondition = eq(subscriptions.notifyOnRestriction, true);
+        }
+
+        const allConditions = notificationCondition ? [...baseConditions, notificationCondition] : baseConditions;
+
+        const result = await db
             .select({ userName: users.name, email: users.email, userId: users.id })
             .from(subscriptions)
             .innerJoin(users, eq(subscriptions.userId, users.id))
-            .where(
-                and(
-                    eq(subscriptions.year, year),
-                    eq(subscriptions.quarter, quarter),
-                    eq(subscriptions.sectionCode, sectionCode)
-                )
-            )
-            .$dynamic();
+            .where(and(...allConditions));
 
-        if (statusChanged == true && codesChanged == true) {
-            query = query.where(or(eq(statusColumn, true), eq(subscriptions.restrictionStatus, true)));
-        } else if (statusChanged == true) {
-            query = query.where(eq(statusColumn, true));
-        } else if (codesChanged == true) {
-            query = query.where(eq(subscriptions.restrictionStatus, true));
-        }
-        const result = await query;
         return result;
     } catch (error) {
         console.error('Error getting users:', error);
