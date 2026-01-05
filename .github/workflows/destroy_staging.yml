@@ -1,9 +1,10 @@
-name: Delete - Staging (PR closed)
+name: Delete - Staging
 
 on:
     pull_request:
-        branches: [main]
         types: [closed]
+    issue_comment:
+        types: [created]
 
 env:
     AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -18,14 +19,26 @@ env:
 
 jobs:
     delete-staging:
+        if: |
+            github.event_name == 'pull_request' ||
+            (
+                github.event.issue.pull_request &&
+                contains(github.event.comment.body, '/remove') &&
+                (
+                    github.event.comment.author_association == 'OWNER' ||
+                    github.event.comment.author_association == 'MEMBER' ||
+                    github.event.comment.author_association == 'COLLABORATOR'
+                )
+            )
         runs-on: ubuntu-latest
-
         env:
-            SST_STAGE: staging-${{ github.event.pull_request.number }}
+            SST_STAGE: staging-${{ github.event.pull_request.number || github.event.issue.number }}
 
         steps:
             - name: Checkout
               uses: actions/checkout@v4
+              with:
+                  ref: refs/pull/${{ github.event.issue.number || github.event.pull_request.number }}/head
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v4
