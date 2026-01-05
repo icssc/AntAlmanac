@@ -3,8 +3,8 @@ name: Delete - Staging
 on:
     pull_request:
         types: [closed]
-    issue_comment:
-        types: [created]
+    repository_dispatch:
+        types: [remove-command]
 
 env:
     AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -19,26 +19,17 @@ env:
 
 jobs:
     delete-staging:
-        if: |
-            github.event_name == 'pull_request' ||
-            (
-                github.event.issue.pull_request &&
-                contains(github.event.comment.body, '/remove') &&
-                (
-                    github.event.comment.author_association == 'OWNER' ||
-                    github.event.comment.author_association == 'MEMBER' ||
-                    github.event.comment.author_association == 'COLLABORATOR'
-                )
-            )
         runs-on: ubuntu-latest
         env:
-            SST_STAGE: staging-${{ github.event.pull_request.number || github.event.issue.number }}
+            # Use pull_request number for PR close events, client_payload for slash commands
+            SST_STAGE: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
 
         steps:
             - name: Checkout
               uses: actions/checkout@v4
               with:
-                  ref: refs/pull/${{ github.event.issue.number || github.event.pull_request.number }}/head
+                  # Use appropriate ref based on trigger type
+                  ref: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v4
@@ -57,3 +48,11 @@ jobs:
               run: |
                   echo "Removing stage: $SST_STAGE"
                   npx sst remove --stage "$SST_STAGE"
+
+            - name: Add reaction to comment
+              if: github.event_name == 'repository_dispatch'
+              uses: peter-evans/create-or-update-comment@v4
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+                  reactions: rocket
