@@ -6,14 +6,6 @@ on:
 
 jobs:
     slash-command-dispatch:
-        # Only run on PR comments from authorized users
-        if: |
-            github.event.issue.pull_request &&
-            (
-                github.event.comment.author_association == 'OWNER' ||
-                github.event.comment.author_association == 'MEMBER' ||
-                github.event.comment.author_association == 'COLLABORATOR'
-            )
         runs-on: ubuntu-latest
         steps:
             - name: Dispatch slash commands
@@ -25,4 +17,4 @@ jobs:
                       remove
                   dispatch-type: repository
                   issue-type: pull-request
-                  permission: none
+                  permission: write
