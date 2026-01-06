@@ -235,14 +235,15 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
     const userAndAccount = await trpc.userData.getUserAndAccountBySessionToken.query({
         token: session.session ?? '',
     });
-    const { users, accounts } = userAndAccount as any;
+    const { users, accounts } = userAndAccount;
 
-    const incomingData: User = await trpc.userData.getUserData.query({ userId: incomingUser.id });
-    const scheduleSaveState = 'userData' in incomingData ? incomingData.userData : incomingData;
+    const incomingData: User | null = await trpc.userData.getUserData.query({ userId: incomingUser.id });
+    const scheduleSaveState =
+        incomingData !== null && 'userData' in incomingData ? incomingData.userData : incomingData;
 
     const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
 
-    if (scheduleSaveState.schedules) {
+    if (scheduleSaveState?.schedules) {
         mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, '(import)-');
         currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
 
