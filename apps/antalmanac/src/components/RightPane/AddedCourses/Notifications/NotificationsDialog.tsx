@@ -1,5 +1,5 @@
 import { Notifications } from '@mui/icons-material';
-import { Dialog, DialogContent, DialogTitle, IconButton, SxProps, Tooltip } from '@mui/material';
+import { Dialog, DialogContent, DialogTitle, DialogActions, Button, IconButton, SxProps, Tooltip } from '@mui/material';
 import { useCallback, useState, useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -75,6 +75,11 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
                 <DialogContent>
                     <NotificationsTabs />
                 </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} variant="text" sx={{ color: 'white' }}>
+                        Cancel
+                    </Button>
+                </DialogActions>
             </Dialog>
 
             <SignInDialog isDark={isDark} open={signInOpen} onClose={handleSignInClose} feature="Notification" />
