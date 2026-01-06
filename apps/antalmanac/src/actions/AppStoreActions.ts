@@ -1,5 +1,6 @@
 import type {
     CourseDetails,
+    CustomEventId,
     RepeatingCustomEvent,
     ScheduleCourse,
     ShortCourseSchedule,
@@ -399,7 +400,7 @@ export const deleteCourse = (sectionCode: string, term: string, scheduleIndex: n
     AppStore.deleteCourse(sectionCode, term, scheduleIndex);
 };
 
-export const deleteCustomEvent = (customEventID: number, scheduleIndices: number[]) => {
+export const deleteCustomEvent = (customEventID: CustomEventId, scheduleIndices: number[]) => {
     AppStore.deleteCustomEvent(customEventID, scheduleIndices);
 };
 
@@ -435,7 +436,7 @@ export const changeCurrentSchedule = (newScheduleIndex: number) => {
     AppStore.changeCurrentSchedule(newScheduleIndex);
 };
 
-export const changeCustomEventColor = (customEventID: number, newColor: string) => {
+export const changeCustomEventColor = (customEventID: CustomEventId, newColor: string) => {
     AppStore.changeCustomEventColor(customEventID, newColor);
 };
 

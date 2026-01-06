@@ -1,6 +1,11 @@
 import { EventEmitter } from 'events';
 
-import type { ScheduleCourse, ScheduleSaveState, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import type {
+    ScheduleCourse,
+    ScheduleSaveState,
+    RepeatingCustomEvent,
+    CustomEventId,
+} from '@packages/antalmanac-types';
 import { SnackbarOrigin, VariantType } from 'notistack';
 
 import actionTypesStore from '$actions/ActionTypesStore';
@@ -280,7 +285,7 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    deleteCustomEvent(customEventId: number, scheduleIndices: number[]) {
+    deleteCustomEvent(customEventId: CustomEventId, scheduleIndices: number[]) {
         this.schedule.deleteCustomEvent(customEventId, scheduleIndices);
         this.unsavedChanges = true;
         const action: DeleteCustomEventAction = {
@@ -292,7 +297,7 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    changeCustomEventColor(customEventId: number, newColor: string) {
+    changeCustomEventColor(customEventId: CustomEventId, newColor: string) {
         this.schedule.changeCustomEventColor(customEventId, newColor);
         this.unsavedChanges = true;
         const action: ChangeCustomEventColorAction = {
