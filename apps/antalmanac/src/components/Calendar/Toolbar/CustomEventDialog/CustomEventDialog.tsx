@@ -75,13 +75,21 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
 
     const handleOpen = useCallback(() => {
         setOpen(true);
-        setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(props.customEvent?.customEventID ?? -1));
+        if (props.customEvent) {
+            const customEventId =
+                typeof props.customEvent.customEventID === 'string'
+                    ? Number(props.customEvent.customEventID)
+                    : props.customEvent.customEventID;
+            setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(customEventId));
+        } else {
+            setScheduleIndices([AppStore.getCurrentScheduleIndex()]);
+        }
 
         logAnalytics(postHog, {
             category: analyticsEnum.calendar,
             action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT,
         });
-    }, [props.customEvent?.customEventID]);
+    }, [props.customEvent, postHog]);
 
     const handleClose = useCallback(() => {
         setOpen(false);
