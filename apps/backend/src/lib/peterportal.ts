@@ -32,12 +32,11 @@ export type PeterPortalAPIResponse = {
 };
 
 export async function fetchUserRoadmapsPeterPortal(userId: string) { // maybe add a return promise
-  const { year, quarter } = getCurrentTerm();
   const env = ppEnvSchema.parse(process.env);
   const apiKey = env.PETERPORTAL_CLIENT_API_KEY;
 
   const searchParams = new URLSearchParams();
-  searchParams.set('input', JSON.stringify({ googleUserId: userId })); // temp vicky test userId
+  searchParams.set('input', JSON.stringify({ googleUserId: userId }));
   const url = `${PETERPORTAL_API_URL}?${searchParams}`;
 
   try {
@@ -51,7 +50,7 @@ export async function fetchUserRoadmapsPeterPortal(userId: string) { // maybe ad
 
     if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`);
     const data: PeterPortalAPIResponse = await response.json();
-
+    console.log(data.result?.data ?? []);
     return data.result?.data ?? [];
 
   } catch (e) {
@@ -68,6 +67,6 @@ export function flattenRoadmapCourses(roadmap: any): string[] {
       q.courses?.forEach(c => courses.add(c));
     }
   }
-
+  console.log('courses', courses);
   return Array.from(courses);
 }

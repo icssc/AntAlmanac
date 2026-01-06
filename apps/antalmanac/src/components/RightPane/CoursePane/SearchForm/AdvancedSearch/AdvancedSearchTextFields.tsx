@@ -1,4 +1,4 @@
-import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText } from '@mui/material';
+import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText, Tooltip, Typography } from '@mui/material';
 import { format, parse } from 'date-fns';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 
@@ -12,6 +12,8 @@ import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/L
 import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { safeUnreachableCase } from '$lib/utils';
+import { usePeterPortalRoadmaps } from '$hooks/usePeterPortal';
+import { useSessionStore } from '$stores/SessionStore';
 
 type InputEvent =
     | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -32,6 +34,9 @@ export function AdvancedSearchTextFields() {
         () => RightPaneStore.getFormData().excludeRestrictionCodes
     );
     const [days, setDays] = useState(() => RightPaneStore.getFormData().days);
+    const [ excludeRoadmapCourses, setExcludeRoadmapCourses ] = useState(() => RightPaneStore.getFormData().excludeRoadmapCourses);
+    const { roadmaps } = usePeterPortalRoadmaps();
+    const isLoggedIn = useSessionStore((s) => s.googleId !== null);
 
     const resetField = useCallback(() => {
         const formData = RightPaneStore.getFormData();
@@ -43,6 +48,7 @@ export function AdvancedSearchTextFields() {
         setBuilding(formData.building);
         setRoom(formData.room);
         setDivision(formData.division);
+        setExcludeRoadmapCourses(formData.excludeRoadmapCourses);
         setExcludeRestrictionCodes(formData.excludeRestrictionCodes);
         setDays(formData.days);
     }, []);
@@ -130,6 +136,9 @@ export function AdvancedSearchTextFields() {
                 break;
             case 'division':
                 setDivision(stringValue);
+                break;
+            case 'excludeRoadmapCourses':
+                setExcludeRoadmapCourses(stringValue);
                 break;
             case 'excludeRestrictionCodes':
                 setExcludeRestrictionCodes(stringValue);
@@ -325,6 +334,53 @@ export function AdvancedSearchTextFields() {
                     width: '100%',
                 }}
             >
+                <LabeledSelect
+                    label={
+                        <Tooltip
+                            title={<Typography sx={{fontSize: '0.8rem'}}>Data from PeterPortal.org</Typography>}
+                        >
+                        <Box>Exclude Taken Courses</Box>
+                        </Tooltip>
+                    }
+                    selectProps={{
+                        value: excludeRoadmapCourses,
+                        onChange: changeHandlerFactory('excludeRoadmapCourses'),
+                        displayEmpty: true,
+                        disabled: !isLoggedIn,
+                        sx: {
+                            width: '100%',
+                        },
+                    }}
+                >   
+                    {!isLoggedIn && ( // not logged in
+                        <MenuItem value="" disabled>
+                            Sign In to filter
+                        </MenuItem>
+                    )}
+
+                    {isLoggedIn && roadmaps.length === 0 && ( // logged in but no roadmaps
+                        <MenuItem
+                            value=""
+                            onClick={() => window.open("https://peterportal.org", "_blank")}
+                        >
+                            Create a roadmap!
+                        </MenuItem>
+                    )}
+
+                    {isLoggedIn && roadmaps.length > 0 && ( // default
+                        <MenuItem value="">
+                            Include all courses
+                        </MenuItem>
+                    )}
+
+                    {isLoggedIn &&  // filter by roadmaps
+                        roadmaps.map((roadmap) => (
+                            <MenuItem key={roadmap.id} value={roadmap.id.toString()}>
+                                {roadmap.name}
+                            </MenuItem>
+                        ))}
+                </LabeledSelect>
+
                 <LabeledSelect
                     label="Exclude Restrictions"
                     selectProps={{
