@@ -1,21 +1,27 @@
 import { Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, Link, useMediaQuery, useTheme } from '@mui/material';
-import { AACourse, AASection, WebsocDepartment, WebsocSchool, WebsocAPIResponse, GE } from '@packages/antalmanac-types';
+import {
+    AACourse,
+    AASection,
+    WebsocDepartment,
+    WebsocSchool,
+    WebsocAPIResponse,
+    WebsocSectionType,
+    GE,
+} from '@packages/antalmanac-types';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
-import RightPaneStore from '../RightPaneStore';
-import GeDataFetchProvider from '../SectionTable/GEDataFetchProvider';
-import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
-
-import { SchoolDeptCard } from './SchoolDeptCard';
-import darkModeLoadingGif from './SearchForm/Gifs/dark-loading.gif';
-import loadingGif from './SearchForm/Gifs/loading.gif';
-import darkNoNothing from './static/dark-no_results.png';
-import noNothing from './static/no_results.png';
-
 import { openSnackbar } from '$actions/AppStoreActions';
+import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
+import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
+import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
+import darkNoNothing from '$components/RightPane/CoursePane/static/dark-no_results.png';
+import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
+import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
+import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import analyticsEnum from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
@@ -27,13 +33,10 @@ import { useThemeStore } from '$stores/SettingsStore';
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
-    const courseColors = currentCourses.reduce(
-        (accumulator, { section }) => {
-            accumulator[section.sectionCode] = section.color;
-            return accumulator;
-        },
-        {} as Record<string, string>
-    );
+    const courseColors = currentCourses.reduce((accumulator, { section }) => {
+        accumulator[section.sectionCode] = section.color;
+        return accumulator;
+    }, {} as Record<string, string>);
 
     return courseColors;
 }
@@ -51,6 +54,17 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
                 for (const section of course.sections) {
                     (section as AASection).color = courseColors[section.sectionCode];
                 }
+
+                const sectionTypesSet = new Set<WebsocSectionType>();
+
+                course.sections.forEach((section) => {
+                    sectionTypesSet.add(section.sectionType);
+                });
+
+                const sectionTypes = [...sectionTypesSet];
+
+                (course as AACourse).sectionTypes = sectionTypes;
+
                 accumulator.push(course as AACourse);
             });
         });
