@@ -127,6 +127,10 @@ class ActionTypesStore extends EventEmitter {
     }
 
     async autoSaveSchedule(action: ActionType) {
+        if (AppStore.getSkeletonMode()) {
+            return;
+        }
+
         const sessionStore = useSessionStore.getState();
         const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() == 'true';
 
@@ -165,6 +169,12 @@ class ActionTypesStore extends EventEmitter {
     }
 
     async loadScheduleFromUnsavedActions() {
+        // Don't load unsaved actions when viewing a shared schedule (skeleton mode)
+        if (AppStore.getSkeletonMode()) {
+            removeLocalStorageUnsavedActions();
+            return;
+        }
+
         const unsavedActionsString = getLocalStorageUnsavedActions();
         if (unsavedActionsString == null) {
             return;

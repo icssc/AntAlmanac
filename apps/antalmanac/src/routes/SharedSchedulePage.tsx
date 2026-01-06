@@ -17,6 +17,7 @@ import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
 import trpc from '$lib/api/trpc';
+import { removeLocalStorageUnsavedActions } from '$lib/localStorage';
 import { getDefaultTerm } from '$lib/termData';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
@@ -104,6 +105,8 @@ export function SharedSchedulePage() {
             try {
                 setOpenLoadingSchedule(true);
                 setError(null);
+
+                removeLocalStorageUnsavedActions();
 
                 if (AppStore.getSkeletonMode()) {
                     AppStore.exitSkeletonMode();
