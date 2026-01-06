@@ -66,7 +66,7 @@ function ThemeMenu() {
             <ButtonGroup style={{ display: 'flex', placeContent: 'center', width: '100%', borderColor: 'unset' }}>
                 <Button
                     startIcon={<LightMode fontSize="small" />}
-                    style={{
+                    sx={{
                         padding: '1rem 2rem',
                         borderRadius: '12px 0px 0px 12px',
                         width: '100%',
@@ -79,7 +79,7 @@ function ThemeMenu() {
                 </Button>
                 <Button
                     startIcon={<SettingsBrightness fontSize="small" />}
-                    style={{
+                    sx={{
                         padding: '1rem 2rem',
                         width: '100%',
                         ...getSelectedStyle('system', themeSetting, isDark),
@@ -91,7 +91,7 @@ function ThemeMenu() {
                 </Button>
                 <Button
                     startIcon={<DarkMode fontSize="small" />}
-                    style={{
+                    sx={{
                         padding: '1rem 2rem',
                         borderRadius: '0px 12px 12px 0px',
                         width: '100%',
@@ -129,7 +129,7 @@ function TimeMenu() {
                 }}
             >
                 <Button
-                    style={{
+                    sx={{
                         padding: '1rem 2rem',
                         borderRadius: '12px 0px 0px 12px',
                         width: '100%',
@@ -143,7 +143,7 @@ function TimeMenu() {
                     12 Hour
                 </Button>
                 <Button
-                    style={{
+                    sx={{
                         padding: '1rem 2rem',
                         borderRadius: '0px 12px 12px 0px',
                         width: '100%',
