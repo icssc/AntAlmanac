@@ -1,6 +1,7 @@
 import { TableRow, TableCell } from '@mui/material';
 import { memo } from 'react';
 
+import { DeptCourseNumberCell } from '$components/RightPane/AddedCourses/Notifications/DeptCourseNumberCell';
 import { NotificationTableDeleteCell } from '$components/RightPane/AddedCourses/Notifications/NotificationTableDeleteCell';
 import { NotificationTableRowCheckbox } from '$components/RightPane/AddedCourses/Notifications/NotificationTableRowCheckbox';
 import { CourseCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/CourseCodeCell';
@@ -17,12 +18,28 @@ export const NotificationTableRow = memo(({ notificationKey }: NotificationTable
         return null;
     }
 
-    const { courseTitle, sectionType, term, sectionCode, lastCodes, lastUpdated, units, sectionNum } = notification;
+    const {
+        courseTitle,
+        sectionType,
+        term,
+        sectionCode,
+        lastCodes,
+        lastUpdated,
+        units,
+        sectionNum,
+        deptCode,
+        courseNumber,
+    } = notification;
 
     return (
         <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
             <NotificationTableDeleteCell notificationKey={notificationKey} />
             <CourseCodeCell sectionCode={sectionCode} sx={{ width: 'unset', padding: '6px 16px' }} />
+            <DeptCourseNumberCell
+                deptCode={deptCode}
+                courseNumber={courseNumber}
+                sx={{ width: 'unset', padding: '6px 16px' }}
+            />
             <DetailsCell
                 sectionType={sectionType}
                 sectionNum={sectionNum}

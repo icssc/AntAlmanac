@@ -25,9 +25,9 @@ interface DetailCellProps {
     sx?: SxProps;
 }
 
-export const DetailsCell = ({ sectionType, sectionNum, units }: DetailCellProps) => {
+export const DetailsCell = ({ sectionType, sectionNum, units, sx }: DetailCellProps) => {
     return (
-        <TableBodyCellContainer>
+        <TableBodyCellContainer sx={sx}>
             <Box sx={SECTION_COLORS[sectionType]}>{sectionType}</Box>
             <Box>Sec: {sectionNum}</Box>
             <Box>Units:{units}</Box>

@@ -1,6 +1,6 @@
 import { Delete } from '@mui/icons-material';
 import { useTheme, useMediaQuery, Box, IconButton, CircularProgress } from '@mui/material';
-import { AASection, Course } from '@packages/antalmanac-types';
+import { AASection, Course, CourseDetails } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { memo, useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -17,6 +17,7 @@ interface DeleteAndNotificationsProps {
     term: string;
     lastUpdated: string;
     lastCodes: string;
+    courseDetails: CourseDetails;
 }
 
 /**

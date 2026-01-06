@@ -43,6 +43,7 @@ export const NotificationsTable = memo(({ keys }: NotificationsTableProps) => {
                         <TableRow>
                             <TableCell></TableCell>
                             <TableCell>Code</TableCell>
+                            <TableCell align="left">Dept/Course</TableCell>
                             <TableCell>Type</TableCell>
                             <TableCell>Course Title</TableCell>
                             <TableCell align="center">Open</TableCell>
