@@ -3,6 +3,7 @@ import { Box, Card, CardActions, CardHeader, IconButton, Tooltip } from '@mui/ma
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { deleteCustomEvent } from '$actions/AppStoreActions';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
@@ -21,6 +22,8 @@ interface CustomEventDetailViewProps {
 const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
     const { customEvent } = props;
     const { isMilitaryTime } = useTimeFormatStore();
+    const location = useLocation();
+    const isSharedSchedulePage = location.pathname.startsWith('/share/');
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
@@ -101,6 +104,7 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                                 deleteCustomEvent(customEvent.customEventID, [AppStore.getCurrentScheduleIndex()]);
                             }}
                             size="large"
+                            disabled={isSharedSchedulePage}
                         >
                             <Delete fontSize="small" />
                         </IconButton>

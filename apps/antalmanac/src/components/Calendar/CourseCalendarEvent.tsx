@@ -4,6 +4,7 @@ import { WebsocSectionFinalExam } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useRef } from 'react';
 import { Event } from 'react-big-calendar';
+import { useLocation } from 'react-router-dom';
 
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
@@ -93,6 +94,8 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
     const paperRef = useRef<HTMLDivElement>(null);
     const quickSearch = useQuickSearch();
     const { isMilitaryTime } = useTimeFormatStore();
+    const location = useLocation();
+    const isSharedSchedulePage = location.pathname.startsWith('/share/');
 
     const postHog = usePostHog();
 
@@ -152,22 +155,24 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                             <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{`${title} ${sectionType}`}</span>
                         </Button>
                     </Tooltip>
-                    <Tooltip title="Delete">
-                        <IconButton
-                            size="small"
-                            style={{ textDecoration: 'underline' }}
-                            onClick={() => {
-                                closePopover();
-                                deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
-                                logAnalytics(postHog, {
-                                    category: analyticsEnum.calendar,
-                                    action: analyticsEnum.calendar.actions.DELETE_COURSE,
-                                });
-                            }}
-                        >
-                            <Delete fontSize="inherit" />
-                        </IconButton>
-                    </Tooltip>
+                    {!isSharedSchedulePage && (
+                        <Tooltip title="Delete">
+                            <IconButton
+                                size="small"
+                                style={{ textDecoration: 'underline' }}
+                                onClick={() => {
+                                    closePopover();
+                                    deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
+                                    logAnalytics(postHog, {
+                                        category: analyticsEnum.calendar,
+                                        action: analyticsEnum.calendar.actions.DELETE_COURSE,
+                                    });
+                                }}
+                            >
+                                <Delete fontSize="inherit" />
+                            </IconButton>
+                        </Tooltip>
+                    )}
                 </Box>
                 <table style={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
                     <tbody>
@@ -264,6 +269,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
                                 });
                             }}
+                            disabled={isSharedSchedulePage}
                         >
                             <Delete fontSize="small" />
                         </IconButton>

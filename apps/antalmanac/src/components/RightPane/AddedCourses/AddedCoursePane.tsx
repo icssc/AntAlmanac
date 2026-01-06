@@ -2,6 +2,7 @@ import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/
 import { AACourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { ColumnToggleDropdown } from '../CoursePane/CoursePaneButtonRow';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
@@ -334,6 +335,8 @@ function SkeletonSchedule() {
 }
 
 function AddedSectionsGrid() {
+    const location = useLocation();
+    const isSharedSchedulePage = location.pathname.startsWith('/share/');
     const [courses, setCourses] = useState(getCourses());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
@@ -393,7 +396,11 @@ function AddedSectionsGrid() {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Box sx={{ display: 'flex', width: 'fit-content', position: 'absolute', zIndex: 2 }}>
                 <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
-                <ClearScheduleButton buttonSx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />
+                <ClearScheduleButton
+                    buttonSx={buttonSx}
+                    analyticsCategory={analyticsEnum.addedClasses}
+                    disabled={isSharedSchedulePage}
+                />
                 <ColumnToggleDropdown />
             </Box>
             <Box sx={{ marginTop: 7 }}>

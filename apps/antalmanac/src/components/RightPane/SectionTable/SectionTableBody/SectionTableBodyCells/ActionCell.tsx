@@ -3,6 +3,7 @@ import { Box, IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
 import ColorPicker from '$components/ColorPicker';
@@ -46,6 +47,8 @@ interface ActionProps {
  */
 export function ColorAndDelete({ section, term }: ActionProps) {
     const isMobile = useIsMobile();
+    const location = useLocation();
+    const isSharedSchedulePage = location.pathname.startsWith('/share/');
 
     const flexDirection = isMobile ? 'column' : undefined;
 
@@ -69,9 +72,11 @@ export function ColorAndDelete({ section, term }: ActionProps) {
                 alignItems: 'center',
             }}
         >
-            <IconButton onClick={handleClick}>
-                <Delete fontSize="small" />
-            </IconButton>
+            {!isSharedSchedulePage && (
+                <IconButton onClick={handleClick}>
+                    <Delete fontSize="small" />
+                </IconButton>
+            )}
 
             <ColorPicker
                 key={AppStore.getCurrentScheduleIndex()}
