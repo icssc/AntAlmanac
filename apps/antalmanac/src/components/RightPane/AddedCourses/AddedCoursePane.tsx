@@ -3,12 +3,11 @@ import { AACourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { ColumnToggleDropdown } from '../CoursePane/CoursePaneButtonRow';
-import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
-
-import CustomEventDetailView from './CustomEventDetailView';
-
 import { updateScheduleNote } from '$actions/AppStoreActions';
+import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEventDetailView';
+import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
+import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
+import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -31,7 +30,7 @@ const buttonSx: SxProps = {
     pointerEvents: 'auto',
 };
 
-interface CourseWithTerm extends AACourse {
+export interface CourseWithTerm extends AACourse {
     term: string;
 }
 
@@ -62,6 +61,7 @@ function getCourses() {
                 prerequisiteLink: course.prerequisiteLink,
                 courseNumber: course.courseNumber,
                 courseTitle: course.courseTitle,
+                sectionTypes: course.sectionTypes,
                 sections: [
                     {
                         ...course.section,
@@ -407,6 +407,8 @@ function AddedSectionsGrid() {
                 {courses.length < 1 ? NoCoursesBox : null}
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
+                        const missingSections = getMissingSections(course);
+
                         return (
                             <Box key={course.deptCode + course.courseNumber + course.courseTitle}>
                                 <SectionTableLazyWrapper
@@ -415,6 +417,7 @@ function AddedSectionsGrid() {
                                     allowHighlight={false}
                                     analyticsCategory={analyticsEnum.addedClasses}
                                     scheduleNames={scheduleNames}
+                                    missingSections={missingSections}
                                 />
                             </Box>
                         );
