@@ -165,13 +165,13 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                     {props.customEvent ? 'Edit a Custom Event' : 'Add a Custom Event'}
                 </DialogTitle>
                 <DialogContent
-                    sx={{
+                    sx={(theme) => ({
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '12px',
                         paddingTop: '12px',
-                        minWidth: (theme) => theme.breakpoints.values.xxs,
-                    }}
+                        minWidth: { sm: theme.breakpoints.values.xxs },
+                    })}
                 >
                     <FormControl fullWidth>
                         <TextField
