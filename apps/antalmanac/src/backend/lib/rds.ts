@@ -607,10 +607,7 @@ export class RDS {
         });
     }
 
-    static async getUserAndAccountBySessionToken(
-        db: DatabaseOrTransaction,
-        refreshToken: string
-    ): Promise<{ users: User; accounts: Account }> {
+    static async getUserAndAccountBySessionToken(db: DatabaseOrTransaction, refreshToken: string) {
         return db.transaction((tx) =>
             tx
                 .select()
@@ -622,7 +619,7 @@ export class RDS {
                 .then((res) => {
                     return { users: res[0].users, accounts: res[0].accounts };
                 })
-        );
+        ) as Promise<{ users: User; accounts: Account }>;
     }
 
     /**
