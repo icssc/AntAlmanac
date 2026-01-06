@@ -154,8 +154,8 @@ export default function AppThemeProvider(props: Props) {
                     MuiAlert: {
                         styleOverrides: {
                             standardWarning: {
-                                backgroundColor: appTheme === 'dark' ? '#fff4e5ff' : '#FFEA99',
-                                color: appTheme === 'dark' ? '#856404ff' : '#302800ff',
+                                backgroundColor: '#FFEA99',
+                                color: '#302800ff',
                             },
                         },
                     },
