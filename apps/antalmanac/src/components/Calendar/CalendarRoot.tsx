@@ -33,11 +33,18 @@ import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
  * Start week on Sunday so Saturday appears after Friday.
  * This ensures the standard week layout: Su, M, Tu, W, Th, F, Sa
  */
+// Normal schedules: Su ... Sa (Sa rightmost)
 // eslint-disable-next-line import/no-named-as-default-member
 moment.updateLocale('en-us', {
     week: {
         dow: 0, // Sunday = 0, Monday = 1, ..., Saturday = 6
     },
+});
+
+// Finals locale: week starts Saturday (Sa ... Fr)
+moment.defineLocale('en-us-finals', {
+    parentLocale: 'en-us',
+    week: { dow: 6 },
 });
 
 const CALENDAR_LOCALIZER: DateLocalizer = momentLocalizer(moment);
@@ -250,6 +257,18 @@ export const ScheduleCalendar = memo(() => {
           ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
           : getDefaultFinalsStartDate();
 
+    const finalsStartsOnSaturday = showFinalsSchedule && finalsDate.getDay() === 6;
+
+    const culture = finalsStartsOnSaturday ? 'en-us-finals' : 'en-us';
+
+    const calendarView = showFinalsSchedule
+        ? finalsStartsOnSaturday || hasWeekendCourse
+            ? Views.WEEK
+            : Views.WORK_WEEK
+        : hasWeekendCourse
+          ? Views.WEEK
+          : Views.WORK_WEEK;
+
     const finalsDateFormat = 'ddd MM/DD';
     const date = showFinalsSchedule ? finalsDate : new Date(2018, 0, 1);
 
@@ -327,11 +346,12 @@ export const ScheduleCalendar = memo(() => {
 
                 <Calendar<CalendarEvent, object>
                     localizer={CALENDAR_LOCALIZER}
+                    culture={culture}
                     toolbar={false}
                     formats={formats}
                     views={CALENDAR_VIEWS}
                     defaultView={Views.WORK_WEEK}
-                    view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
+                    view={calendarView}
                     onView={() => {
                         return;
                     }}
