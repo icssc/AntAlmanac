@@ -311,16 +311,26 @@ export const loadSchedule = async (
                 });
 
                 const userDataResponse = await trpc.userData.getUserData.query({ userId: account.userId });
-                const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
+                const scheduleSaveState = userDataResponse?.userData;
 
-                if (await AppStore.loadSchedule(scheduleSaveState)) {
-                    openSnackbar('success', `Schedule loaded.`);
+                let error = false;
+
+                if (scheduleSaveState !== undefined) {
+                    if (await AppStore.loadSchedule(scheduleSaveState)) {
+                        openSnackbar('success', `Schedule loaded.`);
+                    } else {
+                        AppStore.loadSkeletonSchedule(scheduleSaveState);
+                        error = true;
+                    }
                 } else {
-                    AppStore.loadSkeletonSchedule(scheduleSaveState);
+                    error = true;
+                }
+
+                if (error) {
                     openSnackbar(
                         'error',
                         `Network error loading course information for "${providerId}". 	              
-                        If this continues to happen, please submit a feedback form.`
+                            If this continues to happen, please submit a feedback form.`
                     );
                 }
             } catch (e) {
