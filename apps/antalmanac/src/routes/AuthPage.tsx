@@ -81,13 +81,15 @@ export function AuthPage() {
 
                 const data = JSON.parse(savedData);
 
-                if (isEmptySchedule(userData.userData.schedules)) {
+                if (userData !== null && isEmptySchedule(userData.userData.schedules)) {
                     scheduleSaveState.schedules = data;
                 } else {
                     const saveState = userData && 'userData' in userData ? userData.userData : userData;
-                    mergeShortCourseSchedules(saveState.schedules, data, '(import)-');
-                    scheduleSaveState.schedules = saveState.schedules;
-                    scheduleSaveState.scheduleIndex = saveState.schedules.length - 1;
+                    if (saveState !== null) {
+                        mergeShortCourseSchedules(saveState.schedules, data, '(import)-');
+                        scheduleSaveState.schedules = saveState.schedules;
+                        scheduleSaveState.scheduleIndex = saveState.schedules.length - 1;
+                    }
                 }
 
                 // Fetch user info to enable proper account migration
