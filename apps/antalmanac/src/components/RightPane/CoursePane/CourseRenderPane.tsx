@@ -76,7 +76,14 @@ const RecruitmentBanner = () => {
     };
 
     return (
-        <Box sx={{ position: 'fixed', bottom: 5, right: isMobileScreen ? 5 : 75, zIndex: 999 }}>
+        <Box
+            sx={(theme) => ({
+                position: 'fixed',
+                bottom: 5,
+                right: isMobileScreen ? 5 : 75,
+                zIndex: theme.zIndex.snackbar,
+            })}
+        >
             {displayRecruitmentBanner ? (
                 <Alert
                     icon={false}
