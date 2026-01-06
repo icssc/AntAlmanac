@@ -172,7 +172,7 @@ export class RDS {
 
             const account = await db
                 .insert(accounts)
-                .values({ userId: newUserId, providerAccountId: providerId, accountType })
+                .values({ userId: newUserId, providerAccountId: oidcProviderId, accountType })
                 .returning()
                 .then((res) => res[0]);
 
@@ -191,7 +191,7 @@ export class RDS {
 
         const newAccount = await db
             .insert(accounts)
-            .values({ userId: existingUser.id, providerAccountId: providerId, accountType })
+            .values({ userId: existingUser.id, providerAccountId: oidcProviderId, accountType })
             .returning()
             .then((res) => res[0]);
 
@@ -607,7 +607,10 @@ export class RDS {
         });
     }
 
-    static async getUserAndAccountBySessionToken(db: DatabaseOrTransaction, refreshToken: string) {
+    static async getUserAndAccountBySessionToken(
+        db: DatabaseOrTransaction,
+        refreshToken: string
+    ): Promise<{ users: User; accounts: Account }> {
         return db.transaction((tx) =>
             tx
                 .select()
