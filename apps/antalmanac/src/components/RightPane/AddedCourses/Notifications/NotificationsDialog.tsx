@@ -77,7 +77,7 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} variant="text" sx={{ color: 'white' }}>
-                        Cancel
+                        Close
                     </Button>
                 </DialogActions>
             </Dialog>
