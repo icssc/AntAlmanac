@@ -81,7 +81,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             category: analyticsEnum.calendar,
             action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT,
         });
-    }, [props.customEvent?.customEventID]);
+    }, [props.customEvent?.customEventID, postHog]);
 
     const handleClose = useCallback(() => {
         setOpen(false);
