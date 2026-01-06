@@ -33,13 +33,10 @@ import { useThemeStore } from '$stores/SettingsStore';
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
-    const courseColors = currentCourses.reduce(
-        (accumulator, { section }) => {
-            accumulator[section.sectionCode] = section.color;
-            return accumulator;
-        },
-        {} as Record<string, string>
-    );
+    const courseColors = currentCourses.reduce((accumulator, { section }) => {
+        accumulator[section.sectionCode] = section.color;
+        return accumulator;
+    }, {} as Record<string, string>);
 
     return courseColors;
 }
@@ -58,10 +55,13 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
                     (section as AASection).color = courseColors[section.sectionCode];
                 }
 
-                const sectionTypes = new Set<WebsocSectionType>();
+                const sectionTypesSet = new Set<WebsocSectionType>();
+
                 course.sections.forEach((section) => {
-                    sectionTypes.add(section.sectionType);
+                    sectionTypesSet.add(section.sectionType);
                 });
+
+                const sectionTypes = [...sectionTypesSet];
 
                 (course as AACourse).sectionTypes = sectionTypes;
 

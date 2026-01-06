@@ -3,7 +3,7 @@ import { WebsocSectionType } from '@packages/antalmanac-types';
 import { CourseWithTerm } from '$components/RightPane/AddedCourses/AddedCoursePane';
 
 export const getMissingSections = (userCourses: CourseWithTerm): string[] => {
-    const requiredTypes = userCourses.sectionTypes ?? new Set<WebsocSectionType>();
+    const requiredTypes = new Set<WebsocSectionType>(userCourses.sectionTypes ?? []);
 
     if (requiredTypes.size === 0) {
         return [];

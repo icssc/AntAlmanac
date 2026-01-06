@@ -11,7 +11,7 @@ export type ScheduleCourse = {
     prerequisiteLink: string;
     section: AASection;
     term: string;
-    sectionTypes: Set<WebsocSectionType>;
+    sectionTypes: WebsocSectionType[];
 };
 
 export type Schedule = {

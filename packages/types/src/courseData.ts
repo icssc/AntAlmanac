@@ -6,7 +6,7 @@ export interface CourseDetails {
     courseTitle: string;
     courseComment: string;
     prerequisiteLink: string;
-    sectionTypes: Set<WebsocSectionType>;
+    sectionTypes: WebsocSectionType[];
 }
 
 export interface CourseInfo {
