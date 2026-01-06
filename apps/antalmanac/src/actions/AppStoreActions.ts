@@ -24,6 +24,11 @@ export interface CopyScheduleOptions {
     onError: (scheduleName: string) => unknown;
 }
 
+interface AutoSaveScheduleOptions {
+    userInfo?: { email?: string; name?: string; avatar?: string };
+    postHog?: PostHog;
+}
+
 export const addCourse = (
     section: WebsocSection,
     courseDetails: CourseDetails,
@@ -155,11 +160,8 @@ export const saveSchedule = async (
     }
 };
 
-export async function autoSaveSchedule(
-    providerID: string,
-    userInfo?: { email?: string; name?: string; avatar?: string },
-    postHog?: PostHog
-) {
+export async function autoSaveSchedule(providerID: string, options: AutoSaveScheduleOptions) {
+    const { userInfo, postHog } = options;
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,

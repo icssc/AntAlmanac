@@ -186,7 +186,7 @@ function ExperimentalMenu() {
 
         if (!savedUserID) return;
         actionTypesStore.emit('autoSaveStart');
-        await autoSaveSchedule(savedUserID, postHog);
+        await autoSaveSchedule(savedUserID, { postHog });
         appStore.unsavedChanges = false;
         actionTypesStore.emit('autoSaveEnd');
     };
