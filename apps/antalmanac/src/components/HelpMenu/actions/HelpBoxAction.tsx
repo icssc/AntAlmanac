@@ -3,14 +3,15 @@ import { useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { HelpMenuAction } from '$components/HelpMenu/HelpMenu';
+import { setLocalStorageExpandAboutBox } from '$lib/localStorage';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useHelpMenuStore } from '$stores/HelpMenuStore';
 import { useTabStore } from '$stores/TabStore';
 
 export function HelpBoxAction(): HelpMenuAction {
     const setActiveTab = useTabStore(useShallow((store) => store.setActiveTab));
-    const [showHelpBox, setShowHelpBox] = useHelpMenuStore(
-        useShallow((store) => [store.showHelpBox, store.setShowHelpBox])
+    const [expandAboutBox, toggleExpandAboutBox] = useHelpMenuStore(
+        useShallow((store) => [store.expandAboutBox, store.toggleExpandAboutBox])
     );
     const [displaySearch, disableManualSearch] = useCoursePaneStore(
         useShallow((store) => [store.displaySearch, store.disableManualSearch])
@@ -18,10 +19,11 @@ export function HelpBoxAction(): HelpMenuAction {
 
     const handleClick = useCallback(() => {
         setActiveTab('search');
-        setShowHelpBox(true);
+        toggleExpandAboutBox();
+        setLocalStorageExpandAboutBox('true');
         displaySearch();
         disableManualSearch();
-    }, [disableManualSearch, displaySearch, setActiveTab, setShowHelpBox]);
+    }, [disableManualSearch, displaySearch, setActiveTab, toggleExpandAboutBox]);
 
-    return showHelpBox ? null : { icon: <Help />, name: 'Show Helpful Info', onClick: handleClick };
+    return expandAboutBox ? null : { icon: <Help />, name: 'Show Helpful Info', onClick: handleClick };
 }

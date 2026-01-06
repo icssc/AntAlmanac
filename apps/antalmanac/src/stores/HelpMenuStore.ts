@@ -2,7 +2,8 @@ import { create } from 'zustand';
 
 import { tourShouldRun } from '$lib/TutorialHelpers';
 import {
-    getLocalStorageAboutBoxDismissalTime,
+    getLocalStorageAboutBoxCollapseTime,
+    getLocalStorageExpandAboutBox,
     getLocalStorageHelpBoxDismissalTime,
     getLocalStoragePatchNotesKey,
 } from '$lib/localStorage';
@@ -25,8 +26,8 @@ export interface HelpMenuStoreProps {
     showHelpBox: boolean;
     setShowHelpBox: (value: boolean | ((prev: boolean) => boolean)) => void;
 
-    showAboutBox: boolean;
-    setShowAboutBox: (value: boolean | ((prev: boolean) => boolean)) => void;
+    expandAboutBox: boolean;
+    toggleExpandAboutBox: () => void;
 
     showPatchNotes: boolean;
     setShowPatchNotes: (value: boolean | ((prev: boolean) => boolean)) => void;
@@ -47,8 +48,9 @@ export const useHelpMenuStore = create<HelpMenuStoreProps>((set) => {
     const shouldShowHelpBox =
         !dismissedRecently(helpBoxDismissalTime) && !!HELP_BOX_ACTIVE_MONTH_INDICES.at(currentMonthIndex);
 
-    const aboutBoxDismissalTime = getLocalStorageAboutBoxDismissalTime();
-    const shouldShowAboutBox = !dismissedRecently(aboutBoxDismissalTime);
+    const expandAboutBox = getLocalStorageExpandAboutBox() == 'true';
+    const aboutBoxCollapseTime = getLocalStorageAboutBoxCollapseTime();
+    const shouldExpandAboutBox = expandAboutBox || !dismissedRecently(aboutBoxCollapseTime);
 
     return {
         showHelpBox: shouldShowHelpBox,
@@ -57,10 +59,10 @@ export const useHelpMenuStore = create<HelpMenuStoreProps>((set) => {
                 showHelpBox: typeof value === 'function' ? value(state.showHelpBox) : value,
             })),
 
-        showAboutBox: shouldShowAboutBox,
-        setShowAboutBox: (value) =>
+        expandAboutBox: shouldExpandAboutBox,
+        toggleExpandAboutBox: () =>
             set((state) => ({
-                showHelpBox: typeof value === 'function' ? value(state.showAboutBox) : value,
+                expandAboutBox: !state.expandAboutBox,
             })),
 
         showPatchNotes: shouldShowPatchNotes(),

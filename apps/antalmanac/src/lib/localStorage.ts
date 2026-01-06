@@ -13,7 +13,8 @@ enum LocalStorageKeys {
     autoSave = 'autoSave',
     unsavedActions = 'unsavedActions',
     helpBoxDismissalTime = 'helpBoxDismissalTime',
-    aboutBoxDismissalTime = 'aboutBoxDismissalTime',
+    expandAboutBox = 'expandAboutBox',
+    aboutBoxCollapseTime = 'aboutBoxCollapseTime',
     columnToggles = 'columnToggles',
     pwaDismissalTime = 'pwaDismissalTime',
     sessionId = 'sessionId',
@@ -254,17 +255,30 @@ export function removeLocalStorageHelpBoxDismissalTime() {
     window.localStorage.removeItem(LSK.helpBoxDismissalTime);
 }
 
-// Helper functions for aboutBoxDismissalTime
-export function setLocalStorageAboutBoxDismissalTime(value: string) {
-    window.localStorage.setItem(LSK.aboutBoxDismissalTime, value);
+// Helper functions for expandAboutBox
+export function setLocalStorageExpandAboutBox(value: string) {
+    window.localStorage.setItem(LSK.expandAboutBox, value);
 }
 
-export function getLocalStorageAboutBoxDismissalTime() {
-    return window.localStorage.getItem(LSK.aboutBoxDismissalTime);
+export function getLocalStorageExpandAboutBox() {
+    return window.localStorage.getItem(LSK.expandAboutBox);
 }
 
-export function removeLocalStorageAboutBoxDismissalTime() {
-    window.localStorage.removeItem(LSK.aboutBoxDismissalTime);
+export function removeLocalStorageExpandAboutBox() {
+    window.localStorage.removeItem(LSK.aboutBoxCollapseTime);
+}
+
+// Helper functions for aboutBoxCollapseTime
+export function setLocalStorageAboutBoxCollapseTime(value: string) {
+    window.localStorage.setItem(LSK.aboutBoxCollapseTime, value);
+}
+
+export function getLocalStorageAboutBoxCollapseTime() {
+    return window.localStorage.getItem(LSK.aboutBoxCollapseTime);
+}
+
+export function removeLocalStorageAboutBoxCollapseTime() {
+    window.localStorage.removeItem(LSK.aboutBoxCollapseTime);
 }
 
 // Helper functions for columnToggles
