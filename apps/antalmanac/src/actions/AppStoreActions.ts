@@ -398,7 +398,7 @@ export const loginUser = async () => {
         const authUrl = await trpc.userData.getGoogleAuthUrl.query();
         if (authUrl) {
             cacheSchedule();
-            window.location.href = authUrl;
+            window.location.href = authUrl.toString();
         }
     } catch (error) {
         console.error('Error during login initiation', error);
