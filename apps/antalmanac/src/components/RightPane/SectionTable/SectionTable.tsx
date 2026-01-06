@@ -117,7 +117,7 @@ function SectionTable(props: SectionTableProps) {
                     text="PeterPortal"
                     icon={
                         <img
-                            src={'assets/peterportal-logo.png'}
+                            src={'/assets/peterportal-logo.png'}
                             alt="PeterPortal Icon"
                             width={customIconSize}
                             height={customIconSize}
