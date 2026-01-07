@@ -262,12 +262,58 @@ export function SharedSchedulePage() {
         }
     }, [scheduleId, sessionIsValid, navigate, setOpenLoadingSchedule]);
 
+    const handleGoHome = useCallback(async () => {
+        try {
+            setOpenLoadingSchedule(true);
+
+            if (AppStore.getSkeletonMode()) {
+                AppStore.exitSkeletonMode();
+            }
+
+            if (sessionIsValid) {
+                const sessionToken = useSessionStore.getState().session;
+
+                if (sessionToken) {
+                    const userDataResponse = await trpc.userData.getUserDataWithSession.query({
+                        refreshToken: sessionToken,
+                    });
+                    const scheduleSaveState =
+                        (userDataResponse as { userData?: ScheduleSaveState }).userData ?? userDataResponse;
+
+                    if (scheduleSaveState) {
+                        await AppStore.loadSchedule(scheduleSaveState as ScheduleSaveState);
+                    }
+                }
+            } else {
+                const defaultTerm = getDefaultTerm();
+                const emptyScheduleData = {
+                    scheduleName: defaultTerm.shortName.replaceAll(' ', '-'),
+                    courses: [] as ShortCourse[],
+                    customEvents: [] as RepeatingCustomEvent[],
+                    scheduleNote: '',
+                } as ShortCourseSchedule;
+                const emptySchedule: ScheduleSaveState = {
+                    schedules: [emptyScheduleData],
+                    scheduleIndex: 0,
+                };
+                await AppStore.loadSchedule(emptySchedule);
+            }
+
+            setOpenLoadingSchedule(false);
+            navigate('/');
+        } catch (err) {
+            console.error('Error loading user data:', err);
+            setOpenLoadingSchedule(false);
+            navigate('/');
+        }
+    }, [navigate, sessionIsValid, setOpenLoadingSchedule]);
+
     if (error) {
         return (
             <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <Stack component="main" height="100dvh" justifyContent="center" alignItems="center" spacing={2}>
                     <Alert severity="error">{error}</Alert>
-                    <Button variant="contained" onClick={() => navigate('/')}>
+                    <Button variant="contained" onClick={handleGoHome}>
                         Go Home
                     </Button>
                 </Stack>
