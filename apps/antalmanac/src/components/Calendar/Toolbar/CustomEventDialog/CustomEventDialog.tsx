@@ -130,8 +130,6 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             term: term.shortName,
         };
 
-        console.log('assigned to term ', term.shortName);
-
         resetForm();
 
         props.customEvent
