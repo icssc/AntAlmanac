@@ -158,7 +158,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             color={showFinalsSchedule ? 'primary' : 'inherit'}
                             onClick={handleToggleFinals}
                             id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
-                            disabled={skeletonMode}
+                            disabled={skeletonMode && !isSharedSchedulePage}
                             size="small"
                             sx={{
                                 border: '1px solid',
@@ -176,7 +176,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             onClick={handleToggleFinals}
                             size="small"
                             id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
-                            disabled={skeletonMode}
+                            disabled={skeletonMode && !isSharedSchedulePage}
                         >
                             Finals
                         </Button>
