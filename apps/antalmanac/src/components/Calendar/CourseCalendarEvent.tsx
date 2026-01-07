@@ -237,18 +237,18 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                 <Box sx={{ fontSize: '0.9rem', fontWeight: 500 }}>{title}</Box>
                 <table style={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
                     <tbody>
+                        {
+                            <tr>
+                                <td style={{ verticalAlign: 'top', paddingRight: '2rem' }}>Term</td>
+                                <td style={{ textAlign: 'right' }}>{term}</td>
+                            </tr>
+                        }
                         {building && (
                             <tr>
                                 <td style={{ verticalAlign: 'top', paddingRight: '2rem' }}>Location</td>
                                 <td style={{ textAlign: 'right' }}>
                                     {<MapLink buildingId={+building} room={buildingCatalogue[+building]?.name ?? ''} />}
                                 </td>
-                            </tr>
-                        )}
-                        {term && (
-                            <tr>
-                                <td style={{ verticalAlign: 'top', paddingRight: '2rem' }}>Term</td>
-                                <td style={{ textAlign: 'right' }}>{term}</td>
                             </tr>
                         )}
                     </tbody>

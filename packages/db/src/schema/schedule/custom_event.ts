@@ -28,6 +28,8 @@ export const customEvents = pgTable('customEvents', {
     building: text('building'),
 
     lastUpdated: timestamp('last_updated', { withTimezone: true }).defaultNow(),
+
+    term: text('term'),
 });
 
 export type CustomEvent = typeof customEvents.$inferSelect;

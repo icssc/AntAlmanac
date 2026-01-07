@@ -19,7 +19,7 @@ import { DaySelector } from '$components/Calendar/Toolbar/CustomEventDialog/DayS
 import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog/ScheduleSelector';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { getLatestTerm } from '$lib/termData';
+import { getDefaultTerm, getLatestTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
@@ -36,7 +36,7 @@ const defaultCustomEventValues: RepeatingCustomEvent = {
     days: [false, false, false, false, false, false, false],
     customEventID: 0,
     building: undefined,
-    term: undefined,
+    term: getDefaultTerm().shortName,
 };
 
 export function CustomEventDialog(props: CustomEventDialogProps) {
@@ -129,6 +129,8 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             building: building,
             term: term.shortName,
         };
+
+        console.log('assigned to term ', term.shortName);
 
         resetForm();
 
