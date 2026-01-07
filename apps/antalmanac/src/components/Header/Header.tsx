@@ -95,7 +95,7 @@ export function Header() {
                     severity="info"
                     onClose={handleCloseSignoutDialog}
                 >
-                    You have successfully signed out. Close this dialog to continue browsing AntAlmanac.
+                    You have successfully signed out. Close to continue browsing AntAlmanac.
                 </AlertDialog>
             </Box>
         </AppBar>

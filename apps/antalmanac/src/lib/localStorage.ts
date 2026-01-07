@@ -95,10 +95,6 @@ export function getLocalStorageSessionId() {
     return window.localStorage.getItem(LSK.sessionId);
 }
 
-export function removeLocalStorageSessionId() {
-    window.localStorage.removeItem(LSK.sessionId);
-}
-
 export function setLocalStorageSignoutNotice(value: string) {
     window.localStorage.setItem(LSK.signoutNotice, value);
 }
