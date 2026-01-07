@@ -8,7 +8,7 @@ import dynamic from 'next/dynamic';
 import { usePostHog } from 'posthog-js/react';
 import { Fragment, useEffect, useRef, useCallback, useState, createRef, useMemo } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 
 import LocationMarker from './Marker';
 
@@ -150,9 +150,11 @@ export function getCustomEventPerBuilding() {
  */
 export default function CourseMap() {
     const navigate = useNavigate();
+    const location = useLocation();
     const map = useRef<Map | null>(null);
     const markerRef = createRef<Marker>();
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const isSharedSchedulePage = location.pathname.startsWith('/share/');
     const [selectedDayIndex, setSelectedDay] = useState(0);
     const [markers, setMarkers] = useState(getCoursesPerBuilding());
     const [customEventMarkers, setCustomEventMarkers] = useState(getCustomEventPerBuilding());
@@ -223,9 +225,19 @@ export default function CourseMap() {
 
     const onBuildingChange = useCallback(
         (building?: ExtendedBuilding | null) => {
-            navigate(`/map?location=${building?.id}`);
+            if (isSharedSchedulePage) {
+                const newSearchParams = new URLSearchParams(searchParams);
+                if (building?.id) {
+                    newSearchParams.set('location', String(building.id));
+                } else {
+                    newSearchParams.delete('location');
+                }
+                setSearchParams(newSearchParams, { replace: true });
+            } else {
+                navigate(`/map?location=${building?.id}`);
+            }
         },
-        [navigate]
+        [navigate, isSharedSchedulePage, searchParams, setSearchParams]
     );
 
     const days = useMemo(() => {
