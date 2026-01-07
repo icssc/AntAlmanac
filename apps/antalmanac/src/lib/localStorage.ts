@@ -270,7 +270,6 @@ export function getLocalStoragePWADismissalTime() {
     return window.localStorage.getItem(LSK.pwaDismissalTime);
 }
 
-// Helper functions for temporary data
 export function setLocalStorageTempSaveData(value: string) {
     window.localStorage.setItem(LSK.tempSaveData, value);
 }

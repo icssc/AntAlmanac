@@ -11,7 +11,7 @@ interface TbaSection {
   sectionCode: string;
 }
 
-export default function AsyncCalendarCard() {
+export default function TbaCalendarCard() {
   const isMobile = useIsMobile();
   if (isMobile) return null;
 
@@ -54,7 +54,7 @@ export default function AsyncCalendarCard() {
 
     try {
       const parsed = JSON.parse(raw);
-      const openIndex = parsed.openAsyncTbaCard;
+      const openIndex = parsed.openTbaCard;
 
       setCollapsed(openIndex !== scheduleIndex);
     } catch {
@@ -91,7 +91,7 @@ export default function AsyncCalendarCard() {
       setCollapsed(false);
       setTempSaveData({
       currentScheduleIndex: scheduleIndex,
-      openAsyncTbaCard: scheduleIndex,
+      openTbaCard: scheduleIndex,
     });
     }
   }, [visible, scheduleIndex]);
@@ -101,7 +101,7 @@ export default function AsyncCalendarCard() {
       const next = !prev;
       setTempSaveData({
         currentScheduleIndex: scheduleIndex,
-        openAsyncTbaCard: next ? null : scheduleIndex,
+        openTbaCard: next ? null : scheduleIndex,
       });
       return next;
     });
@@ -137,7 +137,7 @@ export default function AsyncCalendarCard() {
         }
       >
         <AlertTitle sx={{ fontSize: '1em', my: 'auto'}}>
-          You've added Async/TBA sections:
+          You've added TBA sections:
         </AlertTitle>
 
         <Collapse in={!collapsed} timeout="auto" unmountOnExit>

@@ -18,7 +18,7 @@ import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
-import AsyncCalendarCard from './AsyncCalendarCard';
+import TbaCalenderCard from '$components/Calendar/TbaCalendarCard';
 
 /*
  * Always start week on Saturday for finals potentially on weekends.
@@ -226,7 +226,7 @@ export const ScheduleCalendar = memo(() => {
                 scheduleNames={scheduleNames}
             />
             <Box id="screenshot" height="0" flexGrow={1}>
-                <AsyncCalendarCard />
+                <TbaCalenderCard />
                 <CalendarEventPopover />
 
                 <Calendar<CalendarEvent, object>
