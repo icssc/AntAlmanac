@@ -1,5 +1,5 @@
 import { Box, Popover, Tooltip, Typography } from '@mui/material';
-import { Fragment, useCallback, useState } from 'react';
+import { Fragment, useCallback, useMemo, useState } from 'react';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import restrictionsMapping from '$components/RightPane/SectionTable/static/restrictionsMapping.json';
@@ -13,19 +13,21 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
     const isMobile = useIsMobile();
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-    const parseRestrictions = (restrictionCode: string) => {
-        return restrictionCode.split(' ').map((code, index) => {
-            if (code !== 'and' && code !== 'or') {
-                return (
-                    <Fragment key={index}>
-                        {restrictionsMapping[code as keyof typeof restrictionsMapping]}
-                        <br />
-                    </Fragment>
-                );
-            }
-            return null;
-        });
-    };
+    const parsedRestrictions = useMemo(
+        () =>
+            restrictions.split(' ').map((code, index) => {
+                if (code !== 'and' && code !== 'or') {
+                    return (
+                        <Fragment key={index}>
+                            {restrictionsMapping[code as keyof typeof restrictionsMapping]}
+                            <br />
+                        </Fragment>
+                    );
+                }
+                return null;
+            }),
+        [restrictions]
+    );
 
     const handleClick = useCallback(
         (event: React.MouseEvent<HTMLElement>) => {
@@ -41,7 +43,7 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
         setAnchorEl(null);
     }, []);
 
-    const restrictionDescriptions = <Typography>{parseRestrictions(restrictions)}</Typography>;
+    const restrictionDescriptions = <Typography>{parsedRestrictions}</Typography>;
 
     const restrictionContent = (
         <Box
@@ -50,7 +52,7 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                 padding: 1,
             }}
         >
-            <Typography>{parseRestrictions(restrictions)}</Typography>
+            <Typography>{parsedRestrictions}</Typography>
             <Typography
                 component="a"
                 href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
