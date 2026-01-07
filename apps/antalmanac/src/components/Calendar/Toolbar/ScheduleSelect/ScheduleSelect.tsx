@@ -2,6 +2,7 @@ import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
 import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { changeCurrentSchedule } from '$actions/AppStoreActions';
 import { SortableList } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableList';
@@ -52,6 +53,8 @@ function createScheduleSelector(index: number, postHog?: PostHog) {
  */
 export function SelectSchedulePopover() {
     const theme = useTheme();
+    const location = useLocation();
+    const isSharedSchedulePage = location.pathname.startsWith('/share/');
     const { openScheduleSelect, setOpenScheduleSelect } = scheduleComponentsToggleStore();
 
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
@@ -115,11 +118,14 @@ export function SelectSchedulePopover() {
     }, []);
 
     const scheduleMappingToUse = skeletonMode ? skeletonScheduleMapping : scheduleMapping;
+    const displayName = isSharedSchedulePage
+        ? AppStore.getScheduleNames()[currentScheduleIndex] || scheduleMappingToUse[currentScheduleIndex]?.name
+        : scheduleMappingToUse[currentScheduleIndex]?.name;
 
     return (
         <Box>
             <Tooltip
-                title={scheduleMappingToUse[currentScheduleIndex]?.name}
+                title={displayName || ''}
                 enterDelay={200}
                 slotProps={{
                     popper: {
@@ -144,7 +150,7 @@ export function SelectSchedulePopover() {
                     sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
                 >
                     <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
-                        {scheduleMappingToUse[currentScheduleIndex]?.name || null}
+                        {displayName || null}
                     </Typography>
                     <ArrowDropDownIcon />
                 </Button>

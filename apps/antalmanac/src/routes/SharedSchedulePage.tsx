@@ -294,7 +294,7 @@ export function SharedSchedulePage() {
                     >
                         <Stack direction="row" justifyContent="space-between" alignItems="center">
                             <Typography variant="h6" component="h1">
-                                Viewing Shared Schedule: {scheduleName}
+                                Viewing Shared Schedule: <strong>{scheduleName}</strong>
                             </Typography>
                             <Stack direction="row" spacing={1} alignItems="center">
                                 <Button variant="contained" onClick={handleAddToMySchedules}>
