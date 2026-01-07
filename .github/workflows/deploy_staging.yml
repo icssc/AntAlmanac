@@ -21,7 +21,7 @@ jobs:
     deploy-staging:
         runs-on: ubuntu-latest
         environment:
-            name: staging
+            name: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
             url: https://staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}.antalmanac.com
 
         env:
@@ -38,7 +38,7 @@ jobs:
               uses: chrnorm/deployment-action@v2
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
-                  environment: staging
+                  environment: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
                   ref: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
                   description: Staging deployment for PR #${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
 
