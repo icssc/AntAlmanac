@@ -1,0 +1,1 @@
+ALTER TABLE "customEvents" ADD COLUMN "term" text NOT NULL;
