@@ -395,12 +395,12 @@ function AddedSectionsGrid() {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Box sx={{ display: 'flex', width: 'fit-content', position: 'absolute', zIndex: 2 }}>
-                <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
-                <ClearScheduleButton
-                    buttonSx={buttonSx}
-                    analyticsCategory={analyticsEnum.addedClasses}
-                    disabled={isSharedSchedulePage}
-                />
+                {!isSharedSchedulePage && (
+                    <>
+                        <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
+                        <ClearScheduleButton buttonSx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />
+                    </>
+                )}
                 <ColumnToggleDropdown />
             </Box>
             <Box sx={{ marginTop: 7 }}>

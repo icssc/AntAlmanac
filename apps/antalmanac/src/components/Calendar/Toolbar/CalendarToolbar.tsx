@@ -23,6 +23,7 @@ import {
 } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { useState, useCallback, useEffect, memo, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { redoAction, undoDelete } from '$actions/AppStoreActions';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
@@ -72,6 +73,8 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const isMobile = useIsMobile();
     const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
     const menuOpen = Boolean(menuAnchorEl);
+    const location = useLocation();
+    const isSharedSchedulePage = location.pathname.startsWith('/share/');
 
     const postHog = usePostHog();
 
@@ -224,12 +227,14 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             </ListItemIcon>
                             <ListItemText>Download Calendar</ListItemText>
                         </MenuItem>
-                        <MenuItem onClick={handleClearSchedule}>
-                            <ListItemIcon>
-                                <DeleteOutline fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText>Clear Schedule</ListItemText>
-                        </MenuItem>
+                        {!isSharedSchedulePage && (
+                            <MenuItem onClick={handleClearSchedule}>
+                                <ListItemIcon>
+                                    <DeleteOutline fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText>Clear Schedule</ListItemText>
+                            </MenuItem>
+                        )}
                     </Menu>
                     {/* Hidden button components for mobile menu to trigger */}
                     <Box sx={{ display: 'none' }}>
@@ -239,14 +244,16 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                         <Box ref={downloadButtonRef}>
                             <DownloadButton />
                         </Box>
-                        <Box ref={clearButtonRef}>
-                            <ClearScheduleButton
-                                size="medium"
-                                fontSize="small"
-                                skeletonMode={skeletonMode}
-                                analyticsCategory={analyticsEnum.calendar}
-                            />
-                        </Box>
+                        {!isSharedSchedulePage && (
+                            <Box ref={clearButtonRef}>
+                                <ClearScheduleButton
+                                    size="medium"
+                                    fontSize="small"
+                                    skeletonMode={skeletonMode}
+                                    analyticsCategory={analyticsEnum.calendar}
+                                />
+                            </Box>
+                        )}
                     </Box>
                 </Box>
             ) : (
@@ -266,12 +273,14 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                         </IconButton>
                     </Tooltip>
 
-                    <ClearScheduleButton
-                        size="medium"
-                        fontSize="small"
-                        skeletonMode={skeletonMode}
-                        analyticsCategory={analyticsEnum.calendar}
-                    />
+                    {!isSharedSchedulePage && (
+                        <ClearScheduleButton
+                            size="medium"
+                            fontSize="small"
+                            skeletonMode={skeletonMode}
+                            analyticsCategory={analyticsEnum.calendar}
+                        />
+                    )}
 
                     <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
                 </Box>
