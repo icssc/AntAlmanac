@@ -50,7 +50,9 @@ export default function AsyncCalendarCard() {
 
   useEffect(() => {
     const raw = getLocalStorageTempSaveData();
-    if (!raw) return;
+    if (!raw) {
+    	return;
+    }
 
     try {
       const parsed = JSON.parse(raw);
