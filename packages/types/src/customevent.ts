@@ -8,6 +8,7 @@ export const RepeatingCustomEventSchema = type({
     customEventID: 'string | number', // Unique only within the schedule.
     'color?': 'string',
     'building?': 'string | undefined',
+    'term?': 'string | undefined',
 });
 
 export type RepeatingCustomEvent = typeof RepeatingCustomEventSchema.infer;

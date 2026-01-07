@@ -23,6 +23,7 @@ interface CommonCalendarEvent extends Event {
     start: Date;
     end: Date;
     title: string;
+    term: string;
 }
 
 export interface Location {
@@ -57,7 +58,6 @@ export interface CourseEvent extends CommonCalendarEvent {
     sectionType: string;
     deptValue: string;
     courseNumber: string;
-    term: string;
 }
 
 /**
@@ -231,16 +231,28 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
             </Paper>
         );
     } else {
-        const { title, customEventID, building } = selectedEvent;
+        const { term, title, customEventID, building } = selectedEvent;
         return (
             <Paper sx={{ padding: '0.5rem' }} ref={paperRef}>
                 <Box sx={{ fontSize: '0.9rem', fontWeight: 500 }}>{title}</Box>
-                {building && (
-                    <Box sx={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-                        Location:&nbsp;
-                        <MapLink buildingId={+building} room={buildingCatalogue[+building]?.name ?? ''} />
-                    </Box>
-                )}
+                <table style={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                    <tbody>
+                        {building && (
+                            <tr>
+                                <td style={{ verticalAlign: 'top', paddingRight: '2rem' }}>Location</td>
+                                <td style={{ textAlign: 'right' }}>
+                                    {<MapLink buildingId={+building} room={buildingCatalogue[+building]?.name ?? ''} />}
+                                </td>
+                            </tr>
+                        )}
+                        {term && (
+                            <tr>
+                                <td style={{ verticalAlign: 'top', paddingRight: '2rem' }}>Term</td>
+                                <td style={{ textAlign: 'right' }}>{term}</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <ColorPicker
                         color={selectedEvent.color}
