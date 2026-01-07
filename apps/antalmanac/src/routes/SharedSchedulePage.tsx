@@ -91,16 +91,30 @@ export function SharedSchedulePage() {
     const { setOpenLoadingSchedule } = scheduleComponentsToggleStore();
     const [error, setError] = useState<string | null>(null);
     const [scheduleName, setScheduleName] = useState<string | null>(null);
+    const hasAttemptedLoadRef = useRef(false);
+    const currentScheduleIdRef = useRef<string | undefined>(scheduleId);
 
     const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     useEffect(() => {
+        if (currentScheduleIdRef.current !== scheduleId) {
+            hasAttemptedLoadRef.current = false;
+            currentScheduleIdRef.current = scheduleId;
+        }
+
+        if (hasAttemptedLoadRef.current) {
+            return;
+        }
+
         const loadSharedSchedule = async () => {
             if (!scheduleId) {
                 setError('Invalid schedule ID');
                 setOpenLoadingSchedule(false);
+                hasAttemptedLoadRef.current = true;
                 return;
             }
+
+            hasAttemptedLoadRef.current = true;
 
             try {
                 setOpenLoadingSchedule(true);
@@ -153,7 +167,7 @@ export function SharedSchedulePage() {
         return () => {
             setOpenLoadingSchedule(false);
         };
-    }, [scheduleId, sessionIsValid, setOpenLoadingSchedule]);
+    }, [scheduleId, setOpenLoadingSchedule]);
 
     const handleExitSharedSchedule = useCallback(async () => {
         try {
