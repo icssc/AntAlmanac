@@ -1,5 +1,7 @@
 /*
  *   To run this script, use 'pnpm run template'
+ *
+ *  NOTE: You have to delete the template from SES using "aws sesv2 delete-email-template --template-name CourseNotification --region us-east-2"
  */
 
 import { SESv2Client, CreateEmailTemplateCommand } from '@aws-sdk/client-sesv2';
@@ -9,7 +11,7 @@ const client = new SESv2Client({ region: 'us-east-2' });
 const input = {
     TemplateName: 'CourseNotification',
     TemplateContent: {
-        Subject: '{{deptCode}} {{courseNumber}} had some enrollment changes!',
+        Subject: '{{stagingPrefix}}{{deptCode}} {{courseNumber}} had some enrollment changes!',
         Text: `Hi {{userName}}!
         Based on your notification subscriptions on AntAlmanac, the AntAlmanac team would like to notify you that the following class has had some enrollment changes as of {{time}}. 
 

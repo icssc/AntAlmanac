@@ -49,6 +49,7 @@ export default $config({
             environment: {
                 DB_URL: dbUrl,
                 NODE_ENV: $app.stage === 'production' ? 'production' : 'development',
+                STAGE: $app.stage
             },
             permissions: [
                 {

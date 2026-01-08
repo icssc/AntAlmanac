@@ -101,6 +101,10 @@ async function sendNotification(
         notification = notification.replace(/\n/g, '<br>');
 
         const time = getFormattedTime();
+        
+        // Add staging prefix to subject line if not in production
+        const isStaging = process.env.NODE_ENV !== 'production';
+        const stagingPrefix = isStaging ? '[STAGING] ' : '';
 
         const bulkEmailEntries = users
             .filter((user): user is User & { email: string } => user.email !== null)
@@ -124,6 +128,7 @@ async function sendNotification(
                             userId: user.userId,
                             quarter: quarter,
                             year: year,
+                            stagingPrefix: stagingPrefix,
                         }),
                     },
                 },
@@ -148,6 +153,7 @@ async function sendNotification(
                         userId: '',
                         quarter: '',
                         year: '',
+                        stagingPrefix: '',
                     }),
                 },
             },
