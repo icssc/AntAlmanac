@@ -29,16 +29,6 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
         [restrictions]
     );
 
-    const handleClick = useCallback(
-        (event: React.MouseEvent<HTMLElement>) => {
-            if (isMobile) {
-                event.preventDefault();
-                setAnchorEl((currentAnchorEl) => (currentAnchorEl ? null : event.currentTarget));
-            }
-        },
-        [isMobile]
-    );
-
     const handleClose = useCallback(() => {
         setAnchorEl(null);
     }, []);
@@ -59,11 +49,9 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{
-                    textDecoration: 'underline',
                     color: 'primary.main',
                     display: 'block',
                     marginTop: 1,
-                    fontSize: '0.875rem',
                 }}
             >
                 University Requirements
@@ -77,15 +65,22 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                 {isMobile ? (
                     <>
                         <Typography
-                            component="a"
-                            href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={handleClick}
-                            sx={{ cursor: 'pointer' }}
+                            component="button"
+                            type="button"
+                            onClick={(e) => {
+                                setAnchorEl((cur) => (cur ? null : e.currentTarget));
+                            }}
+                            sx={{
+                                background: 'none',
+                                color: 'primary.main',
+                                border: 0,
+                                padding: 0,
+                                textDecoration: 'underline',
+                            }}
                         >
                             {restrictions}
                         </Typography>
+
                         <Popover
                             open={Boolean(anchorEl)}
                             onClose={handleClose}
@@ -97,14 +92,13 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                     </>
                 ) : (
                     <Tooltip title={restrictionDescriptions}>
-                        <Typography>
-                            <a
-                                href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                {restrictions}
-                            </a>
+                        <Typography
+                            component="a"
+                            href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {restrictions}
                         </Typography>
                     </Tooltip>
                 )}
