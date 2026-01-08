@@ -17,7 +17,7 @@ interface TbaCalendarCardProps {
 
 export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardProps) {
   const isMobile = useIsMobile();
-  const [updateTrigger, setUpdateTrigger] = useState(0);
+  const [tbaSections, setTbaSections] = useState<TbaSection[]>([]);
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState(false);
 
@@ -25,18 +25,44 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
   const theme = useTheme();
 
   useEffect(() => {
-    const handleUpdate = () => setUpdateTrigger((prev) => prev + 1);
-    AppStore.on('addedCoursesChange', handleUpdate);
-    AppStore.on('removedCoursesChange', handleUpdate);
-    AppStore.on('clearSchedule', handleUpdate);
-    AppStore.on('currentScheduleIndexChange', handleUpdate);
-    return () => {
-      AppStore.off('addedCoursesChange', handleUpdate);
-      AppStore.off('removedCoursesChange', handleUpdate);
-      AppStore.off('clearSchedule', handleUpdate);
-      AppStore.off('currentScheduleIndexChange', handleUpdate);
+    const updateTbaSections = () => {
+      if (scheduleIndex == null) {
+        setTbaSections([]);
+        return;
+      }
+
+      const courses = AppStore.schedule.getCurrentCourses();
+      const sectionsWithTBA: TbaSection[] = [];
+
+      for (const course of courses) {
+        const section = course.section;
+        if (!section) continue;
+        const meetings = section.meetings ?? [];
+        if (meetings.some((m) => m.timeIsTBA)) {
+          sectionsWithTBA.push({
+            courseTitle: course.courseTitle,
+            sectionCode: section.sectionCode,
+          });
+        }
+      }
+
+      setTbaSections(sectionsWithTBA);
     };
-  }, []);
+
+    AppStore.on('addedCoursesChange', updateTbaSections);
+    AppStore.on('removedCoursesChange', updateTbaSections);
+    AppStore.on('clearSchedule', updateTbaSections);
+    AppStore.on('currentScheduleIndexChange', updateTbaSections);
+
+    updateTbaSections();
+
+    return () => {
+      AppStore.off('addedCoursesChange', updateTbaSections);
+      AppStore.off('removedCoursesChange', updateTbaSections);
+      AppStore.off('clearSchedule', updateTbaSections);
+      AppStore.off('currentScheduleIndexChange', updateTbaSections);
+    };
+  }, [scheduleIndex]);
 
   useEffect(() => {
     if (screenshotTrigger != null) {
@@ -57,30 +83,6 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
       setCollapsed(false);
     }
   }, [scheduleIndex]);
-
-  const tbaSections: TbaSection[] = useMemo(() => {
-    if (scheduleIndex == null) {
-      return [];
-    }
-
-    const courses = AppStore.schedule.getCurrentCourses();
-    const sectionsWithTBA: TbaSection[] = [];
-
-    for (const course of courses) {
-      const section = course.section;
-      if (!section) {
-        continue;
-      }
-      const meetings = section.meetings ?? [];
-      if (meetings.some((m) => m.timeIsTBA)) {
-        sectionsWithTBA.push({
-          courseTitle: course.courseTitle,
-          sectionCode: section.sectionCode,
-        });
-      }
-    }
-    return sectionsWithTBA;
-  }, [updateTrigger, scheduleIndex]);
 
   useEffect(() => {
     setVisible(tbaSections.length > 0);
