@@ -62,7 +62,7 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
       AppStore.off('clearSchedule', updateTbaSections);
       AppStore.off('currentScheduleIndexChange', updateTbaSections);
     };
-  }, [scheduleIndex]);
+  }, []);
 
   useEffect(() => {
     if (screenshotTrigger != null) {
