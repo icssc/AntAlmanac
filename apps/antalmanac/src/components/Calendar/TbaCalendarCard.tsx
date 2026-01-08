@@ -59,14 +59,18 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
   }, [scheduleIndex]);
 
   const tbaSections: TbaSection[] = useMemo(() => {
-    if (scheduleIndex == null) return [];
+    if (scheduleIndex == null) {
+      return [];
+    }
 
     const courses = AppStore.schedule.getCurrentCourses();
     const sectionsWithTBA: TbaSection[] = [];
 
     for (const course of courses) {
       const section = course.section;
-      if (!section) continue;
+      if (!section) {
+        continue;
+      }
       const meetings = section.meetings ?? [];
       if (meetings.some((m) => m.timeIsTBA)) {
         sectionsWithTBA.push({
@@ -130,7 +134,10 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
         }}
         action={
         <IconButton size="small" onClick={handleToggleCollapse}>
-            {collapsed ? <ExpandMore fontSize="small" /> : <ExpandMore fontSize="small" sx={{ transform: 'rotate(180deg)' }} />}
+            {collapsed 
+              ? <ExpandMore fontSize="small" /> 
+              : <ExpandMore fontSize="small" sx={{ transform: 'rotate(180deg)' }} />
+            }
         </IconButton>
         }
       >
