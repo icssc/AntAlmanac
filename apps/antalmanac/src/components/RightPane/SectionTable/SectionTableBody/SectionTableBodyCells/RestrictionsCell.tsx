@@ -74,7 +74,6 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                                 background: 'none',
                                 color: 'primary.main',
                                 border: 0,
-                                padding: 0,
                                 textDecoration: 'underline',
                             }}
                         >
