@@ -119,7 +119,7 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
         left: 'auto',
         right: 16,
         zIndex: (theme) => theme.zIndex.drawer - 1,
-        width: '22rem',
+        width: '35%',
       }}
     >
       <Alert
@@ -133,20 +133,22 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
           width: '100%',
         }}
         action={
-        <IconButton size="small" onClick={handleToggleCollapse}>
-            {collapsed 
-              ? <ExpandMore fontSize="small" /> 
-              : <ExpandMore fontSize="small" sx={{ transform: 'rotate(180deg)' }} />
-            }
-        </IconButton>
+        <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+          <IconButton size="small" onClick={handleToggleCollapse}>
+            <ExpandMore
+              fontSize="small"
+              sx={{ transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}
+            />
+          </IconButton>
+        </Box>
         }
       >
-        <AlertTitle sx={{ fontSize: '1em', my: 'auto'}}>
+        <AlertTitle sx={{ fontSize: '0.9rem', my: 'auto'}}>
           You've added TBA sections:
         </AlertTitle>
 
         <Collapse in={!collapsed} timeout="auto" unmountOnExit>
-          <Box sx={{ mt: 0.25, py: 0.25 }}>
+          <Box sx={{ gap: 0.5}}>
             {tbaSections.map((section, idx) => (
               <Typography key={`${section.courseTitle}-${section.sectionCode}-${idx}`} variant="body2">
                 {section.courseTitle} — {section.sectionCode}
