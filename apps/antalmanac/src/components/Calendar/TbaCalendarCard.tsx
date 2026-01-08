@@ -11,10 +11,12 @@ interface TbaSection {
   sectionCode: string;
 }
 
-export default function TbaCalendarCard() {
-  const isMobile = useIsMobile();
-  if (isMobile) return null;
+interface TbaCalendarCardProps {
+  screenshotTrigger?: number;
+}
 
+export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardProps) {
+  const isMobile = useIsMobile();
   const [updateTrigger, setUpdateTrigger] = useState(0);
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -37,16 +39,10 @@ export default function TbaCalendarCard() {
   }, []);
 
   useEffect(() => {
-    const handleScreenshot = () => {
-      if (collapsed && visible) {
-        setCollapsed(false);
-      }
-    };
-    AppStore.on('screenshot', handleScreenshot);
-    return () => {
-      AppStore.off('screenshot', handleScreenshot);
-    };
-  }, [collapsed, visible]);
+    if (screenshotTrigger != null) {
+      setCollapsed(false);
+    }
+  }, [screenshotTrigger]);
 
   useEffect(() => {
     const raw = getLocalStorageTempSaveData();
@@ -107,7 +103,9 @@ export default function TbaCalendarCard() {
     });
   };
 
-  if (!visible) return null;
+  if (!visible || isMobile) {
+    return null;
+  }
 
   return (
     <Box
