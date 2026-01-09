@@ -39,8 +39,6 @@ export function Header() {
     const { session, sessionIsValid } = useSessionStore();
     const isMobile = useIsMobile();
 
-    const platform = window.location.pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
-
     const clearStorage = () => {
         removeLocalStorageImportedUser();
         removeLocalStorageDataCache();
@@ -86,7 +84,7 @@ export function Header() {
                     <Stack sx={{ flexDirection: 'row', alignItems: 'center' }}>
                         {!isMobile && (
                             <Typography variant={'h5'} sx={{ minWidth: 'auto' }}>
-                                {platform}
+                                Scheduler
                             </Typography>
                         )}
 
@@ -125,7 +123,7 @@ export function Header() {
                                 sx={{ width: '200px' }}
                             >
                                 <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-                                    <MenuItem selected={platform === 'Scheduler'} onClick={() => setAnchorEl(null)}>
+                                    <MenuItem selected={true} onClick={() => setAnchorEl(null)}>
                                         <ListItemIcon>
                                             <CalendarMonth />
                                         </ListItemIcon>
@@ -136,7 +134,7 @@ export function Header() {
                                     href="https://planner-917.antalmanac.com"
                                     style={{ textDecoration: 'none', color: 'inherit' }}
                                 >
-                                    <MenuItem selected={platform === 'Planner'} onClick={() => setAnchorEl(null)}>
+                                    <MenuItem selected={false} onClick={() => setAnchorEl(null)}>
                                         <ListItemIcon>
                                             <Map />
                                         </ListItemIcon>
