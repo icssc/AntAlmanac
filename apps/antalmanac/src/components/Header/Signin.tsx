@@ -278,19 +278,7 @@ export const Signin = () => {
 
             if (savedUserID != null || sessionID !== null) {
                 if (isSharedSchedulePage) {
-                    const sessionToken = getLocalStorageSessionId() ?? '';
-                    if (sessionToken) {
-                        trpc.auth.validateSession
-                            .query({ token: sessionToken })
-                            .then((validSession) => {
-                                if (validSession) {
-                                    updateSession(sessionToken);
-                                }
-                            })
-                            .catch((err) => {
-                                console.error('Error validating session:', err);
-                            });
-                    }
+                    void updateSession(sessionID);
                 } else {
                     void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
                 }
