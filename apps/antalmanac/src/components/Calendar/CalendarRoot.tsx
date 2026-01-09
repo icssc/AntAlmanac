@@ -35,7 +35,8 @@ import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
  */
 // Normal schedules: Su ... Sa (Sa rightmost)
 // eslint-disable-next-line import/no-named-as-default-member
-moment.updateLocale('en-us', {
+moment.defineLocale('en-us', {
+    parentLocale: 'en',
     week: {
         dow: 0, // Sunday = 0, Monday = 1, ..., Saturday = 6
     },
@@ -47,7 +48,7 @@ moment.defineLocale('en-us-finals', {
     week: { dow: 6 },
 });
 
-const CALENDAR_LOCALIZER: DateLocalizer = momentLocalizer(moment);
+moment.locale('en-us');
 const CALENDAR_VIEWS: ViewsProps<CalendarEvent, object> = [Views.WEEK, Views.WORK_WEEK];
 const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
     event: CalendarCourseEvent,
@@ -261,6 +262,11 @@ export const ScheduleCalendar = memo(() => {
 
     const culture = finalsStartsOnSaturday ? 'en-us-finals' : 'en-us';
 
+    const calendarLocalizer = useMemo(() => {
+        moment.locale(culture);
+        return momentLocalizer(moment);
+    }, [culture]);
+
     const calendarView = showFinalsSchedule
         ? finalsStartsOnSaturday || hasWeekendCourse
             ? Views.WEEK
@@ -345,7 +351,8 @@ export const ScheduleCalendar = memo(() => {
                 <CalendarEventPopover />
 
                 <Calendar<CalendarEvent, object>
-                    localizer={CALENDAR_LOCALIZER}
+                    key={`${culture}-${calendarView}`}
+                    localizer={calendarLocalizer}
                     culture={culture}
                     toolbar={false}
                     formats={formats}
