@@ -23,7 +23,6 @@ import {
 } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { useState, useCallback, useEffect, memo, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
 
 import { redoAction, undoDelete } from '$actions/AppStoreActions';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
@@ -33,6 +32,7 @@ import DownloadButton from '$components/buttons/Download';
 import ScreenshotButton from '$components/buttons/Screenshot';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import AppStore from '$stores/AppStore';
 
 function handleUndo(postHog?: PostHog) {
@@ -73,8 +73,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const isMobile = useIsMobile();
     const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
     const menuOpen = Boolean(menuAnchorEl);
-    const location = useLocation();
-    const isSharedSchedulePage = location.pathname.startsWith('/share/');
+    const isSharedSchedulePage = useIsSharedSchedulePage();
 
     const postHog = usePostHog();
 

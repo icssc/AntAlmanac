@@ -2,7 +2,6 @@ import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/
 import { AACourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 
 import { ColumnToggleDropdown } from '../CoursePane/CoursePaneButtonRow';
 import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
@@ -14,6 +13,7 @@ import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
+import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import AppStore from '$stores/AppStore';
 
 /**
@@ -335,8 +335,7 @@ function SkeletonSchedule() {
 }
 
 function AddedSectionsGrid() {
-    const location = useLocation();
-    const isSharedSchedulePage = location.pathname.startsWith('/share/');
+    const isSharedSchedulePage = useIsSharedSchedulePage();
     const [courses, setCourses] = useState(getCourses());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());

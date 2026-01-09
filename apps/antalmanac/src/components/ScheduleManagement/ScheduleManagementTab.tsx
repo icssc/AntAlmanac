@@ -1,7 +1,8 @@
 import { Tab, Tooltip, useMediaQuery, useTheme } from '@mui/material';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { ScheduleManagementTabInfo } from '$components/ScheduleManagement/ScheduleManagementTabs';
+import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import { useTabStore } from '$stores/TabStore';
 
 interface ScheduleManagementTabProps {
@@ -13,9 +14,7 @@ export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps
     const { setActiveTabValue } = useTabStore();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-    const location = useLocation();
-
-    const isSharedSchedulePage = location.pathname.startsWith('/share/');
+    const isSharedSchedulePage = useIsSharedSchedulePage();
     const isSearchTab = value === 1; // Search tab is at index 1
 
     const handleClick = (e: React.MouseEvent) => {

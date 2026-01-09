@@ -1,10 +1,11 @@
 import { GlobalStyles, Stack, useMediaQuery, useTheme } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { getLocalStorageSessionId } from '$lib/localStorage';
+import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import AppStore from '$stores/AppStore';
 import { paramsAreInURL } from '$stores/CoursePaneStore';
 import { useTabStore } from '$stores/TabStore';
@@ -16,11 +17,10 @@ import { useTabStore } from '$stores/TabStore';
 export function ScheduleManagement() {
     const { activeTab, setActiveTab } = useTabStore();
     const { tab } = useParams();
-    const location = useLocation();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const isSharedSchedulePage = location.pathname.startsWith('/share/');
+    const isSharedSchedulePage = useIsSharedSchedulePage();
 
     // Tab index mapped to the last known scrollTop.
     const [positions, setPositions] = useState<Record<number, number>>({});

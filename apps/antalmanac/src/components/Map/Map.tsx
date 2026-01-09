@@ -8,7 +8,7 @@ import dynamic from 'next/dynamic';
 import { usePostHog } from 'posthog-js/react';
 import { Fragment, useEffect, useRef, useCallback, useState, createRef, useMemo } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
-import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 import LocationMarker from './Marker';
 
@@ -22,6 +22,7 @@ import { TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
 import locationIds from '$lib/locations/locations';
 import { notNull } from '$lib/utils';
+import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import AppStore from '$stores/AppStore';
 
 const ATTRIBUTION_MARKUP =
@@ -150,11 +151,10 @@ export function getCustomEventPerBuilding() {
  */
 export default function CourseMap() {
     const navigate = useNavigate();
-    const location = useLocation();
     const map = useRef<Map | null>(null);
     const markerRef = createRef<Marker>();
     const [searchParams, setSearchParams] = useSearchParams();
-    const isSharedSchedulePage = location.pathname.startsWith('/share/');
+    const isSharedSchedulePage = useIsSharedSchedulePage();
     const [selectedDayIndex, setSelectedDay] = useState(0);
     const [markers, setMarkers] = useState(getCoursesPerBuilding());
     const [customEventMarkers, setCustomEventMarkers] = useState(getCustomEventPerBuilding());
