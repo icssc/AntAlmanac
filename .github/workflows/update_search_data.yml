@@ -19,10 +19,7 @@ jobs:
       - name: Fetch SOC terms
         id: fetch
         run: |
-          curl -s https://anteaterapi.com/v2/rest/websoc/terms > terms.json
-
-          # Hash only the data payload (ignore wrapper fields like "ok")
-          hash=$(jq -c '.data' terms.json | sha256sum | awk '{print $1}')
+          hash=$(curl -s https://anteaterapi.com/v2/rest/websoc/terms | sha256sum | awk '{print $1}')
 
           echo "hash=$hash" >> $GITHUB_OUTPUT
           echo "Current data hash: $hash"
