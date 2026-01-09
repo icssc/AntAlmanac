@@ -1,5 +1,5 @@
 ![AntAlmanac](apps/antalmanac/public/banner.png)
-TESTING CONCURRENCY WORKFLOW
+
 # About
 
 AntAlmanac is a schedule planner website for classes at UC Irvine. These are some of its features:
