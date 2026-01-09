@@ -2,6 +2,7 @@ import { CalendarMonth, Map, UnfoldMore } from '@mui/icons-material';
 import {
     AppBar,
     Box,
+    Divider,
     IconButton,
     ListItemIcon,
     ListSubheader,
@@ -80,9 +81,21 @@ export function Header() {
                 }}
             >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0, sm: 1 } }}>
-                    {isMobile ? <CalendarMonth fontSize="large" /> : <Logo />}
-                    <Stack sx={{ flexDirection: 'row', alignItems: 'center' }}>
-                        {!isMobile && (
+                    {!isMobile && (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Logo />
+                            <Divider
+                                orientation="vertical"
+                                flexItem
+                                sx={(theme) => ({ borderColor: theme.palette.secondary.main })}
+                            />
+                        </Box>
+                    )}
+
+                    <Stack sx={{ flexDirection: 'row', alignItems: 'center', gap: { xs: 0, sm: 1 } }}>
+                        {isMobile ? (
+                            <Logo />
+                        ) : (
                             <Typography variant={'h5'} sx={{ minWidth: 'auto' }}>
                                 Scheduler
                             </Typography>
