@@ -279,7 +279,7 @@ function AppDrawer() {
         <>
             <IconButton onClick={handleDrawerOpen} color="inherit" size="large" style={{ padding: '4px' }}>
                 <MenuRounded />
-            </IconButton>
+            </IconButton> {/*
             <Drawer
                 anchor="right"
                 open={drawerOpen}
@@ -308,9 +308,309 @@ function AppDrawer() {
                         <About />
                     </Box>
                 </Box>
-            </Drawer>
+            </Drawer>*/}
         </>
     );
 }
+/*
+import { useContext } from 'react';
+
+import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, Popover } from '@mui/material';
+import './Profile.module.css';
+
+import Link from 'next/link';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import LogoutIcon from '@mui/icons-material/Logout';
+import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import StickyNote2OutlinedIcon from '@mui/icons-material/StickyNote2Outlined';
+import GradingIcon from '@mui/icons-material/Grading';
+import FlagIcon from '@mui/icons-material/Flag';
+import { usePathname } from 'next/navigation';
+//import { useAppSelector } from '../../store/hooks';
+import Image from 'next/image';
+//import TabSelector, { TabOption } from '../../app/roadmap/sidebar/TabSelector';
+//import { Theme } from '@peterportal/types';
+import React from 'react';
+import trpc from '$lib/api/trpc';
+import { User } from '@packages/antalmanac-types';
+
+
+
+interface AdminProfileLinksProps {
+  pathname: string | null;
+  onClose: () => void;
+}
+
+const ThemeContext = React.createContext<{
+  darkMode: boolean;
+  usingSystemTheme: boolean;
+  setTheme: (theme: Theme) => void;
+}>({
+  darkMode: false,
+  usingSystemTheme: false,
+  setTheme: () => {},
+});
+
+const AdminProfileLinks = ({ pathname, onClose }: AdminProfileLinksProps) => {
+  return (
+    <>
+      <ListItem>
+        <ListItemButton
+          className={'profile-popover__link' + (pathname === '/admin/verify' ? ' active' : '')}
+          href="/admin/verify"
+          onClick={onClose}
+          component={Link}
+        >
+          <ListItemIcon>
+            <GradingIcon />
+          </ListItemIcon>
+          <ListItemText primary="Verify Reviews" />
+        </ListItemButton>
+      </ListItem>
+      <ListItem>
+        <ListItemButton
+          className={'profile-popover__link' + (pathname === '/admin/reports' ? ' active' : '')}
+          href="/admin/reports"
+          onClick={onClose}
+          component={Link}
+        >
+          <ListItemIcon>
+            <FlagIcon />
+          </ListItemIcon>
+          <ListItemText primary="View Reports" />
+        </ListItemButton>
+      </ListItem>
+    </>
+  );
+};
+
+export const Profile = () => {
+  const { darkMode, setTheme, usingSystemTheme } = useContext(ThemeContext);
+  const pathname = usePathname();
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    if (open) {
+      setAnchorEl(null);
+    } else {
+      setAnchorEl(event.currentTarget);
+    }
+  };
+
+    const [user, setUser] = useState<null | User>(null);
+    const { session, sessionIsValid, clearSession } = useSessionStore();
+
+    const handleAuthChange = useCallback(async () => {
+        if (sessionIsValid) {
+            const userData = await trpc.userData.getUserAndAccountBySessionToken
+                .query({ token: session ?? '' })
+                .then((res) => res.users);
+            setUser(userData);
+        }
+    }, [session, sessionIsValid, setUser]);
+
+  if (!user) {
+    return (
+      <a href={`/api/users/auth/google`} className="login-button">
+        <Button startIcon={<ExitToAppIcon />} color="inherit">
+          Log In
+        </Button>
+      </a>
+    );
+  }
+
+  const { name, email, avatar } = user;
+
+  const themeTabs: TabOption[] = [
+    { value: 'light', label: 'Light', icon: <LightModeIcon /> },
+    { value: 'system', label: 'System', icon: <SettingsBrightnessIcon /> },
+    { value: 'dark', label: 'Dark', icon: <DarkModeIcon /> },
+  ];
+
+  const getCurrentTheme = (): Theme => {
+    if (usingSystemTheme) return 'system';
+    return darkMode ? 'dark' : 'light';
+  };
+
+  const handleThemeChange = (tab: string) => {
+    setTheme(tab as Theme);
+  };
+
+  const profilePopoverContent = (
+    <div>
+      <div className="profile-popover-header">
+        <Image   src={avatar ?? "/default-avatar.png"} alt={name ?? "/default-avatar.png"} width="50" height="50" />
+        <div>
+          <h1 title={name}>{name}</h1>
+          <h2 title={email}>{email}</h2>
+        </div>
+      </div>
+      <div className="profile-popover-theme-selector">
+        <h4>Theme</h4>
+        <TabSelector tabs={themeTabs} selectedTab={getCurrentTheme()} onTabChange={handleThemeChange} />
+        <Divider />
+      </div>
+      <List className="profile-popover-links">
+        <ListItem>
+          <ListItemButton
+            className={'profile-popover-link' + (pathname === '/reviews' ? ' active' : '')}
+            href="/reviews"
+            onClick={() => setAnchorEl(null)}
+            component={Link}
+          >
+            <ListItemIcon>
+              <StickyNote2OutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="Your Reviews" />
+          </ListItemButton>
+        </ListItem>
+        {isAdmin && <AdminProfileLinks pathname={pathname} onClose={() => setAnchorEl(null)} />}
+        <ListItem>
+          <ListItemButton href={'/api/users/auth/logout'} className="profile-popover-link" component="a">
+            <ListItemIcon>
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText primary="Log Out" />
+          </ListItemButton>
+        </ListItem>
+      </List>
+    </div>
+  );
+
+  return (
+    <div className="navbar-profile">
+      <button className="profile-button" onClick={handleClick}>
+        <Image src={avatar ?? "/default-avatar.png" } alt={name ?? "/default-avatar.png" } className="navbar-profile-pic" width={36} height={36} />
+      </button>
+      <Popover
+        className="profile-popover"
+        open={open}
+        anchorEl={anchorEl}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        {profilePopoverContent}
+      </Popover>
+    </div>
+  );
+};
+
+
+
+/*
+import { useContext } from 'react';
+
+import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, Popover } from '@mui/material';
+
+import Link from 'next/link';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import LogoutIcon from '@mui/icons-material/Logout';
+import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import StickyNote2OutlinedIcon from '@mui/icons-material/StickyNote2Outlined';
+import GradingIcon from '@mui/icons-material/Grading';
+import FlagIcon from '@mui/icons-material/Flag';
+import { usePathname } from 'next/navigation';
+import Image from 'next/image';
+import trpc from '$lib/api/trpc';
+import { User } from '@packages/antalmanac-types';
+
+
+
+export const Profile = () => {
+  const pathname = usePathname();
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    if (open) {
+      setAnchorEl(null);
+    } else {
+      setAnchorEl(event.currentTarget);
+    }
+  };
+    const [userperson, setUser] = useState<null | User>(null);
+    const { sessionIsValid, session } = useSessionStore();
+
+  //This is probably really bad
+    const handleAuthChange = useCallback(async () => {
+        if (sessionIsValid) {
+            const userData = await trpc.userData.getUserAndAccountBySessionToken
+                .query({ token: session ?? '' })
+                .then((res) => res.users);
+            setUser(userData);
+        }
+    }, [setUser]);  
+
+
+  const profilePopoverContent = (
+    <div>
+      <div className="profile-popover-header">
+        <Image src={userperson?.avatar} alt={userperson?.name}  width="50" height="50" />
+        <div>
+          <h1 title={userperson?.name}>{userperson?.name}</h1>
+          <h2 title={userperson?.email}>{userperson?.email}</h2>
+        </div>
+      </div>
+      <div className="profile-popover-theme-selector">
+        <h4>Theme</h4>
+        <ThemeMenu />
+        <Divider />
+      </div>
+      <List className="profile-popover-links">
+        <ListItem>
+          <ListItemButton
+            className={'profile-popover-link' + (pathname === '/reviews' ? ' active' : '')}
+            href="/reviews"
+            onClick={() => setAnchorEl(null)}
+            component={Link}
+          >
+            <ListItemIcon>
+              <StickyNote2OutlinedIcon />
+            </ListItemIcon>
+            <ListItemText primary="Your Reviews" />
+          </ListItemButton>
+        </ListItem>
+      </List>
+    </div>
+  );
+
+  return (
+    <div className="navbar-profile">
+      <button className="profile-button" onClick={handleClick}>
+        <Image src={userperson?.avatar} alt={userperson?.name} className="navbar-profile-pic" width={36} height={36} />
+      </button>
+      <Popover
+        className="profile-popover"
+        open={open}
+        anchorEl={anchorEl}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+      >
+        {profilePopoverContent}
+      </Popover>
+    </div>
+  );
+};*/
+
+
 
 export default AppDrawer;

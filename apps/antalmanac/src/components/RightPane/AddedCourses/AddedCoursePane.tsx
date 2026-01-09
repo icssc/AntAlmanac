@@ -355,7 +355,7 @@ function AddedSectionsGrid() {
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
                         const missingSections = getMissingSections(course);
-
+                        
                         return (
                             <Box key={course.deptCode + course.courseNumber + course.courseTitle}>
                                 <SectionTableLazyWrapper

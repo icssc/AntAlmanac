@@ -4,6 +4,7 @@ import { Avatar, Menu, ListItemIcon, ListItemText, MenuItem, IconButton } from '
 import { User } from '@packages/antalmanac-types';
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { SettingsMenu } from '$components/Header/SettingsMenu'
 
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
@@ -88,6 +89,8 @@ export function Signout() {
                     'aria-labelledby': 'basic-button',
                 }}
             >
+                <SettingsMenu />
+                
                 <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
                         <LogoutIcon />
