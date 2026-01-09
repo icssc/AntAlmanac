@@ -1,0 +1,65 @@
+name: Rebuild Search Data on New Quarter
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  check-terms:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Fetch SOC terms
+        id: fetch
+        run: |
+          curl -s https://anteaterapi.com/v2/rest/websoc/terms > terms.json
+
+          # Hash only the data payload (ignore wrapper fields like "ok")
+          hash=$(jq -c '.data' terms.json | sha256sum | awk '{print $1}')
+
+          echo "hash=$hash" >> $GITHUB_OUTPUT
+          echo "Current data hash: $hash"
+
+      - name: Read previous hash
+        id: previous
+        run: |
+          if [ -f .websoc-hash ]; then
+            prev=$(cat .websoc-hash)
+          else
+            prev=""
+          fi
+
+          echo "prev=$prev" >> $GITHUB_OUTPUT
+          echo "Previous data hash: $prev"
+
+      - name: Compare hashes
+        id: compare
+        run: |
+          if [ "${{ steps.fetch.outputs.hash }}" != "${{ steps.previous.outputs.prev }}" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Trigger rebuild (empty commit)
+        if: steps.compare.outputs.changed == 'true'
+        run: |
+          echo "${{ steps.fetch.outputs.hash }}" > .websoc-hash
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add .websoc-hash
+          git commit --allow-empty -m "ci: rebuild search data"
+          git push
+
+      - name: No change detected
+        if: steps.compare.outputs.changed == 'false'
+        run: echo "SOC terms unchanged. Skipping rebuild."
