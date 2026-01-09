@@ -292,7 +292,6 @@ export const Signin = () => {
                             });
                     }
                 } else {
-                    // Normal behavior: load schedules
                     void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
                 }
             }
