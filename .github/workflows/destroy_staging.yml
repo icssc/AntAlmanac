@@ -21,13 +21,22 @@ jobs:
     delete-staging:
         runs-on: ubuntu-latest
         env:
-            SST_STAGE: staging-${{ github.event.pull_request.number }}
+            SST_STAGE: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
 
         steps:
             - name: Checkout
               uses: actions/checkout@v4
               with:
-                  ref: ${{ github.event.pull_request.head.sha }}
+                  ref: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
+
+            - name: Set commit status as pending
+              uses: myrotvorets/set-commit-status-action@master
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  status: pending
+                  sha: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
+                  context: Delete Staging
+                  description: Removing staging environment for PR #${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v4
@@ -46,6 +55,16 @@ jobs:
               run: |
                   echo "Removing stage: $SST_STAGE"
                   npx sst remove --stage "$SST_STAGE"
+
+            - name: Set final commit status
+              if: always()
+              uses: myrotvorets/set-commit-status-action@master
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  status: ${{ job.status }}
+                  sha: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
+                  context: Delete Staging
+                  description: ${{ job.status == 'success' && 'Staging environment removed' || 'Failed to remove staging environment' }}
 
             - name: Add reaction to comment
               if: github.event_name == 'repository_dispatch'
