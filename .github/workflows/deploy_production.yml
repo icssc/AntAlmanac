@@ -5,7 +5,7 @@ on:
         branches: [main]
 
 concurrency:
-    group: sst-production-deploy
+    group: sst-production
     cancel-in-progress: false
 
 env:
