@@ -50,7 +50,6 @@ export async function fetchUserRoadmapsPeterPortal(userId: string) { // maybe ad
 
     if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`);
     const data: PeterPortalAPIResponse = await response.json();
-    console.log(data.result?.data ?? []);
     return data.result?.data ?? [];
 
   } catch (e) {
@@ -67,6 +66,5 @@ export function flattenRoadmapCourses(roadmap: any): string[] {
       q.courses?.forEach(c => courses.add(c));
     }
   }
-  console.log('courses', courses);
   return Array.from(courses);
 }
