@@ -1,7 +1,5 @@
 import Image from 'next/image';
 
-import { useIsMobile } from '$hooks/useIsMobile';
-
 type Logo = {
     name: string;
     mobileLogo: string;
@@ -15,7 +13,7 @@ type Logo = {
 
 const defaultLogo: Logo = {
     name: 'Default',
-    mobileLogo: '/assets/mobile-logo.svg',
+    mobileLogo: '/assets/mobile-logo-cropped.svg',
     desktopLogo: '/assets/logo.svg',
     startDay: 0,
     startMonthIndex: 0,
@@ -67,18 +65,16 @@ function logoIsForCurrentSeason(logo: Logo) {
 }
 
 export function Logo() {
-    const isMobile = useIsMobile();
-
     const currentLogo = logos.find((logo) => logoIsForCurrentSeason(logo)) ?? defaultLogo;
 
     return (
         <Image
-            src={isMobile ? currentLogo?.mobileLogo : currentLogo?.desktopLogo}
+            src={currentLogo?.mobileLogo}
             height={64}
             width={340}
             style={{
                 width: 'auto',
-                height: '32px',
+                height: '2rem',
             }}
             title={currentLogo?.attribution}
             alt="logo"

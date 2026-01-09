@@ -1,4 +1,17 @@
-import { AppBar, Box, Stack } from '@mui/material';
+import { CalendarMonth, Map, UnfoldMore } from '@mui/icons-material';
+import {
+    AppBar,
+    Box,
+    IconButton,
+    ListItemIcon,
+    ListSubheader,
+    MenuItem,
+    MenuList,
+    Popover,
+    Stack,
+    Typography,
+} from '@mui/material';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { openSnackbar } from '$actions/AppStoreActions';
@@ -16,12 +29,17 @@ import {
     getLocalStorageImportedUser,
 } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
+import { useIsMobile } from '$src/hooks/useIsMobile';
 import { useSessionStore } from '$stores/SessionStore';
 
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const importedUser = getLocalStorageImportedUser() ?? '';
     const { session, sessionIsValid } = useSessionStore();
+    const isMobile = useIsMobile();
+
+    const platform = window.location.pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
 
     const clearStorage = () => {
         removeLocalStorageImportedUser();
@@ -43,6 +61,7 @@ export function Header() {
             clearStorage();
         }
     }, [importedUser, session]);
+
     return (
         <AppBar
             position="static"
@@ -62,7 +81,72 @@ export function Header() {
                     alignItems: 'center',
                 }}
             >
-                <Logo />
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0, sm: 1 } }}>
+                    {isMobile ? <CalendarMonth fontSize="large" /> : <Logo />}
+                    <Stack sx={{ flexDirection: 'row', alignItems: 'center' }}>
+                        {!isMobile && (
+                            <Typography variant={'h5'} sx={{ minWidth: 'auto' }}>
+                                {platform}
+                            </Typography>
+                        )}
+
+                        <IconButton
+                            onClick={(event) => setAnchorEl(event.currentTarget)}
+                            sx={(theme) => ({
+                                borderRadius: theme.spacing(0.5),
+                                paddingX: theme.spacing(0.5),
+                                '& .MuiTouchRipple-child': {
+                                    borderRadius: theme.spacing(0.5),
+                                },
+                            })}
+                        >
+                            <UnfoldMore color="secondary" />
+                        </IconButton>
+
+                        <Popover
+                            open={Boolean(anchorEl)}
+                            anchorEl={anchorEl}
+                            onClose={() => setAnchorEl(null)}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'left',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'left',
+                            }}
+                        >
+                            <MenuList
+                                subheader={
+                                    <ListSubheader component="div" sx={{ lineHeight: '30px' }}>
+                                        Switch Apps
+                                    </ListSubheader>
+                                }
+                                sx={{ width: '200px' }}
+                            >
+                                <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                    <MenuItem selected={platform === 'Scheduler'} onClick={() => setAnchorEl(null)}>
+                                        <ListItemIcon>
+                                            <CalendarMonth />
+                                        </ListItemIcon>
+                                        <Typography variant="h6">Scheduler</Typography>
+                                    </MenuItem>
+                                </Link>
+                                <Link
+                                    href="https://planner-917.antalmanac.com"
+                                    style={{ textDecoration: 'none', color: 'inherit' }}
+                                >
+                                    <MenuItem selected={platform === 'Planner'} onClick={() => setAnchorEl(null)}>
+                                        <ListItemIcon>
+                                            <Map />
+                                        </ListItemIcon>
+                                        <Typography variant="h6">Planner</Typography>
+                                    </MenuItem>
+                                </Link>
+                            </MenuList>
+                        </Popover>
+                    </Stack>
+                </Box>
 
                 <Stack direction="row" sx={{ alignItems: 'center' }}>
                     <Save />
