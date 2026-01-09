@@ -278,6 +278,8 @@ export const Signin = () => {
 
             if (savedUserID != null || sessionID !== null) {
                 if (isSharedSchedulePage) {
+                    // On shared schedule pages, we only validate the session to maintain auth state.
+                    // We don't load the user's schedule data since that would replace the shared schedule being viewed.
                     void updateSession(sessionID);
                 } else {
                     void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
