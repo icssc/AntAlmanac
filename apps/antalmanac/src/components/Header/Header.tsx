@@ -40,6 +40,8 @@ export function Header() {
     const { session, sessionIsValid } = useSessionStore();
     const isMobile = useIsMobile();
 
+    const platform = window.location.pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
+
     const clearStorage = () => {
         removeLocalStorageImportedUser();
         removeLocalStorageDataCache();
@@ -81,23 +83,11 @@ export function Header() {
                 }}
             >
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0, sm: 1 } }}>
-                    {!isMobile && (
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Logo />
-                            <Divider
-                                orientation="vertical"
-                                flexItem
-                                sx={(theme) => ({ borderColor: theme.palette.secondary.main })}
-                            />
-                        </Box>
-                    )}
-
+                    {isMobile ? <CalendarMonth fontSize="large" /> : <Logo />}
                     <Stack sx={{ flexDirection: 'row', alignItems: 'center' }}>
-                        {isMobile ? (
-                            <Logo />
-                        ) : (
+                        {!isMobile && (
                             <Typography variant={'h5'} sx={{ minWidth: 'auto' }}>
-                                Scheduler
+                                {platform}
                             </Typography>
                         )}
 
@@ -136,7 +126,7 @@ export function Header() {
                                 sx={{ width: '200px' }}
                             >
                                 <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-                                    <MenuItem selected={true} onClick={() => setAnchorEl(null)}>
+                                    <MenuItem selected={platform === 'Scheduler'} onClick={() => setAnchorEl(null)}>
                                         <ListItemIcon>
                                             <CalendarMonth />
                                         </ListItemIcon>
@@ -144,10 +134,10 @@ export function Header() {
                                     </MenuItem>
                                 </Link>
                                 <Link
-                                    href="https://planner-926.antalmanac.com"
+                                    href="https://planner-917.antalmanac.com"
                                     style={{ textDecoration: 'none', color: 'inherit' }}
                                 >
-                                    <MenuItem selected={false} onClick={() => setAnchorEl(null)}>
+                                    <MenuItem selected={platform === 'Planner'} onClick={() => setAnchorEl(null)}>
                                         <ListItemIcon>
                                             <Map />
                                         </ListItemIcon>
