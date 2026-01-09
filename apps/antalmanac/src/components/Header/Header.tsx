@@ -144,7 +144,7 @@ export function Header() {
                                     </MenuItem>
                                 </Link>
                                 <Link
-                                    href="https://planner-917.antalmanac.com"
+                                    href="https://planner-926.antalmanac.com"
                                     style={{ textDecoration: 'none', color: 'inherit' }}
                                 >
                                     <MenuItem selected={false} onClick={() => setAnchorEl(null)}>
