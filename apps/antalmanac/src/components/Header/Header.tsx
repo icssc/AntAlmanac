@@ -92,7 +92,7 @@ export function Header() {
                         </Box>
                     )}
 
-                    <Stack sx={{ flexDirection: 'row', alignItems: 'center', gap: { xs: 0, sm: 1 } }}>
+                    <Stack sx={{ flexDirection: 'row', alignItems: 'center' }}>
                         {isMobile ? (
                             <Logo />
                         ) : (
