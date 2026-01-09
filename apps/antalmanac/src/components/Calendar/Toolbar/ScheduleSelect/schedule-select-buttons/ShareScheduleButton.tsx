@@ -15,11 +15,6 @@ export function ShareScheduleButton({ index, disabled }: ShareScheduleButtonProp
     const { sessionIsValid } = useSessionStore();
 
     const handleCopy = useCallback(async () => {
-        if (!sessionIsValid) {
-            AppStore.openSnackbar('error', 'Please sign in to share schedules');
-            return;
-        }
-
         const scheduleId = AppStore.getScheduleId(index);
         if (!scheduleId) {
             AppStore.openSnackbar(
@@ -39,15 +34,22 @@ export function ShareScheduleButton({ index, disabled }: ShareScheduleButtonProp
         } catch (err) {
             AppStore.openSnackbar('error', 'Failed to copy link');
         }
-    }, [index, sessionIsValid]);
+    }, [index]);
+
+    const isDisabled = disabled || !sessionIsValid;
+    const tooltipTitle = !sessionIsValid
+        ? 'Please sign in to share schedules'
+        : copied
+          ? 'Link copied!'
+          : 'Copy Share Link';
 
     return (
-        <Tooltip title="Copy Share Link" disableInteractive>
+        <Tooltip title={tooltipTitle} disableInteractive>
             <span>
                 <IconButton
                     onClick={handleCopy}
                     size="small"
-                    disabled={disabled}
+                    disabled={isDisabled}
                     color={copied ? 'success' : 'default'}
                 >
                     {copied ? <Check /> : <Link />}
