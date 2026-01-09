@@ -1,4 +1,4 @@
-import { Close } from '@mui/icons-material';
+import { Add, Close } from '@mui/icons-material';
 import { useMediaQuery, useTheme, Stack, Alert, Button, Box, Typography, IconButton } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
@@ -346,24 +346,59 @@ export function SharedSchedulePage() {
                     <Box
                         sx={{
                             px: 2,
-                            py: 1,
+                            py: isMobileScreen ? 0.5 : 1,
                             backgroundColor: 'background.paper',
                             borderBottom: 1,
                             borderColor: 'divider',
                         }}
                     >
-                        <Stack direction="row" justifyContent="space-between" alignItems="center">
-                            <Typography variant="h6" component="h1">
-                                Viewing Shared Schedule: <strong>{scheduleName}</strong>
+                        <Stack
+                            direction={'row'}
+                            justifyContent="space-between"
+                            alignItems={'center'}
+                            spacing={isMobileScreen ? 1 : 0}
+                        >
+                            <Typography
+                                variant="h6"
+                                component="h1"
+                                sx={{
+                                    fontSize: isMobileScreen ? '1rem' : undefined,
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                Viewing Shared Schedule:{' '}
+                                <strong style={{ whiteSpace: 'nowrap', marginLeft: '0.25rem' }}>{scheduleName}</strong>
                             </Typography>
-                            <Stack direction="row" spacing={1} alignItems="center">
-                                <Button variant="contained" onClick={handleAddToMySchedules}>
-                                    Add to My Schedules
-                                </Button>
+                            <Stack direction="row" spacing={1} alignItems="center" sx={{ flexShrink: 0 }}>
+                                {isMobileScreen ? (
+                                    <IconButton
+                                        aria-label="Add to My Schedules"
+                                        onClick={handleAddToMySchedules}
+                                        size="small"
+                                        sx={{
+                                            backgroundColor: 'primary.dark',
+                                            color: 'white',
+                                            borderRadius: 2,
+                                            '&:hover': {
+                                                backgroundColor: 'primary.main',
+                                            },
+                                        }}
+                                    >
+                                        <Add />
+                                    </IconButton>
+                                ) : (
+                                    <Button variant="contained" onClick={handleAddToMySchedules} size="large">
+                                        Add to My Schedules
+                                    </Button>
+                                )}
                                 <IconButton
                                     aria-label="Exit shared schedule"
                                     onClick={handleExitSharedSchedule}
                                     color="inherit"
+                                    size={isMobileScreen ? 'medium' : 'large'}
                                 >
                                     <Close />
                                 </IconButton>
