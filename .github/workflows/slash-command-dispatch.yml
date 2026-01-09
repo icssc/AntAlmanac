@@ -15,6 +15,7 @@ jobs:
                   commands: |
                       unlock
                       remove
+                      deploy
                   dispatch-type: repository
                   issue-type: pull-request
                   permission: write
