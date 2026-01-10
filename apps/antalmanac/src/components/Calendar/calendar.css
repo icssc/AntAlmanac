@@ -18,6 +18,10 @@
     border-color: transparent;
 }
 
+.rbc-time-content {
+    border-top-width: 1px;
+}
+
 .rbc-time-view .rbc-allday-cell {
     height: 0;
     z-index: -1000;
