@@ -268,7 +268,14 @@ export const ScheduleCalendar = memo(() => {
         return momentLocalizer(moment);
     }, [culture]);
 
-    const shouldShowWeekView = (showFinalsSchedule && finalsStartsOnSaturday) || hasWeekendCourse;
+    // Check if there are any finals on weekends (else only display M-F)
+    const hasWeekendFinals =
+        showFinalsSchedule &&
+        [...finalsEventsInCalendar, hoveredCalendarizedFinal]
+            .filter(Boolean)
+            .some((event) => event != null && [0, 6].includes(event.start.getDay()));
+
+    const shouldShowWeekView = showFinalsSchedule ? hasWeekendFinals : hasWeekendCourse;
     const calendarView = shouldShowWeekView ? Views.WEEK : Views.WORK_WEEK;
 
     const finalsDateFormat = 'ddd MM/DD';
