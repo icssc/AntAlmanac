@@ -160,8 +160,8 @@ export function Header() {
                 </Box>
 
                 <Stack direction="row" sx={{ alignItems: 'center' }}>
-                    <Save />
                     <Import key="studylist" />
+                    <Save />
                     {sessionIsValid ? <Signout /> : <Signin />}
                     <AppDrawer key="settings" />
                 </Stack>
