@@ -81,12 +81,13 @@ export const ScheduleCalendar = memo(() => {
     );
 
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
-        if (showFinalsSchedule)
-            return hoveredCalendarizedFinal
+        return showFinalsSchedule
+            ? hoveredCalendarizedFinal
                 ? [...finalsEventsInCalendar, hoveredCalendarizedFinal]
-                : finalsEventsInCalendar;
-        else
-            return hoveredCalendarizedCourses ? [...eventsInCalendar, ...hoveredCalendarizedCourses] : eventsInCalendar;
+                : finalsEventsInCalendar
+            : hoveredCalendarizedCourses
+              ? [...eventsInCalendar, ...hoveredCalendarizedCourses]
+              : eventsInCalendar;
     }, [
         eventsInCalendar,
         finalsEventsInCalendar,
@@ -267,13 +268,8 @@ export const ScheduleCalendar = memo(() => {
         return momentLocalizer(moment);
     }, [culture]);
 
-    const calendarView = showFinalsSchedule
-        ? finalsStartsOnSaturday || hasWeekendCourse
-            ? Views.WEEK
-            : Views.WORK_WEEK
-        : hasWeekendCourse
-          ? Views.WEEK
-          : Views.WORK_WEEK;
+    const shouldShowWeekView = (showFinalsSchedule && finalsStartsOnSaturday) || hasWeekendCourse;
+    const calendarView = shouldShowWeekView ? Views.WEEK : Views.WORK_WEEK;
 
     const finalsDateFormat = 'ddd MM/DD';
     const date = showFinalsSchedule ? finalsDate : new Date(2018, 0, 1);
