@@ -332,7 +332,7 @@ export const loadSchedule = async (
                     openSnackbar(
                         'error',
                         `Network error loading course information for "${providerId}". 	              
-                            If this continues to happen, please submit a feedback form.`
+                        If this continues to happen, please submit a feedback form.`
                     );
                 }
             } catch (e) {
