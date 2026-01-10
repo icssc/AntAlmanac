@@ -32,8 +32,8 @@ import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 //  * CALENDAR_VIEWS will set the correct day range
  * Start week on Sunday so Saturday appears after Friday.
  * This ensures the standard week layout: Su, M, Tu, W, Th, F, Sa
+ * Normal schedules: Su ... Sa (Sa rightmost)
  */
-// Normal schedules: Su ... Sa (Sa rightmost)
 // eslint-disable-next-line import/no-named-as-default-member
 moment.defineLocale('en-us', {
     parentLocale: 'en',
