@@ -354,7 +354,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                             if ((courseData[index] as AACourse).sections !== undefined)
                                 heightEstimate = (courseData[index] as AACourse).sections.length * 60 + 20 + 40;
                             return (
-                                <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>
+                                <LazyLoad once key={index} overflow height={heightEstimate} offset={1000}>
                                     {SectionTableWrapped(index, {
                                         courseData: courseData,
                                         scheduleNames: scheduleNames,
