@@ -29,22 +29,55 @@ import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleS
 import { useSessionStore } from '$stores/SessionStore';
 import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
 
+/*
 const lightSelectedStyle: CSSProperties = {
-    backgroundColor: '#F0F7FF',
-    borderColor: '#007FFF',
-    color: '#007FFF',
+    backgroundColor: '#1976d2',
+    borderColor: '#8886',
+    color: '#fff',
 };
 
 const darkSelectedStyle: CSSProperties = {
     backgroundColor: '#003A7570',
-    borderColor: '#0059B2',
+    borderColor: '#d3d4d5',
     color: '#99CCF3',
+};*/
+
+const lightSelectedStyle: CSSProperties = {
+    backgroundColor: '#1976d2', // MUI primary main color
+    color: '#fff',
 };
 
-function getSelectedStyle(buttonValue: string, themeSetting: string, isDark: boolean) {
-    return themeSetting === buttonValue ? (isDark ? darkSelectedStyle : lightSelectedStyle) : {};
-}
+const darkSelectedStyle: CSSProperties = {
+    backgroundColor: '#1976d2', // Same as light - uses primary color
+    color: '#fff',
+};
 
+const lightUnselectedStyle: CSSProperties = {
+    backgroundColor: '#f8f9fa',
+    color: 'inherit',
+};
+
+const darkUnselectedStyle: CSSProperties = {
+    backgroundColor: 'transparent', // PeterPortal doesn't set a background for dark unselected
+    color: 'inherit',
+};
+
+// Add hover styles
+const lightHoverStyle: CSSProperties = {
+    backgroundColor: '#d3d4d5',
+};
+
+const darkHoverStyle: CSSProperties = {
+    backgroundColor: '#424649',
+};
+
+function getSelectedStyle(buttonValue: string, themeSetting: string, isDark: boolean): CSSProperties {
+    if (themeSetting === buttonValue) {
+        return isDark ? darkSelectedStyle : lightSelectedStyle;
+    } else {
+        return isDark ? darkUnselectedStyle : lightUnselectedStyle;
+    }
+}
 function ThemeMenu() {
     const [themeSetting, isDark, setTheme] = useThemeStore((store) => [
         store.themeSetting,
@@ -65,45 +98,65 @@ function ThemeMenu() {
                 Theme
             </Typography>
 
-            <ButtonGroup style={{ display: 'flex', placeContent: 'center', width: '100%', borderColor: 'unset' }}>
-                <Button
-                    startIcon={<LightMode fontSize="small" />}
-                    style={{
-                        padding: '1rem 2rem',
-                        borderRadius: '12px 0px 0px 12px',
-                        width: '100%',
-                        ...getSelectedStyle('light', themeSetting, isDark),
-                    }}
-                    value="light"
-                    onClick={handleThemeChange}
-                >
-                    Light
-                </Button>
-                <Button
-                    startIcon={<SettingsBrightness fontSize="small" />}
-                    style={{
-                        padding: '1rem 2rem',
-                        width: '100%',
-                        ...getSelectedStyle('system', themeSetting, isDark),
-                    }}
-                    value="system"
-                    onClick={handleThemeChange}
-                >
-                    System
-                </Button>
-                <Button
-                    startIcon={<DarkMode fontSize="small" />}
-                    style={{
-                        padding: '1rem 2rem',
-                        borderRadius: '0px 12px 12px 0px',
-                        width: '100%',
-                        ...getSelectedStyle('dark', themeSetting, isDark),
-                    }}
-                    value="dark"
-                    onClick={handleThemeChange}
-                >
-                    Dark
-                </Button>
+            <ButtonGroup
+                sx={{
+                    width: '100%',
+                    marginBottom: '12px',
+                    border: `1px solid ${isDark ? '#8886' : '#d3d4d5'}`,
+                    '& .MuiButtonGroup-grouped': {
+                        border: 'none', // Remove default MUI button borders
+                        '&:not(:last-of-type)': {
+                            borderRight: `1px solid ${isDark ? '#8886' : '#d3d4d5'}`,
+                        },
+                    },
+                    '& .MuiButton-root': {
+                        border: 'none', // Ensure no borders on buttons
+                        '&:hover': {
+                            border: 'none', // Remove hover borders
+                        },
+                        '&:focus': {
+                            outline: 'none', // Remove focus outline if needed
+                        },
+                    },
+                }}
+                style={{ display: 'flex', placeContent: 'center', width: '100%' }}
+            >
+                {[
+                    { value: 'light', label: 'Light', icon: <LightMode fontSize="small" /> },
+                    { value: 'system', label: 'System', icon: <SettingsBrightness fontSize="small" /> },
+                    { value: 'dark', label: 'Dark', icon: <DarkMode fontSize="small" /> },
+                ].map((tab) => {
+                    const isSelected = themeSetting === tab.value;
+
+                    return (
+                        <Button
+                            key={tab.value}
+                            startIcon={tab.icon}
+                            style={{
+                                padding: '6px 12px',
+                                width: '100%',
+                                fontWeight: 'bold',
+                                textTransform: 'none',
+                                backgroundColor: isSelected ? '#1976d2' : isDark ? 'transparent' : '#f8f9fa',
+                                color: isSelected ? '#fff' : 'inherit',
+                            }}
+                            value={tab.value}
+                            onClick={handleThemeChange}
+                            onMouseEnter={(e) => {
+                                if (!isSelected) {
+                                    e.currentTarget.style.backgroundColor = isDark ? '#424649' : '#d3d4d5';
+                                }
+                            }}
+                            onMouseLeave={(e) => {
+                                if (!isSelected) {
+                                    e.currentTarget.style.backgroundColor = isDark ? 'transparent' : '#f8f9fa';
+                                }
+                            }}
+                        >
+                            {tab.label}
+                        </Button>
+                    );
+                })}
             </ButtonGroup>
         </Box>
     );
@@ -240,7 +293,6 @@ function SettingsMenu() {
     return (
         <Stack gap={2}>
             <ThemeMenu />
-            <TimeMenu />
 
             {isMobile && (
                 <Stack gap={2}>
@@ -279,7 +331,8 @@ function AppDrawer() {
         <>
             <IconButton onClick={handleDrawerOpen} color="inherit" size="large" style={{ padding: '4px' }}>
                 <MenuRounded />
-            </IconButton> {/*
+            </IconButton>{' '}
+            {/*
             <Drawer
                 anchor="right"
                 open={drawerOpen}
@@ -610,7 +663,5 @@ export const Profile = () => {
     </div>
   );
 };*/
-
-
 
 export default AppDrawer;
