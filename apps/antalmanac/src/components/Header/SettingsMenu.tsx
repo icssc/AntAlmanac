@@ -20,6 +20,8 @@ import { About } from './About';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
+import { PlannerButton } from '$components/buttons/Planner';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import appStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -117,7 +119,7 @@ function TimeMenu() {
 
     return (
         <Box sx={{ padding: '0 1rem', width: '100%' }}>
-            <Typography variant="h6" style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
+            <Typography variant="h6" style={{ marginBottom: '1rem' }}>
                 Time
             </Typography>
 
@@ -160,6 +162,18 @@ function TimeMenu() {
     );
 }
 
+function PlannerMenu() {
+    return (
+        <Box sx={{ padding: '0 1rem', width: '100%', display: 'flex', justifyContent: 'center' }}>
+            <PlannerButton
+                buttonSx={{
+                    width: '100%',
+                }}
+            />
+        </Box>
+    );
+}
+
 function ExperimentalMenu() {
     const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
     const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
@@ -186,13 +200,13 @@ function ExperimentalMenu() {
 
         if (!savedUserID) return;
         actionTypesStore.emit('autoSaveStart');
-        await autoSaveSchedule(savedUserID, postHog);
+        await autoSaveSchedule(savedUserID, undefined, postHog);
         appStore.unsavedChanges = false;
         actionTypesStore.emit('autoSaveEnd');
     };
 
     return (
-        <Stack sx={{ padding: '1rem 1rem 0 1rem', width: '100%', display: 'flex', alignItems: 'middle' }}>
+        <Stack sx={{ padding: '0 1rem', width: '100%', display: 'flex', alignItems: 'middle' }}>
             <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
                 <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
@@ -221,17 +235,31 @@ function ExperimentalMenu() {
 }
 
 function SettingsMenu() {
+    const isMobile = useIsMobile();
+
     return (
-        <Box>
+        <Stack gap={2}>
             <ThemeMenu />
             <TimeMenu />
 
-            <Divider style={{ marginTop: '16px' }}>
-                <Typography variant="subtitle2">Experimental Features</Typography>
-            </Divider>
+            {isMobile && (
+                <Stack gap={2}>
+                    <Divider>
+                        <Typography variant="subtitle2">Want a 4-year plan?</Typography>
+                    </Divider>
 
-            <ExperimentalMenu />
-        </Box>
+                    <PlannerMenu />
+                </Stack>
+            )}
+
+            <Stack gap={2}>
+                <Divider>
+                    <Typography variant="subtitle2">Experimental Features</Typography>
+                </Divider>
+
+                <ExperimentalMenu />
+            </Stack>
+        </Stack>
     );
 }
 
