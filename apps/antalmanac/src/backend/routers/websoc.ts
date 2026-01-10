@@ -1,4 +1,4 @@
-import type { WebsocAPIResponse, CourseInfo, WebsocCourse } from '@packages/antalmanac-types';
+import type { WebsocAPIResponse, CourseInfo, WebsocCourse, WebsocSectionType } from '@packages/antalmanac-types';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
@@ -123,6 +123,13 @@ const websocRouter = router({
         for (const school of res.schools) {
             for (const department of school.departments) {
                 for (const course of department.courses) {
+                    const sectionTypesSet = new Set<WebsocSectionType>();
+                    course.sections.forEach((section) => {
+                        sectionTypesSet.add(section.sectionType);
+                    });
+
+                    const sectionTypes = [...sectionTypesSet];
+
                     for (const section of course.sections) {
                         courseInfo[section.sectionCode] = {
                             courseDetails: {
@@ -131,6 +138,7 @@ const websocRouter = router({
                                 courseTitle: course.courseTitle,
                                 courseComment: course.courseComment,
                                 prerequisiteLink: course.prerequisiteLink,
+                                sectionTypes: sectionTypes,
                             },
                             section: section,
                         };
