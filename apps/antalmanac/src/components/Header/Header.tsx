@@ -6,7 +6,6 @@ import { AlertDialog } from '$components/AlertDialog';
 import { Import } from '$components/Header/Import';
 import { Logo } from '$components/Header/Logo';
 import { Save } from '$components/Header/Save';
-import AppDrawer from '$components/Header/SettingsMenu';
 import { Signin } from '$components/Header/Signin';
 import { Signout } from '$components/Header/Signout';
 import {
@@ -63,7 +62,7 @@ export function Header() {
                 }}
             >
                 <Logo />
-                
+
                 <Stack direction="row" sx={{ alignItems: 'center' }}>
                     <Import key="studylist" />
                     <Save />
