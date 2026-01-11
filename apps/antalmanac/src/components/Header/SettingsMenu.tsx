@@ -14,6 +14,8 @@ import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleS
 import { useSessionStore } from '$stores/SessionStore';
 import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
 import { User } from '@packages/antalmanac-types';
+import { useTheme } from '@mui/material/styles';
+
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#1976d2',
