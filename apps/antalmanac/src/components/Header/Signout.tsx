@@ -97,7 +97,7 @@ export function Signout() {
                 slotProps={{
                     paper: {
                         sx: {
-                            width: 310,
+                            width: {xs: 200, sm: 260, md: 330},
                             maxWidth: '100vw',
                             p: '16px 20px',
                             borderRadius: 2,
