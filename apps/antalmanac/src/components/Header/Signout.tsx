@@ -1,6 +1,6 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Avatar, Menu, ListItemIcon, ListItemText, MenuItem, IconButton, Popover } from '@mui/material';
+import { Avatar, Divider, Menu, ListItemIcon, ListItemText, MenuItem, IconButton, Popover } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -107,11 +107,22 @@ export function Signout() {
             >
                 <SettingsMenu user={user} />
 
-                <MenuItem onClick={handleLogout}>
+                <Divider style={{ marginTop: '10px', marginBottom: '12px' }}/>
+
+                <MenuItem onClick={handleLogout} sx={{ pl: 0 }}>
                     <ListItemIcon>
                         <LogoutIcon />
                     </ListItemIcon>
-                    <ListItemText>Log out</ListItemText>
+                    <ListItemText
+                        primary="Log out"
+                        primaryTypographyProps={{
+                            sx: {
+                                fontSize: '1rem',
+                                fontWeight: 600,
+                                textTransform: 'uppercase',
+                            },
+                        }}
+                    />
                 </MenuItem>
             </Popover>
         </div>
