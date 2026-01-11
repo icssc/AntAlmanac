@@ -78,10 +78,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
     const handleOpen = useCallback(() => {
         setOpen(true);
         if (props.customEvent) {
-            const customEventId =
-                typeof props.customEvent.customEventID === 'string'
-                    ? Number(props.customEvent.customEventID)
-                    : props.customEvent.customEventID;
+            const customEventId = Number(props.customEvent.customEventID);
             setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(customEventId));
         } else {
             setScheduleIndices([AppStore.getCurrentScheduleIndex()]);
