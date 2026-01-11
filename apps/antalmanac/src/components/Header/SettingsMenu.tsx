@@ -1,16 +1,7 @@
-import { LightMode, SettingsBrightness, DarkMode, Help,  } from '@mui/icons-material';
-import {
-    Avatar,
-    Box,
-    Divider,
-    Stack,
-    Switch,
-    Tooltip,
-    Typography,
-} from '@mui/material';
+import { LightMode, SettingsBrightness, DarkMode, Help } from '@mui/icons-material';
+import { Avatar, Box, Divider, Stack, Switch, Tooltip, Typography } from '@mui/material';
 import { CSSProperties } from '@mui/material/styles/createTypography';
 import { usePostHog } from 'posthog-js/react';
-
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
@@ -30,7 +21,7 @@ const lightSelectedStyle: CSSProperties = {
 };
 
 const darkSelectedStyle: CSSProperties = {
-    backgroundColor: '#1976d2', 
+    backgroundColor: '#1976d2',
     color: '#fff',
 };
 
@@ -40,7 +31,7 @@ const lightUnselectedStyle: CSSProperties = {
 };
 
 const darkUnselectedStyle: CSSProperties = {
-    backgroundColor: 'transparent', 
+    backgroundColor: 'transparent',
     color: 'inherit',
 };
 
@@ -122,7 +113,6 @@ function ThemeMenu() {
         </Box>
     );
 }
-
 function TimeMenu() {
     const [isMilitaryTime, setTimeFormat] = useTimeFormatStore((store) => [store.isMilitaryTime, store.setTimeFormat]);
     const isDark = useThemeStore((store) => store.isDark);
@@ -341,4 +331,3 @@ export function SettingsMenu({ user }: { user: User | null }) {
         </Stack>
     );
 }
-
