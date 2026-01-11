@@ -17,12 +17,12 @@ export type PeterPortalAPIResponse = {
   result: {
     data: [
       {
-        name: string; // e.g., "Peter's Roadmap"
+        name: string;
         content: {
-          name: string; // e.g., "Year 1"
+          name: string; 
           startYear: number;
           quarters: {
-            name: string; // e.g., "Fall", "Winter"
+            name: string;
             courses: string[];
           }[];
         }[];
@@ -36,7 +36,7 @@ export async function fetchUserRoadmapsPeterPortal(userId: string) { // maybe ad
   const apiKey = env.PETERPORTAL_CLIENT_API_KEY;
 
   const searchParams = new URLSearchParams();
-  searchParams.set('input', JSON.stringify({ googleUserId: userId }));
+  searchParams.set('input', JSON.stringify({ googleUserId: `google_${ userId }` })); // temp prefix added
   const url = `${PETERPORTAL_API_URL}?${searchParams}`;
 
   try {
@@ -48,7 +48,9 @@ export async function fetchUserRoadmapsPeterPortal(userId: string) { // maybe ad
       },
     });
 
-    if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch: ${response.statusText}`);
+    }
     const data: PeterPortalAPIResponse = await response.json();
     return data.result?.data ?? [];
 
