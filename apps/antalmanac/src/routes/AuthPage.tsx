@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { isEmptySchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
@@ -20,18 +20,27 @@ import AppStore from '$stores/AppStore';
 
 export function AuthPage() {
     const [searchParams] = useSearchParams();
+    const isAuthenticatingRef = useRef(false);
 
     const handleSearchParamsChange = useCallback(async () => {
+        // Prevent race condition: only allow one authentication attempt at a time
+        if (isAuthenticatingRef.current) {
+            return;
+        }
+
         try {
             const code = searchParams.get('code');
-            if (!code) {
+            const state = searchParams.get('state');
+            if (!code || !state) {
                 window.location.href = '/';
                 return;
             }
 
+            isAuthenticatingRef.current = true;
+
             const { sessionToken, userId, providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
                 code: code,
-                token: '',
+                state: state,
             });
 
             const fromLoading = getLocalStorageFromLoading() ?? '';
@@ -89,10 +98,16 @@ export function AuthPage() {
                     scheduleSaveState.scheduleIndex = saveState.schedules.length - 1;
                 }
 
+                // Fetch user info to enable proper account migration
+                const userInfo = await trpc.userData.getUserByUid.query({ userId });
+
                 await trpc.userData.saveUserData.mutate({
                     id: providerId,
                     data: {
                         id: providerId,
+                        email: userInfo?.email ?? undefined,
+                        name: userInfo?.name ?? undefined,
+                        avatar: userInfo?.avatar ?? undefined,
                         userData: scheduleSaveState,
                     },
                 });
@@ -100,6 +115,7 @@ export function AuthPage() {
             window.location.href = '/';
         } catch (error) {
             console.error('Error during authentication', error);
+            isAuthenticatingRef.current = false;
         }
     }, [searchParams]);
 
