@@ -51,7 +51,6 @@ const darkUnselectedStyle: CSSProperties = {
     color: 'inherit',
 };
 
-
 function getSelectedStyle(buttonValue: string, themeSetting: string, isDark: boolean): CSSProperties {
     if (themeSetting === buttonValue) {
         return isDark ? darkSelectedStyle : lightSelectedStyle;
@@ -69,93 +68,64 @@ function ThemeMenu() {
     const { forceUpdate } = useCoursePaneStore();
     const postHog = usePostHog();
 
-    const handleThemeChange = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleThemeChange = (value: 'light' | 'dark' | 'system') => {
         forceUpdate();
-        setTheme(event.currentTarget.value as 'light' | 'dark' | 'system', postHog);
+        setTheme(value, postHog);
     };
 
     return (
         <Box sx={{ width: '100%' }}>
-            <Typography variant="h5" style={{ fontWeight: 600, marginBottom: '0.5rem' }}>
+            <Typography variant="h5" sx={{ fontWeight: 600, mb: 0.5 }}>
                 Theme
             </Typography>
 
-            <ButtonGroup
+            <Box
                 sx={{
-                    width: '100%',
-                    marginBottom: '12px',
                     display: 'flex',
                     border: `1px solid ${isDark ? '#8886' : '#d3d4d5'}`,
-                    '& .MuiButtonGroup-grouped': {
-                        border: 'none',
-                        '&:not(:last-of-type)': {
-                            borderRight: `1px solid ${isDark ? '#8886' : '#d3d4d5'} !important`,
-                        },
-                    },
-                    '& .MuiButton-root': {
-                        borderTop: 'none !important',
-                        borderBottom: 'none !important',
-                        borderLeft: 'none !important',
-                        '&:focus': {
-                            outline: 'none',
-                            boxShadow: 'none',
-                        },
-                        '&:focus-visible': {
-                            outline: 'none',
-                            boxShadow: 'none',
-                        },
-                        '&:active': {
-                            outline: 'none',
-                            boxShadow: 'none',
-                            border: 'none',
-                        },
-                        '&.Mui-focusVisible': {
-                            outline: 'none',
-                            boxShadow: 'none',
-                        },
-                    },
+                    borderRadius: '4px',
+                    mb: 1.5,
                 }}
             >
                 {[
                     { value: 'light', label: 'Light', icon: <LightMode fontSize="medium" /> },
                     { value: 'system', label: 'System', icon: <SettingsBrightness fontSize="medium" /> },
                     { value: 'dark', label: 'Dark', icon: <DarkMode fontSize="small" /> },
-                ].map((tab) => {
+                ].map((tab, index) => {
                     const isSelected = themeSetting === tab.value;
 
                     return (
-                        <Button
+                        <Box
                             key={tab.value}
-                            startIcon={tab.icon}
-                            disableRipple
+                            onClick={() => handleThemeChange(tab.value as 'light' | 'dark' | 'system')}
                             sx={{
-                                padding: '6px 20px',
-                                width: '100%',
+                                flex: 1,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: 0.5,
+                                padding: '8px 12px',
+                                cursor: 'pointer',
                                 fontWeight: 'bold',
-                                textTransform: 'none',
+                                fontSize: '1.1rem',
                                 backgroundColor: isSelected ? '#1976d2' : isDark ? '#333333' : '#f8f9fa',
                                 color: isSelected ? '#fff' : '#1976d2',
-                                outline: 'none',
-                                boxShadow: 'none',
-                                fontSize: '1.1rem',
-                                border: 'none !important',
+                                borderRight: index < 2 ? `1px solid ${isDark ? '#8886' : '#d3d4d5'}` : 'none',
+                                borderTopLeftRadius: tab.value === 'light' ? 4 : 0,
+                                borderBottomLeftRadius: tab.value === 'light' ? 4 : 0,
+                                borderTopRightRadius: tab.value === 'dark' ? 4 : 0,
+                                borderBottomRightRadius: tab.value === 'dark' ? 4 : 0,
                                 '&:hover': {
                                     backgroundColor: isSelected ? '#1976d2' : isDark ? '#424649' : '#d3d4d5',
-                                    border: 'none !important',
-                                    boxShadow: 'none',
-                                },
-                                '&:active': {
-                                    border: 'none !important',
                                 },
                             }}
-                            value={tab.value}
-                            onClick={handleThemeChange}
                         >
+                            {tab.icon}
                             {tab.label}
-                        </Button>
+                        </Box>
                     );
                 })}
-            </ButtonGroup>
+            </Box>
         </Box>
     );
 }
