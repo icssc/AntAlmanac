@@ -1,10 +1,10 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Avatar, Menu, ListItemIcon, ListItemText, MenuItem, IconButton } from '@mui/material';
+import { Avatar, Menu, ListItemIcon, ListItemText, MenuItem, IconButton, Popover } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SettingsMenu } from '$components/Header/SettingsMenu'
+import { SettingsMenu } from '$components/Header/SettingsMenu';
 
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
@@ -80,24 +80,40 @@ export function Signout() {
                     <AccountCircleIcon />
                 )}
             </IconButton>
-            <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                onClose={handleClose}
+            <Popover
                 open={open}
-                MenuListProps={{
-                    'aria-labelledby': 'basic-button',
+                anchorEl={anchorEl}
+                onClose={() => setAnchorEl(null)}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                slotProps={{
+                    paper: {
+                        sx: {
+                            width: 310,
+                            maxWidth: '100vw',
+                            p: '16px 20px',
+                            borderRadius: 2,
+                            border: '1px solid',
+                            borderColor: 'background.default',
+                        },
+                    },
                 }}
             >
                 <SettingsMenu />
-                
+
                 <MenuItem onClick={handleLogout}>
                     <ListItemIcon>
                         <LogoutIcon />
                     </ListItemIcon>
                     <ListItemText>Log out</ListItemText>
                 </MenuItem>
-            </Menu>
+            </Popover>
         </div>
     );
 }
