@@ -105,7 +105,7 @@ export function Signout() {
                     },
                 }}
             >
-                <SettingsMenu />
+                <SettingsMenu user={user} />
 
                 <MenuItem onClick={handleLogout}>
                     <ListItemIcon>

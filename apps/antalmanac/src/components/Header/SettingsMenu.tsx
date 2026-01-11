@@ -1,5 +1,6 @@
 import { LightMode, Close, SettingsBrightness, DarkMode, Help, MenuRounded } from '@mui/icons-material';
 import {
+    Avatar,
     Box,
     Button,
     ButtonGroup,
@@ -28,6 +29,36 @@ import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
+import { User } from '@packages/antalmanac-types';
+
+const lightSelectedStyle: CSSProperties = {
+    backgroundColor: '#1976d2', // MUI primary main color
+    color: '#fff',
+};
+
+const darkSelectedStyle: CSSProperties = {
+    backgroundColor: '#1976d2', // Same as light - uses primary color
+    color: '#fff',
+};
+
+const lightUnselectedStyle: CSSProperties = {
+    backgroundColor: '#f8f9fa',
+    color: 'inherit',
+};
+
+const darkUnselectedStyle: CSSProperties = {
+    backgroundColor: 'transparent', // PeterPortal doesn't set a background for dark unselected
+    color: 'inherit',
+};
+
+
+function getSelectedStyle(buttonValue: string, themeSetting: string, isDark: boolean): CSSProperties {
+    if (themeSetting === buttonValue) {
+        return isDark ? darkSelectedStyle : lightSelectedStyle;
+    } else {
+        return isDark ? darkUnselectedStyle : lightUnselectedStyle;
+    }
+}
 
 function ThemeMenu() {
     const [themeSetting, isDark, setTheme] = useThemeStore((store) => [
@@ -45,7 +76,7 @@ function ThemeMenu() {
 
     return (
         <Box sx={{ width: '100%' }}>
-            <Typography variant="h5" style={{ fontWeight: 600, marginBottom: '1rem' }}>
+            <Typography variant="h5" style={{ fontWeight: 600, marginBottom: '0.5rem' }}>
                 Theme
             </Typography>
 
@@ -109,9 +140,7 @@ function ThemeMenu() {
                                 fontSize: '1.1rem',
                                 border: 'none !important',
                                 '&:hover': {
-                                    backgroundColor: isSelected 
-                                        ? '#1976d2' 
-                                        : isDark ? '#424649' : '#d3d4d5',
+                                    backgroundColor: isSelected ? '#1976d2' : isDark ? '#424649' : '#d3d4d5',
                                     border: 'none !important',
                                     boxShadow: 'none',
                                 },
@@ -135,54 +164,76 @@ function TimeMenu() {
     const [isMilitaryTime, setTimeFormat] = useTimeFormatStore((store) => [store.isMilitaryTime, store.setTimeFormat]);
     const isDark = useThemeStore((store) => store.isDark);
 
-    const handleTimeFormatChange = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setTimeFormat(event.currentTarget.value == 'true');
+    const handleTimeFormatChange = (event: React.MouseEvent<HTMLDivElement>) => {
+        const value = event.currentTarget.getAttribute('data-value');
+        setTimeFormat(value === 'true');
     };
 
     return (
-        <Box sx={{ padding: '0 1rem', width: '100%' }}>
-            <Typography variant="h6" style={{ marginBottom: '1rem' }}>
+        <Box sx={{ pt: 0.5, width: '100%' }}>
+            <Typography variant="h5" sx={{ fontWeight: 600, mb: 0.5 }}>
                 Time
             </Typography>
-
-            <ButtonGroup
-                style={{
+            <Box
+                sx={{
                     display: 'flex',
-                    placeContent: 'center',
-                    width: '100%',
+                     border: `1px solid ${isDark ? '#8886' : '#d3d4d5'}`,
+                    borderRadius: '4px',
+                    mb: 1.5,
                 }}
             >
-                <Button
-                    style={{
-                        padding: '1rem 2rem',
-                        borderRadius: '12px 0px 0px 12px',
-                        width: '100%',
-                        fontSize: '12px',
-                        ...getSelectedStyle('false', isMilitaryTime.toString(), isDark),
-                    }}
-                    value="false"
+                  <Box
+                    data-value="false"
                     onClick={handleTimeFormatChange}
-                    fullWidth={true}
+                      sx={{
+                        flex: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '8px 20px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '1.1rem',
+                        backgroundColor: !isMilitaryTime ? '#1976d2' : isDark ? '#333333' : '#f8f9fa',
+                        color: !isMilitaryTime ? '#fff' : '#1976d2',
+                        borderRight: `1px solid ${isDark ? '#8886' : '#d3d4d5'}`,
+                        borderTopLeftRadius: 4,
+                        borderBottomLeftRadius: 4,
+                        '&:hover': {
+                            backgroundColor: !isMilitaryTime ? '#1976d2' : isDark ? '#424649' : '#d3d4d5',
+                        },
+                    }}
                 >
                     12 Hour
-                </Button>
-                <Button
-                    style={{
-                        padding: '1rem 2rem',
-                        borderRadius: '0px 12px 12px 0px',
-                        width: '100%',
-                        fontSize: '12px',
-                        ...getSelectedStyle('true', isMilitaryTime.toString(), isDark),
-                    }}
-                    value="true"
+                    </Box>
+                <Box
+                    data-value="true"
                     onClick={handleTimeFormatChange}
+                    sx={{
+                        flex: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '8px 20px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '1.1rem',
+                        backgroundColor: isMilitaryTime ? '#1976d2' : isDark ? '#333333' : '#f8f9fa',
+                        color: isMilitaryTime ? '#fff' : '#1976d2',
+                        borderTopRightRadius: 4,
+                        borderBottomRightRadius: 4,
+                        '&:hover': {
+                            backgroundColor: isMilitaryTime ? '#1976d2' : isDark ? '#424649' : '#d3d4d5',
+                        },
+                    }}
                 >
                     24 Hour
-                </Button>
-            </ButtonGroup>
+                       </Box>
+            </Box>
         </Box>
     );
 }
+
 
 function PlannerMenu() {
     return (
@@ -228,7 +279,7 @@ function ExperimentalMenu() {
     };
 
     return (
-        <Stack sx={{ padding: '0 1rem', width: '100%', display: 'flex', alignItems: 'middle' }}>
+        <Stack sx={{ width: '100%', display: 'flex', alignItems: 'middle' }}>
             <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
                 <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
@@ -256,34 +307,76 @@ function ExperimentalMenu() {
     );
 }
 
-function SettingsMenu() {
-    const isMobile = useIsMobile();
+function UserProfileSection({ user }: { user: User | null }) {
+    if (!user) return null;
+    const theme = useTheme()
 
     return (
-        <Stack gap={2}>
-            <ThemeMenu />
+         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <Avatar
+                src={user.avatar}
+                alt={user.name ?? 'User'}
+                sx={{ width: 50, height: 50 }}
+            />
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography
+                    style={{
+                        fontSize: '18px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        fontWeight: 'bold',
+                        paddingBottom: '8px',
+                        margin: 0,
+                        lineHeight: 1,
+                    }}
+                >
+                    {user.name}
+                </Typography>
+                <Typography
+                    style={{
+                        fontSize: '14px',
+                        color: theme.palette.mode === 'dark' ? '#96969b' : '#606166',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        paddingBottom: '4px',
+                        margin: 0,
+                        lineHeight: 1,
+                        fontWeight: 600
+                    }}
+                >
+                    {user.email}
+                </Typography>
+            </Box>
+        </Box>
+    );
+}
 
-            {isMobile && (
+export function SettingsMenu({ user }: { user: User | null }) {
+        const isMobile = useIsMobile();
+    return (
+        <Stack>
+            <UserProfileSection user={user} />
+
+            <ThemeMenu />
+            <TimeMenu />
+              {isMobile && (
                 <Stack gap={2}>
                     <Divider>
                         <Typography variant="subtitle2">Want a 4-year plan?</Typography>
                     </Divider>
-
                     <PlannerMenu />
                 </Stack>
             )}
-
-            <Stack gap={2}>
+            <Stack >
                 <Divider>
                     <Typography variant="subtitle2">Experimental Features</Typography>
                 </Divider>
 
                 <ExperimentalMenu />
+                <Divider style={{ marginTop: '10px', marginBottom: '12px' }}/>
+                <About/>
             </Stack>
         </Stack>
     );
 }
 
-function AppDrawer() {}
-
-export default AppDrawer;
