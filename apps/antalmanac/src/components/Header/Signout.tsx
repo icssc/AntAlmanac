@@ -5,6 +5,7 @@ import { User } from '@packages/antalmanac-types';
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SettingsMenu } from '$components/Header/SettingsMenu';
+import {MenuRounded } from '@mui/icons-material';
 
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
@@ -68,7 +69,7 @@ export function Signout() {
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}
                 onClick={handleClick}
-                sx={{ width: 'fit-content' }}
+                sx={{ width: 'fit-content', borderRadius: 4 }}
             >
                 {user?.avatar ? (
                     <Avatar
@@ -79,6 +80,7 @@ export function Signout() {
                 ) : (
                     <AccountCircleIcon />
                 )}
+                <MenuRounded sx = {{ml: 0.5}} />
             </IconButton>
             <Popover
                 open={open}
