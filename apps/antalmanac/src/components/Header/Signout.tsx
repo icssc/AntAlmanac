@@ -9,6 +9,7 @@ import {MenuRounded } from '@mui/icons-material';
 
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
+import ProfileMenuButtons from '$components/Header/ProfileMenuButtons';
 
 export function Signout() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -39,7 +40,7 @@ export function Signout() {
     const { session, sessionIsValid, clearSession } = useSessionStore();
 
     const open = Boolean(anchorEl);
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
     const handleClose = () => {
@@ -63,25 +64,7 @@ export function Signout() {
 
     return (
         <div id="load-save-container">
-            <IconButton
-                aria-controls={open ? 'basic-menu' : undefined}
-                color="inherit"
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-                sx={{ width: 'fit-content', borderRadius: 4 }}
-            >
-                {user?.avatar ? (
-                    <Avatar
-                        sx={{ width: '2rem', height: '2rem' }}
-                        src={`${user?.avatar}`}
-                        alt={`${user?.name}-photo`}
-                    />
-                ) : (
-                    <AccountCircleIcon />
-                )}
-                <MenuRounded sx = {{ml: 0.5}} />
-            </IconButton>
+            <ProfileMenuButtons  user = {user} handleOpen={handleClick} />
             <Popover
                 open={open}
                 anchorEl={anchorEl}
