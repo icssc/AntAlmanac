@@ -7,9 +7,7 @@ import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
-import { backendEnvSchema, ppEnvSchema } from '../env';
 import * as searchData from '$generated/searchData';
-import { fetchUserRoadmapsPeterPortal, flattenRoadmapCourses } from '../lib/peterportal';
 
 const MAX_AUTOCOMPLETE_RESULTS = 12;
 
@@ -119,18 +117,6 @@ const searchRouter = router({
                 ...matchedCourses.map((x) => [x.obj.id, x.obj]),
             ]
             return Object.fromEntries(results);
-        }),
-
-    fetchUserRoadmapsPeterPortal: procedure
-        .input(z.object({ userId: z.string() }))
-        .query(async ({ input }) => {
-        return await fetchUserRoadmapsPeterPortal(input.userId);
-        }),
-
-    flattenRoadmapCourses: procedure
-    .input(z.object({ roadmap: z.any() }))
-    .query(({ input }) => {
-        return flattenRoadmapCourses(input.roadmap);
         }),
 });
 

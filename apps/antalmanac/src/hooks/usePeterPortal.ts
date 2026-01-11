@@ -16,7 +16,7 @@ export function usePeterPortalRoadmaps() {
         async function loadRoadmaps() {
             if (!googleId) return;
             try {
-                const data = await trpc.search.fetchUserRoadmapsPeterPortal.query({
+                const data = await trpc.roadmap.fetchUserRoadmapsPeterPortal.query({
                     userId: googleId,
                 });
                 if (active) setRoadmaps(data ?? []);
@@ -38,7 +38,7 @@ export function usePeterPortalRoadmaps() {
             if (!roadmap) return;
 
             try {
-                const flatCourses = await trpc.search.flattenRoadmapCourses.query({ roadmap });
+                const flatCourses = await trpc.roadmap.flattenRoadmapCourses.query({ roadmap });
                 const courseSet = new Set<string>(flatCourses);
                 setUserTakenCourses(courseSet);
                 setFilterTakenCourses(true);
