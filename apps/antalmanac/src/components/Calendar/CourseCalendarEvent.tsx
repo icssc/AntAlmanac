@@ -1,5 +1,17 @@
 import { Delete, Search } from '@mui/icons-material';
-import { Chip, IconButton, Paper, Tooltip, Button, Box, Table, TableBody, TableRow, TableCell } from '@mui/material';
+import {
+    Chip,
+    IconButton,
+    Paper,
+    Tooltip,
+    Button,
+    Box,
+    Table,
+    TableBody,
+    TableRow,
+    TableCell,
+    tableCellClasses,
+} from '@mui/material';
 import { WebsocSectionFinalExam } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useRef } from 'react';
@@ -169,12 +181,25 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         </IconButton>
                     </Tooltip>
                 </Box>
-                <Table style={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                <Table
+                    sx={{
+                        [`& .${tableCellClasses.root}`]: {
+                            p: 0,
+                            pb: 0.5,
+                            verticalAlign: 'top',
+                            borderBottom: 'none',
+                        },
+                        border: 'none',
+                        width: '100%',
+                        borderCollapse: 'collapse',
+                        fontSize: '0.9rem',
+                    }}
+                >
                     <TableBody>
                         <TableRow>
-                            <TableCell style={{ verticalAlign: 'top' }}>Section code</TableCell>
+                            <TableCell>Section code</TableCell>
                             <Tooltip title="Click to copy section code" placement="right">
-                                <TableCell style={{ textAlign: 'right' }}>
+                                <TableCell sx={{ whiteSpace: 'pre', textAlign: 'right' }}>
                                     <Chip
                                         onClick={(event) => {
                                             clickToCopy(event, sectionCode);
@@ -190,20 +215,18 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                             </Tooltip>
                         </TableRow>
                         <TableRow>
-                            <TableCell style={{ verticalAlign: 'top' }}>Term</TableCell>
-                            <TableCell style={{ textAlign: 'right' }}>{term}</TableCell>
+                            <TableCell>Term</TableCell>
+                            <TableCell sx={{ whiteSpace: 'pre', textAlign: 'right' }}>{term}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell style={{ verticalAlign: 'top' }}>Instructors</TableCell>
-                            <TableCell style={{ whiteSpace: 'pre', textAlign: 'right' }}>
+                            <TableCell>Instructors</TableCell>
+                            <TableCell sx={{ whiteSpace: 'pre', textAlign: 'right' }}>
                                 {instructors.join('\n')}
                             </TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell style={{ verticalAlign: 'top' }}>
-                                Location{locations.length > 1 && 's'}
-                            </TableCell>
-                            <TableCell style={{ whiteSpace: 'pre', textAlign: 'right' }}>
+                            <TableCell>Location{locations.length > 1 && 's'}</TableCell>
+                            <TableCell sx={{ whiteSpace: 'pre', textAlign: 'right' }}>
                                 {locations.map((location) => (
                                     <div key={`${sectionCode} @ ${location.building} ${location.room}`}>
                                         <MapLink
@@ -216,11 +239,11 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         </TableRow>
                         <TableRow>
                             <TableCell>Final</TableCell>
-                            <TableCell style={{ textAlign: 'right' }}>{finalExamString}</TableCell>
+                            <TableCell sx={{ whiteSpace: 'pre', textAlign: 'right' }}>{finalExamString}</TableCell>
                         </TableRow>
                         <TableRow>
-                            <TableCell>Color</TableCell>
-                            <TableCell style={{ textAlign: 'right' }}>
+                            <TableCell style={{ paddingBottom: 0 }}>Color</TableCell>
+                            <TableCell style={{ whiteSpace: 'pre', textAlign: 'right', paddingBottom: 0 }}>
                                 <ColorPicker
                                     color={selectedEvent.color}
                                     isCustomEvent={selectedEvent.isCustomEvent}
@@ -239,44 +262,29 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
         return (
             <Paper sx={{ padding: '0.5rem' }} ref={paperRef}>
                 <Box sx={{ fontSize: '0.9rem', fontWeight: 500 }}>{title}</Box>
-                <Table size="small" sx={{ width: '100%' }}>
+                <Table
+                    sx={{
+                        [`& .${tableCellClasses.root}`]: {
+                            p: 0,
+                            pb: 0.5,
+                            verticalAlign: 'top',
+                            borderBottom: 'none',
+                        },
+                        border: 'none',
+                        width: '100%',
+                        borderCollapse: 'collapse',
+                        fontSize: '0.9rem',
+                    }}
+                >
                     <TableBody>
                         <TableRow>
-                            <TableCell
-                                sx={{
-                                    p: 0,
-                                    verticalAlign: 'top',
-                                    pr: 4,
-                                }}
-                            >
-                                Term
-                            </TableCell>
-                            <TableCell
-                                align="right"
-                                sx={{
-                                    p: 0,
-                                }}
-                            >
-                                {term}
-                            </TableCell>
+                            <TableCell style={{ paddingRight: '2rem' }}>Term</TableCell>
+                            <TableCell sx={{ textAlign: 'right' }}>{term}</TableCell>
                         </TableRow>
                         {building && (
                             <TableRow>
-                                <TableCell
-                                    sx={{
-                                        verticalAlign: 'top',
-                                        p: 0,
-                                        pr: 4,
-                                    }}
-                                >
-                                    Location
-                                </TableCell>
-                                <TableCell
-                                    align="right"
-                                    sx={{
-                                        p: 0,
-                                    }}
-                                >
+                                <TableCell style={{ paddingRight: '2rem' }}>Location</TableCell>
+                                <TableCell sx={{ textAlign: 'right' }}>
                                     <MapLink buildingId={+building} room={buildingCatalogue[+building]?.name ?? ''} />
                                 </TableCell>
                             </TableRow>
