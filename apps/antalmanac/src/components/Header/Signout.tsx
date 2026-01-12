@@ -9,7 +9,7 @@ import {MenuRounded } from '@mui/icons-material';
 
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
-import ProfileMenuButtons from '$components/Header/ProfileMenuButtons';
+import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 
 export function Signout() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

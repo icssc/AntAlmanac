@@ -12,7 +12,7 @@ interface ProfileMenuButtonsProps {
     handleOpen: (event: React.MouseEvent<HTMLElement>) => void;
     handleSettingsOpen: (event: React.MouseEvent<HTMLElement>) => void;
 }
-const ProfileMenuButtons: FC<ProfileMenuButtonsProps> = ({ user, handleOpen, handleSettingsOpen }) => {
+export const ProfileMenuButtons: FC<ProfileMenuButtonsProps> = ({ user, handleOpen, handleSettingsOpen }) => {
       if (!user) {
         return (
             <>
@@ -63,4 +63,3 @@ const ProfileMenuButtons: FC<ProfileMenuButtonsProps> = ({ user, handleOpen, han
     );
 };
 
-export default ProfileMenuButtons;

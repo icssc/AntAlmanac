@@ -29,7 +29,7 @@ import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import ProfileMenuButtons from '$components/Header/ProfileMenuButtons';
+import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/SettingsMenu';
 
 interface SignInButtonProps {
