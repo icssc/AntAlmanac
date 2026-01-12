@@ -132,19 +132,28 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
         variant="outlined"
         sx={{
           bgcolor: theme.palette.background.paper,
-          py: 0.5,
-          px: 1,
           width: '100%',
+          alignItems: 'flex-start',
+          py: 1,
+          px: 1,
+          '& .MuiAlert-message': {
+            padding: 0,
+            width: '100%',
+          },
+
+          '& .MuiAlert-action': {
+            padding: 0,
+            margin: 0,
+            alignSelf: 'flex-start',
+          },
         }}
         action={
-        <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
           <IconButton size="small" onClick={handleToggleCollapse}>
             <ExpandMore
               fontSize="small"
               sx={{ transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}
             />
           </IconButton>
-        </Box>
         }
       >
         <AlertTitle sx={{ fontSize: '0.9rem', my: 'auto'}}>
