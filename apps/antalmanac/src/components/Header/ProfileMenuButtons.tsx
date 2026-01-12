@@ -13,7 +13,7 @@ interface ProfileMenuButtonsProps {
     handleSettingsOpen: (event: React.MouseEvent<HTMLElement>) => void;
 }
 export const ProfileMenuButtons: FC<ProfileMenuButtonsProps> = ({ user, handleOpen, handleSettingsOpen }) => {
-      if (!user) {
+    if (!user) {
         return (
             <>
                 <Button
@@ -21,7 +21,7 @@ export const ProfileMenuButtons: FC<ProfileMenuButtonsProps> = ({ user, handleOp
                     size="medium"
                     startIcon={<AccountCircleIcon />}
                     color="inherit"
-                    onClick={handleOpen}  
+                    onClick={handleOpen}
                 >
                     Sign In
                 </Button>
@@ -62,4 +62,3 @@ export const ProfileMenuButtons: FC<ProfileMenuButtonsProps> = ({ user, handleOp
         </Button>
     );
 };
-

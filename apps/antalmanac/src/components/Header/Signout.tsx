@@ -94,7 +94,7 @@ export function Signout() {
 
                 <Divider style={{ marginTop: '10px', marginBottom: '12px' }}/>
 
-                <MenuItem onClick={handleLogout} sx={{ p: 1, pt: 1.25, pb: 1.25, borderRadius: 1 }}>
+                <MenuItem onClick={handleLogout} sx={{ px: 1, py: 1.25, borderRadius: 1 }}>
                     <ListItemIcon>
                         <LogoutIcon />
                     </ListItemIcon>

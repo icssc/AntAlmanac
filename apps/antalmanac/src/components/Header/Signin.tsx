@@ -79,7 +79,7 @@ export const Signin = () => {
 
     const handleOpen = useCallback(() => {
         setIsOpen(true);
-        setSettingsAnchorEl(null); 
+        setSettingsAnchorEl(null);
         if (typeof Storage !== 'undefined') {
             const savedUserID = getLocalStorageUserId();
             if (savedUserID !== null) {
@@ -217,11 +217,7 @@ export const Signin = () => {
 
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
-            <ProfileMenuButtons 
-                user={null} 
-                handleOpen={handleOpen} 
-                handleSettingsOpen={handleSettingsOpen}
-            />
+            <ProfileMenuButtons user={null} handleOpen={handleOpen} handleSettingsOpen={handleSettingsOpen} />
 
             <Dialog open={isOpen} onClose={() => handleClose(true)}>
                 <DialogContent>
@@ -237,9 +233,7 @@ export const Signin = () => {
                             Sign in with Google
                         </LoadingButton>
                         <Divider>or</Divider>
-                        <DialogContentText>
-                            Enter your unique user ID here to sign in your schedule.
-                        </DialogContentText>
+                        <DialogContentText>Enter your unique user ID here to sign in your schedule.</DialogContentText>
 
                         <Alert severity="info" variant={isDark ? 'outlined' : 'standard'}>
                             <AlertTitle>
@@ -299,7 +293,7 @@ export const Signin = () => {
 
                 <Divider style={{ marginTop: '10px', marginBottom: '12px' }} />
 
-                <MenuItem onClick={handleOpen} sx={{ pl: 0 }}>
+                <MenuItem onClick={handleOpen} sx={{ px: 1, py: 1.25, borderRadius: 1 }}>
                     <ListItemIcon>
                         <AccountCircle />
                     </ListItemIcon>
