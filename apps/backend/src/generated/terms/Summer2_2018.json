@@ -1,0 +1,6850 @@
+{
+  "10501": {
+    "type": "SECTION",
+    "department": "MOL BIO",
+    "courseNumber": "200R",
+    "sectionCode": "10501",
+    "sectionNum": "B",
+    "sectionType": "Lab"
+  },
+  "12025": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "40",
+    "sectionCode": "12025",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "12030": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "50",
+    "sectionCode": "12030",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "12040": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "106",
+    "sectionCode": "12040",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "12060": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "131",
+    "sectionCode": "12060",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "12101": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "198",
+    "sectionCode": "12101",
+    "sectionNum": "B",
+    "sectionType": "Sem"
+  },
+  "12111": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "199",
+    "sectionCode": "12111",
+    "sectionNum": "B",
+    "sectionType": "Tut"
+  },
+  "12200": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "202",
+    "sectionCode": "12200",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "12201": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "202",
+    "sectionCode": "12201",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "12202": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "202",
+    "sectionCode": "12202",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "12203": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "202",
+    "sectionCode": "12203",
+    "sectionNum": "D",
+    "sectionType": "Lec"
+  },
+  "12260": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "243",
+    "sectionCode": "12260",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "12261": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "243",
+    "sectionCode": "12261",
+    "sectionNum": "D",
+    "sectionType": "Lec"
+  },
+  "12400": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "323A",
+    "sectionCode": "12400",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "12410": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "323A",
+    "sectionCode": "12410",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "12420": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "347",
+    "sectionCode": "12420",
+    "sectionNum": "A",
+    "sectionType": "Sem"
+  },
+  "12430": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "347",
+    "sectionCode": "12430",
+    "sectionNum": "B",
+    "sectionType": "Sem"
+  },
+  "12432": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "358",
+    "sectionCode": "12432",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "12442": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "358",
+    "sectionCode": "12442",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "12460": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "364",
+    "sectionCode": "12460",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "12470": {
+    "type": "SECTION",
+    "department": "EDUC",
+    "courseNumber": "364",
+    "sectionCode": "12470",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "13030": {
+    "type": "SECTION",
+    "department": "ENGR",
+    "courseNumber": "80",
+    "sectionCode": "13030",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "13050": {
+    "type": "SECTION",
+    "department": "ENGR",
+    "courseNumber": "98",
+    "sectionCode": "13050",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "13090": {
+    "type": "SECTION",
+    "department": "ENGR",
+    "courseNumber": "190W",
+    "sectionCode": "13090",
+    "sectionNum": "D",
+    "sectionType": "Lec"
+  },
+  "13092": {
+    "type": "SECTION",
+    "department": "ENGR",
+    "courseNumber": "190W",
+    "sectionCode": "13092",
+    "sectionNum": "E",
+    "sectionType": "Lec"
+  },
+  "13094": {
+    "type": "SECTION",
+    "department": "ENGR",
+    "courseNumber": "190W",
+    "sectionCode": "13094",
+    "sectionNum": "F",
+    "sectionType": "Lec"
+  },
+  "13096": {
+    "type": "SECTION",
+    "department": "ENGR",
+    "courseNumber": "190W",
+    "sectionCode": "13096",
+    "sectionNum": "G",
+    "sectionType": "Lec"
+  },
+  "13098": {
+    "type": "SECTION",
+    "department": "ENGR",
+    "courseNumber": "190W",
+    "sectionCode": "13098",
+    "sectionNum": "H",
+    "sectionType": "Lec"
+  },
+  "13202": {
+    "type": "SECTION",
+    "department": "ENGR",
+    "courseNumber": "195",
+    "sectionCode": "13202",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "13226": {
+    "type": "SECTION",
+    "department": "ENGR",
+    "courseNumber": "199",
+    "sectionCode": "13226",
+    "sectionNum": "G",
+    "sectionType": "Res"
+  },
+  "13227": {
+    "type": "SECTION",
+    "department": "ENGR",
+    "courseNumber": "199",
+    "sectionCode": "13227",
+    "sectionNum": "H",
+    "sectionType": "Res"
+  },
+  "13302": {
+    "type": "SECTION",
+    "department": "ENGR",
+    "courseNumber": "295",
+    "sectionCode": "13302",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "13341": {
+    "type": "SECTION",
+    "department": "ENGR",
+    "courseNumber": "295",
+    "sectionCode": "13341",
+    "sectionNum": "E",
+    "sectionType": "Lec"
+  },
+  "13343": {
+    "type": "SECTION",
+    "department": "ENGR",
+    "courseNumber": "295",
+    "sectionCode": "13343",
+    "sectionNum": "G",
+    "sectionType": "Lec"
+  },
+  "13344": {
+    "type": "SECTION",
+    "department": "ENGR",
+    "courseNumber": "295",
+    "sectionCode": "13344",
+    "sectionNum": "H",
+    "sectionType": "Lec"
+  },
+  "14040": {
+    "type": "SECTION",
+    "department": "BME",
+    "courseNumber": "50B",
+    "sectionCode": "14040",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "14050": {
+    "type": "SECTION",
+    "department": "BME",
+    "courseNumber": "50B",
+    "sectionCode": "14050",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "14509": {
+    "type": "SECTION",
+    "department": "BME",
+    "courseNumber": "199",
+    "sectionCode": "14509",
+    "sectionNum": "J",
+    "sectionType": "Res"
+  },
+  "14512": {
+    "type": "SECTION",
+    "department": "BME",
+    "courseNumber": "199",
+    "sectionCode": "14512",
+    "sectionNum": "M",
+    "sectionType": "Res"
+  },
+  "14516": {
+    "type": "SECTION",
+    "department": "BME",
+    "courseNumber": "199",
+    "sectionCode": "14516",
+    "sectionNum": "Q",
+    "sectionType": "Res"
+  },
+  "14517": {
+    "type": "SECTION",
+    "department": "BME",
+    "courseNumber": "199",
+    "sectionCode": "14517",
+    "sectionNum": "R",
+    "sectionType": "Res"
+  },
+  "14591": {
+    "type": "SECTION",
+    "department": "BME",
+    "courseNumber": "295",
+    "sectionCode": "14591",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "14601": {
+    "type": "SECTION",
+    "department": "BME",
+    "courseNumber": "296",
+    "sectionCode": "14601",
+    "sectionNum": "B",
+    "sectionType": "Res"
+  },
+  "14610": {
+    "type": "SECTION",
+    "department": "BME",
+    "courseNumber": "297",
+    "sectionCode": "14610",
+    "sectionNum": "A",
+    "sectionType": "Res"
+  },
+  "14651": {
+    "type": "SECTION",
+    "department": "BME",
+    "courseNumber": "299",
+    "sectionCode": "14651",
+    "sectionNum": "B",
+    "sectionType": "Res"
+  },
+  "14652": {
+    "type": "SECTION",
+    "department": "BME",
+    "courseNumber": "299",
+    "sectionCode": "14652",
+    "sectionNum": "C",
+    "sectionType": "Res"
+  },
+  "14655": {
+    "type": "SECTION",
+    "department": "BME",
+    "courseNumber": "299",
+    "sectionCode": "14655",
+    "sectionNum": "F",
+    "sectionType": "Res"
+  },
+  "14656": {
+    "type": "SECTION",
+    "department": "BME",
+    "courseNumber": "299",
+    "sectionCode": "14656",
+    "sectionNum": "G",
+    "sectionType": "Res"
+  },
+  "15108": {
+    "type": "SECTION",
+    "department": "CBEMS",
+    "courseNumber": "199",
+    "sectionCode": "15108",
+    "sectionNum": "I",
+    "sectionType": "Res"
+  },
+  "15180": {
+    "type": "SECTION",
+    "department": "CBEMS",
+    "courseNumber": "299",
+    "sectionCode": "15180",
+    "sectionNum": "A",
+    "sectionType": "Res"
+  },
+  "16015": {
+    "type": "SECTION",
+    "department": "CSE",
+    "courseNumber": "31L",
+    "sectionCode": "16015",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "16016": {
+    "type": "SECTION",
+    "department": "CSE",
+    "courseNumber": "31L",
+    "sectionCode": "16016",
+    "sectionNum": "A1",
+    "sectionType": "Lab"
+  },
+  "16020": {
+    "type": "SECTION",
+    "department": "CSE",
+    "courseNumber": "42",
+    "sectionCode": "16020",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "16021": {
+    "type": "SECTION",
+    "department": "CSE",
+    "courseNumber": "42",
+    "sectionCode": "16021",
+    "sectionNum": "A1",
+    "sectionType": "Lab"
+  },
+  "16025": {
+    "type": "SECTION",
+    "department": "CSE",
+    "courseNumber": "46",
+    "sectionCode": "16025",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "16030": {
+    "type": "SECTION",
+    "department": "CSE",
+    "courseNumber": "50",
+    "sectionCode": "16030",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "16031": {
+    "type": "SECTION",
+    "department": "CSE",
+    "courseNumber": "50",
+    "sectionCode": "16031",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "16060": {
+    "type": "SECTION",
+    "department": "CSE",
+    "courseNumber": "181A",
+    "sectionCode": "16060",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "16061": {
+    "type": "SECTION",
+    "department": "CSE",
+    "courseNumber": "181A",
+    "sectionCode": "16061",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "16062": {
+    "type": "SECTION",
+    "department": "CSE",
+    "courseNumber": "181A",
+    "sectionCode": "16062",
+    "sectionNum": "A2",
+    "sectionType": "Lab"
+  },
+  "16065": {
+    "type": "SECTION",
+    "department": "CSE",
+    "courseNumber": "181B",
+    "sectionCode": "16065",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "16066": {
+    "type": "SECTION",
+    "department": "CSE",
+    "courseNumber": "181B",
+    "sectionCode": "16066",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "16067": {
+    "type": "SECTION",
+    "department": "CSE",
+    "courseNumber": "181B",
+    "sectionCode": "16067",
+    "sectionNum": "A2",
+    "sectionType": "Lab"
+  },
+  "17008": {
+    "type": "SECTION",
+    "department": "ENGRCEE",
+    "courseNumber": "11",
+    "sectionCode": "17008",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "17009": {
+    "type": "SECTION",
+    "department": "ENGRCEE",
+    "courseNumber": "11",
+    "sectionCode": "17009",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "17010": {
+    "type": "SECTION",
+    "department": "ENGRCEE",
+    "courseNumber": "20",
+    "sectionCode": "17010",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "17011": {
+    "type": "SECTION",
+    "department": "ENGRCEE",
+    "courseNumber": "20",
+    "sectionCode": "17011",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "17030": {
+    "type": "SECTION",
+    "department": "ENGRCEE",
+    "courseNumber": "80",
+    "sectionCode": "17030",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "17259": {
+    "type": "SECTION",
+    "department": "ENGRCEE",
+    "courseNumber": "299",
+    "sectionCode": "17259",
+    "sectionNum": "E",
+    "sectionType": "Res"
+  },
+  "18010": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "1",
+    "sectionCode": "18010",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "18015": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "20",
+    "sectionCode": "18015",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "18016": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "20",
+    "sectionCode": "18016",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "18017": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "20",
+    "sectionCode": "18017",
+    "sectionNum": "B2",
+    "sectionType": "Lab"
+  },
+  "18060": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "31L",
+    "sectionCode": "18060",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "18061": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "31L",
+    "sectionCode": "18061",
+    "sectionNum": "A1",
+    "sectionType": "Lab"
+  },
+  "18070": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "50",
+    "sectionCode": "18070",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "18071": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "50",
+    "sectionCode": "18071",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "18100": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "70B",
+    "sectionCode": "18100",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "18101": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "70B",
+    "sectionCode": "18101",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "18105": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "70LB",
+    "sectionCode": "18105",
+    "sectionNum": "A",
+    "sectionType": "Lab"
+  },
+  "18106": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "70LB",
+    "sectionCode": "18106",
+    "sectionNum": "B",
+    "sectionType": "Lab"
+  },
+  "18150": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "159A",
+    "sectionCode": "18150",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "18151": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "159A",
+    "sectionCode": "18151",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "18152": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "159A",
+    "sectionCode": "18152",
+    "sectionNum": "A2",
+    "sectionType": "Lab"
+  },
+  "18153": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "159B",
+    "sectionCode": "18153",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "18154": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "159B",
+    "sectionCode": "18154",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "18155": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "159B",
+    "sectionCode": "18155",
+    "sectionNum": "A2",
+    "sectionType": "Lab"
+  },
+  "18160": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "170C",
+    "sectionCode": "18160",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "18161": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "170C",
+    "sectionCode": "18161",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "18165": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "170LC",
+    "sectionCode": "18165",
+    "sectionNum": "A",
+    "sectionType": "Lab"
+  },
+  "18291": {
+    "type": "SECTION",
+    "department": "EECS",
+    "courseNumber": "295",
+    "sectionCode": "18291",
+    "sectionNum": "B",
+    "sectionType": "Sem"
+  },
+  "19010": {
+    "type": "SECTION",
+    "department": "ENGRMAE",
+    "courseNumber": "10",
+    "sectionCode": "19010",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "19011": {
+    "type": "SECTION",
+    "department": "ENGRMAE",
+    "courseNumber": "10",
+    "sectionCode": "19011",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "19040": {
+    "type": "SECTION",
+    "department": "ENGRMAE",
+    "courseNumber": "80",
+    "sectionCode": "19040",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "19070": {
+    "type": "SECTION",
+    "department": "ENGRMAE",
+    "courseNumber": "120",
+    "sectionCode": "19070",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "19071": {
+    "type": "SECTION",
+    "department": "ENGRMAE",
+    "courseNumber": "120",
+    "sectionCode": "19071",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "19090": {
+    "type": "SECTION",
+    "department": "ENGRMAE",
+    "courseNumber": "130B",
+    "sectionCode": "19090",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "19091": {
+    "type": "SECTION",
+    "department": "ENGRMAE",
+    "courseNumber": "130B",
+    "sectionCode": "19091",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "19100": {
+    "type": "SECTION",
+    "department": "ENGRMAE",
+    "courseNumber": "145",
+    "sectionCode": "19100",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "19101": {
+    "type": "SECTION",
+    "department": "ENGRMAE",
+    "courseNumber": "145",
+    "sectionCode": "19101",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "19190": {
+    "type": "SECTION",
+    "department": "ENGRMAE",
+    "courseNumber": "189",
+    "sectionCode": "19190",
+    "sectionNum": "C",
+    "sectionType": "Tut"
+  },
+  "19260": {
+    "type": "SECTION",
+    "department": "ENGRMAE",
+    "courseNumber": "199",
+    "sectionCode": "19260",
+    "sectionNum": "K",
+    "sectionType": "Tut"
+  },
+  "19262": {
+    "type": "SECTION",
+    "department": "ENGRMAE",
+    "courseNumber": "199",
+    "sectionCode": "19262",
+    "sectionNum": "M",
+    "sectionType": "Tut"
+  },
+  "19264": {
+    "type": "SECTION",
+    "department": "ENGRMAE",
+    "courseNumber": "199",
+    "sectionCode": "19264",
+    "sectionNum": "O",
+    "sectionType": "Tut"
+  },
+  "19266": {
+    "type": "SECTION",
+    "department": "ENGRMAE",
+    "courseNumber": "199",
+    "sectionCode": "19266",
+    "sectionNum": "Q",
+    "sectionType": "Tut"
+  },
+  "19270": {
+    "type": "SECTION",
+    "department": "ENGRMAE",
+    "courseNumber": "199",
+    "sectionCode": "19270",
+    "sectionNum": "U",
+    "sectionType": "Tut"
+  },
+  "19281": {
+    "type": "SECTION",
+    "department": "ENGRMAE",
+    "courseNumber": "299",
+    "sectionCode": "19281",
+    "sectionNum": "B",
+    "sectionType": "Res"
+  },
+  "20030": {
+    "type": "SECTION",
+    "department": "AC ENG",
+    "courseNumber": "22B",
+    "sectionCode": "20030",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "20040": {
+    "type": "SECTION",
+    "department": "AC ENG",
+    "courseNumber": "22B",
+    "sectionCode": "20040",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "20050": {
+    "type": "SECTION",
+    "department": "AC ENG",
+    "courseNumber": "22B",
+    "sectionCode": "20050",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "20060": {
+    "type": "SECTION",
+    "department": "AC ENG",
+    "courseNumber": "22B",
+    "sectionCode": "20060",
+    "sectionNum": "D",
+    "sectionType": "Lec"
+  },
+  "20070": {
+    "type": "SECTION",
+    "department": "AC ENG",
+    "courseNumber": "22B",
+    "sectionCode": "20070",
+    "sectionNum": "E",
+    "sectionType": "Lec"
+  },
+  "20110": {
+    "type": "SECTION",
+    "department": "AC ENG",
+    "courseNumber": "29",
+    "sectionCode": "20110",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "20120": {
+    "type": "SECTION",
+    "department": "AC ENG",
+    "courseNumber": "29",
+    "sectionCode": "20120",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "20130": {
+    "type": "SECTION",
+    "department": "AC ENG",
+    "courseNumber": "29",
+    "sectionCode": "20130",
+    "sectionNum": "D",
+    "sectionType": "Lec"
+  },
+  "20220": {
+    "type": "SECTION",
+    "department": "AFAM",
+    "courseNumber": "40B",
+    "sectionCode": "20220",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "21510": {
+    "type": "SECTION",
+    "department": "ASIANAM",
+    "courseNumber": "51",
+    "sectionCode": "21510",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "21540": {
+    "type": "SECTION",
+    "department": "ASIANAM",
+    "courseNumber": "55",
+    "sectionCode": "21540",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "21600": {
+    "type": "SECTION",
+    "department": "ASIANAM",
+    "courseNumber": "199",
+    "sectionCode": "21600",
+    "sectionNum": "A",
+    "sectionType": "Tut"
+  },
+  "21601": {
+    "type": "SECTION",
+    "department": "ASIANAM",
+    "courseNumber": "199",
+    "sectionCode": "21601",
+    "sectionNum": "B",
+    "sectionType": "Tut"
+  },
+  "22210": {
+    "type": "SECTION",
+    "department": "CLASSIC",
+    "courseNumber": "37A",
+    "sectionCode": "22210",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "22240": {
+    "type": "SECTION",
+    "department": "CLASSIC",
+    "courseNumber": "45A",
+    "sectionCode": "22240",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "22250": {
+    "type": "SECTION",
+    "department": "CLASSIC",
+    "courseNumber": "45B",
+    "sectionCode": "22250",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "22710": {
+    "type": "SECTION",
+    "department": "COM LIT",
+    "courseNumber": "10",
+    "sectionCode": "22710",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "23010": {
+    "type": "SECTION",
+    "department": "E ASIAN",
+    "courseNumber": "40",
+    "sectionCode": "23010",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "23340": {
+    "type": "SECTION",
+    "department": "ENGLISH",
+    "courseNumber": "10",
+    "sectionCode": "23340",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "23360": {
+    "type": "SECTION",
+    "department": "ENGLISH",
+    "courseNumber": "102C",
+    "sectionCode": "23360",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "23410": {
+    "type": "SECTION",
+    "department": "ENGLISH",
+    "courseNumber": "199",
+    "sectionCode": "23410",
+    "sectionNum": "A",
+    "sectionType": "Tut"
+  },
+  "24020": {
+    "type": "SECTION",
+    "department": "EURO ST",
+    "courseNumber": "11",
+    "sectionCode": "24020",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "24040": {
+    "type": "SECTION",
+    "department": "EURO ST",
+    "courseNumber": "S11",
+    "sectionCode": "24040",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "24120": {
+    "type": "SECTION",
+    "department": "FLM&MDA",
+    "courseNumber": "85B",
+    "sectionCode": "24120",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "24150": {
+    "type": "SECTION",
+    "department": "FLM&MDA",
+    "courseNumber": "101B",
+    "sectionCode": "24150",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "24160": {
+    "type": "SECTION",
+    "department": "FLM&MDA",
+    "courseNumber": "139W",
+    "sectionCode": "24160",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "24820": {
+    "type": "SECTION",
+    "department": "FRENCH",
+    "courseNumber": "S1BC",
+    "sectionCode": "24820",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "24840": {
+    "type": "SECTION",
+    "department": "FRENCH",
+    "courseNumber": "S2BC",
+    "sectionCode": "24840",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "25040": {
+    "type": "SECTION",
+    "department": "GEN&SEX",
+    "courseNumber": "50A",
+    "sectionCode": "25040",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "25050": {
+    "type": "SECTION",
+    "department": "GEN&SEX",
+    "courseNumber": "50B",
+    "sectionCode": "25050",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "26510": {
+    "type": "SECTION",
+    "department": "HISTORY",
+    "courseNumber": "12",
+    "sectionCode": "26510",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "26520": {
+    "type": "SECTION",
+    "department": "HISTORY",
+    "courseNumber": "15F",
+    "sectionCode": "26520",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "26530": {
+    "type": "SECTION",
+    "department": "HISTORY",
+    "courseNumber": "16A",
+    "sectionCode": "26530",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "26550": {
+    "type": "SECTION",
+    "department": "HISTORY",
+    "courseNumber": "21B",
+    "sectionCode": "26550",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "26560": {
+    "type": "SECTION",
+    "department": "HISTORY",
+    "courseNumber": "21C",
+    "sectionCode": "26560",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "26570": {
+    "type": "SECTION",
+    "department": "HISTORY",
+    "courseNumber": "37A",
+    "sectionCode": "26570",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "26575": {
+    "type": "SECTION",
+    "department": "HISTORY",
+    "courseNumber": "70A",
+    "sectionCode": "26575",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "26600": {
+    "type": "SECTION",
+    "department": "HISTORY",
+    "courseNumber": "40B",
+    "sectionCode": "26600",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "26630": {
+    "type": "SECTION",
+    "department": "HISTORY",
+    "courseNumber": "60",
+    "sectionCode": "26630",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "26631": {
+    "type": "SECTION",
+    "department": "HISTORY",
+    "courseNumber": "60",
+    "sectionCode": "26631",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "26632": {
+    "type": "SECTION",
+    "department": "HISTORY",
+    "courseNumber": "60",
+    "sectionCode": "26632",
+    "sectionNum": "B2",
+    "sectionType": "Dis"
+  },
+  "26750": {
+    "type": "SECTION",
+    "department": "HISTORY",
+    "courseNumber": "199",
+    "sectionCode": "26750",
+    "sectionNum": "A",
+    "sectionType": "Tut"
+  },
+  "27610": {
+    "type": "SECTION",
+    "department": "HUMAN",
+    "courseNumber": "10",
+    "sectionCode": "27610",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "28920": {
+    "type": "SECTION",
+    "department": "JAPANSE",
+    "courseNumber": "S1BC",
+    "sectionCode": "28920",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "28940": {
+    "type": "SECTION",
+    "department": "JAPANSE",
+    "courseNumber": "S2BC",
+    "sectionCode": "28940",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "29320": {
+    "type": "SECTION",
+    "department": "KOREAN",
+    "courseNumber": "S1BC",
+    "sectionCode": "29320",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "30260": {
+    "type": "SECTION",
+    "department": "PERSIAN",
+    "courseNumber": "50",
+    "sectionCode": "30260",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "30320": {
+    "type": "SECTION",
+    "department": "PHILOS",
+    "courseNumber": "1",
+    "sectionCode": "30320",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "30340": {
+    "type": "SECTION",
+    "department": "PHILOS",
+    "courseNumber": "2",
+    "sectionCode": "30340",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "30360": {
+    "type": "SECTION",
+    "department": "PHILOS",
+    "courseNumber": "4",
+    "sectionCode": "30360",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "30400": {
+    "type": "SECTION",
+    "department": "PHILOS",
+    "courseNumber": "29",
+    "sectionCode": "30400",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "30410": {
+    "type": "SECTION",
+    "department": "PHILOS",
+    "courseNumber": "30",
+    "sectionCode": "30410",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "30420": {
+    "type": "SECTION",
+    "department": "PHILOS",
+    "courseNumber": "31",
+    "sectionCode": "30420",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "30600": {
+    "type": "SECTION",
+    "department": "PHILOS",
+    "courseNumber": "199",
+    "sectionCode": "30600",
+    "sectionNum": "A",
+    "sectionType": "Res"
+  },
+  "30601": {
+    "type": "SECTION",
+    "department": "PHILOS",
+    "courseNumber": "199",
+    "sectionCode": "30601",
+    "sectionNum": "B",
+    "sectionType": "Res"
+  },
+  "31210": {
+    "type": "SECTION",
+    "department": "REL STD",
+    "courseNumber": "5A",
+    "sectionCode": "31210",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "31330": {
+    "type": "SECTION",
+    "department": "SPANISH",
+    "courseNumber": "S1BC",
+    "sectionCode": "31330",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "31340": {
+    "type": "SECTION",
+    "department": "SPANISH",
+    "courseNumber": "S1BC",
+    "sectionCode": "31340",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "31350": {
+    "type": "SECTION",
+    "department": "SPANISH",
+    "courseNumber": "S1BC",
+    "sectionCode": "31350",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "31370": {
+    "type": "SECTION",
+    "department": "SPANISH",
+    "courseNumber": "S2BC",
+    "sectionCode": "31370",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "34130": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "143A",
+    "sectionCode": "34130",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "34150": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "152",
+    "sectionCode": "34150",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "34160": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "152",
+    "sectionCode": "34160",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "34707": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "199",
+    "sectionCode": "34707",
+    "sectionNum": "H",
+    "sectionType": "Tut"
+  },
+  "34711": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "199",
+    "sectionCode": "34711",
+    "sectionNum": "L",
+    "sectionType": "Tut"
+  },
+  "34715": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "199",
+    "sectionCode": "34715",
+    "sectionNum": "P",
+    "sectionType": "Tut"
+  },
+  "34717": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "199",
+    "sectionCode": "34717",
+    "sectionNum": "R",
+    "sectionType": "Tut"
+  },
+  "34803": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "298P",
+    "sectionCode": "34803",
+    "sectionNum": "C",
+    "sectionType": "Fld"
+  },
+  "34901": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34901",
+    "sectionNum": "B",
+    "sectionType": "Tut"
+  },
+  "34904": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34904",
+    "sectionNum": "E",
+    "sectionType": "Tut"
+  },
+  "34906": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34906",
+    "sectionNum": "G",
+    "sectionType": "Tut"
+  },
+  "34908": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34908",
+    "sectionNum": "I",
+    "sectionType": "Tut"
+  },
+  "34910": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34910",
+    "sectionNum": "K",
+    "sectionType": "Tut"
+  },
+  "34912": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34912",
+    "sectionNum": "M",
+    "sectionType": "Tut"
+  },
+  "34914": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34914",
+    "sectionNum": "O",
+    "sectionType": "Tut"
+  },
+  "34916": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34916",
+    "sectionNum": "Q",
+    "sectionType": "Tut"
+  },
+  "34918": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34918",
+    "sectionNum": "S",
+    "sectionType": "Tut"
+  },
+  "34920": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34920",
+    "sectionNum": "U",
+    "sectionType": "Tut"
+  },
+  "34922": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34922",
+    "sectionNum": "W",
+    "sectionType": "Tut"
+  },
+  "34924": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34924",
+    "sectionNum": "Y",
+    "sectionType": "Tut"
+  },
+  "34926": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34926",
+    "sectionNum": "AA",
+    "sectionType": "Tut"
+  },
+  "34929": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34929",
+    "sectionNum": "AD",
+    "sectionType": "Tut"
+  },
+  "34931": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34931",
+    "sectionNum": "AF",
+    "sectionType": "Tut"
+  },
+  "34933": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34933",
+    "sectionNum": "AH",
+    "sectionType": "Tut"
+  },
+  "34935": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34935",
+    "sectionNum": "AJ",
+    "sectionType": "Tut"
+  },
+  "34937": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34937",
+    "sectionNum": "AL",
+    "sectionType": "Tut"
+  },
+  "34939": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34939",
+    "sectionNum": "AN",
+    "sectionType": "Tut"
+  },
+  "34941": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34941",
+    "sectionNum": "AP",
+    "sectionType": "Tut"
+  },
+  "34943": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34943",
+    "sectionNum": "AR",
+    "sectionType": "Tut"
+  },
+  "34945": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34945",
+    "sectionNum": "AT",
+    "sectionType": "Tut"
+  },
+  "34947": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34947",
+    "sectionNum": "AV",
+    "sectionType": "Tut"
+  },
+  "34949": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34949",
+    "sectionNum": "AX",
+    "sectionType": "Tut"
+  },
+  "34951": {
+    "type": "SECTION",
+    "department": "COMPSCI",
+    "courseNumber": "299",
+    "sectionCode": "34951",
+    "sectionNum": "AZ",
+    "sectionType": "Tut"
+  },
+  "36510": {
+    "type": "SECTION",
+    "department": "I&C SCI",
+    "courseNumber": "6B",
+    "sectionCode": "36510",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "36520": {
+    "type": "SECTION",
+    "department": "I&C SCI",
+    "courseNumber": "6D",
+    "sectionCode": "36520",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "36521": {
+    "type": "SECTION",
+    "department": "I&C SCI",
+    "courseNumber": "6D",
+    "sectionCode": "36521",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "36540": {
+    "type": "SECTION",
+    "department": "I&C SCI",
+    "courseNumber": "32",
+    "sectionCode": "36540",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "36541": {
+    "type": "SECTION",
+    "department": "I&C SCI",
+    "courseNumber": "32",
+    "sectionCode": "36541",
+    "sectionNum": "A1",
+    "sectionType": "Lab"
+  },
+  "36570": {
+    "type": "SECTION",
+    "department": "I&C SCI",
+    "courseNumber": "45J",
+    "sectionCode": "36570",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "36580": {
+    "type": "SECTION",
+    "department": "I&C SCI",
+    "courseNumber": "46",
+    "sectionCode": "36580",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "36590": {
+    "type": "SECTION",
+    "department": "I&C SCI",
+    "courseNumber": "51",
+    "sectionCode": "36590",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "36591": {
+    "type": "SECTION",
+    "department": "I&C SCI",
+    "courseNumber": "51",
+    "sectionCode": "36591",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "36592": {
+    "type": "SECTION",
+    "department": "I&C SCI",
+    "courseNumber": "51",
+    "sectionCode": "36592",
+    "sectionNum": "A2",
+    "sectionType": "Lab"
+  },
+  "36593": {
+    "type": "SECTION",
+    "department": "I&C SCI",
+    "courseNumber": "51",
+    "sectionCode": "36593",
+    "sectionNum": "A3",
+    "sectionType": "Lab"
+  },
+  "36596": {
+    "type": "SECTION",
+    "department": "I&C SCI",
+    "courseNumber": "139W",
+    "sectionCode": "36596",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "36597": {
+    "type": "SECTION",
+    "department": "I&C SCI",
+    "courseNumber": "139W",
+    "sectionCode": "36597",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "36702": {
+    "type": "SECTION",
+    "department": "I&C SCI",
+    "courseNumber": "192",
+    "sectionCode": "36702",
+    "sectionNum": "C",
+    "sectionType": "Fld"
+  },
+  "36703": {
+    "type": "SECTION",
+    "department": "I&C SCI",
+    "courseNumber": "192",
+    "sectionCode": "36703",
+    "sectionNum": "D",
+    "sectionType": "Fld"
+  },
+  "37320": {
+    "type": "SECTION",
+    "department": "STATS",
+    "courseNumber": "7",
+    "sectionCode": "37320",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "37321": {
+    "type": "SECTION",
+    "department": "STATS",
+    "courseNumber": "7",
+    "sectionCode": "37321",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "37340": {
+    "type": "SECTION",
+    "department": "STATS",
+    "courseNumber": "8",
+    "sectionCode": "37340",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "37341": {
+    "type": "SECTION",
+    "department": "STATS",
+    "courseNumber": "8",
+    "sectionCode": "37341",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "37360": {
+    "type": "SECTION",
+    "department": "STATS",
+    "courseNumber": "67",
+    "sectionCode": "37360",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "37361": {
+    "type": "SECTION",
+    "department": "STATS",
+    "courseNumber": "67",
+    "sectionCode": "37361",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "37362": {
+    "type": "SECTION",
+    "department": "STATS",
+    "courseNumber": "67",
+    "sectionCode": "37362",
+    "sectionNum": "B2",
+    "sectionType": "Dis"
+  },
+  "37551": {
+    "type": "SECTION",
+    "department": "IN4MATX",
+    "courseNumber": "299",
+    "sectionCode": "37551",
+    "sectionNum": "B",
+    "sectionType": "Tut"
+  },
+  "37553": {
+    "type": "SECTION",
+    "department": "IN4MATX",
+    "courseNumber": "299",
+    "sectionCode": "37553",
+    "sectionNum": "D",
+    "sectionType": "Tut"
+  },
+  "37555": {
+    "type": "SECTION",
+    "department": "IN4MATX",
+    "courseNumber": "299",
+    "sectionCode": "37555",
+    "sectionNum": "F",
+    "sectionType": "Tut"
+  },
+  "37557": {
+    "type": "SECTION",
+    "department": "IN4MATX",
+    "courseNumber": "299",
+    "sectionCode": "37557",
+    "sectionNum": "H",
+    "sectionType": "Tut"
+  },
+  "37559": {
+    "type": "SECTION",
+    "department": "IN4MATX",
+    "courseNumber": "299",
+    "sectionCode": "37559",
+    "sectionNum": "J",
+    "sectionType": "Tut"
+  },
+  "37561": {
+    "type": "SECTION",
+    "department": "IN4MATX",
+    "courseNumber": "299",
+    "sectionCode": "37561",
+    "sectionNum": "L",
+    "sectionType": "Tut"
+  },
+  "37564": {
+    "type": "SECTION",
+    "department": "IN4MATX",
+    "courseNumber": "299",
+    "sectionCode": "37564",
+    "sectionNum": "O",
+    "sectionType": "Tut"
+  },
+  "37567": {
+    "type": "SECTION",
+    "department": "IN4MATX",
+    "courseNumber": "299",
+    "sectionCode": "37567",
+    "sectionNum": "R",
+    "sectionType": "Tut"
+  },
+  "37951": {
+    "type": "SECTION",
+    "department": "STATS",
+    "courseNumber": "299",
+    "sectionCode": "37951",
+    "sectionNum": "B",
+    "sectionType": "Res"
+  },
+  "37953": {
+    "type": "SECTION",
+    "department": "STATS",
+    "courseNumber": "299",
+    "sectionCode": "37953",
+    "sectionNum": "D",
+    "sectionType": "Res"
+  },
+  "37955": {
+    "type": "SECTION",
+    "department": "STATS",
+    "courseNumber": "299",
+    "sectionCode": "37955",
+    "sectionNum": "F",
+    "sectionType": "Res"
+  },
+  "37957": {
+    "type": "SECTION",
+    "department": "STATS",
+    "courseNumber": "299",
+    "sectionCode": "37957",
+    "sectionNum": "H",
+    "sectionType": "Res"
+  },
+  "37959": {
+    "type": "SECTION",
+    "department": "STATS",
+    "courseNumber": "299",
+    "sectionCode": "37959",
+    "sectionNum": "J",
+    "sectionType": "Res"
+  },
+  "37961": {
+    "type": "SECTION",
+    "department": "STATS",
+    "courseNumber": "299",
+    "sectionCode": "37961",
+    "sectionNum": "L",
+    "sectionType": "Res"
+  },
+  "38010": {
+    "type": "SECTION",
+    "department": "MGMT",
+    "courseNumber": "1",
+    "sectionCode": "38010",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "38030": {
+    "type": "SECTION",
+    "department": "MGMT",
+    "courseNumber": "30B",
+    "sectionCode": "38030",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "38050": {
+    "type": "SECTION",
+    "department": "MGMT",
+    "courseNumber": "101",
+    "sectionCode": "38050",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "38070": {
+    "type": "SECTION",
+    "department": "MGMT",
+    "courseNumber": "102",
+    "sectionCode": "38070",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "38090": {
+    "type": "SECTION",
+    "department": "MGMT",
+    "courseNumber": "105",
+    "sectionCode": "38090",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "38140": {
+    "type": "SECTION",
+    "department": "MGMT",
+    "courseNumber": "131B",
+    "sectionCode": "38140",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "38160": {
+    "type": "SECTION",
+    "department": "MGMT",
+    "courseNumber": "136",
+    "sectionCode": "38160",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "38166": {
+    "type": "SECTION",
+    "department": "MGMT",
+    "courseNumber": "141",
+    "sectionCode": "38166",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "38170": {
+    "type": "SECTION",
+    "department": "MGMT",
+    "courseNumber": "190",
+    "sectionCode": "38170",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "38291": {
+    "type": "SECTION",
+    "department": "MGMT",
+    "courseNumber": "199",
+    "sectionCode": "38291",
+    "sectionNum": "B",
+    "sectionType": "Res"
+  },
+  "38293": {
+    "type": "SECTION",
+    "department": "MGMT",
+    "courseNumber": "199",
+    "sectionCode": "38293",
+    "sectionNum": "D",
+    "sectionType": "Res"
+  },
+  "38295": {
+    "type": "SECTION",
+    "department": "MGMT",
+    "courseNumber": "199",
+    "sectionCode": "38295",
+    "sectionNum": "F",
+    "sectionType": "Res"
+  },
+  "38933": {
+    "type": "SECTION",
+    "department": "MPAC",
+    "courseNumber": "200B",
+    "sectionCode": "38933",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "38934": {
+    "type": "SECTION",
+    "department": "MPAC",
+    "courseNumber": "200B",
+    "sectionCode": "38934",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "38936": {
+    "type": "SECTION",
+    "department": "MPAC",
+    "courseNumber": "200C",
+    "sectionCode": "38936",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "38937": {
+    "type": "SECTION",
+    "department": "MPAC",
+    "courseNumber": "200C",
+    "sectionCode": "38937",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "39320": {
+    "type": "SECTION",
+    "department": "MGMT EP",
+    "courseNumber": "209A",
+    "sectionCode": "39320",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "39370": {
+    "type": "SECTION",
+    "department": "MGMT EP",
+    "courseNumber": "295A",
+    "sectionCode": "39370",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "39410": {
+    "type": "SECTION",
+    "department": "MGMT HC",
+    "courseNumber": "203B",
+    "sectionCode": "39410",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "39422": {
+    "type": "SECTION",
+    "department": "MGMT HC",
+    "courseNumber": "209A",
+    "sectionCode": "39422",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "39455": {
+    "type": "SECTION",
+    "department": "MGMT HC",
+    "courseNumber": "267",
+    "sectionCode": "39455",
+    "sectionNum": "A",
+    "sectionType": "Sem"
+  },
+  "39505": {
+    "type": "SECTION",
+    "department": "MGMT FE",
+    "courseNumber": "201A",
+    "sectionCode": "39505",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "39520": {
+    "type": "SECTION",
+    "department": "MGMT FE",
+    "courseNumber": "203A",
+    "sectionCode": "39520",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "39563": {
+    "type": "SECTION",
+    "department": "MGMT FE",
+    "courseNumber": "209B",
+    "sectionCode": "39563",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "39580": {
+    "type": "SECTION",
+    "department": "MGMT FE",
+    "courseNumber": "227",
+    "sectionCode": "39580",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "39605": {
+    "type": "SECTION",
+    "department": "MGMT FE",
+    "courseNumber": "251A",
+    "sectionCode": "39605",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "39606": {
+    "type": "SECTION",
+    "department": "MGMT FE",
+    "courseNumber": "251A",
+    "sectionCode": "39606",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "39681": {
+    "type": "SECTION",
+    "department": "MGMT FE",
+    "courseNumber": "290",
+    "sectionCode": "39681",
+    "sectionNum": "A",
+    "sectionType": "Sem"
+  },
+  "39695": {
+    "type": "SECTION",
+    "department": "MGMT FE",
+    "courseNumber": "290",
+    "sectionCode": "39695",
+    "sectionNum": "B",
+    "sectionType": "Sem"
+  },
+  "39701": {
+    "type": "SECTION",
+    "department": "MGMT FE",
+    "courseNumber": "292",
+    "sectionCode": "39701",
+    "sectionNum": "A",
+    "sectionType": "Sem"
+  },
+  "39727": {
+    "type": "SECTION",
+    "department": "MGMT FE",
+    "courseNumber": "295B",
+    "sectionCode": "39727",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "39729": {
+    "type": "SECTION",
+    "department": "MGMT FE",
+    "courseNumber": "299",
+    "sectionCode": "39729",
+    "sectionNum": "A",
+    "sectionType": "Tut"
+  },
+  "39800": {
+    "type": "SECTION",
+    "department": "BANA",
+    "courseNumber": "200",
+    "sectionCode": "39800",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "39801": {
+    "type": "SECTION",
+    "department": "BANA",
+    "courseNumber": "201A",
+    "sectionCode": "39801",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "39811": {
+    "type": "SECTION",
+    "department": "BANA",
+    "courseNumber": "211",
+    "sectionCode": "39811",
+    "sectionNum": "A",
+    "sectionType": "Sem"
+  },
+  "39912": {
+    "type": "SECTION",
+    "department": "FIN",
+    "courseNumber": "211",
+    "sectionCode": "39912",
+    "sectionNum": "A",
+    "sectionType": "Sem"
+  },
+  "39964": {
+    "type": "SECTION",
+    "department": "FIN",
+    "courseNumber": "290",
+    "sectionCode": "39964",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "39967": {
+    "type": "SECTION",
+    "department": "FIN",
+    "courseNumber": "290",
+    "sectionCode": "39967",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "39971": {
+    "type": "SECTION",
+    "department": "FIN",
+    "courseNumber": "290",
+    "sectionCode": "39971",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "39986": {
+    "type": "SECTION",
+    "department": "FIN",
+    "courseNumber": "299",
+    "sectionCode": "39986",
+    "sectionNum": "A",
+    "sectionType": "Res"
+  },
+  "40025": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1P",
+    "sectionCode": "40025",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "40026": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1P",
+    "sectionCode": "40026",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "40030": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1B",
+    "sectionCode": "40030",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "40031": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1B",
+    "sectionCode": "40031",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "40032": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1B",
+    "sectionCode": "40032",
+    "sectionNum": "A2",
+    "sectionType": "Dis"
+  },
+  "40033": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1B",
+    "sectionCode": "40033",
+    "sectionNum": "A3",
+    "sectionType": "Dis"
+  },
+  "40034": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1B",
+    "sectionCode": "40034",
+    "sectionNum": "A4",
+    "sectionType": "Dis"
+  },
+  "40035": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1B",
+    "sectionCode": "40035",
+    "sectionNum": "A5",
+    "sectionType": "Dis"
+  },
+  "40060": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1C",
+    "sectionCode": "40060",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "40061": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1C",
+    "sectionCode": "40061",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "40062": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1C",
+    "sectionCode": "40062",
+    "sectionNum": "B2",
+    "sectionType": "Dis"
+  },
+  "40063": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1C",
+    "sectionCode": "40063",
+    "sectionNum": "B3",
+    "sectionType": "Dis"
+  },
+  "40064": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1C",
+    "sectionCode": "40064",
+    "sectionNum": "B4",
+    "sectionType": "Dis"
+  },
+  "40091": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LC",
+    "sectionCode": "40091",
+    "sectionNum": "B1",
+    "sectionType": "Lab"
+  },
+  "40092": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LC",
+    "sectionCode": "40092",
+    "sectionNum": "B2",
+    "sectionType": "Lab"
+  },
+  "40093": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LC",
+    "sectionCode": "40093",
+    "sectionNum": "B3",
+    "sectionType": "Lab"
+  },
+  "40094": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LC",
+    "sectionCode": "40094",
+    "sectionNum": "B4",
+    "sectionType": "Lab"
+  },
+  "40095": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LC",
+    "sectionCode": "40095",
+    "sectionNum": "B5",
+    "sectionType": "Lab"
+  },
+  "40096": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LC",
+    "sectionCode": "40096",
+    "sectionNum": "B6",
+    "sectionType": "Lab"
+  },
+  "40097": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LC",
+    "sectionCode": "40097",
+    "sectionNum": "B7",
+    "sectionType": "Lab"
+  },
+  "40098": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LC",
+    "sectionCode": "40098",
+    "sectionNum": "B8",
+    "sectionType": "Lab"
+  },
+  "40099": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LC",
+    "sectionCode": "40099",
+    "sectionNum": "B9",
+    "sectionType": "Lab"
+  },
+  "40100": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LC",
+    "sectionCode": "40100",
+    "sectionNum": "B10",
+    "sectionType": "Lab"
+  },
+  "40101": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LC",
+    "sectionCode": "40101",
+    "sectionNum": "B11",
+    "sectionType": "Lab"
+  },
+  "40102": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LC",
+    "sectionCode": "40102",
+    "sectionNum": "B12",
+    "sectionType": "Lab"
+  },
+  "40103": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LC",
+    "sectionCode": "40103",
+    "sectionNum": "B13",
+    "sectionType": "Lab"
+  },
+  "40131": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LD",
+    "sectionCode": "40131",
+    "sectionNum": "B1",
+    "sectionType": "Lab"
+  },
+  "40132": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LD",
+    "sectionCode": "40132",
+    "sectionNum": "B2",
+    "sectionType": "Lab"
+  },
+  "40133": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LD",
+    "sectionCode": "40133",
+    "sectionNum": "B3",
+    "sectionType": "Lab"
+  },
+  "40134": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LD",
+    "sectionCode": "40134",
+    "sectionNum": "B4",
+    "sectionType": "Lab"
+  },
+  "40135": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LD",
+    "sectionCode": "40135",
+    "sectionNum": "B5",
+    "sectionType": "Lab"
+  },
+  "40136": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LD",
+    "sectionCode": "40136",
+    "sectionNum": "B6",
+    "sectionType": "Lab"
+  },
+  "40137": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LD",
+    "sectionCode": "40137",
+    "sectionNum": "B7",
+    "sectionType": "Lab"
+  },
+  "40138": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LD",
+    "sectionCode": "40138",
+    "sectionNum": "B8",
+    "sectionType": "Lab"
+  },
+  "40139": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LD",
+    "sectionCode": "40139",
+    "sectionNum": "B9",
+    "sectionType": "Lab"
+  },
+  "40140": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LD",
+    "sectionCode": "40140",
+    "sectionNum": "B10",
+    "sectionType": "Lab"
+  },
+  "40141": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LD",
+    "sectionCode": "40141",
+    "sectionNum": "B11",
+    "sectionType": "Lab"
+  },
+  "40142": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LD",
+    "sectionCode": "40142",
+    "sectionNum": "B12",
+    "sectionType": "Lab"
+  },
+  "40143": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LD",
+    "sectionCode": "40143",
+    "sectionNum": "B13",
+    "sectionType": "Lab"
+  },
+  "40151": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LE",
+    "sectionCode": "40151",
+    "sectionNum": "A1",
+    "sectionType": "Lab"
+  },
+  "40152": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LE",
+    "sectionCode": "40152",
+    "sectionNum": "A2",
+    "sectionType": "Lab"
+  },
+  "40153": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LE",
+    "sectionCode": "40153",
+    "sectionNum": "A3",
+    "sectionType": "Lab"
+  },
+  "40154": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LE",
+    "sectionCode": "40154",
+    "sectionNum": "A4",
+    "sectionType": "Lab"
+  },
+  "40155": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "1LE",
+    "sectionCode": "40155",
+    "sectionNum": "A5",
+    "sectionType": "Lab"
+  },
+  "40160": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "5",
+    "sectionCode": "40160",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "40161": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "5",
+    "sectionCode": "40161",
+    "sectionNum": "A1",
+    "sectionType": "Lab"
+  },
+  "40193": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51B",
+    "sectionCode": "40193",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "40194": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51B",
+    "sectionCode": "40194",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "40195": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51B",
+    "sectionCode": "40195",
+    "sectionNum": "B2",
+    "sectionType": "Dis"
+  },
+  "40220": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51LB",
+    "sectionCode": "40220",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "40221": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51LB",
+    "sectionCode": "40221",
+    "sectionNum": "B1",
+    "sectionType": "Lab"
+  },
+  "40222": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51LB",
+    "sectionCode": "40222",
+    "sectionNum": "B2",
+    "sectionType": "Lab"
+  },
+  "40223": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51LB",
+    "sectionCode": "40223",
+    "sectionNum": "B3",
+    "sectionType": "Lab"
+  },
+  "40224": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51LB",
+    "sectionCode": "40224",
+    "sectionNum": "B4",
+    "sectionType": "Lab"
+  },
+  "40225": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51LB",
+    "sectionCode": "40225",
+    "sectionNum": "B5",
+    "sectionType": "Lab"
+  },
+  "40226": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51LB",
+    "sectionCode": "40226",
+    "sectionNum": "B6",
+    "sectionType": "Lab"
+  },
+  "40230": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51C",
+    "sectionCode": "40230",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "40231": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51C",
+    "sectionCode": "40231",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "40232": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51C",
+    "sectionCode": "40232",
+    "sectionNum": "A2",
+    "sectionType": "Dis"
+  },
+  "40240": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51LC",
+    "sectionCode": "40240",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "40241": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51LC",
+    "sectionCode": "40241",
+    "sectionNum": "A1",
+    "sectionType": "Lab"
+  },
+  "40242": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51LC",
+    "sectionCode": "40242",
+    "sectionNum": "A2",
+    "sectionType": "Lab"
+  },
+  "40243": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51LC",
+    "sectionCode": "40243",
+    "sectionNum": "A3",
+    "sectionType": "Lab"
+  },
+  "40244": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51LC",
+    "sectionCode": "40244",
+    "sectionNum": "A4",
+    "sectionType": "Lab"
+  },
+  "40245": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51LC",
+    "sectionCode": "40245",
+    "sectionNum": "A5",
+    "sectionType": "Lab"
+  },
+  "40246": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "51LC",
+    "sectionCode": "40246",
+    "sectionNum": "A6",
+    "sectionType": "Lab"
+  },
+  "40652": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "180",
+    "sectionCode": "40652",
+    "sectionNum": "C",
+    "sectionType": "Res"
+  },
+  "40677": {
+    "type": "SECTION",
+    "department": "CHEM",
+    "courseNumber": "199",
+    "sectionCode": "40677",
+    "sectionNum": "C",
+    "sectionType": "Tut"
+  },
+  "42020": {
+    "type": "SECTION",
+    "department": "EARTHSS",
+    "courseNumber": "3",
+    "sectionCode": "42020",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "42030": {
+    "type": "SECTION",
+    "department": "EARTHSS",
+    "courseNumber": "15",
+    "sectionCode": "42030",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "42040": {
+    "type": "SECTION",
+    "department": "EARTHSS",
+    "courseNumber": "182",
+    "sectionCode": "42040",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "42102": {
+    "type": "SECTION",
+    "department": "EARTHSS",
+    "courseNumber": "199",
+    "sectionCode": "42102",
+    "sectionNum": "C",
+    "sectionType": "Res"
+  },
+  "42105": {
+    "type": "SECTION",
+    "department": "EARTHSS",
+    "courseNumber": "199",
+    "sectionCode": "42105",
+    "sectionNum": "F",
+    "sectionType": "Res"
+  },
+  "44040": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "1B",
+    "sectionCode": "44040",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "44080": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2A",
+    "sectionCode": "44080",
+    "sectionNum": "D",
+    "sectionType": "Lec"
+  },
+  "44081": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2A",
+    "sectionCode": "44081",
+    "sectionNum": "D1",
+    "sectionType": "Dis"
+  },
+  "44082": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2A",
+    "sectionCode": "44082",
+    "sectionNum": "D2",
+    "sectionType": "Dis"
+  },
+  "44090": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2A",
+    "sectionCode": "44090",
+    "sectionNum": "E",
+    "sectionType": "Lec"
+  },
+  "44091": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2A",
+    "sectionCode": "44091",
+    "sectionNum": "E1",
+    "sectionType": "Dis"
+  },
+  "44092": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2A",
+    "sectionCode": "44092",
+    "sectionNum": "E2",
+    "sectionType": "Dis"
+  },
+  "44100": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2A",
+    "sectionCode": "44100",
+    "sectionNum": "F",
+    "sectionType": "Lec"
+  },
+  "44101": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2A",
+    "sectionCode": "44101",
+    "sectionNum": "F1",
+    "sectionType": "Dis"
+  },
+  "44102": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2A",
+    "sectionCode": "44102",
+    "sectionNum": "F2",
+    "sectionType": "Dis"
+  },
+  "44150": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2B",
+    "sectionCode": "44150",
+    "sectionNum": "E",
+    "sectionType": "Lec"
+  },
+  "44151": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2B",
+    "sectionCode": "44151",
+    "sectionNum": "E1",
+    "sectionType": "Dis"
+  },
+  "44152": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2B",
+    "sectionCode": "44152",
+    "sectionNum": "E2",
+    "sectionType": "Dis"
+  },
+  "44160": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2B",
+    "sectionCode": "44160",
+    "sectionNum": "F",
+    "sectionType": "Lec"
+  },
+  "44161": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2B",
+    "sectionCode": "44161",
+    "sectionNum": "F1",
+    "sectionType": "Dis"
+  },
+  "44162": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2B",
+    "sectionCode": "44162",
+    "sectionNum": "F2",
+    "sectionType": "Dis"
+  },
+  "44170": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2B",
+    "sectionCode": "44170",
+    "sectionNum": "G",
+    "sectionType": "Lec"
+  },
+  "44171": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2B",
+    "sectionCode": "44171",
+    "sectionNum": "G1",
+    "sectionType": "Dis"
+  },
+  "44172": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2B",
+    "sectionCode": "44172",
+    "sectionNum": "G2",
+    "sectionType": "Dis"
+  },
+  "44180": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2B",
+    "sectionCode": "44180",
+    "sectionNum": "H",
+    "sectionType": "Lec"
+  },
+  "44181": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2B",
+    "sectionCode": "44181",
+    "sectionNum": "H1",
+    "sectionType": "Dis"
+  },
+  "44182": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2B",
+    "sectionCode": "44182",
+    "sectionNum": "H2",
+    "sectionType": "Dis"
+  },
+  "44220": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2D",
+    "sectionCode": "44220",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "44221": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2D",
+    "sectionCode": "44221",
+    "sectionNum": "C1",
+    "sectionType": "Dis"
+  },
+  "44222": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2D",
+    "sectionCode": "44222",
+    "sectionNum": "C2",
+    "sectionType": "Dis"
+  },
+  "44230": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2D",
+    "sectionCode": "44230",
+    "sectionNum": "D",
+    "sectionType": "Lec"
+  },
+  "44231": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2D",
+    "sectionCode": "44231",
+    "sectionNum": "D1",
+    "sectionType": "Dis"
+  },
+  "44232": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2D",
+    "sectionCode": "44232",
+    "sectionNum": "D2",
+    "sectionType": "Dis"
+  },
+  "44240": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2E",
+    "sectionCode": "44240",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "44241": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2E",
+    "sectionCode": "44241",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "44242": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2E",
+    "sectionCode": "44242",
+    "sectionNum": "A2",
+    "sectionType": "Dis"
+  },
+  "44250": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2E",
+    "sectionCode": "44250",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "44251": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2E",
+    "sectionCode": "44251",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "44252": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "2E",
+    "sectionCode": "44252",
+    "sectionNum": "B2",
+    "sectionType": "Dis"
+  },
+  "44280": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "3A",
+    "sectionCode": "44280",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "44281": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "3A",
+    "sectionCode": "44281",
+    "sectionNum": "C1",
+    "sectionType": "Dis"
+  },
+  "44282": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "3A",
+    "sectionCode": "44282",
+    "sectionNum": "C2",
+    "sectionType": "Dis"
+  },
+  "44290": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "3A",
+    "sectionCode": "44290",
+    "sectionNum": "D",
+    "sectionType": "Lec"
+  },
+  "44291": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "3A",
+    "sectionCode": "44291",
+    "sectionNum": "D1",
+    "sectionType": "Dis"
+  },
+  "44292": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "3A",
+    "sectionCode": "44292",
+    "sectionNum": "D2",
+    "sectionType": "Dis"
+  },
+  "44320": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "3D",
+    "sectionCode": "44320",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "44321": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "3D",
+    "sectionCode": "44321",
+    "sectionNum": "C1",
+    "sectionType": "Dis"
+  },
+  "44322": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "3D",
+    "sectionCode": "44322",
+    "sectionNum": "C2",
+    "sectionType": "Dis"
+  },
+  "44330": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "3D",
+    "sectionCode": "44330",
+    "sectionNum": "D",
+    "sectionType": "Lec"
+  },
+  "44331": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "3D",
+    "sectionCode": "44331",
+    "sectionNum": "D1",
+    "sectionType": "Dis"
+  },
+  "44332": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "3D",
+    "sectionCode": "44332",
+    "sectionNum": "D2",
+    "sectionType": "Dis"
+  },
+  "44350": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "4",
+    "sectionCode": "44350",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "44351": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "4",
+    "sectionCode": "44351",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "44352": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "4",
+    "sectionCode": "44352",
+    "sectionNum": "B2",
+    "sectionType": "Dis"
+  },
+  "44390": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "13",
+    "sectionCode": "44390",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "44391": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "13",
+    "sectionCode": "44391",
+    "sectionNum": "C1",
+    "sectionType": "Dis"
+  },
+  "44400": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "13",
+    "sectionCode": "44400",
+    "sectionNum": "D",
+    "sectionType": "Lec"
+  },
+  "44401": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "13",
+    "sectionCode": "44401",
+    "sectionNum": "D1",
+    "sectionType": "Dis"
+  },
+  "44435": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "105A",
+    "sectionCode": "44435",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "44436": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "105A",
+    "sectionCode": "44436",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "44437": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "105LA",
+    "sectionCode": "44437",
+    "sectionNum": "B2",
+    "sectionType": "Lab"
+  },
+  "44450": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "120A",
+    "sectionCode": "44450",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "44451": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "120A",
+    "sectionCode": "44451",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "44460": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "121A",
+    "sectionCode": "44460",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "44461": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "121A",
+    "sectionCode": "44461",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "44480": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "130A",
+    "sectionCode": "44480",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "44481": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "130A",
+    "sectionCode": "44481",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "44500": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "140A",
+    "sectionCode": "44500",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "44501": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "140A",
+    "sectionCode": "44501",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "44530": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "176",
+    "sectionCode": "44530",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "44531": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "176",
+    "sectionCode": "44531",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "44540": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "180A",
+    "sectionCode": "44540",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "44541": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "180A",
+    "sectionCode": "44541",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "44900": {
+    "type": "SECTION",
+    "department": "MATH",
+    "courseNumber": "299A",
+    "sectionCode": "44900",
+    "sectionNum": "A",
+    "sectionType": "Res"
+  },
+  "47010": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "2",
+    "sectionCode": "47010",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "47011": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "2",
+    "sectionCode": "47011",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "47012": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "2",
+    "sectionCode": "47012",
+    "sectionNum": "A2",
+    "sectionType": "Tut"
+  },
+  "47040": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "3B",
+    "sectionCode": "47040",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "47041": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "3B",
+    "sectionCode": "47041",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "47042": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "3B",
+    "sectionCode": "47042",
+    "sectionNum": "B2",
+    "sectionType": "Dis"
+  },
+  "47043": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "3B",
+    "sectionCode": "47043",
+    "sectionNum": "B3",
+    "sectionType": "Dis"
+  },
+  "47044": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "3B",
+    "sectionCode": "47044",
+    "sectionNum": "B4",
+    "sectionType": "Dis"
+  },
+  "47070": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "3C",
+    "sectionCode": "47070",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "47071": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "3C",
+    "sectionCode": "47071",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "47072": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "3C",
+    "sectionCode": "47072",
+    "sectionNum": "A2",
+    "sectionType": "Dis"
+  },
+  "47073": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "3C",
+    "sectionCode": "47073",
+    "sectionNum": "A3",
+    "sectionType": "Dis"
+  },
+  "47130": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "7D",
+    "sectionCode": "47130",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "47131": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "7D",
+    "sectionCode": "47131",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "47132": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "7D",
+    "sectionCode": "47132",
+    "sectionNum": "B2",
+    "sectionType": "Dis"
+  },
+  "47151": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "7LD",
+    "sectionCode": "47151",
+    "sectionNum": "B1",
+    "sectionType": "Lab"
+  },
+  "47152": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "7LD",
+    "sectionCode": "47152",
+    "sectionNum": "B2",
+    "sectionType": "Lab"
+  },
+  "47153": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "7LD",
+    "sectionCode": "47153",
+    "sectionNum": "B3",
+    "sectionType": "Lab"
+  },
+  "47160": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "7E",
+    "sectionCode": "47160",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "47270": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "295",
+    "sectionCode": "47270",
+    "sectionNum": "B",
+    "sectionType": "Res"
+  },
+  "47603": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "195",
+    "sectionCode": "47603",
+    "sectionNum": "C",
+    "sectionType": "Res"
+  },
+  "47651": {
+    "type": "SECTION",
+    "department": "PHYSICS",
+    "courseNumber": "199",
+    "sectionCode": "47651",
+    "sectionNum": "B",
+    "sectionType": "Res"
+  },
+  "50030": {
+    "type": "SECTION",
+    "department": "SOCECOL",
+    "courseNumber": "10",
+    "sectionCode": "50030",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "50050": {
+    "type": "SECTION",
+    "department": "SOCECOL",
+    "courseNumber": "13",
+    "sectionCode": "50050",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "50080": {
+    "type": "SECTION",
+    "department": "SOCECOL",
+    "courseNumber": "183A",
+    "sectionCode": "50080",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "50090": {
+    "type": "SECTION",
+    "department": "SOCECOL",
+    "courseNumber": "194W",
+    "sectionCode": "50090",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "50091": {
+    "type": "SECTION",
+    "department": "SOCECOL",
+    "courseNumber": "194W",
+    "sectionCode": "50091",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "50092": {
+    "type": "SECTION",
+    "department": "SOCECOL",
+    "courseNumber": "194W",
+    "sectionCode": "50092",
+    "sectionNum": "A2",
+    "sectionType": "Dis"
+  },
+  "50093": {
+    "type": "SECTION",
+    "department": "SOCECOL",
+    "courseNumber": "194W",
+    "sectionCode": "50093",
+    "sectionNum": "A3",
+    "sectionType": "Dis"
+  },
+  "50110": {
+    "type": "SECTION",
+    "department": "SOCECOL",
+    "courseNumber": "195",
+    "sectionCode": "50110",
+    "sectionNum": "C",
+    "sectionType": "Fld"
+  },
+  "50115": {
+    "type": "SECTION",
+    "department": "SOCECOL",
+    "courseNumber": "195",
+    "sectionCode": "50115",
+    "sectionNum": "D",
+    "sectionType": "Fld"
+  },
+  "50251": {
+    "type": "SECTION",
+    "department": "SOCECOL",
+    "courseNumber": "199",
+    "sectionCode": "50251",
+    "sectionNum": "B",
+    "sectionType": "Tut"
+  },
+  "50254": {
+    "type": "SECTION",
+    "department": "SOCECOL",
+    "courseNumber": "199",
+    "sectionCode": "50254",
+    "sectionNum": "E",
+    "sectionType": "Tut"
+  },
+  "50255": {
+    "type": "SECTION",
+    "department": "SOCECOL",
+    "courseNumber": "199",
+    "sectionCode": "50255",
+    "sectionNum": "F",
+    "sectionType": "Tut"
+  },
+  "52020": {
+    "type": "SECTION",
+    "department": "CRM/LAW",
+    "courseNumber": "C7",
+    "sectionCode": "52020",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "52030": {
+    "type": "SECTION",
+    "department": "CRM/LAW",
+    "courseNumber": "C10",
+    "sectionCode": "52030",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "52070": {
+    "type": "SECTION",
+    "department": "CRM/LAW",
+    "courseNumber": "C115",
+    "sectionCode": "52070",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "52090": {
+    "type": "SECTION",
+    "department": "CRM/LAW",
+    "courseNumber": "C139",
+    "sectionCode": "52090",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "52110": {
+    "type": "SECTION",
+    "department": "CRM/LAW",
+    "courseNumber": "C156",
+    "sectionCode": "52110",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "52120": {
+    "type": "SECTION",
+    "department": "CRM/LAW",
+    "courseNumber": "C176",
+    "sectionCode": "52120",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "53030": {
+    "type": "SECTION",
+    "department": "PP&D",
+    "courseNumber": "112",
+    "sectionCode": "53030",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "53031": {
+    "type": "SECTION",
+    "department": "PP&D",
+    "courseNumber": "112",
+    "sectionCode": "53031",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "53032": {
+    "type": "SECTION",
+    "department": "PP&D",
+    "courseNumber": "112",
+    "sectionCode": "53032",
+    "sectionNum": "A2",
+    "sectionType": "Dis"
+  },
+  "53040": {
+    "type": "SECTION",
+    "department": "PP&D",
+    "courseNumber": "130",
+    "sectionCode": "53040",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "53050": {
+    "type": "SECTION",
+    "department": "PP&D",
+    "courseNumber": "132",
+    "sectionCode": "53050",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "53351": {
+    "type": "SECTION",
+    "department": "PP&D",
+    "courseNumber": "299",
+    "sectionCode": "53351",
+    "sectionNum": "B",
+    "sectionType": "Tut"
+  },
+  "54020": {
+    "type": "SECTION",
+    "department": "PSY BEH",
+    "courseNumber": "9",
+    "sectionCode": "54020",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "54040": {
+    "type": "SECTION",
+    "department": "PSY BEH",
+    "courseNumber": "9",
+    "sectionCode": "54040",
+    "sectionNum": "D",
+    "sectionType": "Lec"
+  },
+  "54060": {
+    "type": "SECTION",
+    "department": "PSY BEH",
+    "courseNumber": "11A",
+    "sectionCode": "54060",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "54080": {
+    "type": "SECTION",
+    "department": "PSY BEH",
+    "courseNumber": "11B",
+    "sectionCode": "54080",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "54100": {
+    "type": "SECTION",
+    "department": "PSY BEH",
+    "courseNumber": "11C",
+    "sectionCode": "54100",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "54105": {
+    "type": "SECTION",
+    "department": "PSY BEH",
+    "courseNumber": "101D",
+    "sectionCode": "54105",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "54110": {
+    "type": "SECTION",
+    "department": "PSY BEH",
+    "courseNumber": "102C",
+    "sectionCode": "54110",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "54130": {
+    "type": "SECTION",
+    "department": "PSY BEH",
+    "courseNumber": "103H",
+    "sectionCode": "54130",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "54140": {
+    "type": "SECTION",
+    "department": "PSY BEH",
+    "courseNumber": "110D",
+    "sectionCode": "54140",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "54150": {
+    "type": "SECTION",
+    "department": "PSY BEH",
+    "courseNumber": "111D",
+    "sectionCode": "54150",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "60030": {
+    "type": "SECTION",
+    "department": "ANTHRO",
+    "courseNumber": "2A",
+    "sectionCode": "60030",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "60040": {
+    "type": "SECTION",
+    "department": "ANTHRO",
+    "courseNumber": "2A",
+    "sectionCode": "60040",
+    "sectionNum": "D",
+    "sectionType": "Lec"
+  },
+  "60050": {
+    "type": "SECTION",
+    "department": "ANTHRO",
+    "courseNumber": "2B",
+    "sectionCode": "60050",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "60080": {
+    "type": "SECTION",
+    "department": "ANTHRO",
+    "courseNumber": "10B",
+    "sectionCode": "60080",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "60110": {
+    "type": "SECTION",
+    "department": "ANTHRO",
+    "courseNumber": "41A",
+    "sectionCode": "60110",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "60150": {
+    "type": "SECTION",
+    "department": "ANTHRO",
+    "courseNumber": "134A",
+    "sectionCode": "60150",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "60170": {
+    "type": "SECTION",
+    "department": "ANTHRO",
+    "courseNumber": "162A",
+    "sectionCode": "60170",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "60900": {
+    "type": "SECTION",
+    "department": "ANTHRO",
+    "courseNumber": "199",
+    "sectionCode": "60900",
+    "sectionNum": "A",
+    "sectionType": "Tut"
+  },
+  "61010": {
+    "type": "SECTION",
+    "department": "CHC/LAT",
+    "courseNumber": "63",
+    "sectionCode": "61010",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "61030": {
+    "type": "SECTION",
+    "department": "CHC/LAT",
+    "courseNumber": "64",
+    "sectionCode": "61030",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "61050": {
+    "type": "SECTION",
+    "department": "CHC/LAT",
+    "courseNumber": "120",
+    "sectionCode": "61050",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "61070": {
+    "type": "SECTION",
+    "department": "CHC/LAT",
+    "courseNumber": "151",
+    "sectionCode": "61070",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "61080": {
+    "type": "SECTION",
+    "department": "CHC/LAT",
+    "courseNumber": "153",
+    "sectionCode": "61080",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "61100": {
+    "type": "SECTION",
+    "department": "CHC/LAT",
+    "courseNumber": "178A",
+    "sectionCode": "61100",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "62030": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "13",
+    "sectionCode": "62030",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "62031": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "13",
+    "sectionCode": "62031",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "62032": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "13",
+    "sectionCode": "62032",
+    "sectionNum": "B2",
+    "sectionType": "Dis"
+  },
+  "62050": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "15A",
+    "sectionCode": "62050",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "62051": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "15A",
+    "sectionCode": "62051",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "62070": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "15B",
+    "sectionCode": "62070",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "62071": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "15B",
+    "sectionCode": "62071",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "62100": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "20A",
+    "sectionCode": "62100",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "62101": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "20A",
+    "sectionCode": "62101",
+    "sectionNum": "C1",
+    "sectionType": "Dis"
+  },
+  "62102": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "20A",
+    "sectionCode": "62102",
+    "sectionNum": "C2",
+    "sectionType": "Dis"
+  },
+  "62103": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "20A",
+    "sectionCode": "62103",
+    "sectionNum": "C3",
+    "sectionType": "Dis"
+  },
+  "62110": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "20A",
+    "sectionCode": "62110",
+    "sectionNum": "D",
+    "sectionType": "Lec"
+  },
+  "62130": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "20B",
+    "sectionCode": "62130",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "62150": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "25",
+    "sectionCode": "62150",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "62151": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "25",
+    "sectionCode": "62151",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "62170": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "100A",
+    "sectionCode": "62170",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "62171": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "100A",
+    "sectionCode": "62171",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "62180": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "100B",
+    "sectionCode": "62180",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "62181": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "100B",
+    "sectionCode": "62181",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "62182": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "100B",
+    "sectionCode": "62182",
+    "sectionNum": "A2",
+    "sectionType": "Dis"
+  },
+  "62200": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "100C",
+    "sectionCode": "62200",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "62201": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "100C",
+    "sectionCode": "62201",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "62220": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "122A",
+    "sectionCode": "62220",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "62221": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "122A",
+    "sectionCode": "62221",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "62222": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "122A",
+    "sectionCode": "62222",
+    "sectionNum": "B2",
+    "sectionType": "Dis"
+  },
+  "62240": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "122B",
+    "sectionCode": "62240",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "62241": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "122B",
+    "sectionCode": "62241",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "62242": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "122B",
+    "sectionCode": "62242",
+    "sectionNum": "B2",
+    "sectionType": "Dis"
+  },
+  "62270": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "135",
+    "sectionCode": "62270",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "62271": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "135",
+    "sectionCode": "62271",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "62280": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "137W",
+    "sectionCode": "62280",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "62290": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "140",
+    "sectionCode": "62290",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "62291": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "140",
+    "sectionCode": "62291",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "62292": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "140",
+    "sectionCode": "62292",
+    "sectionNum": "A2",
+    "sectionType": "Dis"
+  },
+  "62300": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "161A",
+    "sectionCode": "62300",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "62301": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "161A",
+    "sectionCode": "62301",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "62901": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "199",
+    "sectionCode": "62901",
+    "sectionNum": "B",
+    "sectionType": "Tut"
+  },
+  "62903": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "199",
+    "sectionCode": "62903",
+    "sectionNum": "D",
+    "sectionType": "Tut"
+  },
+  "62905": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "199",
+    "sectionCode": "62905",
+    "sectionNum": "F",
+    "sectionType": "Tut"
+  },
+  "62956": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "299",
+    "sectionCode": "62956",
+    "sectionNum": "B",
+    "sectionType": "Tut"
+  },
+  "62958": {
+    "type": "SECTION",
+    "department": "ECON",
+    "courseNumber": "299",
+    "sectionCode": "62958",
+    "sectionNum": "D",
+    "sectionType": "Tut"
+  },
+  "64020": {
+    "type": "SECTION",
+    "department": "INTL ST",
+    "courseNumber": "11",
+    "sectionCode": "64020",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "64040": {
+    "type": "SECTION",
+    "department": "INTL ST",
+    "courseNumber": "13",
+    "sectionCode": "64040",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "64041": {
+    "type": "SECTION",
+    "department": "INTL ST",
+    "courseNumber": "13",
+    "sectionCode": "64041",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "64042": {
+    "type": "SECTION",
+    "department": "INTL ST",
+    "courseNumber": "13",
+    "sectionCode": "64042",
+    "sectionNum": "B2",
+    "sectionType": "Dis"
+  },
+  "64050": {
+    "type": "SECTION",
+    "department": "INTL ST",
+    "courseNumber": "14",
+    "sectionCode": "64050",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "64090": {
+    "type": "SECTION",
+    "department": "INTL ST",
+    "courseNumber": "140A",
+    "sectionCode": "64090",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "64135": {
+    "type": "SECTION",
+    "department": "INTL ST",
+    "courseNumber": "154B",
+    "sectionCode": "64135",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "64140": {
+    "type": "SECTION",
+    "department": "INTL ST",
+    "courseNumber": "155BW",
+    "sectionCode": "64140",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "64150": {
+    "type": "SECTION",
+    "department": "INTL ST",
+    "courseNumber": "155BW",
+    "sectionCode": "64150",
+    "sectionNum": "D",
+    "sectionType": "Lec"
+  },
+  "64160": {
+    "type": "SECTION",
+    "department": "INTL ST",
+    "courseNumber": "177J",
+    "sectionCode": "64160",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "64190": {
+    "type": "SECTION",
+    "department": "INTL ST",
+    "courseNumber": "183A",
+    "sectionCode": "64190",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "65020": {
+    "type": "SECTION",
+    "department": "LINGUIS",
+    "courseNumber": "2",
+    "sectionCode": "65020",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "65040": {
+    "type": "SECTION",
+    "department": "LINGUIS",
+    "courseNumber": "3",
+    "sectionCode": "65040",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "65050": {
+    "type": "SECTION",
+    "department": "LINGUIS",
+    "courseNumber": "43",
+    "sectionCode": "65050",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "66020": {
+    "type": "SECTION",
+    "department": "LPS",
+    "courseNumber": "29",
+    "sectionCode": "66020",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "66030": {
+    "type": "SECTION",
+    "department": "LPS",
+    "courseNumber": "30",
+    "sectionCode": "66030",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "66040": {
+    "type": "SECTION",
+    "department": "LPS",
+    "courseNumber": "31",
+    "sectionCode": "66040",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "66070": {
+    "type": "SECTION",
+    "department": "LPS",
+    "courseNumber": "60",
+    "sectionCode": "66070",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "66071": {
+    "type": "SECTION",
+    "department": "LPS",
+    "courseNumber": "60",
+    "sectionCode": "66071",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "66072": {
+    "type": "SECTION",
+    "department": "LPS",
+    "courseNumber": "60",
+    "sectionCode": "66072",
+    "sectionNum": "B2",
+    "sectionType": "Dis"
+  },
+  "67020": {
+    "type": "SECTION",
+    "department": "POL SCI",
+    "courseNumber": "21A",
+    "sectionCode": "67020",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "67030": {
+    "type": "SECTION",
+    "department": "POL SCI",
+    "courseNumber": "41A",
+    "sectionCode": "67030",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "67070": {
+    "type": "SECTION",
+    "department": "POL SCI",
+    "courseNumber": "61A",
+    "sectionCode": "67070",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "67100": {
+    "type": "SECTION",
+    "department": "POL SCI",
+    "courseNumber": "124B",
+    "sectionCode": "67100",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "67120": {
+    "type": "SECTION",
+    "department": "POL SCI",
+    "courseNumber": "144A",
+    "sectionCode": "67120",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "67140": {
+    "type": "SECTION",
+    "department": "POL SCI",
+    "courseNumber": "153E",
+    "sectionCode": "67140",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "67160": {
+    "type": "SECTION",
+    "department": "POL SCI",
+    "courseNumber": "156D",
+    "sectionCode": "67160",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "67190": {
+    "type": "SECTION",
+    "department": "POL SCI",
+    "courseNumber": "171AW",
+    "sectionCode": "67190",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "68020": {
+    "type": "SECTION",
+    "department": "PSYCH",
+    "courseNumber": "7A",
+    "sectionCode": "68020",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "68040": {
+    "type": "SECTION",
+    "department": "PSYCH",
+    "courseNumber": "7A",
+    "sectionCode": "68040",
+    "sectionNum": "D",
+    "sectionType": "Lec"
+  },
+  "68060": {
+    "type": "SECTION",
+    "department": "PSYCH",
+    "courseNumber": "9A",
+    "sectionCode": "68060",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "68080": {
+    "type": "SECTION",
+    "department": "PSYCH",
+    "courseNumber": "9B",
+    "sectionCode": "68080",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "68100": {
+    "type": "SECTION",
+    "department": "PSYCH",
+    "courseNumber": "9C",
+    "sectionCode": "68100",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "68110": {
+    "type": "SECTION",
+    "department": "PSYCH",
+    "courseNumber": "46A",
+    "sectionCode": "68110",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "68140": {
+    "type": "SECTION",
+    "department": "PSYCH",
+    "courseNumber": "120A",
+    "sectionCode": "68140",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "68170": {
+    "type": "SECTION",
+    "department": "PSYCH",
+    "courseNumber": "160A",
+    "sectionCode": "68170",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "68175": {
+    "type": "SECTION",
+    "department": "PSYCH",
+    "courseNumber": "160D",
+    "sectionCode": "68175",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "68190": {
+    "type": "SECTION",
+    "department": "PSYCH",
+    "courseNumber": "178N",
+    "sectionCode": "68190",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "69020": {
+    "type": "SECTION",
+    "department": "SOCIOL",
+    "courseNumber": "1",
+    "sectionCode": "69020",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "69040": {
+    "type": "SECTION",
+    "department": "SOCIOL",
+    "courseNumber": "3",
+    "sectionCode": "69040",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "69060": {
+    "type": "SECTION",
+    "department": "SOCIOL",
+    "courseNumber": "10B",
+    "sectionCode": "69060",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "69080": {
+    "type": "SECTION",
+    "department": "SOCIOL",
+    "courseNumber": "63",
+    "sectionCode": "69080",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "69090": {
+    "type": "SECTION",
+    "department": "SOCIOL",
+    "courseNumber": "110",
+    "sectionCode": "69090",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "69100": {
+    "type": "SECTION",
+    "department": "SOCIOL",
+    "courseNumber": "135",
+    "sectionCode": "69100",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "69150": {
+    "type": "SECTION",
+    "department": "SOCIOL",
+    "courseNumber": "161W",
+    "sectionCode": "69150",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "69170": {
+    "type": "SECTION",
+    "department": "SOCIOL",
+    "courseNumber": "174",
+    "sectionCode": "69170",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "69950": {
+    "type": "SECTION",
+    "department": "SOCIOL",
+    "courseNumber": "290",
+    "sectionCode": "69950",
+    "sectionNum": "A",
+    "sectionType": "Res"
+  },
+  "69951": {
+    "type": "SECTION",
+    "department": "SOCIOL",
+    "courseNumber": "290",
+    "sectionCode": "69951",
+    "sectionNum": "B",
+    "sectionType": "Res"
+  },
+  "70030": {
+    "type": "SECTION",
+    "department": "SOC SCI",
+    "courseNumber": "3A",
+    "sectionCode": "70030",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "70050": {
+    "type": "SECTION",
+    "department": "SOC SCI",
+    "courseNumber": "10C",
+    "sectionCode": "70050",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "70075": {
+    "type": "SECTION",
+    "department": "SOC SCI",
+    "courseNumber": "89",
+    "sectionCode": "70075",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "70090": {
+    "type": "SECTION",
+    "department": "SOC SCI",
+    "courseNumber": "164B",
+    "sectionCode": "70090",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "70100": {
+    "type": "SECTION",
+    "department": "SOC SCI",
+    "courseNumber": "164C",
+    "sectionCode": "70100",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "70141": {
+    "type": "SECTION",
+    "department": "SOC SCI",
+    "courseNumber": "172AW",
+    "sectionCode": "70141",
+    "sectionNum": "D",
+    "sectionType": "Lec"
+  },
+  "70150": {
+    "type": "SECTION",
+    "department": "SOC SCI",
+    "courseNumber": "183A",
+    "sectionCode": "70150",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "70180": {
+    "type": "SECTION",
+    "department": "SOC SCI",
+    "courseNumber": "184GW",
+    "sectionCode": "70180",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "70190": {
+    "type": "SECTION",
+    "department": "SOC SCI",
+    "courseNumber": "184GW",
+    "sectionCode": "70190",
+    "sectionNum": "D",
+    "sectionType": "Lec"
+  },
+  "70230": {
+    "type": "SECTION",
+    "department": "SOC SCI",
+    "courseNumber": "194A",
+    "sectionCode": "70230",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "70231": {
+    "type": "SECTION",
+    "department": "SOC SCI",
+    "courseNumber": "194A",
+    "sectionCode": "70231",
+    "sectionNum": "D",
+    "sectionType": "Lec"
+  },
+  "70250": {
+    "type": "SECTION",
+    "department": "SOC SCI",
+    "courseNumber": "197",
+    "sectionCode": "70250",
+    "sectionNum": "C",
+    "sectionType": "Fld"
+  },
+  "70251": {
+    "type": "SECTION",
+    "department": "SOC SCI",
+    "courseNumber": "197",
+    "sectionCode": "70251",
+    "sectionNum": "D",
+    "sectionType": "Fld"
+  },
+  "72810": {
+    "type": "SECTION",
+    "department": "SPPS",
+    "courseNumber": "70A",
+    "sectionCode": "72810",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "87010": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87010",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "87011": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87011",
+    "sectionNum": "A1",
+    "sectionType": "Act"
+  },
+  "87012": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87012",
+    "sectionNum": "A2",
+    "sectionType": "Act"
+  },
+  "87013": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87013",
+    "sectionNum": "A3",
+    "sectionType": "Act"
+  },
+  "87014": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87014",
+    "sectionNum": "A4",
+    "sectionType": "Act"
+  },
+  "87015": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87015",
+    "sectionNum": "A5",
+    "sectionType": "Act"
+  },
+  "87016": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87016",
+    "sectionNum": "A6",
+    "sectionType": "Act"
+  },
+  "87017": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87017",
+    "sectionNum": "A7",
+    "sectionType": "Act"
+  },
+  "87018": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87018",
+    "sectionNum": "A8",
+    "sectionType": "Act"
+  },
+  "87019": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87019",
+    "sectionNum": "A9",
+    "sectionType": "Act"
+  },
+  "87020": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87020",
+    "sectionNum": "A10",
+    "sectionType": "Act"
+  },
+  "87030": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87030",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "87031": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87031",
+    "sectionNum": "B1",
+    "sectionType": "Act"
+  },
+  "87032": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87032",
+    "sectionNum": "B2",
+    "sectionType": "Act"
+  },
+  "87033": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87033",
+    "sectionNum": "B3",
+    "sectionType": "Act"
+  },
+  "87034": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87034",
+    "sectionNum": "B4",
+    "sectionType": "Act"
+  },
+  "87035": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87035",
+    "sectionNum": "B5",
+    "sectionType": "Act"
+  },
+  "87036": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87036",
+    "sectionNum": "B6",
+    "sectionType": "Act"
+  },
+  "87037": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87037",
+    "sectionNum": "B7",
+    "sectionType": "Act"
+  },
+  "87038": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87038",
+    "sectionNum": "B8",
+    "sectionType": "Act"
+  },
+  "87039": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87039",
+    "sectionNum": "B9",
+    "sectionType": "Act"
+  },
+  "87040": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "83",
+    "sectionCode": "87040",
+    "sectionNum": "B10",
+    "sectionType": "Act"
+  },
+  "87050": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "84",
+    "sectionCode": "87050",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "87051": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "84",
+    "sectionCode": "87051",
+    "sectionNum": "A1",
+    "sectionType": "Lab"
+  },
+  "87052": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "84",
+    "sectionCode": "87052",
+    "sectionNum": "A2",
+    "sectionType": "Lab"
+  },
+  "87053": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "84",
+    "sectionCode": "87053",
+    "sectionNum": "A3",
+    "sectionType": "Lab"
+  },
+  "87054": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "84",
+    "sectionCode": "87054",
+    "sectionNum": "A4",
+    "sectionType": "Lab"
+  },
+  "87060": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "84",
+    "sectionCode": "87060",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "87061": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "84",
+    "sectionCode": "87061",
+    "sectionNum": "B1",
+    "sectionType": "Act"
+  },
+  "87062": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "84",
+    "sectionCode": "87062",
+    "sectionNum": "B2",
+    "sectionType": "Act"
+  },
+  "87063": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "84",
+    "sectionCode": "87063",
+    "sectionNum": "B3",
+    "sectionType": "Act"
+  },
+  "87064": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "84",
+    "sectionCode": "87064",
+    "sectionNum": "B4",
+    "sectionType": "Act"
+  },
+  "87065": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "84",
+    "sectionCode": "87065",
+    "sectionNum": "B5",
+    "sectionType": "Act"
+  },
+  "87066": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "84",
+    "sectionCode": "87066",
+    "sectionNum": "B6",
+    "sectionType": "Lab"
+  },
+  "87067": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "84",
+    "sectionCode": "87067",
+    "sectionNum": "B7",
+    "sectionType": "Lab"
+  },
+  "87068": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "84",
+    "sectionCode": "87068",
+    "sectionNum": "B8",
+    "sectionType": "Lab"
+  },
+  "87069": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "84",
+    "sectionCode": "87069",
+    "sectionNum": "B9",
+    "sectionType": "Lab"
+  },
+  "87070": {
+    "type": "SECTION",
+    "department": "UNI STU",
+    "courseNumber": "84",
+    "sectionCode": "87070",
+    "sectionNum": "B10",
+    "sectionType": "Lab"
+  },
+  "88016": {
+    "type": "SECTION",
+    "department": "NUR SCI",
+    "courseNumber": "294",
+    "sectionCode": "88016",
+    "sectionNum": "A",
+    "sectionType": "Fld"
+  },
+  "88510": {
+    "type": "SECTION",
+    "department": "PHRMSCI",
+    "courseNumber": "42",
+    "sectionCode": "88510",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "88530": {
+    "type": "SECTION",
+    "department": "PHRMSCI",
+    "courseNumber": "90",
+    "sectionCode": "88530",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "88550": {
+    "type": "SECTION",
+    "department": "PHRMSCI",
+    "courseNumber": "120L",
+    "sectionCode": "88550",
+    "sectionNum": "A",
+    "sectionType": "Lab"
+  },
+  "88900": {
+    "type": "SECTION",
+    "department": "PHRMSCI",
+    "courseNumber": "198",
+    "sectionCode": "88900",
+    "sectionNum": "A",
+    "sectionType": "Res"
+  },
+  "88912": {
+    "type": "SECTION",
+    "department": "PHRMSCI",
+    "courseNumber": "199",
+    "sectionCode": "88912",
+    "sectionNum": "C",
+    "sectionType": "Res"
+  },
+  "88914": {
+    "type": "SECTION",
+    "department": "PHRMSCI",
+    "courseNumber": "199",
+    "sectionCode": "88914",
+    "sectionNum": "E",
+    "sectionType": "Res"
+  },
+  "88916": {
+    "type": "SECTION",
+    "department": "PHRMSCI",
+    "courseNumber": "199",
+    "sectionCode": "88916",
+    "sectionNum": "G",
+    "sectionType": "Res"
+  },
+  "88919": {
+    "type": "SECTION",
+    "department": "PHRMSCI",
+    "courseNumber": "199",
+    "sectionCode": "88919",
+    "sectionNum": "J",
+    "sectionType": "Res"
+  },
+  "88921": {
+    "type": "SECTION",
+    "department": "PHRMSCI",
+    "courseNumber": "199",
+    "sectionCode": "88921",
+    "sectionNum": "L",
+    "sectionType": "Res"
+  },
+  "89030": {
+    "type": "SECTION",
+    "department": "PUBHLTH",
+    "courseNumber": "1",
+    "sectionCode": "89030",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "89040": {
+    "type": "SECTION",
+    "department": "PUBHLTH",
+    "courseNumber": "2",
+    "sectionCode": "89040",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "89120": {
+    "type": "SECTION",
+    "department": "PUBHLTH",
+    "courseNumber": "125",
+    "sectionCode": "89120",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "89121": {
+    "type": "SECTION",
+    "department": "PUBHLTH",
+    "courseNumber": "125",
+    "sectionCode": "89121",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "89122": {
+    "type": "SECTION",
+    "department": "PUBHLTH",
+    "courseNumber": "125",
+    "sectionCode": "89122",
+    "sectionNum": "A2",
+    "sectionType": "Dis"
+  },
+  "89130": {
+    "type": "SECTION",
+    "department": "PUBHLTH",
+    "courseNumber": "127",
+    "sectionCode": "89130",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "89140": {
+    "type": "SECTION",
+    "department": "PUBHLTH",
+    "courseNumber": "139",
+    "sectionCode": "89140",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "89160": {
+    "type": "SECTION",
+    "department": "PUBHLTH",
+    "courseNumber": "146",
+    "sectionCode": "89160",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "89180": {
+    "type": "SECTION",
+    "department": "PUBHLTH",
+    "courseNumber": "170",
+    "sectionCode": "89180",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "89451": {
+    "type": "SECTION",
+    "department": "PUBHLTH",
+    "courseNumber": "199",
+    "sectionCode": "89451",
+    "sectionNum": "B",
+    "sectionType": "Res"
+  },
+  "89453": {
+    "type": "SECTION",
+    "department": "PUBHLTH",
+    "courseNumber": "199",
+    "sectionCode": "89453",
+    "sectionNum": "D",
+    "sectionType": "Res"
+  },
+  "89454": {
+    "type": "SECTION",
+    "department": "PUBHLTH",
+    "courseNumber": "199",
+    "sectionCode": "89454",
+    "sectionNum": "E",
+    "sectionType": "Res"
+  },
+  "89456": {
+    "type": "SECTION",
+    "department": "PUBHLTH",
+    "courseNumber": "199",
+    "sectionCode": "89456",
+    "sectionNum": "G",
+    "sectionType": "Res"
+  },
+  "89457": {
+    "type": "SECTION",
+    "department": "PUBHLTH",
+    "courseNumber": "199",
+    "sectionCode": "89457",
+    "sectionNum": "H",
+    "sectionType": "Res"
+  },
+  "90460": {
+    "type": "SECTION",
+    "department": "BATS",
+    "courseNumber": "299",
+    "sectionCode": "90460",
+    "sectionNum": "A",
+    "sectionType": "Res"
+  },
+  "91705": {
+    "type": "SECTION",
+    "department": "EPIDEM",
+    "courseNumber": "296",
+    "sectionCode": "91705",
+    "sectionNum": "A",
+    "sectionType": "Tut"
+  },
+  "05010": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "35",
+    "sectionCode": "05010",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "05030": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "37",
+    "sectionCode": "05030",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "05100": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "94",
+    "sectionCode": "05100",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "05101": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "94",
+    "sectionCode": "05101",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "05102": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "94",
+    "sectionCode": "05102",
+    "sectionNum": "B2",
+    "sectionType": "Dis"
+  },
+  "05103": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "94",
+    "sectionCode": "05103",
+    "sectionNum": "B3",
+    "sectionType": "Dis"
+  },
+  "05120": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "97",
+    "sectionCode": "05120",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "05121": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "97",
+    "sectionCode": "05121",
+    "sectionNum": "B1",
+    "sectionType": "Dis"
+  },
+  "05122": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "97",
+    "sectionCode": "05122",
+    "sectionNum": "B2",
+    "sectionType": "Dis"
+  },
+  "05123": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "97",
+    "sectionCode": "05123",
+    "sectionNum": "B3",
+    "sectionType": "Dis"
+  },
+  "05124": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "97",
+    "sectionCode": "05124",
+    "sectionNum": "B4",
+    "sectionType": "Dis"
+  },
+  "05140": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "99",
+    "sectionCode": "05140",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "05145": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "99",
+    "sectionCode": "05145",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "05150": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "99",
+    "sectionCode": "05150",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "05160": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "100",
+    "sectionCode": "05160",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "05190": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "E106",
+    "sectionCode": "05190",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "05191": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "E106",
+    "sectionCode": "05191",
+    "sectionNum": "A1",
+    "sectionType": "Dis"
+  },
+  "05192": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "E106",
+    "sectionCode": "05192",
+    "sectionNum": "A2",
+    "sectionType": "Dis"
+  },
+  "05205": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "E109",
+    "sectionCode": "05205",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "05220": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "D111L",
+    "sectionCode": "05220",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "05221": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "D111L",
+    "sectionCode": "05221",
+    "sectionNum": "A1",
+    "sectionType": "Lab"
+  },
+  "05222": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "D111L",
+    "sectionCode": "05222",
+    "sectionNum": "A2",
+    "sectionType": "Lab"
+  },
+  "05225": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "N113L",
+    "sectionCode": "05225",
+    "sectionNum": "A",
+    "sectionType": "Lab"
+  },
+  "05240": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "E112L",
+    "sectionCode": "05240",
+    "sectionNum": "B",
+    "sectionType": "Dis"
+  },
+  "05241": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "E112L",
+    "sectionCode": "05241",
+    "sectionNum": "B1",
+    "sectionType": "Lab"
+  },
+  "05242": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "E112L",
+    "sectionCode": "05242",
+    "sectionNum": "B2",
+    "sectionType": "Lab"
+  },
+  "05280": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "M118L",
+    "sectionCode": "05280",
+    "sectionNum": "E",
+    "sectionType": "Lab"
+  },
+  "05281": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "M118L",
+    "sectionCode": "05281",
+    "sectionNum": "E1",
+    "sectionType": "Dis"
+  },
+  "05285": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "M118L",
+    "sectionCode": "05285",
+    "sectionNum": "F",
+    "sectionType": "Lab"
+  },
+  "05286": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "M118L",
+    "sectionCode": "05286",
+    "sectionNum": "F1",
+    "sectionType": "Dis"
+  },
+  "05290": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "M118L",
+    "sectionCode": "05290",
+    "sectionNum": "G",
+    "sectionType": "Lab"
+  },
+  "05291": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "M118L",
+    "sectionCode": "05291",
+    "sectionNum": "G1",
+    "sectionType": "Dis"
+  },
+  "05295": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "M118L",
+    "sectionCode": "05295",
+    "sectionNum": "H",
+    "sectionType": "Lab"
+  },
+  "05296": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "M118L",
+    "sectionCode": "05296",
+    "sectionNum": "H1",
+    "sectionType": "Dis"
+  },
+  "05305": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "M122",
+    "sectionCode": "05305",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "05310": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "D124",
+    "sectionCode": "05310",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "05355": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "N165",
+    "sectionCode": "05355",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "05362": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "E179L",
+    "sectionCode": "05362",
+    "sectionNum": "B",
+    "sectionType": "Lab"
+  },
+  "05363": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "E179L",
+    "sectionCode": "05363",
+    "sectionNum": "C",
+    "sectionType": "Lab"
+  },
+  "05364": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "E183",
+    "sectionCode": "05364",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "05410": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "194S",
+    "sectionCode": "05410",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "06031": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "198",
+    "sectionCode": "06031",
+    "sectionNum": "B",
+    "sectionType": "Res"
+  },
+  "06033": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "198",
+    "sectionCode": "06033",
+    "sectionNum": "D",
+    "sectionType": "Res"
+  },
+  "06035": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "198",
+    "sectionCode": "06035",
+    "sectionNum": "F",
+    "sectionType": "Res"
+  },
+  "06036": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "198",
+    "sectionCode": "06036",
+    "sectionNum": "G",
+    "sectionType": "Res"
+  },
+  "06055": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06055",
+    "sectionNum": "F",
+    "sectionType": "Res"
+  },
+  "06234": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06234",
+    "sectionNum": "CI",
+    "sectionType": "Res"
+  },
+  "06057": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06057",
+    "sectionNum": "H",
+    "sectionType": "Res"
+  },
+  "06059": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06059",
+    "sectionNum": "J",
+    "sectionType": "Res"
+  },
+  "06061": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06061",
+    "sectionNum": "L",
+    "sectionType": "Res"
+  },
+  "06451": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06451",
+    "sectionNum": "KA",
+    "sectionType": "Res"
+  },
+  "06063": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06063",
+    "sectionNum": "N",
+    "sectionType": "Res"
+  },
+  "06226": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06226",
+    "sectionNum": "CA",
+    "sectionType": "Res"
+  },
+  "06065": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06065",
+    "sectionNum": "P",
+    "sectionType": "Res"
+  },
+  "06459": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06459",
+    "sectionNum": "KI",
+    "sectionType": "Res"
+  },
+  "06066": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06066",
+    "sectionNum": "Q",
+    "sectionType": "Res"
+  },
+  "06307": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06307",
+    "sectionNum": "FH",
+    "sectionType": "Res"
+  },
+  "06434": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06434",
+    "sectionNum": "JJ",
+    "sectionType": "Res"
+  },
+  "06067": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06067",
+    "sectionNum": "R",
+    "sectionType": "Res"
+  },
+  "06068": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06068",
+    "sectionNum": "S",
+    "sectionType": "Res"
+  },
+  "06241": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06241",
+    "sectionNum": "CP",
+    "sectionType": "Res"
+  },
+  "06202": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06202",
+    "sectionNum": "BC",
+    "sectionType": "Res"
+  },
+  "06346": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06346",
+    "sectionNum": "GU",
+    "sectionType": "Res"
+  },
+  "06574": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06574",
+    "sectionNum": "PW",
+    "sectionType": "Res"
+  },
+  "06203": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06203",
+    "sectionNum": "BD",
+    "sectionType": "Res"
+  },
+  "06244": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06244",
+    "sectionNum": "CS",
+    "sectionType": "Res"
+  },
+  "06495": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06495",
+    "sectionNum": "LR",
+    "sectionType": "Res"
+  },
+  "06512": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06512",
+    "sectionNum": "NM",
+    "sectionType": "Res"
+  },
+  "06569": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06569",
+    "sectionNum": "PR",
+    "sectionType": "Res"
+  },
+  "06573": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06573",
+    "sectionNum": "PV",
+    "sectionType": "Res"
+  },
+  "06600": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06600",
+    "sectionNum": "LW",
+    "sectionType": "Res"
+  },
+  "06205": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06205",
+    "sectionNum": "BF",
+    "sectionType": "Res"
+  },
+  "06436": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06436",
+    "sectionNum": "JL",
+    "sectionType": "Res"
+  },
+  "06210": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06210",
+    "sectionNum": "BK",
+    "sectionType": "Res"
+  },
+  "06442": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06442",
+    "sectionNum": "JR",
+    "sectionType": "Res"
+  },
+  "06503": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06503",
+    "sectionNum": "ND",
+    "sectionType": "Res"
+  },
+  "06213": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06213",
+    "sectionNum": "BN",
+    "sectionType": "Res"
+  },
+  "06562": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06562",
+    "sectionNum": "PK",
+    "sectionType": "Res"
+  },
+  "06215": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06215",
+    "sectionNum": "BP",
+    "sectionType": "Res"
+  },
+  "06219": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06219",
+    "sectionNum": "BT",
+    "sectionType": "Res"
+  },
+  "06222": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06222",
+    "sectionNum": "BW",
+    "sectionType": "Res"
+  },
+  "06492": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06492",
+    "sectionNum": "LP",
+    "sectionType": "Res"
+  },
+  "06224": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06224",
+    "sectionNum": "BY",
+    "sectionType": "Res"
+  },
+  "06431": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06431",
+    "sectionNum": "JG",
+    "sectionType": "Res"
+  },
+  "06227": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06227",
+    "sectionNum": "CB",
+    "sectionType": "Res"
+  },
+  "06230": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06230",
+    "sectionNum": "CE",
+    "sectionType": "Res"
+  },
+  "06232": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06232",
+    "sectionNum": "CG",
+    "sectionType": "Res"
+  },
+  "06236": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06236",
+    "sectionNum": "CK",
+    "sectionType": "Res"
+  },
+  "06240": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06240",
+    "sectionNum": "CO",
+    "sectionType": "Res"
+  },
+  "06488": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06488",
+    "sectionNum": "LL",
+    "sectionType": "Res"
+  },
+  "06514": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06514",
+    "sectionNum": "NO",
+    "sectionType": "Res"
+  },
+  "06516": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06516",
+    "sectionNum": "NQ",
+    "sectionType": "Res"
+  },
+  "06242": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06242",
+    "sectionNum": "CQ",
+    "sectionType": "Res"
+  },
+  "06243": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06243",
+    "sectionNum": "CR",
+    "sectionType": "Res"
+  },
+  "06345": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06345",
+    "sectionNum": "GT",
+    "sectionType": "Res"
+  },
+  "06348": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06348",
+    "sectionNum": "GW",
+    "sectionType": "Res"
+  },
+  "06453": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06453",
+    "sectionNum": "KC",
+    "sectionType": "Res"
+  },
+  "06523": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06523",
+    "sectionNum": "NX",
+    "sectionType": "Res"
+  },
+  "06530": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06530",
+    "sectionNum": "OE",
+    "sectionType": "Res"
+  },
+  "06245": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06245",
+    "sectionNum": "CT",
+    "sectionType": "Res"
+  },
+  "06438": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06438",
+    "sectionNum": "JN",
+    "sectionType": "Res"
+  },
+  "06571": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06571",
+    "sectionNum": "PT",
+    "sectionType": "Res"
+  },
+  "06246": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06246",
+    "sectionNum": "CU",
+    "sectionType": "Res"
+  },
+  "06339": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06339",
+    "sectionNum": "GN",
+    "sectionType": "Res"
+  },
+  "06469": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06469",
+    "sectionNum": "KS",
+    "sectionType": "Res"
+  },
+  "06247": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06247",
+    "sectionNum": "CV",
+    "sectionType": "Res"
+  },
+  "06498": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06498",
+    "sectionNum": "LU",
+    "sectionType": "Res"
+  },
+  "06248": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06248",
+    "sectionNum": "CW",
+    "sectionType": "Res"
+  },
+  "06311": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06311",
+    "sectionNum": "FL",
+    "sectionType": "Res"
+  },
+  "06433": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06433",
+    "sectionNum": "JI",
+    "sectionType": "Res"
+  },
+  "06249": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06249",
+    "sectionNum": "CX",
+    "sectionType": "Res"
+  },
+  "06497": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06497",
+    "sectionNum": "LT",
+    "sectionType": "Res"
+  },
+  "06303": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06303",
+    "sectionNum": "FD",
+    "sectionType": "Res"
+  },
+  "06406": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06406",
+    "sectionNum": "IG",
+    "sectionType": "Res"
+  },
+  "06507": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06507",
+    "sectionNum": "NH",
+    "sectionType": "Res"
+  },
+  "06306": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06306",
+    "sectionNum": "FG",
+    "sectionType": "Res"
+  },
+  "06409": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06409",
+    "sectionNum": "IJ",
+    "sectionType": "Res"
+  },
+  "06412": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06412",
+    "sectionNum": "IM",
+    "sectionType": "Res"
+  },
+  "06309": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06309",
+    "sectionNum": "FE",
+    "sectionType": "Res"
+  },
+  "06429": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06429",
+    "sectionNum": "JE",
+    "sectionType": "Res"
+  },
+  "06314": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06314",
+    "sectionNum": "FO",
+    "sectionType": "Res"
+  },
+  "06485": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06485",
+    "sectionNum": "LI",
+    "sectionType": "Res"
+  },
+  "06317": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06317",
+    "sectionNum": "FR",
+    "sectionType": "Res"
+  },
+  "06319": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06319",
+    "sectionNum": "FT",
+    "sectionType": "Res"
+  },
+  "06321": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06321",
+    "sectionNum": "FV",
+    "sectionType": "Res"
+  },
+  "06326": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06326",
+    "sectionNum": "GA",
+    "sectionType": "Res"
+  },
+  "06528": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06528",
+    "sectionNum": "OC",
+    "sectionType": "Res"
+  },
+  "06329": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06329",
+    "sectionNum": "GD",
+    "sectionType": "Res"
+  },
+  "06332": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06332",
+    "sectionNum": "GG",
+    "sectionType": "Res"
+  },
+  "06335": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06335",
+    "sectionNum": "GJ",
+    "sectionType": "Res"
+  },
+  "06337": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06337",
+    "sectionNum": "GL",
+    "sectionType": "Res"
+  },
+  "06344": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06344",
+    "sectionNum": "GS",
+    "sectionType": "Res"
+  },
+  "06347": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06347",
+    "sectionNum": "GV",
+    "sectionType": "Res"
+  },
+  "06422": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06422",
+    "sectionNum": "IW",
+    "sectionType": "Res"
+  },
+  "06349": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06349",
+    "sectionNum": "GX",
+    "sectionType": "Res"
+  },
+  "06350": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06350",
+    "sectionNum": "GY",
+    "sectionType": "Res"
+  },
+  "06549": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06549",
+    "sectionNum": "OX",
+    "sectionType": "Res"
+  },
+  "06351": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06351",
+    "sectionNum": "GZ",
+    "sectionType": "Res"
+  },
+  "06400": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06400",
+    "sectionNum": "JA",
+    "sectionType": "Res"
+  },
+  "06402": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06402",
+    "sectionNum": "IC",
+    "sectionType": "Res"
+  },
+  "06404": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06404",
+    "sectionNum": "IE",
+    "sectionType": "Res"
+  },
+  "06414": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06414",
+    "sectionNum": "IO",
+    "sectionType": "Res"
+  },
+  "06417": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06417",
+    "sectionNum": "IR",
+    "sectionType": "Res"
+  },
+  "06419": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06419",
+    "sectionNum": "IT",
+    "sectionType": "Res"
+  },
+  "06425": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06425",
+    "sectionNum": "IZ",
+    "sectionType": "Res"
+  },
+  "06427": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06427",
+    "sectionNum": "JC",
+    "sectionType": "Res"
+  },
+  "06519": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06519",
+    "sectionNum": "NT",
+    "sectionType": "Res"
+  },
+  "06439": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06439",
+    "sectionNum": "JO",
+    "sectionType": "Res"
+  },
+  "06444": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06444",
+    "sectionNum": "JT",
+    "sectionType": "Res"
+  },
+  "06448": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06448",
+    "sectionNum": "JX",
+    "sectionType": "Res"
+  },
+  "06449": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06449",
+    "sectionNum": "JY",
+    "sectionType": "Res"
+  },
+  "06496": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06496",
+    "sectionNum": "LS",
+    "sectionType": "Res"
+  },
+  "06537": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06537",
+    "sectionNum": "OL",
+    "sectionType": "Res"
+  },
+  "06575": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06575",
+    "sectionNum": "PX",
+    "sectionType": "Res"
+  },
+  "06455": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06455",
+    "sectionNum": "KE",
+    "sectionType": "Res"
+  },
+  "06570": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06570",
+    "sectionNum": "PS",
+    "sectionType": "Res"
+  },
+  "06457": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06457",
+    "sectionNum": "KG",
+    "sectionType": "Res"
+  },
+  "06509": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06509",
+    "sectionNum": "NJ",
+    "sectionType": "Res"
+  },
+  "06531": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06531",
+    "sectionNum": "OF",
+    "sectionType": "Res"
+  },
+  "06463": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06463",
+    "sectionNum": "KM",
+    "sectionType": "Res"
+  },
+  "06535": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06535",
+    "sectionNum": "OJ",
+    "sectionType": "Res"
+  },
+  "06466": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06466",
+    "sectionNum": "KP",
+    "sectionType": "Res"
+  },
+  "06501": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06501",
+    "sectionNum": "NB",
+    "sectionType": "Res"
+  },
+  "06471": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06471",
+    "sectionNum": "KU",
+    "sectionType": "Res"
+  },
+  "06473": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06473",
+    "sectionNum": "KW",
+    "sectionType": "Res"
+  },
+  "06475": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06475",
+    "sectionNum": "KY",
+    "sectionType": "Res"
+  },
+  "06554": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06554",
+    "sectionNum": "PC",
+    "sectionType": "Res"
+  },
+  "06478": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06478",
+    "sectionNum": "LB",
+    "sectionType": "Res"
+  },
+  "06480": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06480",
+    "sectionNum": "LD",
+    "sectionType": "Res"
+  },
+  "06483": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06483",
+    "sectionNum": "LG",
+    "sectionType": "Res"
+  },
+  "06491": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06491",
+    "sectionNum": "LO",
+    "sectionType": "Res"
+  },
+  "06494": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06494",
+    "sectionNum": "LQ",
+    "sectionType": "Res"
+  },
+  "06499": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06499",
+    "sectionNum": "LV",
+    "sectionType": "Res"
+  },
+  "06505": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06505",
+    "sectionNum": "NF",
+    "sectionType": "Res"
+  },
+  "06511": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06511",
+    "sectionNum": "NL",
+    "sectionType": "Res"
+  },
+  "06521": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06521",
+    "sectionNum": "NV",
+    "sectionType": "Res"
+  },
+  "06526": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06526",
+    "sectionNum": "OA",
+    "sectionType": "Res"
+  },
+  "06539": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06539",
+    "sectionNum": "ON",
+    "sectionType": "Res"
+  },
+  "06552": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06552",
+    "sectionNum": "PA",
+    "sectionType": "Res"
+  },
+  "06557": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06557",
+    "sectionNum": "PF",
+    "sectionType": "Res"
+  },
+  "06560": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06560",
+    "sectionNum": "PI",
+    "sectionType": "Res"
+  },
+  "06572": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06572",
+    "sectionNum": "PU",
+    "sectionType": "Res"
+  },
+  "06601": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06601",
+    "sectionNum": "LX",
+    "sectionType": "Res"
+  },
+  "06602": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "199",
+    "sectionCode": "06602",
+    "sectionNum": "LY",
+    "sectionType": "Res"
+  },
+  "05080": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "93",
+    "sectionCode": "05080",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "05002": {
+    "type": "SECTION",
+    "department": "BIO SCI",
+    "courseNumber": "9A",
+    "sectionCode": "05002",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "09501": {
+    "type": "SECTION",
+    "department": "ECO EVO",
+    "courseNumber": "200A",
+    "sectionCode": "09501",
+    "sectionNum": "B",
+    "sectionType": "Res"
+  },
+  "01020": {
+    "type": "SECTION",
+    "department": "ART",
+    "courseNumber": "12B",
+    "sectionCode": "01020",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "01040": {
+    "type": "SECTION",
+    "department": "ART",
+    "courseNumber": "20B",
+    "sectionCode": "01040",
+    "sectionNum": "A",
+    "sectionType": "Stu"
+  },
+  "01070": {
+    "type": "SECTION",
+    "department": "ART",
+    "courseNumber": "65A",
+    "sectionCode": "01070",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "01120": {
+    "type": "SECTION",
+    "department": "ART",
+    "courseNumber": "100",
+    "sectionCode": "01120",
+    "sectionNum": "C",
+    "sectionType": "Stu"
+  },
+  "01130": {
+    "type": "SECTION",
+    "department": "ART",
+    "courseNumber": "100",
+    "sectionCode": "01130",
+    "sectionNum": "D",
+    "sectionType": "Stu"
+  },
+  "01711": {
+    "type": "SECTION",
+    "department": "ART",
+    "courseNumber": "199",
+    "sectionCode": "01711",
+    "sectionNum": "B",
+    "sectionType": "Stu"
+  },
+  "01712": {
+    "type": "SECTION",
+    "department": "ART",
+    "courseNumber": "199",
+    "sectionCode": "01712",
+    "sectionNum": "C",
+    "sectionType": "Stu"
+  },
+  "02030": {
+    "type": "SECTION",
+    "department": "DANCE",
+    "courseNumber": "185W",
+    "sectionCode": "02030",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "02010": {
+    "type": "SECTION",
+    "department": "DANCE",
+    "courseNumber": "3",
+    "sectionCode": "02010",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  },
+  "03020": {
+    "type": "SECTION",
+    "department": "DRAMA",
+    "courseNumber": "50E",
+    "sectionCode": "03020",
+    "sectionNum": "A",
+    "sectionType": "Stu"
+  },
+  "03040": {
+    "type": "SECTION",
+    "department": "DRAMA",
+    "courseNumber": "135",
+    "sectionCode": "03040",
+    "sectionNum": "A",
+    "sectionType": "Stu"
+  },
+  "04030": {
+    "type": "SECTION",
+    "department": "MUSIC",
+    "courseNumber": "3",
+    "sectionCode": "04030",
+    "sectionNum": "B",
+    "sectionType": "Lec"
+  },
+  "04040": {
+    "type": "SECTION",
+    "department": "MUSIC",
+    "courseNumber": "3",
+    "sectionCode": "04040",
+    "sectionNum": "C",
+    "sectionType": "Lec"
+  },
+  "04060": {
+    "type": "SECTION",
+    "department": "MUSIC",
+    "courseNumber": "8",
+    "sectionCode": "04060",
+    "sectionNum": "A",
+    "sectionType": "Lec"
+  }
+}

@@ -75,7 +75,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
 
     const handleOpen = useCallback(() => {
         setOpen(true);
-        setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(props.customEvent?.customEventID ?? -1));
+        setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(Number(props.customEvent?.customEventID ?? -1)));
 
         logAnalytics(postHog, {
             category: analyticsEnum.calendar,
@@ -125,8 +125,6 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
         };
 
         resetForm();
-
-        console.log(props.customEvent);
 
         props.customEvent
             ? editCustomEvent(newCustomEvent, scheduleIndices)

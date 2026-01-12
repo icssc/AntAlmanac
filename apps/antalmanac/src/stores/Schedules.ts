@@ -24,6 +24,8 @@ export class Schedules {
 
     private previousStates: ScheduleUndoState[];
 
+    private futureStates: ScheduleUndoState[];
+
     private skeletonSchedules: ShortCourseSchedule[];
 
     /**
@@ -46,6 +48,7 @@ export class Schedules {
         ];
         this.currentScheduleIndex = 0;
         this.previousStates = [];
+        this.futureStates = [];
         this.scheduleNoteMap = { [scheduleNoteId]: '' };
         this.skeletonSchedules = [];
     }
@@ -339,7 +342,6 @@ export class Schedules {
      */
     getIndexesOfCustomEvent(customEventId: number) {
         const indices: number[] = [];
-        console.log(this.schedules);
 
         for (const scheduleIndex of this.schedules.keys()) {
             if (this.doesCustomEventExistInSchedule(customEventId, scheduleIndex)) {
@@ -478,6 +480,7 @@ export class Schedules {
      */
     clearPreviousStates() {
         this.previousStates = [];
+        this.futureStates = [];
     }
 
     /**
@@ -493,6 +496,7 @@ export class Schedules {
         if (this.previousStates.length >= 50) {
             this.previousStates.shift();
         }
+        this.futureStates = [];
     }
 
     /**
@@ -501,10 +505,38 @@ export class Schedules {
      */
     revertState() {
         const state = this.previousStates.pop();
-        if (state !== undefined) {
-            this.schedules = state.schedules;
-            this.currentScheduleIndex = state.scheduleIndex;
+        if (state === undefined) {
+            return false;
         }
+        const clonedSchedules = JSON.parse(JSON.stringify(this.schedules)) as Schedule[];
+        this.futureStates.push({
+            schedules: clonedSchedules,
+            scheduleIndex: this.currentScheduleIndex,
+        });
+        if (this.futureStates.length >= 50) {
+            this.futureStates.shift();
+        }
+        this.schedules = state.schedules;
+        this.currentScheduleIndex = state.scheduleIndex;
+        return true;
+    }
+
+    advanceState() {
+        const state = this.futureStates.pop();
+        if (state === undefined) {
+            return false;
+        }
+        const clonedSchedules = JSON.parse(JSON.stringify(this.schedules)) as Schedule[];
+        this.previousStates.push({
+            schedules: clonedSchedules,
+            scheduleIndex: this.currentScheduleIndex,
+        });
+        if (this.previousStates.length >= 50) {
+            this.previousStates.shift();
+        }
+        this.schedules = state.schedules;
+        this.currentScheduleIndex = state.scheduleIndex;
+        return true;
     }
 
     /*

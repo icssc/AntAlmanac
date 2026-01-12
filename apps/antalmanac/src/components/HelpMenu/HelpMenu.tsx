@@ -62,17 +62,18 @@ export function HelpMenu() {
 
     return (
         <Stack
-            sx={{
+            sx={(theme) => ({
                 position: 'fixed',
                 bottom: isMobile ? 65 : 16, // Magic number
                 right: 8,
-            }}
+                zIndex: theme.zIndex.fab,
+            })}
             spacing={1}
             alignItems="center"
         >
             <Backdrop
                 sx={{
-                    zIndex: 1000, // If there's a higher zIndex than this, then that other zIndex is the real problem
+                    zIndex: 'inherit',
                 }}
                 open={open}
                 onClick={handleClose}

@@ -1,1 +1,4 @@
 src/generated/
+.next
+.open-next
+next-env.d.ts

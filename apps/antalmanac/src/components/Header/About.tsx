@@ -76,7 +76,7 @@ const AboutButton = () => {
                         <Link target="_blank" href="https://github.com/icssc/AntAlmanac/contributors">
                             <img
                                 src="https://contrib.rocks/image?repo=icssc/antalmanac"
-                                width={'100%'}
+                                width="100%"
                                 alt="AntAlmanac Contributors"
                             />
                         </Link>
