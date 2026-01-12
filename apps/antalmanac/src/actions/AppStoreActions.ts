@@ -51,6 +51,7 @@ export const addCourse = (
         courseComment: courseDetails.courseComment,
         prerequisiteLink: courseDetails.prerequisiteLink,
         section: { ...section, color: '' },
+        sectionTypes: courseDetails.sectionTypes,
     };
 
     return AppStore.addCourse(newCourse, scheduleIndex);
