@@ -2,8 +2,6 @@ import { Collapse, IconButton, Alert, AlertTitle, Box, Typography, useTheme } fr
 import { ExpandMore, InfoOutlined } from '@mui/icons-material';
 import { useEffect, useMemo, useState } from 'react';
 import AppStore from '$stores/AppStore';
-import { getLocalStorageTempSaveData } from '$lib/localStorage';
-import { setTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { useIsMobile } from '$hooks/useIsMobile';
 
 interface TbaSection {
@@ -71,42 +69,18 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
   }, [screenshotTrigger]);
 
   useEffect(() => {
-    const raw = getLocalStorageTempSaveData();
-    if (!raw) {
-    	return;
-    }
-
-    try {
-      const parsed = JSON.parse(raw);
-      const openIndex = parsed.openTbaCard;
-
-      setCollapsed(openIndex !== scheduleIndex);
-    } catch {
-      setCollapsed(false);
-    }
-  }, [scheduleIndex]);
-
-  useEffect(() => {
     setVisible(tbaSections.length > 0);
   }, [tbaSections]);
 
   useEffect(() => {
     if (visible) {
       setCollapsed(false);
-      setTempSaveData({
-      currentScheduleIndex: scheduleIndex,
-      openTbaCard: scheduleIndex,
-    });
     }
-  }, [visible, scheduleIndex]);
+  }, [visible]);
 
   const handleToggleCollapse = () => {
     setCollapsed((prev) => {
       const next = !prev;
-      setTempSaveData({
-        currentScheduleIndex: scheduleIndex,
-        openTbaCard: next ? null : scheduleIndex,
-      });
       return next;
     });
   };
