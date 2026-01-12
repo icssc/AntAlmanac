@@ -72,7 +72,9 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
 
   useEffect(() => {
     const raw = getLocalStorageTempSaveData();
-    if (!raw) return;
+    if (!raw) {
+    	return;
+    }
 
     try {
       const parsed = JSON.parse(raw);
