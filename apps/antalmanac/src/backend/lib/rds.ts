@@ -619,7 +619,7 @@ export class RDS {
                 .then((res) => {
                     return { users: res[0].users, accounts: res[0].accounts };
                 })
-        ) as Promise<{ users: User; accounts: Account }>;
+        );
     }
 
     /**

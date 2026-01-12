@@ -1,7 +1,6 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Avatar, Menu, ListItemIcon, ListItemText, MenuItem, IconButton } from '@mui/material';
-import { User } from '@packages/antalmanac-types';
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,7 +9,7 @@ import { useSessionStore } from '$stores/SessionStore';
 
 export function Signout() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [user, setUser] = useState<null | User>(null);
+    const [user, setUser] = useState<{ name?: string | null; avatar?: string | null } | null>(null);
     const navigate = useNavigate();
 
     const handleLogout = async () => {

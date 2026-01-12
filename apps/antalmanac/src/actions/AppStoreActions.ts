@@ -26,7 +26,7 @@ export interface CopyScheduleOptions {
 }
 
 interface AutoSaveScheduleOptions {
-    userInfo?: { email?: string; name?: string; avatar?: string };
+    userInfo?: { email?: string | null; name?: string | null; avatar?: string | null };
     postHog?: PostHog;
 }
 
@@ -100,7 +100,7 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
 export const saveSchedule = async (
     providerId: string,
     rememberMe: boolean,
-    userInfo?: { email?: string; name?: string; avatar?: string },
+    userInfo?: { email?: string | null; name?: string | null; avatar?: string | null },
     postHog?: PostHog
 ) => {
     logAnalytics(postHog, {
@@ -130,9 +130,9 @@ export const saveSchedule = async (
                     id: providerId,
                     data: {
                         id: providerId,
-                        email: userInfo?.email,
-                        name: userInfo?.name,
-                        avatar: userInfo?.avatar,
+                        email: userInfo?.email ?? undefined,
+                        name: userInfo?.name ?? undefined,
+                        avatar: userInfo?.avatar ?? undefined,
                         userData: scheduleSaveState,
                     },
                 });
@@ -179,9 +179,9 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
             id: providerID,
             data: {
                 id: providerID,
-                email: userInfo?.email,
-                name: userInfo?.name,
-                avatar: userInfo?.avatar,
+                email: userInfo?.email ?? undefined,
+                name: userInfo?.name ?? undefined,
+                avatar: userInfo?.avatar ?? undefined,
                 userData: scheduleSaveState,
             },
         });
