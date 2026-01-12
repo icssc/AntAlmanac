@@ -1,59 +1,53 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/github-workflow.json
----
-name: Destroy CloudFormation stacks for staging
+name: Delete - Staging
 
 on:
     pull_request:
-        types:
-            - closed
+        types: [closed]
+    repository_dispatch:
+        types: [remove-command]
 
 concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}
-    cancel-in-progress: true
-
-permissions:
-    contents: read
-    deployments: write
+    group: sst-staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
+    cancel-in-progress: false
 
 env:
-    # Tooling settings.
-    HUSKY: 0
-    NODE_ENV: staging
+    AWS_REGION: ${{ secrets.AWS_REGION }}
 
-    # Application information.
-    MONGODB_URI_PROD: ${{ secrets.MONGODB_URI_PROD }}
+    PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+    DEV_DB_URL: ${{ secrets.DEV_DB_URL }}
     MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
-    VITE_TILES_ENDPOINT: ${{ secrets.VITE_TILES_ENDPOINT}}
-    GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
-    GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
     ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
-    DB_URL: ${{ secrets.STAGING_DB_URL }}
-
-    # Turborepo credentials.
-    TURBO_API: ${{ vars.TURBO_API }}
-    TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-    TURBO_TEAM: team_antalmanac
-
-    # AWS credentials.
-    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    AWS_DEFAULT_REGION: us-east-1
-
-    # Information used by AWS CDK stacks.
-    HOSTED_ZONE_ID: ${{ secrets.HOSTED_ZONE_ID }}
-    CERTIFICATE_ARN: ${{ secrets.CERTIFICATE_ARN }}
-    PR_NUM: ${{ github.event.pull_request.number }}
-    STAGE: dev
+    OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID }}
+    OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
+    GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
 
 jobs:
-    destroy_staging_frontend:
-        name: Destroy frontend staging CloudFormation stack and environment
-
+    delete-staging:
         runs-on: ubuntu-latest
+        env:
+            SST_STAGE: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
 
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v3
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  ref: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
+
+            - name: Set commit status as pending
+              uses: myrotvorets/set-commit-status-action@master
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  status: pending
+                  sha: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
+                  context: Delete Staging
+                  description: Removing staging environment for PR #${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ env.AWS_REGION }}
 
             - name: Setup Node.js and pnpm
               uses: ./.github/actions/setup-node-and-pnpm
@@ -61,49 +55,31 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: Build frontend
-              run: pnpm --filter "antalmanac" build
-
-            - name: Destroy frontend staging CloudFormation stack
-              run: pnpm --filter "antalmanac-cdk" frontend-staging destroy --force
-
-            - name: Delete deployment
-              uses: ./.github/actions/delete-deployment
+            # TODO (@xgraceyan): Remove this stage once SST fixes deployments
+            - name: Setup Pulumi
+              uses: pulumi/actions@v5
               with:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  environment: staging-backend
-                  name: frontend-staging-${{ github.event.pull_request.number }}
+                  pulumi-version: 3.138.0 # Any version < 3.214.0 works
 
-    destroy_staging_backend:
-        name: Destroy backend staging CloudFormation stack and environment
+            - name: Remove SST staging stage
+              run: |
+                  echo "Removing stage: $SST_STAGE"
+                  npx sst remove --stage "$SST_STAGE"
 
-        runs-on: ubuntu-latest
-
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v3
-
-            - name: Setup Node.js and pnpm
-              uses: ./.github/actions/setup-node-and-pnpm
-
-            - name: Install dependencies
-              run: pnpm install --frozen-lockfile
-
-            - name: Build backend
-              run: pnpm --filter "antalmanac-backend" build
-              env:
-                  ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
-
-            - name: Destroy backend staging CloudFormation stack
-              run: pnpm --filter "antalmanac-cdk" backend-staging destroy --force
-              env: # Placeholder values because they shouldn't be necessary
-                  GOOGLE_CLIENT_ID: ""
-                  GOOGLE_CLIENT_SECRET: ""
-                  GOOGLE_REDIRECT_URI: ""
-
-            - name: Delete deployment
-              uses: ./.github/actions/delete-deployment
+            - name: Set final commit status
+              if: always()
+              uses: myrotvorets/set-commit-status-action@master
               with:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  environment: staging-backend
-                  name: backend-staging-${{ github.event.pull_request.number }}
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  status: ${{ job.status }}
+                  sha: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
+                  context: Delete Staging
+                  description: ${{ job.status == 'success' && 'Staging environment removed' || 'Failed to remove staging environment' }}
+
+            - name: Add reaction to comment
+              if: github.event_name == 'repository_dispatch'
+              uses: peter-evans/create-or-update-comment@v4
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+                  reactions: rocket
