@@ -36,13 +36,13 @@ export const useSessionStore = create<SessionState>((set) => {
                     try {
                         const { users } = await trpc.userData.getUserAndAccountBySessionToken
                             .query({ token: session });
-
-                        const googleId = await trpc.userData.getGoogleIdByUserId.query({
+                        let googleId = await trpc.userData.getGoogleIdByUserId.query({
                             userId: users.id,
-                            
                         });
+                        if (googleId?.startsWith("google_")) {
+                            googleId = googleId.slice("google_".length);
+                        }
                         set({ googleId });
-
                     } catch (e) {
                         console.error("❌ Failed to load googleId:", e);
                         set({ googleId: null })

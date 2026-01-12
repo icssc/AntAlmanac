@@ -139,7 +139,7 @@ export class RDS {
             tx
                 .select({ providerAccountId: accounts.providerAccountId })
                 .from(accounts)
-                .where(and(eq(accounts.userId, userId), eq(accounts.accountType, 'GOOGLE')))
+                .where(eq(accounts.userId, userId))
                 .limit(1)
                 .then((res) => (res.length > 0 ? res[0].providerAccountId : null))
         );
