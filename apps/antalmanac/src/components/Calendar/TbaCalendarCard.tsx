@@ -133,9 +133,9 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
         sx={{
           bgcolor: theme.palette.background.paper,
           width: '100%',
-          alignItems: 'flex-start',
+          alignItems: collapsed ? 'center' : 'flex-start',
           py: 1,
-          px: 1,
+          px: 1.5,
           '& .MuiAlert-message': {
             padding: 0,
             width: '100%',
