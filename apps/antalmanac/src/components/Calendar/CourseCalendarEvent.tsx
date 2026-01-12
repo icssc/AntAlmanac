@@ -1,5 +1,5 @@
 import { Delete, Search } from '@mui/icons-material';
-import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
+import { Chip, IconButton, Paper, Tooltip, Button, Box, Table, TableBody, TableRow, TableCell } from '@mui/material';
 import { WebsocSectionFinalExam } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useRef } from 'react';
@@ -169,12 +169,12 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         </IconButton>
                     </Tooltip>
                 </Box>
-                <table style={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-                    <tbody>
-                        <tr>
-                            <td style={{ verticalAlign: 'top' }}>Section code</td>
+                <Table style={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell style={{ verticalAlign: 'top' }}>Section code</TableCell>
                             <Tooltip title="Click to copy section code" placement="right">
-                                <td style={{ textAlign: 'right' }}>
+                                <TableCell style={{ textAlign: 'right' }}>
                                     <Chip
                                         onClick={(event) => {
                                             clickToCopy(event, sectionCode);
@@ -186,20 +186,24 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                                         label={sectionCode}
                                         size="small"
                                     />
-                                </td>
+                                </TableCell>
                             </Tooltip>
-                        </tr>
-                        <tr>
-                            <td style={{ verticalAlign: 'top' }}>Term</td>
-                            <td style={{ textAlign: 'right' }}>{term}</td>
-                        </tr>
-                        <tr>
-                            <td style={{ verticalAlign: 'top' }}>Instructors</td>
-                            <td style={{ whiteSpace: 'pre', textAlign: 'right' }}>{instructors.join('\n')}</td>
-                        </tr>
-                        <tr>
-                            <td style={{ verticalAlign: 'top' }}>Location{locations.length > 1 && 's'}</td>
-                            <td style={{ whiteSpace: 'pre', textAlign: 'right' }}>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell style={{ verticalAlign: 'top' }}>Term</TableCell>
+                            <TableCell style={{ textAlign: 'right' }}>{term}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell style={{ verticalAlign: 'top' }}>Instructors</TableCell>
+                            <TableCell style={{ whiteSpace: 'pre', textAlign: 'right' }}>
+                                {instructors.join('\n')}
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell style={{ verticalAlign: 'top' }}>
+                                Location{locations.length > 1 && 's'}
+                            </TableCell>
+                            <TableCell style={{ whiteSpace: 'pre', textAlign: 'right' }}>
                                 {locations.map((location) => (
                                     <div key={`${sectionCode} @ ${location.building} ${location.room}`}>
                                         <MapLink
@@ -208,15 +212,15 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                                         />
                                     </div>
                                 ))}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Final</td>
-                            <td style={{ textAlign: 'right' }}>{finalExamString}</td>
-                        </tr>
-                        <tr>
-                            <td>Color</td>
-                            <td style={{ textAlign: 'right' }}>
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Final</TableCell>
+                            <TableCell style={{ textAlign: 'right' }}>{finalExamString}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Color</TableCell>
+                            <TableCell style={{ textAlign: 'right' }}>
                                 <ColorPicker
                                     color={selectedEvent.color}
                                     isCustomEvent={selectedEvent.isCustomEvent}
@@ -224,10 +228,10 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                                     term={selectedEvent.term}
                                     analyticsCategory={analyticsEnum.calendar}
                                 />
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
             </Paper>
         );
     } else {
@@ -235,24 +239,50 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
         return (
             <Paper sx={{ padding: '0.5rem' }} ref={paperRef}>
                 <Box sx={{ fontSize: '0.9rem', fontWeight: 500 }}>{title}</Box>
-                <table style={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-                    <tbody>
-                        {
-                            <tr>
-                                <td style={{ verticalAlign: 'top', paddingRight: '2rem' }}>Term</td>
-                                <td style={{ textAlign: 'right' }}>{term}</td>
-                            </tr>
-                        }
+                <Table size="small" sx={{ width: '100%' }}>
+                    <TableBody>
+                        <TableRow>
+                            <TableCell
+                                sx={{
+                                    p: 0,
+                                    verticalAlign: 'top',
+                                    pr: 4,
+                                }}
+                            >
+                                Term
+                            </TableCell>
+                            <TableCell
+                                align="right"
+                                sx={{
+                                    p: 0,
+                                }}
+                            >
+                                {term}
+                            </TableCell>
+                        </TableRow>
                         {building && (
-                            <tr>
-                                <td style={{ verticalAlign: 'top', paddingRight: '2rem' }}>Location</td>
-                                <td style={{ textAlign: 'right' }}>
-                                    {<MapLink buildingId={+building} room={buildingCatalogue[+building]?.name ?? ''} />}
-                                </td>
-                            </tr>
+                            <TableRow>
+                                <TableCell
+                                    sx={{
+                                        verticalAlign: 'top',
+                                        p: 0,
+                                        pr: 4,
+                                    }}
+                                >
+                                    Location
+                                </TableCell>
+                                <TableCell
+                                    align="right"
+                                    sx={{
+                                        p: 0,
+                                    }}
+                                >
+                                    <MapLink buildingId={+building} room={buildingCatalogue[+building]?.name ?? ''} />
+                                </TableCell>
+                            </TableRow>
                         )}
-                    </tbody>
-                </table>
+                    </TableBody>
+                </Table>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <ColorPicker
                         color={selectedEvent.color}
