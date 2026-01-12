@@ -26,11 +26,25 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
 
     const handleLogout = async () => {
         setAnchorEl(null);
+        if (!session) {
+            await clearSession();
+            onLogoutComplete?.();
+            return;
+        }
+
         try {
+            await trpc.userData.logout.mutate({
+                sessionToken: session,
+                redirectUrl: window.location.origin,
+            });
+
             await clearSession();
             onLogoutComplete?.();
         } catch (error) {
-            console.error('Failed to sign out', error);
+            console.error('Error during logout', error);
+            // Even on error, clear session and show dialog
+            await clearSession();
+            onLogoutComplete?.();
         }
     };
 
