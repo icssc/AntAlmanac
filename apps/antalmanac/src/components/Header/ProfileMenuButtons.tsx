@@ -10,9 +10,10 @@ import { User } from '@packages/antalmanac-types';
 interface ProfileMenuButtonsProps {
     user: User | null;
     handleOpen: (event: React.MouseEvent<HTMLElement>) => void;
+    handleSettingsOpen: (event: React.MouseEvent<HTMLElement>) => void;
 }
-const ProfileMenuButtons: FC<ProfileMenuButtonsProps> = ({ user, handleOpen }) => {
-    if (!user) {
+const ProfileMenuButtons: FC<ProfileMenuButtonsProps> = ({ user, handleOpen, handleSettingsOpen }) => {
+      if (!user) {
         return (
             <>
                 <Button
@@ -20,11 +21,11 @@ const ProfileMenuButtons: FC<ProfileMenuButtonsProps> = ({ user, handleOpen }) =
                     size="medium"
                     startIcon={<AccountCircleIcon />}
                     color="inherit"
-                    href="/api/users/auth/google"
+                    onClick={handleOpen}  
                 >
                     Sign In
                 </Button>
-                <IconButton onClick={handleOpen} color="inherit">
+                <IconButton onClick={handleSettingsOpen} color="inherit">
                     <MenuIcon />
                 </IconButton>
             </>

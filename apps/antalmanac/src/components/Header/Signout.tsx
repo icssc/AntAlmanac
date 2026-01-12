@@ -64,7 +64,7 @@ export function Signout() {
 
     return (
         <div id="load-save-container">
-            <ProfileMenuButtons  user = {user} handleOpen={handleClick} />
+            <ProfileMenuButtons  user = {user} handleOpen={handleClick} handleSettingsOpen={handleClick} />
             <Popover
                 open={open}
                 anchorEl={anchorEl}
