@@ -15,6 +15,7 @@ import { useSessionStore } from '$stores/SessionStore';
 import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
 import { User } from '@packages/antalmanac-types';
 import { useTheme } from '@mui/material/styles';
+import { About } from '$components/Header/About';
 
 
 const lightSelectedStyle: CSSProperties = {

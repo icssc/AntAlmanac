@@ -38,7 +38,7 @@ const AboutButton = () => {
 
     return (
         <>
-            <Button onClick={handleOpen} color="inherit" startIcon={<Info />} size="large" variant="text">
+            <Button onClick={handleOpen} color="inherit" startIcon={<Info />} size="medium" variant="text">
                 About
             </Button>
             <Dialog open={open} onClose={handleClose}>
