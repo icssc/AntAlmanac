@@ -199,7 +199,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         <TableRow>
                             <TableCell>Section code</TableCell>
                             <Tooltip title="Click to copy section code" placement="right">
-                                <TableCell sx={{ whiteSpace: 'pre', textAlign: 'right' }}>
+                                <TableCell sx={{ textAlign: 'right' }}>
                                     <Chip
                                         onClick={(event) => {
                                             clickToCopy(event, sectionCode);
@@ -216,17 +216,15 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         </TableRow>
                         <TableRow>
                             <TableCell>Term</TableCell>
-                            <TableCell sx={{ whiteSpace: 'pre', textAlign: 'right' }}>{term}</TableCell>
+                            <TableCell sx={{ textAlign: 'right' }}>{term}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>Instructors</TableCell>
-                            <TableCell sx={{ whiteSpace: 'pre', textAlign: 'right' }}>
-                                {instructors.join('\n')}
-                            </TableCell>
+                            <TableCell sx={{ textAlign: 'right' }}>{instructors.join('\n')}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell>Location{locations.length > 1 && 's'}</TableCell>
-                            <TableCell sx={{ whiteSpace: 'pre', textAlign: 'right' }}>
+                            <TableCell sx={{ textAlign: 'right' }}>
                                 {locations.map((location) => (
                                     <div key={`${sectionCode} @ ${location.building} ${location.room}`}>
                                         <MapLink
@@ -239,11 +237,11 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         </TableRow>
                         <TableRow>
                             <TableCell>Final</TableCell>
-                            <TableCell sx={{ whiteSpace: 'pre', textAlign: 'right' }}>{finalExamString}</TableCell>
+                            <TableCell sx={{ textAlign: 'right' }}>{finalExamString}</TableCell>
                         </TableRow>
                         <TableRow>
                             <TableCell style={{ paddingBottom: 0 }}>Color</TableCell>
-                            <TableCell style={{ whiteSpace: 'pre', textAlign: 'right', paddingBottom: 0 }}>
+                            <TableCell style={{ textAlign: 'right', paddingBottom: 0 }}>
                                 <ColorPicker
                                     color={selectedEvent.color}
                                     isCustomEvent={selectedEvent.isCustomEvent}
