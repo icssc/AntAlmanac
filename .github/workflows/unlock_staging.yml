@@ -1,34 +1,20 @@
-name: Delete - Staging
+name: Unlock - Staging
 
 on:
-    pull_request:
-        types: [closed]
     repository_dispatch:
-        types: [remove-command]
-
-concurrency:
-    group: sst-staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
-    cancel-in-progress: false
+        types: [unlock-command]
 
 env:
     AWS_REGION: ${{ secrets.AWS_REGION }}
 
-    PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
-    DEV_DB_URL: ${{ secrets.DEV_DB_URL }}
-    MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
-    ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
-    OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID }}
-    OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
-    GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
-
 jobs:
-    delete-staging:
+    unlock-staging:
         runs-on: ubuntu-latest
         env:
             SST_STAGE: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
 
         steps:
-            - name: Checkout
+            - name: Checkout PR branch
               uses: actions/checkout@v4
               with:
                   ref: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
@@ -38,9 +24,9 @@ jobs:
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
                   status: pending
-                  sha: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
-                  context: Delete Staging
-                  description: Removing staging environment for PR #${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
+                  sha: ${{ github.event.client_payload.pull_request.head.sha }}
+                  context: Unlock Staging
+                  description: Unlocking staging environment for PR #${{ github.event.client_payload.pull_request.number }}
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v4
@@ -55,16 +41,10 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
-            # TODO (@xgraceyan): Remove this stage once SST fixes deployments
-            - name: Setup Pulumi
-              uses: pulumi/actions@v5
-              with:
-                  pulumi-version: 3.138.0 # Any version < 3.214.0 works
-
-            - name: Remove SST staging stage
+            - name: Unlock SST staging stage
               run: |
-                  echo "Removing stage: $SST_STAGE"
-                  npx sst remove --stage "$SST_STAGE"
+                  echo "Unlocking stage: $SST_STAGE"
+                  npx sst unlock --stage "$SST_STAGE"
 
             - name: Set final commit status
               if: always()
@@ -72,12 +52,11 @@ jobs:
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
                   status: ${{ job.status }}
-                  sha: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
-                  context: Delete Staging
-                  description: ${{ job.status == 'success' && 'Staging environment removed' || 'Failed to remove staging environment' }}
+                  sha: ${{ github.event.client_payload.pull_request.head.sha }}
+                  context: Unlock Staging
+                  description: ${{ job.status == 'success' && 'Staging environment unlocked' || 'Failed to unlock staging environment' }}
 
             - name: Add reaction to comment
-              if: github.event_name == 'repository_dispatch'
               uses: peter-evans/create-or-update-comment@v4
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
