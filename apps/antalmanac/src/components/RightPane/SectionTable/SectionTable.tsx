@@ -123,7 +123,7 @@ function SectionTable(props: SectionTableProps) {
                             height={customIconSize}
                         />
                     }
-                    redirectLink={`https://peterportal.org/course/${courseId}`}
+                    redirectLink={`https://peterportal.org/course/${encodeURIComponent(courseId)}`}
                 />
 
                 <CourseInfoButton
