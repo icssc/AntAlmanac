@@ -54,7 +54,7 @@ jobs:
 
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
-              
+
             # TODO (@xgraceyan): Remove this stage once SST fixes deployments
             - name: Setup Pulumi
               uses: pulumi/actions@v5

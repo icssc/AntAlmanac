@@ -69,7 +69,7 @@ jobs:
               uses: pulumi/actions@v5
               with:
                   pulumi-version: 3.138.0 # Any version < 3.214.0 works
-                  
+
             - name: Deploy SST (staging)
               id: deploy
               run: |
