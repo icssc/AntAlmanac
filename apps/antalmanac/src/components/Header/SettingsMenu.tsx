@@ -1,7 +1,10 @@
 import { LightMode, SettingsBrightness, DarkMode, Help } from '@mui/icons-material';
 import { Avatar, Box, Divider, Stack, Switch, Tooltip, Typography } from '@mui/material';
+import Image from 'next/image';
 import { CSSProperties } from '@mui/material/styles/createTypography';
 import { usePostHog } from 'posthog-js/react';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
@@ -109,15 +112,15 @@ function TimeMenu() {
             <Box
                 sx={{
                     display: 'flex',
-                     border: `1px solid ${isDark ? '#8886' : '#d3d4d5'}`,
+                    border: `1px solid ${isDark ? '#8886' : '#d3d4d5'}`,
                     borderRadius: '4px',
                     mb: 1.5,
                 }}
             >
-                  <Box
+                <Box
                     data-value="false"
                     onClick={handleTimeFormatChange}
-                      sx={{
+                    sx={{
                         flex: 1,
                         display: 'flex',
                         alignItems: 'center',
@@ -137,7 +140,7 @@ function TimeMenu() {
                     }}
                 >
                     12 Hour
-                    </Box>
+                </Box>
                 <Box
                     data-value="true"
                     onClick={handleTimeFormatChange}
@@ -160,12 +163,11 @@ function TimeMenu() {
                     }}
                 >
                     24 Hour
-                       </Box>
+                </Box>
             </Box>
         </Box>
     );
 }
-
 
 function PlannerMenu() {
     return (
@@ -240,15 +242,21 @@ function ExperimentalMenu() {
 
 function UserProfileSection({ user }: { user: User | null }) {
     if (!user) return null;
-    const theme = useTheme()
+    const theme = useTheme();
 
     return (
-         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-            <Avatar
-                src={user.avatar}
-                alt={user.name ?? 'User'}
-                sx={{ width: 50, height: 50 }}
-            />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            {user.avatar ? (
+                <Image
+                    src={user.avatar}
+                    alt={user.name ?? 'User'}
+                    width={50}
+                    height={50}
+                    style={{ borderRadius: '50%', objectFit: 'cover' }}
+                />
+            ) : (
+                <AccountCircleIcon sx={{ width: 50, height: 50 }} />
+            )}
             <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Typography
                     style={{
@@ -272,7 +280,7 @@ function UserProfileSection({ user }: { user: User | null }) {
                         paddingBottom: '4px',
                         margin: 0,
                         lineHeight: 1,
-                        fontWeight: 600
+                        fontWeight: 600,
                     }}
                 >
                     {user.email}
@@ -283,14 +291,14 @@ function UserProfileSection({ user }: { user: User | null }) {
 }
 
 export function SettingsMenu({ user }: { user: User | null }) {
-        const isMobile = useIsMobile();
+    const isMobile = useIsMobile();
     return (
         <Stack>
             <UserProfileSection user={user} />
 
             <ThemeMenu />
             <TimeMenu />
-              {isMobile && (
+            {isMobile && (
                 <Stack gap={2}>
                     <Divider>
                         <Typography variant="subtitle2">Want a 4-year plan?</Typography>
@@ -298,14 +306,14 @@ export function SettingsMenu({ user }: { user: User | null }) {
                     <PlannerMenu />
                 </Stack>
             )}
-            <Stack >
+            <Stack>
                 <Divider>
                     <Typography variant="subtitle2">Experimental Features</Typography>
                 </Divider>
 
                 <ExperimentalMenu />
-                <Divider style={{ marginTop: '10px', marginBottom: '12px' }}/>
-                <About/>
+                <Divider style={{ marginTop: '10px', marginBottom: '12px' }} />
+                <About />
             </Stack>
         </Stack>
     );
