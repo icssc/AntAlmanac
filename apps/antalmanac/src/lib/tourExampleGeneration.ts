@@ -212,6 +212,7 @@ export function sampleClassFactory({
         section: {
             color: '#FF0000',
             instructors: instructors,
+            isCancelled: false,
             maxCapacity: '500',
             meetings: meetings ?? sampleMeetingsFactory({}),
             finalExam: finalExam ?? sampleFinalExamFactory({}),
