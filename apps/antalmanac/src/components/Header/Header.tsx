@@ -64,8 +64,8 @@ export function Header() {
                 <Logo />
 
                 <Stack direction="row" sx={{ alignItems: 'center' }}>
-                    <Save />
                     <Import key="studylist" />
+                    <Save />
                     {sessionIsValid ? <Signout /> : <Signin />}
                 </Stack>
                 
