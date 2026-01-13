@@ -1,6 +1,6 @@
 import { FC } from 'react';
 
-import { Button, IconButton } from '@mui/material';
+import { Button, IconButton, CircularProgress } from '@mui/material';
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Image from 'next/image';
@@ -11,15 +11,16 @@ interface ProfileMenuButtonsProps {
     user: User | null;
     handleOpen: (event: React.MouseEvent<HTMLElement>) => void;
     handleSettingsOpen: (event: React.MouseEvent<HTMLElement>) => void;
+    loading?: boolean;
 }
-export const ProfileMenuButtons: FC<ProfileMenuButtonsProps> = ({ user, handleOpen, handleSettingsOpen }) => {
+export const ProfileMenuButtons: FC<ProfileMenuButtonsProps> = ({ user, handleOpen, handleSettingsOpen, loading = false }) => {
     if (!user) {
         return (
             <>
                 <Button
                     variant="text"
                     size="medium"
-                    startIcon={<AccountCircleIcon />}
+                    startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <AccountCircleIcon />}
                     color="inherit"
                     onClick={handleOpen}
                 >

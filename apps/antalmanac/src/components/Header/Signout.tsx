@@ -1,11 +1,9 @@
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Avatar, Divider, Menu, ListItemIcon, ListItemText, MenuItem, IconButton, Popover } from '@mui/material';
+import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SettingsMenu } from '$components/Header/SettingsMenu';
-import {MenuRounded } from '@mui/icons-material';
 
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
@@ -43,9 +41,7 @@ export function Signout() {
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+
 
     const handleAuthChange = useCallback(async () => {
         if (sessionIsValid) {

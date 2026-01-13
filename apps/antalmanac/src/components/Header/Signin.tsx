@@ -5,13 +5,11 @@ import {
     Stack,
     Alert,
     AlertTitle,
-    CircularProgress,
     Button,
     Dialog,
     DialogActions,
     DialogContent,
     DialogContentText,
-    DialogTitle,
     Popover,
     TextField,
     AlertColor,
@@ -31,24 +29,6 @@ import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/SettingsMenu';
-
-interface SignInButtonProps {
-    action: typeof saveSchedule;
-    actionSecondary?: () => void;
-    disabled: boolean;
-    loading: boolean;
-    colorType: 'primary' | 'secondary';
-    id?: string;
-    isDark: boolean;
-    handleSettingsOpen: (event: React.MouseEvent<HTMLElement>) => void;
-}
-
-interface SignInIconProps {
-    loading: boolean;
-}
-function SignInIcon(props: SignInIconProps) {
-    return props.loading ? <CircularProgress size={20} color="inherit" /> : <AccountCircle />;
-}
 
 const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = {
     SESSION_EXPIRED: {
@@ -217,7 +197,7 @@ export const Signin = () => {
 
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
-            <ProfileMenuButtons user={null} handleOpen={handleOpen} handleSettingsOpen={handleSettingsOpen} />
+            <ProfileMenuButtons user={null} handleOpen={handleOpen} handleSettingsOpen={handleSettingsOpen} loading={loadingSchedule}/>
 
             <Dialog open={isOpen} onClose={() => handleClose(true)}>
                 <DialogContent>

@@ -18,35 +18,6 @@ import { useTheme } from '@mui/material/styles';
 import { About } from '$components/Header/About';
 import { BLUE } from '$src/globals';
 
-
-const lightSelectedStyle: CSSProperties = {
-    backgroundColor: BLUE,
-    color: '#fff',
-};
-
-const darkSelectedStyle: CSSProperties = {
-    backgroundColor: BLUE,
-    color: '#fff',
-};
-
-const lightUnselectedStyle: CSSProperties = {
-    backgroundColor: '#f8f9fa',
-    color: 'inherit',
-};
-
-const darkUnselectedStyle: CSSProperties = {
-    backgroundColor: 'transparent',
-    color: 'inherit',
-};
-
-function getSelectedStyle(buttonValue: string, themeSetting: string, isDark: boolean): CSSProperties {
-    if (themeSetting === buttonValue) {
-        return isDark ? darkSelectedStyle : lightSelectedStyle;
-    } else {
-        return isDark ? darkUnselectedStyle : lightUnselectedStyle;
-    }
-}
-
 function ThemeMenu() {
     const [themeSetting, isDark, setTheme] = useThemeStore((store) => [
         store.themeSetting,
@@ -120,6 +91,7 @@ function ThemeMenu() {
         </Box>
     );
 }
+
 function TimeMenu() {
     const [isMilitaryTime, setTimeFormat] = useTimeFormatStore((store) => [store.isMilitaryTime, store.setTimeFormat]);
     const isDark = useThemeStore((store) => store.isDark);
