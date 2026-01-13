@@ -30,7 +30,7 @@ const lightTheme: PaletteOptions = {
 
 const darkTheme: PaletteOptions = {
     primary: {
-        main: DODGER_BLUE,
+        main: BLUE,
     },
     secondary: {
         main: '#ffffff',

@@ -16,15 +16,16 @@ import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } 
 import { User } from '@packages/antalmanac-types';
 import { useTheme } from '@mui/material/styles';
 import { About } from '$components/Header/About';
+import { BLUE } from '$src/globals';
 
 
 const lightSelectedStyle: CSSProperties = {
-    backgroundColor: '#1976d2',
+    backgroundColor: BLUE,
     color: '#fff',
 };
 
 const darkSelectedStyle: CSSProperties = {
-    backgroundColor: '#1976d2',
+    backgroundColor: BLUE,
     color: '#fff',
 };
 
@@ -98,15 +99,15 @@ function ThemeMenu() {
                                 cursor: 'pointer',
                                 fontWeight: 'bold',
                                 fontSize: '1.1rem',
-                                backgroundColor: isSelected ? '#1976d2' : isDark ? '#333333' : '#f8f9fa',
-                                color: isSelected ? '#fff' : '#1976d2',
+                                backgroundColor: isSelected ? BLUE : isDark ? '#333333' : '#f8f9fa',
+                                color: isSelected ? '#fff' : BLUE,
                                 borderRight: index < 2 ? `1px solid ${isDark ? '#8886' : '#d3d4d5'}` : 'none',
                                 borderTopLeftRadius: tab.value === 'light' ? 4 : 0,
                                 borderBottomLeftRadius: tab.value === 'light' ? 4 : 0,
                                 borderTopRightRadius: tab.value === 'dark' ? 4 : 0,
                                 borderBottomRightRadius: tab.value === 'dark' ? 4 : 0,
                                 '&:hover': {
-                                    backgroundColor: isSelected ? '#1976d2' : isDark ? '#424649' : '#d3d4d5',
+                                    backgroundColor: isSelected ? BLUE : isDark ? '#424649' : '#d3d4d5',
                                 },
                             }}
                         >
@@ -153,13 +154,13 @@ function TimeMenu() {
                         cursor: 'pointer',
                         fontWeight: 'bold',
                         fontSize: '1.1rem',
-                        backgroundColor: !isMilitaryTime ? '#1976d2' : isDark ? '#333333' : '#f8f9fa',
-                        color: !isMilitaryTime ? '#fff' : '#1976d2',
+                        backgroundColor: !isMilitaryTime ? BLUE : isDark ? '#333333' : '#f8f9fa',
+                        color: !isMilitaryTime ? '#fff' : BLUE,
                         borderRight: `1px solid ${isDark ? '#8886' : '#d3d4d5'}`,
                         borderTopLeftRadius: 4,
                         borderBottomLeftRadius: 4,
                         '&:hover': {
-                            backgroundColor: !isMilitaryTime ? '#1976d2' : isDark ? '#424649' : '#d3d4d5',
+                            backgroundColor: !isMilitaryTime ? BLUE : isDark ? '#424649' : '#d3d4d5',
                         },
                     }}
                 >
@@ -177,12 +178,12 @@ function TimeMenu() {
                         cursor: 'pointer',
                         fontWeight: 'bold',
                         fontSize: '1.1rem',
-                        backgroundColor: isMilitaryTime ? '#1976d2' : isDark ? '#333333' : '#f8f9fa',
-                        color: isMilitaryTime ? '#fff' : '#1976d2',
+                        backgroundColor: isMilitaryTime ? BLUE : isDark ? '#333333' : '#f8f9fa',
+                        color: isMilitaryTime ? '#fff' : BLUE,
                         borderTopRightRadius: 4,
                         borderBottomRightRadius: 4,
                         '&:hover': {
-                            backgroundColor: isMilitaryTime ? '#1976d2' : isDark ? '#424649' : '#d3d4d5',
+                            backgroundColor: isMilitaryTime ? BLUE : isDark ? '#424649' : '#d3d4d5',
                         },
                     }}
                 >
