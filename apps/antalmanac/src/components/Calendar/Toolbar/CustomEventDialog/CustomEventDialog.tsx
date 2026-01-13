@@ -18,7 +18,6 @@ import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
 import { DaySelector } from '$components/Calendar/Toolbar/CustomEventDialog/DaySelector';
 import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog/ScheduleSelector';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
-import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -40,7 +39,6 @@ const defaultCustomEventValues: RepeatingCustomEvent = {
 
 export function CustomEventDialog(props: CustomEventDialogProps) {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-    const isMobile = useIsMobile();
 
     const [open, setOpen] = useState(false);
     const [scheduleIndices, setScheduleIndices] = useState<number[]>([]);
@@ -167,7 +165,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                     </IconButton>
                 </Tooltip>
             )}
-            <Dialog open={open} onClose={handleClose} maxWidth={'xs'} fullScreen={isMobile}>
+            <Dialog open={open} onClose={handleClose} maxWidth={'xs'}>
                 <DialogTitle id="form-dialog-title">
                     {props.customEvent ? 'Edit a Custom Event' : 'Add a Custom Event'}
                 </DialogTitle>
