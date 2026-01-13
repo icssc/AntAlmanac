@@ -36,7 +36,7 @@ export async function fetchUserRoadmapsPeterPortal(userId: string) { // maybe ad
   const apiKey = env.PETERPORTAL_CLIENT_API_KEY;
 
   const searchParams = new URLSearchParams();
-  searchParams.set('input', JSON.stringify({ googleUserId: `google_${ userId }` })); // temp prefix added
+  searchParams.set('input', JSON.stringify({ googleUserId: userId }));
   const url = `${PETERPORTAL_API_URL}?${searchParams}`;
 
   try {
