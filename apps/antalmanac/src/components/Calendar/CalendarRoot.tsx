@@ -28,17 +28,27 @@ import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleS
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 
 /*
- * Always start week on Saturday for finals potentially on weekends.
- * CALENDAR_VIEWS will set the correct day range
+//  * Always start week on Saturday for finals potentially on weekends.
+//  * CALENDAR_VIEWS will set the correct day range
+ * Start week on Sunday so Saturday appears after Friday.
+ * This ensures the standard week layout: Su, M, Tu, W, Th, F, Sa
+ * Normal schedules: Su ... Sa (Sa rightmost)
  */
 // eslint-disable-next-line import/no-named-as-default-member
-moment.updateLocale('en-us', {
+moment.defineLocale('en-us', {
+    parentLocale: 'en',
     week: {
-        dow: 6,
+        dow: 0, // Sunday = 0, Monday = 1, ..., Saturday = 6
     },
 });
 
-const CALENDAR_LOCALIZER: DateLocalizer = momentLocalizer(moment);
+// Finals locale: week starts Saturday (Sa ... Fr)
+moment.defineLocale('en-us-finals', {
+    parentLocale: 'en-us',
+    week: { dow: 6 },
+});
+
+moment.locale('en-us');
 const CALENDAR_VIEWS: ViewsProps<CalendarEvent, object> = [Views.WEEK, Views.WORK_WEEK];
 const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
     event: CalendarCourseEvent,
@@ -71,12 +81,13 @@ export const ScheduleCalendar = memo(() => {
     );
 
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
-        if (showFinalsSchedule)
-            return hoveredCalendarizedFinal
+        return showFinalsSchedule
+            ? hoveredCalendarizedFinal
                 ? [...finalsEventsInCalendar, hoveredCalendarizedFinal]
-                : finalsEventsInCalendar;
-        else
-            return hoveredCalendarizedCourses ? [...eventsInCalendar, ...hoveredCalendarizedCourses] : eventsInCalendar;
+                : finalsEventsInCalendar
+            : hoveredCalendarizedCourses
+            ? [...eventsInCalendar, ...hoveredCalendarizedCourses]
+            : eventsInCalendar;
     }, [
         eventsInCalendar,
         finalsEventsInCalendar,
@@ -245,8 +256,27 @@ export const ScheduleCalendar = memo(() => {
     const finalsDate = hoveredCalendarizedFinal
         ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
         : onlyCourseEvents.length > 0
-          ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
-          : getDefaultFinalsStartDate();
+        ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
+        : getDefaultFinalsStartDate();
+
+        const finalsStartsOnSaturday = showFinalsSchedule && finalsDate.getDay() === 6;
+
+    const culture = finalsStartsOnSaturday ? 'en-us-finals' : 'en-us';
+
+    const calendarLocalizer = useMemo(() => {
+        moment.locale(culture);
+        return momentLocalizer(moment);
+    }, [culture]);
+
+    // Check if there are any finals on weekends (else only display M-F)
+    const hasWeekendFinals =
+        showFinalsSchedule &&
+        [...finalsEventsInCalendar, hoveredCalendarizedFinal]
+            .filter(Boolean)
+            .some((event) => event != null && [0, 6].includes(event.start.getDay()));
+
+    const shouldShowWeekView = showFinalsSchedule ? hasWeekendFinals : hasWeekendCourse;
+    const calendarView = shouldShowWeekView ? Views.WEEK : Views.WORK_WEEK;
 
     const finalsDateFormat = 'ddd MM/DD';
     const date = showFinalsSchedule ? finalsDate : new Date(2018, 0, 1);
@@ -324,12 +354,14 @@ export const ScheduleCalendar = memo(() => {
                 <CalendarEventPopover />
 
                 <Calendar<CalendarEvent, object>
-                    localizer={CALENDAR_LOCALIZER}
+                    key={`${culture}-${calendarView}`}
+                    localizer={calendarLocalizer}
+                    culture={culture}
                     toolbar={false}
                     formats={formats}
                     views={CALENDAR_VIEWS}
                     defaultView={Views.WORK_WEEK}
-                    view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
+                    view={calendarView}
                     onView={() => {
                         return;
                     }}
