@@ -86,8 +86,8 @@ export const ScheduleCalendar = memo(() => {
                 ? [...finalsEventsInCalendar, hoveredCalendarizedFinal]
                 : finalsEventsInCalendar
             : hoveredCalendarizedCourses
-            ? [...eventsInCalendar, ...hoveredCalendarizedCourses]
-            : eventsInCalendar;
+              ? [...eventsInCalendar, ...hoveredCalendarizedCourses]
+              : eventsInCalendar;
     }, [
         eventsInCalendar,
         finalsEventsInCalendar,
@@ -256,10 +256,10 @@ export const ScheduleCalendar = memo(() => {
     const finalsDate = hoveredCalendarizedFinal
         ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
         : onlyCourseEvents.length > 0
-        ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
-        : getDefaultFinalsStartDate();
+          ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
+          : getDefaultFinalsStartDate();
 
-        const finalsStartsOnSaturday = showFinalsSchedule && finalsDate.getDay() === 6;
+    const finalsStartsOnSaturday = showFinalsSchedule && finalsDate.getDay() === 6;
 
     const culture = finalsStartsOnSaturday ? 'en-us-finals' : 'en-us';
 
