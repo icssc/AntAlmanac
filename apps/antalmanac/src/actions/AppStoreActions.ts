@@ -218,9 +218,16 @@ export const mergeShortCourseSchedules = (
     const existingScheduleNames = new Set(currentSchedules.map((s: ShortCourseSchedule) => s.scheduleName));
     const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
         let scheduleName = `${importMessage}${schedule.scheduleName}`;
-        if (existingScheduleNames.has(scheduleName)) {
-            scheduleName = `${scheduleName}(1)`;
+        let counter = 1;
+        const baseName = scheduleName;
+
+        while (existingScheduleNames.has(scheduleName)) {
+            scheduleName = `${baseName}(${counter})`;
+            counter++;
         }
+
+        existingScheduleNames.add(scheduleName);
+
         return {
             ...schedule,
             scheduleName: scheduleName,
