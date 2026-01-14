@@ -1,5 +1,6 @@
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, PopoverProps, Tooltip } from '@mui/material';
+import { CustomEventId } from '@packages/antalmanac-types';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { memo, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
@@ -15,7 +16,7 @@ interface ColorPickerProps {
     /**If true, this object has a customEventID. If false, this object has a term and sectionCode. */
     isCustomEvent: boolean;
     /**Not undefined when isCustomEvent is true */
-    customEventID?: number;
+    customEventID?: CustomEventId;
     /**Not undefined  when isCustomEvent is false */
     term?: string;
     /**Not undefined  when isCustomEvent is false */
