@@ -1,4 +1,5 @@
 name: Check for New Quarter and Reschedule
+
 on:
     schedule:
         # NEXT SOC RELEASE
@@ -6,6 +7,26 @@ on:
         # END NEXT SOC RELEASE
     workflow_dispatch:
   
+env:
+    ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
+
+permissions:
+    contents: write
+
+jobs:
+    check-and-reschedule:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+            
+            - name: Configure Git
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+
 
 
 
