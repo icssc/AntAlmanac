@@ -4,7 +4,8 @@ function getDomain() {
     if ($app.stage === 'production') {
         return 'antalmanac.com';
     } else if ($app.stage.match(/^staging-(\d+)$/)) {
-        return `${$app.stage}.antalmanac.com`;
+        const subdomainPrefix = $app.stage.replace('staging-', 'scheduler-');
+        return `${subdomainPrefix}.antalmanac.com`;
     }
 
     throw new Error('Invalid stage');
