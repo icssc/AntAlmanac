@@ -151,6 +151,14 @@ export default function AppThemeProvider(props: Props) {
                             variant: 'standard',
                         },
                     },
+                    MuiAlert: {
+                        styleOverrides: {
+                            standardWarning: {
+                                backgroundColor: '#FFEA99',
+                                color: '#302800ff',
+                            },
+                        },
+                    },
                 },
                 breakpoints: {
                     /**
