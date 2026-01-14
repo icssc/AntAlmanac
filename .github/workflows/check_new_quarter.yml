@@ -1,0 +1,11 @@
+name: Check for New Quarter and Reschedule
+on:
+    schedule:
+        # NEXT SOC RELEASE
+        - cron: '0 * * * *'
+        # END NEXT SOC RELEASE
+    workflow_dispatch:
+  
+
+
+
