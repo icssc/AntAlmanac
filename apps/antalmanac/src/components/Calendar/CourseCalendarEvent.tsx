@@ -276,7 +276,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                 >
                     <TableBody>
                         <TableRow>
-                            <TableCell style={{ paddingRight: '2rem' }}>Term</TableCell>
+                            <TableCell style={{ paddingTop: '0.2rem', paddingRight: '2rem' }}>Term</TableCell>
                             <TableCell sx={{ textAlign: 'right' }}>{term}</TableCell>
                         </TableRow>
                         {building && (
