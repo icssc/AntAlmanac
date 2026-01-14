@@ -76,6 +76,7 @@ export function Header() {
 
                 <Stack direction="row" sx={{ alignItems: 'center' }}>
                     <Import key="studylist" />
+                    <Save />
                     {sessionIsValid ? <Signout onLogoutComplete={handleLogoutComplete} /> : <Signin />}
                     <AppDrawer key="settings" />
                 </Stack>

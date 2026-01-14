@@ -94,6 +94,10 @@ export function getLocalStorageSessionId() {
     return window.localStorage.getItem(LSK.sessionId);
 }
 
+export function removeLocalStorageSessionId() {
+    window.localStorage.removeItem(LSK.sessionId);
+}
+
 // Helper functions for patchNotesKey
 export function setLocalStoragePatchNotesKey(value: string) {
     window.localStorage.setItem(LSK.patchNotesKey, value);
