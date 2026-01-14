@@ -3,7 +3,7 @@ import type {
     CourseInfo,
     WebsocCourse,
     WebsocSectionType,
-    WebsocAPIDepartmentResponse,
+    WebsocAPIDepartmentsResponse,
 } from '@packages/antalmanac-types';
 import { z } from 'zod';
 
@@ -92,7 +92,7 @@ const queryWebSocDepartments = async () => {
         },
     });
     const data = await response.json();
-    return data.data as WebsocAPIDepartmentResponse;
+    return data.data as WebsocAPIDepartmentsResponse;
 };
 
 function combineWebsocResponses(responses: WebsocAPIResponse[]) {
