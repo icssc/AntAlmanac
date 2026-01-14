@@ -5,7 +5,7 @@ import type {
     ScheduleUndoState,
     ShortCourseSchedule,
     RepeatingCustomEvent,
-    CourseInfo,
+    HydratedScheduleSaveState,
 } from '@packages/antalmanac-types';
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
@@ -563,61 +563,18 @@ export class Schedules {
     /**
      * Overwrites the current schedule with the input save state.
      */
-    async fromScheduleSaveState(saveState: ScheduleSaveState) {
+    async fromScheduleSaveState(saveState: HydratedScheduleSaveState | ScheduleSaveState) {
         this.addUndoState();
 
         try {
-            // Get a dictionary of all unique courses
-            const courseDict: { [key: string]: Set<string> } = {};
-            for (const schedule of saveState.schedules) {
-                for (const course of schedule.courses) {
-                    if (course.term in courseDict) {
-                        courseDict[course.term].add(course.sectionCode);
-                    } else {
-                        courseDict[course.term] = new Set([course.sectionCode]);
-                    }
-                }
-            }
-
-            // Get the course info for each course
-            const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
-
-            const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
-                const sectionCodes = Array.from(courseSet).join(',');
-                const courseInfo = await WebSOC.getCourseInfo({ term, sectionCodes });
-                courseInfoDict.set(term, courseInfo);
-            });
-
-            await Promise.all(websocRequests);
-
             this.schedules.length = 0;
             this.currentScheduleIndex = saveState.scheduleIndex;
 
             // Map course info to courses and transform shortened schedule to normal schedule
-            for (const shortCourseSchedule of saveState.schedules) {
-                const courses: ScheduleCourse[] = [];
-                for (const shortCourse of shortCourseSchedule.courses) {
-                    const courseInfoMap = courseInfoDict.get(shortCourse.term);
-                    if (courseInfoMap !== undefined) {
-                        const courseInfo = courseInfoMap[shortCourse.sectionCode.padStart(5, '0')];
-                        if (courseInfo === undefined) {
-                            // Class doesn't exist/was cancelled
-                            continue;
-                        }
-                        courses.push({
-                            ...shortCourse,
-                            ...courseInfo.courseDetails,
-                            section: {
-                                ...courseInfo.section,
-                                color: shortCourse.color,
-                            },
-                        });
-                    }
-                }
-
+            for (const schedule of saveState.schedules) {
                 const scheduleNoteId = Math.random();
-                if ('scheduleNote' in shortCourseSchedule) {
-                    this.scheduleNoteMap[scheduleNoteId] = shortCourseSchedule.scheduleNote;
+                if ('scheduleNote' in schedule) {
+                    this.scheduleNoteMap[scheduleNoteId] = schedule.scheduleNote;
                 } else {
                     // If this is a schedule that was saved before schedule notes were implemented,
                     // just give each schedule an empty schedule note
@@ -625,9 +582,9 @@ export class Schedules {
                 }
 
                 this.schedules.push({
-                    scheduleName: shortCourseSchedule.scheduleName,
-                    courses: courses,
-                    customEvents: shortCourseSchedule.customEvents,
+                    scheduleName: schedule.scheduleName,
+                    courses: schedule.courses,
+                    customEvents: schedule.customEvents,
                     scheduleNoteId: scheduleNoteId,
                 });
             }

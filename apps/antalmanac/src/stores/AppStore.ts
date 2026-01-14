@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import type { ScheduleCourse, ScheduleSaveState, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import type { ScheduleCourse, ScheduleSaveState, RepeatingCustomEvent, HydratedScheduleSaveState } from '@packages/antalmanac-types';
 import { SnackbarOrigin, VariantType } from 'notistack';
 
 import actionTypesStore from '$actions/ActionTypesStore';
@@ -369,7 +369,7 @@ class AppStore extends EventEmitter {
         this.emit('reorderSchedule');
     }
 
-    private async loadScheduleFromSaveState(savedSchedule: ScheduleSaveState) {
+    private async loadScheduleFromSaveState(savedSchedule: HydratedScheduleSaveState) {
         try {
             await this.schedule.fromScheduleSaveState(savedSchedule);
             return true;
@@ -378,7 +378,7 @@ class AppStore extends EventEmitter {
         }
     }
 
-    async loadSchedule(savedSchedule: ScheduleSaveState) {
+    async loadSchedule(savedSchedule: HydratedScheduleSaveState) {
         const hasDataChanged = JSON.stringify(this.schedule.getScheduleAsSaveState()) === JSON.stringify(savedSchedule);
         const loadSuccess = await this.loadScheduleFromSaveState(savedSchedule);
         if (!loadSuccess) {
