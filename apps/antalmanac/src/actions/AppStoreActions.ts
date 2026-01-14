@@ -191,13 +191,11 @@ export async function autoSaveSchedule(
             },
         });
 
-        // Update schedule IDs in AppStore after saving
         if (result && 'scheduleIds' in result && Array.isArray(result.scheduleIds)) {
             const schedules = AppStore.getSchedules();
             for (let i = 0; i < Math.min(schedules.length, result.scheduleIds.length); i++) {
                 schedules[i].id = result.scheduleIds[i];
             }
-            // Emit events to notify components of the ID updates
             AppStore.emit('scheduleNamesChange');
         }
 

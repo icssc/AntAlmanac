@@ -432,7 +432,6 @@ class AppStore extends EventEmitter {
 
     loadSkeletonSchedule(savedSchedule: ScheduleSaveState) {
         this.schedule.setSkeletonSchedules(savedSchedule.schedules);
-        // Set the current schedule index to match the saved schedule index
         this.schedule.setCurrentScheduleIndex(savedSchedule.scheduleIndex);
         this.skeletonMode = true;
 

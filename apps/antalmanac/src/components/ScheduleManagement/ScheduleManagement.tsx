@@ -53,7 +53,6 @@ export function ScheduleManagement() {
             return;
         }
 
-        // Don't set search tab when on shared schedule page
         if (isSharedSchedulePage) {
             setActiveTab('added');
             return;

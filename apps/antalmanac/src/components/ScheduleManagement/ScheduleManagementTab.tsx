@@ -15,7 +15,7 @@ export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const isSharedSchedulePage = useIsSharedSchedulePage();
-    const isSearchTab = value === 1; // Search tab is at index 1
+    const isSearchTab = value === 1;
 
     const handleClick = (e: React.MouseEvent) => {
         if (isSharedSchedulePage && isSearchTab) {

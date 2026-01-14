@@ -227,7 +227,6 @@ export function SharedSchedulePage() {
                 AppStore.exitSkeletonMode();
             }
 
-            // For logged-in users, load their saved schedules first
             if (sessionIsValid) {
                 const sessionToken = useSessionStore.getState().session;
                 if (!sessionToken) {
@@ -259,7 +258,6 @@ export function SharedSchedulePage() {
                         `Shared schedule "${sharedSchedule.scheduleName}" added to your schedules!`
                     );
                 } else {
-                    // Otherwise, import it normally
                     await importSharedScheduleById(scheduleId);
                 }
             }

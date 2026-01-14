@@ -664,7 +664,6 @@ export class Schedules {
     getCurrentSkeletonSchedule(): ShortCourseSchedule {
         const schedule = this.skeletonSchedules[this.currentScheduleIndex];
         if (!schedule) {
-            // Return empty schedule if index is out of bounds
             return {
                 scheduleName: '',
                 courses: [],
