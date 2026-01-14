@@ -3,6 +3,8 @@
 function getDomain() {
     if ($app.stage === 'production') {
         return 'antalmanac.com';
+    } else if ($app.stage === 'staging-shared') {
+        return 'staging-shared.antalmanac.com';
     } else if ($app.stage.match(/^staging-(\d+)$/)) {
         return `${$app.stage}.antalmanac.com`;
     }
@@ -10,24 +12,37 @@ function getDomain() {
     throw new Error('Invalid stage');
 }
 
+// const isPermanentStage = ['production', 'staging-shared'].includes($app.stage);
+
 export default $config({
     app(input) {
         return {
             name: 'antalmanac',
-            removal: input?.stage === 'production' ? 'retain' : 'remove',
-            protect: ['production'].includes(input?.stage),
+            removal: ['production', 'staging-shared'].includes(input?.stage) ? 'retain' : 'remove',
+            protect: ['production', 'staging-shared'].includes(input?.stage),
             home: 'aws',
         };
     },
     async run() {
         const domain = getDomain();
 
-        new sst.aws.Nextjs('Website', {
-            path: 'apps/antalmanac',
+        const router = new sst.aws.Router('AntAlmanacRouter', {
             domain: {
                 name: domain,
-                redirects: $app.stage.match(/^staging-(\d+)$/) ? [] : [`www.${domain}`],
+                aliases: [`*.${domain}`],
             },
+        });
+
+        new sst.aws.Nextjs('Website', {
+            path: 'apps/antalmanac',
+            router: {
+                instance: router,
+                path: '/',
+            },
+            // domain: {
+            //     name: domain,
+            //     redirects: $app.stage.match(/^staging-(\d+)$/) ? [] : [`www.${domain}`],
+            // },
             cachePolicy: '92d18877-845e-47e7-97e6-895382b1bf7c',
             environment: {
                 DB_URL: $app.stage === 'production' ? process.env.PROD_DB_URL : process.env.DEV_DB_URL,
