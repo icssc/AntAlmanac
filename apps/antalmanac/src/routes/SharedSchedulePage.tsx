@@ -249,7 +249,6 @@ export function SharedSchedulePage() {
                 const sharedSchedule = await trpc.userData.getSharedSchedule.query({ scheduleId });
                 const currentSchedule = currentSchedules.schedules[currentSchedules.scheduleIndex];
 
-                // TODO find a better way to stop the duplicate schedule from being added when not logged in
                 if (currentSchedule && currentSchedule.scheduleName === sharedSchedule.scheduleName) {
                     const prefixedName = `(shared)-${sharedSchedule.scheduleName}`;
                     AppStore.renameSchedule(currentSchedules.scheduleIndex, prefixedName);
