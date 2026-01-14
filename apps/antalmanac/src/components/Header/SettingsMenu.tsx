@@ -1,4 +1,4 @@
-import { LightMode, Close, SettingsBrightness, DarkMode, Help, MenuRounded } from '@mui/icons-material';
+import { Close, DarkMode, Help, LightMode, MenuRounded, SettingsBrightness } from '@mui/icons-material';
 import {
     Box,
     Button,
@@ -12,7 +12,7 @@ import {
     useMediaQuery,
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import { CSSProperties } from '@mui/material/styles/createTypography';
+import type { CSSProperties } from '@mui/material/styles/createTypography';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 
@@ -27,7 +27,7 @@ import appStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
+import { useAutoSaveStore, usePreviewStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',
@@ -65,10 +65,17 @@ function ThemeMenu() {
                 Theme
             </Typography>
 
-            <ButtonGroup style={{ display: 'flex', placeContent: 'center', width: '100%', borderColor: 'unset' }}>
+            <ButtonGroup
+                style={{
+                    display: 'flex',
+                    placeContent: 'center',
+                    width: '100%',
+                    borderColor: 'unset',
+                }}
+            >
                 <Button
                     startIcon={<LightMode fontSize="small" />}
-                    style={{
+                    sx={{
                         padding: '1rem 2rem',
                         borderRadius: '12px 0px 0px 12px',
                         width: '100%',
@@ -81,7 +88,7 @@ function ThemeMenu() {
                 </Button>
                 <Button
                     startIcon={<SettingsBrightness fontSize="small" />}
-                    style={{
+                    sx={{
                         padding: '1rem 2rem',
                         width: '100%',
                         ...getSelectedStyle('system', themeSetting, isDark),
@@ -93,7 +100,7 @@ function ThemeMenu() {
                 </Button>
                 <Button
                     startIcon={<DarkMode fontSize="small" />}
-                    style={{
+                    sx={{
                         padding: '1rem 2rem',
                         borderRadius: '0px 12px 12px 0px',
                         width: '100%',
@@ -131,7 +138,7 @@ function TimeMenu() {
                 }}
             >
                 <Button
-                    style={{
+                    sx={{
                         padding: '1rem 2rem',
                         borderRadius: '12px 0px 0px 12px',
                         width: '100%',
@@ -145,7 +152,7 @@ function TimeMenu() {
                     12 Hour
                 </Button>
                 <Button
-                    style={{
+                    sx={{
                         padding: '1rem 2rem',
                         borderRadius: '0px 12px 12px 0px',
                         width: '100%',
@@ -164,7 +171,14 @@ function TimeMenu() {
 
 function PlannerMenu() {
     return (
-        <Box sx={{ padding: '0 1rem', width: '100%', display: 'flex', justifyContent: 'center' }}>
+        <Box
+            sx={{
+                padding: '0 1rem',
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+            }}
+        >
             <PlannerButton
                 buttonSx={{
                     width: '100%',
@@ -200,16 +214,30 @@ function ExperimentalMenu() {
 
         if (!savedUserID) return;
         actionTypesStore.emit('autoSaveStart');
-        await autoSaveSchedule(savedUserID, undefined, postHog);
+        await autoSaveSchedule(savedUserID, { postHog });
         appStore.unsavedChanges = false;
         actionTypesStore.emit('autoSaveEnd');
     };
 
     return (
-        <Stack sx={{ padding: '0 1rem', width: '100%', display: 'flex', alignItems: 'middle' }}>
+        <Stack
+            sx={{
+                padding: '0 1rem',
+                width: '100%',
+                display: 'flex',
+                alignItems: 'middle',
+            }}
+        >
             <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
                 <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
+                    <Typography
+                        variant="h6"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            alignContent: 'center',
+                        }}
+                    >
                         Hover to Preview
                     </Typography>
                     <Tooltip title={<Typography>Hover over courses to preview them in your calendar!</Typography>}>
@@ -221,7 +249,14 @@ function ExperimentalMenu() {
 
             <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
                 <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
+                    <Typography
+                        variant="h6"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            alignContent: 'center',
+                        }}
+                    >
                         Auto Save
                     </Typography>
                     <Tooltip title={<Typography>Auto Save your schedule!</Typography>}>
@@ -304,7 +339,14 @@ function AppDrawer() {
 
                     <SettingsMenu />
 
-                    <Box sx={{ padding: '1.5rem', width: '100%', bottom: 0, position: 'absolute' }}>
+                    <Box
+                        sx={{
+                            padding: '1.5rem',
+                            width: '100%',
+                            bottom: 0,
+                            position: 'absolute',
+                        }}
+                    >
                         <About />
                     </Box>
                 </Box>
