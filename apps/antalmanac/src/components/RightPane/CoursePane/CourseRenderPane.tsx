@@ -33,10 +33,13 @@ import { useThemeStore } from '$stores/SettingsStore';
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
-    const courseColors = currentCourses.reduce((accumulator, { section }) => {
-        accumulator[section.sectionCode] = section.color;
-        return accumulator;
-    }, {} as Record<string, string>);
+    const courseColors = currentCourses.reduce(
+        (accumulator, { section }) => {
+            accumulator[section.sectionCode] = section.color;
+            return accumulator;
+        },
+        {} as Record<string, string>
+    );
 
     return courseColors;
 }
@@ -202,7 +205,11 @@ const ErrorMessage = () => {
             }}
         >
             {courseId ? (
-                <Link href={`https://peterportal.org/course/${courseId}`} target="_blank" sx={{ width: '100%' }}>
+                <Link
+                    href={`https://peterportal.org/course/${encodeURIComponent(courseId)}`}
+                    target="_blank"
+                    sx={{ width: '100%' }}
+                >
                     <Alert
                         variant="filled"
                         severity="info"
