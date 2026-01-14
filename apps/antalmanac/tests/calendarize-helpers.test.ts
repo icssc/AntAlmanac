@@ -206,6 +206,7 @@ describe('calendarize-helpers', () => {
             days: [true, false, true, false, true, false, true],
             customEventID: 0,
             color: '#000000',
+            term: '2024 Winter',
         },
     ];
 
@@ -219,6 +220,7 @@ describe('calendarize-helpers', () => {
             title: 'title',
             building: '',
             days: ['Su', 'Tu', 'Th', 'Sa'],
+            term: '2024 Winter',
         },
         {
             isCustomEvent: true,
@@ -229,6 +231,7 @@ describe('calendarize-helpers', () => {
             title: 'title',
             building: '',
             days: ['Su', 'Tu', 'Th', 'Sa'],
+            term: '2024 Winter',
         },
         {
             isCustomEvent: true,
@@ -239,6 +242,7 @@ describe('calendarize-helpers', () => {
             title: 'title',
             building: '',
             days: ['Su', 'Tu', 'Th', 'Sa'],
+            term: '2024 Winter',
         },
         {
             isCustomEvent: true,
@@ -249,6 +253,7 @@ describe('calendarize-helpers', () => {
             title: 'title',
             building: '',
             days: ['Su', 'Tu', 'Th', 'Sa'],
+            term: '2024 Winter',
         },
     ];
 

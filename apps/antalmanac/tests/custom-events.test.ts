@@ -10,6 +10,7 @@ describe('Custom Events', () => {
         customEventID: 999,
         color: 'placeholderColor',
         building: undefined,
+        term: '2023 Fall',
     };
 
     test('schema does not throw error when building property exists and is undefined', async () => {
