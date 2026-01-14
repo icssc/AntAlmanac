@@ -1,4 +1,6 @@
 import Image from 'next/image';
+import { useIsMobile } from '$hooks/useIsMobile';
+import { useThemeStore } from '$stores/SettingsStore';
 
 type Logo = {
     name: string;
@@ -65,16 +67,17 @@ function logoIsForCurrentSeason(logo: Logo) {
 }
 
 export function Logo() {
+    const isMobile = useIsMobile();
     const currentLogo = logos.find((logo) => logoIsForCurrentSeason(logo)) ?? defaultLogo;
 
     return (
         <Image
-            src={currentLogo?.mobileLogo}
+            src={isMobile ? currentLogo?.mobileLogo : currentLogo?.desktopLogo}
             height={64}
             width={340}
             style={{
                 width: 'auto',
-                height: '2rem',
+                height: isMobile ? '2rem' : '3rem',
             }}
             title={currentLogo?.attribution}
             alt="logo"

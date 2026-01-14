@@ -25,9 +25,9 @@ import { Signin } from '$components/Header/Signin';
 import { Signout } from '$components/Header/Signout';
 import {
     getLocalStorageDataCache,
-    removeLocalStorageImportedUser,
-    removeLocalStorageDataCache,
     getLocalStorageImportedUser,
+    removeLocalStorageDataCache,
+    removeLocalStorageImportedUser,
 } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
 import { useIsMobile } from '$src/hooks/useIsMobile';
@@ -82,27 +82,26 @@ export function Header() {
                     alignItems: 'center',
                 }}
             >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0, sm: 1 } }}>
-                    {isMobile ? <CalendarMonth fontSize="large" /> : <Logo />}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1 } }}>
                     <Stack sx={{ flexDirection: 'row', alignItems: 'center' }}>
-                        {!isMobile && (
-                            <Typography variant={'h5'} sx={{ minWidth: 'auto' }}>
-                                {platform}
-                            </Typography>
-                        )}
-
-                        <IconButton
-                            onClick={(event) => setAnchorEl(event.currentTarget)}
-                            sx={(theme) => ({
-                                borderRadius: theme.spacing(0.5),
-                                paddingX: theme.spacing(0.5),
-                                '& .MuiTouchRipple-child': {
+                        {isMobile ? (
+                            <IconButton
+                                onClick={(event) => setAnchorEl(event.currentTarget)}
+                                sx={(theme) => ({
                                     borderRadius: theme.spacing(0.5),
-                                },
-                            })}
-                        >
-                            <UnfoldMore color="secondary" />
-                        </IconButton>
+                                    gap: theme.spacing(0.5),
+                                    paddingX: theme.spacing(0.5),
+                                    '& .MuiTouchRipple-child': {
+                                        borderRadius: theme.spacing(0.5),
+                                    },
+                                })}
+                            >
+                                <Logo />
+                                <UnfoldMore color="secondary" />
+                            </IconButton>
+                        ) : (
+                            <Logo />
+                        )}
 
                         <Popover
                             open={Boolean(anchorEl)}
