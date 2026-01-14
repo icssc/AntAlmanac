@@ -20,6 +20,7 @@ import { useSessionStore } from '$stores/SessionStore';
 
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
+    const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
     const importedUser = getLocalStorageImportedUser() ?? '';
     const { session, sessionIsValid } = useSessionStore();
 
@@ -31,6 +32,15 @@ export function Header() {
     const handleCloseSuccessfulSaved = () => {
         setOpenSuccessfulSaved(false);
         clearStorage();
+    };
+
+    const handleLogoutComplete = () => {
+        setOpenSignoutDialog(true);
+    };
+
+    const handleCloseSignoutDialog = () => {
+        setOpenSignoutDialog(false);
+        window.location.reload();
     };
 
     useEffect(() => {
@@ -67,7 +77,7 @@ export function Header() {
                 <Stack direction="row" sx={{ alignItems: 'center' }}>
                     <Import key="studylist" />
                     <Save />
-                    {sessionIsValid ? <Signout /> : <Signin />}
+                    {sessionIsValid ? <Signout onLogoutComplete={handleLogoutComplete} /> : <Signin />}
                     <AppDrawer key="settings" />
                 </Stack>
 
@@ -78,6 +88,14 @@ export function Header() {
                     onClose={handleCloseSuccessfulSaved}
                 >
                     NOTE: All changes made to your schedules will be saved to your Google account
+                </AlertDialog>
+                <AlertDialog
+                    open={openSignoutDialog}
+                    title="Signed out successfully"
+                    severity="info"
+                    onClose={handleCloseSignoutDialog}
+                >
+                    You have successfully signed out. Close to continue browsing AntAlmanac.
                 </AlertDialog>
             </Box>
         </AppBar>

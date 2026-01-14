@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId, removeLocalStorageSessionId, setLocalStorageSessionId } from '$lib/localStorage';
+import { getLocalStorageSessionId, setLocalStorageSessionId, removeLocalStorageSessionId } from '$lib/localStorage';
 
 interface SessionState {
     session: string | null;
@@ -31,8 +31,6 @@ export const useSessionStore = create<SessionState>((set) => {
             if (currentSession) {
                 await trpc.auth.invalidateSession.mutate({ token: currentSession });
                 removeLocalStorageSessionId();
-                set({ session: null, sessionIsValid: false });
-                window.location.reload();
             }
         },
     };

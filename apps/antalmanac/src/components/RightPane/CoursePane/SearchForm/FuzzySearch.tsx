@@ -1,8 +1,7 @@
-import { type AutocompleteInputChangeReason, Box, Divider, Typography} from '@mui/material';
+import { type AutocompleteInputChangeReason, Box, Divider, Typography } from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
 import { PureComponent } from 'react';
-import { useThemeStore } from '$stores/SettingsStore';
 import UAParser from 'ua-parser-js';
 
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
@@ -103,7 +102,8 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
             } else {
                 const requestTimestamp = Date.now();
 
-                this.setState({
+                this.setState(
+                    {
                         currentTerm: newTerm,
                         results: {},
                         loading: true,
@@ -130,13 +130,11 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         RightPaneStore.resetFormValues();
         RightPaneStore.updateFormValue('term', term);
         switch (result.type) {
-            case resultType.GE_CATEGORY:
+            case resultType.GE_CATEGORY: {
                 const geCode = option.key.split('-')[1].toUpperCase();
-                RightPaneStore.updateFormValue(
-                    'ge',
-                    `GE-${geCode}`
-                );
+                RightPaneStore.updateFormValue('ge', `GE-${geCode}`);
                 break;
+            }
             case resultType.DEPARTMENT:
                 RightPaneStore.updateFormValue('deptValue', option.key);
                 break;
@@ -196,7 +194,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         const requestQuery = this.state.value;
 
         trpc.search.doSearch
-            .query({ query: requestQuery, term: requestTerm})
+            .query({ query: requestQuery, term: requestTerm })
             .then((result) => {
                 if (!this.requestIsCurrent(requestTimestamp)) return;
 
@@ -253,7 +251,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
     onChange = (_event: unknown, option: SearchOption | null) => {
         if (option) {
-            this.setState({ open: false, value: ''}, () => {
+            this.setState({ open: false, value: '' }, () => {
                 this.doSearch(option);
             });
         }
@@ -271,7 +269,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         return isOffered ? groupType.OFFERED : groupType.NOT_OFFERED;
     };
 
-    renderGroup = (params: {key: string; group: string; children?: React.ReactNode }) => {
+    renderGroup = (params: { key: string; group: string; children?: React.ReactNode }) => {
         if (params.group === groupType.UNGROUPED) {
             return <Box key={params.key}>{params.children}</Box>;
         }
@@ -281,13 +279,13 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
         return (
             <Box key={params.key}>
-                <Divider 
-                    textAlign="left" 
-                    sx={{ 
-                        mt: 1, 
-                        mb: 1, 
-                        ml: 0.5, 
-                        '&::before': { width: '0px' }, 
+                <Divider
+                    textAlign="left"
+                    sx={{
+                        mt: 1,
+                        mb: 1,
+                        ml: 0.5,
+                        '&::before': { width: '0px' },
                         '&::after': { borderColor: 'text.primary', opacity: 0.45 },
                     }}
                 >
@@ -300,8 +298,13 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
     renderOption = (props: React.HTMLAttributes<HTMLLIElement>, option: SearchOption) => {
         const object = option.result;
-        const { key, ...restProps} = props as React.HTMLAttributes<HTMLLIElement> & { key: string }
-        if (!object) return <Box component="li" key={key} {...restProps}>{option.key}</Box>;
+        const { key, ...restProps } = props as React.HTMLAttributes<HTMLLIElement> & { key: string };
+        if (!object)
+            return (
+                <Box component="li" key={key} {...restProps}>
+                    {option.key}
+                </Box>
+            );
 
         const label = this.getOptionLabel(option);
         const isCourse = object.type === resultType.COURSE;
@@ -337,7 +340,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 autocompleteProps={{
                     loading: this.state.loading,
                     fullWidth: true,
-                    options: Object.entries(this.state.results ?? {}).map(([key, result]) => ({key, result})),
+                    options: Object.entries(this.state.results ?? {}).map(([key, result]) => ({ key, result })),
                     autoHighlight: true,
                     filterOptions: this.filterOptions,
                     getOptionLabel: this.getOptionLabel,
