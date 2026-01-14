@@ -1,8 +1,15 @@
-import type { WebsocAPIResponse, CourseInfo, WebsocCourse, WebsocSectionType } from '@packages/antalmanac-types';
+import type {
+    WebsocAPIResponse,
+    CourseInfo,
+    WebsocCourse,
+    WebsocSectionType,
+    WebsocAPIDepartmentResponse,
+} from '@packages/antalmanac-types';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
 
+const DEPARTMENT_YEAR_RANGE = 10;
 
 function sanitizeSearchParams(params: Record<string, string>) {
     if ('term' in params) {
@@ -75,6 +82,19 @@ const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
     return sortWebsocResponse(data.data as WebsocAPIResponse);
 };
 
+const queryWebSocDepartments = async () => {
+    const minYear = new Date().getFullYear() - DEPARTMENT_YEAR_RANGE;
+    const url = `https://anteaterapi.com/v2/rest/websoc/departments?since=${minYear}`;
+
+    const response = await fetch(url, {
+        headers: {
+            ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
+        },
+    });
+    const data = await response.json();
+    return data.data as WebsocAPIDepartmentResponse;
+};
+
 function combineWebsocResponses(responses: WebsocAPIResponse[]) {
     const combined: WebsocAPIResponse = { schools: [] };
     for (const res of responses) {
@@ -124,7 +144,6 @@ const websocRouter = router({
         for (const school of res.schools) {
             for (const department of school.departments) {
                 for (const course of department.courses) {
-                    
                     const sectionTypesSet = new Set<WebsocSectionType>();
                     course.sections.forEach((section) => {
                         sectionTypesSet.add(section.sectionType);
@@ -149,6 +168,9 @@ const websocRouter = router({
             }
         }
         return courseInfo;
+    }),
+    getDepartments: procedure.query(async () => {
+        return await queryWebSocDepartments();
     }),
 });
 
