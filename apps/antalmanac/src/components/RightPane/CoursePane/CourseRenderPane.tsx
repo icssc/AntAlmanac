@@ -205,7 +205,11 @@ const ErrorMessage = () => {
             }}
         >
             {courseId ? (
-                <Link href={`https://peterportal.org/course/${courseId}`} target="_blank" sx={{ width: '100%' }}>
+                <Link
+                    href={`https://peterportal.org/course/${encodeURIComponent(courseId)}`}
+                    target="_blank"
+                    sx={{ width: '100%' }}
+                >
                     <Alert
                         variant="filled"
                         severity="info"
@@ -357,7 +361,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                             if ((courseData[index] as AACourse).sections !== undefined)
                                 heightEstimate = (courseData[index] as AACourse).sections.length * 60 + 20 + 40;
                             return (
-                                <LazyLoad once key={index} overflow height={heightEstimate} offset={500}>
+                                <LazyLoad once key={index} overflow height={heightEstimate} offset={1000}>
                                     {SectionTableWrapped(index, {
                                         courseData: courseData,
                                         scheduleNames: scheduleNames,

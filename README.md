@@ -101,7 +101,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
     - [nvm](https://github.com/nvm-sh/nvm) - Node-Version-Manager.
     - [fnm](https://github.com/Schniz/fnm) - Fast-Node-Manager.
-    - [nvm-widows](https://github.com/coreybutler/nvm-windows)
+    - [nvm-windows](https://github.com/coreybutler/nvm-windows)
 
     If none of those work for any reason, you can defer to your Operating System's
     package manager or [the downloads from the official website](https://nodejs.org/en/download).
@@ -239,7 +239,7 @@ these sorts of permissions. Here are the different version managers again.
 
 -   [nvm](https://github.com/nvm-sh/nvm) - Node-Version-Manager.
 -   [fnm](https://github.com/Schniz/fnm) - Fast-Node-Manager.
--   [nvm-widows](https://github.com/coreybutler/nvm-windows)
+-   [nvm-windows](https://github.com/coreybutler/nvm-windows)
 
 A more convenient, but less secure way to resolve this is to run the command with admin privileges, e.g with `sudo`.
 

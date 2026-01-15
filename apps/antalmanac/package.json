@@ -22,7 +22,8 @@
         "predeploy": "npm run build",
         "deploy": "gh-pages -d build",
         "format": "prettier --write src",
-        "lint": "eslint src"
+        "lint": "eslint src",
+        "typecheck": "tsc --noEmit"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.3.1",

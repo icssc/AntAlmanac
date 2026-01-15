@@ -3,6 +3,7 @@ import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import './Map.css';
 
 import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
+import { CustomEventId } from '@packages/antalmanac-types';
 import { Marker, type Map, type LatLngTuple } from 'leaflet';
 import dynamic from 'next/dynamic';
 import { usePostHog } from 'posthog-js/react';
@@ -108,7 +109,7 @@ export function getCustomEventPerBuilding() {
         start: Date;
         end: Date;
         days: string[];
-        customEventID: number;
+        customEventID: CustomEventId;
         color?: string | undefined;
         building?: string | undefined;
     }
