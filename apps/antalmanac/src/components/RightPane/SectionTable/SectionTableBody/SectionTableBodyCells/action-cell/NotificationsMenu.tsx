@@ -146,7 +146,13 @@ export const NotificationsMenu = memo(
                                     display: 'inline-flex',
                                     marginLeft: 'auto',
                                 }}
-                                onClick={(e) => e.stopPropagation()}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                }}
+                                onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                }}
                             >
                                 <NotificationEmailTooltip sessionToken={session} />
                             </Box>
