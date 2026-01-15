@@ -1,7 +1,6 @@
 import { LightMode, SettingsBrightness, DarkMode, Help } from '@mui/icons-material';
-import { Avatar, Box, Divider, Stack, Switch, Tooltip, Typography } from '@mui/material';
+import { Box, Divider, Stack, Switch, Tooltip, Typography } from '@mui/material';
 import Image from 'next/image';
-import { CSSProperties } from '@mui/material/styles/createTypography';
 import { usePostHog } from 'posthog-js/react';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
@@ -171,7 +170,7 @@ function TimeMenu() {
 
 function PlannerMenu() {
     return (
-        <Box sx={{ padding: '0 1rem', width: '100%', display: 'flex', justifyContent: 'center' }}>
+        <Box sx={{ py: 1, width: '100%', display: 'flex', justifyContent: 'center' }}>
             <PlannerButton
                 buttonSx={{
                     width: '100%',
@@ -299,7 +298,7 @@ export function SettingsMenu({ user }: { user: User | null }) {
             <ThemeMenu />
             <TimeMenu />
             {isMobile && (
-                <Stack gap={2}>
+                <Stack>
                     <Divider>
                         <Typography variant="subtitle2">Want a 4-year plan?</Typography>
                     </Divider>

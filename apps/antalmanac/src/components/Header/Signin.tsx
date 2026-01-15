@@ -197,7 +197,12 @@ export const Signin = () => {
 
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
-            <ProfileMenuButtons user={null} handleOpen={handleOpen} handleSettingsOpen={handleSettingsOpen} loading={loadingSchedule}/>
+            <ProfileMenuButtons
+                user={null}
+                handleOpen={handleOpen}
+                handleSettingsOpen={handleSettingsOpen}
+                loading={loadingSchedule}
+            />
 
             <Dialog open={isOpen} onClose={() => handleClose(true)}>
                 <DialogContent>
@@ -259,8 +264,11 @@ export const Signin = () => {
                 slotProps={{
                     paper: {
                         sx: {
-                            width: { xs: 200, sm: 260, md: 330 },
-                            maxWidth: '100vw',
+                            width: {
+                                xs: 300,
+                                sm: 300,
+                                md: 330,
+                            },
                             p: '16px 20px',
                             borderRadius: 2,
                             border: '1px solid',

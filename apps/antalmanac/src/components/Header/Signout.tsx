@@ -42,7 +42,6 @@ export function Signout() {
         setAnchorEl(event.currentTarget);
     };
 
-
     const handleAuthChange = useCallback(async () => {
         if (sessionIsValid) {
             const userData = await trpc.userData.getUserAndAccountBySessionToken
@@ -60,7 +59,7 @@ export function Signout() {
 
     return (
         <div id="load-save-container">
-            <ProfileMenuButtons  user = {user} handleOpen={handleClick} handleSettingsOpen={handleClick} />
+            <ProfileMenuButtons user={user} handleOpen={handleClick} handleSettingsOpen={handleClick} />
             <Popover
                 open={open}
                 anchorEl={anchorEl}
@@ -76,8 +75,11 @@ export function Signout() {
                 slotProps={{
                     paper: {
                         sx: {
-                            width: {xs: 200, sm: 260, md: 330},
-                            maxWidth: '100vw',
+                            width: {
+                                xs: 300,
+                                sm: 300,
+                                md: 330,
+                            },
                             p: '16px 20px',
                             borderRadius: 2,
                             border: '1px solid',
@@ -88,7 +90,7 @@ export function Signout() {
             >
                 <SettingsMenu user={user} />
 
-                <Divider style={{ marginTop: '10px', marginBottom: '12px' }}/>
+                <Divider style={{ marginTop: '10px', marginBottom: '12px' }} />
 
                 <MenuItem onClick={handleLogout} sx={{ px: 1, py: 1.25, borderRadius: 1 }}>
                     <ListItemIcon>
