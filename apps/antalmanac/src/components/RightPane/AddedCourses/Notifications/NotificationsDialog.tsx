@@ -1,8 +1,9 @@
 import { Notifications } from '@mui/icons-material';
-import { Dialog, DialogContent, DialogTitle, DialogActions, Button, IconButton, SxProps, Tooltip } from '@mui/material';
+import { Dialog, DialogContent, DialogTitle, DialogActions, Button, IconButton, SxProps, Tooltip, Box } from '@mui/material';
 import { useCallback, useState, useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
+import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
 import { NotificationsTabs } from '$components/RightPane/AddedCourses/Notifications/NotificationsTabs';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { useNotificationStore } from '$stores/NotificationStore';
@@ -71,7 +72,12 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
             </Tooltip>
 
             <Dialog open={open} onClose={handleClose} fullWidth>
-                <DialogTitle>Manage Notifications</DialogTitle>
+                <DialogTitle>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        Manage Notifications
+                        <NotificationEmailTooltip sessionToken={session} />
+                    </Box>
+                </DialogTitle>
                 <DialogContent>
                     <NotificationsTabs />
                 </DialogContent>

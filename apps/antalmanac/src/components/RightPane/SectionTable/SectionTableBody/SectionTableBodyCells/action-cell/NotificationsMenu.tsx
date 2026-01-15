@@ -1,10 +1,11 @@
 import { Check, EditNotifications, NotificationAddOutlined } from '@mui/icons-material';
-import { IconButton, ListItemButton, Menu, MenuItem, Typography, Tooltip } from '@mui/material';
+import { IconButton, ListItemButton, Menu, MenuItem, Typography, Tooltip, Box } from '@mui/material';
 import { AASection, Course } from '@packages/antalmanac-types';
 import { useState, useCallback, memo, useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { SignInDialog } from '$components/dialogs/SignInDialog';
+import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
 import { NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -126,9 +127,31 @@ export const NotificationsMenu = memo(
                         horizontal: 'left',
                     }}
                 >
-                    <ListItemButton disabled={true} style={{ opacity: 1 }}>
-                        <Typography sx={{ fontWeight: 600 }}>Notify When</Typography>
-                    </ListItemButton>
+                    <MenuItem
+                        sx={{
+                            cursor: 'default',
+                            '&:hover': { backgroundColor: 'transparent' },
+                            pointerEvents: 'none',
+                        }}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }}
+                    >
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, width: '100%' }}>
+                            <Typography sx={{ fontWeight: 600 }}>Notify When</Typography>
+                            <Box
+                                sx={{
+                                    pointerEvents: 'auto',
+                                    display: 'inline-flex',
+                                    marginLeft: 'auto',
+                                }}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <NotificationEmailTooltip sessionToken={session} />
+                            </Box>
+                        </Box>
+                    </MenuItem>
                     {MENU_ITEMS.map((item) => {
                         const selected = notifyOn?.[item.status];
                         return (
