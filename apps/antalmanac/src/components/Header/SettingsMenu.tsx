@@ -1,4 +1,4 @@
-import { LightMode, Close, SettingsBrightness, DarkMode, Help, MenuRounded } from '@mui/icons-material';
+import { Close, DarkMode, Help, LightMode, MenuRounded, SettingsBrightness } from '@mui/icons-material';
 import {
     Box,
     Button,
@@ -12,7 +12,7 @@ import {
     useMediaQuery,
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import { CSSProperties } from '@mui/material/styles/createTypography';
+import type { CSSProperties } from '@mui/material/styles/createTypography';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 
@@ -20,12 +20,14 @@ import { About } from './About';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
+import { PlannerButton } from '$components/buttons/Planner';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import appStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
+import { useAutoSaveStore, usePreviewStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 
 const lightSelectedStyle: CSSProperties = {
     backgroundColor: '#F0F7FF',
@@ -63,7 +65,14 @@ function ThemeMenu() {
                 Theme
             </Typography>
 
-            <ButtonGroup style={{ display: 'flex', placeContent: 'center', width: '100%', borderColor: 'unset' }}>
+            <ButtonGroup
+                style={{
+                    display: 'flex',
+                    placeContent: 'center',
+                    width: '100%',
+                    borderColor: 'unset',
+                }}
+            >
                 <Button
                     startIcon={<LightMode fontSize="small" />}
                     sx={{
@@ -117,7 +126,7 @@ function TimeMenu() {
 
     return (
         <Box sx={{ padding: '0 1rem', width: '100%' }}>
-            <Typography variant="h6" style={{ marginTop: '1.5rem', marginBottom: '1rem' }}>
+            <Typography variant="h6" style={{ marginBottom: '1rem' }}>
                 Time
             </Typography>
 
@@ -160,6 +169,25 @@ function TimeMenu() {
     );
 }
 
+function PlannerMenu() {
+    return (
+        <Box
+            sx={{
+                padding: '0 1rem',
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+            }}
+        >
+            <PlannerButton
+                buttonSx={{
+                    width: '100%',
+                }}
+            />
+        </Box>
+    );
+}
+
 function ExperimentalMenu() {
     const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
     const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
@@ -192,10 +220,24 @@ function ExperimentalMenu() {
     };
 
     return (
-        <Stack sx={{ padding: '1rem 1rem 0 1rem', width: '100%', display: 'flex', alignItems: 'middle' }}>
+        <Stack
+            sx={{
+                padding: '0 1rem',
+                width: '100%',
+                display: 'flex',
+                alignItems: 'middle',
+            }}
+        >
             <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
                 <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
+                    <Typography
+                        variant="h6"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            alignContent: 'center',
+                        }}
+                    >
                         Hover to Preview
                     </Typography>
                     <Tooltip title={<Typography>Hover over courses to preview them in your calendar!</Typography>}>
@@ -207,7 +249,14 @@ function ExperimentalMenu() {
 
             <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
                 <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
+                    <Typography
+                        variant="h6"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            alignContent: 'center',
+                        }}
+                    >
                         Auto Save
                     </Typography>
                     <Tooltip title={<Typography>Auto Save your schedule!</Typography>}>
@@ -221,17 +270,31 @@ function ExperimentalMenu() {
 }
 
 function SettingsMenu() {
+    const isMobile = useIsMobile();
+
     return (
-        <Box>
+        <Stack gap={2}>
             <ThemeMenu />
             <TimeMenu />
 
-            <Divider style={{ marginTop: '16px' }}>
-                <Typography variant="subtitle2">Experimental Features</Typography>
-            </Divider>
+            {isMobile && (
+                <Stack gap={2}>
+                    <Divider>
+                        <Typography variant="subtitle2">Want a 4-year plan?</Typography>
+                    </Divider>
 
-            <ExperimentalMenu />
-        </Box>
+                    <PlannerMenu />
+                </Stack>
+            )}
+
+            <Stack gap={2}>
+                <Divider>
+                    <Typography variant="subtitle2">Experimental Features</Typography>
+                </Divider>
+
+                <ExperimentalMenu />
+            </Stack>
+        </Stack>
     );
 }
 
@@ -276,7 +339,14 @@ function AppDrawer() {
 
                     <SettingsMenu />
 
-                    <Box sx={{ padding: '1.5rem', width: '100%', bottom: 0, position: 'absolute' }}>
+                    <Box
+                        sx={{
+                            padding: '1.5rem',
+                            width: '100%',
+                            bottom: 0,
+                            position: 'absolute',
+                        }}
+                    >
                         <About />
                     </Box>
                 </Box>
