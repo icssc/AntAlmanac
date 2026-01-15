@@ -98,7 +98,7 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
         bottom: 16,
         left: 'auto',
         right: 16,
-        zIndex: (theme) => theme.zIndex.drawer - 1,
+        zIndex: 1,
         width: '30%',
       }}
     >
