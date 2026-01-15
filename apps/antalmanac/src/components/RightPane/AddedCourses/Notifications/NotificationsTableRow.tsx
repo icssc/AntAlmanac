@@ -6,6 +6,7 @@ import { NotificationTableDeleteCell } from '$components/RightPane/AddedCourses/
 import { NotificationTableRowCheckbox } from '$components/RightPane/AddedCourses/Notifications/NotificationTableRowCheckbox';
 import { CourseCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/CourseCodeCell';
 import { DetailsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell';
+import { InstructorsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/InstructorsCell';
 import { NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 
 interface NotificationTableRowProps {
@@ -29,6 +30,7 @@ export const NotificationTableRow = memo(({ notificationKey }: NotificationTable
         sectionNum,
         deptCode,
         courseNumber,
+        instructors,
     } = notification;
 
     return (
@@ -38,6 +40,7 @@ export const NotificationTableRow = memo(({ notificationKey }: NotificationTable
             <DeptCourseNumberCell
                 deptCode={deptCode}
                 courseNumber={courseNumber}
+                courseTitle={courseTitle}
                 sx={{ width: 'unset', padding: '6px 16px' }}
             />
             <DetailsCell
@@ -46,7 +49,11 @@ export const NotificationTableRow = memo(({ notificationKey }: NotificationTable
                 units={units}
                 sx={{ width: 'unset', padding: '6px 16px' }}
             />
-            <TableCell>{courseTitle}</TableCell>
+            {instructors && instructors.length > 0 ? (
+                <InstructorsCell instructors={instructors} sx={{ width: 'unset', padding: '6px 16px' }} />
+            ) : (
+                <TableCell sx={{ width: 'unset', padding: '6px 16px' }}>-</TableCell>
+            )}
 
             {Object.keys(notification.notifyOn).map((statusKey) => (
                 <NotificationTableRowCheckbox

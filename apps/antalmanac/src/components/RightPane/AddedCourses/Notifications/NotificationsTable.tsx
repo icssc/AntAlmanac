@@ -45,7 +45,7 @@ export const NotificationsTable = memo(({ keys }: NotificationsTableProps) => {
                             <TableCell>Code</TableCell>
                             <TableCell align="left">Dept/Course</TableCell>
                             <TableCell>Type</TableCell>
-                            <TableCell>Course Title</TableCell>
+                            <TableCell>Instructor</TableCell>
                             <TableCell align="center">Open</TableCell>
                             <TableCell align="center">Waitlist</TableCell>
                             <TableCell align="center">Full</TableCell>

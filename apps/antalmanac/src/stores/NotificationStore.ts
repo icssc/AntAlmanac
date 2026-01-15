@@ -25,6 +25,7 @@ export type Notification = {
     lastCodes: string;
     deptCode?: string;
     courseNumber?: string;
+    instructors?: string[];
 };
 
 interface RawNotification {
@@ -72,6 +73,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
             lastCodes,
             deptCode,
             courseNumber,
+            instructors,
         }) => {
             const key = sectionCode + ' ' + term;
 
@@ -110,6 +112,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                           lastCodes,
                           deptCode,
                           courseNumber,
+                          instructors,
                       };
 
                 const updatedNotifications = {
@@ -215,6 +218,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                                 lastCodes: existingNotification.lastCodes ?? course.section.restrictions,
                                 deptCode: course.courseDetails.deptCode,
                                 courseNumber: course.courseDetails.courseNumber,
+                                instructors: course.section.instructors,
                             };
                         }
                     }

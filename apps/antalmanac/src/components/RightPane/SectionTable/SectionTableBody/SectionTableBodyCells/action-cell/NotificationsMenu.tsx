@@ -60,7 +60,7 @@ export const NotificationsMenu = memo(
 
         const handleClick = useCallback(
             (status: keyof NotifyOn) => {
-                const { sectionType, sectionCode, restrictions, units, sectionNum } = section;
+                const { sectionType, sectionCode, restrictions, units, sectionNum, instructors } = section;
                 const currStatus = section.status;
                 setNotifications({
                     courseTitle,
@@ -74,6 +74,7 @@ export const NotificationsMenu = memo(
                     lastCodes: restrictions,
                     deptCode,
                     courseNumber,
+                    instructors,
                 });
             },
             [courseTitle, section, setNotifications, term, deptCode, courseNumber]
