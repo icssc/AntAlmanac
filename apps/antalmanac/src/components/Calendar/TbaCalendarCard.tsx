@@ -5,7 +5,8 @@ import AppStore from '$stores/AppStore';
 import { useIsMobile } from '$hooks/useIsMobile';
 
 interface TbaSection {
-  courseTitle: string;
+  deptCode: string;
+  courseNumber: string;
   sectionCode: string;
 }
 
@@ -38,7 +39,8 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
         const meetings = section.meetings ?? [];
         if (meetings.some((m) => m.timeIsTBA)) {
           sectionsWithTBA.push({
-            courseTitle: course.courseTitle,
+            deptCode: course.deptCode,
+            courseNumber: course.courseNumber,
             sectionCode: section.sectionCode,
           });
         }
@@ -97,7 +99,7 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
         left: 'auto',
         right: 16,
         zIndex: (theme) => theme.zIndex.drawer - 1,
-        width: '35%',
+        width: '30%',
       }}
     >
       <Alert
@@ -109,7 +111,7 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
           width: '100%',
           alignItems: collapsed ? 'center' : 'flex-start',
           py: 1,
-          px: 1.5,
+          px: 1,
           '& .MuiAlert-message': {
             padding: 0,
             width: '100%',
@@ -131,14 +133,14 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
         }
       >
         <AlertTitle sx={{ fontSize: '0.9rem', my: 'auto'}}>
-          You've added TBA sections:
+          TBA sections added:
         </AlertTitle>
 
         <Collapse in={!collapsed} timeout="auto" unmountOnExit>
           <Box sx={{ gap: 0.5}}>
             {tbaSections.map((section, idx) => (
-              <Typography key={`${section.courseTitle}-${section.sectionCode}-${idx}`} variant="body2">
-                {section.courseTitle} — {section.sectionCode}
+              <Typography key={`${section.deptCode}-${section.sectionCode}-${idx}`} variant="body2">
+                {section.deptCode} {section.courseNumber} — {section.sectionCode}
               </Typography>
             ))}
           </Box>
