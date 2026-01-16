@@ -11,7 +11,7 @@ import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 
 export function Signout() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [user, setUser] = useState<null | User>(null);
+    const [user, setUser] = useState<{ name?: string | null; avatar?: string | null } | null>(null);
     const navigate = useNavigate();
 
     const handleLogout = async () => {

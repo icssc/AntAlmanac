@@ -205,7 +205,7 @@ function ExperimentalMenu() {
 
         if (!savedUserID) return;
         actionTypesStore.emit('autoSaveStart');
-        await autoSaveSchedule(savedUserID, undefined, postHog);
+        await autoSaveSchedule(savedUserID, { postHog });
         appStore.unsavedChanges = false;
         actionTypesStore.emit('autoSaveEnd');
     };
@@ -214,7 +214,14 @@ function ExperimentalMenu() {
         <Stack sx={{ width: '100%', display: 'flex', alignItems: 'middle' }}>
             <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
                 <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
+                    <Typography
+                        variant="h6"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            alignContent: 'center',
+                        }}
+                    >
                         Hover to Preview
                     </Typography>
                     <Tooltip title={<Typography>Hover over courses to preview them in your calendar!</Typography>}>
@@ -226,7 +233,14 @@ function ExperimentalMenu() {
 
             <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
                 <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
+                    <Typography
+                        variant="h6"
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            alignContent: 'center',
+                        }}
+                    >
                         Auto Save
                     </Typography>
                     <Tooltip title={<Typography>Auto Save your schedule!</Typography>}>
