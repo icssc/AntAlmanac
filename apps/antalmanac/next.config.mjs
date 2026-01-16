@@ -7,6 +7,9 @@ const nextConfig = {
     eslint: {
         ignoreDuringBuilds: true,
     },
+    images: {
+        unoptimized: true,
+    },
     serverExternalPackages: ['@node-rs/argon2'],
 };
 

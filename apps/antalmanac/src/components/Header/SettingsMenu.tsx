@@ -1,22 +1,9 @@
-import { Close, DarkMode, Help, LightMode, MenuRounded, SettingsBrightness } from '@mui/icons-material';
-import {
-    Box,
-    Button,
-    ButtonGroup,
-    Divider,
-    Drawer,
-    Stack,
-    Switch,
-    Tooltip,
-    Typography,
-    useMediaQuery,
-} from '@mui/material';
-import IconButton from '@mui/material/IconButton';
-import type { CSSProperties } from '@mui/material/styles/createTypography';
+import { LightMode, SettingsBrightness, DarkMode, Help } from '@mui/icons-material';
+import { Box, Divider, Stack, Switch, Tooltip, Typography } from '@mui/material';
+import Image from 'next/image';
 import { usePostHog } from 'posthog-js/react';
-import { useCallback, useState } from 'react';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-import { About } from './About';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
@@ -27,23 +14,11 @@ import appStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { useAutoSaveStore, usePreviewStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
-
-const lightSelectedStyle: CSSProperties = {
-    backgroundColor: '#F0F7FF',
-    borderColor: '#007FFF',
-    color: '#007FFF',
-};
-
-const darkSelectedStyle: CSSProperties = {
-    backgroundColor: '#003A7570',
-    borderColor: '#0059B2',
-    color: '#99CCF3',
-};
-
-function getSelectedStyle(buttonValue: string, themeSetting: string, isDark: boolean) {
-    return themeSetting === buttonValue ? (isDark ? darkSelectedStyle : lightSelectedStyle) : {};
-}
+import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
+import { User } from '@packages/antalmanac-types';
+import { useTheme } from '@mui/material/styles';
+import { About } from '$components/Header/About';
+import { BLUE } from '$src/globals';
 
 function ThemeMenu() {
     const [themeSetting, isDark, setTheme] = useThemeStore((store) => [
@@ -54,64 +29,67 @@ function ThemeMenu() {
     const { forceUpdate } = useCoursePaneStore();
     const postHog = usePostHog();
 
-    const handleThemeChange = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleThemeChange = (value: 'light' | 'dark' | 'system') => {
         forceUpdate();
-        setTheme(event.currentTarget.value as 'light' | 'dark' | 'system', postHog);
+        setTheme(value, postHog);
     };
 
     return (
-        <Box sx={{ padding: '0 1rem', width: '100%' }}>
-            <Typography variant="h6" style={{ marginBottom: '1rem' }}>
+        <Box sx={{ width: '100%' }}>
+            <Typography variant="h5" sx={{ fontWeight: 600, mb: 0.5 }}>
                 Theme
             </Typography>
 
-            <ButtonGroup
-                style={{
+            <Box
+                sx={{
                     display: 'flex',
-                    placeContent: 'center',
-                    width: '100%',
-                    borderColor: 'unset',
+                    border: `1px solid ${isDark ? '#8886' : '#d3d4d5'}`,
+                    borderRadius: '4px',
+                    mb: 1.5,
                 }}
             >
-                <Button
-                    startIcon={<LightMode fontSize="small" />}
-                    sx={{
-                        padding: '1rem 2rem',
-                        borderRadius: '12px 0px 0px 12px',
-                        width: '100%',
-                        ...getSelectedStyle('light', themeSetting, isDark),
-                    }}
-                    value="light"
-                    onClick={handleThemeChange}
-                >
-                    Light
-                </Button>
-                <Button
-                    startIcon={<SettingsBrightness fontSize="small" />}
-                    sx={{
-                        padding: '1rem 2rem',
-                        width: '100%',
-                        ...getSelectedStyle('system', themeSetting, isDark),
-                    }}
-                    value="system"
-                    onClick={handleThemeChange}
-                >
-                    System
-                </Button>
-                <Button
-                    startIcon={<DarkMode fontSize="small" />}
-                    sx={{
-                        padding: '1rem 2rem',
-                        borderRadius: '0px 12px 12px 0px',
-                        width: '100%',
-                        ...getSelectedStyle('dark', themeSetting, isDark),
-                    }}
-                    value="dark"
-                    onClick={handleThemeChange}
-                >
-                    Dark
-                </Button>
-            </ButtonGroup>
+                {[
+                    { value: 'light', label: 'Light', icon: <LightMode fontSize="medium" /> },
+                    { value: 'system', label: 'System', icon: <SettingsBrightness fontSize="medium" /> },
+                    { value: 'dark', label: 'Dark', icon: <DarkMode fontSize="small" /> },
+                ].map((tab, index) => {
+                    const isSelected = themeSetting === tab.value;
+
+                    return (
+                        <Box
+                            key={tab.value}
+                            onClick={() => handleThemeChange(tab.value as 'light' | 'dark' | 'system')}
+                            sx={{
+                                flex: 1,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                minwidth: 0,
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                gap: 0.5,
+                                padding: '8px 12px',
+                                cursor: 'pointer',
+                                fontWeight: 'bold',
+                                fontSize: '1.1rem',
+                                backgroundColor: isSelected ? BLUE : isDark ? '#333333' : '#f8f9fa',
+                                color: isSelected ? '#fff' : BLUE,
+                                borderRight: index < 2 ? `1px solid ${isDark ? '#8886' : '#d3d4d5'}` : 'none',
+                                borderTopLeftRadius: tab.value === 'light' ? 4 : 0,
+                                borderBottomLeftRadius: tab.value === 'light' ? 4 : 0,
+                                borderTopRightRadius: tab.value === 'dark' ? 4 : 0,
+                                borderBottomRightRadius: tab.value === 'dark' ? 4 : 0,
+                                '&:hover': {
+                                    backgroundColor: isSelected ? BLUE : isDark ? '#424649' : '#d3d4d5',
+                                },
+                            }}
+                        >
+                            {tab.icon}
+                            {tab.label}
+                        </Box>
+                    );
+                })}
+            </Box>
         </Box>
     );
 }
@@ -120,65 +98,79 @@ function TimeMenu() {
     const [isMilitaryTime, setTimeFormat] = useTimeFormatStore((store) => [store.isMilitaryTime, store.setTimeFormat]);
     const isDark = useThemeStore((store) => store.isDark);
 
-    const handleTimeFormatChange = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setTimeFormat(event.currentTarget.value == 'true');
+    const handleTimeFormatChange = (event: React.MouseEvent<HTMLDivElement>) => {
+        const value = event.currentTarget.getAttribute('data-value');
+        setTimeFormat(value === 'true');
     };
 
     return (
-        <Box sx={{ padding: '0 1rem', width: '100%' }}>
-            <Typography variant="h6" style={{ marginBottom: '1rem' }}>
+        <Box sx={{ pt: 0.5, width: '100%' }}>
+            <Typography variant="h5" sx={{ fontWeight: 600, mb: 0.5 }}>
                 Time
             </Typography>
-
-            <ButtonGroup
-                style={{
+            <Box
+                sx={{
                     display: 'flex',
-                    placeContent: 'center',
-                    width: '100%',
+                    border: `1px solid ${isDark ? '#8886' : '#d3d4d5'}`,
+                    borderRadius: '4px',
+                    mb: 1.5,
                 }}
             >
-                <Button
-                    sx={{
-                        padding: '1rem 2rem',
-                        borderRadius: '12px 0px 0px 12px',
-                        width: '100%',
-                        fontSize: '12px',
-                        ...getSelectedStyle('false', isMilitaryTime.toString(), isDark),
-                    }}
-                    value="false"
+                <Box
+                    data-value="false"
                     onClick={handleTimeFormatChange}
-                    fullWidth={true}
+                    sx={{
+                        flex: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '8px 20px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '1.1rem',
+                        backgroundColor: !isMilitaryTime ? BLUE : isDark ? '#333333' : '#f8f9fa',
+                        color: !isMilitaryTime ? '#fff' : BLUE,
+                        borderRight: `1px solid ${isDark ? '#8886' : '#d3d4d5'}`,
+                        borderTopLeftRadius: 4,
+                        borderBottomLeftRadius: 4,
+                        '&:hover': {
+                            backgroundColor: !isMilitaryTime ? BLUE : isDark ? '#424649' : '#d3d4d5',
+                        },
+                    }}
                 >
                     12 Hour
-                </Button>
-                <Button
-                    sx={{
-                        padding: '1rem 2rem',
-                        borderRadius: '0px 12px 12px 0px',
-                        width: '100%',
-                        fontSize: '12px',
-                        ...getSelectedStyle('true', isMilitaryTime.toString(), isDark),
-                    }}
-                    value="true"
+                </Box>
+                <Box
+                    data-value="true"
                     onClick={handleTimeFormatChange}
+                    sx={{
+                        flex: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '8px 20px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '1.1rem',
+                        backgroundColor: isMilitaryTime ? BLUE : isDark ? '#333333' : '#f8f9fa',
+                        color: isMilitaryTime ? '#fff' : BLUE,
+                        borderTopRightRadius: 4,
+                        borderBottomRightRadius: 4,
+                        '&:hover': {
+                            backgroundColor: isMilitaryTime ? BLUE : isDark ? '#424649' : '#d3d4d5',
+                        },
+                    }}
                 >
                     24 Hour
-                </Button>
-            </ButtonGroup>
+                </Box>
+            </Box>
         </Box>
     );
 }
 
 function PlannerMenu() {
     return (
-        <Box
-            sx={{
-                padding: '0 1rem',
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-            }}
-        >
+        <Box sx={{ py: 1, width: '100%', display: 'flex', justifyContent: 'center' }}>
             <PlannerButton
                 buttonSx={{
                     width: '100%',
@@ -187,7 +179,6 @@ function PlannerMenu() {
         </Box>
     );
 }
-
 function ExperimentalMenu() {
     const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
     const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
@@ -220,14 +211,7 @@ function ExperimentalMenu() {
     };
 
     return (
-        <Stack
-            sx={{
-                padding: '0 1rem',
-                width: '100%',
-                display: 'flex',
-                alignItems: 'middle',
-            }}
-        >
+        <Stack sx={{ width: '100%', display: 'flex', alignItems: 'middle' }}>
             <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
                 <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <Typography
@@ -269,90 +253,81 @@ function ExperimentalMenu() {
     );
 }
 
-function SettingsMenu() {
-    const isMobile = useIsMobile();
+function UserProfileSection({ user }: { user: User | null }) {
+    if (!user) return null;
+    const theme = useTheme();
 
     return (
-        <Stack gap={2}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            {user.avatar ? (
+                <Image
+                    src={user.avatar}
+                    alt={user.name ?? 'User'}
+                    width={50}
+                    height={50}
+                    style={{ borderRadius: '50%', objectFit: 'cover' }}
+                />
+            ) : (
+                <AccountCircleIcon sx={{ width: 50, height: 50 }} />
+            )}
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography
+                    style={{
+                        fontSize: '18px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        fontWeight: 'bold',
+                        paddingBottom: '8px',
+                        margin: 0,
+                        lineHeight: 1,
+                    }}
+                >
+                    {user.name}
+                </Typography>
+                <Typography
+                    style={{
+                        fontSize: '14px',
+                        color: theme.palette.mode === 'dark' ? '#96969b' : '#606166',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        paddingBottom: '4px',
+                        margin: 0,
+                        lineHeight: 1,
+                        fontWeight: 600,
+                    }}
+                >
+                    {user.email}
+                </Typography>
+            </Box>
+        </Box>
+    );
+}
+
+export function SettingsMenu({ user }: { user: User | null }) {
+    const isMobile = useIsMobile();
+    return (
+        <Stack>
+            <UserProfileSection user={user} />
+
             <ThemeMenu />
             <TimeMenu />
-
             {isMobile && (
-                <Stack gap={2}>
+                <Stack>
                     <Divider>
                         <Typography variant="subtitle2">Want a 4-year plan?</Typography>
                     </Divider>
-
                     <PlannerMenu />
                 </Stack>
             )}
-
-            <Stack gap={2}>
+            <Stack>
                 <Divider>
                     <Typography variant="subtitle2">Experimental Features</Typography>
                 </Divider>
 
                 <ExperimentalMenu />
+                <Divider style={{ marginTop: '10px', marginBottom: '12px' }} />
+                <About />
             </Stack>
         </Stack>
     );
 }
-
-function AppDrawer() {
-    const [drawerOpen, setDrawerOpen] = useState(false);
-    const isMobileScreen = useMediaQuery('(max-width:750px)');
-
-    const handleDrawerOpen = useCallback(() => {
-        setDrawerOpen(true);
-    }, []);
-
-    const handleDrawerClose = useCallback(() => {
-        setDrawerOpen(false);
-    }, []);
-
-    return (
-        <>
-            <IconButton onClick={handleDrawerOpen} color="inherit" size="large" style={{ padding: '4px' }}>
-                <MenuRounded />
-            </IconButton>
-            <Drawer
-                anchor="right"
-                open={drawerOpen}
-                onClose={handleDrawerClose}
-                PaperProps={{ style: { borderRadius: '10px 0 0 10px' } }}
-                variant="temporary"
-            >
-                <Box style={{ width: isMobileScreen ? '300px' : '360px', height: '100%' }}>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'end',
-                            paddingTop: '8px',
-                            paddingRight: '12px',
-                        }}
-                    >
-                        <IconButton size="large" onClick={handleDrawerClose} style={{ marginLeft: 'auto' }}>
-                            <Close />
-                        </IconButton>
-                    </Box>
-
-                    <SettingsMenu />
-
-                    <Box
-                        sx={{
-                            padding: '1.5rem',
-                            width: '100%',
-                            bottom: 0,
-                            position: 'absolute',
-                        }}
-                    >
-                        <About />
-                    </Box>
-                </Box>
-            </Drawer>
-        </>
-    );
-}
-
-export default AppDrawer;
