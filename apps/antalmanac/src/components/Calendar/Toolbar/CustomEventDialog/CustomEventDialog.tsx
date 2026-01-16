@@ -75,13 +75,18 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
 
     const handleOpen = useCallback(() => {
         setOpen(true);
-        setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(Number(props.customEvent?.customEventID ?? -1)));
+        if (props.customEvent) {
+            const customEventId = Number(props.customEvent.customEventID);
+            setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(customEventId));
+        } else {
+            setScheduleIndices([AppStore.getCurrentScheduleIndex()]);
+        }
 
         logAnalytics(postHog, {
             category: analyticsEnum.calendar,
             action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT,
         });
-    }, [props.customEvent?.customEventID, postHog]);
+    }, [props.customEvent, postHog]);
 
     const handleClose = useCallback(() => {
         setOpen(false);
@@ -165,13 +170,13 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                     {props.customEvent ? 'Edit a Custom Event' : 'Add a Custom Event'}
                 </DialogTitle>
                 <DialogContent
-                    sx={{
+                    sx={(theme) => ({
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '12px',
                         paddingTop: '12px',
-                        minWidth: (theme) => theme.breakpoints.values.xxs,
-                    }}
+                        minWidth: { sm: theme.breakpoints.values.xxs },
+                    })}
                 >
                     <FormControl fullWidth>
                         <TextField

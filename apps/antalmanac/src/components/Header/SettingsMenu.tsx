@@ -12,7 +12,6 @@ import {
     useMediaQuery,
 } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import { CSSProperties } from '@mui/material/styles/createTypography';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 
@@ -27,13 +26,13 @@ import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleS
 import { useSessionStore } from '$stores/SessionStore';
 import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
 
-const lightSelectedStyle: CSSProperties = {
+const lightSelectedStyle: React.CSSProperties = {
     backgroundColor: '#F0F7FF',
     borderColor: '#007FFF',
     color: '#007FFF',
 };
 
-const darkSelectedStyle: CSSProperties = {
+const darkSelectedStyle: React.CSSProperties = {
     backgroundColor: '#003A7570',
     borderColor: '#0059B2',
     color: '#99CCF3',
