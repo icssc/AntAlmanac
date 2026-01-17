@@ -71,7 +71,7 @@ export default function AppThemeProvider(props: Props) {
         return () => {
             mediaQueryList.removeEventListener('change', onChange);
         };
-    }, [setAppTheme]);
+    }, [setAppTheme, postHog]);
 
     const theme = useMemo(
         () =>

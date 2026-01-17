@@ -183,7 +183,7 @@ export default function CourseMap() {
             AppStore.removeListener('currentScheduleIndexChange', updateAllMarkers);
             AppStore.removeListener('colorChange', updateAllMarkers);
         };
-    }, []);
+    }, [postHog]);
 
     useEffect(() => {
         const updateCalendarEvents = () => {

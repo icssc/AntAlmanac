@@ -86,7 +86,7 @@ export function ColumnToggleDropdown() {
                 setSelectedColumns(e.target.value);
             }
         },
-        [setSelectedColumns]
+        [setSelectedColumns, postHog]
     );
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
