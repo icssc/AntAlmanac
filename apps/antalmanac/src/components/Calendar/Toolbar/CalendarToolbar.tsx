@@ -32,6 +32,7 @@ import DownloadButton from '$components/buttons/Download';
 import ScreenshotButton from '$components/buttons/Screenshot';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import AppStore from '$stores/AppStore';
 
 function handleUndo(postHog?: PostHog) {
@@ -72,6 +73,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const isMobile = useIsMobile();
     const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
     const menuOpen = Boolean(menuAnchorEl);
+    const isSharedSchedulePage = useIsSharedSchedulePage();
 
     const postHog = usePostHog();
 
@@ -155,7 +157,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             color={showFinalsSchedule ? 'primary' : 'inherit'}
                             onClick={handleToggleFinals}
                             id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
-                            disabled={skeletonMode}
+                            disabled={skeletonMode && !isSharedSchedulePage}
                             size="small"
                             sx={{
                                 border: '1px solid',
@@ -173,7 +175,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             onClick={handleToggleFinals}
                             size="small"
                             id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
-                            disabled={skeletonMode}
+                            disabled={skeletonMode && !isSharedSchedulePage}
                         >
                             Finals
                         </Button>
@@ -224,12 +226,14 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             </ListItemIcon>
                             <ListItemText>Download Calendar</ListItemText>
                         </MenuItem>
-                        <MenuItem onClick={handleClearSchedule}>
-                            <ListItemIcon>
-                                <DeleteOutline fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText>Clear Schedule</ListItemText>
-                        </MenuItem>
+                        {!isSharedSchedulePage && (
+                            <MenuItem onClick={handleClearSchedule}>
+                                <ListItemIcon>
+                                    <DeleteOutline fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText>Clear Schedule</ListItemText>
+                            </MenuItem>
+                        )}
                     </Menu>
                     {/* Hidden button components for mobile menu to trigger */}
                     <Box sx={{ display: 'none' }}>
@@ -239,14 +243,16 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                         <Box ref={downloadButtonRef}>
                             <DownloadButton />
                         </Box>
-                        <Box ref={clearButtonRef}>
-                            <ClearScheduleButton
-                                size="medium"
-                                fontSize="small"
-                                skeletonMode={skeletonMode}
-                                analyticsCategory={analyticsEnum.calendar}
-                            />
-                        </Box>
+                        {!isSharedSchedulePage && (
+                            <Box ref={clearButtonRef}>
+                                <ClearScheduleButton
+                                    size="medium"
+                                    fontSize="small"
+                                    skeletonMode={skeletonMode}
+                                    analyticsCategory={analyticsEnum.calendar}
+                                />
+                            </Box>
+                        )}
                     </Box>
                 </Box>
             ) : (
@@ -266,12 +272,14 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                         </IconButton>
                     </Tooltip>
 
-                    <ClearScheduleButton
-                        size="medium"
-                        fontSize="small"
-                        skeletonMode={skeletonMode}
-                        analyticsCategory={analyticsEnum.calendar}
-                    />
+                    {!isSharedSchedulePage && (
+                        <ClearScheduleButton
+                            size="medium"
+                            fontSize="small"
+                            skeletonMode={skeletonMode}
+                            analyticsCategory={analyticsEnum.calendar}
+                        />
+                    )}
 
                     <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
                 </Box>

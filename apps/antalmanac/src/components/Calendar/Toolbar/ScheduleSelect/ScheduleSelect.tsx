@@ -8,8 +8,10 @@ import { SortableList } from '$components/Calendar/Toolbar/ScheduleSelect/drag-a
 import { AddScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton';
 import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/DeleteScheduleButton';
 import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
+import { ShareScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/ShareScheduleButton';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 
@@ -51,6 +53,7 @@ function createScheduleSelector(index: number, postHog?: PostHog) {
  */
 export function SelectSchedulePopover() {
     const theme = useTheme();
+    const isSharedSchedulePage = useIsSharedSchedulePage();
     const { openScheduleSelect, setOpenScheduleSelect } = scheduleComponentsToggleStore();
 
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
@@ -114,11 +117,14 @@ export function SelectSchedulePopover() {
     }, []);
 
     const scheduleMappingToUse = skeletonMode ? skeletonScheduleMapping : scheduleMapping;
+    const displayName = isSharedSchedulePage
+        ? AppStore.getScheduleNames()[currentScheduleIndex] || scheduleMappingToUse[currentScheduleIndex]?.name
+        : scheduleMappingToUse[currentScheduleIndex]?.name;
 
     return (
         <Box>
             <Tooltip
-                title={scheduleMappingToUse[currentScheduleIndex]?.name}
+                title={displayName || ''}
                 enterDelay={200}
                 slotProps={{
                     popper: {
@@ -143,7 +149,7 @@ export function SelectSchedulePopover() {
                     sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
                 >
                     <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
-                        {scheduleMappingToUse[currentScheduleIndex]?.name || null}
+                        {displayName || null}
                     </Typography>
                     <ArrowDropDownIcon />
                 </Button>
@@ -223,6 +229,7 @@ export function SelectSchedulePopover() {
                                         <Box display="flex" alignItems="center" gap={0.5}>
                                             <CopyScheduleButton index={index} disabled={skeletonMode} />
                                             <RenameScheduleButton index={index} disabled={skeletonMode} />
+                                            <ShareScheduleButton index={index} disabled={skeletonMode} />
                                             <DeleteScheduleButton index={index} disabled={skeletonMode} />
                                         </Box>
                                     </Box>

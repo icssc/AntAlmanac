@@ -23,6 +23,7 @@ import { TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
 import locationIds from '$lib/locations/locations';
 import { notNull } from '$lib/utils';
+import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import AppStore from '$stores/AppStore';
 
 const ATTRIBUTION_MARKUP =
@@ -153,7 +154,8 @@ export default function CourseMap() {
     const navigate = useNavigate();
     const map = useRef<Map | null>(null);
     const markerRef = createRef<Marker>();
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const isSharedSchedulePage = useIsSharedSchedulePage();
     const [selectedDayIndex, setSelectedDay] = useState(0);
     const [markers, setMarkers] = useState(getCoursesPerBuilding());
     const [customEventMarkers, setCustomEventMarkers] = useState(getCustomEventPerBuilding());
@@ -224,9 +226,19 @@ export default function CourseMap() {
 
     const onBuildingChange = useCallback(
         (building?: ExtendedBuilding | null) => {
-            navigate(`/map?location=${building?.id}`);
+            if (isSharedSchedulePage) {
+                const newSearchParams = new URLSearchParams(searchParams);
+                if (building?.id) {
+                    newSearchParams.set('location', String(building.id));
+                } else {
+                    newSearchParams.delete('location');
+                }
+                setSearchParams(newSearchParams, { replace: true });
+            } else {
+                navigate(`/map?location=${building?.id}`);
+            }
         },
-        [navigate]
+        [navigate, isSharedSchedulePage, searchParams, setSearchParams]
     );
 
     const days = useMemo(() => {
