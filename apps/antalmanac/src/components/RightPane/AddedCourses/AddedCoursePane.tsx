@@ -1,4 +1,5 @@
 import { updateScheduleNote } from '$actions/AppStoreActions';
+import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import { EmptyState } from '$components/EmptyState';
@@ -7,6 +8,7 @@ import { getMissingSections } from '$components/RightPane/AddedCourses/getMissin
 import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
 import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import SectionTable from '$components/RightPane/SectionTable/SectionTable';
+import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
@@ -296,7 +298,7 @@ function AddedSectionsGrid() {
     const [courses, setCourses] = useState(getCourses());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
-
+    const isMobile = useIsMobile();
     useEffect(() => {
         const handleCoursesChange = () => {
             setCourses(getCourses());
@@ -350,7 +352,10 @@ function AddedSectionsGrid() {
                 <NotificationsDialog buttonSx={buttonSx} />
             </Box>
             <Box sx={{ marginTop: 7 }}>
-                <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
+                    {isMobile && <SelectSchedulePopover />}
+                </Box>
                 {courses.length === 0 && (
                     <EmptyState
                         Icon={MenuBook}
