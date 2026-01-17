@@ -40,6 +40,10 @@ class _WebSOC {
     async getCourseInfo(params: Record<string, string>) {
         return await trpc.websoc.getCourseInfo.query(params);
     }
+
+    async getDepartments() {
+        return await trpc.websoc.getDepartments.query();
+    }
 }
 
 export const WebSOC = new _WebSOC();
