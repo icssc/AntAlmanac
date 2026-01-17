@@ -1,4 +1,5 @@
 import { Tab, useMediaQuery, useTheme } from '@mui/material';
+import { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
 import { ScheduleManagementTabInfo } from '$components/ScheduleManagement/ScheduleManagementTabs';
@@ -14,9 +15,9 @@ export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-    const handleClick = () => {
+    const handleClick = useCallback(() => {
         setActiveTabValue(value);
-    };
+    }, [setActiveTabValue, value]);
 
     return (
         <Tab

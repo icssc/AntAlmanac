@@ -8,11 +8,13 @@ import searchRouter from './search';
 import userDataRouter from './userData';
 import websocRouter from './websoc';
 import zotcourseRouter from './zotcourse';
+import notificationsRouter from './notifications';
 
 const appRouter = router({
     course: courseRouter,
     enrollHist: enrollHistRouter,
     grades: gradesRouter,
+    notifications: notificationsRouter,
     search: searchRouter,
     auth: authRouter,
     userData: userDataRouter,

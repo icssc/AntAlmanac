@@ -219,8 +219,7 @@ This command runs `sst deploy --stage production` which:
 
 The following environment variables are required for deployment and should be configured in your AWS environment or CI/CD pipeline:
 
--   `PROD_DB_URL` - Production database connection string
--   `DEV_DB_URL` - Development database connection string
+-   `DB_URL` - Database connection string 
 -   `MAPBOX_ACCESS_TOKEN` - Mapbox API token for map features
 -   `NEXT_PUBLIC_TILES_ENDPOINT` - Endpoint for map tiles
 -   `ANTEATER_API_KEY` - API key for Anteater API
