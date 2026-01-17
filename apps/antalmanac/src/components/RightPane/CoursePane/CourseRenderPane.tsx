@@ -30,6 +30,8 @@ import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useThemeStore } from '$stores/SettingsStore';
+import { useSessionStore } from '$stores/SessionStore';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
@@ -242,6 +244,7 @@ const ErrorMessage = () => {
 };
 
 export default function CourseRenderPane(props: { id?: number }) {
+    const { manualSearchEnabled } = useCoursePaneStore();  
     const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
     const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
     const [loading, setLoading] = useState(true);
@@ -295,7 +298,22 @@ export default function CourseRenderPane(props: { id?: number }) {
 
             setError(false);
             setWebsocResp(websocJsonResp);
-            setCourseData(flattenSOCObject(websocJsonResp));
+            const allCourses = flattenSOCObject(websocJsonResp);
+
+            const { filterTakenCourses, userTakenCourses } = useSessionStore.getState();
+
+            const filteredCourses =
+                manualSearchEnabled && filterTakenCourses && userTakenCourses.size > 0
+                    ? allCourses.filter((item) => {
+                          if ('sections' in item && 'deptCode' in item && 'courseNumber' in item) {
+                              const courseKey = `${item.deptCode}${item.courseNumber}`.replace(/\s+/g, '');
+                              return !userTakenCourses.has(courseKey);
+                          }
+                          return true;
+                      })
+                    : allCourses;
+
+            setCourseData(filteredCourses);
         } catch (error) {
             console.error(error);
             setError(true);

@@ -7,7 +7,6 @@ import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
-
 import * as searchData from '$generated/searchData';
 
 const MAX_AUTOCOMPLETE_RESULTS = 12;
@@ -112,13 +111,12 @@ const searchRouter = router({
                         return a.obj.isOffered ? -1 : 1;
                       });
 
-
-
-            return Object.fromEntries([
+            let results = [
                 ...matchedSections.map((x) => [x.sectionCode, x]),
                 ...matchedDepts.map((x) => [x.obj.id, x.obj]),
                 ...matchedCourses.map((x) => [x.obj.id, x.obj]),
-            ]);
+            ]
+            return Object.fromEntries(results);
         }),
 });
 
