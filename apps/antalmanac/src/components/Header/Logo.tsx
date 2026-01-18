@@ -73,11 +73,11 @@ export function Logo() {
     return (
         <Image
             src={isMobile ? currentLogo?.mobileLogo : currentLogo?.mobileLogo}
-            height={64}
-            width={340}
+            height={36}
+            width={78}
             style={{
                 width: 'auto',
-                height: isMobile ? '2rem' : '2.5rem',
+                height: '2.5rem',
             }}
             title={currentLogo?.attribution}
             alt="logo"
