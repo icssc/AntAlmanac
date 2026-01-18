@@ -46,12 +46,6 @@ jobs:
                   DB_URL: ${{ secrets.PROD_DB_URL }}
               run: pnpm db:migrate
 
-            # TODO (@xgraceyan): Remove this stage once SST fixes deployments
-            - name: Setup Pulumi
-              uses: pulumi/actions@v5
-              with:
-                  pulumi-version: 3.138.0 # Any version < 3.214.0 works
-
             - name: Deploy SST (production)
               env:
                   SST_STAGE: production
