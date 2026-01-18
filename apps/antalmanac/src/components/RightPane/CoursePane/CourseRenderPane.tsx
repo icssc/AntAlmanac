@@ -1,5 +1,5 @@
 import { Close } from '@mui/icons-material';
-import { Alert, Box, IconButton, Link, useMediaQuery, useTheme } from '@mui/material';
+import { Alert, Box, IconButton, Link } from '@mui/material';
 import {
     AACourse,
     AASection,
@@ -22,6 +22,7 @@ import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
+import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
@@ -77,8 +78,7 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
 };
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
-    const theme = useTheme();
-    const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMobileScreen = useIsMobile();
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
     const recruitmentDismissalTime = getLocalStorageRecruitmentDismissalTime();
