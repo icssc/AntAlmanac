@@ -1,5 +1,5 @@
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
-import { Box, IconButton, Typography, Skeleton, Tooltip, useMediaQuery } from '@mui/material';
+import { Box, IconButton, Typography, Skeleton, Tooltip } from '@mui/material';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
     LineChart,
@@ -12,8 +12,8 @@ import {
     Legend,
 } from 'recharts';
 
+import { useIsMobile } from '$hooks/useIsMobile';
 import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
-import { MOBILE_BREAKPOINT } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 
 type PopupHeaderCallback = () => void;
@@ -35,7 +35,7 @@ function PopupHeader({
     popupTitle,
     enrollmentHistory,
 }: PopupHeaderProps) {
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
+    const isMobileScreen = useIsMobile();
 
     return (
         <Box
@@ -78,7 +78,7 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
     const [enrollmentHistory, setEnrollmentHistory] = useState<EnrollmentHistory[]>();
     const [graphIndex, setGraphIndex] = useState(0);
 
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
+    const isMobileScreen = useIsMobile();
 
     const deptEnrollmentHistory = useMemo(() => new DepartmentEnrollmentHistory(department), [department]);
 
