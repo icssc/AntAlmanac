@@ -9,7 +9,7 @@ import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialo
 import ColorPicker from '$components/ColorPicker';
 import { MapLink } from '$components/buttons/MapLink';
 import analyticsEnum from '$lib/analytics/analytics';
-import buildingCatalogue from '$lib/locations/buildingCatalogue';
+import buildingCatalogue from '$generated/buildingCatalogue';
 import AppStore from '$stores/AppStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 
