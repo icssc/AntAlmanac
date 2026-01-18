@@ -77,7 +77,7 @@ export function Logo() {
             width={340}
             style={{
                 width: 'auto',
-                height: isMobile ? '2rem' : '3rem',
+                height: isMobile ? '2rem' : '2.5rem',
             }}
             title={currentLogo?.attribution}
             alt="logo"
