@@ -1,6 +1,6 @@
 import Image from 'next/image';
+
 import { useIsMobile } from '$hooks/useIsMobile';
-import { useThemeStore } from '$stores/SettingsStore';
 
 type Logo = {
     name: string;
@@ -72,7 +72,7 @@ export function Logo() {
 
     return (
         <Image
-            src={isMobile ? currentLogo?.mobileLogo : currentLogo?.desktopLogo}
+            src={isMobile ? currentLogo?.mobileLogo : currentLogo?.mobileLogo}
             height={64}
             width={340}
             style={{

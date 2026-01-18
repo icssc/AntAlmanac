@@ -1,8 +1,10 @@
-import { CalendarMonth, Map, UnfoldMore } from '@mui/icons-material';
+import { UnfoldMore } from '@mui/icons-material';
+import { EventNote, Route } from '@mui/icons-material';
 import {
     AppBar,
     Box,
-    Divider,
+    Button,
+    ButtonGroup,
     IconButton,
     ListItemIcon,
     ListSubheader,
@@ -82,9 +84,9 @@ export function Header() {
                     alignItems: 'center',
                 }}
             >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 1 } }}>
-                    <Stack sx={{ flexDirection: 'row', alignItems: 'center' }}>
-                        {isMobile ? (
+                <Stack direction="row" sx={{ alignItems: 'center', gap: 2 }}>
+                    {isMobile ? (
+                        <>
                             <IconButton
                                 onClick={(event) => setAnchorEl(event.currentTarget)}
                                 sx={(theme) => ({
@@ -97,56 +99,82 @@ export function Header() {
                                 })}
                             >
                                 <Logo />
-                                <UnfoldMore color="secondary" />
+                                <UnfoldMore color="inherit" />
                             </IconButton>
-                        ) : (
-                            <Logo />
-                        )}
 
-                        <Popover
-                            open={Boolean(anchorEl)}
-                            anchorEl={anchorEl}
-                            onClose={() => setAnchorEl(null)}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'left',
-                            }}
-                        >
-                            <MenuList
-                                subheader={
-                                    <ListSubheader component="div" sx={{ lineHeight: '30px' }}>
-                                        Switch Apps
-                                    </ListSubheader>
-                                }
-                                sx={{ width: '200px' }}
+                            <Popover
+                                open={Boolean(anchorEl)}
+                                anchorEl={anchorEl}
+                                onClose={() => setAnchorEl(null)}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'left',
+                                }}
                             >
-                                <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-                                    <MenuItem selected={platform === 'Scheduler'} onClick={() => setAnchorEl(null)}>
-                                        <ListItemIcon>
-                                            <CalendarMonth />
-                                        </ListItemIcon>
-                                        <Typography variant="h6">Scheduler</Typography>
-                                    </MenuItem>
-                                </Link>
-                                <Link
-                                    href="https://planner-917.antalmanac.com"
-                                    style={{ textDecoration: 'none', color: 'inherit' }}
+                                <MenuList
+                                    subheader={
+                                        <ListSubheader component="div" sx={{ lineHeight: '30px' }}>
+                                            Switch Apps
+                                        </ListSubheader>
+                                    }
+                                    sx={{ width: '200px' }}
                                 >
-                                    <MenuItem selected={platform === 'Planner'} onClick={() => setAnchorEl(null)}>
-                                        <ListItemIcon>
-                                            <Map />
-                                        </ListItemIcon>
-                                        <Typography variant="h6">Planner</Typography>
-                                    </MenuItem>
-                                </Link>
-                            </MenuList>
-                        </Popover>
-                    </Stack>
-                </Box>
+                                    <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                        <MenuItem
+                                            selected={platform === 'Scheduler'}
+                                            onClick={() => setAnchorEl(null)}
+                                            sx={{ minHeight: 'fit-content' }}
+                                        >
+                                            <ListItemIcon>
+                                                <EventNote />
+                                            </ListItemIcon>
+                                            <Typography variant="h6">Scheduler</Typography>
+                                        </MenuItem>
+                                    </Link>
+                                    <Link
+                                        href="https://planner-917.antalmanac.com"
+                                        style={{ textDecoration: 'none', color: 'inherit' }}
+                                    >
+                                        <MenuItem
+                                            selected={platform === 'Planner'}
+                                            onClick={() => setAnchorEl(null)}
+                                            sx={{ minHeight: 'fit-content' }}
+                                        >
+                                            <ListItemIcon>
+                                                <Route />
+                                            </ListItemIcon>
+                                            <Typography variant="h6">Planner</Typography>
+                                        </MenuItem>
+                                    </Link>
+                                </MenuList>
+                            </Popover>
+                        </>
+                    ) : (
+                        <>
+                            <Logo />
+                            <ButtonGroup variant="outlined" color="inherit">
+                                <Button color="secondary" variant="contained" sx={{ gap: 0.5 }}>
+                                    <EventNote sx={{ fontSize: 16, color: BLUE }} />
+                                    <Typography variant="body1" style={{ color: BLUE, fontWeight: 500 }}>
+                                        Scheduler
+                                    </Typography>
+                                </Button>
+                                <Button sx={{ gap: 0.5 }}>
+                                    <Route sx={{ fontSize: 16 }} />
+                                    <Typography variant="body1" style={{ color: 'white', fontWeight: 500 }}>
+                                        Planner
+                                    </Typography>
+                                </Button>
+                            </ButtonGroup>
+                        </>
+                    )}
+
+                    {/* <Chip label="New!" color="primary" /> */}
+                </Stack>
 
                 <Stack direction="row" sx={{ alignItems: 'center' }}>
                     <Import key="studylist" />

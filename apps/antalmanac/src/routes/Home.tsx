@@ -12,7 +12,7 @@ import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
 import { BLUE } from '$src/globals';
-import { SideNav } from '$src/shared-components/SideNav';
+// import { SideNav } from '$src/shared-components/SideNav';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
 function MobileHome() {
@@ -85,7 +85,7 @@ export default function Home() {
             <InstallPWABanner />
 
             <Stack direction="row" height="100dvh">
-                <SideNav />
+                {/* <SideNav /> */}
 
                 <Stack component="main" flex={1}>
                     <Header />
