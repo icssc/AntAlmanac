@@ -54,6 +54,18 @@ jobs:
                     exit 0
                 fi
 
+                LATEST_DEPLOYED=$(cat .github/deployed_terms.json | jq -r '.data[0].longName')
+
+                if [[ "$LATEST_DEPLOYED" == "$LATEST_TERM" ]]; then
+                    echo "No new quarter found"
+                    echo "update_needed=false" >> $GITHUB_OUTPUT
+                else
+                    echo "New quarter detected!"
+                    echo "update_needed=true" >> $GITHUB_OUTPUT
+                    echo "new_term=$LATEST_TERM" >> $GITHUB_OUTPUT
+                    echo "reason=new quarter available, trigger rebuild" >> $GITHUB_OUTPUT
+                    echo "$API_RESPONSE" > .github/deployed_terms.json
+
         
 
 
