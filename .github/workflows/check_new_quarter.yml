@@ -56,6 +56,9 @@ jobs:
 
                 LATEST_DEPLOYED=$(cat .github/deployed_terms.json | jq -r '.data[0].longName')
 
+                echo "Latest term from API: $LATEST_TERM"
+                echo "Latest deployed term: $LATEST_DEPLOYED"
+
                 if [[ "$LATEST_DEPLOYED" == "$LATEST_TERM" ]]; then
                     echo "No new quarter found"
                     echo "update_needed=false" >> $GITHUB_OUTPUT
@@ -65,18 +68,16 @@ jobs:
                     echo "new_term=$LATEST_TERM" >> $GITHUB_OUTPUT
                     echo "reason=new quarter available, trigger rebuild" >> $GITHUB_OUTPUT
                     echo "$API_RESPONSE" > .github/deployed_terms.json
+                fi
 
             - name: Commit and push updated terms
               if: steps.check.outputs.update_needed == 'true'
-              run: |
-                git config user.name "github-actions[bot]"        
-                git config user.email "github-actions[bot]@users.noreply.github.com"        
-
+              run: |      
                 git add .github/deployed_terms.json
-
                 git commit -m "ci: ${{ steps.check.outputs.reason }}
 New term: ${{ steps.check.outputs.new_term }}
-Updated by automated workflow on $(date -u +%Y-%m-%d)
+
+Auto-updated by workflow on $(date -u +%Y-%m-%d)"
                 
                 git push origin main
                 echo "Updated deployed_terms.json and triggered rebuild"
