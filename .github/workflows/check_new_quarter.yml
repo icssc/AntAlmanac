@@ -1,10 +1,8 @@
-name: Check for New Quarter and Reschedule
+name: Check for New Quarter and Update Deployed Terms if needed
 
 on:
     schedule:
-        # NEXT SOC RELEASE
         - cron: '0 * * * *'
-        # END NEXT SOC RELEASE
     workflow_dispatch:
   
 env:
@@ -27,6 +25,23 @@ jobs:
                   git config user.name "github-actions[bot]"
                   git config user.email "github-actions[bot]@users.noreply.github.com"
 
+            - name: Check for new Terms
+              id: check
+              run: |
+                echo "Fetching latest terms from AnteaterAPI..."
+                API_RESPONSE=$(curl -s https://anteaterapi.com/v2/rest/websoc/terms)
+
+                if [ -z "$API_RESPONSE" ]; then
+                    echo "Error: AnteaterAPI returned an empty response"
+                    exit 1
+                fi 
+
+                if ! echo "$API_RESPONSE" | jq empty 2>/dev/null; then
+                    echo "Error: AnteaterAPI returned invalid JSON"
+                    exit 1
+                fi
+
+                
 
 
 
