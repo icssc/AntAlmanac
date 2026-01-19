@@ -72,12 +72,11 @@ jobs:
 
             - name: Commit and push updated terms
               if: steps.check.outputs.update_needed == 'true'
-              run: |      
+              run: |
                 git add .github/deployed_terms.json
-                git commit -m "ci: ${{ steps.check.outputs.reason }}
-New term: ${{ steps.check.outputs.new_term }}
-
-Auto-updated by workflow on $(date -u +%Y-%m-%d)"
+                git commit -m "ci: ${{ steps.check.outputs.reason }}" \
+                           -m "New term: ${{ steps.check.outputs.new_term }}" \
+                           -m "Auto-updated by workflow on $(date -u +%Y-%m-%d)"
                 
                 git push origin main
                 echo "Updated deployed_terms.json and triggered rebuild"
