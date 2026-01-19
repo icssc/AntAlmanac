@@ -41,7 +41,23 @@ jobs:
                     exit 1
                 fi
 
-                
+                LATEST_TERM=$(echo "$API_RESPONSE" | jq -r '.data[0].longName')
+
+                if [ ! -f .github/deployed_terms.json ]; then
+                    echo "deployed_terms.json does not exist"
+                    echo "Creating initial deployed_terms.json..."
+                    echo "$API_RESPONSE" > .github/deployed_terms.json
+                    echo "update_needed=true" >> $GITHUB_OUTPUT
+                    echo "new_term=$LATEST_TERM" >> $GITHUB_OUTPUT
+                    echo "reason=initial deployed terms tracking file not generated" >> $GITHUB_OUTPUT
+
+                    exit 0
+                fi
+
+        
+
+
+
 
 
 
