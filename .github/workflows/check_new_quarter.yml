@@ -87,5 +87,6 @@ jobs:
                              -m "New term: ${{ steps.check.outputs.new_term }}" \
                              -m "Auto-updated by workflow on $(date -u +%Y-%m-%d)"
 
+                  git pull --rebase origin ${{ github.ref_name }}
                   git push
                   echo "Updated deployed_terms.json and triggered rebuild"
