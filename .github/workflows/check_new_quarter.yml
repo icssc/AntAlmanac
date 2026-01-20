@@ -4,7 +4,7 @@ on:
     schedule:
         - cron: '0 * * * *'
     workflow_dispatch:
-  
+
 env:
     ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
 
@@ -19,7 +19,7 @@ jobs:
               uses: actions/checkout@v4
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
-            
+
             - name: Configure Git
               run: |
                   git config user.name "github-actions[bot]"
@@ -28,61 +28,57 @@ jobs:
             - name: Check for new Terms
               id: check
               run: |
-                echo "Fetching latest terms from AnteaterAPI..."
-                API_RESPONSE=$(curl -s https://anteaterapi.com/v2/rest/websoc/terms)
+                  echo "Fetching latest terms from AnteaterAPI..."
+                  API_RESPONSE=$(curl -s https://anteaterapi.com/v2/rest/websoc/terms)
 
-                if [ -z "$API_RESPONSE" ]; then
-                    echo "Error: AnteaterAPI returned an empty response"
-                    exit 1
-                fi 
+                  if [ -z "$API_RESPONSE" ]; then
+                      echo "Error: AnteaterAPI returned an empty response"
+                      exit 1
+                  fi 
 
-                if ! echo "$API_RESPONSE" | jq empty 2>/dev/null; then
-                    echo "Error: AnteaterAPI returned invalid JSON"
-                    exit 1
-                fi
+                  if ! echo "$API_RESPONSE" | jq empty 2>/dev/null; then
+                      echo "Error: AnteaterAPI returned invalid JSON"
+                      exit 1
+                  fi
 
-                LATEST_TERM=$(echo "$API_RESPONSE" | jq -r '.data[0].longName')
+                  LATEST_TERM=$(echo "$API_RESPONSE" | jq -r '.data[0].longName')
 
-                if [ ! -f .github/deployed_terms.json ]; then
-                    echo "deployed_terms.json does not exist"
-                    echo "Creating initial deployed_terms.json..."
-                    echo "$API_RESPONSE" > .github/deployed_terms.json
-                    echo "update_needed=true" >> $GITHUB_OUTPUT
-                    echo "new_term=$LATEST_TERM" >> $GITHUB_OUTPUT
-                    echo "reason=initial deployed terms tracking file not generated" >> $GITHUB_OUTPUT
+                  if [[ ! -f .github/deployed_terms.json ]]; then
+                      echo "deployed_terms.json does not exist"
+                      echo "Creating initial deployed_terms.json..."
+                      echo "$API_RESPONSE" > .github/deployed_terms.json
+                      echo "update_needed=true" >> $GITHUB_OUTPUT
+                      echo "new_term=$LATEST_TERM" >> $GITHUB_OUTPUT
+                      echo "reason=initial deployed terms tracking file not generated" >> $GITHUB_OUTPUT
 
-                    exit 0
-                fi
+                      exit 0
+                  fi
 
-                LATEST_DEPLOYED=$(cat .github/deployed_terms.json | jq -r '.data[0].longName')
+                  LATEST_DEPLOYED=$(jq -r '.data[0].longName // empty' .github/deployed_terms.json)
 
-                echo "Latest term from API: $LATEST_TERM"
-                echo "Latest deployed term: $LATEST_DEPLOYED"
+                  echo "Latest term from API: $LATEST_TERM"
+                  echo "Latest deployed term: $LATEST_DEPLOYED"
 
-                if [[ "$LATEST_DEPLOYED" == "$LATEST_TERM" ]]; then
-                    echo "No new quarter found"
-                    echo "update_needed=false" >> $GITHUB_OUTPUT
-                else
-                    echo "New quarter detected!"
-                    echo "update_needed=true" >> $GITHUB_OUTPUT
-                    echo "new_term=$LATEST_TERM" >> $GITHUB_OUTPUT
-                    echo "reason=new quarter available, trigger rebuild" >> $GITHUB_OUTPUT
-                    echo "$API_RESPONSE" > .github/deployed_terms.json
-                fi
+                  if [[ "$LATEST_DEPLOYED" == "$LATEST_TERM" ]]; then
+                      echo "No new quarter found"
+                      echo "update_needed=false" >> $GITHUB_OUTPUT
+                  else
+                      echo "New quarter detected!"
+                      echo "$API_RESPONSE" > .github/deployed_terms.json
+                      {
+                          echo "update_needed=true" >>
+                          echo "new_term=$LATEST_TERM"
+                          echo "reason=new quarter available, trigger rebuild"
+                      } >> $GITHUB_OUTPUT
+                  fi
 
             - name: Commit and push updated terms
               if: steps.check.outputs.update_needed == 'true'
               run: |
-                git add .github/deployed_terms.json
-                git commit -m "ci: ${{ steps.check.outputs.reason }}" \
-                           -m "New term: ${{ steps.check.outputs.new_term }}" \
-                           -m "Auto-updated by workflow on $(date -u +%Y-%m-%d)"
-                
-                git push
-                echo "Updated deployed_terms.json and triggered rebuild"
+                  git add .github/deployed_terms.json
+                  git commit -m "ci: ${{ steps.check.outputs.reason }}" \
+                             -m "New term: ${{ steps.check.outputs.new_term }}" \
+                             -m "Auto-updated by workflow on $(date -u +%Y-%m-%d)"
 
-
-
-
-
-
+                  git push
+                  echo "Updated deployed_terms.json and triggered rebuild"
