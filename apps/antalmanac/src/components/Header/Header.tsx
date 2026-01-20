@@ -68,8 +68,6 @@ export function Header() {
                     <Save />
                     {sessionIsValid ? <Signout /> : <Signin />}
                 </Stack>
-                
-                
 
                 <AlertDialog
                     open={openSuccessfulSaved}

@@ -19,16 +19,15 @@ import {
 } from '@mui/material';
 import { useEffect, useState, useCallback } from 'react';
 
-import { loadSchedule, saveSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
+import { loadSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
+import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
+import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
-import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
-import { SettingsMenu } from '$components/Header/SettingsMenu';
 
 const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = {
     SESSION_EXPIRED: {
@@ -47,7 +46,6 @@ export const Signin = () => {
     const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = scheduleComponentsToggleStore();
 
     const [openAlert, setOpenalert] = useState(false);
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const [settingsAnchorEl, setSettingsAnchorEl] = useState<null | HTMLElement>(null);
     const [alertMessage, setAlertMessage] = useState<{ title: string; severity: AlertColor }>(
         ALERT_MESSAGES.SCHEDULE_IMPORTED
@@ -173,18 +171,6 @@ export const Signin = () => {
     }, [isOpen, enterEvent]);
 
     useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
-
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
-
-        return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
-        };
-    }, []);
-
-    useEffect(() => {
         if (typeof Storage !== 'undefined') {
             const savedUserID = getLocalStorageUserId();
             const sessionID = getLocalStorageSessionId();
@@ -228,7 +214,6 @@ export const Signin = () => {
                         </Alert>
 
                         <TextField
-                            autoFocus
                             margin="dense"
                             label="Unique User ID"
                             type="text"

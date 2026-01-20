@@ -3,15 +3,15 @@ import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from '@mui/mat
 import { User } from '@packages/antalmanac-types';
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SettingsMenu } from '$components/Header/SettingsMenu';
 
+import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
+import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
-import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 
 export function Signout() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [user, setUser] = useState<{ name?: string | null; avatar?: string | null } | null>(null);
+    const [user, setUser] = useState<User | null>(null);
     const navigate = useNavigate();
 
     const handleLogout = async () => {
@@ -47,7 +47,7 @@ export function Signout() {
             const userData = await trpc.userData.getUserAndAccountBySessionToken
                 .query({ token: session ?? '' })
                 .then((res) => res.users);
-            setUser(userData);
+            setUser(userData as unknown as User); // TODO (@KevinWu098): Fix this type assertion.
         }
     }, [session, sessionIsValid, setUser]);
 
