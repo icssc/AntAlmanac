@@ -73,7 +73,7 @@ jobs:
                       echo "New quarter detected!"
                       echo "$API_RESPONSE" > .github/deployed_terms.json
                       {
-                          echo "update_needed=true" >>
+                          echo "update_needed=true"
                           echo "new_term=$LATEST_TERM"
                           echo "reason=new quarter available, trigger rebuild"
                       } >> $GITHUB_OUTPUT
