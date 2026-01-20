@@ -6,7 +6,6 @@ import { AlertDialog } from '$components/AlertDialog';
 import { Import } from '$components/Header/Import';
 import { Logo } from '$components/Header/Logo';
 import { Save } from '$components/Header/Save';
-import AppDrawer from '$components/Header/SettingsMenu';
 import { Signin } from '$components/Header/Signin';
 import { Signout } from '$components/Header/Signout';
 import {
@@ -68,7 +67,6 @@ export function Header() {
                     <Import key="studylist" />
                     <Save />
                     {sessionIsValid ? <Signout /> : <Signin />}
-                    <AppDrawer key="settings" />
                 </Stack>
 
                 <AlertDialog

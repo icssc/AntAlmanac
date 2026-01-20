@@ -1,15 +1,17 @@
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Avatar, Menu, ListItemIcon, ListItemText, MenuItem, IconButton } from '@mui/material';
+import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from '@mui/material';
+import { User } from '@packages/antalmanac-types';
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
+import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
 
 export function Signout() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [user, setUser] = useState<{ name?: string | null; avatar?: string | null } | null>(null);
+    const [user, setUser] = useState<User | null>(null);
     const navigate = useNavigate();
 
     const handleLogout = async () => {
@@ -36,11 +38,8 @@ export function Signout() {
     const { session, sessionIsValid, clearSession } = useSessionStore();
 
     const open = Boolean(anchorEl);
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
     };
 
     const handleAuthChange = useCallback(async () => {
@@ -48,7 +47,7 @@ export function Signout() {
             const userData = await trpc.userData.getUserAndAccountBySessionToken
                 .query({ token: session ?? '' })
                 .then((res) => res.users);
-            setUser(userData);
+            setUser(userData as unknown as User); // TODO (@KevinWu098): Fix this type assertion.
         }
     }, [session, sessionIsValid, setUser]);
 
@@ -60,40 +59,55 @@ export function Signout() {
 
     return (
         <div id="load-save-container">
-            <IconButton
-                aria-controls={open ? 'basic-menu' : undefined}
-                color="inherit"
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-                sx={{ width: 'fit-content' }}
-            >
-                {user?.avatar ? (
-                    <Avatar
-                        sx={{ width: '2rem', height: '2rem' }}
-                        src={`${user?.avatar}`}
-                        alt={`${user?.name}-photo`}
-                    />
-                ) : (
-                    <AccountCircleIcon />
-                )}
-            </IconButton>
-            <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                onClose={handleClose}
+            <ProfileMenuButtons user={user} handleOpen={handleClick} handleSettingsOpen={handleClick} />
+            <Popover
                 open={open}
-                MenuListProps={{
-                    'aria-labelledby': 'basic-button',
+                anchorEl={anchorEl}
+                onClose={() => setAnchorEl(null)}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                slotProps={{
+                    paper: {
+                        sx: {
+                            width: {
+                                xs: 300,
+                                sm: 300,
+                                md: 330,
+                            },
+                            p: '16px 20px',
+                            borderRadius: 2,
+                            border: '1px solid',
+                            borderColor: 'background.default',
+                        },
+                    },
                 }}
             >
-                <MenuItem onClick={handleLogout}>
+                <SettingsMenu user={user} />
+
+                <Divider style={{ marginTop: '10px', marginBottom: '12px' }} />
+
+                <MenuItem onClick={handleLogout} sx={{ px: 1, py: 1.25, borderRadius: 1 }}>
                     <ListItemIcon>
                         <LogoutIcon />
                     </ListItemIcon>
-                    <ListItemText>Log out</ListItemText>
+                    <ListItemText
+                        primary="Log out"
+                        primaryTypographyProps={{
+                            sx: {
+                                fontSize: '1rem',
+                                fontWeight: 600,
+                                textTransform: 'uppercase',
+                            },
+                        }}
+                    />
                 </MenuItem>
-            </Menu>
+            </Popover>
         </div>
     );
 }
