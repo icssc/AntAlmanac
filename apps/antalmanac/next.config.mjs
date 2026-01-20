@@ -8,7 +8,12 @@ const nextConfig = {
         ignoreDuringBuilds: true,
     },
     images: {
-        unoptimized: true,
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'lh3.googleusercontent.com',
+            },
+        ],
     },
     serverExternalPackages: ['@node-rs/argon2'],
 };
