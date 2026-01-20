@@ -29,19 +29,24 @@ jobs:
               id: check
               run: |
                   echo "Fetching latest terms from AnteaterAPI..."
-                  API_RESPONSE=$(curl -s https://anteaterapi.com/v2/rest/websoc/terms)
+                  API_RESPONSE=$(
+                    curl -s https://anteaterapi.com/v2/rest/websoc/terms \
+                    -H "Authorization: Bearer $ANTEATER_API_KEY" \
+                    -H "Origin: https://antalmanac.com"
+                  )
 
-                  if [ -z "$API_RESPONSE" ]; then
-                      echo "Error: AnteaterAPI returned an empty response"
-                      exit 1
-                  fi 
 
                   if ! echo "$API_RESPONSE" | jq empty 2>/dev/null; then
                       echo "Error: AnteaterAPI returned invalid JSON"
                       exit 1
                   fi
 
-                  LATEST_TERM=$(echo "$API_RESPONSE" | jq -r '.data[0].longName')
+                  LATEST_TERM=$(echo "$API_RESPONSE" | jq -r '.data[0].longName // empty')
+
+                  if [[ -z "$LATEST_TERM" ]]; then
+                      echo "Error: AnteaterAPI returned an empty response"
+                      exit 1
+                  fi
 
                   if [[ ! -f .github/deployed_terms.json ]]; then
                       echo "deployed_terms.json does not exist"
