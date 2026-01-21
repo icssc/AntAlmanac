@@ -98,11 +98,9 @@ export const ScheduleCalendar = memo(() => {
 
     useEffect(() => {
         if (!loadingSchedule) {
-            const courseEvents = eventsInCalendar.filter((event) => !event.isCustomEvent);
-
-            if (courseEvents.length > 0) {
+            if (eventsInCalendar.length > 0) {
                 hasHadEventsRef.current = true;
-                const skeletonBlueprint = courseEvents
+                const skeletonBlueprint = eventsInCalendar
                     .map((event) => {
                         const dayOffset = event.start.getDate() - BASE_DATE.getDate();
                         return {

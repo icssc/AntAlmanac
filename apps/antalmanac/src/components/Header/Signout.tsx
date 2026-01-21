@@ -13,7 +13,7 @@ interface SignoutProps {
 
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [user, setUser] = useState<null | User>(null);
+    const [user, setUser] = useState<Pick<User, 'name' | 'avatar'> | null>(null);
     const { session, sessionIsValid, clearSession } = useSessionStore();
 
     const open = Boolean(anchorEl);
@@ -53,7 +53,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
             const userData = await trpc.userData.getUserAndAccountBySessionToken
                 .query({ token: session ?? '' })
                 .then((res) => res.users);
-            setUser(userData);
+            setUser({ name: userData.name ?? undefined, avatar: userData.avatar ?? undefined });
         }
     }, [session, sessionIsValid, setUser]);
 
