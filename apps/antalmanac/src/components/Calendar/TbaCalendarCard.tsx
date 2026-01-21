@@ -1,6 +1,6 @@
 import { Collapse, IconButton, Alert, AlertTitle, Box, Typography, useTheme } from '@mui/material';
 import { ExpandMore, InfoOutlined } from '@mui/icons-material';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AppStore from '$stores/AppStore';
 import { useIsMobile } from '$hooks/useIsMobile';
 
@@ -18,19 +18,7 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
   const isMobile = useIsMobile();
   const [tbaSections, setTbaSections] = useState<TbaSection[]>([]);
   const [collapsed, setCollapsed] = useState(false);
-// Remove:
-// const [visible, setVisible] = useState(false);
-// useEffect for setting visible
-// useEffect for resetting collapsed
-
-// Replace with:
-const visible = tbaSections.length > 0;
-
-useEffect(() => {
-  if (tbaSections.length > 0) {
-    setCollapsed(false);
-  }
-}, [tbaSections.length]);```
+  const visible = tbaSections.length > 0;
 
   const scheduleIndex = AppStore.getCurrentScheduleIndex();
   const theme = useTheme();
@@ -83,20 +71,13 @@ useEffect(() => {
   }, [screenshotTrigger]);
 
   useEffect(() => {
-    setVisible(tbaSections.length > 0);
-  }, [tbaSections]);
-
-  useEffect(() => {
-    if (visible) {
+    if (tbaSections.length > 0) {
       setCollapsed(false);
     }
-  }, [visible]);
+  }, [tbaSections.length]);
 
   const handleToggleCollapse = () => {
     setCollapsed((prev) => !prev);
-      const next = !prev;
-      return next;
-    });
   };
 
   if (!visible || isMobile) {
