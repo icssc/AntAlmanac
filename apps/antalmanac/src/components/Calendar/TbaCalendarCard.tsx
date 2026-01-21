@@ -18,7 +18,19 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
   const isMobile = useIsMobile();
   const [tbaSections, setTbaSections] = useState<TbaSection[]>([]);
   const [collapsed, setCollapsed] = useState(false);
-  const [visible, setVisible] = useState(false);
+// Remove:
+// const [visible, setVisible] = useState(false);
+// useEffect for setting visible
+// useEffect for resetting collapsed
+
+// Replace with:
+const visible = tbaSections.length > 0;
+
+useEffect(() => {
+  if (tbaSections.length > 0) {
+    setCollapsed(false);
+  }
+}, [tbaSections.length]);```
 
   const scheduleIndex = AppStore.getCurrentScheduleIndex();
   const theme = useTheme();
