@@ -1,4 +1,5 @@
-import { latLng, Routing, popup } from 'leaflet';
+// eslint-disable-next-line import/default
+import L from 'leaflet';
 import type { LatLngTuple } from 'leaflet';
 import 'leaflet-routing-machine';
 import { useEffect } from 'react';
@@ -29,7 +30,7 @@ const dontCreateMarker = () => false;
 /**
  * Given waypoints of a route and a color for the route, draw a route to the map.
  */
-export default function ClassRoutes(props: ClassRoutesProps) {
+function Routes(props: ClassRoutesProps) {
     const map = useMap();
 
     useEffect(() => {
@@ -38,10 +39,11 @@ export default function ClassRoutes(props: ClassRoutesProps) {
         /**
          * Convert each tuple to an actual `LatLng` object.
          */
-        const waypoints = latLngTuples.map((latLngTuple) => latLng(latLngTuple));
+        // eslint-disable-next-line import/no-named-as-default-member
+        const waypoints = latLngTuples.map((latLngTuple) => L.latLng(latLngTuple));
 
-        const routerControl = Routing.control({
-            router: Routing.mapbox('', {
+        const routerControl = L.Routing.control({
+            router: L.Routing.mapbox('', {
                 /**
                  * Default is mapbox/driving. More options:
                  * @see {@link https://docs.mapbox.com/api/navigation/directions/#routing-profiles}
@@ -57,13 +59,13 @@ export default function ClassRoutes(props: ClassRoutesProps) {
              */
             fitSelectedRoutes: false,
 
-            plan: Routing.plan(waypoints, {
+            plan: L.Routing.plan(waypoints, {
                 addWaypoints: false,
                 createMarker: dontCreateMarker,
             }),
 
             routeLine(route) {
-                const line = Routing.line(route, {
+                const line = L.Routing.line(route, {
                     addWaypoints: false,
                     extendToWaypoints: true,
                     missingRouteTolerance: 0,
@@ -98,7 +100,8 @@ export default function ClassRoutes(props: ClassRoutesProps) {
            <br>
            <span style="color:#888888">${miles}</span>
           `;
-                const leafletPopup = popup({ content, closeButton: false });
+                // eslint-disable-next-line import/no-named-as-default-member
+                const leafletPopup = L.popup({ content, closeButton: false });
 
                 /**
                  * @see {@link https://github.com/perliedman/leaflet-routing-machine/issues/117}
@@ -135,3 +138,5 @@ export default function ClassRoutes(props: ClassRoutesProps) {
 
     return null;
 }
+
+export default Routes;

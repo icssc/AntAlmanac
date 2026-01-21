@@ -1,6 +1,6 @@
 import { Delete, Search } from '@mui/icons-material';
 import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
-import { WebsocSectionFinalExam } from '@packages/antalmanac-types';
+import { CustomEventId, WebsocSectionFinalExam } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useRef } from 'react';
 import { Event } from 'react-big-calendar';
@@ -65,16 +65,24 @@ export interface CourseEvent extends CommonCalendarEvent {
  * https://github.com/icssc/AntAlmanac/wiki/The-Great-AntAlmanac-TypeScript-Rewritening%E2%84%A2#duplicate-interface-names-%EF%B8%8F
  */
 export interface CustomEvent extends CommonCalendarEvent {
-    customEventID: number;
+    customEventID: CustomEventId;
     isCustomEvent: true;
     building: string;
     days: string[];
 }
 
-export type CalendarEvent = CourseEvent | CustomEvent;
+export interface SkeletonEvent extends CommonCalendarEvent {
+    isSkeletonEvent: true;
+}
+
+export type CalendarEvent = CourseEvent | CustomEvent | SkeletonEvent;
+
+export const isSkeletonEvent = (event: CalendarEvent): event is SkeletonEvent => {
+    return 'isSkeletonEvent' in event && event.isSkeletonEvent;
+};
 
 interface CourseCalendarEventProps {
-    selectedEvent: CalendarEvent;
+    selectedEvent: CourseEvent | CustomEvent;
     scheduleNames: string[];
     closePopover: () => void;
 }
@@ -165,7 +173,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                     <tbody>
                         <tr>
                             <td style={{ verticalAlign: 'top' }}>Section code</td>
-                            <Tooltip title="Click to copy course code" placement="right">
+                            <Tooltip title="Click to copy section code" placement="right">
                                 <td style={{ textAlign: 'right' }}>
                                     <Chip
                                         onClick={(event) => {

@@ -1,12 +1,14 @@
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, PopoverProps, Tooltip } from '@mui/material';
+import { CustomEventId } from '@packages/antalmanac-types';
 import { PostHog, usePostHog } from 'posthog-js/react';
-import { memo, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
 
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
 import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
+import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 
 interface ColorPickerProps {
     color: string;
@@ -14,7 +16,7 @@ interface ColorPickerProps {
     /**If true, this object has a customEventID. If false, this object has a term and sectionCode. */
     isCustomEvent: boolean;
     /**Not undefined when isCustomEvent is true */
-    customEventID?: number;
+    customEventID?: CustomEventId;
     /**Not undefined  when isCustomEvent is false */
     term?: string;
     /**Not undefined  when isCustomEvent is false */
@@ -34,6 +36,15 @@ const ColorPicker = memo(function ColorPicker({
 
     const postHog = usePostHog();
 
+    const updateColor = useCallback(
+        (newColor: string) => {
+            if (currColor !== newColor) {
+                setCurrColor(newColor);
+            }
+        },
+        [currColor]
+    );
+
     useEffect(() => {
         let colorPickerId;
         if (isCustomEvent && customEventID) colorPickerId = customEventID.toString();
@@ -44,7 +55,7 @@ const ColorPicker = memo(function ColorPicker({
         return () => {
             AppStore.unregisterColorPicker(colorPickerId, updateColor);
         };
-    }, [isCustomEvent, customEventID, sectionCode]);
+    }, [isCustomEvent, customEventID, sectionCode, updateColor]);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>, postHog?: PostHog) => {
         event.stopPropagation();
@@ -66,12 +77,6 @@ const ColorPicker = memo(function ColorPicker({
         setCurrColor(newColor.hex);
         if (isCustomEvent && customEventID) changeCustomEventColor(customEventID, newColor.hex);
         else if (sectionCode && term) changeCourseColor(sectionCode, term, newColor.hex);
-    };
-
-    const updateColor = (newColor: string) => {
-        if (currColor !== newColor) {
-            setCurrColor(newColor);
-        }
     };
 
     return (
@@ -101,7 +106,7 @@ const ColorPicker = memo(function ColorPicker({
                     horizontal: 'left',
                 }}
             >
-                <SketchPicker color={currColor} onChange={handleColorChange} />
+                <SketchPicker color={currColor} onChange={handleColorChange} presetColors={colorPickerPresetColors} />
             </Popover>
         </>
     );

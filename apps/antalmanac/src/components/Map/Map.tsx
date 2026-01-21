@@ -3,15 +3,17 @@ import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import './Map.css';
 
 import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
+import { CustomEventId } from '@packages/antalmanac-types';
 import { Marker, type Map, type LatLngTuple } from 'leaflet';
+import dynamic from 'next/dynamic';
 import { usePostHog } from 'posthog-js/react';
 import { Fragment, useEffect, useRef, useCallback, useState, createRef, useMemo } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import 'leaflet-routing-machine';
 
 import LocationMarker from './Marker';
-import ClassRoutes from './Routes';
+
+const Routes = dynamic(() => import('./Routes'), { ssr: false });
 
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { UserLocator } from '$components/Map/UserLocator';
@@ -107,7 +109,7 @@ export function getCustomEventPerBuilding() {
         start: Date;
         end: Date;
         days: string[];
-        customEventID: number;
+        customEventID: CustomEventId;
         color?: string | undefined;
         building?: string | undefined;
     }
@@ -181,7 +183,7 @@ export default function CourseMap() {
             AppStore.removeListener('currentScheduleIndexChange', updateAllMarkers);
             AppStore.removeListener('colorChange', updateAllMarkers);
         };
-    }, []);
+    }, [postHog]);
 
     useEffect(() => {
         const updateCalendarEvents = () => {
@@ -345,7 +347,7 @@ export default function CourseMap() {
                          * Previous renders of the routes will be left behind if the keys aren't unique.
                          */
                         const key = Math.random().toString(36).substring(7);
-                        return <ClassRoutes key={key} latLngTuples={latLngTuples} color={color} />;
+                        return <Routes key={key} latLngTuples={latLngTuples} color={color} />;
                     })}
 
                 {/* Draw a marker for each class that occurs today. */}

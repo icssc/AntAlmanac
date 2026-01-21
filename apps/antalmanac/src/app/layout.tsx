@@ -1,7 +1,5 @@
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import type { Metadata, Viewport } from 'next';
 
-import AppThemeProvider from '$src/app/Theme';
 import './globals.css';
 
 const ANTALMANAC_DESCRIPTION = 'A schedule planning and course exploration tool for UCI students.';
@@ -11,6 +9,14 @@ export const metadata: Metadata = {
     description: ANTALMANAC_DESCRIPTION,
     manifest: '/manifest.json',
     metadataBase: new URL('https://antalmanac.com'),
+    icons: {
+        icon: [
+            { url: '/favicon.ico' },
+            { url: '/favicon-96x96.png', type: 'image/png', sizes: '96x96' },
+            { url: '/favicon.svg', type: 'image/svg+xml' },
+        ],
+        apple: '/apple-touch-icon.png',
+    },
     twitter: {
         card: 'summary_large_image',
         title: 'AntAlmanac',
@@ -68,10 +74,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 />
             </head>
             <body>
-                <noscript> You need to enable JavaScript to run this app. </noscript>
-                <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-                    <AppThemeProvider>{children}</AppThemeProvider>
-                </AppRouterCacheProvider>
+                <noscript>You need to enable JavaScript to run this app.</noscript>
+                {children}
             </body>
         </html>
     );

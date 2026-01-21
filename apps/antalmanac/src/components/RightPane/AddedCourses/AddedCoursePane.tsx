@@ -3,12 +3,11 @@ import { AACourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { ColumnToggleDropdown } from '../CoursePane/CoursePaneButtonRow';
-import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
-
-import CustomEventDetailView from './CustomEventDetailView';
-
 import { updateScheduleNote } from '$actions/AppStoreActions';
+import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEventDetailView';
+import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
+import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
+import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -30,7 +29,7 @@ const buttonSx: SxProps = {
     pointerEvents: 'auto',
 };
 
-interface CourseWithTerm extends AACourse {
+export interface CourseWithTerm extends AACourse {
     term: string;
 }
 
@@ -61,6 +60,7 @@ function getCourses() {
                 prerequisiteLink: course.prerequisiteLink,
                 courseNumber: course.courseNumber,
                 courseTitle: course.courseTitle,
+                sectionTypes: course.sectionTypes,
                 sections: [
                     {
                         ...course.section,
@@ -254,7 +254,7 @@ function SkeletonSchedule() {
                         <Typography variant="h6">{term}</Typography>
                         <Paper key={term} elevation={1}>
                             {sections.map((section, index) => (
-                                <Tooltip title="Click to copy course code" placement="right" key={index}>
+                                <Tooltip title="Click to copy section code" placement="right" key={index}>
                                     <Chip
                                         onClick={(event) => {
                                             clickToCopy(event, section);
@@ -343,17 +343,19 @@ function AddedSectionsGrid() {
     );
 
     return (
-        <Box display="flex" flexDirection="column" gap={1}>
-            <Box display="flex" width={1} position="absolute" zIndex="2">
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Box sx={{ display: 'flex', width: 'fit-content', position: 'absolute', zIndex: 2 }}>
                 <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
                 <ClearScheduleButton buttonSx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />
                 <ColumnToggleDropdown />
             </Box>
-            <Box style={{ marginTop: 56 }}>
+            <Box sx={{ marginTop: 7 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
                 {courses.length < 1 ? NoCoursesBox : null}
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
+                        const missingSections = getMissingSections(course);
+
                         return (
                             <Box key={course.deptCode + course.courseNumber + course.courseTitle}>
                                 <SectionTableLazyWrapper
@@ -362,6 +364,7 @@ function AddedSectionsGrid() {
                                     allowHighlight={false}
                                     analyticsCategory={analyticsEnum.addedClasses}
                                     scheduleNames={scheduleNames}
+                                    missingSections={missingSections}
                                 />
                             </Box>
                         );
@@ -395,7 +398,7 @@ export function AddedCoursePane() {
         return () => {
             AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
-    }, []);
+    }, [postHog]);
 
     return <Box>{skeletonMode ? <SkeletonSchedule /> : <AddedSectionsGrid />}</Box>;
 }

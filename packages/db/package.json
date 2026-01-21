@@ -1,0 +1,31 @@
+{
+    "name": "@packages/db",
+    "version": "0.0.1",
+    "description": "Antalmanac database",
+    "scripts": {
+        "db:generate": "drizzle-kit generate",
+        "db:migrate": "drizzle-kit migrate",
+        "db:studio": "drizzle-kit studio"
+    },
+    "dependencies": {
+        "@paralleldrive/cuid2": "^2.2.2",
+        "drizzle-orm": "^0.45.1",
+        "postgres": "^3.4.5"
+    },
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^5.52.0",
+        "@typescript-eslint/parser": "^5.52.0",
+        "dotenv": "^16.4.5",
+        "drizzle-kit": "^0.28.1",
+        "eslint": "^8.34.0",
+        "eslint-config-prettier": "^8.6.0",
+        "eslint-plugin-import": "^2.27.5",
+        "prettier": "^2.8.4",
+        "tsx": "^4.19.2"
+    },
+    "lint-staged": {
+        "*.{ts,json}": [
+            "prettier --write"
+        ]
+    }
+}

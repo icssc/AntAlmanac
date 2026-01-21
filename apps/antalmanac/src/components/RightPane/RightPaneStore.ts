@@ -33,7 +33,7 @@ export interface BuildingFocusInfo {
 class RightPaneStore extends EventEmitter {
     private formData: Record<ManualSearchParam, string>;
     private prevFormData?: Record<ManualSearchParam, string>;
-    private urlCourseCodeValue: string;
+    private urlSectionCodeValue: string;
     private urlTermValue: string;
     private urlGEValue: string;
     private urlCourseNumValue: string;
@@ -44,7 +44,7 @@ class RightPaneStore extends EventEmitter {
         this.setMaxListeners(15);
         this.formData = structuredClone(defaultFormValues);
         const search = new URLSearchParams(window.location.search);
-        this.urlCourseCodeValue = search.get('courseCode') || '';
+        this.urlSectionCodeValue = search.get('sectionCode') || '';
         this.urlTermValue = search.get('term') || '';
         this.urlGEValue = search.get('ge') || '';
         this.urlCourseNumValue = search.get('courseNumber') || '';
@@ -75,7 +75,7 @@ class RightPaneStore extends EventEmitter {
         return defaultFormValues;
     };
 
-    getUrlCourseCodeValue = () => this.urlCourseCodeValue;
+    getUrlSectionCodeValue = () => this.urlSectionCodeValue;
     getUrlTermValue = () => this.urlTermValue;
     getUrlGEValue = () => this.urlGEValue;
     getUrlCourseNumValue = () => this.urlCourseNumValue;

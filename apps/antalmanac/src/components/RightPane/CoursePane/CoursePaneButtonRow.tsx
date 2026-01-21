@@ -86,7 +86,7 @@ export function ColumnToggleDropdown() {
                 setSelectedColumns(e.target.value);
             }
         },
-        [setSelectedColumns]
+        [setSelectedColumns, postHog]
     );
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -160,7 +160,7 @@ export function CoursePaneButtonRow(props: CoursePaneButtonRowProps) {
         <Box
             sx={{
                 display: props.showSearch ? 'block' : 'none',
-                width: '100%',
+                width: 'fit-content',
                 zIndex: 3,
                 position: 'absolute',
             }}

@@ -6,6 +6,7 @@ import type {
     ShortCourseSchedule,
     RepeatingCustomEvent,
     CourseInfo,
+    CustomEventId,
 } from '@packages/antalmanac-types';
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
@@ -23,6 +24,8 @@ export class Schedules {
     private currentScheduleIndex: number;
 
     private previousStates: ScheduleUndoState[];
+
+    private futureStates: ScheduleUndoState[];
 
     private skeletonSchedules: ShortCourseSchedule[];
 
@@ -46,6 +49,7 @@ export class Schedules {
         ];
         this.currentScheduleIndex = 0;
         this.previousStates = [];
+        this.futureStates = [];
         this.scheduleNoteMap = { [scheduleNoteId]: '' };
         this.skeletonSchedules = [];
     }
@@ -325,7 +329,7 @@ export class Schedules {
     /**
      * Get a reference ito the custom event that matches the ID.
      */
-    getExistingCustomEvent(customEventId: number) {
+    getExistingCustomEvent(customEventId: CustomEventId) {
         for (const customEvent of this.getAllCustomEvents()) {
             if (customEvent.customEventID === customEventId) {
                 return customEvent;
@@ -337,9 +341,8 @@ export class Schedules {
     /**
      * Get indices of schedules that contain the custom event.
      */
-    getIndexesOfCustomEvent(customEventId: number) {
+    getIndexesOfCustomEvent(customEventId: CustomEventId) {
         const indices: number[] = [];
-        console.log(this.schedules);
 
         for (const scheduleIndex of this.schedules.keys()) {
             if (this.doesCustomEventExistInSchedule(customEventId, scheduleIndex)) {
@@ -374,7 +377,7 @@ export class Schedules {
      * Deletes custom event from the given indices.
      * @param scheduleIndices The schedule indices to delete the custom event from.
      */
-    deleteCustomEvent(customEventId: number, scheduleIndices = [this.getCurrentScheduleIndex()]) {
+    deleteCustomEvent(customEventId: CustomEventId, scheduleIndices = [this.getCurrentScheduleIndex()]) {
         this.addUndoState();
         for (const scheduleIndex of scheduleIndices) {
             const customEvents = this.schedules[scheduleIndex].customEvents;
@@ -388,7 +391,7 @@ export class Schedules {
     /**
      * Change color of a custom event
      */
-    changeCustomEventColor(customEventId: number, newColor: string) {
+    changeCustomEventColor(customEventId: CustomEventId, newColor: string) {
         this.addUndoState();
         const customEvent = this.getExistingCustomEvent(customEventId);
         if (customEvent) {
@@ -426,7 +429,7 @@ export class Schedules {
     /**
      * Checks if a schedule contains the custom event ID
      */
-    doesCustomEventExistInSchedule(customEventId: number, scheduleIndex: number) {
+    doesCustomEventExistInSchedule(customEventId: CustomEventId, scheduleIndex: number) {
         for (const customEvent of this.schedules.at(scheduleIndex)?.customEvents ?? []) {
             if (customEvent.customEventID === customEventId) {
                 return true;
@@ -478,6 +481,7 @@ export class Schedules {
      */
     clearPreviousStates() {
         this.previousStates = [];
+        this.futureStates = [];
     }
 
     /**
@@ -493,6 +497,7 @@ export class Schedules {
         if (this.previousStates.length >= 50) {
             this.previousStates.shift();
         }
+        this.futureStates = [];
     }
 
     /**
@@ -501,10 +506,38 @@ export class Schedules {
      */
     revertState() {
         const state = this.previousStates.pop();
-        if (state !== undefined) {
-            this.schedules = state.schedules;
-            this.currentScheduleIndex = state.scheduleIndex;
+        if (state === undefined) {
+            return false;
         }
+        const clonedSchedules = JSON.parse(JSON.stringify(this.schedules)) as Schedule[];
+        this.futureStates.push({
+            schedules: clonedSchedules,
+            scheduleIndex: this.currentScheduleIndex,
+        });
+        if (this.futureStates.length >= 50) {
+            this.futureStates.shift();
+        }
+        this.schedules = state.schedules;
+        this.currentScheduleIndex = state.scheduleIndex;
+        return true;
+    }
+
+    advanceState() {
+        const state = this.futureStates.pop();
+        if (state === undefined) {
+            return false;
+        }
+        const clonedSchedules = JSON.parse(JSON.stringify(this.schedules)) as Schedule[];
+        this.previousStates.push({
+            schedules: clonedSchedules,
+            scheduleIndex: this.currentScheduleIndex,
+        });
+        if (this.previousStates.length >= 50) {
+            this.previousStates.shift();
+        }
+        this.schedules = state.schedules;
+        this.currentScheduleIndex = state.scheduleIndex;
+        return true;
     }
 
     /*
@@ -535,9 +568,6 @@ export class Schedules {
         this.addUndoState();
 
         try {
-            this.schedules.length = 0;
-            this.currentScheduleIndex = saveState.scheduleIndex;
-
             // Get a dictionary of all unique courses
             const courseDict: { [key: string]: Set<string> } = {};
             for (const schedule of saveState.schedules) {
@@ -560,6 +590,9 @@ export class Schedules {
             });
 
             await Promise.all(websocRequests);
+
+            this.schedules.length = 0;
+            this.currentScheduleIndex = saveState.scheduleIndex;
 
             // Map course info to courses and transform shortened schedule to normal schedule
             for (const shortCourseSchedule of saveState.schedules) {

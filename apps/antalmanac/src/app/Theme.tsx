@@ -71,7 +71,7 @@ export default function AppThemeProvider(props: Props) {
         return () => {
             mediaQueryList.removeEventListener('change', onChange);
         };
-    }, [setAppTheme]);
+    }, [setAppTheme, postHog]);
 
     const theme = useMemo(
         () =>
@@ -149,6 +149,14 @@ export default function AppThemeProvider(props: Props) {
                     MuiTextField: {
                         defaultProps: {
                             variant: 'standard',
+                        },
+                    },
+                    MuiAlert: {
+                        styleOverrides: {
+                            standardWarning: {
+                                backgroundColor: '#FFEA99',
+                                color: '#302800ff',
+                            },
                         },
                     },
                 },
