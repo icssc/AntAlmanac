@@ -70,7 +70,8 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
 
     return {
         welcome: {
-            selector: '#root',
+            selector: '#__next',
+            position: 'center',
             content: (
                 <>
                     Welcome to AntAlmanac!
@@ -87,21 +88,23 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
             },
         },
         searchBar: {
-            selector: '#searchBar',
+            selector: '#fuzzy-search',
             content: 'You can search for your classes here!',
             action: () => {
                 markTourHasRun();
                 setActiveTab('search');
             },
-            mutationObservables: ['#searchBar'],
+            mutationObservables: ['#fuzzy-search'],
         },
         importButton: {
             selector: '#import-button',
             content: 'Quickly add your classes from WebReg or Zotcourse!',
+            position: 'bottom',
         },
         calendar: {
             selector: '.rbc-time-view', // Calendar.
             content: 'See the classes in your schedule!',
+            position: 'bottom',
             action: () => {
                 addSampleClasses();
                 const finalsButtonPressed = document.getElementById('finals-button-pressed');
@@ -190,6 +193,7 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
                     That&apos;s it 🎉 Good luck with your classes!
                 </>
             ),
+            position: 'bottom',
             action: tourActionFactory(() => goToNamedStep(TourStepName.saveAndLoad), {
                 selector: '#load-save-container',
                 eventType: 'click',
