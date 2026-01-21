@@ -6,6 +6,7 @@ import type {
     HydratedScheduleSaveState,
     ScheduleSaveState,
     ShortCourseSchedule,
+    User,
     WebsocSection,
 } from '@packages/antalmanac-types';
 import { TRPCClientError } from '@trpc/client';
@@ -267,8 +268,10 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
     const { users, accounts } = userAndAccount;
 
     const incomingData: User | null = await trpc.userData.getUserData.query({ userId: incomingUser.id });
-    const scheduleSaveState =
-        incomingData !== null && 'userData' in incomingData ? incomingData.userData : incomingData;
+    if (!incomingData) {
+        throw new Error(`Oops! Schedule "${username}" doesn't seem to exist.`);
+    }
+    const scheduleSaveState = 'userData' in incomingData ? incomingData.userData : incomingData;
 
     const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
 
@@ -340,8 +343,12 @@ export const loadSchedule = async (
                     providerId,
                 });
 
-                const userDataResponse = await trpc.userData.getUserData.query({ userId: account.userId });
-                const scheduleSaveState = userDataResponse?.userData;
+                const userDataResponse = await trpc.userData.getUserDataHydrated.query({ userId: account.userId });
+                if (!userDataResponse) {
+                    openSnackbar('error', `Couldn't find schedules for this account`);
+                    return;
+                }
+                const scheduleSaveState = userDataResponse.userData ?? userDataResponse;
 
                 let error = false;
 
@@ -349,12 +356,9 @@ export const loadSchedule = async (
                     if (await AppStore.loadSchedule(scheduleSaveState)) {
                         openSnackbar('success', `Schedule loaded.`);
                     } else {
-                        AppStore.loadSkeletonSchedule(scheduleSaveState);
+                        AppStore.loadSkeletonSchedule(toShortScheduleSaveState(scheduleSaveState));
                         error = true;
                     }
-                } else {
-                    AppStore.loadSkeletonSchedule(toShortScheduleSaveState(scheduleSaveState));
-                    error = true;
                 }
 
                 if (error) {
@@ -391,14 +395,16 @@ export const loadScheduleWithSessionToken = async () => {
         const userDataResponse = await trpc.userData.getUserDataWithSession.query({
             refreshToken: useSessionStore.getState().session ?? '',
         });
-        const scheduleSaveState = userDataResponse?.userData;
-        if (scheduleSaveState !== undefined && isEmptySchedule(scheduleSaveState.schedules)) {
+        if (!userDataResponse) {
+            openSnackbar('error', `Couldn't find schedules for this account`);
+            return false;
+        }
+        const scheduleSaveState = userDataResponse.userData ?? userDataResponse;
+        if (isEmptySchedule(scheduleSaveState.schedules)) {
             return true;
         }
 
-        if (scheduleSaveState === undefined) {
-            openSnackbar('error', `Couldn't find schedules for this account`);
-        } else if (await AppStore.loadSchedule(scheduleSaveState)) {
+        if (await AppStore.loadSchedule(scheduleSaveState)) {
             openSnackbar('success', `Schedule loaded.`);
             return true;
         } else {

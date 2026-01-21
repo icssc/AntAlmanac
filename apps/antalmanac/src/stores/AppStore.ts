@@ -4,7 +4,7 @@ import type {
     ScheduleCourse,
     ScheduleSaveState,
     RepeatingCustomEvent,
-    HydratedScheduleSaveState
+    HydratedScheduleSaveState,
     CustomEventId,
 } from '@packages/antalmanac-types';
 import { SnackbarOrigin, VariantType } from 'notistack';
