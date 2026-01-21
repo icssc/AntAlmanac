@@ -11,7 +11,7 @@ export function SchoolDeptCard({ name, type, comment }: SchoolDeptCardProps) {
     const html = { __html: comment };
 
     return (
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
             <Paper elevation={1} square style={{ overflow: 'hidden' }}>
                 <Accordion disableGutters>
                     <AccordionSummary

@@ -22,7 +22,8 @@
         "predeploy": "npm run build",
         "deploy": "gh-pages -d build",
         "format": "prettier --write src",
-        "lint": "eslint src"
+        "lint": "eslint src",
+        "typecheck": "tsc --noEmit"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.3.1",
@@ -33,10 +34,11 @@
         "@emotion/react": "^11.10.5",
         "@emotion/styled": "^11.10.5",
         "@leeoniya/ufuzzy": "1.0.14",
-        "@mui/icons-material": "^5.11.0",
-        "@mui/lab": "^5.0.0-alpha.118",
-        "@mui/material": "^5.11.7",
-        "@mui/material-nextjs": "^5.0.0",
+        "@mui/icons-material": "^7.3.7",
+        "@mui/lab": "7.0.1-beta.21",
+        "@mui/material": "^7.3.7",
+        "@mui/material-nextjs": "^7.3.7",
+        "@mui/system": "^7.3.7",
         "@mui/x-date-pickers": "^8.3.1",
         "@packages/antalmanac-types": "workspace:^",
         "@reactour/tour": "^3.6.1",
