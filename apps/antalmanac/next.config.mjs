@@ -7,6 +7,7 @@ const nextConfig = {
         ignoreBuildErrors: true,
     },
     serverExternalPackages: ['@node-rs/argon2'],
+    turbopack: {},
 };
 
 export default withPWA({
