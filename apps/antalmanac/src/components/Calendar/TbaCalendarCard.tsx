@@ -81,7 +81,7 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
   }, [visible]);
 
   const handleToggleCollapse = () => {
-    setCollapsed((prev) => {
+    setCollapsed((prev) => !prev);
       const next = !prev;
       return next;
     });
