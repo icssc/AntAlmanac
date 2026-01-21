@@ -70,7 +70,7 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
 
     return {
         welcome: {
-            selector: '#__next',
+            selector: '#root',
             position: 'center',
             content: (
                 <>
