@@ -2,8 +2,9 @@ import type {
     CourseDetails,
     RepeatingCustomEvent,
     ScheduleCourse,
+    HydratedScheduleSaveState,
+    ScheduleSaveState,
     ShortCourseSchedule,
-    User,
     WebsocSection,
 } from '@packages/antalmanac-types';
 import { TRPCClientError } from '@trpc/client';
@@ -73,7 +74,7 @@ export const openSnackbar = (
     AppStore.openSnackbar(variant, message, duration, position, style);
 };
 
-export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
+export function isEmptySchedule(schedules: ShortCourseSchedule[] | HydratedScheduleSaveState['schedules']) {
     for (const schedule of schedules) {
         if (schedule.courses.length > 0) {
             return false;
@@ -90,6 +91,33 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
 
     return true;
 }
+
+const isHydratedSaveState = (
+    saveState: HydratedScheduleSaveState | ScheduleSaveState
+): saveState is HydratedScheduleSaveState =>
+    saveState.schedules.some((schedule) => schedule.courses.some((course) => 'section' in course));
+
+const toShortScheduleSaveState = (
+    saveState: HydratedScheduleSaveState | ScheduleSaveState
+): ScheduleSaveState => {
+    if (!isHydratedSaveState(saveState)) {
+        return saveState;
+    }
+
+    return {
+        scheduleIndex: saveState.scheduleIndex,
+        schedules: saveState.schedules.map((schedule) => ({
+            scheduleName: schedule.scheduleName,
+            customEvents: schedule.customEvents,
+            scheduleNote: schedule.scheduleNote,
+            courses: schedule.courses.map((course) => ({
+                sectionCode: course.section.sectionCode,
+                term: course.term,
+                color: course.section.color,
+            })),
+        })),
+    };
+};
 
 export const saveSchedule = async (
     providerId: string,
@@ -235,7 +263,10 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
     });
     const { users, accounts } = userAndAccount as any;
 
-    const incomingData: User = await trpc.userData.getUserData.query({ userId: incomingUser.id });
+    const incomingData = await trpc.userData.getUserData.query({ userId: incomingUser.id });
+    if (!incomingData) {
+        throw new Error(`Oops! Schedule "${username}" doesn't seem to exist.`);
+    }
     const scheduleSaveState = 'userData' in incomingData ? incomingData.userData : incomingData;
 
     const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
@@ -308,13 +339,17 @@ export const loadSchedule = async (
                     providerId,
                 });
 
-                const userDataResponse = await trpc.userData.getUserData.query({ userId: account.userId });
-                const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
+                const userDataResponse = await trpc.userData.getUserDataHydrated.query({ userId: account.userId });
+                if (!userDataResponse) {
+                    openSnackbar('error', `Couldn't find schedules for this account`);
+                    return;
+                }
+                const scheduleSaveState = userDataResponse.userData ?? userDataResponse;
 
                 if (await AppStore.loadSchedule(scheduleSaveState)) {
                     openSnackbar('success', `Schedule loaded.`);
                 } else {
-                    AppStore.loadSkeletonSchedule(scheduleSaveState);
+                    AppStore.loadSkeletonSchedule(toShortScheduleSaveState(scheduleSaveState));
                     openSnackbar(
                         'error',
                         `Network error loading course information for "${providerId}". 	              
@@ -348,18 +383,20 @@ export const loadScheduleWithSessionToken = async () => {
         const userDataResponse = await trpc.userData.getUserDataWithSession.query({
             refreshToken: useSessionStore.getState().session ?? '',
         });
-        const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
+        if (!userDataResponse) {
+            openSnackbar('error', `Couldn't find schedules for this account`);
+            return false;
+        }
+        const scheduleSaveState = userDataResponse.userData ?? userDataResponse;
         if (isEmptySchedule(scheduleSaveState.schedules)) {
             return true;
         }
 
-        if (scheduleSaveState == null) {
-            openSnackbar('error', `Couldn't find schedules for this account`);
-        } else if (await AppStore.loadSchedule(scheduleSaveState)) {
+        if (await AppStore.loadSchedule(scheduleSaveState)) {
             openSnackbar('success', `Schedule loaded.`);
             return true;
         } else {
-            AppStore.loadSkeletonSchedule(scheduleSaveState);
+            AppStore.loadSkeletonSchedule(toShortScheduleSaveState(scheduleSaveState));
             openSnackbar(
                 'error',
                 `Network error loading course information". 	              
@@ -386,7 +423,7 @@ export const loginUser = async () => {
         const authUrl = await trpc.userData.getGoogleAuthUrl.query();
         if (authUrl) {
             cacheSchedule();
-            window.location.href = authUrl;
+            window.location.href = authUrl.toString();
         }
     } catch (error) {
         console.error('Error during login initiation', error);

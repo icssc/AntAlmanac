@@ -151,6 +151,35 @@ const userDataRouter = router({
             });
         }
     }),
+    /**
+     * Retrieves user data by user ID with hydrated schedules.
+     * @param input - An object containing the user ID.
+     * @returns The user data with course information hydrated from WebSOC.
+     */
+    getUserDataHydrated: procedure.input(userInputSchema.assert).query(async ({ input }) => {
+        if ('userId' in input) {
+            const userData = await RDS.getUserDataByUid(db, input.userId);
+
+            if (!userData?.userData?.schedules) {
+                return userData;
+            }
+
+            const hydratedSchedules = await hydrateScheduleCourses(userData.userData.schedules);
+
+            return {
+                ...userData,
+                userData: {
+                    schedules: hydratedSchedules,
+                    scheduleIndex: userData.userData.scheduleIndex,
+                },
+            };
+        } else {
+            throw new TRPCError({
+                code: 'BAD_REQUEST',
+                message: 'Invalid input: userId is required',
+            });
+        }
+    }),
     getUserDataWithSession: procedure.input(z.object({ refreshToken: z.string() })).query(async ({ input }) => {
         if ('refreshToken' in input) {
             const userData = await RDS.fetchUserDataWithSession(db, input.refreshToken);

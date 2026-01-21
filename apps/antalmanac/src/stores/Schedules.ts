@@ -3,8 +3,10 @@ import type {
     ScheduleCourse,
     ScheduleSaveState,
     ScheduleUndoState,
+    ShortCourse,
     ShortCourseSchedule,
     RepeatingCustomEvent,
+    CourseInfo,
     HydratedScheduleSaveState,
 } from '@packages/antalmanac-types';
 
@@ -328,7 +330,7 @@ export class Schedules {
     /**
      * Get a reference ito the custom event that matches the ID.
      */
-    getExistingCustomEvent(customEventId: number) {
+    getExistingCustomEvent(customEventId: string | number) {
         for (const customEvent of this.getAllCustomEvents()) {
             if (customEvent.customEventID === customEventId) {
                 return customEvent;
@@ -340,7 +342,7 @@ export class Schedules {
     /**
      * Get indices of schedules that contain the custom event.
      */
-    getIndexesOfCustomEvent(customEventId: number) {
+    getIndexesOfCustomEvent(customEventId: string | number) {
         const indices: number[] = [];
 
         for (const scheduleIndex of this.schedules.keys()) {
@@ -390,7 +392,7 @@ export class Schedules {
     /**
      * Change color of a custom event
      */
-    changeCustomEventColor(customEventId: number, newColor: string) {
+    changeCustomEventColor(customEventId: string | number, newColor: string) {
         this.addUndoState();
         const customEvent = this.getExistingCustomEvent(customEventId);
         if (customEvent) {
@@ -428,7 +430,7 @@ export class Schedules {
     /**
      * Checks if a schedule contains the custom event ID
      */
-    doesCustomEventExistInSchedule(customEventId: number, scheduleIndex: number) {
+    doesCustomEventExistInSchedule(customEventId: string | number, scheduleIndex: number) {
         for (const customEvent of this.schedules.at(scheduleIndex)?.customEvents ?? []) {
             if (customEvent.customEventID === customEventId) {
                 return true;
@@ -567,11 +569,47 @@ export class Schedules {
         this.addUndoState();
 
         try {
+            const isShortCourse = (course: ScheduleCourse | ShortCourse): course is ShortCourse =>
+                'sectionCode' in course;
+
+            const hasShortCourses = saveState.schedules.some((schedule) =>
+                schedule.courses.some((course) => isShortCourse(course))
+            );
+
+            const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
+
+            if (hasShortCourses) {
+                // Get a dictionary of all unique courses
+                const courseDict: { [key: string]: Set<string> } = {};
+                for (const schedule of saveState.schedules) {
+                    for (const course of schedule.courses) {
+                        if (!isShortCourse(course)) {
+                            continue;
+                        }
+                        if (course.term in courseDict) {
+                            courseDict[course.term].add(course.sectionCode);
+                        } else {
+                            courseDict[course.term] = new Set([course.sectionCode]);
+                        }
+                    }
+                }
+
+                // Get the course info for each course
+                const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
+                    const sectionCodes = Array.from(courseSet).join(',');
+                    const courseInfo = await WebSOC.getCourseInfo({ term, sectionCodes });
+                    courseInfoDict.set(term, courseInfo);
+                });
+
+                await Promise.all(websocRequests);
+            }
+
             this.schedules.length = 0;
             this.currentScheduleIndex = saveState.scheduleIndex;
 
             // Map course info to courses and transform shortened schedule to normal schedule
             for (const schedule of saveState.schedules) {
+                const courses: ScheduleCourse[] = [];
                 const scheduleNoteId = Math.random();
                 if ('scheduleNote' in schedule) {
                     this.scheduleNoteMap[scheduleNoteId] = schedule.scheduleNote;
@@ -581,9 +619,36 @@ export class Schedules {
                     this.scheduleNoteMap[scheduleNoteId] = '';
                 }
 
+                if (hasShortCourses) {
+                    for (const course of schedule.courses) {
+                        if (!isShortCourse(course)) {
+                            courses.push(course);
+                            continue;
+                        }
+
+                        const courseInfoMap = courseInfoDict.get(course.term);
+                        if (courseInfoMap !== undefined) {
+                            const courseInfo = courseInfoMap[course.sectionCode.padStart(5, '0')];
+                            if (courseInfo === undefined) {
+                                continue;
+                            }
+                            courses.push({
+                                ...courseInfo.courseDetails,
+                                term: course.term,
+                                section: {
+                                    ...courseInfo.section,
+                                    color: course.color,
+                                },
+                            });
+                        }
+                    }
+                } else {
+                    courses.push(...(schedule.courses as ScheduleCourse[]));
+                }
+
                 this.schedules.push({
                     scheduleName: schedule.scheduleName,
-                    courses: schedule.courses,
+                    courses: courses,
                     customEvents: schedule.customEvents,
                     scheduleNoteId: scheduleNoteId,
                 });
