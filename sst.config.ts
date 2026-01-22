@@ -100,7 +100,7 @@ export default $config({
         emailQueue.subscribe(emailProcessorLambda.arn, {
             batch: {
                 size: 14, // Match SES rate limit 
-                window: '1 second', // Collect messages for up to 1 second
+                window: '1.25 seconds', // Collect messages for up to 1 second
                 partialResponses: true, // Enable partial batch failure reporting
             },
         });
