@@ -1,4 +1,4 @@
-import type { DraggableSyntheticListeners, UniqueIdentifier } from '@dnd-kit/core';
+import type { DraggableAttributes, DraggableSyntheticListeners, UniqueIdentifier } from '@dnd-kit/core';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { ListItem } from '@mui/material';
@@ -10,13 +10,13 @@ interface Props {
 }
 
 interface Context {
-    attributes: Record<string, any>;
+    attributes: DraggableAttributes | null;
     listeners: DraggableSyntheticListeners;
     ref(node: HTMLElement | null): void;
 }
 
 export const SortableItemContext = createContext<Context>({
-    attributes: {},
+    attributes: null,
     listeners: undefined,
     ref: (_node: HTMLElement | null) => {
         // Intentionally left blank
