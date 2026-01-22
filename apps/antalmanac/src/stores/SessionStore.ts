@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId, removeLocalStorageSessionId, setLocalStorageSessionId } from '$lib/localStorage';
+import { getLocalStorageSessionId, setLocalStorageSessionId, removeLocalStorageSessionId } from '$lib/localStorage';
 
 interface SessionState {
     session: string | null;

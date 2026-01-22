@@ -39,6 +39,7 @@ export default $config({
                 OIDC_ISSUER_URL: process.env.OIDC_ISSUER_URL,
                 GOOGLE_REDIRECT_URI: `https://${domain}/auth`,
                 NEXT_PUBLIC_BASE_URL: domain,
+                NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY,
             },
         });
 
