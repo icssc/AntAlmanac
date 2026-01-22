@@ -86,6 +86,14 @@ export default $config({
                         'arn:aws:ses:us-east-2:990864464737:configuration-set/*',
                     ],
                 },
+                {
+                    actions: [
+                        'sqs:ReceiveMessage',
+                        'sqs:DeleteMessage',
+                        'sqs:GetQueueAttributes',
+                    ],
+                    resources: [emailQueue.arn],
+                },
             ],
         });
 
