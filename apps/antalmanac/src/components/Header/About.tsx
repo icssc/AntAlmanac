@@ -30,7 +30,7 @@ const AboutButton = () => {
             category: analyticsEnum.nav,
             action: analyticsEnum.nav.actions.CLICK_ABOUT,
         });
-    }, []);
+    }, [postHog]);
 
     const handleClose = useCallback(() => {
         setOpen(false);
@@ -128,7 +128,7 @@ const DonateButton = () => {
 
 export function About() {
     return (
-        <Stack direction="row" sx={{ justifyContent: 'space-evenly', alignItems: 'center' }}>
+        <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
             <DonateButton />
             <AboutButton />
             <FeedbackButton />

@@ -43,11 +43,13 @@ moment.defineLocale('en-us', {
 });
 
 // Finals locale: week starts Saturday (Sa ... Fr)
+// eslint-disable-next-line import/no-named-as-default-member
 moment.defineLocale('en-us-finals', {
     parentLocale: 'en-us',
     week: { dow: 6 },
 });
 
+// eslint-disable-next-line import/no-named-as-default-member
 moment.locale('en-us');
 const CALENDAR_VIEWS: ViewsProps<CalendarEvent, object> = [Views.WEEK, Views.WORK_WEEK];
 const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
@@ -98,11 +100,9 @@ export const ScheduleCalendar = memo(() => {
 
     useEffect(() => {
         if (!loadingSchedule) {
-            const courseEvents = eventsInCalendar.filter((event) => !event.isCustomEvent);
-
-            if (courseEvents.length > 0) {
+            if (eventsInCalendar.length > 0) {
                 hasHadEventsRef.current = true;
-                const skeletonBlueprint = courseEvents
+                const skeletonBlueprint = eventsInCalendar
                     .map((event) => {
                         const dayOffset = event.start.getDate() - BASE_DATE.getDate();
                         return {
@@ -264,6 +264,7 @@ export const ScheduleCalendar = memo(() => {
     const culture = finalsStartsOnSaturday ? 'en-us-finals' : 'en-us';
 
     const calendarLocalizer = useMemo(() => {
+        // eslint-disable-next-line import/no-named-as-default-member
         moment.locale(culture);
         return momentLocalizer(moment);
     }, [culture]);
