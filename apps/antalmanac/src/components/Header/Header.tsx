@@ -1,11 +1,9 @@
-import { UnfoldMore } from '@mui/icons-material';
-import { EventNote, Route } from '@mui/icons-material';
+import { EventNote, Route, UnfoldMore } from '@mui/icons-material';
 import {
     AppBar,
     Box,
     Button,
     ButtonGroup,
-    IconButton,
     ListItemIcon,
     ListSubheader,
     MenuItem,
@@ -84,36 +82,31 @@ export function Header() {
                     alignItems: 'center',
                 }}
             >
-                <Stack direction="row" sx={{ alignItems: 'center', gap: 2 }}>
+                <Stack direction="row" alignItems="center" gap={1}>
                     {isMobile ? (
                         <>
-                            <IconButton
+                            <Button
                                 onClick={(event) => setAnchorEl(event.currentTarget)}
-                                sx={(theme) => ({
-                                    borderRadius: theme.spacing(0.5),
-                                    gap: theme.spacing(0.5),
-                                    paddingX: theme.spacing(0.5),
+                                endIcon={<UnfoldMore />}
+                                sx={{
+                                    minWidth: 'auto',
+                                    p: 0.5,
+                                    color: 'white',
                                     '& .MuiTouchRipple-child': {
-                                        borderRadius: theme.spacing(0.5),
+                                        borderRadius: 0.5,
+                                        bgcolor: 'white',
                                     },
-                                })}
+                                }}
                             >
                                 <Logo />
-                                <UnfoldMore color="inherit" />
-                            </IconButton>
+                            </Button>
 
                             <Popover
                                 open={Boolean(anchorEl)}
                                 anchorEl={anchorEl}
                                 onClose={() => setAnchorEl(null)}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'left',
-                                }}
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'left',
-                                }}
+                                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
                             >
                                 <MenuList
                                     subheader={
@@ -121,35 +114,32 @@ export function Header() {
                                             Switch Apps
                                         </ListSubheader>
                                     }
-                                    sx={{ width: '200px' }}
+                                    sx={{ width: 200 }}
                                 >
-                                    <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-                                        <MenuItem
-                                            selected={platform === 'Scheduler'}
-                                            onClick={() => setAnchorEl(null)}
-                                            sx={{ minHeight: 'fit-content' }}
-                                        >
-                                            <ListItemIcon>
-                                                <EventNote />
-                                            </ListItemIcon>
-                                            <Typography variant="h6">Scheduler</Typography>
-                                        </MenuItem>
-                                    </Link>
-                                    <Link
-                                        href="https://planner-917.antalmanac.com"
-                                        style={{ textDecoration: 'none', color: 'inherit' }}
+                                    <MenuItem
+                                        component={Link}
+                                        href="/"
+                                        selected={platform === 'Scheduler'}
+                                        onClick={() => setAnchorEl(null)}
+                                        sx={{ minHeight: 'fit-content', textDecoration: 'none', color: 'inherit' }}
                                     >
-                                        <MenuItem
-                                            selected={platform === 'Planner'}
-                                            onClick={() => setAnchorEl(null)}
-                                            sx={{ minHeight: 'fit-content' }}
-                                        >
-                                            <ListItemIcon>
-                                                <Route />
-                                            </ListItemIcon>
-                                            <Typography variant="h6">Planner</Typography>
-                                        </MenuItem>
-                                    </Link>
+                                        <ListItemIcon>
+                                            <EventNote />
+                                        </ListItemIcon>
+                                        <Typography variant="h6">Scheduler</Typography>
+                                    </MenuItem>
+                                    <MenuItem
+                                        component={Link}
+                                        href="https://planner-917.antalmanac.com"
+                                        selected={platform === 'Planner'}
+                                        onClick={() => setAnchorEl(null)}
+                                        sx={{ minHeight: 'fit-content', textDecoration: 'none', color: 'inherit' }}
+                                    >
+                                        <ListItemIcon>
+                                            <Route />
+                                        </ListItemIcon>
+                                        <Typography variant="h6">Planner</Typography>
+                                    </MenuItem>
                                 </MenuList>
                             </Popover>
                         </>
@@ -157,26 +147,32 @@ export function Header() {
                         <>
                             <Logo />
                             <ButtonGroup variant="outlined" color="inherit">
-                                <Button color="secondary" variant="contained" sx={{ gap: 0.5 }}>
-                                    <EventNote sx={{ fontSize: 16, color: BLUE }} />
-                                    <Typography variant="body1" style={{ color: BLUE, fontWeight: 500 }}>
-                                        Scheduler
-                                    </Typography>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<EventNote />}
+                                    sx={{
+                                        boxShadow: 'none',
+                                        bgcolor: 'white',
+                                        color: BLUE,
+                                        fontWeight: 500,
+                                        fontSize: 14,
+                                        '&:hover': { bgcolor: 'grey.100' },
+                                    }}
+                                >
+                                    Scheduler
                                 </Button>
-                                <Button sx={{ gap: 0.5 }}>
-                                    <Route sx={{ fontSize: 16 }} />
-                                    <Typography variant="body1" style={{ color: 'white', fontWeight: 500 }}>
-                                        Planner
-                                    </Typography>
+                                <Button
+                                    startIcon={<Route />}
+                                    sx={{ boxShadow: 'none', color: 'white', fontWeight: 500, fontSize: 14 }}
+                                >
+                                    Planner
                                 </Button>
                             </ButtonGroup>
                         </>
                     )}
-
-                    {/* <Chip label="New!" color="primary" /> */}
                 </Stack>
 
-                <Stack direction="row" sx={{ alignItems: 'center' }}>
+                <Stack direction="row" alignItems="center">
                     <Import key="studylist" />
                     <Save />
                     {sessionIsValid ? <Signout /> : <Signin />}
