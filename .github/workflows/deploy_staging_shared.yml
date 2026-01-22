@@ -2,7 +2,7 @@ name: Deploy - Staging Shared
 
 on:
     push:
-        branches: [staging-shared]
+        branches: [scheduler, staging-shared]
     repository_dispatch:
         types: [deploy-command]
 

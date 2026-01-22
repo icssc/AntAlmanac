@@ -12,14 +12,14 @@ function getDomain() {
     throw new Error('Invalid stage');
 }
 
-// const isPermanentStage = ['production', 'staging-shared'].includes($app.stage);
+const isPermanentStage = ['production', 'scheduler', 'staging-shared'].includes($app.stage);
 
 export default $config({
     app(input) {
         return {
             name: 'antalmanac',
-            removal: ['production', 'staging-shared'].includes(input?.stage) ? 'retain' : 'remove',
-            protect: ['production', 'staging-shared'].includes(input?.stage),
+            removal: isPermanentStage ? 'retain' : 'remove',
+            protect: isPermanentStage,
             home: 'aws',
         };
     },
@@ -39,10 +39,6 @@ export default $config({
                 instance: router,
                 path: '/',
             },
-            // domain: {
-            //     name: domain,
-            //     redirects: $app.stage.match(/^staging-(\d+)$/) ? [] : [`www.${domain}`],
-            // },
             cachePolicy: '92d18877-845e-47e7-97e6-895382b1bf7c',
             environment: {
                 DB_URL: $app.stage === 'production' ? process.env.PROD_DB_URL : process.env.DEV_DB_URL,

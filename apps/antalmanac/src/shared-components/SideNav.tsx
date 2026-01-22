@@ -1,5 +1,5 @@
 import { EventNote, Route } from '@mui/icons-material';
-import { Paper, Stack, type SxProps, Typography, useTheme } from '@mui/material';
+import { Paper, Stack, SxProps, Typography, useTheme } from '@mui/material';
 import Link from 'next/link';
 
 import { useIsMobile } from '$hooks/useIsMobile';

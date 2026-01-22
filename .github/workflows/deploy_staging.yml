@@ -3,6 +3,9 @@ name: Deploy - Staging
 on:
     pull_request:
         types: [opened, synchronize, reopened]
+        branches-ignore:
+            - staging-shared
+            - scheduler
     repository_dispatch:
         types: [deploy-command]
 
