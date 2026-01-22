@@ -12,14 +12,14 @@ function getDomain() {
     throw new Error('Invalid stage');
 }
 
-const isPermanentStage = ['production', 'scheduler', 'staging-shared'].includes($app.stage);
+const isPermanentStage = ['production', 'scheduler', 'staging-shared'];
 
 export default $config({
     app(input) {
         return {
             name: 'antalmanac',
-            removal: isPermanentStage ? 'retain' : 'remove',
-            protect: isPermanentStage,
+            removal: isPermanentStage.includes(input?.stage) ? 'retain' : 'remove',
+            protect: isPermanentStage.includes(input?.stage),
             home: 'aws',
         };
     },
