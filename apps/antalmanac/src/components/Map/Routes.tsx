@@ -39,6 +39,7 @@ function Routes(props: ClassRoutesProps) {
         /**
          * Convert each tuple to an actual `LatLng` object.
          */
+        // eslint-disable-next-line import/no-named-as-default-member
         const waypoints = latLngTuples.map((latLngTuple) => L.latLng(latLngTuple));
 
         const routerControl = L.Routing.control({
@@ -99,6 +100,7 @@ function Routes(props: ClassRoutesProps) {
            <br>
            <span style="color:#888888">${miles}</span>
           `;
+                // eslint-disable-next-line import/no-named-as-default-member
                 const leafletPopup = L.popup({ content, closeButton: false });
 
                 /**
