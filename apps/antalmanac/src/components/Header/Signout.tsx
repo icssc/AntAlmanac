@@ -1,46 +1,51 @@
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Avatar, Menu, ListItemIcon, ListItemText, MenuItem, IconButton } from '@mui/material';
-import { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { User } from '@packages/antalmanac-types';
+import { useEffect, useState, useCallback, type MouseEvent } from 'react';
 
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
 
-export function Signout() {
+interface SignoutProps {
+    onLogoutComplete?: () => void;
+}
+
+export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [user, setUser] = useState<{ name?: string | null; avatar?: string | null } | null>(null);
-    const navigate = useNavigate();
-
-    const handleLogout = async () => {
-        if (!session) {
-            navigate('/');
-            return;
-        }
-
-        try {
-            const { logoutUrl } = await trpc.userData.logout.mutate({
-                sessionToken: session,
-                redirectUrl: window.location.origin,
-            });
-            clearSession();
-
-            window.location.href = logoutUrl;
-        } catch (error) {
-            console.error('Error during logout', error);
-            clearSession();
-            navigate('/');
-        }
-    };
-
+    const [user, setUser] = useState<Pick<User, 'name' | 'avatar'> | null>(null);
     const { session, sessionIsValid, clearSession } = useSessionStore();
 
     const open = Boolean(anchorEl);
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
     const handleClose = () => {
         setAnchorEl(null);
+    };
+
+    const handleLogout = async () => {
+        setAnchorEl(null);
+        if (!session) {
+            await clearSession();
+            onLogoutComplete?.();
+            return;
+        }
+
+        try {
+            await trpc.userData.logout.mutate({
+                sessionToken: session,
+                redirectUrl: window.location.origin,
+            });
+
+            await clearSession();
+            onLogoutComplete?.();
+        } catch (error) {
+            console.error('Error during logout', error);
+            // Even on error, clear session and show dialog
+            await clearSession();
+            onLogoutComplete?.();
+        }
     };
 
     const handleAuthChange = useCallback(async () => {
@@ -48,7 +53,7 @@ export function Signout() {
             const userData = await trpc.userData.getUserAndAccountBySessionToken
                 .query({ token: session ?? '' })
                 .then((res) => res.users);
-            setUser(userData);
+            setUser({ name: userData.name ?? undefined, avatar: userData.avatar ?? undefined });
         }
     }, [session, sessionIsValid, setUser]);
 
