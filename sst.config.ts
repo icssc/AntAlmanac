@@ -42,6 +42,11 @@ export default $config({
             },
         });
 
+        const emailQueue = new sst.aws.Queue('EmailQueue', {
+            visibilityTimeout: '3 minutes', 
+            messageRetentionPeriod: '14 days', 
+        });
+
         const aantsLambda = new sst.aws.Function('AantsLambda', {
             handler: 'apps/aants/src/lambda.handler',
             timeout: '20 seconds', // TODO (@IsaacNguyen): Test how long AANTS takes to run and change accordingly
@@ -49,11 +54,31 @@ export default $config({
             environment: {
                 DB_URL: dbUrl,
                 NODE_ENV: $app.stage === 'production' ? 'production' : 'development',
-                STAGE: $app.stage
+                STAGE: $app.stage,
+                EMAIL_QUEUE_URL: emailQueue.url,
             },
             permissions: [
                 {
-                    actions: ['ses:SendEmail', 'ses:SendRawEmail', 'ses:SendBulkEmail', 'ses:SendBulkTemplatedEmail'],
+                    actions: ['sqs:SendMessage'],
+                    resources: [emailQueue.arn],
+                },
+            ],
+        });
+
+        const emailProcessorLambda = new sst.aws.Function('EmailProcessorLambda', {
+            handler: 'apps/aants/src/emailProcessor.handler',
+            timeout: '30 seconds',
+            memory: '256 MB',
+            reservedConcurrency: 1, // Only one execution at a time to respect rate limit
+            environment: {
+                NODE_ENV: $app.stage === 'production' ? 'production' : 'development',
+                STAGE: $app.stage,
+            },
+            permissions: [
+                {
+                    actions: [
+                        'ses:SendEmail',
+                    ],
                     resources: [
                         'arn:aws:ses:us-east-2:990864464737:identity/icssc@uci.edu',
                         'arn:aws:ses:us-east-2:990864464737:template/*',
@@ -61,6 +86,14 @@ export default $config({
                     ],
                 },
             ],
+        });
+
+        emailQueue.subscribe(emailProcessorLambda.arn, {
+            batch: {
+                size: 14, // Match SES rate limit 
+                window: '1 second', // Collect messages for up to 1 second
+                partialResponses: true, // Enable partial batch failure reporting
+            },
         });
 
         new sst.aws.Cron('NotificationCronRule', {
