@@ -6,9 +6,8 @@ import { useEffect, useState } from 'react';
 
 import AppStore from '$stores/AppStore';
 
-
 interface ProfileMenuButtonsProps {
-    user: User | null;
+    user: Pick<User, 'name' | 'avatar' | 'email'> | null;
     handleOpen: (event: React.MouseEvent<HTMLElement>) => void;
     handleSettingsOpen: (event: React.MouseEvent<HTMLElement>) => void;
     loading?: boolean;

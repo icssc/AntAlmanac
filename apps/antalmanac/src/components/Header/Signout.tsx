@@ -1,45 +1,49 @@
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from '@mui/material';
+import { ListItemIcon, ListItemText, MenuItem, Popover, Divider } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
-import { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useCallback, type MouseEvent } from 'react';
 
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
 
-export function Signout() {
+interface SignoutProps {
+    onLogoutComplete?: () => void;
+}
+
+export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [user, setUser] = useState<User | null>(null);
-    const navigate = useNavigate();
+    const [user, setUser] = useState<Pick<User, 'name' | 'avatar' | 'email'> | null>(null);
+    const { session, sessionIsValid, clearSession } = useSessionStore();
+
+    const open = Boolean(anchorEl);
+    const handleClick = (event: MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
 
     const handleLogout = async () => {
+        setAnchorEl(null);
         if (!session) {
-            navigate('/');
+            await clearSession();
+            onLogoutComplete?.();
             return;
         }
 
         try {
-            const { logoutUrl } = await trpc.userData.logout.mutate({
+            await trpc.userData.logout.mutate({
                 sessionToken: session,
                 redirectUrl: window.location.origin,
             });
-            clearSession();
 
-            window.location.href = logoutUrl;
+            await clearSession();
+            onLogoutComplete?.();
         } catch (error) {
             console.error('Error during logout', error);
-            clearSession();
-            navigate('/');
+            // Even on error, clear session and show dialog
+            await clearSession();
+            onLogoutComplete?.();
         }
-    };
-
-    const { session, sessionIsValid, clearSession } = useSessionStore();
-
-    const open = Boolean(anchorEl);
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
     };
 
     const handleAuthChange = useCallback(async () => {
@@ -47,7 +51,11 @@ export function Signout() {
             const userData = await trpc.userData.getUserAndAccountBySessionToken
                 .query({ token: session ?? '' })
                 .then((res) => res.users);
-            setUser(userData as unknown as User); // TODO (@KevinWu098): Fix this type assertion.
+            setUser({
+                name: userData.name ?? undefined,
+                avatar: userData.avatar ?? undefined,
+                email: userData.email ?? undefined,
+            });
         }
     }, [session, sessionIsValid, setUser]);
 

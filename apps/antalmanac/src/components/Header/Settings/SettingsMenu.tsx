@@ -9,7 +9,11 @@ import { ExperimentalMenu } from '$components/Header/Settings/ExperimentalMenu';
 import { ThemeSelector } from '$components/Header/Settings/ThemeSelector';
 import { TimeSelector } from '$components/Header/Settings/TimeSelector';
 
-function UserProfileSection({ user }: { user: User | null }) {
+interface UserProfileSectionProps {
+    user: Pick<User, 'name' | 'avatar' | 'email'> | null;
+}
+
+function UserProfileSection({ user }: UserProfileSectionProps) {
     const theme = useTheme();
 
     if (!user) {
@@ -63,7 +67,7 @@ function UserProfileSection({ user }: { user: User | null }) {
 }
 
 interface SettingsMenuProps {
-    user: User | null;
+    user: Pick<User, 'name' | 'avatar' | 'email'> | null;
 }
 
 export function SettingsMenu({ user }: SettingsMenuProps) {
