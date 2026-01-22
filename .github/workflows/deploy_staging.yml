@@ -3,9 +3,6 @@ name: Deploy - Staging
 on:
     pull_request:
         types: [opened, synchronize, reopened]
-        branches-ignore:
-            - staging-shared
-            - scheduler
     repository_dispatch:
         types: [deploy-command]
 
@@ -27,6 +24,7 @@ env:
 
 jobs:
     deploy-staging:
+        if: github.head_ref != 'staging-shared' && github.head_ref != 'scheduler'
         runs-on: ubuntu-latest
         environment:
             name: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
