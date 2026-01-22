@@ -78,7 +78,7 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
 };
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
-    const isMobileScreen = useIsMobile();
+    const isMobile = useIsMobile();
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
     const recruitmentDismissalTime = getLocalStorageRecruitmentDismissalTime();
@@ -100,7 +100,7 @@ const RecruitmentBanner = () => {
             sx={(theme) => ({
                 position: 'fixed',
                 bottom: 5,
-                right: isMobileScreen ? 5 : 75,
+                right: isMobile ? 5 : 75,
                 zIndex: theme.zIndex.snackbar,
             })}
         >

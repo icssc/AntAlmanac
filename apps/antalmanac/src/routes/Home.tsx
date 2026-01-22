@@ -75,7 +75,7 @@ function DesktopHome() {
 }
 
 export default function Home() {
-    const isMobileScreen = useIsMobile();
+    const isMobile = useIsMobile();
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -84,7 +84,7 @@ export default function Home() {
 
             <Stack component="main" height="100dvh">
                 <Header />
-                {isMobileScreen ? <MobileHome /> : <DesktopHome />}
+                {isMobile ? <MobileHome /> : <DesktopHome />}
             </Stack>
 
             <NotificationSnackbar />

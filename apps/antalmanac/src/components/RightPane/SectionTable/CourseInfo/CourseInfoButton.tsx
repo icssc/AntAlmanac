@@ -25,13 +25,12 @@ export const CourseInfoButton = ({
 }: CourseInfoButtonProps) => {
     const postHog = usePostHog();
     const theme = useTheme();
-    const isMobileScreen = useIsMobile();
+    const isMobile = useIsMobile();
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const scheduleManagementWidth = useScheduleManagementStore((state) => state.scheduleManagementWidth);
-    const compact =
-        isMobileScreen || (scheduleManagementWidth && scheduleManagementWidth < theme.breakpoints.values.xs);
+    const compact = isMobile || (scheduleManagementWidth && scheduleManagementWidth < theme.breakpoints.values.xs);
 
     const handleClick = useCallback(
         (event: React.MouseEvent<HTMLElement>) => {

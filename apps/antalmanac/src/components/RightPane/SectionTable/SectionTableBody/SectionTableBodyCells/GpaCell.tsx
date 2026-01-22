@@ -83,7 +83,7 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
                     deptCode={deptCode}
                     courseNumber={courseNumber}
                     instructor={instructor}
-                    isMobileScreen={isMobile}
+                    isMobile={isMobile}
                 />
             </Popover>
         </TableBodyCellContainer>

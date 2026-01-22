@@ -71,7 +71,7 @@ function SectionTable(props: SectionTableProps) {
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
-    const isMobileScreen = useIsMobile();
+    const isMobile = useIsMobile();
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
@@ -135,7 +135,7 @@ function SectionTable(props: SectionTableProps) {
                         <GradesPopup
                             deptCode={courseDetails.deptCode}
                             courseNumber={courseDetails.courseNumber}
-                            isMobileScreen={isMobileScreen}
+                            isMobile={isMobile}
                         />
                     }
                 />
@@ -187,7 +187,7 @@ function SectionTable(props: SectionTableProps) {
                             <TableCell
                                 sx={{
                                     padding: 0,
-                                    width: isMobileScreen ? '6%' : '8%',
+                                    width: isMobile ? '6%' : '8%',
                                 }}
                             />
                             {tableHeaderColumnEntries

@@ -35,7 +35,7 @@ function PopupHeader({
     popupTitle,
     enrollmentHistory,
 }: PopupHeaderProps) {
-    const isMobileScreen = useIsMobile();
+    const isMobile = useIsMobile();
 
     return (
         <Box
@@ -54,7 +54,7 @@ function PopupHeader({
                     </IconButton>
                 </span>
             </Tooltip>
-            <Typography sx={{ fontWeight: 500, fontSize: isMobileScreen ? '0.8rem' : '1rem', textAlign: 'center' }}>
+            <Typography sx={{ fontWeight: 500, fontSize: isMobile ? '0.8rem' : '1rem', textAlign: 'center' }}>
                 {popupTitle}
             </Typography>
             <Tooltip title="Newer Graph">
@@ -78,12 +78,12 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
     const [enrollmentHistory, setEnrollmentHistory] = useState<EnrollmentHistory[]>();
     const [graphIndex, setGraphIndex] = useState(0);
 
-    const isMobileScreen = useIsMobile();
+    const isMobile = useIsMobile();
 
     const deptEnrollmentHistory = useMemo(() => new DepartmentEnrollmentHistory(department), [department]);
 
-    const graphWidth = useMemo(() => (isMobileScreen ? 250 : 450), [isMobileScreen]);
-    const graphHeight = useMemo(() => (isMobileScreen ? 175 : 250), [isMobileScreen]);
+    const graphWidth = useMemo(() => (isMobile ? 250 : 450), [isMobile]);
+    const graphHeight = useMemo(() => (isMobile ? 175 : 250), [isMobile]);
     const popupTitle = useMemo(() => {
         if (enrollmentHistory == null) {
             return 'No past enrollment data found for this course';
