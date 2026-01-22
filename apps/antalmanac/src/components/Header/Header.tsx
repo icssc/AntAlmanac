@@ -165,6 +165,7 @@ export function Header() {
                                         color: BLUE,
                                         fontWeight: 500,
                                         fontSize: 14,
+                                        py: 0.2,
                                         '&:hover': { bgcolor: 'grey.100' },
                                     }}
                                 >
@@ -172,7 +173,13 @@ export function Header() {
                                 </Button>
                                 <Button
                                     startIcon={<Route />}
-                                    sx={{ boxShadow: 'none', color: 'white', fontWeight: 500, fontSize: 14 }}
+                                    sx={{
+                                        boxShadow: 'none',
+                                        color: 'white',
+                                        fontWeight: 500,
+                                        fontSize: 14,
+                                        py: 0.2,
+                                    }}
                                 >
                                     Planner
                                 </Button>
