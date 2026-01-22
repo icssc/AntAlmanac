@@ -1,6 +1,6 @@
-import { SESv2Client, SendBulkEmailCommand } from '@aws-sdk/client-sesv2';
 import { WebsocSection } from '@icssc/libwebsoc-next';
 import { User } from './subscriptionData';
+import { queueEmail } from './emailQueue';
 
 export interface CourseDetails {
     sectionCode: string;
@@ -17,7 +17,6 @@ export interface CourseDetails {
 }
 
 const BATCH_SIZE = 450;
-const client = new SESv2Client({ region: 'us-east-2' });
 
 /**
  * Batches an array of course codes into smaller arrays based on a predefined BATCH_SIZE.
@@ -104,65 +103,65 @@ async function sendNotification(
         
         // Add staging prefix to subject line if not in production
         const isStaging = process.env.NODE_ENV !== 'production';
-        const stagingPrefix = isStaging ? '[STAGING] ' : '';
+        const stagingPrefix = isStaging ? '[SQS] [STAGING] ' : '';
 
-        const bulkEmailEntries = users
-            .filter((user): user is User & { email: string } => user.email !== null)
-            .map((user) => ({
-                Destination: {
-                    ToAddresses: [user.email],
-                },
-                ReplacementEmailContent: {
-                    ReplacementTemplate: {
-                        ReplacementTemplateData: JSON.stringify({
-                            userName: user.userName,
-                            notification: notification,
-                            deptCode: deptCode,
-                            courseNumber: courseNumber,
-                            courseTitle: courseTitle,
-                            instructor: instructor,
-                            days: days,
-                            hours: hours,
-                            time: time,
-                            sectionCode: sectionCode,
-                            userId: user.userId,
-                            quarter: quarter,
-                            year: year,
-                            stagingPrefix: stagingPrefix,
-                        }),
-                    },
-                },
-            }));
+        const queueUrl = process.env.EMAIL_QUEUE_URL;
+        if (!queueUrl) {
+            throw new Error('EMAIL_QUEUE_URL environment variable is not set');
+        }
 
-        const input = {
-            FromEmailAddress: 'icssc@uci.edu',
-            DefaultContent: {
-                Template: {
+        const usersWithEmail = users.filter(
+            (user): user is User & { email: string } => user.email !== null
+        );
+
+        const templateData = JSON.stringify({
+            name: '',
+            notification: '',
+            deptCode: '',
+            courseNumber: '',
+            courseTitle: '',
+            instructor: '',
+            days: '',
+            hours: '',
+            time: '',
+            sectionCode: '',
+            userId: '',
+            quarter: '',
+            year: '',
+            stagingPrefix: stagingPrefix,
+        });
+
+        // Send each email as a separate SQS message
+        await Promise.all(
+            usersWithEmail.map((user) =>
+                queueEmail(queueUrl, {
+                    FromEmailAddress: 'icssc@uci.edu',
                     TemplateName: 'CourseNotification',
-                    TemplateData: JSON.stringify({
-                        name: '',
-                        notification: '',
-                        deptCode: '',
-                        courseNumber: '',
-                        courseTitle: '',
-                        instructor: '',
-                        days: '',
-                        hours: '',
-                        time: '',
-                        sectionCode: '',
-                        userId: '',
-                        quarter: '',
-                        year: '',
-                        stagingPrefix: '',
+                    TemplateData: templateData,
+                    Destination: {
+                        ToAddresses: [user.email],
+                    },
+                    ReplacementTemplateData: JSON.stringify({
+                        userName: user.userName,
+                        notification: notification,
+                        deptCode: deptCode,
+                        courseNumber: courseNumber,
+                        courseTitle: courseTitle,
+                        instructor: instructor,
+                        days: days,
+                        hours: hours,
+                        time: time,
+                        sectionCode: sectionCode,
+                        userId: user.userId,
+                        quarter: quarter,
+                        year: year,
+                        stagingPrefix: stagingPrefix,
                     }),
-                },
-            },
-            BulkEmailEntries: bulkEmailEntries,
-        };
+                })
+            )
+        );
 
-        const command = new SendBulkEmailCommand(input);
-        const response = await client.send(command);
-        return response;
+        return { queued: usersWithEmail.length };
     } catch (error) {
         console.error('Error sending bulk emails:', error);
         throw error;
