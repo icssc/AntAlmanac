@@ -1,6 +1,6 @@
 import { Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, Link, useMediaQuery, useTheme } from '@mui/material';
-import {
+import type {
     AACourse,
     AASection,
     WebsocDepartment,
@@ -295,7 +295,9 @@ export default function CourseRenderPane(props: { id?: number }) {
 
             setError(false);
             setWebsocResp(websocJsonResp);
-            setCourseData(flattenSOCObject(websocJsonResp));
+            if (websocJsonResp) {
+                setCourseData(flattenSOCObject(websocJsonResp));
+            }
         } catch (error) {
             console.error(error);
             setError(true);

@@ -9,8 +9,8 @@ import type {
 } from '@packages/antalmanac-types';
 import { TRPCClientError } from '@trpc/client';
 import { TRPCError } from '@trpc/server';
-import { SnackbarOrigin, VariantType } from 'notistack';
-import { PostHog } from 'posthog-js/react';
+import type { SnackbarOrigin, VariantType } from 'notistack';
+import type { PostHog } from 'posthog-js/react';
 
 import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
@@ -40,8 +40,8 @@ export const addCourse = (
 ) => {
     logAnalytics(postHog, {
         category: analyticsEnum.classSearch,
-        action: analyticsEnum.classSearch.actions.ADD_COURSE,
-        label: courseDetails.deptCode,
+        action: analyticsEnum.classSearch.actions.ADD_COURSE ?? '',
+        label: courseDetails.deptCode ?? '',
         value: courseNumAsDecimal(courseDetails.courseNumber),
     });
     const terms = AppStore.termsInSchedule(term);
@@ -105,8 +105,8 @@ export const saveSchedule = async (
 ) => {
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
-        action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
-        label: providerId,
+        action: analyticsEnum.nav.actions.SAVE_SCHEDULE ?? '',
+        label: providerId ?? '',
         value: rememberMe ? 1 : 0,
     });
 
@@ -166,8 +166,8 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
     const { userInfo, postHog } = options;
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
-        action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
-        label: providerID,
+        action: analyticsEnum.nav.actions.SAVE_SCHEDULE ?? '',
+        label: providerID ?? '',
     });
     if (providerID == null) return;
     providerID = providerID.replace(/\s+/g, '');
@@ -229,7 +229,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
             throw new Error(`Oops! Schedule "${username}" doesn't seem to exist.`);
         });
 
-    if (!skipImportedCheck && incomingUser.imported) {
+    if (!skipImportedCheck && incomingUser?.imported) {
         return { imported: true, error: null };
     }
 
@@ -238,7 +238,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
     });
     const { users, accounts } = userAndAccount;
 
-    const incomingData: User | null = await trpc.userData.getUserData.query({ userId: incomingUser.id });
+    const incomingData: User | null = await trpc.userData.getUserData.query({ userId: incomingUser?.id ?? '' });
     const scheduleSaveState =
         incomingData !== null && 'userData' in incomingData ? incomingData.userData : incomingData;
 
@@ -256,7 +256,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
 
             scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
 
-            await saveSchedule(accounts.providerAccountId, true, users);
+            await saveSchedule(accounts?.providerAccountId ?? '', true, users);
 
             await trpc.userData.flagImportedSchedule.mutate({
                 providerId: username,
@@ -291,8 +291,8 @@ export const loadSchedule = async (
 ) => {
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
-        action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
-        label: providerId,
+        action: analyticsEnum.nav.actions.LOAD_SCHEDULE ?? '',
+        label: providerId ?? '',
         value: rememberMe ? 1 : 0,
     });
     if (
@@ -465,6 +465,7 @@ export const copySchedule = (
     logAnalytics(postHog, {
         category: analyticsEnum.addedClasses,
         action: analyticsEnum.addedClasses.actions.COPY_SCHEDULE,
+        label: '',
     });
 
     try {

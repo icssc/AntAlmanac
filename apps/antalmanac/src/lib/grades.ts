@@ -1,4 +1,4 @@
-import { GE } from '@packages/antalmanac-types';
+import type { GE } from '@packages/antalmanac-types';
 
 import trpc from '$lib/api/trpc';
 

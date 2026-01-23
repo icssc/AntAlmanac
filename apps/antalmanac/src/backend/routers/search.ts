@@ -85,7 +85,8 @@ const searchRouter = router({
             }
 
             const u = new uFuzzy();
-            const matchedGEs = u.search(toMutable(geCategoryKeys), query)[0]?.map((i) => geCategoryKeys[i]) ?? [];
+            const matchedGEs =
+                u.search(toMutable(geCategoryKeys), query)[0]?.map((i) => geCategoryKeys[i] ?? ('ge1a' as const)) ?? [];
             if (matchedGEs.length) return Object.fromEntries(matchedGEs.map(toGESearchResult));
 
             const matchedDepts =

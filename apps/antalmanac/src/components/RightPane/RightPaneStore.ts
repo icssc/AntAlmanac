@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { AdvancedSearchParam, ManualSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
+import type { AdvancedSearchParam, ManualSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { getDefaultTerm } from '$lib/termData';
 
 const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {

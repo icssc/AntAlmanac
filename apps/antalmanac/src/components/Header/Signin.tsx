@@ -13,7 +13,7 @@ import {
     DialogContentText,
     DialogTitle,
     TextField,
-    AlertColor,
+    type AlertColor,
 } from '@mui/material';
 import { useEffect, useState, useCallback } from 'react';
 

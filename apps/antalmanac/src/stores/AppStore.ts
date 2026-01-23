@@ -6,7 +6,7 @@ import type {
     RepeatingCustomEvent,
     CustomEventId,
 } from '@packages/antalmanac-types';
-import { SnackbarOrigin, VariantType } from 'notistack';
+import type { SnackbarOrigin, VariantType } from 'notistack';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import type {

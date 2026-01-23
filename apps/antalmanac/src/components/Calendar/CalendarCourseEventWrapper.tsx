@@ -2,7 +2,7 @@
 
 import { Box } from '@mui/material';
 import { useCallback, useEffect, useRef } from 'react';
-import { EventWrapperProps } from 'react-big-calendar';
+import type { EventWrapperProps } from 'react-big-calendar';
 import { useShallow } from 'zustand/react/shallow';
 
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';

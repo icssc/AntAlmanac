@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { WebsocSectionType } from '@packages/antalmanac-types';
+import type { WebsocSectionType } from '@packages/antalmanac-types';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 

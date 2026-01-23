@@ -248,7 +248,7 @@ const userDataRouter = router({
 
             const account = await RDS.registerUserAccount(db, 'OIDC', oauthUserId, username, email, picture ?? '');
 
-            const userId: string = account.userId;
+            const userId: string = account?.userId ?? '';
 
             if (userId.length > 0) {
                 // Create session with OIDC and Google tokens

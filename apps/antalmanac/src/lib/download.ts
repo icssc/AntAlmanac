@@ -10,7 +10,9 @@ import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import { getDefaultTerm, termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 
-export const quarterStartDates = Object.fromEntries(termData.map((term) => [term.shortName, term.startDate]));
+export const quarterStartDates = Object.fromEntries(
+    termData.map((term) => [term.shortName, term.startDate.toISOString()])
+) as Record<string, string>;
 
 export const months: Record<string, number> = { Mar: 3, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Dec: 12 };
 
@@ -75,7 +77,11 @@ export function getByDays(days: string): string[] {
  */
 export function getClassStartDate(term: string, bydays: string[]) {
     // Get the start date of the quarter (Monday)
-    const quarterStartDate = new Date(quarterStartDates[term]);
+    const startDateStr = quarterStartDates[term];
+    if (!startDateStr) {
+        throw new Error(`Invalid term: ${term}`);
+    }
+    const quarterStartDate = new Date(startDateStr);
 
     // The number of days since the start of the quarter.
     let dayOffset: number;
@@ -85,11 +91,24 @@ export function getClassStartDate(term: string, bydays: string[]) {
     // Sort by this ordering: [TH, FR, SA, SU, MO, TU, WE]
     if (getQuarter(term) === 'Fall') {
         bydays.sort((day1, day2) => {
-            return fallDaysOffset[day1] - fallDaysOffset[day2];
+            const offset1 = fallDaysOffset[day1];
+            const offset2 = fallDaysOffset[day2];
+            if (offset1 === undefined || offset2 === undefined) {
+                return 0;
+            }
+            return offset1 - offset2;
         });
-        dayOffset = fallDaysOffset[bydays[0]];
+        const firstDay = bydays[0];
+        if (!firstDay || fallDaysOffset[firstDay] === undefined) {
+            throw new Error(`Invalid day: ${firstDay}`);
+        }
+        dayOffset = fallDaysOffset[firstDay];
     } else {
-        dayOffset = daysOffset[bydays[0]];
+        const firstDay = bydays[0];
+        if (!firstDay || daysOffset[firstDay] === undefined) {
+            throw new Error(`Invalid day: ${firstDay}`);
+        }
+        dayOffset = daysOffset[firstDay];
     }
 
     // Add the dayOffset to the quarterStartDate
@@ -261,7 +280,7 @@ export function getEventsFromCourses(
             const term = _term ?? getDefaultTerm(events).shortName;
             const { title, start, end, building } = event as CustomEvent;
             const days = getByDays(event.days.join(''));
-            const rrule = getRRule(days, getQuarter(term));
+            const rrule = getRRule(days, getQuarter(term as string));
             const eventStartDate = getClassStartDate(term, days);
             const [firstClassStart, firstClassEnd] = getFirstClass(
                 eventStartDate,
@@ -286,6 +305,7 @@ export function getEventsFromCourses(
             return customEvent;
         } else {
             const { term, title, courseTitle, instructors, sectionType, start, end, finalExam } = event;
+            if (!term) return [];
             const courseEvents: EventAttributes[] = event.locations
                 .map((location) => {
                     if (location.days === undefined) {

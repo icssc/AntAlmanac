@@ -1,7 +1,7 @@
 import { PureComponent } from 'react';
 
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
+import type { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import { WebSOC } from '$lib/websoc';
 
@@ -11,11 +11,11 @@ import { WebSOC } from '$lib/websoc';
  * GE criteria will miss them.
  */
 class GeDataFetchProvider extends PureComponent<SectionTableProps> {
-    state = {
+    override state = {
         courseDetails: this.props.courseDetails,
     };
 
-    async componentDidMount() {
+    override async componentDidMount() {
         const formData = RightPaneStore.getFormData();
 
         const params = {
@@ -33,7 +33,7 @@ class GeDataFetchProvider extends PureComponent<SectionTableProps> {
         });
     }
 
-    render() {
+    override render() {
         return <SectionTableLazyWrapper {...this.props} courseDetails={this.state.courseDetails} />;
     }
 }

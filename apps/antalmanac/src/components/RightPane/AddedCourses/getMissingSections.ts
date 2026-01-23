@@ -1,6 +1,6 @@
-import { WebsocSectionType } from '@packages/antalmanac-types';
+import type { WebsocSectionType } from '@packages/antalmanac-types';
 
-import { CourseWithTerm } from '$components/RightPane/AddedCourses/AddedCoursePane';
+import type { CourseWithTerm } from '$components/RightPane/AddedCourses/AddedCoursePane';
 
 export const getMissingSections = (userCourses: CourseWithTerm): string[] => {
     const requiredTypes = new Set<WebsocSectionType>(userCourses.sectionTypes ?? []);

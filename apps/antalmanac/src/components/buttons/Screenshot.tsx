@@ -14,7 +14,7 @@ const ScreenshotButton = () => {
     const handleClick = () => {
         logAnalytics(postHog, {
             category: analyticsEnum.calendar,
-            action: analyticsEnum.calendar.actions.SCREENSHOT,
+            action: analyticsEnum.calendar.actions.SCREENSHOT ?? '',
         });
 
         void html2canvas(document.getElementById('screenshot') as HTMLElement, {

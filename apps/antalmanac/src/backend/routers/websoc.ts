@@ -5,24 +5,25 @@ import { procedure, router } from '../trpc';
 
 function sanitizeSearchParams(params: Record<string, string>) {
     if ('term' in params) {
-        const termValue = params.term;
+        const termValue = params.term ?? '';
         const termParts = termValue.split(' ');
         if (termParts.length === 2) {
             const [year, quarter] = termParts;
             delete params.term;
-            params.quarter = quarter;
-            params.year = year;
+            params.quarter = quarter ?? '';
+            params.year = year ?? '';
         }
     }
     if ('department' in params) {
-        if (params.department.toUpperCase() === 'ALL') {
+        const deptValue = params.department ?? '';
+        if (deptValue.toUpperCase() === 'ALL') {
             delete params.department;
         } else {
-            params.department = params.department.toUpperCase();
+            params.department = deptValue.toUpperCase();
         }
     }
     if ('courseNumber' in params) {
-        params.courseNumber = params.courseNumber.toUpperCase();
+        params.courseNumber = (params.courseNumber ?? '').toUpperCase();
     }
     for (const [key, value] of Object.entries(params)) {
         if (value === '') {
@@ -80,20 +81,24 @@ function combineWebsocResponses(responses: WebsocAPIResponse[]) {
         for (const school of res.schools) {
             const schoolIndex = combined.schools.findIndex((s) => s.schoolName === school.schoolName);
             if (schoolIndex !== -1) {
-                for (const dept of school.departments) {
-                    const deptIndex = combined.schools[schoolIndex].departments.findIndex(
-                        (d) => d.deptCode === dept.deptCode
-                    );
-                    if (deptIndex !== -1) {
-                        const courses = new Set(combined.schools[schoolIndex].departments[deptIndex].courses);
-                        for (const course of dept.courses) {
-                            courses.add(course);
+                const currentSchool = combined.schools[schoolIndex];
+                if (currentSchool) {
+                    for (const dept of school.departments) {
+                        const deptIndex = currentSchool.departments.findIndex((d) => d.deptCode === dept.deptCode);
+                        if (deptIndex !== -1) {
+                            const currentDept = currentSchool.departments[deptIndex];
+                            if (currentDept) {
+                                const courses = new Set(currentDept.courses);
+                                for (const course of dept.courses) {
+                                    courses.add(course);
+                                }
+                                const coursesArray = Array.from(courses);
+                                coursesArray.sort(compareCourses);
+                                currentDept.courses = coursesArray;
+                            }
+                        } else {
+                            currentSchool.departments.push(dept);
                         }
-                        const coursesArray = Array.from(courses);
-                        coursesArray.sort(compareCourses);
-                        combined.schools[schoolIndex].departments[deptIndex].courses = coursesArray;
-                    } else {
-                        combined.schools[schoolIndex].departments.push(dept);
                     }
                 }
             } else {
@@ -110,7 +115,8 @@ const websocRouter = router({
         .input(z.object({ params: z.record(z.string(), z.string()), fieldName: z.string() }))
         .query(async ({ input }) => {
             const responses: WebsocAPIResponse[] = [];
-            for (const field of input.params[input.fieldName].trim().replace(' ', '').split(',')) {
+            const fieldValue = input.params[input.fieldName] ?? '';
+            for (const field of fieldValue.trim().replace(' ', '').split(',')) {
                 const req = JSON.parse(JSON.stringify(input.params)) as Record<string, string>;
                 req[input.fieldName] = field;
                 responses.push(await queryWebSoc({ input: req }));

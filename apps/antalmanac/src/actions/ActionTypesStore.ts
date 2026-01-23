@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { CustomEventId, RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
+import type { CustomEventId, RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
 
 import { autoSaveSchedule } from '$actions/AppStoreActions';
 import trpc from '$lib/api/trpc';
@@ -142,7 +142,7 @@ class ActionTypesStore extends EventEmitter {
                 token: sessionStore.session,
             });
 
-            if (accounts.providerAccountId) {
+            if (accounts?.providerAccountId) {
                 this.emit('autoSaveStart');
                 await autoSaveSchedule(accounts.providerAccountId, { userInfo: users });
                 AppStore.unsavedChanges = false;

@@ -1,4 +1,4 @@
-import { Box, BoxProps } from '@mui/material';
+import { Box, type BoxProps } from '@mui/material';
 import { grey } from '@mui/material/colors';
 
 import { useThemeStore } from '$stores/SettingsStore';

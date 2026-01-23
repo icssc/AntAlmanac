@@ -1,4 +1,4 @@
-import { paths } from './generated/anteater-api-types';
+import type { paths } from './generated/anteater-api-types';
 
 export type WebsocAPIResponse =
     paths['/v2/rest/websoc']['get']['responses'][200]['content']['application/json']['data'];

@@ -1,4 +1,4 @@
-import { ShortCourseSchedule } from '@packages/antalmanac-types';
+import type { ShortCourseSchedule } from '@packages/antalmanac-types';
 
 /**
  *

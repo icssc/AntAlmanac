@@ -17,7 +17,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
 import { DaySelector } from '$components/Calendar/Toolbar/CustomEventDialog/DaySelector';
 import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog/ScheduleSelector';
-import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
+import { BuildingSelect, type ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -69,7 +69,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
 
         logAnalytics(postHog, {
             category: analyticsEnum.calendar,
-            action: analyticsEnum.calendar.actions.ADD_CUSTOM_EVENT,
+            action: analyticsEnum.calendar.actions.ADD_CUSTOM_EVENT ?? '',
         });
     };
 
@@ -84,7 +84,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
 
         logAnalytics(postHog, {
             category: analyticsEnum.calendar,
-            action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT,
+            action: analyticsEnum.calendar.actions.CLICK_CUSTOM_EVENT ?? '',
         });
     }, [props.customEvent, postHog]);
 

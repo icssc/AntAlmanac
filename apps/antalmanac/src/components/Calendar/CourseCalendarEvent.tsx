@@ -1,9 +1,9 @@
 import { Delete, Search } from '@mui/icons-material';
 import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
-import { CustomEventId, WebsocSectionFinalExam } from '@packages/antalmanac-types';
+import type { CustomEventId, WebsocSectionFinalExam } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useRef } from 'react';
-import { Event } from 'react-big-calendar';
+import type { Event } from 'react-big-calendar';
 
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
@@ -161,7 +161,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                                 deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
                                 logAnalytics(postHog, {
                                     category: analyticsEnum.calendar,
-                                    action: analyticsEnum.calendar.actions.DELETE_COURSE,
+                                    action: analyticsEnum.calendar.actions.DELETE_COURSE ?? '',
                                 });
                             }}
                         >
@@ -180,7 +180,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                                             clickToCopy(event, sectionCode);
                                             logAnalytics(postHog, {
                                                 category: analyticsEnum.calendar,
-                                                action: analyticsEnum.calendar.actions.COPY_COURSE_CODE,
+                                                action: analyticsEnum.calendar.actions.COPY_COURSE_CODE ?? '',
                                             });
                                         }}
                                         label={sectionCode}
@@ -201,10 +201,10 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                             <td style={{ verticalAlign: 'top' }}>Location{locations.length > 1 && 's'}</td>
                             <td style={{ whiteSpace: 'pre', textAlign: 'right' }}>
                                 {locations.map((location) => (
-                                    <div key={`${sectionCode} @ ${location.building} ${location.room}`}>
+                                    <div key={`${sectionCode} @ ${location.building ?? ''} ${location.room ?? ''}`}>
                                         <MapLink
-                                            buildingId={locationIds[location.building] ?? '0'}
-                                            room={`${location.building} ${location.room}`}
+                                            buildingId={locationIds[location.building ?? ''] ?? '0'}
+                                            room={`${location.building ?? ''} ${location.room ?? ''}`}
                                         />
                                     </div>
                                 ))}

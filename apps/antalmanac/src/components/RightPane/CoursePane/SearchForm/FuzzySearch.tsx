@@ -1,6 +1,12 @@
-import { type AutocompleteInputChangeReason, Box, Divider, Typography } from '@mui/material';
+import {
+    type AutocompleteInputChangeReason,
+    type AutocompleteRenderGroupParams,
+    Box,
+    Divider,
+    Typography,
+} from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
-import { PostHog } from 'posthog-js/react';
+import type { PostHog } from 'posthog-js/react';
 import { PureComponent } from 'react';
 import UAParser from 'ua-parser-js';
 
@@ -64,7 +70,7 @@ interface SearchOption {
     result: SearchResult;
 }
 class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
-    state: FuzzySearchState = {
+    override state: FuzzySearchState = {
         cache: {},
         open: false,
         results: {},
@@ -75,11 +81,11 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         currentTerm: RightPaneStore.getFormData().term,
     };
 
-    componentDidMount() {
+    override componentDidMount() {
         RightPaneStore.on('formDataChange', this.handleFormDataChange);
     }
 
-    componentWillUnmount() {
+    override componentWillUnmount() {
         RightPaneStore.off('formDataChange', this.handleFormDataChange);
     }
 
@@ -131,8 +137,10 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         RightPaneStore.updateFormValue('term', term);
         switch (result.type) {
             case resultType.GE_CATEGORY: {
-                const geCode = option.key.split('-')[1].toUpperCase();
-                RightPaneStore.updateFormValue('ge', `GE-${geCode}`);
+                const geCode = option.key.split('-')[1]?.toUpperCase();
+                if (geCode) {
+                    RightPaneStore.updateFormValue('ge', `GE-${geCode}`);
+                }
                 break;
             }
             case resultType.DEPARTMENT:
@@ -154,7 +162,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         this.props.toggleSearch();
         logAnalytics(this.props.postHog, {
             category: analyticsEnum.classSearch,
-            action: analyticsEnum.classSearch.actions.FUZZY_SEARCH,
+            action: analyticsEnum.classSearch.actions.FUZZY_SEARCH as string,
         });
     };
 
@@ -165,11 +173,17 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         if (!object) return option.key;
         switch (object.type) {
             case resultType.GE_CATEGORY: {
-                const cat = option.key.split('-')[1].toLowerCase();
-                const num = parseInt(cat);
-                return `${emojiMap.GE_CATEGORY} GE ${cat.replace(num.toString(), romanArr[num - 1])} (${cat}): ${
-                    object.name
-                }`;
+                const cat = option.key.split('-')[1]?.toLowerCase();
+                if (cat) {
+                    const num = parseInt(cat);
+                    const roman = romanArr[num - 1];
+                    if (roman) {
+                        return `${emojiMap.GE_CATEGORY} GE ${cat.replace(num.toString(), roman)} (${cat}): ${
+                            object.name
+                        }`;
+                    }
+                }
+                return '';
             }
             case resultType.DEPARTMENT:
                 return `${emojiMap.DEPARTMENT} ${option.key}: ${object.name}`;
@@ -269,7 +283,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         return isOffered ? groupType.OFFERED : groupType.NOT_OFFERED;
     };
 
-    renderGroup = (params: { key: string; group: string; children?: React.ReactNode }) => {
+    renderGroup = (params: AutocompleteRenderGroupParams) => {
         if (params.group === groupType.UNGROUPED) {
             return <Box key={params.key}>{params.children}</Box>;
         }
@@ -333,7 +347,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         }
     };
 
-    render() {
+    override render() {
         return (
             <LabeledAutocomplete
                 label="Search"

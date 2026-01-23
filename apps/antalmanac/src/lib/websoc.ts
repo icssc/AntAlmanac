@@ -1,4 +1,4 @@
-import { WebsocAPIResponse } from '@packages/antalmanac-types';
+import type { WebsocAPIResponse } from '@packages/antalmanac-types';
 
 import trpc from '$lib/api/trpc';
 

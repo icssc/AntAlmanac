@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { WebsocSectionMeeting } from '@packages/antalmanac-types';
+import type { WebsocSectionMeeting } from '@packages/antalmanac-types';
 import { Fragment } from 'react';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';

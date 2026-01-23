@@ -1,4 +1,4 @@
-import { ChangeEvent, PureComponent } from 'react';
+import { type ChangeEvent, PureComponent } from 'react';
 
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
@@ -15,7 +15,7 @@ class SectionCodeSearchBar extends PureComponent {
             : RightPaneStore.getFormData().sectionCode;
     }
 
-    state = {
+    override state = {
         sectionCode: this.getSectionCode(),
     };
 
@@ -34,11 +34,11 @@ class SectionCodeSearchBar extends PureComponent {
         history.replaceState(stateObj, 'url', '/' + new_url);
     };
 
-    componentDidMount() {
+    override componentDidMount() {
         RightPaneStore.on('formReset', this.resetField);
     }
 
-    componentWillUnmount() {
+    override componentWillUnmount() {
         RightPaneStore.removeListener('formReset', this.resetField);
     }
 
@@ -46,7 +46,7 @@ class SectionCodeSearchBar extends PureComponent {
         this.setState({ sectionCode: RightPaneStore.getFormData().sectionCode });
     };
 
-    render() {
+    override render() {
         return (
             <LabeledTextField
                 label="Section Code"

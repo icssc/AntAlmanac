@@ -15,7 +15,7 @@ import {
     teal,
     yellow,
 } from '@mui/material/colors';
-import { ScheduleCourse } from '@packages/antalmanac-types';
+import type { ScheduleCourse } from '@packages/antalmanac-types';
 
 const colorVariants: Record<string, string[]> = {
     blue: [blue[300], blue[200], blue[100], blue[400], blue[500]],
@@ -58,7 +58,8 @@ export const colorPickerPresetColors = [
 function generateColorVariant(originalColor: string, usedColors: Set<string>): string {
     let family: string | null = null;
     for (const f in colorVariants) {
-        if (colorVariants[f].includes(originalColor)) {
+        const familyColors = colorVariants[f];
+        if (familyColors && familyColors.includes(originalColor)) {
             family = f;
             break;
         }
@@ -67,7 +68,10 @@ function generateColorVariant(originalColor: string, usedColors: Set<string>): s
     // Fallback to original color if no family found
     if (!family) return originalColor;
 
-    for (const variant of colorVariants[family]) {
+    const familyColors = colorVariants[family];
+    if (!familyColors) return originalColor;
+
+    for (const variant of familyColors) {
         if (!usedColors.has(variant)) {
             return variant;
         }
@@ -97,21 +101,39 @@ export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSche
     );
     const defaultColors = Object.values(colorVariants).map((variants) => variants[0]);
     const usedColors = sectionsInSchedule.map((course) => course.section.color);
-    const lastDefaultColor = usedColors.findLast((materialColor) =>
-        (defaultColors as string[]).includes(materialColor)
-    ) as unknown as (typeof defaultColors)[number];
 
-    // If the same sectionType exists, return that color
-    if (existingSectionsType.length > 0) return existingSectionsType[0].section.color;
-
-    // If the same courseTitle exists, but not the same sectionType, return a close color
-    if (existingSections.length > 0) {
-        return generateColorVariant(existingSections[0].section.color, new Set(usedColors));
+    // Find last default color in usedColors (manual implementation since findLast is ES2023)
+    let lastDefaultColor: string | undefined;
+    for (let i = usedColors.length - 1; i >= 0; i--) {
+        const color = usedColors[i];
+        if (color && (defaultColors as string[]).includes(color)) {
+            lastDefaultColor = color;
+            break;
+        }
     }
 
-    // If there are no existing sections with the same course title, generate a new color. If we run out of unique colors, return the next color up after the last default color in use, looping after reaching the end.
-    return (
-        defaultColors.find((materialColor) => !usedColors.includes(materialColor)) ||
-        defaultColors[(defaultColors.indexOf(lastDefaultColor) + 1) % defaultColors.length]
-    );
+    // If the same sectionType exists, return that color
+    const firstSectionType = existingSectionsType[0];
+    if (firstSectionType) return firstSectionType.section.color;
+
+    // If the same courseTitle exists, but not the same sectionType, return a close color
+    const firstExisting = existingSections[0];
+    if (firstExisting) {
+        return generateColorVariant(firstExisting.section.color, new Set(usedColors));
+    }
+
+    // If there are no existing sections with the same course title, generate a new color
+    const unusedColor = defaultColors.find((materialColor) => materialColor && !usedColors.includes(materialColor));
+    if (unusedColor) return unusedColor;
+
+    // If we run out of unique colors, return the next color up after the last default color in use, looping after reaching the end
+    if (lastDefaultColor) {
+        const nextIndex = (defaultColors.indexOf(lastDefaultColor) + 1) % defaultColors.length;
+        const nextColor = defaultColors[nextIndex];
+        if (nextColor) return nextColor;
+    }
+
+    // Final fallback
+    const fallback = defaultColors[0];
+    return fallback ?? '#000000';
 }

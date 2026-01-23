@@ -1,6 +1,6 @@
 import type { AACourse } from '@packages/antalmanac-types';
 
-import { AnalyticsCategory } from '$lib/analytics/analytics';
+import type { AnalyticsCategory } from '$lib/analytics/analytics';
 
 /**
  * This is in its own file so we can import it in SectionTableLazyWrapper without messing up the lazy-load.
