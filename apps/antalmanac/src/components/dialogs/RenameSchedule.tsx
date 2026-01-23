@@ -34,7 +34,7 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
      * This is destructured separately for memoization.
      */
     const { onClose } = props;
-    const [name, setName] = useState(AppStore.getScheduleNames()[index]);
+    const [name, setName] = useState(AppStore.getScheduleNames()[index] ?? '');
 
     const handleCancel = useCallback(() => {
         onClose?.({}, 'escapeKeyDown');
@@ -67,7 +67,7 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
     );
 
     const handleScheduleNamesChange = useCallback(() => {
-        setName(AppStore.getScheduleNames()[index]);
+        setName(AppStore.getScheduleNames()[index] ?? '');
     }, [index]);
 
     useEffect(() => {

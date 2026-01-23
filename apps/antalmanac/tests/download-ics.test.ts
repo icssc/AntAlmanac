@@ -1,11 +1,11 @@
 import { describe, test, expect } from 'vitest';
 
-import type { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
+import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { getEventsFromCourses } from '$lib/download';
 
 describe('download-ics', () => {
     test('converts schedule courses to events for the ics library', () => {
-        const courses: CalendarEvent[] = [
+        const courses: (CourseEvent | CustomEvent)[] = [
             // CourseEvent
             {
                 color: 'placeholderColor',

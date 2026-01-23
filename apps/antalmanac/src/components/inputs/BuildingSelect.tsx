@@ -41,6 +41,10 @@ export function BuildingSelect(props: BuildingSelectProps) {
 
         const building = buildingCatalogue[Number(props.value)];
 
+        if (!building) {
+            return;
+        }
+
         return {
             id: props.value,
             ...building,

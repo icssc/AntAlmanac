@@ -198,7 +198,7 @@ export const Signin = () => {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const [alertMessage, setAlertMessage] = useState<{ title: string; severity: AlertColor }>(
-        ALERT_MESSAGES.SCHEDULE_IMPORTED
+        ALERT_MESSAGES.SCHEDULE_IMPORTED!
     );
 
     const validateImportedUser = useCallback(async (userID: string) => {
@@ -206,8 +206,9 @@ export const Signin = () => {
             const res = await trpc.userData.getGuestAccountAndUserByName
                 .query({ name: userID })
                 .then((res) => res.users);
+            if (!res) return false;
             if (res.imported) {
-                setAlertMessage(ALERT_MESSAGES.SCHEDULE_IMPORTED);
+                setAlertMessage(ALERT_MESSAGES.SCHEDULE_IMPORTED!);
                 setOpenalert(true);
             }
             return res;
@@ -239,7 +240,7 @@ export const Signin = () => {
 
             if (!validSession) {
                 setOpenalert(true);
-                setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
+                setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED!);
             } else if (sessionToken && (await loadScheduleWithSessionToken())) {
                 updateSession(sessionToken);
             } else if (sessionToken === '' && userID && userID !== '') {

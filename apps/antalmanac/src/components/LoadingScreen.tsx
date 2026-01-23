@@ -16,11 +16,11 @@ type LoadingScreenProps = {
 };
 
 export function LoadingScreen(props: LoadingScreenProps) {
-    const [randomFact, setRandomFact] = useState<string>(FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)]);
+    const [randomFact, setRandomFact] = useState<string>(FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)] ?? '');
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setRandomFact(FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)]);
+            setRandomFact(FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)] ?? '');
         }, 4000);
 
         return () => clearInterval(interval);

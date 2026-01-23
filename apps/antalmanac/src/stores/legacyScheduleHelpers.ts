@@ -35,12 +35,12 @@ export function convertLegacySchedule(legacyUserData: LegacyUserData) {
     }
     for (const course of legacyUserData.addedCourses) {
         for (const scheduleIndex of course.scheduleIndices) {
-            scheduleSaveState.schedules[scheduleIndex].courses.push({ ...course });
+            scheduleSaveState.schedules[scheduleIndex]?.courses.push({ ...course });
         }
     }
     for (const customEvent of legacyUserData.customEvents) {
         for (const scheduleIndex of customEvent.scheduleIndices) {
-            scheduleSaveState.schedules[scheduleIndex].customEvents.push({ ...customEvent });
+            scheduleSaveState.schedules[scheduleIndex]?.customEvents.push({ ...customEvent });
         }
     }
     return scheduleSaveState;

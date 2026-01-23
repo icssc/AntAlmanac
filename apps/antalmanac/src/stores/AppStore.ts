@@ -189,17 +189,17 @@ class AppStore extends EventEmitter {
 
     registerColorPicker(id: string, update: (color: string) => void) {
         if (id in this.colorPickers) {
-            this.colorPickers[id].on('colorChange', update);
+            this.colorPickers[id]!.on('colorChange', update);
         } else {
             this.colorPickers[id] = new EventEmitter();
-            this.colorPickers[id].on('colorChange', update);
+            this.colorPickers[id]!.on('colorChange', update);
         }
     }
 
     unregisterColorPicker(id: string, update: (color: string) => void) {
         if (id in this.colorPickers) {
-            this.colorPickers[id].removeListener('colorChange', update);
-            if (this.colorPickers[id].listenerCount('colorChange') === 0) {
+            this.colorPickers[id]!.removeListener('colorChange', update);
+            if (this.colorPickers[id]!.listenerCount('colorChange') === 0) {
                 delete this.colorPickers[id];
             }
         }
@@ -307,7 +307,7 @@ class AppStore extends EventEmitter {
             newColor: newColor,
         };
         actionTypesStore.autoSaveSchedule(action);
-        this.colorPickers[customEventId].emit('colorChange', newColor);
+        this.colorPickers[customEventId]?.emit('colorChange', newColor);
         this.emit('colorChange', false);
     }
 
@@ -480,7 +480,7 @@ class AppStore extends EventEmitter {
             newColor: newColor,
         };
         actionTypesStore.autoSaveSchedule(action);
-        this.colorPickers[sectionCode].emit('colorChange', newColor);
+        this.colorPickers[sectionCode]?.emit('colorChange', newColor);
         this.emit('colorChange', false);
     }
 

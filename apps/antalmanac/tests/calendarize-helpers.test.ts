@@ -12,6 +12,7 @@ describe('calendarize-helpers', () => {
             courseTitle: 'placeholderCourseTitle',
             deptCode: 'placeholderDeptCode',
             prerequisiteLink: 'placeholderPrerequisiteLink',
+            sectionTypes: ['Lec'],
             section: {
                 color: 'placeholderColor',
                 sectionCode: 'placeholderSectionCode',
@@ -62,6 +63,8 @@ describe('calendarize-helpers', () => {
                 status: 'OPEN',
                 sectionComment: 'placeholderSectionComment',
                 updatedAt: 'placeholderUpdatedAt',
+                isCancelled: false,
+                webURL: '',
             },
             term: '2024 Winter',
         },
