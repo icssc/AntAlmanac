@@ -51,7 +51,7 @@ export default $config({
         const aantsLambda = new sst.aws.Function('AantsLambda', {
             handler: 'apps/aants/src/lambda.handler',
             timeout: '20 seconds', // TODO (@IsaacNguyen): Test how long AANTS takes to run and change accordingly
-            memory: '256 MB',
+            memory: '512 MB',
             environment: {
                 DB_URL: dbUrl,
                 NODE_ENV: $app.stage === 'production' ? 'production' : 'development',
@@ -69,7 +69,7 @@ export default $config({
         const emailProcessorLambda = new sst.aws.Function('EmailProcessorLambda', {
             handler: 'apps/aants/src/emailProcessor.handler',
             timeout: '30 seconds',
-            memory: '256 MB',
+            memory: '512 MB',
             reservedConcurrency: 1, // Only one execution at a time to respect rate limit
             environment: {
                 NODE_ENV: $app.stage === 'production' ? 'production' : 'development',
@@ -79,6 +79,7 @@ export default $config({
                 {
                     actions: [
                         'ses:SendEmail',
+                        'ses:SendTemplatedEmail',
                     ],
                     resources: [
                         'arn:aws:ses:us-east-2:990864464737:identity/icssc@uci.edu',
