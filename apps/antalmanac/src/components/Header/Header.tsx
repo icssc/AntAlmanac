@@ -139,7 +139,7 @@ export function Header() {
                                     </MenuItem>
                                     <MenuItem
                                         component={Link}
-                                        href="https://planner-917.antalmanac.com"
+                                        href="/planner"
                                         selected={platform === 'Planner'}
                                         onClick={() => setAnchorEl(null)}
                                         sx={{ minHeight: 'fit-content', textDecoration: 'none', color: 'inherit' }}
@@ -172,6 +172,8 @@ export function Header() {
                                     Scheduler
                                 </Button>
                                 <Button
+                                    component={Link}
+                                    href="/planner"
                                     startIcon={<Route />}
                                     sx={{
                                         boxShadow: 'none',
@@ -179,6 +181,7 @@ export function Header() {
                                         fontWeight: 500,
                                         fontSize: 14,
                                         py: 0.2,
+                                        textDecoration: 'none',
                                     }}
                                 >
                                     Planner
