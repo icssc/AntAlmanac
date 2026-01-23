@@ -92,7 +92,7 @@ const searchRouter = router({
                 matchedSections.length === MAX_AUTOCOMPLETE_RESULTS
                     ? []
                     : fuzzysort.go(query, searchData.departments, {
-                          keys: ['id', 'alias'],
+                          keys: ['id', 'name', 'alias'],
                           limit: MAX_AUTOCOMPLETE_RESULTS - matchedSections.length,
                       });
 
