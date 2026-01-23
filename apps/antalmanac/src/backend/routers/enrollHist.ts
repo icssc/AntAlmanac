@@ -1,4 +1,4 @@
-import { EnrollmentHistory } from '@packages/antalmanac-types';
+import type { EnrollmentHistory } from '@packages/antalmanac-types';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';

@@ -1,6 +1,6 @@
 import { ContentPasteGo } from '@mui/icons-material';
 import {
-    AlertColor,
+    type AlertColor,
     Box,
     Button,
     Dialog,
@@ -17,9 +17,9 @@ import {
     TextField,
     Tooltip,
 } from '@mui/material';
-import { CourseInfo } from '@packages/antalmanac-types';
+import type { CourseInfo } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { type ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import {
@@ -43,7 +43,7 @@ import {
     removeLocalStorageUserId,
 } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
-import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
+import { type ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';

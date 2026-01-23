@@ -1,4 +1,4 @@
-import { SxProps, TableCell } from '@mui/material';
+import { type SxProps, TableCell } from '@mui/material';
 
 interface TableBodyCellContainerProps {
     sx?: SxProps;

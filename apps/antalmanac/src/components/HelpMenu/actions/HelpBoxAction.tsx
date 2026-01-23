@@ -2,7 +2,7 @@ import { Help } from '@mui/icons-material';
 import { useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-import { HelpMenuAction } from '$components/HelpMenu/HelpMenu';
+import type { HelpMenuAction } from '$components/HelpMenu/HelpMenu';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useHelpMenuStore } from '$stores/HelpMenuStore';
 import { useTabStore } from '$stores/TabStore';

@@ -2,7 +2,7 @@ import { Box, Button, Paper, Popover, useMediaQuery, useTheme } from '@mui/mater
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 
-import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
+import { type AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
 interface CourseInfoButtonProps {

@@ -1,9 +1,9 @@
 /* eslint-disable prefer-const */
 import { Button, Popover } from '@mui/material';
-import { Prerequisite, PrerequisiteTree } from '@packages/antalmanac-types';
-import { FC, useState } from 'react';
+import type { Prerequisite, PrerequisiteTree } from '@packages/antalmanac-types';
+import { type FC, useState } from 'react';
 
-import { CourseInfo } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
+import type { CourseInfo } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { useThemeStore } from '$stores/SettingsStore';
 
 import './PrereqTree.css';

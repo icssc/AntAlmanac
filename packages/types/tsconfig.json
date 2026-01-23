@@ -1,12 +1,26 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "node",
+    /* Base Options */
     "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "strict": true,
     "skipLibCheck": true,
+    "target": "es2022",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+
+    /* Strictness */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+
+    /* Not Transpiling with TypeScript */
+    "module": "preserve",
+    "noEmit": true,
+
+    /* Library-specific */
+    "experimentalDecorators": true,
     "rootDir": "src",
     "outDir": "dist"
   }

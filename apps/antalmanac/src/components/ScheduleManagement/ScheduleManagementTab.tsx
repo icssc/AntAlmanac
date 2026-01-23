@@ -1,7 +1,7 @@
 import { Tab, useMediaQuery, useTheme } from '@mui/material';
 import { Link } from 'react-router-dom';
 
-import { ScheduleManagementTabInfo } from '$components/ScheduleManagement/ScheduleManagementTabs';
+import type { ScheduleManagementTabInfo } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useTabStore } from '$stores/TabStore';
 
 interface ScheduleManagementTabProps {

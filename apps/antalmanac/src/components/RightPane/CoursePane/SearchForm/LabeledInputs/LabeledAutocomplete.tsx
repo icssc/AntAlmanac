@@ -1,4 +1,4 @@
-import { Autocomplete, AutocompleteProps, TextFieldProps } from '@mui/material';
+import { Autocomplete, type AutocompleteProps, type TextFieldProps } from '@mui/material';
 import { useId } from 'react';
 
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';

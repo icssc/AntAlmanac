@@ -1,5 +1,5 @@
-import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
-import { AACourse } from '@packages/antalmanac-types';
+import { Box, Chip, Paper, type SxProps, TextField, Tooltip, Typography } from '@mui/material';
+import type { AACourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 

@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { shallow } from 'zustand/shallow';
 
 import { getLocalStoragePWADismissalTime, setLocalStoragePWADismissalTime } from '$lib/localStorage';
-import { BeforeInstallPromptEvent, usePWAStore } from '$stores/PWAStore';
+import { type BeforeInstallPromptEvent, usePWAStore } from '$stores/PWAStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 function InstallPWABanner() {

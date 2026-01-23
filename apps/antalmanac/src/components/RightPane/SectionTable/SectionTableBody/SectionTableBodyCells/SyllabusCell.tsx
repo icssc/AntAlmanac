@@ -1,4 +1,4 @@
-import { WebsocSectionStatus } from '@packages/antalmanac-types';
+import type { WebsocSectionStatus } from '@packages/antalmanac-types';
 import { Link } from 'react-router-dom';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';

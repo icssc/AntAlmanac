@@ -79,7 +79,11 @@ export class Schedules {
     }
 
     getCurrentScheduleName() {
-        return this.schedules[this.currentScheduleIndex].scheduleName;
+        const currentSchedule = this.schedules[this.currentScheduleIndex];
+        if (!currentSchedule) {
+            throw new Error('Current schedule not found');
+        }
+        return currentSchedule.scheduleName;
     }
 
     /**
@@ -128,7 +132,11 @@ export class Schedules {
      */
     renameSchedule(scheduleIndex: number, newScheduleName: string) {
         this.addUndoState();
-        this.schedules[scheduleIndex].scheduleName = this.getNextScheduleName(scheduleIndex, newScheduleName);
+        const schedule = this.schedules[scheduleIndex];
+        if (!schedule) {
+            throw new Error(`Schedule at index ${scheduleIndex} not found`);
+        }
+        schedule.scheduleName = this.getNextScheduleName(scheduleIndex, newScheduleName);
     }
 
     /**
@@ -164,7 +172,11 @@ export class Schedules {
         for (const customEvent of this.getCurrentCustomEvents()) {
             this.addCustomEvent(customEvent, [to], false);
         }
-        this.currentScheduleIndex = this.previousStates[this.previousStates.length - 1].scheduleIndex; // return to previously selected schedule index
+        const previousState = this.previousStates[this.previousStates.length - 1];
+        if (!previousState) {
+            throw new Error('No previous state found');
+        }
+        this.currentScheduleIndex = previousState.scheduleIndex; // return to previously selected schedule index
     }
 
     /**
@@ -174,6 +186,9 @@ export class Schedules {
     reorderSchedule(from: number, to: number) {
         this.addUndoState();
         const [removed] = this.schedules.splice(from, 1);
+        if (!removed) {
+            throw new Error(`Schedule at index ${from} not found`);
+        }
         this.schedules.splice(to, 0, removed);
         if (this.currentScheduleIndex === from) {
             this.currentScheduleIndex = to;
@@ -254,7 +269,11 @@ export class Schedules {
 
         // existingSection is pushed so methods (e.g. @changeCourseColor) have the same course reference across all schedules.
         if (existingSection) {
-            this.schedules[scheduleIndex].courses.push(existingSection);
+            const schedule = this.schedules[scheduleIndex];
+            if (!schedule) {
+                throw new Error(`Schedule at index ${scheduleIndex} not found`);
+            }
+            schedule.courses.push(existingSection);
             return existingSection;
         }
         const sectionToAdd = {
@@ -269,7 +288,11 @@ export class Schedules {
             },
         };
 
-        this.schedules[scheduleIndex].courses.push(sectionToAdd);
+        const schedule = this.schedules[scheduleIndex];
+        if (!schedule) {
+            throw new Error(`Schedule at index ${scheduleIndex} not found`);
+        }
+        schedule.courses.push(sectionToAdd);
 
         return sectionToAdd;
     }
@@ -305,7 +328,12 @@ export class Schedules {
     deleteCourse(sectionCode: string, term: string, scheduleIndex: number) {
         this.addUndoState();
         this.setCurrentScheduleIndex(scheduleIndex);
-        this.schedules[scheduleIndex].courses = this.schedules[this.currentScheduleIndex].courses.filter((course) => {
+        const targetSchedule = this.schedules[scheduleIndex];
+        const currentSchedule = this.schedules[this.currentScheduleIndex];
+        if (!targetSchedule || !currentSchedule) {
+            throw new Error('Schedule not found');
+        }
+        targetSchedule.courses = currentSchedule.courses.filter((course) => {
             return !(course.section.sectionCode === sectionCode && course.term === term);
         });
     }
@@ -314,7 +342,11 @@ export class Schedules {
      * Check if a course has already been added to a schedule.
      */
     doesCourseExistInSchedule(sectionCode: string, term: string, scheduleIndex: number) {
-        for (const course of this.schedules[scheduleIndex].courses) {
+        const schedule = this.schedules[scheduleIndex];
+        if (!schedule) {
+            return false;
+        }
+        for (const course of schedule.courses) {
             if (course.section.sectionCode === sectionCode && term === course.term) {
                 return true;
             }
@@ -368,7 +400,11 @@ export class Schedules {
         }
         for (const scheduleIndex of scheduleIndices) {
             if (!this.doesCustomEventExistInSchedule(newCustomEvent.customEventID, scheduleIndex)) {
-                this.schedules[scheduleIndex].customEvents.push(newCustomEvent);
+                const schedule = this.schedules[scheduleIndex];
+                if (!schedule) {
+                    throw new Error(`Schedule at index ${scheduleIndex} not found`);
+                }
+                schedule.customEvents.push(newCustomEvent);
             }
         }
     }
@@ -380,7 +416,11 @@ export class Schedules {
     deleteCustomEvent(customEventId: CustomEventId, scheduleIndices = [this.getCurrentScheduleIndex()]) {
         this.addUndoState();
         for (const scheduleIndex of scheduleIndices) {
-            const customEvents = this.schedules[scheduleIndex].customEvents;
+            const schedule = this.schedules[scheduleIndex];
+            if (!schedule) {
+                continue;
+            }
+            const customEvents = schedule.customEvents;
             const index = customEvents.findIndex((customEvent) => customEvent.customEventID === customEventId);
             if (index !== undefined) {
                 customEvents.splice(index, 1);
@@ -545,6 +585,7 @@ export class Schedules {
      */
     getScheduleAsSaveState(): ScheduleSaveState {
         const shortSchedules: ShortCourseSchedule[] = this.schedules.map((schedule) => {
+            const scheduleNote = this.scheduleNoteMap[schedule.scheduleNoteId];
             return {
                 scheduleName: schedule.scheduleName,
                 customEvents: schedule.customEvents,
@@ -555,7 +596,7 @@ export class Schedules {
                         sectionCode: course.section.sectionCode,
                     };
                 }),
-                scheduleNote: this.scheduleNoteMap[schedule.scheduleNoteId],
+                scheduleNote: scheduleNote ?? '',
             };
         });
         return { schedules: shortSchedules, scheduleIndex: this.currentScheduleIndex };
@@ -572,8 +613,9 @@ export class Schedules {
             const courseDict: { [key: string]: Set<string> } = {};
             for (const schedule of saveState.schedules) {
                 for (const course of schedule.courses) {
-                    if (course.term in courseDict) {
-                        courseDict[course.term].add(course.sectionCode);
+                    const termSet = courseDict[course.term];
+                    if (termSet) {
+                        termSet.add(course.sectionCode);
                     } else {
                         courseDict[course.term] = new Set([course.sectionCode]);
                     }
@@ -650,12 +692,20 @@ export class Schedules {
     }
 
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
-        const scheduleNoteId = this.schedules[scheduleIndex].scheduleNoteId;
+        const schedule = this.schedules[scheduleIndex];
+        if (!schedule) {
+            throw new Error(`Schedule at index ${scheduleIndex} not found`);
+        }
+        const scheduleNoteId = schedule.scheduleNoteId;
         this.scheduleNoteMap[scheduleNoteId] = newScheduleNote;
     }
 
     getCurrentSkeletonSchedule(): ShortCourseSchedule {
-        return this.skeletonSchedules[this.currentScheduleIndex];
+        const currentSkeleton = this.skeletonSchedules[this.currentScheduleIndex];
+        if (!currentSkeleton) {
+            throw new Error('Current skeleton schedule not found');
+        }
+        return currentSkeleton;
     }
 
     getSkeletonScheduleNames(): string[] {

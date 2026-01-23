@@ -1,4 +1,4 @@
-import { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import type { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { db } from '@packages/db/src/index';
 import * as schema from '@packages/db/src/schema';
 import {
@@ -7,16 +7,16 @@ import {
     accounts,
     coursesInSchedule,
     customEvents,
-    AccountType,
-    Schedule,
-    CourseInSchedule,
-    CustomEvent,
+    type AccountType,
+    type Schedule,
+    type CourseInSchedule,
+    type CustomEvent,
     sessions,
-    Account,
-    Session,
+    type Account,
+    type Session,
 } from '@packages/db/src/schema';
-import { and, eq, ExtractTablesWithRelations, gt } from 'drizzle-orm';
-import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
+import { and, eq, type ExtractTablesWithRelations, gt } from 'drizzle-orm';
+import { PgTransaction, type PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
 type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;
@@ -50,7 +50,7 @@ export class RDS {
                   .insert(users)
                   .values({ name })
                   .returning({ id: users.id })
-                  .then((users) => users[0].id);
+                  .then((users) => users[0]?.id);
 
         if (userId === undefined) {
             throw new Error(`Failed to create guest user for ${name}`);
@@ -95,7 +95,7 @@ export class RDS {
                 .where(and(eq(users.name, name), eq(accounts.accountType, 'GUEST')))
                 .execute()
                 .then((res) => {
-                    return { users: res[0].users, accounts: res[0].accounts };
+                    return { users: res[0]?.users, accounts: res[0]?.accounts };
                 })
         );
     }
@@ -168,7 +168,7 @@ export class RDS {
                 })
                 .returning({ userId: users.id })
                 .then((res) => res[0]);
-            const newUserId = result.userId;
+            const newUserId = result?.userId ?? '';
 
             const account = await db
                 .insert(accounts)
@@ -222,8 +222,8 @@ export class RDS {
 
         const scheduleResult = await tx.insert(schedules).values(dbSchedule).returning({ id: schedules.id });
 
-        const scheduleId = scheduleResult[0].id;
-        if (scheduleId === undefined) {
+        const scheduleId = scheduleResult[0]?.id ?? '';
+        if (scheduleId === '') {
             throw new Error(`Failed to insert schedule for ${userId}`);
         }
 
@@ -258,7 +258,7 @@ export class RDS {
                 userData.email,
                 userData.avatar
             );
-            const userId = account.userId;
+            const userId = account?.userId ?? '';
             if (!account) {
                 throw new Error(`Failed to create user`);
             }
@@ -270,7 +270,9 @@ export class RDS {
             const scheduleIndex = userData.userData.scheduleIndex;
 
             const currentScheduleId =
-                scheduleIndex === undefined || scheduleIndex >= scheduleIds.length ? null : scheduleIds[scheduleIndex];
+                scheduleIndex === undefined || scheduleIndex >= scheduleIds.length
+                    ? null
+                    : (scheduleIds[scheduleIndex] ?? null);
 
             if (currentScheduleId !== null) {
                 await tx.update(users).set({ currentScheduleId: currentScheduleId }).where(eq(users.id, userId));
@@ -407,11 +409,11 @@ export class RDS {
             .leftJoin(users, eq(accounts.userId, users.id))
             .limit(1);
 
-        if (res.length === 0 || res[0].users === null || res[0].accounts === null) {
+        if (res.length === 0 || res[0]?.users === null || res[0]?.accounts === null) {
             return null;
         }
 
-        return { user: res[0].users, account: res[0].accounts };
+        return { user: res[0]?.users, account: res[0]?.accounts };
     }
 
     /**
@@ -428,14 +430,14 @@ export class RDS {
         sectionResults.forEach(({ schedules: schedule, coursesInSchedule: course }) => {
             const scheduleId = schedule.id;
 
-            const scheduleAggregate = schedulesMapping[scheduleId] || {
+            const scheduleAggregate = (schedulesMapping[scheduleId] ?? {
                 id: scheduleId,
-                scheduleName: schedule.name,
-                scheduleNote: schedule.notes,
+                scheduleName: schedule.name ?? '',
+                scheduleNote: schedule.notes ?? '',
                 courses: [],
                 customEvents: [],
                 index: schedule.index,
-            };
+            }) as ShortCourseSchedule & { id: string; index: number };
 
             if (course) {
                 scheduleAggregate.courses.push({
@@ -451,12 +453,14 @@ export class RDS {
         // Add custom events to schedules
         customEventResults.forEach(({ schedules: schedule, customEvents: customEvent }) => {
             const scheduleId = schedule.id;
-            const scheduleAggregate = schedulesMapping[scheduleId] || {
-                scheduleName: schedule.name,
-                scheduleNote: schedule.notes,
+            const scheduleAggregate = (schedulesMapping[scheduleId] ?? {
+                scheduleName: schedule.name ?? '',
+                scheduleNote: schedule.notes ?? '',
                 courses: [],
                 customEvents: [],
-            };
+                id: scheduleId,
+                index: schedule.index,
+            }) as ShortCourseSchedule & { id: string; index: number };
 
             if (customEvent) {
                 scheduleAggregate.customEvents.push({
@@ -558,7 +562,7 @@ export class RDS {
             .from(users)
             .leftJoin(sessions, eq(users.id, sessions.userId))
             .where(and(eq(sessions.refreshToken, refreshToken), gt(sessions.expires, new Date())))
-            .then((res) => res[0].users);
+            .then((res) => res[0]?.users);
     }
 
     /**
@@ -617,7 +621,7 @@ export class RDS {
                 .where(eq(sessions.refreshToken, refreshToken))
                 .execute()
                 .then((res) => {
-                    return { users: res[0].users, accounts: res[0].accounts };
+                    return { users: res[0]?.users, accounts: res[0]?.accounts };
                 })
         );
     }
@@ -636,12 +640,16 @@ export class RDS {
     static async flagImportedUser(db: DatabaseOrTransaction, providerId: string) {
         try {
             const { users: user, accounts } = await this.getGuestAccountAndUserByName(db, providerId);
-            if (user.imported) {
+            if (user?.imported) {
                 return false;
             }
 
             await db.transaction((tx) =>
-                tx.update(users).set({ imported: true }).where(eq(users.id, accounts.userId)).execute()
+                tx
+                    .update(users)
+                    .set({ imported: true })
+                    .where(eq(users.id, accounts?.userId ?? ''))
+                    .execute()
             );
             return true;
         } catch (error) {

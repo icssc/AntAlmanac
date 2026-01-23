@@ -1,6 +1,6 @@
 import { Add, ArrowDropDown, Delete } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
-import { AASection, CourseDetails } from '@packages/antalmanac-types';
+import type { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 

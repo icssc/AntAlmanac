@@ -1,4 +1,4 @@
-import { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 
 import trpc from './api/trpc';
 import { QueryZotcourseError } from './customErrors';

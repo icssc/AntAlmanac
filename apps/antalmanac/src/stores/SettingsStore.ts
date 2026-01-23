@@ -1,4 +1,4 @@
-import { PostHog } from 'posthog-js/react';
+import type { PostHog } from 'posthog-js/react';
 import { create } from 'zustand';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';

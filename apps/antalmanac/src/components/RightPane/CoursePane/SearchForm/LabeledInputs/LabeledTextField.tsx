@@ -1,4 +1,4 @@
-import { TextField, TextFieldProps } from '@mui/material';
+import { TextField, type TextFieldProps } from '@mui/material';
 import { useId } from 'react';
 
 import { LabeledInput } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledInput';

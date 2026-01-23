@@ -12,7 +12,7 @@ import {
     Legend,
 } from 'recharts';
 
-import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
+import { DepartmentEnrollmentHistory, type EnrollmentHistory } from '$lib/enrollmentHistory';
 import { MOBILE_BREAKPOINT } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 

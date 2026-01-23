@@ -1,4 +1,4 @@
-import { Alert, Box, Dialog, DialogContent, AlertColor, DialogActions, Button } from '@mui/material';
+import { Alert, Box, Dialog, DialogContent, type AlertColor, DialogActions, Button } from '@mui/material';
 
 import { useThemeStore } from '$stores/SettingsStore';
 

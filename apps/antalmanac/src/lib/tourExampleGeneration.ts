@@ -1,4 +1,9 @@
-import { ScheduleCourse, HourMinute, WebsocSectionFinalExam, WebsocSectionMeeting } from '@packages/antalmanac-types';
+import type {
+    ScheduleCourse,
+    HourMinute,
+    WebsocSectionFinalExam,
+    WebsocSectionMeeting,
+} from '@packages/antalmanac-types';
 
 import AppStore from '$stores/AppStore';
 

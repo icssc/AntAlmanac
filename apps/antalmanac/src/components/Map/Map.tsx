@@ -3,7 +3,7 @@ import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import './Map.css';
 
 import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
-import { CustomEventId } from '@packages/antalmanac-types';
+import type { CustomEventId } from '@packages/antalmanac-types';
 import { Marker, type Map, type LatLngTuple } from 'leaflet';
 import dynamic from 'next/dynamic';
 import { usePostHog } from 'posthog-js/react';
@@ -17,10 +17,10 @@ const Routes = dynamic(() => import('./Routes'), { ssr: false });
 
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { UserLocator } from '$components/Map/UserLocator';
-import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
+import { BuildingSelect, type ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { TILES_URL } from '$lib/api/endpoints';
-import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
+import buildingCatalogue, { type Building } from '$lib/locations/buildingCatalogue';
 import locationIds from '$lib/locations/locations';
 import { notNull } from '$lib/utils';
 import AppStore from '$stores/AppStore';
@@ -53,9 +53,10 @@ export function getCoursesPerBuilding() {
 
     const uniqueBuildingCodes = new Set(allBuildingCodes);
 
-    const validBuildingCodes = [...uniqueBuildingCodes].filter(
-        (buildingCode) => buildingCatalogue[locationIds[buildingCode]] != null
-    );
+    const validBuildingCodes = [...uniqueBuildingCodes].filter((buildingCode) => {
+        const locationId = locationIds[buildingCode];
+        return locationId != null && buildingCatalogue[locationId] != null;
+    });
 
     const coursesPerBuilding: Record<string, (CourseEvent & Building & MarkerContent)[]> = {};
 
@@ -63,15 +64,30 @@ export function getCoursesPerBuilding() {
         coursesPerBuilding[buildingCode] = courseEvents
             .filter((event) => event.locations.map((location) => location.building).includes(buildingCode))
             .map((event) => {
-                const locationData = buildingCatalogue[locationIds[buildingCode]];
-                const key = `${event.title} ${event.sectionType} @ ${event.locations[0]}`;
+                const locationId = locationIds[buildingCode];
+                if (locationId == null) {
+                    throw new Error(`Location ID not found for building code: ${buildingCode}`);
+                }
+                const locationData = buildingCatalogue[locationId];
+                if (!locationData) {
+                    throw new Error(`Location data not found for location ID: ${locationId}`);
+                }
+                const firstLocation = event.locations[0];
+                if (!firstLocation) {
+                    throw new Error(`No location found for event: ${event.title}`);
+                }
+                const key = `${event.title} ${event.sectionType} @ ${firstLocation}`;
                 const acronym = locationData.name.substring(
                     locationData.name.indexOf('(') + 1,
                     locationData.name.indexOf(')')
                 );
+                const firstImage = locationData.imageURLs[0];
+                if (!firstImage) {
+                    throw new Error(`No image found for location: ${locationData.name}`);
+                }
                 const markerData = {
                     key,
-                    image: locationData.imageURLs[0],
+                    image: firstImage,
                     acronym,
                     markerColor: event.color,
                     location: locationData.name,
@@ -92,17 +108,21 @@ export function getCustomEventPerBuilding() {
 
     // convert all digit to name in customEventBuilding  for example: 83096  ->  ICS
     for (let i = 0; i < customEventBuildings.length; i++) {
-        customEventBuildings[i] =
-            Object.keys(locationIds).find((key) => locationIds[key] === parseInt(customEventBuildings[i])) || '';
+        const currentBuilding = customEventBuildings[i];
+        if (currentBuilding) {
+            customEventBuildings[i] =
+                Object.keys(locationIds).find((key) => locationIds[key] === parseInt(currentBuilding)) || '';
+        }
     }
 
     const allBuildingCodes = [...customEventBuildings];
 
     const uniqueBuildingCodes = new Set(allBuildingCodes);
 
-    const validBuildingCodes = [...uniqueBuildingCodes].filter(
-        (buildingCode) => buildingCatalogue[locationIds[buildingCode]] != null
-    );
+    const validBuildingCodes = [...uniqueBuildingCodes].filter((buildingCode) => {
+        const locationId = locationIds[buildingCode];
+        return locationId != null && buildingCatalogue[locationId] != null;
+    });
 
     interface localCustomEventType {
         title: string;
@@ -116,24 +136,38 @@ export function getCustomEventPerBuilding() {
 
     const customEventPerBuilding: Record<string, (localCustomEventType & Building & MarkerContent)[]> = {};
     for (let i = 0; i < validBuildingCodes.length; i++) {
-        customEventPerBuilding[validBuildingCodes[i]] = customEvents
+        const buildingCode = validBuildingCodes[i];
+        if (!buildingCode) continue;
+
+        customEventPerBuilding[buildingCode] = customEvents
             .filter((event) => {
                 return (
                     Object.keys(locationIds).find(
                         (key) => locationIds[key] === parseInt(event.building ? event.building : '')
-                    ) == validBuildingCodes[i]
+                    ) == buildingCode
                 );
             })
             .map((event) => {
-                const locationData = buildingCatalogue[locationIds[validBuildingCodes[i]]];
+                const locationId = locationIds[buildingCode];
+                if (locationId == null) {
+                    throw new Error(`Location ID not found for building code: ${buildingCode}`);
+                }
+                const locationData = buildingCatalogue[locationId];
+                if (!locationData) {
+                    throw new Error(`Location data not found for location ID: ${locationId}`);
+                }
                 const key = `${event.title} @ ${event.building}`;
                 const acronym = locationData.name.substring(
                     locationData.name.indexOf('(') + 1,
                     locationData.name.indexOf(')')
                 );
+                const firstImage = locationData.imageURLs[0];
+                if (!firstImage) {
+                    throw new Error(`No image found for location: ${locationData.name}`);
+                }
                 const markerCustomEventData = {
                     key,
-                    image: locationData.imageURLs[0],
+                    image: firstImage,
                     acronym,
                     markerColor: event.color ? event.color : '',
                     location: locationData.name,
@@ -169,7 +203,7 @@ export default function CourseMap() {
 
         logAnalytics(postHog, {
             category: analyticsEnum.map,
-            action: analyticsEnum.map.actions.OPEN,
+            action: analyticsEnum.map.actions.OPEN ?? '',
         });
 
         AppStore.on('addedCoursesChange', updateAllMarkers);
@@ -265,29 +299,32 @@ export default function CourseMap() {
      * A duplicate section code found later in the array will have a higher index.
      */
     const markersToDisplay = useMemo(() => {
-        const markerValues = Object.keys(markers).flatMap((markerKey) => markers[markerKey]);
+        const markerValues = Object.keys(markers).flatMap((markerKey) => markers[markerKey] ?? []);
 
         const markersToday =
-            today === 'All' ? markerValues : markerValues.filter((course) => course.start.toString().includes(today));
+            today === 'All'
+                ? markerValues
+                : markerValues.filter((course) => today && course.start.toString().includes(today));
 
         return markersToday
-            .sort((a, b) => a.start.getTime() - b.start.getTime())
-            .filter((marker, i, arr) => arr.findIndex((other) => other.sectionCode === marker.sectionCode) === i);
+            .sort((a, b) => (a?.start.getTime() ?? 0) - (b?.start.getTime() ?? 0))
+            .filter((marker, i, arr) => arr.findIndex((other) => other?.sectionCode === marker?.sectionCode) === i);
     }, [markers, today]);
 
     const customEventMarkersToDisplay = useMemo(() => {
         const markerValues = Object.keys(customEventMarkers)
-            .flatMap((markerKey) => customEventMarkers[markerKey])
-            .filter((marker, i, arr) => arr.findIndex((other) => other.key === marker.key) === i);
+            .flatMap((markerKey) => customEventMarkers[markerKey] ?? [])
+            .filter((marker, i, arr) => arr.findIndex((other) => other?.key === marker?.key) === i);
 
         const markersToday =
             today === 'All'
                 ? markerValues
                 : markerValues.filter((event) => {
-                      return event.days.some((day) => day && today.includes(day));
+                      return today && event.days.some((day) => day && today.includes(day));
                   });
 
         return markersToday.sort((a, b) => {
+            if (!a || !b) return 0;
             const startDateA = new Date(`1970-01-01T${a.start}`);
             const startDateB = new Date(`1970-01-01T${b.start}`);
             return startDateA.getTime() - startDateB.getTime();
@@ -303,7 +340,10 @@ export default function CourseMap() {
             (acc, cur, index) => {
                 acc.push([cur]);
                 if (index > 0) {
-                    acc[index - 1].push(cur);
+                    const prevPair = acc[index - 1];
+                    if (prevPair) {
+                        prevPair.push(cur);
+                    }
                 }
                 return acc;
             },
@@ -352,16 +392,20 @@ export default function CourseMap() {
 
                 {/* Draw a marker for each class that occurs today. */}
                 {markersToDisplay.map((marker, index) => {
+                    if (!marker) return null;
+                    const firstLocation = marker.locations[0];
+                    if (!firstLocation) return null;
+
                     // Find all courses that occur in the same building prior to this one to stack them properly.
                     // TODO Handle multiple buildings between class comparisons on markers.
                     const coursesSameBuildingPrior = markersToDisplay
                         .slice(0, index)
                         .filter((m) =>
-                            m.locations.map((location) => location.building).includes(marker.locations[0].building)
+                            m?.locations.map((location) => location.building).includes(firstLocation.building)
                         );
 
                     const allRoomsInBuilding = marker.locations
-                        .filter((location) => location.building == marker.locations[0].building)
+                        .filter((location) => location.building == firstLocation.building)
                         .reduce((roomList, location) => [...roomList, location.room], [] as string[]);
 
                     return (
@@ -381,7 +425,7 @@ export default function CourseMap() {
                                         <span style={{ fontWeight: 'bold' }}>
                                             Room{allRoomsInBuilding.length > 1 && 's'}:
                                         </span>{' '}
-                                        {marker.locations[0].building} {allRoomsInBuilding.join('/')}
+                                        {firstLocation.building} {allRoomsInBuilding.join('/')}
                                     </Typography>
                                 </Box>
                             </LocationMarker>

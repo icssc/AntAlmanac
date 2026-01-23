@@ -21,7 +21,7 @@ import {
     ListItemIcon,
     ListItemText,
 } from '@mui/material';
-import { PostHog, usePostHog } from 'posthog-js/react';
+import { type PostHog, usePostHog } from 'posthog-js/react';
 import { useState, useCallback, useEffect, memo, useRef } from 'react';
 
 import { redoAction, undoDelete } from '$actions/AppStoreActions';
@@ -38,7 +38,7 @@ function handleUndo(postHog?: PostHog) {
     return () => {
         logAnalytics(postHog, {
             category: analyticsEnum.calendar,
-            action: analyticsEnum.calendar.actions.UNDO,
+            action: analyticsEnum.calendar.actions.UNDO ?? '',
         });
         undoDelete(null);
     };
@@ -48,7 +48,7 @@ function handleRedo(postHog?: PostHog) {
     return () => {
         logAnalytics(postHog, {
             category: analyticsEnum.calendar,
-            action: analyticsEnum.calendar.actions.REDO,
+            action: analyticsEnum.calendar.actions.REDO ?? '',
         });
         redoAction();
     };
@@ -84,7 +84,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
         if (!showFinalsSchedule) {
             logAnalytics(postHog, {
                 category: analyticsEnum.calendar,
-                action: analyticsEnum.calendar.actions.DISPLAY_FINALS,
+                action: analyticsEnum.calendar.actions.DISPLAY_FINALS ?? '',
             });
         }
         toggleDisplayFinalsSchedule();

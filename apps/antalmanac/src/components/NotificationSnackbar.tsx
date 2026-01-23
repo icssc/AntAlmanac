@@ -1,6 +1,6 @@
 import { Close } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
-import { ProviderContext, withSnackbar, SnackbarKey } from 'notistack';
+import { withSnackbar, type ProviderContext, type SnackbarKey } from 'notistack';
 import { useCallback, useEffect } from 'react';
 
 import AppStore from '$stores/AppStore';

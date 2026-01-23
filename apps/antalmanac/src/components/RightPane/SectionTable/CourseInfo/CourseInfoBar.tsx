@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 import PrereqTree from '$components/RightPane/SectionTable/PrereqTree';
 import { useIsMobile } from '$hooks/useIsMobile';
-import analyticsEnum, { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
+import analyticsEnum, { type AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 
 const noCourseInfo = {

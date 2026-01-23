@@ -3,7 +3,7 @@ import { useTour } from '@reactour/tour';
 import { useCallback, useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-import { HelpMenuAction } from '$components/HelpMenu/HelpMenu';
+import type { HelpMenuAction } from '$components/HelpMenu/HelpMenu';
 import { stepsFactory, tourShouldRun } from '$lib/TutorialHelpers';
 import { removeSampleClasses } from '$lib/tourExampleGeneration';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';

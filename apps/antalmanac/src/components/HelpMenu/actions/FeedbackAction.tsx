@@ -1,7 +1,7 @@
 import { Feedback as FeedbackIcon } from '@mui/icons-material';
 import { useCallback } from 'react';
 
-import { HelpMenuAction } from '$components/HelpMenu/HelpMenu';
+import type { HelpMenuAction } from '$components/HelpMenu/HelpMenu';
 import { FEEDBACK_LINK } from '$src/globals';
 
 export function FeedbackAction(): HelpMenuAction {

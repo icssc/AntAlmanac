@@ -1,4 +1,4 @@
-import { WebsocSection, WebsocCourse, WebsocSectionType } from '@packages/anteater-api-types';
+import type { WebsocSection, WebsocCourse, WebsocSectionType } from '@packages/anteater-api-types';
 
 type AASectionExtendedProperties = {
     color: string;

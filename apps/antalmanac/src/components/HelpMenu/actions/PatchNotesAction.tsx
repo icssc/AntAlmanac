@@ -2,7 +2,7 @@ import { Campaign } from '@mui/icons-material';
 import { useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-import { HelpMenuAction } from '$components/HelpMenu/HelpMenu';
+import type { HelpMenuAction } from '$components/HelpMenu/HelpMenu';
 import { useHelpMenuStore } from '$stores/HelpMenuStore';
 
 export function PatchNotesAction(): HelpMenuAction {

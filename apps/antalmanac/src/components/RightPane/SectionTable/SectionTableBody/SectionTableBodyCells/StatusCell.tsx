@@ -1,5 +1,5 @@
-import { SxProps } from '@mui/material';
-import { WebsocSectionStatus } from '@packages/antalmanac-types';
+import type { SxProps } from '@mui/material';
+import type { WebsocSectionStatus } from '@packages/antalmanac-types';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 

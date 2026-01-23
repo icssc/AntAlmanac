@@ -1,4 +1,4 @@
-import { Select, SelectProps } from '@mui/material';
+import { Select, type SelectProps } from '@mui/material';
 import { useId } from 'react';
 
 import { LabeledInput } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledInput';
