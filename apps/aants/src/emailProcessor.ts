@@ -50,5 +50,6 @@ export async function handler(event: SQSEvent){
 
     } catch (error) {
         console.error('Error processing email records:', error);
+        throw error;
     }
 }

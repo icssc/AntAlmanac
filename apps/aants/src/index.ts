@@ -118,7 +118,6 @@ export async function scanAndNotify() {
         console.log('All subscriptions sent!');
     } catch (error) {
         console.error('Error in managing subscription:', error instanceof Error ? error.message : String(error));
-    } finally {
-        process.exit(0);
+        throw error;
     }
 }
