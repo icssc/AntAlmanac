@@ -100,7 +100,7 @@ const searchRouter = router({
                     : fuzzysort
                           .go(query, searchData.courses, {
                               keys: ['id', 'name', 'alias', 'metadata.department', 'metadata.number'],
-                              limit: MAX_AUTOCOMPLETE_RESULTS - matchedDepts.length - matchedSections.length,
+                              limit: 100,
                           })
                           .map((course) => {
                               return {
