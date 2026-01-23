@@ -61,7 +61,7 @@ const searchRouter = router({
             }
 
             const offeredCourseSet = new Set(
-                Object.values(termSectionCodes).map((s) => `${s.department}-${s.sectionCode}`)
+                Object.values(termSectionCodes).map((s) => `${s.department}-${s.courseNumber}`)
             );
 
             const num = Number(input.query);
