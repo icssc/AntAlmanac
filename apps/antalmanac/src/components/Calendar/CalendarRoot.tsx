@@ -176,6 +176,11 @@ export const ScheduleCalendar = memo(() => {
         const randomIndex = Math.floor(Math.random() * skeletonBlueprintVariations.length);
         const fallbackBlueprints = skeletonBlueprintVariations[randomIndex];
 
+        // Guard fallbackBlueprints in case variations is empty or index is invalid
+        if (!fallbackBlueprints || !Array.isArray(fallbackBlueprints)) {
+            return [] as SkeletonEvent[];
+        }
+
         return fallbackBlueprints.map(blueprintToSkeletonEvent);
     }, [blueprintToSkeletonEvent]);
 
@@ -232,11 +237,17 @@ export const ScheduleCalendar = memo(() => {
 
         const backgroundRegexResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(
             bg.slice(0, 7)
-        ) as RegExpExecArray; // returns {hex, r, g, b}
+        ) as RegExpExecArray | null; // returns {hex, r, g, b}
+
+        if (!backgroundRegexResult) {
+            // fallback to dark text if parse fails
+            return false;
+        }
+
         const backgroundRGB = {
-            r: parseInt(backgroundRegexResult[1], 16),
-            g: parseInt(backgroundRegexResult[2], 16),
-            b: parseInt(backgroundRegexResult[3], 16),
+            r: parseInt(backgroundRegexResult[1] ?? '00', 16),
+            g: parseInt(backgroundRegexResult[2] ?? '00', 16),
+            b: parseInt(backgroundRegexResult[3] ?? '00', 16),
         } as const;
         const textRgb = { r: 255, g: 255, b: 255 }; // white text
 
@@ -255,7 +266,7 @@ export const ScheduleCalendar = memo(() => {
 
     const finalsDate = hoveredCalendarizedFinal
         ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
-        : onlyCourseEvents.length > 0
+        : onlyCourseEvents.length > 0 && onlyCourseEvents[0] !== undefined
           ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
           : getDefaultFinalsStartDate();
 
@@ -338,7 +349,7 @@ export const ScheduleCalendar = memo(() => {
             <Backdrop
                 sx={(theme) => ({
                     color: '#ffff',
-                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
                     zIndex: theme.zIndex.drawer + 1,
                     position: 'absolute',
                     padding: ' 0',

@@ -85,11 +85,11 @@ const analyticsEnum: AnalyticsEnum = {
     },
 };
 
-export default analyticsEnum;
+export default analyticsEnum as unknown as any;
 
 interface AnalyticsProps {
     category: AnalyticsCategory;
-    action: string;
+    action: string | undefined;
     label?: string;
     value?: number;
 }
@@ -98,6 +98,7 @@ interface AnalyticsProps {
  * Logs event to PostHog instance
  */
 export function logAnalytics(postHog: PostHog | undefined, { category, action, label, value }: AnalyticsProps) {
+    if (!action) return;
     postHog?.capture(action, {
         category: category.title,
         label,

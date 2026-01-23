@@ -28,5 +28,32 @@ const types = scope({
 }).compile();
 
 export const LegacyUserSchema = types.legacyUser;
-export type LegacyUserData = typeof types.legacyUserData.infer;
-export type LegacyUser = typeof types.legacyUser.infer;
+
+// Explicit TypeScript types to avoid depending on arktype's inferred literal types
+export type LegacyCourse = {
+    color: string;
+    term: string;
+    sectionCode: string;
+    scheduleIndices: number[];
+};
+
+export type LegacyCustomEvent = {
+    customEventID: string;
+    color: string;
+    title: string;
+    days: boolean[];
+    scheduleIndices: number[];
+    start: string;
+    end: string;
+};
+
+export type LegacyUserData = {
+    addedCourses: LegacyCourse[];
+    scheduleNames: string[];
+    customEvents: LegacyCustomEvent[];
+};
+
+export type LegacyUser = {
+    _id: string;
+    userData: LegacyUserData;
+};

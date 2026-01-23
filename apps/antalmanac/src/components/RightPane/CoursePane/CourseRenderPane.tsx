@@ -55,7 +55,7 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
 
             dept.courses.forEach((course) => {
                 for (const section of course.sections) {
-                    (section as AASection).color = courseColors[section.sectionCode];
+                    (section as AASection).color = courseColors[section.sectionCode] || '#3174ad';
                 }
 
                 const sectionTypesSet = new Set<WebsocSectionType>();

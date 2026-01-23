@@ -36,7 +36,7 @@ export function DepartmentSearchBar() {
 
     const handleChange = useCallback(
         (_: unknown, option: string | null) => {
-            const newValue = option ?? options[0]; // options[0] corresponds to `ALL`
+            const newValue = option ?? options[0] ?? 'ALL'; // options[0] corresponds to `ALL`
 
             setValue(newValue);
             RightPaneStore.updateFormValue('deptValue', newValue);
@@ -48,7 +48,7 @@ export function DepartmentSearchBar() {
             urlParam.delete('deptValue');
 
             if (newValue != 'ALL') {
-                urlParam.append('deptValue', newValue);
+                urlParam.append('deptValue', newValue!);
             }
             const param = urlParam.toString();
             const new_url = `${param.trim() ? '?' : ''}${param}`;
@@ -62,7 +62,7 @@ export function DepartmentSearchBar() {
                           return a === newValue ? -1 : b === newValue ? 1 : 0;
                       })
                   )
-                : setRecentSearches((prev) => [newValue, ...prev].slice(0, 5));
+                : setRecentSearches((prev) => [newValue!, ...prev].slice(0, 5));
         },
         [recentSearches]
     );

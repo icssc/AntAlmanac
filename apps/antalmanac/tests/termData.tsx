@@ -9,7 +9,8 @@ describe('termData', () => {
      */
     test('uses default term index if no events is provided', () => {
         const term = getDefaultTerm();
-        expect(term.shortName).toEqual(termData[defaultTerm]);
+        expect(term).toBeDefined();
+        expect(term!.shortName).toEqual(termData[defaultTerm]!.shortName);
     });
 
     test('uses first term found in event list if provided', () => {
@@ -35,6 +36,7 @@ describe('termData', () => {
 
         const term = getDefaultTerm([event]);
 
-        expect(term.shortName).toEqual(event.term);
+        expect(term).toBeDefined();
+        expect(term!.shortName).toEqual(event.term);
     });
 });

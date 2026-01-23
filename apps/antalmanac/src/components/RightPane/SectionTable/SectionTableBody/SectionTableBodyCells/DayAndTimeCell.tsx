@@ -22,7 +22,9 @@ export const DayAndTimeCell = ({ meetings }: DayAndTimeCellProps) => {
                 if (meeting.startTime && meeting.endTime) {
                     const timeString = formatTimes(meeting.startTime, meeting.endTime, isMilitaryTime);
 
-                    return <Box key={meeting.timeIsTBA + meeting.bldg[0]}>{`${meeting.days} ${timeString}`}</Box>;
+                    return (
+                        <Box key={meeting.timeIsTBA + (meeting.bldg[0] ?? '')}>{`${meeting.days} ${timeString}`}</Box>
+                    );
                 }
             })}
         </TableBodyCellContainer>

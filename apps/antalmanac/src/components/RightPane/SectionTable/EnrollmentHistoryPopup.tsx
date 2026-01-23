@@ -85,11 +85,11 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
     const graphWidth = useMemo(() => (isMobileScreen ? 250 : 450), [isMobileScreen]);
     const graphHeight = useMemo(() => (isMobileScreen ? 175 : 250), [isMobileScreen]);
     const popupTitle = useMemo(() => {
-        if (enrollmentHistory == null) {
+        if (enrollmentHistory == null || graphIndex >= enrollmentHistory.length) {
             return 'No past enrollment data found for this course';
         }
 
-        const currEnrollmentHistory = enrollmentHistory[graphIndex];
+        const currEnrollmentHistory = enrollmentHistory[graphIndex]!;
         return `${department} ${courseNumber} | ${currEnrollmentHistory.year} ${
             currEnrollmentHistory.quarter
         } | ${currEnrollmentHistory.instructors.join(', ')}`;
@@ -140,7 +140,7 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
         );
     }
 
-    const lineChartData = enrollmentHistory[graphIndex].days;
+    const lineChartData = enrollmentHistory[graphIndex]!.days;
 
     return (
         <Box sx={{ padding: 0.5 }}>

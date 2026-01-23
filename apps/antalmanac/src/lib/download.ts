@@ -208,8 +208,10 @@ export function parseTimes(startTime: HourMinute, endTime: HourMinute) {
  *
  * @example "2019 Fall" -> "2019"
  */
-export function getYear(term: string) {
-    return parseInt(term.split(' ')[0]);
+export function getYear(term: string | undefined): number {
+    if (!term) return 0;
+    const parts = term.split(' ');
+    return parts.length > 0 ? parseInt(parts[0]!) : 0;
 }
 
 /**
@@ -217,8 +219,10 @@ export function getYear(term: string) {
  *
  * @example "2019 Fall" -> "Fall"
  */
-export function getQuarter(term: string) {
-    return term.split(' ')[1];
+export function getQuarter(term: string | undefined): string {
+    if (!term) return '';
+    const parts = term.split(' ');
+    return parts[1] ?? '';
 }
 
 /**
@@ -277,10 +281,12 @@ export function getEventsFromCourses(
         if (event.isCustomEvent) {
             // FIXME: We don't have a way to get the term for custom events,
             // so we just use the default term.
-            const term = _term ?? getDefaultTerm(events).shortName;
+            const defaultTermObj = getDefaultTerm(events);
+            if (!defaultTermObj) return [];
+            const term = _term ?? defaultTermObj.shortName;
             const { title, start, end, building } = event as CustomEvent;
             const days = getByDays(event.days.join(''));
-            const rrule = getRRule(days, getQuarter(term as string));
+            const rrule = getRRule(days, getQuarter(term));
             const eventStartDate = getClassStartDate(term, days);
             const [firstClassStart, firstClassEnd] = getFirstClass(
                 eventStartDate,

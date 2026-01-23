@@ -23,7 +23,7 @@ class _WebSOC {
         const paramsString = JSON.stringify(params);
 
         // hit cache if data is less than 5 minutes old
-        if (this.cache[paramsString]?.timestamp > Date.now() - 5 * 60 * 1000) {
+        if (this.cache[paramsString] && this.cache[paramsString].timestamp > Date.now() - 5 * 60 * 1000) {
             return this.cache[paramsString];
         }
 

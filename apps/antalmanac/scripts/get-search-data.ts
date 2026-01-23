@@ -106,11 +106,11 @@ async function main() {
     `
     );
     let count = 0;
-    const termPromises = termData.map(async (term, index) => {
+    const termPromises = termData.map(async (term: { shortName: string }, index: number) => {
         try {
             const [year, quarter] = term.shortName.split(' ');
             const parsedTerm = `${quarter}_${year}`;
-            const query = QUERY_TEMPLATE.replace('$$YEAR$$', year).replace('$$QUARTER$$', quarter);
+            const query = QUERY_TEMPLATE.replace('$$YEAR$$', String(year)).replace('$$QUARTER$$', String(quarter));
 
             // TODO (@kevin): remove delay once AAPI resolves OOM issues
             await new Promise((resolve) => setTimeout(resolve, DELAY_MS * index));
@@ -143,7 +143,7 @@ async function main() {
     });
 
     const results = await Promise.all(termPromises);
-    count = results.reduce((acc, numKeys) => acc + numKeys, 0);
+    count = results.reduce((acc: number, numKeys: number) => acc + numKeys, 0);
 
     console.log(`Fetched ${count} section codes for ${termData.length} terms from Anteater API.`);
     console.log('Cache generated.');

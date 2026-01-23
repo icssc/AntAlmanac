@@ -19,7 +19,7 @@ const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {
 const defaultFormValues: Record<ManualSearchParam, string> = {
     deptValue: 'ALL',
     ge: 'ANY',
-    term: getDefaultTerm().shortName,
+    term: getDefaultTerm()?.shortName ?? '2024 Fall',
     courseNumber: '',
     sectionCode: '',
     ...defaultAdvancedSearchValues,

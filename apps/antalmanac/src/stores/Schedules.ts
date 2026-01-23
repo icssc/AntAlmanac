@@ -41,7 +41,7 @@ export class Schedules {
 
         this.schedules = [
             {
-                scheduleName: `${getDefaultTerm().shortName.replaceAll(' ', '-')}`,
+                scheduleName: `${getDefaultTerm()?.shortName.replaceAll(' ', '-') ?? '2024-Fall'}`,
                 courses: [],
                 customEvents: [],
                 scheduleNoteId: scheduleNoteId,
@@ -67,7 +67,7 @@ export class Schedules {
     }
 
     getDefaultScheduleName() {
-        return getDefaultTerm().shortName.replaceAll(' ', '-');
+        return getDefaultTerm()?.shortName.replaceAll(' ', '-') ?? '2024-Fall';
     }
 
     getCurrentScheduleIndex() {

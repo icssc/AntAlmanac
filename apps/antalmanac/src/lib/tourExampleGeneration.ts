@@ -110,7 +110,7 @@ export function randint(min: number, max: number): number {
 }
 
 function randomWeekdayForFinals(): FinalsDaysOfWeek {
-    return finalsDaysOfWeek[randint(0, 6)];
+    return finalsDaysOfWeek[randint(0, 6)]!;
 }
 
 function randomClasstime(): HourMinute {

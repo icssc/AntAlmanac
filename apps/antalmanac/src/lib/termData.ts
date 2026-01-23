@@ -32,7 +32,7 @@ const defaultTerm = termData.findIndex((term) => !term.isSummerTerm);
  * By default, use a static index.
  * If an array of events is provided, select the first term found.
  */
-function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): Term {
+function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): Term | undefined {
     let term = termData[defaultTerm];
 
     for (const event of events) {
@@ -49,7 +49,10 @@ function getDefaultTerm(events: (CustomEvent | CourseEvent)[] = []): Term {
 }
 
 function getDefaultFinalsStartDate() {
-    return new Date(termData[defaultTerm].finalsStartDate);
+    if (defaultTerm >= 0) {
+        return new Date(termData[defaultTerm]!.finalsStartDate);
+    }
+    return new Date();
 }
 
 function getFinalsStartDateForTerm(term: string) {
