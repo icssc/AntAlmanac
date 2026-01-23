@@ -104,7 +104,7 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
         calendar: {
             selector: '.rbc-time-view', // Calendar.
             content: 'See the classes in your schedule!',
-            position: 'bottom',
+            position: 'right',
             action: () => {
                 addSampleClasses();
                 const finalsButtonPressed = document.getElementById('finals-button-pressed');
