@@ -92,6 +92,7 @@ const searchRouter = router({
                     : fuzzysort.go(query, searchData.departments, {
                           keys: ['id', 'name', 'alias'],
                           limit: MAX_AUTOCOMPLETE_RESULTS - matchedSections.length,
+                          threshold: 0.7,
                       });
 
             const matchedCourses =
