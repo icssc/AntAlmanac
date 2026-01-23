@@ -118,7 +118,8 @@ const searchRouter = router({
                           .sort((a, b) => {
                               if (a.obj.isOffered === b.obj.isOffered) return 0;
                               return a.obj.isOffered ? -1 : 1;
-                          });
+                          })
+                          .slice(0, MAX_AUTOCOMPLETE_RESULTS - matchedDepts.length - matchedSections.length);
 
             return Object.fromEntries([
                 ...matchedSections.map((x) => [x.sectionCode, x]),
