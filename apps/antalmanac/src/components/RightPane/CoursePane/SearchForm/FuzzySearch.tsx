@@ -299,13 +299,12 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     renderOption = (props: React.HTMLAttributes<HTMLLIElement>, option: SearchOption) => {
         const object = option.result;
         const { key, ...restProps } = props as React.HTMLAttributes<HTMLLIElement> & { key: string };
-        if (!object) {
+        if (!object)
             return (
                 <Box component="li" key={key} {...restProps}>
                     {option.key}
                 </Box>
             );
-        }
 
         const label = this.getOptionLabel(option);
         const isCourse = object.type === resultType.COURSE;
