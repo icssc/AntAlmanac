@@ -74,23 +74,28 @@ const PrereqTreeNode: FC<TreeProps> = (props) => {
                 <div style={{ display: 'inline-flex', flexDirection: 'row', padding: '0.5rem 0' }}>
                     <span style={{ margin: 'auto' }}>
                         <div className={'prereq-branch'}>
-                            {
-                                Object.entries(phraseMapping).filter(([subtreeType, _]) =>
+                            {(() => {
+                                const filtered = Object.entries(phraseMapping).filter(([subtreeType, _]) =>
                                     Object.prototype.hasOwnProperty.call(prerequisite, subtreeType)
-                                )[0][1]
-                            }
+                                );
+                                return filtered.length > 0 ? filtered[0]![1] : null;
+                            })()}
                         </div>
                     </span>
                     <div className={'prereq-clump'}>
                         <ul className="prereq-list">
-                            {prereqTree[Object.keys(prerequisite)[0]].map((child, index) => (
-                                <PrereqTreeNode
-                                    key={`tree-${index}`}
-                                    prerequisiteNames={props.prerequisiteNames}
-                                    index={index}
-                                    prerequisite={child}
-                                />
-                            ))}
+                            {(() => {
+                                const key = Object.keys(prerequisite)[0];
+                                if (!key || !prereqTree[key]) return null;
+                                return prereqTree[key].map((child: any, index: number) => (
+                                    <PrereqTreeNode
+                                        key={`tree-${index}`}
+                                        prerequisiteNames={props.prerequisiteNames}
+                                        index={index}
+                                        prerequisite={child}
+                                    />
+                                ));
+                            })()}
                         </ul>
                     </div>
                 </div>

@@ -177,7 +177,7 @@ const GradeTooltip = (props: GradeTooltipProps) => {
                     }}
                 >
                     <Typography variant="body1" align="center" sx={{ color: '#fff', fontWeight: 500 }}>
-                        {`${label}: ${payload[0].value}%`}
+                        {`${label}: ${payload?.[0]?.value ?? 0}%`}
                     </Typography>
                 </Box>
             </>

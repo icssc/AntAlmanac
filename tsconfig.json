@@ -1,3 +1,33 @@
 {
-    // Empty tsconfig for VSCode users
+    "compilerOptions": {
+        "target": "es2022",
+        "module": "es2022",
+        "moduleResolution": "bundler",
+        "lib": ["es2022", "dom"],
+        "jsx": "react-jsx",
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "noUncheckedIndexedAccess": true,
+        "noEmit": true,
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
+        "baseUrl": ".",
+        "paths": {
+            "$assets/*": ["apps/antalmanac/src/assets/*"],
+            "$actions/*": ["apps/antalmanac/src/actions/*"],
+            "$api/*": ["apps/antalmanac/src/api/*"],
+            "$components/*": ["apps/antalmanac/src/components/*"],
+            "$generated/*": ["apps/antalmanac/src/generated/*"],
+            "$lib/*": ["apps/antalmanac/src/lib/*"],
+            "$hooks/*": ["apps/antalmanac/src/hooks/*"],
+            "$providers/*": ["apps/antalmanac/src/providers/*"],
+            "$routes/*": ["apps/antalmanac/src/routes/*"],
+            "$stores/*": ["apps/antalmanac/src/stores/*"],
+            "$src/*": ["apps/antalmanac/src/*"],
+            "$components/Calendar/*": ["apps/antalmanac/src/components/Calendar/*"]
+        }
+    },
+    "include": ["apps/**/*", "packages/**/*", "db/**/*", "types/**/*"]
 }

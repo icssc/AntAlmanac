@@ -49,7 +49,16 @@ async function fetchCalendarTerms(): Promise<CalendarTerm[]> {
 }
 
 function toLocalDateCode(dateString: string): string {
-    const [year, month, day] = dateString.split('-').map(Number);
+    const parts = dateString.split('-');
+    if (parts.length < 3) {
+        throw new Error(`Invalid date string: ${dateString}`);
+    }
+    const year = Number(parts[0]);
+    const month = Number(parts[1]);
+    const day = Number(parts[2]);
+    if (Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day)) {
+        throw new Error(`Invalid date components in date string: ${dateString}`);
+    }
     // 0-indexed months
     return `new Date(${year}, ${month - 1}, ${day})`;
 }

@@ -203,7 +203,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                                 {locations.map((location) => (
                                     <div key={`${sectionCode} @ ${location.building ?? ''} ${location.room ?? ''}`}>
                                         <MapLink
-                                            buildingId={locationIds[location.building ?? ''] ?? '0'}
+                                            buildingId={locationIds[location.building ?? ''] ?? 0}
                                             room={`${location.building ?? ''} ${location.room ?? ''}`}
                                         />
                                     </div>

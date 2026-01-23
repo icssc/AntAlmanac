@@ -64,7 +64,7 @@ async function fetchLocations() {
         // { 'mediaUrlTypes': ['image', '...', 'image'], 'mediaUrls': ['xyz.jpg', '...', 'abc.png']}
         if (locationData.mediaUrlTypes !== undefined) {
             for (const [i, media] of locationData.mediaUrlTypes.entries()) {
-                if (media === 'image') {
+                if (media === 'image' && locationData.mediaUrls[i]) {
                     imgUrls.push(locationData.mediaUrls[i]);
                 }
             }

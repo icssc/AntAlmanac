@@ -19,6 +19,7 @@ export const LocationsCell = ({ meetings }: LocationsCellProps) => {
                     meeting.bldg.map((bldg) => {
                         const [buildingName = ''] = bldg.split(' ');
                         const buildingId = locationIds[buildingName];
+                        if (buildingId === undefined) return null;
                         return (
                             <Fragment key={meeting.timeIsTBA + bldg}>
                                 <MapLink buildingId={buildingId} room={bldg} />

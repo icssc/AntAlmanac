@@ -111,7 +111,7 @@ class _Grades {
 
         const cacheKey = department + courseNumber + instructor;
 
-        if (cacheKey in this.gradesCache) return this.gradesCache[cacheKey];
+        if (cacheKey in this.gradesCache) return this.gradesCache[cacheKey] ?? null;
 
         if (cacheOnly) return null;
 

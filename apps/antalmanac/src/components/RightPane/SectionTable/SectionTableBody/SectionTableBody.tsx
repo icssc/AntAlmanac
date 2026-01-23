@@ -29,9 +29,17 @@ export function SectionTableBody({
      * i.e. time information, which is compared with the calendar events to find conflicts.
      */
     const parseSectionDetails = useCallback((section: AASection) => {
+        if (!section.meetings || section.meetings.length === 0) {
+            return {
+                daysOccurring: [] as number[],
+                startTime: { hour: 0, minute: 0 },
+                endTime: { hour: 0, minute: 0 },
+            };
+        }
+        const meeting = section.meetings[0]!;
         return {
-            daysOccurring: parseDaysString(section.meetings[0].timeIsTBA ? null : section.meetings[0].days),
-            ...normalizeTime(section.meetings[0]),
+            daysOccurring: parseDaysString(meeting.timeIsTBA ? null : (meeting as any).days),
+            ...normalizeTime(meeting),
         };
     }, []);
 

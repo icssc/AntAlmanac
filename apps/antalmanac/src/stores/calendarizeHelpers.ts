@@ -23,6 +23,8 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): 
         return course.section.meetings
             .filter((meeting) => !meeting.timeIsTBA)
             .flatMap((meeting) => {
+                if (!meeting.startTime || !meeting.endTime) return [];
+
                 const startHour = meeting.startTime.hour;
                 const startMin = meeting.startTime.minute;
                 const endHour = meeting.endTime.hour;
@@ -96,6 +98,8 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
             >;
             const { bldg, ...finalExam } = finalExamObject;
 
+            if (!finalExam.startTime || !finalExam.endTime) return [];
+
             const startHour = finalExam.startTime.hour;
             const startMin = finalExam.startTime.minute;
             const endHour = finalExam.endTime.hour;
@@ -117,10 +121,13 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                 .map((day, index) => (day ? index : undefined))
                 .filter(notNull);
 
+            const firstMeeting =
+                course.section.meetings && course.section.meetings.length > 0 ? course.section.meetings[0] : undefined;
+
             const locationsWithNoDays = bldg
                 ? bldg.map(getLocation)
-                : !course.section.meetings[0].timeIsTBA
-                  ? course.section.meetings[0].bldg.map(getLocation)
+                : firstMeeting && !firstMeeting.timeIsTBA && 'bldg' in firstMeeting && firstMeeting.bldg
+                  ? firstMeeting.bldg.map(getLocation)
                   : [];
 
             /**
@@ -175,7 +182,7 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
          *
          * @example [1, 3, 5] -> ['M', 'W', 'F']
          */
-        const days = dayIndicesOccurring.map((dayIndex) => COURSE_WEEK_DAYS[dayIndex]);
+        const days = dayIndicesOccurring.map((dayIndex) => COURSE_WEEK_DAYS[dayIndex] as string);
         return dayIndicesOccurring.map((dayIndex) => {
             const startHour = parseInt(customEvent.start.slice(0, 2), 10);
             const startMin = parseInt(customEvent.start.slice(3, 5), 10);
@@ -219,7 +226,9 @@ export function parseDaysString(daysString: string | null): number[] | null {
     let match: RegExpExecArray | null;
 
     while ((match = SHORT_DAY_REGEX.exec(daysString))) {
-        days.push(SHORT_DAYS.indexOf(match[1]));
+        if (match[1]) {
+            days.push(SHORT_DAYS.indexOf(match[1]));
+        }
     }
 
     return days;

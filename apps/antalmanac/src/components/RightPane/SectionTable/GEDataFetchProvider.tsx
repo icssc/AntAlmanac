@@ -29,7 +29,7 @@ class GeDataFetchProvider extends PureComponent<SectionTableProps> {
         const jsonResp = await WebSOC.query(params);
 
         this.setState({
-            courseDetails: jsonResp.schools[0].departments[0].courses[0],
+            courseDetails: jsonResp?.schools?.[0]?.departments?.[0]?.courses?.[0] ?? null,
         });
     }
 
