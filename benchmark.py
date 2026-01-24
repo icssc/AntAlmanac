@@ -1,6 +1,5 @@
 import subprocess
 import urllib.parse
-import sys
 import re
 import argparse
 
@@ -78,7 +77,7 @@ def get_metrics(url, staging_number: str, num_requests: int):
             "  - macOS (Homebrew): brew install hey\n"
             "  - Other OS: https://github.com/rakyll/hey/\n"
         )
-        return {"avg": 0, "rps": 0, "p50": 0, "p95": 0, "status": "Missing hey"}
+        exit(1)
 
     except subprocess.CalledProcessError as e:
         print(f"Error running hey for staging {staging_number}: {e}")
@@ -93,7 +92,7 @@ def parse_args() -> argparse.Namespace:
         )
     )
     parser.add_argument("staging_a", help="First staging number (e.g. 1457)")
-    parser.add_argument("staging_b", help="Second staging number (e.g. 1456)")
+    parser.add_argument("staging_b", help="Second staging number (e.g. 1438)")
     parser.add_argument("term", help='Search term, e.g. "computer science"')
     parser.add_argument(
         "-n",
