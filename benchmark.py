@@ -34,8 +34,8 @@ def get_metrics(url, staging_number: str, num_requests: int):
         # Run 'hey' command: 1000 requests
         result = subprocess.run(
             ['hey', '-n', str(num_requests), url],
-            capture_output=True, 
-            text=True, 
+            capture_output=True,
+            text=True,
             check=True
         )
         output = result.stdout
@@ -70,6 +70,15 @@ def get_metrics(url, staging_number: str, num_requests: int):
             metrics["status"] = ", ".join([f"{code}: {count}" for code, count in status_matches])
 
         return metrics
+
+    except FileNotFoundError:
+        print(
+            "Could not find the 'hey' binary.\n"
+            "Install it first, for example:\n"
+            "  - macOS (Homebrew): brew install hey\n"
+            "  - Other OS: https://github.com/rakyll/hey/\n"
+        )
+        return {"avg": 0, "rps": 0, "p50": 0, "p95": 0, "status": "Missing hey"}
 
     except subprocess.CalledProcessError as e:
         print(f"Error running hey for staging {staging_number}: {e}")
