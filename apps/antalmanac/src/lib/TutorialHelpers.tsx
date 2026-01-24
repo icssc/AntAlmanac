@@ -102,7 +102,7 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
             position: 'bottom',
         },
         calendar: {
-            selector: '.rbc-time-view', // Calendar.
+            selector: '#calendar-root',
             content: 'See the classes in your schedule!',
             position: 'right',
             action: () => {
@@ -111,6 +111,8 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
                 if (!finalsButtonPressed) return;
                 finalsButtonPressed.click(); // To switch back to normal view
             },
+            resizeObservables: ['#calendar-root'],
+            mutationObservables: ['#calendar-root'],
         },
         finalsButton: {
             selector: '#finals-button, #finals-button-pressed',
@@ -182,8 +184,23 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
         mapPane: {
             selector: '#map-pane',
             content: 'Click on a day to see your route!',
-            action: () => setActiveTab('map'),
-            mutationObservables: ['#map-pane'],
+            action: () => {
+                setActiveTab('map');
+
+                if (!window.location.pathname.includes('/map')) {
+                    // Clicking the tab will also navigate via the Link component
+                    setTimeout(() => {
+                        document.getElementById('map-tab')?.click();
+                    }, 0);
+                }
+
+                // Re-measure after the map mounts
+                setTimeout(() => {
+                    window.dispatchEvent(new Event('resize'));
+                }, 50);
+            },
+            mutationObservables: ['#root', '#map-pane'],
+            resizeObservables: ['#root', '#map-pane'],
         },
         saveAndLoad: {
             selector: '#save-button',
