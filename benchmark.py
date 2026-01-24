@@ -172,13 +172,13 @@ def main():
             delta_disp = v1_disp - v2_disp
             unit = ""
 
-        delta_str = f"{delta_disp:+.4f}{unit}"
+        delta_str = f"{delta_disp:+.1f}{unit}"
 
         print(
             row_fmt.format(
                 label,
-                f"{v1_disp:.4f}{unit}",
-                f"{v2_disp:.4f}{unit}",
+                f"{v1_disp:.1f}{unit}",
+                f"{v2_disp:.1f}{unit}",
                 delta_str,
             )
         )
