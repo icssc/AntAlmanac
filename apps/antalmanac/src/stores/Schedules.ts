@@ -70,6 +70,13 @@ export class Schedules {
         return getDefaultTerm().shortName.replaceAll(' ', '-');
     }
 
+    /**
+     * Get the backend schedule ID for a schedule, if available.
+     */
+    getScheduleId(scheduleIndex: number) {
+        return this.schedules[scheduleIndex]?.id;
+    }
+
     getCurrentScheduleIndex() {
         return this.currentScheduleIndex;
     }
@@ -626,6 +633,7 @@ export class Schedules {
                 }
 
                 this.schedules.push({
+                    id: shortCourseSchedule.id,
                     scheduleName: shortCourseSchedule.scheduleName,
                     courses: courses,
                     customEvents: shortCourseSchedule.customEvents,
@@ -655,11 +663,24 @@ export class Schedules {
     }
 
     getCurrentSkeletonSchedule(): ShortCourseSchedule {
-        return this.skeletonSchedules[this.currentScheduleIndex];
+        const schedule = this.skeletonSchedules[this.currentScheduleIndex];
+        if (!schedule) {
+            return {
+                scheduleName: '',
+                courses: [],
+                customEvents: [],
+                scheduleNote: '',
+            };
+        }
+        return schedule;
     }
 
     getSkeletonScheduleNames(): string[] {
         return this.skeletonSchedules.map((schedule) => schedule.scheduleName);
+    }
+
+    getSchedules(): Schedule[] {
+        return this.schedules;
     }
 
     setSkeletonSchedules(skeletonSchedules: ShortCourseSchedule[]) {

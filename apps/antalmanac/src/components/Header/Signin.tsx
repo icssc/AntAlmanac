@@ -21,6 +21,7 @@ import { loadSchedule, saveSchedule, loginUser, loadScheduleWithSessionToken } f
 import { AlertDialog } from '$components/AlertDialog';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
+import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -189,7 +190,6 @@ const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = 
 
 export const Signin = () => {
     const isDark = useThemeStore((store) => store.isDark);
-
     const { updateSession } = useSessionStore();
 
     const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = scheduleComponentsToggleStore();
@@ -200,6 +200,8 @@ export const Signin = () => {
     const [alertMessage, setAlertMessage] = useState<{ title: string; severity: AlertColor }>(
         ALERT_MESSAGES.SCHEDULE_IMPORTED
     );
+
+    const isSharedSchedulePage = useIsSharedSchedulePage();
 
     const validateImportedUser = useCallback(async (userID: string) => {
         try {
@@ -275,10 +277,16 @@ export const Signin = () => {
             const sessionID = getLocalStorageSessionId();
 
             if (savedUserID != null || sessionID !== null) {
-                void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
+                if (isSharedSchedulePage) {
+                    // On shared schedule pages, we only validate the session to maintain auth state.
+                    // We don't load the user's schedule data since that would replace the shared schedule being viewed.
+                    void updateSession(sessionID);
+                } else {
+                    void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
+                }
             }
         }
-    }, [loadScheduleAndSetLoadingAuth]);
+    }, [loadScheduleAndSetLoadingAuth, isSharedSchedulePage, updateSession]);
 
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
@@ -286,7 +294,7 @@ export const Signin = () => {
                 id="load-button"
                 action={loadScheduleAndSetLoading}
                 actionSecondary={handleLogin}
-                disabled={skeletonMode}
+                disabled={skeletonMode && !isSharedSchedulePage}
                 loading={loadingSchedule}
                 colorType={isDark ? 'secondary' : 'primary'}
                 isDark={isDark}

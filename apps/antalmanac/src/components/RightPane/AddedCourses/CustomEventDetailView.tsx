@@ -10,6 +10,7 @@ import ColorPicker from '$components/ColorPicker';
 import { MapLink } from '$components/buttons/MapLink';
 import analyticsEnum from '$lib/analytics/analytics';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
+import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import AppStore from '$stores/AppStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 
@@ -21,6 +22,7 @@ interface CustomEventDetailViewProps {
 const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
     const { customEvent } = props;
     const { isMilitaryTime } = useTimeFormatStore();
+    const isSharedSchedulePage = useIsSharedSchedulePage();
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
@@ -101,6 +103,7 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                                 deleteCustomEvent(customEvent.customEventID, [AppStore.getCurrentScheduleIndex()]);
                             }}
                             size="large"
+                            disabled={isSharedSchedulePage}
                         >
                             <Delete fontSize="small" />
                         </IconButton>

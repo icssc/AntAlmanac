@@ -9,6 +9,7 @@ import ColorPicker from '$components/ColorPicker';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import AppStore from '$stores/AppStore';
 
 /**
@@ -46,6 +47,7 @@ interface ActionProps {
  */
 export function ColorAndDelete({ section, term }: ActionProps) {
     const isMobile = useIsMobile();
+    const isSharedSchedulePage = useIsSharedSchedulePage();
 
     const flexDirection = isMobile ? 'column' : undefined;
 
@@ -69,9 +71,11 @@ export function ColorAndDelete({ section, term }: ActionProps) {
                 alignItems: 'center',
             }}
         >
-            <IconButton onClick={handleClick}>
-                <Delete fontSize="small" />
-            </IconButton>
+            {!isSharedSchedulePage && (
+                <IconButton onClick={handleClick}>
+                    <Delete fontSize="small" />
+                </IconButton>
+            )}
 
             <ColorPicker
                 key={AppStore.getCurrentScheduleIndex()}

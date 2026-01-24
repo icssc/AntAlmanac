@@ -126,7 +126,7 @@ export const saveSchedule = async (
             }
 
             try {
-                await trpc.userData.saveUserData.mutate({
+                const result = await trpc.userData.saveUserData.mutate({
                     id: providerId,
                     data: {
                         id: providerId,
@@ -136,6 +136,14 @@ export const saveSchedule = async (
                         userData: scheduleSaveState,
                     },
                 });
+
+                if (result && 'scheduleIds' in result && Array.isArray(result.scheduleIds)) {
+                    const schedules = AppStore.getSchedules();
+                    for (let i = 0; i < Math.min(schedules.length, result.scheduleIds.length); i++) {
+                        schedules[i].id = result.scheduleIds[i];
+                    }
+                    AppStore.emit('scheduleNamesChange');
+                }
 
                 if (useSessionStore.getState().sessionIsValid) {
                     openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
@@ -175,7 +183,7 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
 
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
     try {
-        await trpc.userData.saveUserData.mutate({
+        const result = await trpc.userData.saveUserData.mutate({
             id: providerID,
             data: {
                 id: providerID,
@@ -185,6 +193,14 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
                 userData: scheduleSaveState,
             },
         });
+
+        if (result && 'scheduleIds' in result && Array.isArray(result.scheduleIds)) {
+            const schedules = AppStore.getSchedules();
+            for (let i = 0; i < Math.min(schedules.length, result.scheduleIds.length); i++) {
+                schedules[i].id = result.scheduleIds[i];
+            }
+            AppStore.emit('scheduleNamesChange');
+        }
 
         deleteTempSaveData();
         AppStore.saveSchedule();
@@ -204,13 +220,20 @@ export const mergeShortCourseSchedules = (
 ) => {
     const existingScheduleNames = new Set(currentSchedules.map((s: ShortCourseSchedule) => s.scheduleName));
     const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
-        let scheduleName = schedule.scheduleName;
-        if (existingScheduleNames.has(schedule.scheduleName)) {
-            scheduleName = scheduleName + '(1)';
+        let scheduleName = `${importMessage}${schedule.scheduleName}`;
+        let counter = 1;
+        const baseName = scheduleName;
+
+        while (existingScheduleNames.has(scheduleName)) {
+            scheduleName = `${baseName}(${counter})`;
+            counter++;
         }
+
+        existingScheduleNames.add(scheduleName);
+
         return {
             ...schedule,
-            scheduleName: `${importMessage}${scheduleName}`,
+            scheduleName: scheduleName,
         };
     });
     currentSchedules.push(...cacheSchedule);
@@ -251,17 +274,21 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
         scheduleComponentsToggleStore.setState({ openImportDialog: false, openLoadingSchedule: true });
 
         const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
-        if (isScheduleLoaded) {
-            openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
 
-            scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
-
-            await saveSchedule(accounts.providerAccountId, true, users);
-
-            await trpc.userData.flagImportedSchedule.mutate({
-                providerId: username,
-            });
+        if (!isScheduleLoaded) {
+            scheduleComponentsToggleStore.setState({ openLoadingSchedule: false });
+            return { imported: false, error: new Error('Failed to load imported schedule') };
         }
+
+        openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
+
+        scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
+
+        await saveSchedule(accounts.providerAccountId, true, users);
+
+        await trpc.userData.flagImportedSchedule.mutate({
+            providerId: username,
+        });
     }
 
     return { imported: false, error: null };
@@ -281,6 +308,57 @@ export const importScheduleWithUsername = async (username: string) => {
     } catch (e) {
         return { imported: false, error: e };
     }
+};
+
+export const importSharedScheduleById = async (scheduleId: string) => {
+    const sharedSchedule = await trpc.userData.getSharedSchedule.query({ scheduleId });
+
+    const incomingSchedule: ShortCourseSchedule = {
+        id: undefined,
+        scheduleName: sharedSchedule.scheduleName,
+        scheduleNote: sharedSchedule.scheduleNote || '',
+        courses: sharedSchedule.courses,
+        customEvents: sharedSchedule.customEvents,
+    };
+
+    const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
+
+    mergeShortCourseSchedules(currentSchedules.schedules, [incomingSchedule], '(shared)-');
+    currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
+
+    scheduleComponentsToggleStore.setState({ openLoadingSchedule: true });
+
+    const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
+
+    if (!isScheduleLoaded) {
+        scheduleComponentsToggleStore.setState({ openLoadingSchedule: false });
+        return { imported: false, error: new Error('Failed to load shared schedule') };
+    }
+
+    const session = useSessionStore.getState();
+    if (session.sessionIsValid && session.session) {
+        try {
+            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
+                token: session.session,
+            });
+
+            await autoSaveSchedule(accounts.providerAccountId, {
+                email: users.email,
+                name: users.name,
+                avatar: users.avatar,
+            });
+        } catch (err) {
+            console.error('Failed to auto-save after importing shared schedule:', err);
+        }
+    }
+
+    openSnackbar('success', `Shared schedule "${incomingSchedule.scheduleName}" added to your account!`);
+
+    scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
+
+    changeCurrentSchedule(currentSchedules.scheduleIndex);
+
+    return { imported: true, error: null };
 };
 
 export const loadSchedule = async (
