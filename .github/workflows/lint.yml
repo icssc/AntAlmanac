@@ -1,0 +1,27 @@
+name: Lint
+
+on:
+    pull_request:
+    workflow_dispatch:
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v6
+
+            - name: Setup Node.js and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Generate termData
+              env:
+                  ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
+              run: pnpm --filter antalmanac get-data
+
+            - name: ESLint
+              run: pnpm --filter antalmanac lint
