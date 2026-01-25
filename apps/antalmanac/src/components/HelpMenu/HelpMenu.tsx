@@ -29,7 +29,7 @@ export type HelpMenuAction = {
     onClick: VoidFunction;
 } | null;
 
-const SPEEDDIAL_CLASS_NAME = 'speedDial';
+const CONTROLS_POINTER_EVENTS_CLASS_NAME = 'controlsPointerEvents';
 
 export function HelpMenu() {
     const isMobile = useIsMobile();
@@ -72,7 +72,7 @@ export function HelpMenu() {
                 right: 8,
                 zIndex: theme.zIndex.fab,
                 pointerEvents: 'none',
-                [`& > *:not(.${SPEEDDIAL_CLASS_NAME})`]: {
+                [`& > *:not(.${CONTROLS_POINTER_EVENTS_CLASS_NAME})`]: {
                     pointerEvents: 'auto',
                 },
             })}
@@ -89,7 +89,7 @@ export function HelpMenu() {
 
             <SpeedDial
                 ariaLabel="Help Menu"
-                className={SPEEDDIAL_CLASS_NAME}
+                className={CONTROLS_POINTER_EVENTS_CLASS_NAME}
                 icon={
                     <Tooltip title="Help Menu" placement="left">
                         <Box
