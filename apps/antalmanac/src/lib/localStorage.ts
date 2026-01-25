@@ -229,6 +229,7 @@ export function removeLocalStorageAutoSave() {
     window.localStorage.removeItem(LSK.autoSave);
 }
 
+// Helper functions for jsonImportExport
 export function setLocalStorageJsonImportExport(value: string) {
     window.localStorage.setItem(LSK.jsonImportExport, value);
 }

@@ -381,9 +381,6 @@ export function Import() {
 
     const validateSchedule = useCallback(
         (schedule: Record<string, unknown>, scheduleIndex: number): { valid: boolean; error?: string } => {
-            if (!schedule.id || (typeof schedule.id !== 'string' && typeof schedule.id !== 'number')) {
-                return { valid: false, error: `Schedule ${scheduleIndex + 1} is missing required field: id` };
-            }
             if (!schedule.scheduleName || typeof schedule.scheduleName !== 'string') {
                 return { valid: false, error: `Schedule ${scheduleIndex + 1} is missing required field: scheduleName` };
             }
