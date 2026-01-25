@@ -84,13 +84,11 @@ export default function Home() {
             <PatchNotes />
             <InstallPWABanner />
 
-            <Stack direction="row" height="100dvh">
+            <Stack component="main" height="100dvh">
                 {/* <SideNav /> */}
 
-                <Stack component="main" flex={1}>
-                    <Header />
-                    {isMobileScreen ? <MobileHome /> : <DesktopHome />}
-                </Stack>
+                <Header />
+                {isMobileScreen ? <MobileHome /> : <DesktopHome />}
             </Stack>
 
             <NotificationSnackbar />
