@@ -8,7 +8,6 @@ import {
     type SvgIconProps,
     Tooltip,
     IconButton,
-    SxProps,
 } from '@mui/material';
 import { useCallback, useState } from 'react';
 
@@ -29,11 +28,6 @@ export type HelpMenuAction = {
     disableOnMobile?: boolean;
     onClick: VoidFunction;
 } | null;
-
-/** When adding a new item, add this to its `sx` prop */
-const commonChildItemStyles: SxProps = {
-    pointerEvents: 'auto',
-};
 
 export function HelpMenu() {
     const isMobile = useIsMobile();
@@ -76,6 +70,9 @@ export function HelpMenu() {
                 right: 8,
                 zIndex: theme.zIndex.fab,
                 pointerEvents: 'none',
+                '& > *:not(.speedDial)': {
+                    pointerEvents: 'auto',
+                },
             })}
             spacing={1}
             alignItems="center"
@@ -90,6 +87,7 @@ export function HelpMenu() {
 
             <SpeedDial
                 ariaLabel="Help Menu"
+                className="speedDial"
                 icon={
                     <Tooltip title="Help Menu" placement="left">
                         <Box
@@ -135,7 +133,6 @@ export function HelpMenu() {
                     size="large"
                     onClick={handleOpenAutoSaveWarning}
                     sx={{
-                        ...commonChildItemStyles,
                         bgcolor: isDark ? 'warning.dark' : 'warning.main',
                         color: 'white',
                         height: '4rem',
