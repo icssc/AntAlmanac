@@ -1,8 +1,9 @@
-import { ContentPasteGo } from '@mui/icons-material';
+import { CloudUpload, ContentPasteGo } from '@mui/icons-material';
 import {
     AlertColor,
     Box,
     Button,
+    Checkbox,
     Dialog,
     DialogActions,
     DialogContent,
@@ -11,15 +12,17 @@ import {
     FormControl,
     FormControlLabel,
     InputLabel,
+    Paper,
     Radio,
     RadioGroup,
     Stack,
     TextField,
     Tooltip,
+    Typography,
 } from '@mui/material';
-import { CourseInfo } from '@packages/antalmanac-types';
+import { CourseInfo, ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import {
@@ -28,6 +31,7 @@ import {
     addCourse,
     importScheduleWithUsername,
     importValidatedSchedule,
+    mergeShortCourseSchedules,
 } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
@@ -44,7 +48,7 @@ import {
 } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
-import { BLUE } from '$src/globals';
+import { BLUE, DODGER_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -54,6 +58,7 @@ enum ImportSource {
     ZOT_COURSE_IMPORT = 'zotcourse',
     STUDY_LIST_IMPORT = 'studylist',
     AA_USERNAME_IMPORT = 'username',
+    JSON_IMPORT = 'json',
 }
 
 export function Import() {
@@ -74,12 +79,27 @@ export function Import() {
 
     const postHog = usePostHog();
 
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+    const dragCounterRef = useRef(0);
+    const [importedSchedules, setImportedSchedules] = useState<ShortCourseSchedule[]>([]);
+    const [selectedScheduleIndices, setSelectedScheduleIndices] = useState<Set<number>>(new Set());
+
     const handleOpen = useCallback(() => {
         setOpenImportDialog(true);
     }, [setOpenImportDialog]);
 
     const handleClose = useCallback(() => {
         setOpenImportDialog(false);
+        setSelectedFileName(null);
+        setIsDragging(false);
+        dragCounterRef.current = 0;
+        setImportedSchedules([]);
+        setSelectedScheduleIndices(new Set());
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
     }, [setOpenImportDialog]);
 
     const handleSubmit = async () => {
@@ -130,13 +150,50 @@ export function Import() {
                 }
                 break;
             }
+
+            case ImportSource.JSON_IMPORT: {
+                if (importedSchedules.length === 0) {
+                    openSnackbar('error', 'Please select a JSON file to import.');
+                    return;
+                }
+
+                if (selectedScheduleIndices.size === 0) {
+                    openSnackbar('error', 'Please select at least one schedule to import.');
+                    return;
+                }
+
+                try {
+                    const schedulesToImport = importedSchedules.filter((_, index) =>
+                        selectedScheduleIndices.has(index)
+                    );
+                    const currentScheduleState = AppStore.schedule.getScheduleAsSaveState();
+
+                    mergeShortCourseSchedules(currentScheduleState.schedules, schedulesToImport, '');
+                    currentScheduleState.scheduleIndex = currentScheduleState.schedules.length - 1;
+
+                    await AppStore.loadSchedule(currentScheduleState);
+                    openSnackbar('success', `Successfully imported ${schedulesToImport.length} schedule(s)!`);
+                } catch (error) {
+                    console.error('JSON import error:', error);
+                    const errorMessage = error instanceof Error ? error.message : 'Failed to import schedules.';
+                    openSnackbar('error', errorMessage);
+                    handleClose();
+                    return;
+                }
+                break;
+            }
+
             default:
                 openSnackbar('error', 'Invalid import source.');
                 handleClose();
                 return;
         }
 
-        if (!sectionCodes && importSource !== ImportSource.AA_USERNAME_IMPORT) {
+        if (
+            !sectionCodes &&
+            importSource !== ImportSource.AA_USERNAME_IMPORT &&
+            importSource !== ImportSource.JSON_IMPORT
+        ) {
             openSnackbar(
                 'error',
                 `Cannot import an empty ${
@@ -147,6 +204,12 @@ export function Import() {
             return;
         }
         setStudyListText('');
+        setSelectedFileName(null);
+        setImportedSchedules([]);
+        setSelectedScheduleIndices(new Set());
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
         handleClose();
     };
 
@@ -233,6 +296,300 @@ export function Import() {
         setAAUsername(event.currentTarget.value);
     }, []);
 
+    const validateCourse = useCallback(
+        (
+            course: Record<string, unknown>,
+            scheduleIndex: number,
+            courseIndex: number
+        ): { valid: boolean; error?: string } => {
+            if (!course.sectionCode || typeof course.sectionCode !== 'string') {
+                return {
+                    valid: false,
+                    error: `Schedule ${scheduleIndex + 1}, Course ${courseIndex + 1} is missing required field: sectionCode`,
+                };
+            }
+            if (!course.term || typeof course.term !== 'string') {
+                return {
+                    valid: false,
+                    error: `Schedule ${scheduleIndex + 1}, Course ${courseIndex + 1} is missing required field: term`,
+                };
+            }
+            if (!course.color || typeof course.color !== 'string') {
+                return {
+                    valid: false,
+                    error: `Schedule ${scheduleIndex + 1}, Course ${courseIndex + 1} is missing required field: color`,
+                };
+            }
+            return { valid: true };
+        },
+        []
+    );
+
+    const validateCustomEvent = useCallback(
+        (
+            customEvent: Record<string, unknown>,
+            scheduleIndex: number,
+            eventIndex: number
+        ): { valid: boolean; error?: string } => {
+            if (!customEvent.customEventId && customEvent.customEventID === undefined) {
+                return {
+                    valid: false,
+                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${eventIndex + 1} is missing required field: customEventId or customEventID`,
+                };
+            }
+            if (!customEvent.title || typeof customEvent.title !== 'string') {
+                return {
+                    valid: false,
+                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${eventIndex + 1} is missing required field: title`,
+                };
+            }
+            if (!customEvent.start || typeof customEvent.start !== 'string') {
+                return {
+                    valid: false,
+                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${eventIndex + 1} is missing required field: start`,
+                };
+            }
+            if (!customEvent.end || typeof customEvent.end !== 'string') {
+                return {
+                    valid: false,
+                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${eventIndex + 1} is missing required field: end`,
+                };
+            }
+            if (!customEvent.days || !Array.isArray(customEvent.days)) {
+                return {
+                    valid: false,
+                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${eventIndex + 1} is missing required field: days (must be an array)`,
+                };
+            }
+            if (!customEvent.color || typeof customEvent.color !== 'string') {
+                return {
+                    valid: false,
+                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${eventIndex + 1} is missing required field: color`,
+                };
+            }
+            if (!('building' in customEvent)) {
+                return {
+                    valid: false,
+                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${eventIndex + 1} is missing required field: building`,
+                };
+            }
+            return { valid: true };
+        },
+        []
+    );
+
+    const validateSchedule = useCallback(
+        (schedule: Record<string, unknown>, scheduleIndex: number): { valid: boolean; error?: string } => {
+            if (!schedule.id || (typeof schedule.id !== 'string' && typeof schedule.id !== 'number')) {
+                return { valid: false, error: `Schedule ${scheduleIndex + 1} is missing required field: id` };
+            }
+            if (!schedule.scheduleName || typeof schedule.scheduleName !== 'string') {
+                return { valid: false, error: `Schedule ${scheduleIndex + 1} is missing required field: scheduleName` };
+            }
+            if (!('scheduleNote' in schedule)) {
+                return { valid: false, error: `Schedule ${scheduleIndex + 1} is missing required field: scheduleNote` };
+            }
+            if (!schedule.courses || !Array.isArray(schedule.courses)) {
+                return {
+                    valid: false,
+                    error: `Schedule ${scheduleIndex + 1} is missing required field: courses (must be an array)`,
+                };
+            }
+
+            for (let j = 0; j < schedule.courses.length; j++) {
+                const course = schedule.courses[j] as Record<string, unknown>;
+                const courseValidation = validateCourse(course, scheduleIndex, j);
+                if (!courseValidation.valid) {
+                    return courseValidation;
+                }
+            }
+
+            if (schedule.customEvents && Array.isArray(schedule.customEvents)) {
+                for (let k = 0; k < schedule.customEvents.length; k++) {
+                    const customEvent = schedule.customEvents[k] as Record<string, unknown>;
+                    const eventValidation = validateCustomEvent(customEvent, scheduleIndex, k);
+                    if (!eventValidation.valid) {
+                        return eventValidation;
+                    }
+                }
+            }
+
+            return { valid: true };
+        },
+        [validateCourse, validateCustomEvent]
+    );
+
+    const validateScheduleData = useCallback(
+        (scheduleData: unknown): { valid: boolean; error?: string } => {
+            if (!scheduleData || typeof scheduleData !== 'object') {
+                return { valid: false, error: 'Invalid schedule data format. Schedule data must be an object.' };
+            }
+
+            const data = scheduleData as { schedules?: unknown };
+            if (!data.schedules || !Array.isArray(data.schedules)) {
+                return { valid: false, error: 'Invalid schedule data format. Schedules must be an array.' };
+            }
+
+            for (let i = 0; i < data.schedules.length; i++) {
+                const schedule = data.schedules[i] as Record<string, unknown>;
+                const scheduleValidation = validateSchedule(schedule, i);
+                if (!scheduleValidation.valid) {
+                    return scheduleValidation;
+                }
+            }
+
+            return { valid: true };
+        },
+        [validateSchedule]
+    );
+
+    const handleFileInputChange = useCallback(
+        async (event: React.ChangeEvent<HTMLInputElement>) => {
+            const file = event.target.files?.[0];
+            if (file) {
+                if (file.type === 'application/json' || file.name.endsWith('.json')) {
+                    setSelectedFileName(file.name);
+
+                    try {
+                        const fileText = await file.text();
+                        const importedScheduleData = JSON.parse(fileText);
+
+                        const validation = validateScheduleData(importedScheduleData);
+                        if (!validation.valid) {
+                            openSnackbar('error', validation.error || 'Invalid schedule data format.');
+                            setSelectedFileName(null);
+                            if (fileInputRef.current) {
+                                fileInputRef.current.value = '';
+                            }
+                            return;
+                        }
+
+                        if (importedScheduleData.schedules && Array.isArray(importedScheduleData.schedules)) {
+                            if (importedScheduleData.schedules.length === 0) {
+                                openSnackbar('error', 'No schedules found in the imported file.');
+                                setSelectedFileName(null);
+                                if (fileInputRef.current) {
+                                    fileInputRef.current.value = '';
+                                }
+                                return;
+                            }
+
+                            setImportedSchedules(importedScheduleData.schedules);
+                            setSelectedScheduleIndices(
+                                new Set(importedScheduleData.schedules.map((_: unknown, index: number) => index))
+                            );
+                        } else {
+                            openSnackbar('error', 'Invalid schedule data format.');
+                            setSelectedFileName(null);
+                            if (fileInputRef.current) {
+                                fileInputRef.current.value = '';
+                            }
+                        }
+                    } catch (error) {
+                        console.error('JSON parse error:', error);
+                        const errorMessage = error instanceof Error ? error.message : 'Failed to parse JSON file.';
+                        openSnackbar('error', errorMessage);
+                        setSelectedFileName(null);
+                        if (fileInputRef.current) {
+                            fileInputRef.current.value = '';
+                        }
+                    }
+                } else {
+                    openSnackbar('error', 'Please select a valid JSON file.');
+                    if (fileInputRef.current) {
+                        fileInputRef.current.value = '';
+                    }
+                    setSelectedFileName(null);
+                }
+            }
+        },
+        [validateScheduleData]
+    );
+
+    const handleDragOver = useCallback((event: React.DragEvent<HTMLLabelElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (event.dataTransfer.types.includes('Files')) {
+            setIsDragging(true);
+        }
+    }, []);
+
+    const handleDragEnter = useCallback((event: React.DragEvent<HTMLLabelElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+        dragCounterRef.current += 1;
+        if (event.dataTransfer.types.includes('Files')) {
+            setIsDragging(true);
+        }
+    }, []);
+
+    const handleDragLeave = useCallback((event: React.DragEvent<HTMLLabelElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+        dragCounterRef.current -= 1;
+        if (dragCounterRef.current === 0) {
+            setIsDragging(false);
+        }
+    }, []);
+
+    const handleDrop = useCallback(
+        async (event: React.DragEvent<HTMLLabelElement>) => {
+            event.preventDefault();
+            event.stopPropagation();
+            dragCounterRef.current = 0;
+            setIsDragging(false);
+
+            const file = event.dataTransfer.files?.[0];
+            if (file) {
+                if (file.type === 'application/json' || file.name.endsWith('.json')) {
+                    setSelectedFileName(file.name);
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    if (fileInputRef.current) {
+                        fileInputRef.current.files = dataTransfer.files;
+                    }
+
+                    try {
+                        const fileText = await file.text();
+                        const importedScheduleData = JSON.parse(fileText);
+
+                        const validation = validateScheduleData(importedScheduleData);
+                        if (!validation.valid) {
+                            openSnackbar('error', validation.error || 'Invalid schedule data format.');
+                            setSelectedFileName(null);
+                            return;
+                        }
+
+                        if (importedScheduleData.schedules && Array.isArray(importedScheduleData.schedules)) {
+                            if (importedScheduleData.schedules.length === 0) {
+                                openSnackbar('error', 'No schedules found in the imported file.');
+                                setSelectedFileName(null);
+                                return;
+                            }
+
+                            setImportedSchedules(importedScheduleData.schedules);
+                            setSelectedScheduleIndices(
+                                new Set(importedScheduleData.schedules.map((_: unknown, index: number) => index))
+                            );
+                        } else {
+                            openSnackbar('error', 'Invalid schedule data format.');
+                            setSelectedFileName(null);
+                        }
+                    } catch (error) {
+                        console.error('JSON parse error:', error);
+                        const errorMessage = error instanceof Error ? error.message : 'Failed to parse JSON file.';
+                        openSnackbar('error', errorMessage);
+                        setSelectedFileName(null);
+                    }
+                } else {
+                    openSnackbar('error', 'Please drop a valid JSON file.');
+                    setSelectedFileName(null);
+                }
+            }
+        },
+        [validateScheduleData]
+    );
+
     const handleFirstTimeSignin = useCallback(async () => {
         const newUserFlag = getLocalStorageOnFirstSignin() ?? '';
         if (newUserFlag !== '') {
@@ -298,6 +655,13 @@ export function Import() {
                                     control={<Radio color="primary" />}
                                     label="From AntAlmanac unique user ID"
                                     disabled={!sessionIsValid}
+                                />
+                            </Tooltip>
+                            <Tooltip title="Import from your schedule data" placement="right">
+                                <FormControlLabel
+                                    value={ImportSource.JSON_IMPORT}
+                                    control={<Radio color="primary" />}
+                                    label="From JSON File"
                                 />
                             </Tooltip>
                         </RadioGroup>
@@ -368,11 +732,184 @@ export function Import() {
                         </Box>
                     )}
 
-                    {importSource !== ImportSource.AA_USERNAME_IMPORT && (
+                    {importSource !== ImportSource.AA_USERNAME_IMPORT && importSource !== ImportSource.JSON_IMPORT && (
                         <Stack spacing={1}>
                             <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
                             <TermSelector />
                         </Stack>
+                    )}
+                    {importSource === ImportSource.JSON_IMPORT && (
+                        <Box>
+                            <DialogContentText>
+                                Upload your schedule data JSON file here to import it into AntAlmanac.
+                            </DialogContentText>
+
+                            <InputLabel style={{ fontSize: '9px', marginTop: '16px', marginBottom: '8px' }}>
+                                Schedule Data JSON File
+                            </InputLabel>
+
+                            <input
+                                ref={fileInputRef}
+                                id="json-file-input"
+                                type="file"
+                                accept=".json,application/json"
+                                style={{ display: 'none' }}
+                                onChange={handleFileInputChange}
+                            />
+
+                            <label
+                                htmlFor="json-file-input"
+                                onDragEnter={handleDragEnter}
+                                onDragOver={handleDragOver}
+                                onDragLeave={handleDragLeave}
+                                onDrop={handleDrop}
+                                style={{ display: 'block', cursor: 'pointer' }}
+                                aria-label="Upload JSON schedule file"
+                            >
+                                <Paper
+                                    sx={{
+                                        border: '2px dashed',
+                                        borderColor: isDragging || selectedFileName ? DODGER_BLUE : 'divider',
+                                        backgroundColor: isDragging ? 'action.hover' : 'background.paper',
+                                        padding: 3,
+                                        textAlign: 'center',
+                                        transition: 'all 0.2s ease-in-out',
+                                        '&:hover': {
+                                            borderColor: DODGER_BLUE,
+                                            backgroundColor: 'action.hover',
+                                        },
+                                    }}
+                                >
+                                    <Stack spacing={2} alignItems="center">
+                                        <CloudUpload
+                                            sx={{
+                                                fontSize: 48,
+                                                color: isDragging || selectedFileName ? DODGER_BLUE : 'text.secondary',
+                                            }}
+                                        />
+                                        {selectedFileName ? (
+                                            <>
+                                                <Typography
+                                                    variant="body1"
+                                                    sx={{ color: DODGER_BLUE }}
+                                                    fontWeight="medium"
+                                                >
+                                                    {selectedFileName}
+                                                </Typography>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    Click to select a different file
+                                                </Typography>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Typography variant="body1" color="text.primary">
+                                                    Drag and drop your JSON file here
+                                                </Typography>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    or click to browse
+                                                </Typography>
+                                            </>
+                                        )}
+                                    </Stack>
+                                </Paper>
+                            </label>
+
+                            {importedSchedules.length > 0 && (
+                                <Box sx={{ marginTop: 3 }}>
+                                    <DialogContentText sx={{ marginBottom: 2 }}>
+                                        Select which schedules you would like to import:
+                                    </DialogContentText>
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                checked={
+                                                    selectedScheduleIndices.size === importedSchedules.length &&
+                                                    importedSchedules.length > 0
+                                                }
+                                                indeterminate={
+                                                    selectedScheduleIndices.size > 0 &&
+                                                    selectedScheduleIndices.size < importedSchedules.length
+                                                }
+                                                onChange={() => {
+                                                    if (selectedScheduleIndices.size === importedSchedules.length) {
+                                                        setSelectedScheduleIndices(new Set());
+                                                    } else {
+                                                        setSelectedScheduleIndices(
+                                                            new Set(importedSchedules.map((_, index) => index))
+                                                        );
+                                                    }
+                                                }}
+                                            />
+                                        }
+                                        label={
+                                            <Typography variant="subtitle2" fontWeight="medium">
+                                                Select All ({selectedScheduleIndices.size} of {importedSchedules.length}
+                                                )
+                                            </Typography>
+                                        }
+                                        sx={{ marginBottom: 1 }}
+                                    />
+                                    <Box
+                                        sx={{
+                                            maxHeight: 300,
+                                            overflow: 'auto',
+                                            border: '1px solid',
+                                            borderColor: 'divider',
+                                            borderRadius: 1,
+                                            p: 1,
+                                        }}
+                                    >
+                                        <Stack spacing={1}>
+                                            {importedSchedules.map((schedule, index) => (
+                                                <Paper
+                                                    key={index}
+                                                    sx={{
+                                                        p: 1.5,
+                                                        border: selectedScheduleIndices.has(index)
+                                                            ? `2px solid ${DODGER_BLUE}`
+                                                            : '2px solid transparent',
+                                                        backgroundColor: selectedScheduleIndices.has(index)
+                                                            ? 'action.selected'
+                                                            : 'background.paper',
+                                                        transition: 'all 0.2s ease-in-out',
+                                                    }}
+                                                >
+                                                    <FormControlLabel
+                                                        control={
+                                                            <Checkbox
+                                                                checked={selectedScheduleIndices.has(index)}
+                                                                onChange={() => {
+                                                                    setSelectedScheduleIndices((prev) => {
+                                                                        const newSet = new Set(prev);
+                                                                        if (newSet.has(index)) {
+                                                                            newSet.delete(index);
+                                                                        } else {
+                                                                            newSet.add(index);
+                                                                        }
+                                                                        return newSet;
+                                                                    });
+                                                                }}
+                                                            />
+                                                        }
+                                                        label={
+                                                            <Box>
+                                                                <Typography variant="body2" fontWeight="medium">
+                                                                    {schedule.scheduleName}
+                                                                </Typography>
+                                                                <Typography variant="caption" color="text.secondary">
+                                                                    {schedule.courses.length} course(s),{' '}
+                                                                    {schedule.customEvents.length} custom event(s)
+                                                                </Typography>
+                                                            </Box>
+                                                        }
+                                                    />
+                                                </Paper>
+                                            ))}
+                                        </Stack>
+                                    </Box>
+                                </Box>
+                            )}
+                        </Box>
                     )}
                 </DialogContent>
                 <DialogActions>
