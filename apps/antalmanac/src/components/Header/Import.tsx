@@ -458,6 +458,8 @@ export function Import() {
                         if (!validation.valid) {
                             openSnackbar('error', validation.error || 'Invalid schedule data format.');
                             setSelectedFileName(null);
+                            setImportedSchedules([]);
+                            setSelectedScheduleIndices(new Set());
                             if (fileInputRef.current) {
                                 fileInputRef.current.value = '';
                             }
@@ -468,6 +470,8 @@ export function Import() {
                             if (importedScheduleData.schedules.length === 0) {
                                 openSnackbar('error', 'No schedules found in the imported file.');
                                 setSelectedFileName(null);
+                                setImportedSchedules([]);
+                                setSelectedScheduleIndices(new Set());
                                 if (fileInputRef.current) {
                                     fileInputRef.current.value = '';
                                 }
@@ -481,6 +485,8 @@ export function Import() {
                         } else {
                             openSnackbar('error', 'Invalid schedule data format.');
                             setSelectedFileName(null);
+                            setImportedSchedules([]);
+                            setSelectedScheduleIndices(new Set());
                             if (fileInputRef.current) {
                                 fileInputRef.current.value = '';
                             }
@@ -490,6 +496,8 @@ export function Import() {
                         const errorMessage = error instanceof Error ? error.message : 'Failed to parse JSON file.';
                         openSnackbar('error', errorMessage);
                         setSelectedFileName(null);
+                        setImportedSchedules([]);
+                        setSelectedScheduleIndices(new Set());
                         if (fileInputRef.current) {
                             fileInputRef.current.value = '';
                         }
@@ -500,6 +508,8 @@ export function Import() {
                         fileInputRef.current.value = '';
                     }
                     setSelectedFileName(null);
+                    setImportedSchedules([]);
+                    setSelectedScheduleIndices(new Set());
                 }
             }
         },
@@ -557,6 +567,8 @@ export function Import() {
                         if (!validation.valid) {
                             openSnackbar('error', validation.error || 'Invalid schedule data format.');
                             setSelectedFileName(null);
+                            setImportedSchedules([]);
+                            setSelectedScheduleIndices(new Set());
                             return;
                         }
 
@@ -564,6 +576,8 @@ export function Import() {
                             if (importedScheduleData.schedules.length === 0) {
                                 openSnackbar('error', 'No schedules found in the imported file.');
                                 setSelectedFileName(null);
+                                setImportedSchedules([]);
+                                setSelectedScheduleIndices(new Set());
                                 return;
                             }
 
@@ -574,16 +588,22 @@ export function Import() {
                         } else {
                             openSnackbar('error', 'Invalid schedule data format.');
                             setSelectedFileName(null);
+                            setImportedSchedules([]);
+                            setSelectedScheduleIndices(new Set());
                         }
                     } catch (error) {
                         console.error('JSON parse error:', error);
                         const errorMessage = error instanceof Error ? error.message : 'Failed to parse JSON file.';
                         openSnackbar('error', errorMessage);
                         setSelectedFileName(null);
+                        setImportedSchedules([]);
+                        setSelectedScheduleIndices(new Set());
                     }
                 } else {
                     openSnackbar('error', 'Please drop a valid JSON file.');
                     setSelectedFileName(null);
+                    setImportedSchedules([]);
+                    setSelectedScheduleIndices(new Set());
                 }
             }
         },
