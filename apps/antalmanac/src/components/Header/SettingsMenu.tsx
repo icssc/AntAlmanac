@@ -24,7 +24,13 @@ import appStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
+import {
+    usePreviewStore,
+    useThemeStore,
+    useTimeFormatStore,
+    useAutoSaveStore,
+    useJsonImportExportStore,
+} from '$stores/SettingsStore';
 
 const lightSelectedStyle: React.CSSProperties = {
     backgroundColor: '#F0F7FF',
@@ -162,6 +168,10 @@ function TimeMenu() {
 function ExperimentalMenu() {
     const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
     const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
+    const [jsonImportExport, setJsonImportExport] = useJsonImportExportStore((store) => [
+        store.jsonImportExport,
+        store.setJsonImportExport,
+    ]);
     const { sessionIsValid, session } = useSessionStore();
     const { setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
 
@@ -214,6 +224,23 @@ function ExperimentalMenu() {
                     </Tooltip>
                 </Box>
                 <Switch color={'primary'} value={autoSave} checked={autoSave} onChange={handleAutoSaveChange} />
+            </Box>
+
+            <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
+                <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
+                        JSON Import/Export
+                    </Typography>
+                    <Tooltip title={<Typography>Enable JSON file import and export functionality</Typography>}>
+                        <Help />
+                    </Tooltip>
+                </Box>
+                <Switch
+                    color={'primary'}
+                    value={jsonImportExport}
+                    checked={jsonImportExport}
+                    onChange={(event) => setJsonImportExport(event.target.checked)}
+                />
             </Box>
         </Stack>
     );

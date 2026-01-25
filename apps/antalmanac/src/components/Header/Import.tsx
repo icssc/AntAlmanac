@@ -52,7 +52,7 @@ import { BLUE, DODGER_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
+import { useThemeStore, useJsonImportExportStore } from '$stores/SettingsStore';
 
 enum ImportSource {
     ZOT_COURSE_IMPORT = 'zotcourse',
@@ -74,6 +74,7 @@ export function Import() {
 
     const { sessionIsValid } = useSessionStore();
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
+    const jsonImportExport = useJsonImportExportStore((store) => store.jsonImportExport);
 
     const { isDark } = useThemeStore();
 
@@ -636,6 +637,12 @@ export function Import() {
         };
     }, [handleFirstTimeSignin, sessionIsValid]);
 
+    useEffect(() => {
+        if (!jsonImportExport && importSource === ImportSource.JSON_IMPORT) {
+            setImportSource(ImportSource.STUDY_LIST_IMPORT);
+        }
+    }, [jsonImportExport, importSource]);
+
     return (
         <>
             <Tooltip title="Import a schedule from your Study List">
@@ -677,13 +684,15 @@ export function Import() {
                                     disabled={!sessionIsValid}
                                 />
                             </Tooltip>
-                            <Tooltip title="Import from your schedule data" placement="right">
-                                <FormControlLabel
-                                    value={ImportSource.JSON_IMPORT}
-                                    control={<Radio color="primary" />}
-                                    label="From JSON File"
-                                />
-                            </Tooltip>
+                            {jsonImportExport && (
+                                <Tooltip title="Import from your schedule data" placement="right">
+                                    <FormControlLabel
+                                        value={ImportSource.JSON_IMPORT}
+                                        control={<Radio color="primary" />}
+                                        label="From JSON File"
+                                    />
+                                </Tooltip>
+                            )}
                         </RadioGroup>
                     </FormControl>
                     {importSource === ImportSource.STUDY_LIST_IMPORT && (
