@@ -1,4 +1,4 @@
-name: Check for New Quarter and Update Deployed Terms if needed
+name: Check for New Quarter and Update Deployed Terms If Needed
 
 on:
     schedule:
@@ -12,11 +12,11 @@ permissions:
     contents: write
 
 jobs:
-    check-and-reschedule:
+    check-quarters:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -25,7 +25,7 @@ jobs:
                   git config user.name "github-actions[bot]"
                   git config user.email "github-actions[bot]@users.noreply.github.com"
 
-            - name: Check for new Terms
+            - name: Check for new terms
               id: check
               run: |
                   echo "Fetching latest terms from AnteaterAPI..."
