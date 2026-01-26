@@ -21,7 +21,7 @@ async function processEmailRecords(records: SQSEvent['Records']) {
                 Content: {
                     Template: {
                         TemplateName: emailRequest.TemplateName,
-                        TemplateData: emailRequest.ReplacementTemplateData,
+                        TemplateData: emailRequest.TemplateData,
                     },
                 },
             });

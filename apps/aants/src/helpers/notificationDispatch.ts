@@ -114,35 +114,16 @@ async function sendNotification(
             (user): user is User & { email: string } => user.email !== null
         );
 
-        const templateData = JSON.stringify({
-            name: '',
-            notification: '',
-            deptCode: '',
-            courseNumber: '',
-            courseTitle: '',
-            instructor: '',
-            days: '',
-            hours: '',
-            time: '',
-            sectionCode: '',
-            userId: '',
-            quarter: '',
-            year: '',
-            stagingPrefix: stagingPrefix,
-        });
-
         // Send each email as a separate SQS message
         await Promise.all(
             usersWithEmail.map((user) =>
                 queueEmail(queueUrl, {
                     FromEmailAddress: 'icssc@uci.edu',
                     TemplateName: 'CourseNotification',
-                    TemplateData: templateData,
                     Destination: {
                         ToAddresses: [user.email],
                     },
-                    ReplacementTemplateData: JSON.stringify({
-                        userName: user.userName,
+                    TemplateData: JSON.stringify({
                         notification: notification,
                         deptCode: deptCode,
                         courseNumber: courseNumber,

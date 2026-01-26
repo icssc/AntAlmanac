@@ -9,7 +9,6 @@ export interface EmailRequest {
     Destination: {
         ToAddresses: string[];
     };
-    ReplacementTemplateData: string;
 }
 
 /**
