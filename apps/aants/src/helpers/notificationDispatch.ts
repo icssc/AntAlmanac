@@ -114,6 +114,8 @@ async function sendNotification(
             (user): user is User & { email: string } => user.email !== null
         );
 
+        console.log(`[QUEUE] Queuing ${usersWithEmail.length} email(s) for ${deptCode} ${courseNumber} ${sectionCode}`);
+
         // Send each email as a separate SQS message
         await Promise.all(
             usersWithEmail.map((user) =>
@@ -142,6 +144,7 @@ async function sendNotification(
             )
         );
 
+        console.log(`[QUEUE] Successfully queued ${usersWithEmail.length} email(s) for ${deptCode} ${courseNumber} ${sectionCode}`);
         return { queued: usersWithEmail.length };
     } catch (error) {
         console.error('Error sending bulk emails:', error);
