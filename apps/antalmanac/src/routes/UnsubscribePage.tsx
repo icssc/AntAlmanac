@@ -41,9 +41,9 @@ export const Unsubscribe = () => {
 
         try {
             if (unsubscribeAll === 'true') {
-                await trpc.notifications.deleteAllNotifications.mutate({ id: userId });
+                await trpc.notifications.deleteAllNotifications.mutate({ userId });
             } else {
-                await trpc.notifications.deleteNotification.mutate({ id: userId, notification });
+                await trpc.notifications.deleteNotification.mutate({ userId, notification });
             }
             setDone(true);
         } catch (err) {
