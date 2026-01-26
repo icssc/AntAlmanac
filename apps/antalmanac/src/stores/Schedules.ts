@@ -7,6 +7,7 @@ import type {
     RepeatingCustomEvent,
     CourseInfo,
     CustomEventId,
+    CourseDetails,
 } from '@packages/antalmanac-types';
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
@@ -591,6 +592,49 @@ export class Schedules {
 
             await Promise.all(websocRequests);
 
+            // Fetch complete sectionTypes for each unique course
+            // When getCourseInfo is called with specific sectionCodes, WebSOC only returns those sections,
+            // so sectionTypes is incomplete. We need to fetch all sections of each course to get complete sectionTypes.
+            const completeSectionTypesDict = new Map<string, CourseDetails['sectionTypes']>();
+            const uniqueCourses = new Set<string>();
+
+            // Extract unique courses from the fetched courseInfo
+            for (const [term, courseInfoMap] of courseInfoDict) {
+                for (const [, courseInfo] of Object.entries(courseInfoMap)) {
+                    const key = `${term}-${courseInfo.courseDetails.deptCode}-${courseInfo.courseDetails.courseNumber}`;
+                    uniqueCourses.add(key);
+                }
+            }
+
+            // Fetch full course data for each unique course
+            const fullCourseRequests = Array.from(uniqueCourses).map(async (courseKey) => {
+                const [term, deptCode, courseNumber] = courseKey.split('-');
+                try {
+                    const fullData = await WebSOC.query({ term, deptCode, courseNumber });
+
+                    // Extract all section types from the full course data
+                    const allSectionTypesSet = new Set<CourseDetails['sectionTypes'][number]>();
+                    for (const school of fullData.schools) {
+                        for (const dept of school.departments) {
+                            for (const course of dept.courses) {
+                                course.sections.forEach((section) => {
+                                    allSectionTypesSet.add(section.sectionType);
+                                });
+                            }
+                        }
+                    }
+
+                    if (allSectionTypesSet.size > 0) {
+                        completeSectionTypesDict.set(courseKey, Array.from(allSectionTypesSet));
+                    }
+                } catch (e) {
+                    console.error(`Failed to fetch full course data for ${courseKey}:`, e);
+                    // Fall back to incomplete sectionTypes from courseInfo
+                }
+            });
+
+            await Promise.all(fullCourseRequests);
+
             this.schedules.length = 0;
             this.currentScheduleIndex = saveState.scheduleIndex;
 
@@ -605,9 +649,19 @@ export class Schedules {
                             // Class doesn't exist/was cancelled
                             continue;
                         }
+
+                        // Use complete sectionTypes if available
+                        const courseKey = `${shortCourse.term}-${courseInfo.courseDetails.deptCode}-${courseInfo.courseDetails.courseNumber}`;
+                        const completeSectionTypes = completeSectionTypesDict.get(courseKey);
+
+                        const courseDetails = { ...courseInfo.courseDetails };
+                        if (completeSectionTypes) {
+                            courseDetails.sectionTypes = completeSectionTypes;
+                        }
+
                         courses.push({
                             ...shortCourse,
-                            ...courseInfo.courseDetails,
+                            ...courseDetails,
                             section: {
                                 ...courseInfo.section,
                                 color: shortCourse.color,
