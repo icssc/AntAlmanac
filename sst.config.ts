@@ -43,9 +43,18 @@ export default $config({
             },
         });
 
+
+        const emailDLQ = new sst.aws.Queue('EmailDLQ', {
+            messageRetentionPeriod: '14 days', 
+        });
+
         const emailQueue = new sst.aws.Queue('EmailQueue', {
             visibilityTimeout: '3 minutes', 
-            messageRetentionPeriod: '14 days', 
+            messageRetentionPeriod: '14 days',
+            dlq: {
+                queue: emailDLQ.arn,
+                retry: 3, 
+            },
         });
 
         const aantsLambda = new sst.aws.Function('AantsLambda', {
