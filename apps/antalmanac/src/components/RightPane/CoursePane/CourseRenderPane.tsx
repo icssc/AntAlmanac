@@ -1,5 +1,5 @@
 import { Close } from '@mui/icons-material';
-import { Alert, Box, IconButton, Link } from '@mui/material';
+import { Alert, Box, IconButton, Link, useTheme } from '@mui/material';
 import {
     AACourse,
     AASection,
@@ -79,6 +79,7 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
     const isMobile = useIsMobile();
+    const theme = useTheme();
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
     const recruitmentDismissalTime = getLocalStorageRecruitmentDismissalTime();
