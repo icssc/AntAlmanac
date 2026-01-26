@@ -1,7 +1,8 @@
-import { Box, Button, Paper, Popover, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Button, Paper, Popover, useTheme } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 
+import { useIsMobile } from '$hooks/useIsMobile';
 import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
@@ -24,13 +25,12 @@ export const CourseInfoButton = ({
 }: CourseInfoButtonProps) => {
     const postHog = usePostHog();
     const theme = useTheme();
-    const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMobile = useIsMobile();
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const scheduleManagementWidth = useScheduleManagementStore((state) => state.scheduleManagementWidth);
-    const compact =
-        isMobileScreen || (scheduleManagementWidth && scheduleManagementWidth < theme.breakpoints.values.xs);
+    const compact = isMobile || (scheduleManagementWidth && scheduleManagementWidth < theme.breakpoints.values.xs);
 
     const handleClick = useCallback(
         (event: React.MouseEvent<HTMLElement>) => {
