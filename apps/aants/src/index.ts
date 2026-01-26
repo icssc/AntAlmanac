@@ -90,13 +90,41 @@ function processSchool(school: WebsocSchool, quarter: string, year: string) {
 
 /**
  * Processes a batch of section codes and sends notifications to users if the status and/or restriction codes have changed.
+ * If there are missing codes, retry them individually to work around WebSoc's ignoring requests for section codes from the same course.
  * @param batch - The batch of section codes to process.
  * @param quarter - The academic quarter of the batch.
  * @param year - The academic year of the batch.
  */
 async function processBatch(batch: string[], quarter: string, year: string) {
     const response: WebsocResponse = (await getUpdatedClasses(quarter, year, batch)) || { schools: [] };
-    return Promise.all(response.schools.map((school) => processSchool(school, quarter, year)));
+    
+    const processedSectionCodes = new Set<string>();
+    if (response?.schools) {
+        for (const school of response.schools) {
+            for (const department of school.departments) {
+                for (const course of department.courses) {
+                    for (const section of course.sections) {
+                        processedSectionCodes.add(section.sectionCode);
+                    }
+                }
+            }
+        }
+    }
+    
+    const notProcessed = batch.filter((code) => !processedSectionCodes.has(code));
+    
+    const initialPromises = Promise.all(response.schools.map((school) => processSchool(school, quarter, year)));
+
+    if (notProcessed.length > 0) {
+        const retryPromises = notProcessed.map(async (missingCode) => {
+            const retryResponse: WebsocResponse = (await getUpdatedClasses(quarter, year, [missingCode])) || { schools: [] };
+            return Promise.all(retryResponse.schools.map((school) => processSchool(school, quarter, year)));
+        });
+        
+        return Promise.all([initialPromises, ...retryPromises]);
+    }
+    
+    return initialPromises;
 }
 
 /**
@@ -114,7 +142,7 @@ export async function scanAndNotify() {
                 return Promise.all(batches.map((batch) => processBatch(batch, quarter, year)));
             })
         );
-
+        
         console.log('All subscriptions sent!');
     } catch (error) {
         console.error('Error in managing subscription:', error instanceof Error ? error.message : String(error));
