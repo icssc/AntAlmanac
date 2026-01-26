@@ -14,9 +14,9 @@ export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps
     const { setActiveTabValue } = useTabStore();
     const isMobile = useIsMobile();
 
-    const handleClick = useCallback(() => {
+    const handleClick = () => {
         setActiveTabValue(value);
-    }, [setActiveTabValue, value]);
+    };
 
     return (
         <Tab
