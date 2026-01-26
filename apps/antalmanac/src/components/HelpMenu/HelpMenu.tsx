@@ -29,8 +29,6 @@ export type HelpMenuAction = {
     onClick: VoidFunction;
 } | null;
 
-const CONTROLS_POINTER_EVENTS_CLASS_NAME = 'controlsPointerEvents';
-
 export function HelpMenu() {
     const isMobile = useIsMobile();
     const [open, setOpen] = useState(false);
@@ -72,7 +70,8 @@ export function HelpMenu() {
                 right: 8,
                 zIndex: theme.zIndex.fab,
                 pointerEvents: 'none',
-                [`& > *:not(.${CONTROLS_POINTER_EVENTS_CLASS_NAME})`]: {
+                // MUI SpeedDial controls pointer events itself
+                '& > *:not(.MuiSpeedDial-root)': {
                     pointerEvents: 'auto',
                 },
             })}
@@ -89,7 +88,6 @@ export function HelpMenu() {
 
             <SpeedDial
                 ariaLabel="Help Menu"
-                className={CONTROLS_POINTER_EVENTS_CLASS_NAME}
                 icon={
                     <Tooltip title="Help Menu" placement="left">
                         <Box
