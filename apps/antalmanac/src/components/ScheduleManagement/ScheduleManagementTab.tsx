@@ -1,7 +1,8 @@
-import { Tab, useMediaQuery, useTheme } from '@mui/material';
+import { Tab } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 import { ScheduleManagementTabInfo } from '$components/ScheduleManagement/ScheduleManagementTabs';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { useTabStore } from '$stores/TabStore';
 
 interface ScheduleManagementTabProps {
@@ -11,8 +12,7 @@ interface ScheduleManagementTabProps {
 
 export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps) => {
     const { setActiveTabValue } = useTabStore();
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMobile = useIsMobile();
 
     const handleClick = () => {
         setActiveTabValue(value);
