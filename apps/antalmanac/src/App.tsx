@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
 import { undoDelete, redoDelete } from '$actions/AppStoreActions';
+import { AutoSignIn } from '$components/AutoSignIn';
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
 import AppPostHogProvider from '$providers/PostHog';
 import AppQueryProvider from '$providers/Query';
@@ -24,6 +25,7 @@ function RouteLayout() {
     return (
         <>
             <PosthogPageviewTracker />
+            <AutoSignIn />
             <Outlet />
         </>
     );
