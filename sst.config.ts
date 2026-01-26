@@ -6,7 +6,8 @@ function getDomain() {
     } else if ($app.stage === 'staging-shared') {
         return 'staging-shared.antalmanac.com';
     } else if ($app.stage.match(/^staging-(\d+)$/)) {
-        return `${$app.stage}.antalmanac.com`;
+        const subdomainPrefix = $app.stage.replace('staging-', 'scheduler-');
+        return `${subdomainPrefix}.antalmanac.com`;
     }
 
     throw new Error('Invalid stage');
