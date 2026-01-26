@@ -29,13 +29,13 @@ export const Unsubscribe = () => {
             sectionCode,
             courseTitle: '',
             sectionType: '',
-            notificationStatus: {
-                openStatus: false,
-                waitlistStatus: false,
-                fullStatus: false,
-                restrictionStatus: false,
+            notifyOn: {
+                notifyOnOpen: false,
+                notifyOnWaitlist: false,
+                notifyOnFull: false,
+                notifyOnRestriction: false,
             },
-            lastUpdated: '',
+            lastUpdatedStatus: '',
             lastCodes: '',
         };
 
