@@ -43,28 +43,29 @@ export default $config({
             },
         });
 
-        const aantsLambda = new sst.aws.Function('AantsLambda', {
-            handler: 'apps/aants/src/lambda.handler',
-            timeout: '20 seconds', // TODO (@IsaacNguyen): Test how long AANTS takes to run and change accordingly
-            memory: '256 MB',
-            environment: {
-                DB_URL: dbUrl,
-                NODE_ENV: $app.stage === 'production' ? 'production' : 'development',
-                STAGE: $app.stage
-            },
-            permissions: [
-                {
-                    actions: ['ses:SendEmail', 'ses:SendRawEmail', 'ses:SendBulkEmail', 'ses:SendBulkTemplatedEmail'],
-                    resources: [
-                        'arn:aws:ses:us-east-2:990864464737:identity/icssc@uci.edu',
-                        'arn:aws:ses:us-east-2:990864464737:template/*',
-                        'arn:aws:ses:us-east-2:990864464737:configuration-set/*',
-                    ],
-                },
-            ],
-        });
-
         // Uncomment when verify SQS branch works
+
+        // const aantsLambda = new sst.aws.Function('AantsLambda', {
+        //     handler: 'apps/aants/src/lambda.handler',
+        //     timeout: '20 seconds', // TODO (@IsaacNguyen): Test how long AANTS takes to run and change accordingly
+        //     memory: '256 MB',
+        //     environment: {
+        //         DB_URL: dbUrl,
+        //         NODE_ENV: $app.stage === 'production' ? 'production' : 'development',
+        //         STAGE: $app.stage
+        //     },
+        //     permissions: [
+        //         {
+        //             actions: ['ses:SendEmail', 'ses:SendRawEmail', 'ses:SendBulkEmail', 'ses:SendBulkTemplatedEmail'],
+        //             resources: [
+        //                 'arn:aws:ses:us-east-2:990864464737:identity/icssc@uci.edu',
+        //                 'arn:aws:ses:us-east-2:990864464737:template/*',
+        //                 'arn:aws:ses:us-east-2:990864464737:configuration-set/*',
+        //             ],
+        //         },
+        //     ],
+        // });
+
         // new sst.aws.Cron('NotificationCronRule', {
         //     schedule: 'rate(5 minutes)', // AANTS runs every 5 minutes - TODO (@IsaacNguyen): Might change in future
         //     job: aantsLambda.arn,
