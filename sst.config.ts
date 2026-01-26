@@ -64,9 +64,10 @@ export default $config({
             ],
         });
 
-        new sst.aws.Cron('NotificationCronRule', {
-            schedule: 'rate(5 minutes)', // AANTS runs every 5 minutes - TODO (@IsaacNguyen): Might change in future
-            job: aantsLambda.arn,
-        });
+        // Uncomment when verify SQS branch works
+        // new sst.aws.Cron('NotificationCronRule', {
+        //     schedule: 'rate(5 minutes)', // AANTS runs every 5 minutes - TODO (@IsaacNguyen): Might change in future
+        //     job: aantsLambda.arn,
+        // });
     },
 });
