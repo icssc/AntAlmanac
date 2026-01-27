@@ -92,7 +92,7 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
         left: 'auto',
         right: 16,
         zIndex: 1,
-        width: '30%',
+        width: { xs: '45%', md: '30%' },
       }}
     >
       <Alert
