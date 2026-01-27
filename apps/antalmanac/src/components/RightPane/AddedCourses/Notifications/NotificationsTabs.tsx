@@ -45,7 +45,7 @@ export function NotificationsTabs() {
                 sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 4 }}
             >
                 <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center' }}>
-                    You don't have any notifications enabled.
+                    You don&apos;t have any notifications enabled.
                 </Typography>
                 <Box
                     sx={{

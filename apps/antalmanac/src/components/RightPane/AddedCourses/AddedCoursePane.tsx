@@ -4,8 +4,8 @@ import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { updateScheduleNote } from '$actions/AppStoreActions';
-import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
 import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEventDetailView';
+import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
 import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
 import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
