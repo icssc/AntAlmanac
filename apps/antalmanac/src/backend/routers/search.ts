@@ -122,12 +122,11 @@ const searchRouter = router({
                           })
                           .slice(0, MAX_AUTOCOMPLETE_RESULTS - matchedDepts.length - matchedSections.length);
 
-            let results = [
+              return Object.fromEntries([
                 ...matchedSections.map((x) => [x.sectionCode, x]),
                 ...matchedDepts.map((x) => [x.obj.id, x.obj]),
                 ...matchedCourses.map((x) => [x.obj.id, x.obj]),
-            ]
-            return Object.fromEntries(results);
+            ]);
         }),
 });
 
