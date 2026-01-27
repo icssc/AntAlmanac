@@ -133,6 +133,7 @@ async function sendNotification(
                         time: time,
                         sectionCode: sectionCode,
                         userId: user.userId,
+                        userName: user.userName,
                         quarter: quarter,
                         year: year,
                         stagingPrefix: stagingPrefix,
