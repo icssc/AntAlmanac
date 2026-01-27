@@ -1,5 +1,5 @@
-import { Autocomplete, AutocompleteProps, TextFieldProps } from '@mui/material';
-import { useId } from 'react';
+import { Autocomplete, type AutocompleteProps, Popper, type PopperProps, type TextFieldProps } from '@mui/material';
+import { useEffect, useId, useState } from 'react';
 
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 
@@ -14,6 +14,42 @@ interface LabeledAutocompleteProps<
     textFieldProps?: TextFieldProps;
     isAligned?: boolean;
 }
+
+const ResponsivePopper = (props: PopperProps) => {
+    const { anchorEl, style, ...rest } = props;
+    const [measuredWidth, setMeasuredWidth] = useState<number>();
+
+    useEffect(() => {
+        if (!anchorEl || !(anchorEl instanceof HTMLElement)) return;
+
+        const el = anchorEl;
+        const update = () => setMeasuredWidth(el.clientWidth);
+
+        update();
+
+        const ro = new ResizeObserver(() => update());
+        ro.observe(el);
+
+        // Fallback
+        window.addEventListener('resize', update);
+
+        return () => {
+            ro.disconnect();
+            window.removeEventListener('resize', update);
+        };
+    }, [anchorEl]);
+
+    return (
+        <Popper
+            {...rest}
+            anchorEl={anchorEl}
+            style={{
+                ...style,
+                ...(measuredWidth ? { width: measuredWidth } : null),
+            }}
+        />
+    );
+};
 
 export const LabeledAutocomplete = <T,>({
     label,
@@ -33,6 +69,7 @@ export const LabeledAutocomplete = <T,>({
                 width: '100%',
             }}
             {...autocompleteProps}
+            PopperComponent={ResponsivePopper}
             renderInput={(params) => (
                 <LabeledTextField
                     label={label}
