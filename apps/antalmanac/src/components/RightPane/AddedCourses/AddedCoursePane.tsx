@@ -124,7 +124,7 @@ function CustomEventsBox() {
             <Box display="flex" flexDirection="column" gap={1}>
                 {customEvents.map((customEvent) => {
                     return (
-                        <Box key={customEvent.title}>
+                        <Box key={customEvent.customEventID}>
                             <CustomEventDetailView
                                 customEvent={customEvent}
                                 scheduleNames={AppStore.getScheduleNames()}
@@ -398,7 +398,7 @@ export function AddedCoursePane() {
         return () => {
             AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
-    }, []);
+    }, [postHog]);
 
     return <Box>{skeletonMode ? <SkeletonSchedule /> : <AddedSectionsGrid />}</Box>;
 }

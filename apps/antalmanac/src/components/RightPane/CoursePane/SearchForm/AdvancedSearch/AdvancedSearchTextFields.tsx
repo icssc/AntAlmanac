@@ -397,7 +397,7 @@ export function AdvancedSearchTextFields() {
                         <MenuItem key={option.value} value={option.value} sx={{ paddingY: 0.25 }}>
                             <Checkbox
                                 checked={excludeRestrictionCodes.includes(option.value)}
-                                inputProps={{ 'aria-Labeledby': `option-label-${option.value}` }}
+                                inputProps={{ 'aria-labelledby': `option-label-${option.value}` }}
                             />
                             <ListItemText id={`option-label-${option.value}`} primary={option.label} />
                         </MenuItem>
@@ -427,7 +427,7 @@ export function AdvancedSearchTextFields() {
                         <MenuItem key={option.value} value={option.value} sx={{ paddingY: 0.25 }}>
                             <Checkbox
                                 checked={days.includes(option.value)}
-                                inputProps={{ 'aria-Labeledby': `option-label-${option.value}` }}
+                                inputProps={{ 'aria-labelledby': `option-label-${option.value}` }}
                             />
                             <ListItemText id={`option-label-${option.value}`} primary={option.label} />
                         </MenuItem>

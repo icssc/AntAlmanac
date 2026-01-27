@@ -626,10 +626,7 @@ export class RDS {
         });
     }
 
-    static async getUserAndAccountBySessionToken(
-        db: DatabaseOrTransaction,
-        refreshToken: string
-    ): Promise<{ users: User; accounts: Account }> {
+    static async getUserAndAccountBySessionToken(db: DatabaseOrTransaction, refreshToken: string) {
         return db.transaction((tx) =>
             tx
                 .select()
