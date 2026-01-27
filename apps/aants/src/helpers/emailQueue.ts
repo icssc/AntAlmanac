@@ -14,15 +14,12 @@ export interface EmailRequest {
 /**
  * Sends a single email request to SQS queue.
  * Each email becomes its own SQS message for individual processing.
- * 
+ *
  * @param queueUrl - The URL of the SQS queue to send the message to
  * @param emailRequest - The email data to be queued
  * @returns Promise that resolves when the message is successfully sent to the queue
  */
-export async function queueEmail(
-    queueUrl: string,
-    emailRequest: EmailRequest
-): Promise<void> {
+export async function queueEmail(queueUrl: string, emailRequest: EmailRequest): Promise<void> {
     try {
         const command = new SendMessageCommand({
             QueueUrl: queueUrl,

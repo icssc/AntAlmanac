@@ -11,7 +11,7 @@ const client = new SESv2Client({ region: 'us-east-2' });
 const input = {
     TemplateName: 'CourseNotification',
     TemplateContent: {
-        Subject: '{{stagingPrefix}}{{deptCode}} {{courseNumber}} had some enrollment changes!',
+        Subject: '{{stagingPrefix}}{{deptCode}} {{courseNumber}} ({{courseType}}) had some enrollment changes!',
         Text: `Hi {{userName}}!
         Based on your notification subscriptions on AntAlmanac, the AntAlmanac team would like to notify you that the following class has had some enrollment changes as of {{time}}. 
 
@@ -19,6 +19,7 @@ const input = {
         {{notification}}
 
         Course Name: {{deptCode}} {{courseNumber}} - {{courseTitle}}
+        Type: {{courseType}}
         Instructor: {{instructor}}
         Time Slot: {{days}} {{hours}}
         Section: {{sectionCode}}
@@ -39,6 +40,7 @@ const input = {
         </div>
         <div>
             <p>Course Name: <strong>{{deptCode}}</strong> <strong>{{courseNumber}}</strong> - <strong>{{courseTitle}}</strong>
+            <br>Type: <strong>{{courseType}}</strong>
             <br>Instructor: <strong>{{instructor}}</strong>
             <br>Time Slot: <strong>{{days}}</strong> <strong>{{hours}}</strong>
             <br>Section Code: <strong>{{sectionCode}}</strong></p>

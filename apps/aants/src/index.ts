@@ -4,6 +4,7 @@
 
 import { WebsocResponse, WebsocSection, WebsocCourse, WebsocSchool, WebsocDepartment } from '@icssc/libwebsoc-next';
 
+import { batchCourseCodes, sendNotification, CourseDetails } from './helpers/notificationDispatch';
 import {
     getUpdatedClasses,
     getSubscriptionSectionCodes,
@@ -12,7 +13,6 @@ import {
     getUsers,
 } from './helpers/subscriptionData';
 
-import { batchCourseCodes, sendNotification, CourseDetails } from './helpers/notificationDispatch';
 
 /**
  * Processes a section of a course and sends notifications to users if and only if the status and/or restriction codes have changed.
@@ -23,7 +23,7 @@ import { batchCourseCodes, sendNotification, CourseDetails } from './helpers/not
  * @param year - The academic year of the course.
  */
 async function processSection(section: WebsocSection, course: WebsocCourse, quarter: string, year: string) {
-    const { sectionCode, instructors, meetings, status, restrictions } = section;
+    const { sectionCode, instructors, meetings, status, restrictions, sectionType } = section;
     const instructor = instructors.join(', ');
 
     const previousState = await getLastUpdatedStatus(year, quarter, sectionCode);
@@ -34,12 +34,16 @@ async function processSection(section: WebsocSection, course: WebsocCourse, quar
     const codesChanged = previousRestrictions !== restrictions;
 
     if (!statusChanged && !codesChanged) {
-        console.log(`[SKIP] ${course.deptCode} ${course.courseNumber} ${sectionCode} - No changes (status: ${status}, codes: ${restrictions})`);
+        console.log(
+            `[SKIP] ${course.deptCode} ${course.courseNumber} ${sectionCode} - No changes (status: ${status}, codes: ${restrictions})`
+        );
         return;
     }
 
     console.log(`[PROCESSING] ${course.deptCode} ${course.courseNumber} ${sectionCode} - ${course.courseTitle}`);
-    console.log(`  Changes: status=${statusChanged ? `${previousStatus}→${status}` : 'none'}, codes=${codesChanged ? `${previousRestrictions}→${restrictions}` : 'none'}`);
+    console.log(
+        `  Changes: status=${statusChanged ? `${previousStatus}→${status}` : 'none'}, codes=${codesChanged ? `${previousRestrictions}→${restrictions}` : 'none'}`
+    );
 
     const users = await getUsers(quarter, year, sectionCode, status, statusChanged, codesChanged);
 
@@ -53,6 +57,7 @@ async function processSection(section: WebsocSection, course: WebsocCourse, quar
         deptCode: course.deptCode,
         courseNumber: course.courseNumber,
         courseTitle: course.courseTitle,
+        courseType: sectionType,
         quarter,
         year,
     };
@@ -107,7 +112,7 @@ function processSchool(school: WebsocSchool, quarter: string, year: string) {
 async function processBatch(batch: string[], quarter: string, year: string) {
     console.log(`[BATCH] Processing ${batch.length} section codes for ${quarter} ${year}`);
     const response: WebsocResponse = (await getUpdatedClasses(quarter, year, batch)) || { schools: [] };
-    
+
     const processedSectionCodes = new Set<string>();
     if (response?.schools) {
         for (const school of response.schools) {
@@ -120,25 +125,29 @@ async function processBatch(batch: string[], quarter: string, year: string) {
             }
         }
     }
-    
+
     const notProcessed = batch.filter((code) => !processedSectionCodes.has(code));
-    
+
     if (notProcessed.length > 0) {
-        console.log(`[BATCH] ${notProcessed.length} section codes not found in initial response, retrying individually`);
+        console.log(
+            `[BATCH] ${notProcessed.length} section codes not found in initial response, retrying individually`
+        );
     }
-    
+
     const initialPromises = Promise.all(response.schools.map((school) => processSchool(school, quarter, year)));
 
     if (notProcessed.length > 0) {
         const retryPromises = notProcessed.map(async (missingCode) => {
             console.log(`[RETRY] Retrying section code: ${missingCode}`);
-            const retryResponse: WebsocResponse = (await getUpdatedClasses(quarter, year, [missingCode])) || { schools: [] };
+            const retryResponse: WebsocResponse = (await getUpdatedClasses(quarter, year, [missingCode])) || {
+                schools: [],
+            };
             return Promise.all(retryResponse.schools.map((school) => processSchool(school, quarter, year)));
         });
-        
+
         return Promise.all([initialPromises, ...retryPromises]);
     }
-    
+
     return initialPromises;
 }
 
@@ -168,14 +177,19 @@ export async function scanAndNotify() {
             Object.entries(subscriptions).map(([term, sectionCodes]) => {
                 const [quarter, year] = term.split('-');
                 const batches = batchCourseCodes(sectionCodes.map(String));
-                console.log(`[SCAN] Processing ${term}: ${sectionCodes.length} sections in ${batches.length} batch(es)`);
+                console.log(
+                    `[SCAN] Processing ${term}: ${sectionCodes.length} sections in ${batches.length} batch(es)`
+                );
                 return Promise.all(batches.map((batch) => processBatch(batch, quarter, year)));
             })
         );
-        
+
         console.log('[SCAN] All subscriptions processed!');
     } catch (error) {
-        console.error('[ERROR] Error in managing subscription:', error instanceof Error ? error.message : String(error));
+        console.error(
+            '[ERROR] Error in managing subscription:',
+            error instanceof Error ? error.message : String(error)
+        );
         throw error;
     }
 }

@@ -13,6 +13,7 @@ export interface CourseDetails {
     deptCode: string;
     courseNumber: string;
     courseTitle: string;
+    courseType: string;
     quarter: string;
     year: string;
 }
@@ -80,6 +81,7 @@ async function sendNotification(
         deptCode,
         courseNumber,
         courseTitle,
+        courseType,
         quarter,
         year,
     } = courseDetails;
@@ -127,6 +129,7 @@ async function sendNotification(
                         deptCode: deptCode,
                         courseNumber: courseNumber,
                         courseTitle: courseTitle,
+                        courseType: courseType,
                         instructor: instructor,
                         days: days,
                         hours: hours,
