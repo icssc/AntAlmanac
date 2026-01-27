@@ -7,7 +7,7 @@ import { useSessionStore } from '$stores/SessionStore';
 interface NotificationEmailTooltipProps {
     sessionToken?: string | null;
 }
-export const NotificationEmailTooltip = memo(({ sessionToken }: NotificationEmailTooltipProps) => {
+export const NotificationEmailTooltip = memo(({ sessionToken: _sessionToken }: NotificationEmailTooltipProps) => {
     const email = useSessionStore((state) => state.email);
 
     if (!email) {
@@ -17,12 +17,15 @@ export const NotificationEmailTooltip = memo(({ sessionToken }: NotificationEmai
     return (
         <Tooltip
             title={
-                <> Notifications will be sent to <strong>{email}</strong> </>
+                <>
+                    {' '}
+                    Notifications will be sent to <strong>{email}</strong>{' '}
+                </>
             }
             arrow
             slotProps={{
                 tooltip: {
-                    sx: { fontSize: '0.9rem' }, 
+                    sx: { fontSize: '0.9rem' },
                 },
             }}
         >

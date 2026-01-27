@@ -37,7 +37,7 @@ export const DeleteAndNotifications = memo(({ ...props }: DeleteAndNotifications
             category: analyticsEnum.addedClasses,
             action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
         });
-    }, [props.term, props.section.sectionCode]);
+    }, [postHog, props.term, props.section.sectionCode]);
 
     return (
         <Box

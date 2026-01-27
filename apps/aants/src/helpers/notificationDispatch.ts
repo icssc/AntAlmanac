@@ -1,6 +1,7 @@
 import { WebsocSection } from '@icssc/libwebsoc-next';
-import { User } from './subscriptionData';
+
 import { queueEmail } from './emailQueue';
+import { User } from './subscriptionData';
 
 export interface CourseDetails {
     sectionCode: string;
@@ -100,7 +101,7 @@ async function sendNotification(
         notification = notification.replace(/\n/g, '<br>');
 
         const time = getFormattedTime();
-        
+
         // Add staging prefix to subject line if not in production
         const isStaging = process.env.NODE_ENV !== 'production';
         const stagingPrefix = isStaging ? '[SQS] [STAGING] ' : '';
@@ -110,11 +111,7 @@ async function sendNotification(
             throw new Error('EMAIL_QUEUE_URL environment variable is not set');
         }
 
-        const usersWithEmail = users.filter(
-            (user): user is User & { email: string } => user.email !== null
-        );
-
-        console.log(`[QUEUE] Queuing ${usersWithEmail.length} email(s) for ${deptCode} ${courseNumber} ${sectionCode}`);
+        const usersWithEmail = users.filter((user): user is User & { email: string } => user.email !== null);
 
         // Send each email as a separate SQS message
         await Promise.all(
@@ -144,7 +141,6 @@ async function sendNotification(
             )
         );
 
-        console.log(`[QUEUE] Successfully queued ${usersWithEmail.length} email(s) for ${deptCode} ${courseNumber} ${sectionCode}`);
         return { queued: usersWithEmail.length };
     } catch (error) {
         console.error('Error sending bulk emails:', error);
