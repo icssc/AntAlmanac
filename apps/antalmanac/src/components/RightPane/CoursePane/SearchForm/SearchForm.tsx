@@ -4,7 +4,6 @@ import { useCallback, type FormEvent } from 'react';
 
 import { AboutBox } from '$components/RightPane/CoursePane/SearchForm/AboutBox';
 import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
-// import { HelpBox } from '$components/RightPane/CoursePane/SearchForm/HelpBox';
 import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
@@ -90,9 +89,10 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                 </Stack>
             </Box>
 
-            <AboutBox />
-            {/* <HelpBox /> */}
-            <PrivacyPolicyBanner />
+            <Stack gap={1} sx={{ marginRight: 0.5 }}>
+                <AboutBox />
+                <PrivacyPolicyBanner />
+            </Stack>
         </Stack>
     );
 };

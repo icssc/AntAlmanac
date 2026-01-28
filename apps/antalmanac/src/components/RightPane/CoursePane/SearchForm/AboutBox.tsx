@@ -21,7 +21,13 @@ import { setLocalStorageAboutBoxCollapseTime, setLocalStorageExpandAboutBox } fr
 import { useHelpMenuStore } from '$stores/HelpMenuStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
-const images = [
+interface ImageInfo {
+    src: string;
+    title: string;
+    alt: string;
+}
+
+const images: ImageInfo[] = [
     {
         src: '/about-box/aboutbox1.png',
         title: 'Search',
@@ -51,11 +57,11 @@ export function AboutBox() {
     }, []);
 
     const handleClick = useCallback(() => {
+        toggleExpandAboutBox();
         if (expandAboutBox) {
             collapseAboutBox();
         }
         setLocalStorageExpandAboutBox(!expandAboutBox ? 'true' : 'false');
-        toggleExpandAboutBox();
     }, [expandAboutBox, collapseAboutBox, toggleExpandAboutBox]);
 
     return (
@@ -64,10 +70,7 @@ export function AboutBox() {
             expanded={expandAboutBox}
             onChange={handleClick}
             sx={{
-                padding: 1,
                 paddingRight: 4, // FIX ME: Magic Number padding for the Help Menu
-                marginBottom: '10px',
-                marginRight: '5px',
             }}
         >
             <AccordionSummary expandIcon={<ExpandMore />}>
