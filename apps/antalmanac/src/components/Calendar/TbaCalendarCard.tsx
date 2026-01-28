@@ -92,7 +92,7 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
         left: 'auto',
         right: 16,
         zIndex: 1,
-        width: { xs: '45%', md: '30%' },
+        width: { s: '30%', md: '25%' },
       }}
     >
       <Alert
@@ -105,8 +105,11 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
           alignItems: collapsed ? 'center' : 'flex-start',
           py: 1,
           px: 1,
+          '& .MuiAlert-icon': {
+            margin: 0,
+          },
           '& .MuiAlert-message': {
-            padding: 0,
+            padding: 0.5,
             width: '100%',
           },
 
@@ -117,7 +120,7 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
           },
         }}
         action={
-          <IconButton size="small" onClick={handleToggleCollapse}>
+          <IconButton size="small" onClick={handleToggleCollapse} sx={{paddingLeft: 0 }}>
             <ExpandMore
               fontSize="small"
               sx={{ transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}
@@ -125,7 +128,7 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
           </IconButton>
         }
       >
-        <AlertTitle sx={{ fontSize: '0.9rem', my: 'auto'}}>
+        <AlertTitle sx={{ fontSize: '0.9rem', my: 'auto' }}>
           TBA sections added:
         </AlertTitle>
 
