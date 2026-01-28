@@ -3,7 +3,7 @@ import { Button, Tooltip } from '@mui/material';
 
 import { GITHUB_LINK } from '$src/globals';
 
-const GitHubButton = () => {
+export const GitHubButton = () => {
     return (
         <Tooltip title="Check out our GitHub!">
             <Button
@@ -19,5 +19,3 @@ const GitHubButton = () => {
         </Tooltip>
     );
 };
-
-export default GitHubButton;

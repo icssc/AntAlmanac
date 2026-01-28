@@ -14,9 +14,9 @@ import Link from 'next/link';
 import { useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-import FeedbackButton from '$components/buttons/Feedback';
-import GitHubButton from '$components/buttons/GitHub';
-import ProjectsButton from '$components/buttons/Projects';
+import { FeedbackButton } from '$components/buttons/FeedbackButton';
+import { GitHubButton } from '$components/buttons/GitHubButton';
+import { ProjectsButton } from '$components/buttons/ProjectsButton';
 import { setLocalStorageAboutBoxCollapseTime, setLocalStorageExpandAboutBox } from '$lib/localStorage';
 import { useHelpMenuStore } from '$stores/HelpMenuStore';
 import { useThemeStore } from '$stores/SettingsStore';

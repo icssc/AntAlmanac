@@ -7,7 +7,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { DONATION_LINK } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 
-const AboutButton = () => {
+export const AboutButton = () => {
     const [open, setOpen] = useState(false);
     const { isDark } = useThemeStore();
     const postHog = usePostHog();
@@ -18,7 +18,7 @@ const AboutButton = () => {
             category: analyticsEnum.nav,
             action: analyticsEnum.nav.actions.CLICK_ABOUT,
         });
-    }, []);
+    }, [postHog]);
 
     const handleClose = useCallback(() => {
         setOpen(false);
@@ -79,5 +79,3 @@ const AboutButton = () => {
         </>
     );
 };
-
-export default AboutButton;

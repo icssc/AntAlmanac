@@ -3,7 +3,7 @@ import { Button, Tooltip } from '@mui/material';
 
 import { DONATION_LINK } from '$src/globals';
 
-const DonateButton = () => {
+export const DonateButton = () => {
     return (
         <Tooltip title="Help us pay for the servers!">
             <Button
@@ -19,5 +19,3 @@ const DonateButton = () => {
         </Tooltip>
     );
 };
-
-export default DonateButton;

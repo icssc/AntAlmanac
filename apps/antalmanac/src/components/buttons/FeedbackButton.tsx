@@ -3,7 +3,7 @@ import { Button, Tooltip } from '@mui/material';
 
 import { FEEDBACK_LINK } from '$src/globals';
 
-const FeedbackButton = () => {
+export const FeedbackButton = () => {
     return (
         <Tooltip title="Give Us Feedback!">
             <Button
@@ -19,5 +19,3 @@ const FeedbackButton = () => {
         </Tooltip>
     );
 };
-
-export default FeedbackButton;
