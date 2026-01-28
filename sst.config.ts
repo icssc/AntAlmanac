@@ -23,13 +23,11 @@ export default $config({
         const domain = getDomain();
 
         const router = new sst.aws.Router('AntAlmanacRouter', {
-            domain:
-                $app.stage === 'production'
-                    ? {
-                          name: domain,
-                          cert: 'arn:aws:acm:us-east-1:990864464737:certificate/3e950982-16c7-4ffb-baf5-614a7df30504',
-                      }
-                    : { name: domain },
+            domain: {
+                name: domain,
+                aliases: [`*.${domain}`],
+                cert: 'arn:aws:acm:us-east-1:990864464737:certificate/3e950982-16c7-4ffb-baf5-614a7df30504',
+            },
         });
 
         new sst.aws.Nextjs('Website', {
