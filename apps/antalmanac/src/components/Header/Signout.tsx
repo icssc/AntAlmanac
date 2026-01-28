@@ -31,13 +31,15 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
         }
 
         try {
-            await trpc.userData.logout.mutate({
+            const { logoutUrl } = await trpc.userData.logout.mutate({
                 sessionToken: session,
                 redirectUrl: window.location.origin,
             });
 
             await clearSession();
             onLogoutComplete?.();
+
+            window.location.href = logoutUrl;
         } catch (error) {
             console.error('Error during logout', error);
             // Even on error, clear session and show dialog
