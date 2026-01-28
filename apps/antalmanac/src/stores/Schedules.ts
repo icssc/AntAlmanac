@@ -598,7 +598,7 @@ export class Schedules {
             const completeSectionTypesDict = new Map<string, CourseDetails['sectionTypes']>();
             const uniqueCourses = new Set<string>();
 
-            // Extract unique courses from the fetched courseInfo
+            // Extract unique (term, deptCode, courseNumber) combinations
             for (const [term, courseInfoMap] of courseInfoDict) {
                 for (const [, courseInfo] of Object.entries(courseInfoMap)) {
                     const key = `${term}-${courseInfo.courseDetails.deptCode}-${courseInfo.courseDetails.courseNumber}`;
@@ -606,29 +606,49 @@ export class Schedules {
                 }
             }
 
-            // Fetch full course data for each unique course
-            const fullCourseRequests = Array.from(uniqueCourses).map(async (courseKey) => {
-                const [term, deptCode, courseNumber] = courseKey.split('-');
-                try {
-                    const fullData = await WebSOC.query({ term, deptCode, courseNumber });
+            // Group courses by (term, deptCode) to batch queries
+            const coursesByDept = new Map<string, string[]>();
+            for (const courseKey of uniqueCourses) {
+                const [term, deptCode] = courseKey.split('-') as [string, string, string];
+                const deptKey = `${term}-${deptCode}`;
+                if (!coursesByDept.has(deptKey)) {
+                    coursesByDept.set(deptKey, []);
+                }
+                coursesByDept.get(deptKey)!.push(courseKey);
+            }
 
-                    // Extract all section types from the full course data
-                    const allSectionTypesSet = new Set<CourseDetails['sectionTypes'][number]>();
+            // Fetch full course data for each (term, deptCode) combination
+            const fullCourseRequests = Array.from(coursesByDept.entries()).map(async ([deptKey, courseKeys]) => {
+                const [term, deptCode] = deptKey.split('-') as [string, string];
+                try {
+                    // Query all courses in this dept at once (WebSOC returns all courses when courseNumber is omitted)
+                    const fullData = await WebSOC.query({ term, deptCode });
+
+                    // Build a map of courseNumber -> sectionTypes for this dept
+                    const courseSectionTypesMap = new Map<string, CourseDetails['sectionTypes']>();
+
                     for (const school of fullData.schools) {
                         for (const dept of school.departments) {
                             for (const course of dept.courses) {
+                                const sectionTypesSet = new Set<CourseDetails['sectionTypes'][number]>();
                                 course.sections.forEach((section) => {
-                                    allSectionTypesSet.add(section.sectionType);
+                                    sectionTypesSet.add(section.sectionType);
                                 });
+                                courseSectionTypesMap.set(course.courseNumber, Array.from(sectionTypesSet));
                             }
                         }
                     }
 
-                    if (allSectionTypesSet.size > 0) {
-                        completeSectionTypesDict.set(courseKey, Array.from(allSectionTypesSet));
+                    // Store results in the main dictionary
+                    for (const courseKey of courseKeys) {
+                        const courseNumber = courseKey.split('-')[2];
+                        const sectionTypes = courseSectionTypesMap.get(courseNumber);
+                        if (sectionTypes) {
+                            completeSectionTypesDict.set(courseKey, sectionTypes);
+                        }
                     }
                 } catch (e) {
-                    console.error(`Failed to fetch full course data for ${courseKey}:`, e);
+                    console.error(`Failed to fetch full course data for ${deptKey}:`, e);
                     // Fall back to incomplete sectionTypes from courseInfo
                 }
             });
