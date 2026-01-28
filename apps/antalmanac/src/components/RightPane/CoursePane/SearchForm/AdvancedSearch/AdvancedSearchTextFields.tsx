@@ -11,8 +11,8 @@ import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/La
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
 import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { safeUnreachableCase } from '$lib/utils';
 import { usePeterPortalRoadmaps } from '$hooks/usePeterPortal';
+import { safeUnreachableCase } from '$lib/utils';
 import { useSessionStore } from '$stores/SessionStore';
 
 type InputEvent =
@@ -34,7 +34,9 @@ export function AdvancedSearchTextFields() {
         () => RightPaneStore.getFormData().excludeRestrictionCodes
     );
     const [days, setDays] = useState(() => RightPaneStore.getFormData().days);
-    const [ excludeRoadmapCourses, setExcludeRoadmapCourses ] = useState(() => RightPaneStore.getFormData().excludeRoadmapCourses);
+    const [excludeRoadmapCourses, setExcludeRoadmapCourses] = useState(
+        () => RightPaneStore.getFormData().excludeRoadmapCourses
+    );
     const { roadmaps } = usePeterPortalRoadmaps();
     const isLoggedIn = useSessionStore((s) => s.googleId !== null);
 
@@ -336,10 +338,8 @@ export function AdvancedSearchTextFields() {
             >
                 <LabeledSelect
                     label={
-                        <Tooltip
-                            title={<Typography sx={{fontSize: '0.8rem'}}>Data from PeterPortal.org</Typography>}
-                        >
-                        <Box>Exclude Taken Courses</Box>
+                        <Tooltip title={<Typography sx={{ fontSize: '0.8rem' }}>Data from PeterPortal.org</Typography>}>
+                            <Box>Exclude Taken Courses</Box>
                         </Tooltip>
                     }
                     selectProps={{
@@ -351,29 +351,26 @@ export function AdvancedSearchTextFields() {
                             width: '100%',
                         },
                     }}
-                >   
+                >
                     {!isLoggedIn && ( // not logged in
                         <MenuItem value="" disabled>
                             Sign In to filter
                         </MenuItem>
                     )}
 
-                    {isLoggedIn && roadmaps.length === 0 && ( // logged in but no roadmaps
-                        <MenuItem
-                            value=""
-                            onClick={() => window.open("https://peterportal.org", "_blank")}
-                        >
-                            Create a roadmap!
-                        </MenuItem>
-                    )}
+                    {isLoggedIn &&
+                        roadmaps.length === 0 && ( // logged in but no roadmaps
+                            <MenuItem value="" onClick={() => window.open('https://peterportal.org', '_blank')}>
+                                Create a roadmap!
+                            </MenuItem>
+                        )}
 
-                    {isLoggedIn && roadmaps.length > 0 && ( // default
-                        <MenuItem value="">
-                            Include all courses
-                        </MenuItem>
-                    )}
+                    {isLoggedIn &&
+                        roadmaps.length > 0 && ( // default
+                            <MenuItem value="">Include all courses</MenuItem>
+                        )}
 
-                    {isLoggedIn &&  // filter by roadmaps
+                    {isLoggedIn && // filter by roadmaps
                         roadmaps.map((roadmap) => (
                             <MenuItem key={roadmap.id} value={roadmap.id.toString()}>
                                 {roadmap.name}

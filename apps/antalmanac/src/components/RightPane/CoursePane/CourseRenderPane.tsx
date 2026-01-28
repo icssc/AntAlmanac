@@ -29,10 +29,10 @@ import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDism
 import { WebSOC } from '$lib/websoc';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
-import { useHoveredStore } from '$stores/HoveredStore';
-import { useThemeStore } from '$stores/SettingsStore';
-import { useSessionStore } from '$stores/SessionStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { useHoveredStore } from '$stores/HoveredStore';
+import { useSessionStore } from '$stores/SessionStore';
+import { useThemeStore } from '$stores/SettingsStore';
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
@@ -245,7 +245,7 @@ const ErrorMessage = () => {
 };
 
 export default function CourseRenderPane(props: { id?: number }) {
-    const { manualSearchEnabled } = useCoursePaneStore();  
+    const { manualSearchEnabled } = useCoursePaneStore();
     const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
     const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
     const [loading, setLoading] = useState(true);
@@ -322,7 +322,7 @@ export default function CourseRenderPane(props: { id?: number }) {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [manualSearchEnabled]);
 
     const updateScheduleNames = () => {
         setScheduleNames(AppStore.getScheduleNames());

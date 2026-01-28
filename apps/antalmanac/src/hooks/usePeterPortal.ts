@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
-import trpc from '$lib/api/trpc';
-import { useSessionStore } from '$stores/SessionStore';
+
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+import trpc from '$lib/api/trpc';
+import { type PeterPortalRoadmap } from '$src/backend/lib/peterportal';
+import { useSessionStore } from '$stores/SessionStore';
 
 export function usePeterPortalRoadmaps() {
     const googleId = useSessionStore((s) => s.googleId);
     const setUserTakenCourses = useSessionStore((s) => s.setUserTakenCourses);
     const setFilterTakenCourses = useSessionStore((s) => s.setFilterTakenCourses);
 
-    const [roadmaps, setRoadmaps] = useState<any[]>([]);
+    const [roadmaps, setRoadmaps] = useState<PeterPortalRoadmap[] | never[]>([]);
     const selectedRoadmapId = RightPaneStore.getFormData().excludeRoadmapCourses;
 
     useEffect(() => {
-        let active = true;
+        const active = true;
         async function loadRoadmaps() {
             if (!googleId) return;
             try {
@@ -28,7 +30,7 @@ export function usePeterPortalRoadmaps() {
     }, [googleId]);
 
     useEffect(() => {
-        async function flattenCourses () {
+        async function flattenCourses() {
             if (!selectedRoadmapId) {
                 setUserTakenCourses(new Set());
                 setFilterTakenCourses(false);
@@ -47,7 +49,7 @@ export function usePeterPortalRoadmaps() {
             }
         }
         flattenCourses();
-    }), [roadmaps, selectedRoadmapId]
+    }, [roadmaps, selectedRoadmapId, setUserTakenCourses, setFilterTakenCourses]);
 
     return {
         roadmaps,

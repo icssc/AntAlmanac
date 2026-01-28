@@ -4,7 +4,7 @@ import { useId } from 'react';
 import { LabeledInput } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledInput';
 
 interface LabeledSelectProps<T = string | string[]> {
-    label: string;
+    label: React.ReactNode;
     selectProps?: SelectProps<T>;
     children?: React.ReactNode;
     isAligned?: boolean;
