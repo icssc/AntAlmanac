@@ -22,18 +22,11 @@ export default $config({
     async run() {
         const domain = getDomain();
 
-        const router = new sst.aws.Router('AntAlmanacRouter', {
-            domain: {
-                name: domain,
-                aliases: [`*.${domain}`],
-            },
-        });
-
         new sst.aws.Nextjs('Website', {
             path: 'apps/antalmanac',
-            router: {
-                instance: router,
-                path: '/',
+            domain: {
+                name: domain,
+                redirects: $app.stage.match(/^staging-(\d+)$/) ? [] : [`www.${domain}`],
             },
             cachePolicy: '92d18877-845e-47e7-97e6-895382b1bf7c',
             environment: {
