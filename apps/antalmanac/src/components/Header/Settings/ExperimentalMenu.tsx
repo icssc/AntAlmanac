@@ -8,8 +8,7 @@ import { getLocalStorageUserId } from '$lib/localStorage';
 import appStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { usePreviewStore } from '$stores/SettingsStore';
-import { useAutoSaveStore } from '$stores/SettingsStore';
+import { usePreviewStore, useAutoSaveStore } from '$stores/SettingsStore';
 
 export function ExperimentalMenu() {
     const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
