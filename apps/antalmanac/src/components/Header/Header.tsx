@@ -44,43 +44,49 @@ export function Header() {
         }
     }, [importedUser, session]);
     return (
-        <AppBar
-            position="static"
-            color="primary"
+        <Box
             sx={{
-                height: 'calc(52px + env(safe-area-inset-top))',
-                px: 1,
-                paddingTop: 'env(safe-area-inset-top)',
-                boxShadow: 'none',
                 backgroundColor: BLUE,
+                paddingTop: 'env(safe-area-inset-top)',
             }}
         >
-            <Box
+            <AppBar
+                position="static"
+                color="primary"
                 sx={{
-                    display: 'flex',
-                    height: '100%',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    height: 52,
+                    px: 1,
+                    boxShadow: 'none',
+                    backgroundColor: BLUE,
                 }}
             >
-                <Logo />
-
-                <Stack direction="row" sx={{ alignItems: 'center' }}>
-                    <Import key="studylist" />
-                    <Save />
-                    {sessionIsValid ? <Signout /> : <Signin />}
-                    <AppDrawer key="settings" />
-                </Stack>
-
-                <AlertDialog
-                    open={openSuccessfulSaved}
-                    title={`Schedule from "${importedUser}" has been saved to your account!`}
-                    severity="success"
-                    onClose={handleCloseSuccessfulSaved}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        height: '100%',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
                 >
-                    NOTE: All changes made to your schedules will be saved to your Google account
-                </AlertDialog>
-            </Box>
-        </AppBar>
+                    <Logo />
+
+                    <Stack direction="row" sx={{ alignItems: 'center' }}>
+                        <Import key="studylist" />
+                        <Save />
+                        {sessionIsValid ? <Signout /> : <Signin />}
+                        <AppDrawer key="settings" />
+                    </Stack>
+
+                    <AlertDialog
+                        open={openSuccessfulSaved}
+                        title={`Schedule from "${importedUser}" has been saved to your account!`}
+                        severity="success"
+                        onClose={handleCloseSuccessfulSaved}
+                    >
+                        NOTE: All changes made to your schedules will be saved to your Google account
+                    </AlertDialog>
+                </Box>
+            </AppBar>
+        </Box>
     );
 }
