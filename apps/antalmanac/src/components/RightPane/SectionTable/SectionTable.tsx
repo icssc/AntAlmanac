@@ -1,5 +1,5 @@
 import { Assessment, ShowChart as ShowChartIcon } from '@mui/icons-material';
-import { Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow, useMediaQuery } from '@mui/material';
+import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useMemo } from 'react';
 
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
@@ -10,8 +10,8 @@ import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/Enrol
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
+import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
-import { MOBILE_BREAKPOINT } from '$src/globals';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import { useTabStore } from '$stores/TabStore';
 
@@ -67,11 +67,11 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
 function SectionTable(props: SectionTableProps) {
-    const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory } = props;
+    const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory, missingSections = [] } = props;
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
+    const isMobile = useIsMobile();
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
@@ -123,7 +123,7 @@ function SectionTable(props: SectionTableProps) {
                             height={customIconSize}
                         />
                     }
-                    redirectLink={`https://peterportal.org/course/${courseId}`}
+                    redirectLink={`https://peterportal.org/course/${encodeURIComponent(courseId)}`}
                 />
 
                 <CourseInfoButton
@@ -135,7 +135,7 @@ function SectionTable(props: SectionTableProps) {
                         <GradesPopup
                             deptCode={courseDetails.deptCode}
                             courseNumber={courseDetails.courseNumber}
-                            isMobileScreen={isMobileScreen}
+                            isMobile={isMobile}
                         />
                     }
                 />
@@ -154,6 +154,20 @@ function SectionTable(props: SectionTableProps) {
                 />
             </Box>
 
+            {missingSections?.length > 0 && (
+                <Alert
+                    severity="warning"
+                    sx={{
+                        mb: 1,
+                        '& .MuiAlert-message': {
+                            display: 'flex',
+                            alignItems: 'center',
+                        },
+                    }}
+                >
+                    Missing required sections: {missingSections.join(', ')}
+                </Alert>
+            )}
             <TableContainer
                 component={Paper}
                 sx={{ margin: '8px 0px 8px 0px', width: '100%' }}
@@ -173,7 +187,7 @@ function SectionTable(props: SectionTableProps) {
                             <TableCell
                                 sx={{
                                     padding: 0,
-                                    width: isMobileScreen ? '6%' : '8%',
+                                    width: isMobile ? '6%' : '8%',
                                 }}
                             />
                             {tableHeaderColumnEntries

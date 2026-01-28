@@ -4,6 +4,10 @@ on:
     push:
         branches: [main]
 
+concurrency:
+    group: sst-production
+    cancel-in-progress: false
+
 env:
     AWS_REGION: ${{ secrets.AWS_REGION }}
 
@@ -14,6 +18,7 @@ env:
     OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID }}
     OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
     GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+    NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY }}
 
 jobs:
     deploy-production:
@@ -40,6 +45,12 @@ jobs:
               env:
                   DB_URL: ${{ secrets.PROD_DB_URL }}
               run: pnpm db:migrate
+
+            # TODO (@xgraceyan): Remove this stage once SST fixes deployments
+            - name: Setup Pulumi
+              uses: pulumi/actions@v5
+              with:
+                  pulumi-version: 3.138.0 # Any version < 3.214.0 works
 
             - name: Deploy SST (production)
               env:

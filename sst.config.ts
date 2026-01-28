@@ -28,6 +28,7 @@ export default $config({
                 name: domain,
                 redirects: $app.stage.match(/^staging-(\d+)$/) ? [] : [`www.${domain}`],
             },
+            cachePolicy: '92d18877-845e-47e7-97e6-895382b1bf7c',
             environment: {
                 DB_URL: $app.stage === 'production' ? process.env.PROD_DB_URL : process.env.DEV_DB_URL,
                 MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
@@ -37,6 +38,7 @@ export default $config({
                 OIDC_ISSUER_URL: process.env.OIDC_ISSUER_URL,
                 GOOGLE_REDIRECT_URI: `https://${domain}/auth`,
                 NEXT_PUBLIC_BASE_URL: domain,
+                NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY,
             },
         });
     },

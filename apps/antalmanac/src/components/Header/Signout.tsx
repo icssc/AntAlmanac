@@ -2,20 +2,33 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Avatar, Menu, ListItemIcon, ListItemText, MenuItem, IconButton } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
-import { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useCallback, type MouseEvent } from 'react';
 
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
 
-export function Signout() {
+interface SignoutProps {
+    onLogoutComplete?: () => void;
+}
+
+export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [user, setUser] = useState<null | User>(null);
-    const navigate = useNavigate();
+    const [user, setUser] = useState<Pick<User, 'name' | 'avatar'> | null>(null);
+    const { session, sessionIsValid, clearSession } = useSessionStore();
+
+    const open = Boolean(anchorEl);
+    const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     const handleLogout = async () => {
+        setAnchorEl(null);
         if (!session) {
-            navigate('/');
+            await clearSession();
+            onLogoutComplete?.();
             return;
         }
 
@@ -24,24 +37,17 @@ export function Signout() {
                 sessionToken: session,
                 redirectUrl: window.location.origin,
             });
-            clearSession();
+
+            await clearSession();
+            onLogoutComplete?.();
 
             window.location.href = logoutUrl;
         } catch (error) {
             console.error('Error during logout', error);
-            clearSession();
-            navigate('/');
+            // Even on error, clear session and show dialog
+            await clearSession();
+            onLogoutComplete?.();
         }
-    };
-
-    const { session, sessionIsValid, clearSession } = useSessionStore();
-
-    const open = Boolean(anchorEl);
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
     };
 
     const handleAuthChange = useCallback(async () => {
@@ -49,7 +55,7 @@ export function Signout() {
             const userData = await trpc.userData.getUserAndAccountBySessionToken
                 .query({ token: session ?? '' })
                 .then((res) => res.users);
-            setUser(userData);
+            setUser({ name: userData.name ?? undefined, avatar: userData.avatar ?? undefined });
         }
     }, [session, sessionIsValid, setUser]);
 

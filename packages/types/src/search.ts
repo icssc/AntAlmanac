@@ -17,6 +17,7 @@ export type CourseSearchResult = {
         department: string;
         number: string;
     };
+    isOffered?: boolean;
 };
 
 export type SectionSearchResult = {

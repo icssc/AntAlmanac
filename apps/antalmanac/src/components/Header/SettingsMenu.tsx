@@ -1,18 +1,6 @@
 import { LightMode, Close, SettingsBrightness, DarkMode, Help, MenuRounded } from '@mui/icons-material';
-import {
-    Box,
-    Button,
-    ButtonGroup,
-    Divider,
-    Drawer,
-    Stack,
-    Switch,
-    Tooltip,
-    Typography,
-    useMediaQuery,
-} from '@mui/material';
+import { Box, Button, ButtonGroup, Divider, Drawer, Stack, Switch, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import { CSSProperties } from '@mui/material/styles/createTypography';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 
@@ -20,6 +8,7 @@ import { About } from './About';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import appStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -27,13 +16,13 @@ import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleS
 import { useSessionStore } from '$stores/SessionStore';
 import { usePreviewStore, useThemeStore, useTimeFormatStore, useAutoSaveStore } from '$stores/SettingsStore';
 
-const lightSelectedStyle: CSSProperties = {
+const lightSelectedStyle: React.CSSProperties = {
     backgroundColor: '#F0F7FF',
     borderColor: '#007FFF',
     color: '#007FFF',
 };
 
-const darkSelectedStyle: CSSProperties = {
+const darkSelectedStyle: React.CSSProperties = {
     backgroundColor: '#003A7570',
     borderColor: '#0059B2',
     color: '#99CCF3',
@@ -66,7 +55,7 @@ function ThemeMenu() {
             <ButtonGroup style={{ display: 'flex', placeContent: 'center', width: '100%', borderColor: 'unset' }}>
                 <Button
                     startIcon={<LightMode fontSize="small" />}
-                    style={{
+                    sx={{
                         padding: '1rem 2rem',
                         borderRadius: '12px 0px 0px 12px',
                         width: '100%',
@@ -79,7 +68,7 @@ function ThemeMenu() {
                 </Button>
                 <Button
                     startIcon={<SettingsBrightness fontSize="small" />}
-                    style={{
+                    sx={{
                         padding: '1rem 2rem',
                         width: '100%',
                         ...getSelectedStyle('system', themeSetting, isDark),
@@ -91,7 +80,7 @@ function ThemeMenu() {
                 </Button>
                 <Button
                     startIcon={<DarkMode fontSize="small" />}
-                    style={{
+                    sx={{
                         padding: '1rem 2rem',
                         borderRadius: '0px 12px 12px 0px',
                         width: '100%',
@@ -129,7 +118,7 @@ function TimeMenu() {
                 }}
             >
                 <Button
-                    style={{
+                    sx={{
                         padding: '1rem 2rem',
                         borderRadius: '12px 0px 0px 12px',
                         width: '100%',
@@ -143,7 +132,7 @@ function TimeMenu() {
                     12 Hour
                 </Button>
                 <Button
-                    style={{
+                    sx={{
                         padding: '1rem 2rem',
                         borderRadius: '0px 12px 12px 0px',
                         width: '100%',
@@ -186,7 +175,7 @@ function ExperimentalMenu() {
 
         if (!savedUserID) return;
         actionTypesStore.emit('autoSaveStart');
-        await autoSaveSchedule(savedUserID, postHog);
+        await autoSaveSchedule(savedUserID, { postHog });
         appStore.unsavedChanges = false;
         actionTypesStore.emit('autoSaveEnd');
     };
@@ -237,7 +226,7 @@ function SettingsMenu() {
 
 function AppDrawer() {
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const isMobileScreen = useMediaQuery('(max-width:750px)');
+    const isMobile = useIsMobile();
 
     const handleDrawerOpen = useCallback(() => {
         setDrawerOpen(true);
@@ -259,7 +248,7 @@ function AppDrawer() {
                 PaperProps={{ style: { borderRadius: '10px 0 0 10px' } }}
                 variant="temporary"
             >
-                <Box style={{ width: isMobileScreen ? '300px' : '360px', height: '100%' }}>
+                <Box style={{ width: isMobile ? '300px' : '360px', height: '100%' }}>
                     <Box
                         sx={{
                             display: 'flex',
