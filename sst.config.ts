@@ -26,6 +26,7 @@ export default $config({
             domain: {
                 name: domain,
                 aliases: [`*.${domain}`],
+                cert: 'arn:aws:acm:us-east-1:990864464737:certificate/3e950982-16c7-4ffb-baf5-614a7df30504',
             },
         });
 
