@@ -52,14 +52,12 @@
     font-size: 0.9rem;
 }
 
-/* Mobile: smaller timeslots for screens smaller than 800px */
 @media (max-width: 799px) {
     .rbc-timeslot-group {
         min-height: 22px;
     }
 }
 
-/* Desktop and tablet: larger timeslots for screens 800px and larger */
 @media (min-width: 800px) {
     .rbc-timeslot-group {
         min-height: 28px;

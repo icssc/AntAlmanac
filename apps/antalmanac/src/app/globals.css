@@ -1,12 +1,8 @@
-/* Mobile: 12px for screens smaller than 800px */
-@media (max-width: 799px) {
-    html {
-        font-size: 12px;
-    }
+html {
+    font-size: 12px;
 }
 
-/* Desktop and tablet: 14px for screens 800px and larger */
-@media (min-width: 800px) {
+@media (max-width: 800px) {
     html {
         font-size: 14px;
     }
