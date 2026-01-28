@@ -4,7 +4,7 @@ import { shallow } from 'zustand/shallow';
 
 import type { CalendarEvent, CourseEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
-import locationIds from '$lib/locations/locations';
+import locationIds from '$generated/locations';
 import { useSelectedEventStore } from '$stores/SelectedEventStore';
 
 export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) => {

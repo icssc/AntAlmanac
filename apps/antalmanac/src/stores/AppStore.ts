@@ -26,6 +26,7 @@ import type {
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { sectionTypeToName } from '$lib/utils';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
@@ -418,6 +419,9 @@ class AppStore extends EventEmitter {
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNotesChange');
 
+        // Check for missing sections after loading schedule
+        this.checkForMissingSections();
+
         return true;
     }
 
@@ -502,6 +506,62 @@ class AppStore extends EventEmitter {
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
         this.schedule.updateScheduleNote(newScheduleNote, scheduleIndex);
         this.emit('scheduleNotesChange');
+    }
+
+    /**
+     * Check for missing required sections in loaded courses and display warnings.
+     * This is called after loading a schedule from saved state to detect courses
+     * that are missing required sections (e.g., lab, discussion).
+     */
+    checkForMissingSections() {
+        const coursesWithMissingSections: { courseId: string; missingSections: string[] }[] = [];
+
+        // Group courses by unique course (deptCode + courseNumber + term)
+        const courseGroups = new Map<string, ScheduleCourse[]>();
+
+        for (const course of this.schedule.getCurrentCourses()) {
+            const courseId = `${course.deptCode} ${course.courseNumber} (${course.term})`;
+            if (!courseGroups.has(courseId)) {
+                courseGroups.set(courseId, []);
+            }
+            courseGroups.get(courseId)!.push(course);
+        }
+
+        // Check each course group for missing sections
+        for (const [courseId, courses] of courseGroups) {
+            // All courses in the group should have the same sectionTypes
+            const sectionTypes = courses[0].sectionTypes;
+            if (!sectionTypes || sectionTypes.length === 0) {
+                continue;
+            }
+
+            // Get all section types the user has enrolled in
+            const enrolledSectionTypes = new Set(courses.map((c) => c.section.sectionType));
+
+            // Find missing section types
+            const missingSectionTypes = sectionTypes.filter((type) => !enrolledSectionTypes.has(type));
+
+            if (missingSectionTypes.length > 0) {
+                // Map section type codes to readable names
+                const missingSections = missingSectionTypes.map(sectionTypeToName);
+
+                coursesWithMissingSections.push({ courseId, missingSections });
+            }
+        }
+
+        // Display warning if there are courses with missing sections
+        if (coursesWithMissingSections.length > 0) {
+            const warningMessages = coursesWithMissingSections.map(
+                ({ courseId, missingSections }) => `${courseId}: Missing ${missingSections.join(', ')}`
+            );
+
+            const message =
+                coursesWithMissingSections.length === 1
+                    ? `1 course is missing required sections:\n${warningMessages[0]}`
+                    : `${coursesWithMissingSections.length} courses are missing required sections:\n${warningMessages.join('\n')}`;
+
+            this.openSnackbar('warning', message, 10);
+        }
     }
 
     termsInSchedule = (term: string) =>

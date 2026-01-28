@@ -6,7 +6,7 @@ import { notNull } from './utils';
 
 import { openSnackbar } from '$actions/AppStoreActions';
 import type { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
-import buildingCatalogue from '$lib/locations/buildingCatalogue';
+import buildingCatalogue from '$generated/buildingCatalogue';
 import { getDefaultTerm, termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 
