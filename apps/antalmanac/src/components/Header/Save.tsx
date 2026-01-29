@@ -119,7 +119,7 @@ export const Save = () => {
                 </Alert>
             </Snackbar>
 
-            <SignInDialog isDark={isDark} open={openSignInDialog} onClose={handleClickSignIn} action="Save" />
+            <SignInDialog isDark={isDark} open={openSignInDialog} onClose={handleClickSignIn} feature="Save" />
         </Stack>
     );
 };

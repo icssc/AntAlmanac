@@ -54,8 +54,8 @@ export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) =>
                               .map((location: Location) => `${location.building} ${location.room}`)
                               .join(', ')
                         : courseEvent.locations.length > 1
-                          ? `${courseEvent.locations.length} Locations`
-                          : `${courseEvent.locations[0].building} ${courseEvent.locations[0].room}`}
+                        ? `${courseEvent.locations.length} Locations`
+                        : `${courseEvent.locations[0].building} ${courseEvent.locations[0].room}`}
                 </Box>
                 <Box>{courseEvent.sectionCode}</Box>
             </Box>

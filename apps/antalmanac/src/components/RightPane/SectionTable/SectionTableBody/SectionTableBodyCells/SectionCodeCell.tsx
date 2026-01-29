@@ -37,7 +37,6 @@ export const SectionCodeCell = ({ sectionCode, analyticsCategory }: SectionCodeC
                             action: analyticsCategory.actions.COPY_COURSE_CODE,
                         });
                     }}
-                    // className={classes.sectionCode}
                     label={sectionCode}
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
@@ -50,14 +49,3 @@ export const SectionCodeCell = ({ sectionCode, analyticsCategory }: SectionCodeC
         </TableBodyCellContainer>
     );
 };
-
-/**
- * {
-        display: 'inline-flex',
-        cursor: 'pointer',
-        '&:hover': {
-            cursor: 'pointer',
-        },
-        alignSelf: 'center',
-    },
- */
