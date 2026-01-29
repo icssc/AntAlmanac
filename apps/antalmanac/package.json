@@ -90,7 +90,7 @@
         "@types/leaflet": "^1.9.14",
         "@types/leaflet-routing-machine": "^3.2.4",
         "@types/leaflet.locatecontrol": "^0.74.1",
-        "@types/node": "^18.13.0",
+        "@types/node": "^22.0.0",
         "@types/pg": "^8.15.6",
         "@types/react": "19.2.7",
         "@types/react-big-calendar": "^1.6.0",
