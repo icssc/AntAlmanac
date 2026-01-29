@@ -164,8 +164,7 @@ export function Header() {
                                         bgcolor: 'white',
                                         color: BLUE,
                                         fontWeight: 500,
-                                        fontSize: 14,
-                                        py: 0.2,
+                                        py: 0.4,
                                         '&:hover': { bgcolor: 'grey.100' },
                                     }}
                                 >
@@ -179,8 +178,7 @@ export function Header() {
                                         boxShadow: 'none',
                                         color: 'white',
                                         fontWeight: 500,
-                                        fontSize: 14,
-                                        py: 0.2,
+                                        py: 0.4,
                                         textDecoration: 'none',
                                     }}
                                 >

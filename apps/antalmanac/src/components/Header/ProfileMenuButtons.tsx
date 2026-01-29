@@ -42,7 +42,7 @@ export function ProfileMenuButtons({ user, handleOpen, handleSettingsOpen, loadi
                     Sign In
                 </Button>
                 <IconButton onClick={handleSettingsOpen} color="inherit">
-                    <Menu />
+                    <Menu sx={{ width: 24, height: 24 }} />
                 </IconButton>
             </>
         );
@@ -76,7 +76,7 @@ export function ProfileMenuButtons({ user, handleOpen, handleSettingsOpen, loadi
             ) : (
                 <AccountCircle sx={{ width: 24, height: 24 }} />
             )}
-            <Menu />
+            <Menu sx={{ width: 24, height: 24 }} />
         </Button>
     );
 }
