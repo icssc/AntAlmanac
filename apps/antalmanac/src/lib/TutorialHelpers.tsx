@@ -26,6 +26,46 @@ function markTourHasRun() {
     setLocalStorageTourHasRun('true');
 }
 
+function waitForElementRect(
+    selector: string,
+    onReady: (el: Element) => void,
+    options: { timeoutMs?: number; minWidth?: number; minHeight?: number } = {}
+) {
+    const timeoutMs = options.timeoutMs ?? 8000;
+    const minWidth = options.minWidth ?? 5;
+    const minHeight = options.minHeight ?? 5;
+    const startedAt = Date.now();
+
+    const tick = () => {
+        const el = document.querySelector(selector);
+        if (el) {
+            const rect = el.getBoundingClientRect();
+            if (rect.width >= minWidth && rect.height >= minHeight) {
+                onReady(el);
+                return;
+            }
+        }
+
+        if (Date.now() - startedAt > timeoutMs) {
+            console.info(`Timed out waiting for ${selector} to be measurable`);
+            return;
+        }
+
+        requestAnimationFrame(tick);
+    };
+
+    requestAnimationFrame(tick);
+}
+
+function isElementRectReady(selector: string, options: { minWidth?: number; minHeight?: number } = {}): boolean {
+    const el = document.querySelector(selector);
+    if (!el) return false;
+    const rect = el.getBoundingClientRect();
+    const minWidth = options.minWidth ?? 5;
+    const minHeight = options.minHeight ?? 5;
+    return rect.width >= minWidth && rect.height >= minHeight;
+}
+
 /** Only run tour if it hasn't run before, we're on desktop, and there isn't a user ID saved */
 export function tourShouldRun(): boolean {
     return !(
@@ -68,6 +108,19 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
         goToStep(stepIndex);
     };
 
+    const reselectStepWhenReady = (stepName: TourStepName, selector: string) => {
+        // If the target is already measurable, don't re-select (avoids loops).
+        if (isElementRectReady(selector)) {
+            return;
+        }
+
+        waitForElementRect(selector, () => {
+            // Nudge layout + re-select step so Reactour recomputes target geometry.
+            window.dispatchEvent(new Event('resize'));
+            goToNamedStep(stepName);
+        });
+    };
+
     return {
         welcome: {
             selector: '#root',
@@ -93,6 +146,7 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
             action: () => {
                 markTourHasRun();
                 setActiveTab('search');
+                reselectStepWhenReady(TourStepName.searchBar, '#fuzzy-search');
             },
             mutationObservables: ['#fuzzy-search'],
         },
@@ -176,7 +230,7 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
                     <b>Select</b> the map tab to see where your classes are.
                 </>
             ),
-            action: tourActionFactory(() => goToNamedStep(TourStepName.mapPane), {
+            action: tourActionFactory(() => reselectStepWhenReady(TourStepName.mapPane, '#map-pane'), {
                 selector: '#map-tab',
                 eventType: 'click',
             }),
@@ -194,16 +248,14 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
                     }, 0);
                 }
 
-                // Re-measure after the map mounts
-                setTimeout(() => {
-                    window.dispatchEvent(new Event('resize'));
-                }, 50);
+                // Ensure this step anchors only after #map-pane is measurable.
+                reselectStepWhenReady(TourStepName.mapPane, '#map-pane');
             },
             mutationObservables: ['#root', '#map-pane'],
             resizeObservables: ['#root', '#map-pane'],
         },
         saveAndLoad: {
-            selector: '#save-button',
+            selector: '#load-save-container',
             content: (
                 <>
                     <b>Sign in</b> to save your schedules when you&apos;re done. <br />
@@ -211,10 +263,9 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
                 </>
             ),
             position: 'bottom',
-            action: tourActionFactory(() => goToNamedStep(TourStepName.saveAndLoad), {
-                selector: '#load-save-container',
-                eventType: 'click',
-            }),
+            action: () => {
+                reselectStepWhenReady(TourStepName.saveAndLoad, '#load-save-container');
+            },
         },
     };
 }
