@@ -81,6 +81,10 @@ export function Header() {
                 padding: 1,
                 boxShadow: 'none',
                 backgroundColor: BLUE,
+                fontSize: '10.5px',
+                '@media (min-width: 800px)': {
+                    fontSize: '12.25px',
+                },
             }}
         >
             <Box
@@ -135,7 +139,7 @@ export function Header() {
                                         <ListItemIcon>
                                             <EventNote />
                                         </ListItemIcon>
-                                        <Typography variant="h6">Scheduler</Typography>
+                                        <Typography fontSize="inherit">Scheduler</Typography>
                                     </MenuItem>
                                     <MenuItem
                                         component={Link}
@@ -147,7 +151,7 @@ export function Header() {
                                         <ListItemIcon>
                                             <Route />
                                         </ListItemIcon>
-                                        <Typography variant="h6">Planner</Typography>
+                                        <Typography fontSize="inherit">Planner</Typography>
                                     </MenuItem>
                                 </MenuList>
                             </Popover>
@@ -164,6 +168,7 @@ export function Header() {
                                         bgcolor: 'white',
                                         color: BLUE,
                                         fontWeight: 500,
+                                        fontSize: 'inherit',
                                         py: 0.4,
                                         '&:hover': { bgcolor: 'grey.100' },
                                     }}
@@ -178,6 +183,7 @@ export function Header() {
                                         boxShadow: 'none',
                                         color: 'white',
                                         fontWeight: 500,
+                                        fontSize: 'inherit',
                                         py: 0.4,
                                         textDecoration: 'none',
                                     }}
