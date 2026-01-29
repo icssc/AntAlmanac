@@ -33,11 +33,11 @@ export function ProfileMenuButtons({ user, handleOpen, handleSettingsOpen, loadi
             <>
                 <Button
                     variant="text"
-                    size="medium"
                     startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <AccountCircle />}
                     color="inherit"
                     onClick={handleOpen}
                     disabled={skeletonMode}
+                    sx={{ fontSize: 'inherit' }}
                 >
                     Sign In
                 </Button>
