@@ -13,7 +13,6 @@ import {
     getUsers,
 } from './helpers/subscriptionData';
 
-
 /**
  * Processes a section of a course and sends notifications to users if and only if the status and/or restriction codes have changed.
  * Also updates the subscription status in the database to the most current status and restriction codes.
@@ -78,8 +77,8 @@ async function processSection(section: WebsocSection, course: WebsocCourse, quar
  * @param quarter - The academic quarter of the course.
  * @param year - The academic year of the course.
  */
-function processCourse(course: WebsocCourse, quarter: string, year: string) {
-    return Promise.all(course.sections.map((section) => processSection(section, course, quarter, year)));
+async function processCourse(course: WebsocCourse, quarter: string, year: string) {
+    await Promise.all(course.sections.map((section) => processSection(section, course, quarter, year)));
 }
 
 /**
@@ -88,8 +87,8 @@ function processCourse(course: WebsocCourse, quarter: string, year: string) {
  * @param quarter - The academic quarter of the department.
  * @param year - The academic year of the department.
  */
-function processDepartment(department: WebsocDepartment, quarter: string, year: string) {
-    return Promise.all(department.courses.map((course) => processCourse(course, quarter, year)));
+async function processDepartment(department: WebsocDepartment, quarter: string, year: string) {
+    await Promise.all(department.courses.map((course) => processCourse(course, quarter, year)));
 }
 
 /**
@@ -98,8 +97,8 @@ function processDepartment(department: WebsocDepartment, quarter: string, year: 
  * @param quarter - The academic quarter of the school.
  * @param year - The academic year of the school.
  */
-function processSchool(school: WebsocSchool, quarter: string, year: string) {
-    return Promise.all(school.departments.map((department) => processDepartment(department, quarter, year)));
+async function processSchool(school: WebsocSchool, quarter: string, year: string) {
+    await Promise.all(school.departments.map((department) => processDepartment(department, quarter, year)));
 }
 
 /**
@@ -134,21 +133,19 @@ async function processBatch(batch: string[], quarter: string, year: string) {
         );
     }
 
-    const initialPromises = Promise.all(response.schools.map((school) => processSchool(school, quarter, year)));
+    await Promise.all(response.schools.map((school) => processSchool(school, quarter, year)));
 
     if (notProcessed.length > 0) {
-        const retryPromises = notProcessed.map(async (missingCode) => {
-            console.log(`[RETRY] Retrying section code: ${missingCode}`);
-            const retryResponse: WebsocResponse = (await getUpdatedClasses(quarter, year, [missingCode])) || {
-                schools: [],
-            };
-            return Promise.all(retryResponse.schools.map((school) => processSchool(school, quarter, year)));
-        });
-
-        return Promise.all([initialPromises, ...retryPromises]);
+        await Promise.all(
+            notProcessed.map(async (missingCode) => {
+                console.log(`[RETRY] Retrying section code: ${missingCode}`);
+                const retryResponse: WebsocResponse = (await getUpdatedClasses(quarter, year, [missingCode])) || {
+                    schools: [],
+                };
+                await Promise.all(retryResponse.schools.map((school) => processSchool(school, quarter, year)));
+            })
+        );
     }
-
-    return initialPromises;
 }
 
 /**
