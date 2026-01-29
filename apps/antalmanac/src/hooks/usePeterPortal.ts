@@ -1,7 +1,6 @@
 import type { Roadmap } from '@packages/antalmanac-types';
 import { useEffect, useState } from 'react';
 
-
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
@@ -74,7 +73,7 @@ export function usePeterPortalRoadmaps() {
             }
         }
         flattenCourses();
-    }, [googleId, roadmaps, selectedRoadmapId]);
+    }, [googleId, roadmaps, selectedRoadmapId, setFilterTakenCourses, setUserTakenCourses]);
 
     return {
         roadmaps,
