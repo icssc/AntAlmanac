@@ -1,4 +1,9 @@
+import { z } from 'zod';
+
+import type { PeterPortalAPIResponse, Roadmap } from '@packages/antalmanac-types';
 import { ppEnvSchema } from '../env';
+
+export type { Quarter, RoadmapContent, Roadmap, PeterPortalAPIResponse } from '@packages/antalmanac-types';
 
 export const PETERPORTAL_API_URL = "https://peterportal.org/api/trpc/external.roadmaps.getByGoogleID";
 
@@ -13,23 +18,23 @@ export function getCurrentTerm(): { year: number; quarter: string } {
   return { year, quarter };
 }
 
-export type PeterPortalAPIResponse = {
-  result: {
-    data: [
-      {
-        name: string;
-        content: {
-          name: string; 
-          startYear: number;
-          quarters: {
-            name: string;
-            courses: string[];
-          }[];
-        }[];
-      }
-    ];
-  };
-};
+export const quarterSchema = z.object({
+  name: z.string(),
+  courses: z.array(z.string()),
+});
+
+export const roadmapContentSchema = z.object({
+  name: z.string(),
+  startYear: z.number(),
+  quarters: z.array(quarterSchema),
+});
+
+export const roadmapSchema = z.object({
+  id: z.union([z.string(), z.number()]),
+  name: z.string(),
+  chc: z.string().nullable().optional(),
+  content: z.array(roadmapContentSchema),
+});
 
 export async function fetchUserRoadmapsPeterPortal(userId: string) { // maybe add a return promise
   const env = ppEnvSchema.parse(process.env);
@@ -60,7 +65,7 @@ export async function fetchUserRoadmapsPeterPortal(userId: string) { // maybe ad
   }
 }
 
-export function flattenRoadmapCourses(roadmap: any): string[] {
+export function flattenRoadmapCourses(roadmap: Roadmap): string[] {
   const courses: Set<string> = new Set();
 
   for (const year of roadmap.content ?? []) {

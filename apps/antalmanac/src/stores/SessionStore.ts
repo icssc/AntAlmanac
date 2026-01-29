@@ -44,7 +44,7 @@ export const useSessionStore = create<SessionState>((set) => {
                         }
                         set({ googleId });
                     } catch (e) {
-                        console.error("❌ Failed to load googleId:", e);
+                        console.error("Failed to load googleId:", e);
                         set({ googleId: null })
                     }
                 }

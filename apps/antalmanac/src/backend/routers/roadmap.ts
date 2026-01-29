@@ -1,6 +1,7 @@
-import { procedure, router } from '../trpc';
 import { z } from 'zod';
-import { fetchUserRoadmapsPeterPortal, flattenRoadmapCourses } from '../lib/peterportal';
+
+import { procedure, router } from '../trpc';
+import { fetchUserRoadmapsPeterPortal, flattenRoadmapCourses, roadmapSchema } from '../lib/peterportal';
 
 const roadmapRouter = router({
     fetchUserRoadmapsPeterPortal: procedure
@@ -10,7 +11,7 @@ const roadmapRouter = router({
         }),
 
     flattenRoadmapCourses: procedure
-    .input(z.object({ roadmap: z.any() }))
+    .input(z.object({ roadmap: roadmapSchema }))
     .query(({ input }) => {
         return flattenRoadmapCourses(input.roadmap);
     }),

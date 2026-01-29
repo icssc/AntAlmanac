@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
-import trpc from '$lib/api/trpc';
+
 import { useSessionStore } from '$stores/SessionStore';
+import trpc from '$lib/api/trpc';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+import type { Roadmap } from '@packages/antalmanac-types';
 
 export function usePeterPortalRoadmaps() {
     const googleId = useSessionStore((s) => s.googleId);
     const setUserTakenCourses = useSessionStore((s) => s.setUserTakenCourses);
     const setFilterTakenCourses = useSessionStore((s) => s.setFilterTakenCourses);
 
-    const [roadmaps, setRoadmaps] = useState<any[]>([]);
+    const [roadmaps, setRoadmaps] = useState<Roadmap[]>([]);
     const selectedRoadmapId = RightPaneStore.getFormData().excludeRoadmapCourses;
 
     useEffect(() => {
@@ -25,6 +27,9 @@ export function usePeterPortalRoadmaps() {
             }
         }
         loadRoadmaps();
+        return () => {
+            active = false;
+        };
     }, [googleId]);
 
     useEffect(() => {
