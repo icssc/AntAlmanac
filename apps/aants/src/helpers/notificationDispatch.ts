@@ -87,20 +87,18 @@ async function sendNotification(
     } = courseDetails;
 
     try {
-        let notification = ``;
+        const parts = [];
 
-        if (currentStatus === 'Waitl' && statusChanged) {
-            notification += `- The class is now <strong>WAITLISTED</strong>`;
-        } else if (statusChanged) {
-            notification += `- The class is now <strong>${currentStatus}</strong>`;
-        }
-        if (codesChanged && statusChanged) {
-            notification += `\n- The class now has restriction codes <strong>${restrictionCodes}</strong>`;
-        } else if (codesChanged) {
-            notification += `- The class now has restriction codes <strong>${restrictionCodes}</strong>`;
+        if (statusChanged) {
+            const status = currentStatus === 'Waitl' ? 'WAITLISTED' : currentStatus;
+            parts.push(`The class is now <strong>${status}</strong>`);
         }
 
-        notification = notification.replace(/\n/g, '<br>');
+        if (codesChanged) {
+            parts.push(`The class now has restriction codes <strong>${restrictionCodes}</strong>`);
+        }
+
+        const notification = parts.map((p) => `- ${p}`).join('<br>');
 
         const time = getFormattedTime();
 
@@ -108,17 +106,12 @@ async function sendNotification(
         const isStaging = process.env.NODE_ENV !== 'production';
         const stagingPrefix = isStaging ? '[SQS] [STAGING] ' : '';
 
-        const queueUrl = process.env.EMAIL_QUEUE_URL;
-        if (!queueUrl) {
-            throw new Error('EMAIL_QUEUE_URL environment variable is not set');
-        }
-
         const usersWithEmail = users.filter((user): user is User & { email: string } => user.email !== null);
 
         // Send each email as a separate SQS message
         await Promise.all(
             usersWithEmail.map((user) =>
-                queueEmail(queueUrl, {
+                queueEmail({
                     FromEmailAddress: 'icssc@uci.edu',
                     TemplateName: 'CourseNotification',
                     Destination: {
