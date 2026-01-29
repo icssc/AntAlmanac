@@ -46,6 +46,16 @@ export const ScheduleSaveStateSchema = type({
 });
 export type ScheduleSaveState = typeof ScheduleSaveStateSchema.infer;
 
+export type HydratedScheduleSaveState = {
+    schedules: Array<{
+        scheduleName: string;
+        courses: ScheduleCourse[];
+        customEvents: RepeatingCustomEvent[];
+        scheduleNote: string;
+    }>;
+    scheduleIndex: number;
+}
+
 export type ScheduleUndoState = {
     schedules: Schedule[];
     scheduleIndex: number;

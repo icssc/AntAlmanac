@@ -4,6 +4,7 @@ import type {
     ScheduleCourse,
     ScheduleSaveState,
     RepeatingCustomEvent,
+    HydratedScheduleSaveState,
     CustomEventId,
 } from '@packages/antalmanac-types';
 import { SnackbarOrigin, VariantType } from 'notistack';
@@ -374,7 +375,35 @@ class AppStore extends EventEmitter {
         this.emit('reorderSchedule');
     }
 
-    private async loadScheduleFromSaveState(savedSchedule: ScheduleSaveState) {
+    private isHydratedSaveState(
+        savedSchedule: HydratedScheduleSaveState | ScheduleSaveState
+    ): savedSchedule is HydratedScheduleSaveState {
+        return savedSchedule.schedules.some((schedule) =>
+            schedule.courses.some((course) => 'section' in course)
+        );
+    }
+
+    private toShortSaveState(savedSchedule: HydratedScheduleSaveState | ScheduleSaveState): ScheduleSaveState {
+        if (!this.isHydratedSaveState(savedSchedule)) {
+            return savedSchedule;
+        }
+
+        return {
+            scheduleIndex: savedSchedule.scheduleIndex,
+            schedules: savedSchedule.schedules.map((schedule) => ({
+                scheduleName: schedule.scheduleName,
+                customEvents: schedule.customEvents,
+                scheduleNote: schedule.scheduleNote,
+                courses: schedule.courses.map((course) => ({
+                    sectionCode: course.section.sectionCode,
+                    term: course.term,
+                    color: course.section.color,
+                })),
+            })),
+        };
+    }
+
+    private async loadScheduleFromSaveState(savedSchedule: HydratedScheduleSaveState | ScheduleSaveState) {
         try {
             await this.schedule.fromScheduleSaveState(savedSchedule);
             return true;
@@ -383,8 +412,10 @@ class AppStore extends EventEmitter {
         }
     }
 
-    async loadSchedule(savedSchedule: ScheduleSaveState) {
-        const hasDataChanged = JSON.stringify(this.schedule.getScheduleAsSaveState()) === JSON.stringify(savedSchedule);
+    async loadSchedule(savedSchedule: HydratedScheduleSaveState | ScheduleSaveState) {
+        const shortSaveState = this.toShortSaveState(savedSchedule);
+        const hasDataChanged =
+            JSON.stringify(this.schedule.getScheduleAsSaveState()) === JSON.stringify(shortSaveState);
         const loadSuccess = await this.loadScheduleFromSaveState(savedSchedule);
         if (!loadSuccess) {
             return false;
@@ -409,7 +440,7 @@ class AppStore extends EventEmitter {
         if (hasDataChanged) {
             deleteTempSaveData();
         } else {
-            loadTempSaveData(savedSchedule.schedules.length);
+            loadTempSaveData(shortSaveState.schedules.length);
         }
 
         this.emit('addedCoursesChange');
