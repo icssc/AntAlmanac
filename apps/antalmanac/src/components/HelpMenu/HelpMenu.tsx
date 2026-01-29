@@ -69,6 +69,11 @@ export function HelpMenu() {
                 bottom: `calc(${isMobile ? 65 : 16}px + env(safe-area-inset-bottom))`, // Magic number
                 right: 8,
                 zIndex: theme.zIndex.fab,
+                pointerEvents: 'none',
+                // MUI SpeedDial controls pointer events itself
+                '& > *:not(.MuiSpeedDial-root)': {
+                    pointerEvents: 'auto',
+                },
             })}
             spacing={1}
             alignItems="center"

@@ -8,6 +8,7 @@ import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
 
+// eslint-disable-next-line import/no-unresolved
 import * as searchData from '$generated/searchData';
 
 const MAX_AUTOCOMPLETE_RESULTS = 12;
@@ -38,14 +39,8 @@ const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
 
 const toMutable = <T>(arr: readonly T[]): T[] => arr as T[];
 
-const isCourseOffered = (
-    department: string,
-    courseNumber: string,
-    termSectionCodes: Record<string, SectionSearchResult>
-): boolean => {
-    return Object.values(termSectionCodes).some((section) => {
-        return section.department === department && section.courseNumber === courseNumber;
-    });
+const isCourseOffered = (department: string, courseNumber: string, offeredCourseSet: Set<string>): boolean => {
+    return offeredCourseSet.has(`${department}-${courseNumber}`);
 };
 
 const searchRouter = router({
@@ -64,6 +59,10 @@ const searchRouter = router({
             } catch (err) {
                 throw new Error(`Failed to load term data for ${parsedTerm}: ${err}`);
             }
+
+            const offeredCourseSet = new Set(
+                Object.values(termSectionCodes).map((s) => `${s.department}-${s.courseNumber}`)
+            );
 
             const num = Number(input.query);
             const matchedSections: SectionSearchResult[] = [];
@@ -91,8 +90,9 @@ const searchRouter = router({
                 matchedSections.length === MAX_AUTOCOMPLETE_RESULTS
                     ? []
                     : fuzzysort.go(query, searchData.departments, {
-                          keys: ['id', 'alias'],
+                          keys: ['id', 'name', 'alias'],
                           limit: MAX_AUTOCOMPLETE_RESULTS - matchedSections.length,
+                          threshold: 0.7,
                       });
 
             const matchedCourses =
@@ -101,7 +101,7 @@ const searchRouter = router({
                     : fuzzysort
                           .go(query, searchData.courses, {
                               keys: ['id', 'name', 'alias', 'metadata.department', 'metadata.number'],
-                              limit: MAX_AUTOCOMPLETE_RESULTS - matchedDepts.length - matchedSections.length,
+                              limit: 100,
                           })
                           .map((course) => {
                               return {
@@ -111,7 +111,7 @@ const searchRouter = router({
                                       isOffered: isCourseOffered(
                                           course.obj.metadata.department,
                                           course.obj.metadata.number,
-                                          termSectionCodes
+                                          offeredCourseSet
                                       ),
                                   },
                               };
@@ -119,7 +119,8 @@ const searchRouter = router({
                           .sort((a, b) => {
                               if (a.obj.isOffered === b.obj.isOffered) return 0;
                               return a.obj.isOffered ? -1 : 1;
-                          });
+                          })
+                          .slice(0, MAX_AUTOCOMPLETE_RESULTS - matchedDepts.length - matchedSections.length);
 
             return Object.fromEntries([
                 ...matchedSections.map((x) => [x.sectionCode, x]),

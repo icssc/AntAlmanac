@@ -1,16 +1,5 @@
 import { LightMode, Close, SettingsBrightness, DarkMode, Help, MenuRounded } from '@mui/icons-material';
-import {
-    Box,
-    Button,
-    ButtonGroup,
-    Divider,
-    Drawer,
-    Stack,
-    Switch,
-    Tooltip,
-    Typography,
-    useMediaQuery,
-} from '@mui/material';
+import { Box, Button, ButtonGroup, Divider, Drawer, Stack, Switch, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
@@ -19,6 +8,7 @@ import { About } from './About';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import appStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -236,7 +226,7 @@ function SettingsMenu() {
 
 function AppDrawer() {
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const isMobileScreen = useMediaQuery('(max-width:750px)');
+    const isMobile = useIsMobile();
 
     const handleDrawerOpen = useCallback(() => {
         setDrawerOpen(true);
@@ -264,7 +254,7 @@ function AppDrawer() {
                 }}
                 variant="temporary"
             >
-                <Box style={{ width: isMobileScreen ? '300px' : '360px', height: '100%' }}>
+                <Box style={{ width: isMobile ? '300px' : '360px', height: '100%' }}>
                     <Box
                         sx={{
                             display: 'flex',
