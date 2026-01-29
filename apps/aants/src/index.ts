@@ -194,4 +194,6 @@ export async function scanAndNotify() {
     }
 }
 
-scanAndNotify();
+if (require.main === module) {
+    scanAndNotify();
+}
