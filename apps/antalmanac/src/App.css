@@ -12,7 +12,7 @@
 }
 
 /* Hide the scrollbars on mobile devices */
-@media (max-width: 768px) {
+@media (max-width: 799px) {
     ::-webkit-scrollbar {
         display: none;
     }
@@ -23,7 +23,7 @@
 }
 
 /* Ensure snackbars sit above the mobile navigation tabs */
-@media (max-width: 600px) {
+@media (max-width: 799px) {
     .notification-snackbar-container {
         padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 64px) !important;
     }

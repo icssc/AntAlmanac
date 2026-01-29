@@ -4,6 +4,7 @@ import { useIsMobile } from '$hooks/useIsMobile';
 
 type Logo = {
     name: string;
+    logo: string;
     mobileLogo: string;
     desktopLogo: string;
     startDay: number; // inclusive
@@ -15,7 +16,8 @@ type Logo = {
 
 const defaultLogo: Logo = {
     name: 'Default',
-    mobileLogo: '/assets/mobile-logo.svg',
+    logo: '/assets/mobile-logo-cropped.svg',
+    mobileLogo: '/assets/mobile-logo-cropped.svg',
     desktopLogo: '/assets/logo.svg',
     startDay: 0,
     startMonthIndex: 0,
@@ -26,6 +28,7 @@ const defaultLogo: Logo = {
 const logos: Logo[] = [
     {
         name: 'Christmas',
+        logo: '/assets/christmas-logo.png',
         mobileLogo: '/assets/christmas-mobile-logo.png',
         desktopLogo: '/assets/christmas-logo.png',
         startDay: 1,
@@ -36,6 +39,7 @@ const logos: Logo[] = [
     },
     {
         name: 'Thanksgiving',
+        logo: '/assets/thanksgiving-mobile-logo.png',
         mobileLogo: '/assets/thanksgiving-mobile-logo.png',
         desktopLogo: '/assets/thanksgiving-logo.png',
         startDay: 1,
@@ -46,6 +50,7 @@ const logos: Logo[] = [
     },
     {
         name: 'Halloween',
+        logo: '/assets/halloween-mobile-logo.png',
         mobileLogo: '/assets/halloween-mobile-logo.png',
         desktopLogo: '/assets/halloween-logo.png',
         startDay: 1,
@@ -67,19 +72,14 @@ function logoIsForCurrentSeason(logo: Logo) {
 }
 
 export function Logo() {
-    const isMobile = useIsMobile();
-
     const currentLogo = logos.find((logo) => logoIsForCurrentSeason(logo)) ?? defaultLogo;
 
+    const isMobile = useIsMobile();
     return (
         <Image
-            src={isMobile ? currentLogo?.mobileLogo : currentLogo?.desktopLogo}
-            height={64}
-            width={340}
-            style={{
-                width: 'auto',
-                height: '32px',
-            }}
+            src={currentLogo?.logo}
+            height={32}
+            width={isMobile ? 48 : 78}
             title={currentLogo?.attribution}
             alt="logo"
         />

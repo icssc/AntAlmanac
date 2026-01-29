@@ -13,6 +13,7 @@ import PatchNotes from '$components/PatchNotes';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { BLUE } from '$src/globals';
+// import { SideNav } from '$src/shared-components/SideNav';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
 function MobileHome() {
@@ -83,6 +84,8 @@ export default function Home() {
             <InstallPWABanner />
 
             <Stack component="main" height="100dvh">
+                {/* <SideNav /> */}
+
                 <Header />
                 {isMobile ? <MobileHome /> : <DesktopHome />}
             </Stack>

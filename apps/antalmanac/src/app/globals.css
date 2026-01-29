@@ -1,12 +1,10 @@
-@media (min-resolution: 120dpi) {
-    html {
-        font-size: 14px;
-    }
+html {
+    font-size: 12px;
 }
 
-@media (min-resolution: 144dpi) {
+@media (max-width: 800px) {
     html {
-        font-size: 12px;
+        font-size: 14px;
     }
 }
 
