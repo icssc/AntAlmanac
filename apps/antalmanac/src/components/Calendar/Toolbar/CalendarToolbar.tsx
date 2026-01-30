@@ -236,7 +236,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
 
             {shouldCondenseToolbar ? (
                 <Box display="flex" flexDirection="row" gap={0.5}>
-                    <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
+                    <Box display="flex" flexWrap="nowrap" alignItems="center" gap={0.5}>
                         <IconButton onClick={handleUndo(postHog)} disabled={skeletonMode}>
                             <UndoIcon fontSize="small" />
                         </IconButton>
