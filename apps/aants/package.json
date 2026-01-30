@@ -12,6 +12,7 @@
     "author": "",
     "dependencies": {
         "@aws-sdk/client-sesv2": "^3.750.0",
+        "@aws-sdk/client-sqs": "^3.750.0",
         "@icssc/libwebsoc-next": "1.0.0",
         "@trpc/server": "^10.30.0",
         "aws-sdk": "^2.1550.0",
@@ -23,6 +24,7 @@
         "zod": "3.23.8"
     },
     "devDependencies": {
+        "@types/aws-lambda": "^8.10.130",
         "@types/pg": "^8.11.10",
         "@typescript-eslint/eslint-plugin": "^5.52.0",
         "@typescript-eslint/parser": "^5.52.0",

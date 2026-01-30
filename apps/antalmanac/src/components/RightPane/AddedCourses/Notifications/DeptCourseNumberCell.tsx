@@ -1,5 +1,5 @@
-import { Box, SxProps, Tooltip, IconButton } from '@mui/material';
 import { InfoOutlined } from '@mui/icons-material';
+import { Box, SxProps, Tooltip, IconButton } from '@mui/material';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 
@@ -18,12 +18,14 @@ export const DeptCourseNumberCell = ({ deptCode, courseNumber, courseTitle, sx }
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <Box>{displayText}</Box>
                 {courseTitle && (
-                    <Tooltip title={courseTitle} placement="top"
-                    slotProps={{
-                        tooltip: {
-                            sx: { fontSize: '0.9rem' }, 
-                        },
-                    }}
+                    <Tooltip
+                        title={courseTitle}
+                        placement="top"
+                        slotProps={{
+                            tooltip: {
+                                sx: { fontSize: '0.9rem' },
+                            },
+                        }}
                     >
                         <IconButton size="small" sx={{ padding: 0, minWidth: 'auto', width: 'auto', height: 'auto' }}>
                             <InfoOutlined fontSize="small" />

@@ -1,5 +1,6 @@
-import { z } from 'zod';
 import { db } from '@packages/db/src/index';
+import { z } from 'zod';
+
 import { RDS } from '../../backend/lib/rds';
 import { procedure, router } from '../trpc';
 
