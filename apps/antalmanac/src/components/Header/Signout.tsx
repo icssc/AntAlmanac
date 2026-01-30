@@ -39,7 +39,9 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
             await clearSession();
             onLogoutComplete?.();
 
-            window.location.href = logoutUrl;
+            if (logoutUrl) {
+                window.location.href = logoutUrl;
+            }
         } catch (error) {
             console.error('Error during logout', error);
             // Even on error, clear session and show dialog
