@@ -1,7 +1,3 @@
-/*
- * To run this script, use 'pnpm run aants'
- */
-
 import { WebsocResponse, WebsocSection, WebsocCourse, WebsocSchool, WebsocDepartment } from '@icssc/libwebsoc-next';
 
 import { batchCourseCodes, sendNotification, CourseDetails } from './helpers/notificationDispatch';
@@ -189,8 +185,4 @@ export async function scanAndNotify() {
         );
         throw error;
     }
-}
-
-if (require.main === module) {
-    scanAndNotify();
 }
