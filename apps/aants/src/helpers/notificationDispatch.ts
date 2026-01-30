@@ -116,7 +116,7 @@ async function sendNotification(
         await Promise.all(
             usersWithEmail.map((user) =>
                 queueEmail({
-                    FromEmailAddress: 'icssc@uci.edu',
+                    FromEmailAddress: 'no-reply@icssc.club',
                     TemplateName: 'CourseNotification',
                     Destination: {
                         ToAddresses: [user.email],
