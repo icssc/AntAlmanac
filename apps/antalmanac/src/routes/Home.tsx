@@ -51,7 +51,7 @@ function DesktopHome() {
             expandToMin={false}
             gutterSize={10}
             gutterAlign="center"
-            snapOffset={30}
+            snapOffset={0}
             dragInterval={1}
             direction="horizontal"
             cursor="col-resize"
