@@ -134,34 +134,6 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
         }
     };
 
-    const fullToolbarContent = (
-        <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
-            <ScreenshotButton />
-
-            <DownloadButton />
-
-            <Tooltip title="Undo last action">
-                <IconButton onClick={handleUndo(postHog)} size="medium" disabled={skeletonMode}>
-                    <UndoIcon fontSize="small" />
-                </IconButton>
-            </Tooltip>
-            <Tooltip title="Redo last action">
-                <IconButton onClick={handleRedo(postHog)} size="medium" disabled={skeletonMode}>
-                    <RedoIcon fontSize="small" />
-                </IconButton>
-            </Tooltip>
-
-            <ClearScheduleButton
-                size="medium"
-                fontSize="small"
-                skeletonMode={skeletonMode}
-                analyticsCategory={analyticsEnum.calendar}
-            />
-
-            <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
-        </Box>
-    );
-
     return (
         <Paper
             elevation={0}
@@ -301,7 +273,31 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                     },
                 }}
             >
-                {fullToolbarContent}
+                <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
+                    <ScreenshotButton />
+
+                    <DownloadButton />
+
+                    <Tooltip title="Undo last action">
+                        <IconButton onClick={handleUndo(postHog)} size="medium" disabled={skeletonMode}>
+                            <UndoIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Redo last action">
+                        <IconButton onClick={handleRedo(postHog)} size="medium" disabled={skeletonMode}>
+                            <RedoIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+
+                    <ClearScheduleButton
+                        size="medium"
+                        fontSize="small"
+                        skeletonMode={skeletonMode}
+                        analyticsCategory={analyticsEnum.calendar}
+                    />
+
+                    <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
+                </Box>
             </Box>
         </Paper>
     );
