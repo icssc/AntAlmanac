@@ -1,4 +1,10 @@
-import { type AutocompleteInputChangeReason, Box, Divider, Typography } from '@mui/material';
+import {
+    type AutocompleteInputChangeReason,
+    type AutocompleteRenderGroupParams,
+    Box,
+    Divider,
+    Typography,
+} from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
 import { PureComponent } from 'react';
@@ -269,7 +275,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         return isOffered ? groupType.OFFERED : groupType.NOT_OFFERED;
     };
 
-    renderGroup = (params: { key: string; group: string; children?: React.ReactNode }) => {
+    renderGroup = (params: AutocompleteRenderGroupParams) => {
         if (params.group === groupType.UNGROUPED) {
             return <Box key={params.key}>{params.children}</Box>;
         }

@@ -1,8 +1,7 @@
 import { Box, Typography } from '@mui/material';
 
 import { BLUE } from '$src/globals';
-import { useTimeFormatStore } from '$stores/SettingsStore';
-import { useThemeStore } from '$stores/SettingsStore';
+import { useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
 
 export function TimeSelector() {
     const [isMilitaryTime, setTimeFormat] = useTimeFormatStore((store) => [store.isMilitaryTime, store.setTimeFormat]);

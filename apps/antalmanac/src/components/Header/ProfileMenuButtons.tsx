@@ -33,16 +33,16 @@ export function ProfileMenuButtons({ user, handleOpen, handleSettingsOpen, loadi
             <>
                 <Button
                     variant="text"
-                    size="medium"
                     startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <AccountCircle />}
                     color="inherit"
                     onClick={handleOpen}
                     disabled={skeletonMode}
+                    sx={{ fontSize: 'inherit' }}
                 >
                     Sign In
                 </Button>
                 <IconButton onClick={handleSettingsOpen} color="inherit">
-                    <Menu />
+                    <Menu sx={{ width: 24, height: 24 }} />
                 </IconButton>
             </>
         );
@@ -76,7 +76,7 @@ export function ProfileMenuButtons({ user, handleOpen, handleSettingsOpen, loadi
             ) : (
                 <AccountCircle sx={{ width: 24, height: 24 }} />
             )}
-            <Menu />
+            <Menu sx={{ width: 24, height: 24 }} />
         </Button>
     );
 }
