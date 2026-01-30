@@ -139,7 +139,9 @@ export function Header() {
                                         <ListItemIcon>
                                             <EventNote />
                                         </ListItemIcon>
-                                        <Typography fontSize="inherit">Scheduler</Typography>
+                                        <Typography fontSize="15px" fontWeight={500}>
+                                            Scheduler
+                                        </Typography>
                                     </MenuItem>
                                     <MenuItem
                                         component={Link}
@@ -151,7 +153,9 @@ export function Header() {
                                         <ListItemIcon>
                                             <Route />
                                         </ListItemIcon>
-                                        <Typography fontSize="inherit">Planner</Typography>
+                                        <Typography fontSize="15px" fontWeight={500}>
+                                            Planner
+                                        </Typography>
                                     </MenuItem>
                                 </MenuList>
                             </Popover>
