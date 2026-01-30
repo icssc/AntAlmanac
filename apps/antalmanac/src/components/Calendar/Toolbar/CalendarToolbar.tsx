@@ -30,6 +30,7 @@ import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSele
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import DownloadButton from '$components/buttons/Download';
 import ScreenshotButton from '$components/buttons/Screenshot';
+import { useElementSize } from '$hooks/useElementSize';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
@@ -72,6 +73,10 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const isMobile = useIsMobile();
     const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
     const menuOpen = Boolean(menuAnchorEl);
+    const [toolbarRef, { width: availableWidth }] = useElementSize<HTMLDivElement>();
+    const [ghostRef, { width: requiredWidth }] = useElementSize<HTMLDivElement>();
+
+    const shouldCondenseToolbar = isMobile || availableWidth < requiredWidth + 20;
 
     const postHog = usePostHog();
 
@@ -134,19 +139,66 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
         }
     };
 
+    const fullToolbarContent = (
+        <Box display="flex" flexWrap="nowrap" alignItems="center" gap={0.5}>
+            <ScreenshotButton />
+
+            <DownloadButton />
+
+            <Tooltip title="Undo last action">
+                <IconButton onClick={handleUndo(postHog)} size="medium" disabled={skeletonMode}>
+                    <UndoIcon fontSize="small" />
+                </IconButton>
+            </Tooltip>
+            <Tooltip title="Redo last action">
+                <IconButton onClick={handleRedo(postHog)} size="medium" disabled={skeletonMode}>
+                    <RedoIcon fontSize="small" />
+                </IconButton>
+            </Tooltip>
+
+            <ClearScheduleButton
+                size="medium"
+                fontSize="small"
+                skeletonMode={skeletonMode}
+                analyticsCategory={analyticsEnum.calendar}
+            />
+
+            <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
+        </Box>
+    );
+
     return (
         <Paper
+            ref={toolbarRef}
             elevation={0}
             variant="outlined"
             sx={{
                 display: 'flex',
-                flexWrap: 'wrap',
+                flexWrap: 'nowrap',
                 gap: 1,
                 alignItems: 'center',
                 padding: 1,
                 borderRadius: '4px 4px 0 0',
             }}
         >
+            <Box
+                ref={ghostRef}
+                sx={{
+                    visibility: 'hidden',
+                    position: 'absolute',
+                    height: 0,
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                }}
+            >
+                <Box gap={1} display="flex" alignItems="center">
+                    <SelectSchedulePopover />
+                    <Button>Finals</Button>
+                    <Box width={20} />
+                    {fullToolbarContent}
+                </Box>
+            </Box>
+
             <Box gap={1} display="flex" alignItems="center">
                 <SelectSchedulePopover />
                 <Tooltip title="Toggle showing finals schedule">
@@ -182,7 +234,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             </Box>
             <Box flexGrow={1} />
 
-            {isMobile ? (
+            {shouldCondenseToolbar ? (
                 <Box display="flex" flexDirection="row" gap={0.5}>
                     <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
                         <IconButton onClick={handleUndo(postHog)} disabled={skeletonMode}>
@@ -250,31 +302,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                     </Box>
                 </Box>
             ) : (
-                <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
-                    <ScreenshotButton />
-
-                    <DownloadButton />
-
-                    <Tooltip title="Undo last action">
-                        <IconButton onClick={handleUndo(postHog)} size="medium" disabled={skeletonMode}>
-                            <UndoIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Redo last action">
-                        <IconButton onClick={handleRedo(postHog)} size="medium" disabled={skeletonMode}>
-                            <RedoIcon fontSize="small" />
-                        </IconButton>
-                    </Tooltip>
-
-                    <ClearScheduleButton
-                        size="medium"
-                        fontSize="small"
-                        skeletonMode={skeletonMode}
-                        analyticsCategory={analyticsEnum.calendar}
-                    />
-
-                    <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
-                </Box>
+                fullToolbarContent
             )}
         </Paper>
     );
