@@ -1,7 +1,9 @@
 import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 
+import { aantsEnvSchema } from '../env';
+
+const env = aantsEnvSchema.parse(process.env);
 const sqsClient = new SQSClient({});
-const QUEUE_URL = process.env.EMAIL_QUEUE_URL;
 
 export interface EmailRequest {
     FromEmailAddress: string;
@@ -20,13 +22,9 @@ export interface EmailRequest {
  * @returns Promise that resolves when the message is successfully sent to the queue
  */
 export async function queueEmail(emailRequest: EmailRequest): Promise<void> {
-    if (!QUEUE_URL) {
-        throw new Error('EMAIL_QUEUE_URL environment variable is not set');
-    }
-
     try {
         const command = new SendMessageCommand({
-            QueueUrl: QUEUE_URL,
+            QueueUrl: env.QUEUE_URL,
             MessageBody: JSON.stringify(emailRequest),
         });
 

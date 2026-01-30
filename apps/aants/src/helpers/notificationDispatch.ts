@@ -1,5 +1,7 @@
 import { WebsocSection } from '@icssc/libwebsoc-next';
 
+import { aantsEnvSchema } from '../env';
+
 import { queueEmail } from './emailQueue';
 import { User } from './subscriptionData';
 
@@ -19,6 +21,8 @@ export interface CourseDetails {
 }
 
 const BATCH_SIZE = 450;
+
+const env = aantsEnvSchema.parse(process.env);
 
 /**
  * Batches an array of course codes into smaller arrays based on a predefined BATCH_SIZE.
@@ -103,7 +107,7 @@ async function sendNotification(
         const time = getFormattedTime();
 
         // Add staging prefix to subject line if not in production
-        const isStaging = process.env.NODE_ENV !== 'production';
+        const isStaging = env.NODE_ENV !== 'production';
         const stagingPrefix = isStaging ? '[SQS] [STAGING] ' : '';
 
         const usersWithEmail = users.filter((user): user is User & { email: string } => user.email !== null);
