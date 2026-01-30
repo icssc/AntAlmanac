@@ -43,17 +43,16 @@ export default $config({
             },
         });
 
-
         const emailDLQ = new sst.aws.Queue('EmailDLQ', {
-            messageRetentionPeriod: '14 days', 
+            messageRetentionPeriod: '14 days',
         });
 
         const emailQueue = new sst.aws.Queue('EmailQueue', {
-            visibilityTimeout: '3 minutes', 
+            visibilityTimeout: '3 minutes',
             messageRetentionPeriod: '14 days',
             dlq: {
                 queue: emailDLQ.arn,
-                retry: 3, 
+                retry: 3,
             },
         });
 
@@ -65,7 +64,7 @@ export default $config({
                 DB_URL: dbUrl,
                 NODE_ENV: $app.stage === 'production' ? 'production' : 'development',
                 STAGE: $app.stage,
-                EMAIL_QUEUE_URL: emailQueue.url,
+                QUEUE_URL: emailQueue.url,
             },
             permissions: [
                 {
@@ -86,10 +85,7 @@ export default $config({
             },
             permissions: [
                 {
-                    actions: [
-                        'ses:SendEmail',
-                        'ses:SendTemplatedEmail',
-                    ],
+                    actions: ['ses:SendEmail', 'ses:SendTemplatedEmail'],
                     resources: [
                         'arn:aws:ses:us-east-2:990864464737:identity/icssc@uci.edu',
                         'arn:aws:ses:us-east-2:990864464737:template/*',
@@ -97,11 +93,7 @@ export default $config({
                     ],
                 },
                 {
-                    actions: [
-                        'sqs:ReceiveMessage',
-                        'sqs:DeleteMessage',
-                        'sqs:GetQueueAttributes',
-                    ],
+                    actions: ['sqs:ReceiveMessage', 'sqs:DeleteMessage', 'sqs:GetQueueAttributes'],
                     resources: [emailQueue.arn],
                 },
             ],
@@ -109,7 +101,7 @@ export default $config({
 
         emailQueue.subscribe(emailProcessorLambda.arn, {
             batch: {
-                size: 14, // Match SES rate limit 
+                size: 14, // Match SES rate limit
                 window: '1.25 seconds', // Collect messages for up to 1 second
                 partialResponses: true, // Enable partial batch failure reporting
             },
