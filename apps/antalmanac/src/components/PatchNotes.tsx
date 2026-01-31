@@ -8,6 +8,8 @@ import {
     DialogTitle,
     Typography,
 } from '@mui/material';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -42,32 +44,18 @@ function PatchNotes() {
             data-testid={dialogTestId}
             slots={{ backdrop: PatchNotesBackdrop }}
         >
-            <DialogTitle>{"What's New - May 2025"}</DialogTitle>
+            <DialogTitle>{'You can now create 4-year plans from AntAlmanac!'}</DialogTitle>
 
             <DialogContent>
-                <Typography>Features</Typography>
-                <ul>
-                    <li>
-                        Sign-in with Google! This will keep your schedules secure and enable exciting upcoming features.
-                        Stay tuned!
-                        <ul>
-                            <li>
-                                If you encounter any issues reach out to us via{' '}
-                                <a href="https://discord.gg/8CSGbGBqz8">discord</a> or our{' '}
-                                <a href="https://forms.gle/234567890">feedback form</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Automatic addition of new terms so you don&apos;t have to wait for us to do it manually.</li>
-                    <li>Filtering by day of the week in advanced search.</li>
-                    <li>Optimizations to speed up schedule saving.</li>
-                    <li>Outage page for the rare occasion that Antalmanac is down.</li>
-                </ul>
-                <Typography>Bug Fixes</Typography>
-                <ul>
-                    <li>Advanced search fields getting overridden by URL parameters.</li>
-                    <li>Off-by-one error in enrollment history graph.</li>
-                </ul>
+                <Typography sx={{ mb: 2 }}>
+                    AntAlmanac and PeterPortal are now unified into one ultimate course planning app. Learn more in our{' '}
+                    <Link href="https://docs.icssc.club/docs/about/antalmanac/merge" target="_blank">
+                        blog post
+                    </Link>
+                </Typography>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Image src="/assets/merge-switcher.png" alt="4-year plan" width={350} height={50} />
+                </div>
             </DialogContent>
 
             <DialogActions>
