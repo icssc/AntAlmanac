@@ -30,7 +30,7 @@ export default $config({
         const router = new sst.aws.Router('AntAlmanacRouter', {
             domain: {
                 name: domain,
-                aliases: [`*.${domain}`],
+                aliases: $app.stage === 'production' ? [`www.${domain}`] : undefined,
             },
         });
 
