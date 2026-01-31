@@ -26,6 +26,46 @@ function markTourHasRun() {
     setLocalStorageTourHasRun('true');
 }
 
+function waitForElementRect(
+    selector: string,
+    onReady: (el: Element) => void,
+    options: { timeoutMs?: number; minWidth?: number; minHeight?: number } = {}
+) {
+    const timeoutMs = options.timeoutMs ?? 8000;
+    const minWidth = options.minWidth ?? 5;
+    const minHeight = options.minHeight ?? 5;
+    const startedAt = Date.now();
+
+    const tick = () => {
+        const el = document.querySelector(selector);
+        if (el) {
+            const rect = el.getBoundingClientRect();
+            if (rect.width >= minWidth && rect.height >= minHeight) {
+                onReady(el);
+                return;
+            }
+        }
+
+        if (Date.now() - startedAt > timeoutMs) {
+            console.info(`Timed out waiting for ${selector} to be measurable`);
+            return;
+        }
+
+        requestAnimationFrame(tick);
+    };
+
+    requestAnimationFrame(tick);
+}
+
+function isElementRectReady(selector: string, options: { minWidth?: number; minHeight?: number } = {}): boolean {
+    const el = document.querySelector(selector);
+    if (!el) return false;
+    const rect = el.getBoundingClientRect();
+    const minWidth = options.minWidth ?? 5;
+    const minHeight = options.minHeight ?? 5;
+    return rect.width >= minWidth && rect.height >= minHeight;
+}
+
 /** Only run tour if it hasn't run before, we're on desktop, and there isn't a user ID saved */
 export function tourShouldRun(): boolean {
     return !(
@@ -68,9 +108,23 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
         goToStep(stepIndex);
     };
 
+    const reselectStepWhenReady = (stepName: TourStepName, selector: string) => {
+        // If the target is already measurable, don't re-select (avoids loops).
+        if (isElementRectReady(selector)) {
+            return;
+        }
+
+        waitForElementRect(selector, () => {
+            // Nudge layout + re-select step so Reactour recomputes target geometry.
+            window.dispatchEvent(new Event('resize'));
+            goToNamedStep(stepName);
+        });
+    };
+
     return {
         welcome: {
             selector: '#root',
+            position: 'center',
             content: (
                 <>
                     Welcome to AntAlmanac!
@@ -87,27 +141,32 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
             },
         },
         searchBar: {
-            selector: '#searchBar',
+            selector: '#fuzzy-search',
             content: 'You can search for your classes here!',
             action: () => {
                 markTourHasRun();
                 setActiveTab('search');
+                reselectStepWhenReady(TourStepName.searchBar, '#fuzzy-search');
             },
-            mutationObservables: ['#searchBar'],
+            mutationObservables: ['#fuzzy-search'],
         },
         importButton: {
             selector: '#import-button',
             content: 'Quickly add your classes from WebReg or Zotcourse!',
+            position: 'bottom',
         },
         calendar: {
-            selector: '.rbc-time-view', // Calendar.
+            selector: '#calendar-root',
             content: 'See the classes in your schedule!',
+            position: 'right',
             action: () => {
                 addSampleClasses();
                 const finalsButtonPressed = document.getElementById('finals-button-pressed');
                 if (!finalsButtonPressed) return;
                 finalsButtonPressed.click(); // To switch back to normal view
             },
+            resizeObservables: ['#calendar-root'],
+            mutationObservables: ['#calendar-root'],
         },
         finalsButton: {
             selector: '#finals-button, #finals-button-pressed',
@@ -171,7 +230,7 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
                     <b>Select</b> the map tab to see where your classes are.
                 </>
             ),
-            action: tourActionFactory(() => goToNamedStep(TourStepName.mapPane), {
+            action: tourActionFactory(() => reselectStepWhenReady(TourStepName.mapPane, '#map-pane'), {
                 selector: '#map-tab',
                 eventType: 'click',
             }),
@@ -179,21 +238,34 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
         mapPane: {
             selector: '#map-pane',
             content: 'Click on a day to see your route!',
-            action: () => setActiveTab('map'),
-            mutationObservables: ['#map-pane'],
+            action: () => {
+                setActiveTab('map');
+
+                if (!window.location.pathname.includes('/map')) {
+                    // Clicking the tab will also navigate via the Link component
+                    setTimeout(() => {
+                        document.getElementById('map-tab')?.click();
+                    }, 0);
+                }
+
+                // Ensure this step anchors only after #map-pane is measurable.
+                reselectStepWhenReady(TourStepName.mapPane, '#map-pane');
+            },
+            mutationObservables: ['#root', '#map-pane'],
+            resizeObservables: ['#root', '#map-pane'],
         },
         saveAndLoad: {
-            selector: '#save-button',
+            selector: '#load-save-container',
             content: (
                 <>
                     <b>Sign in</b> to save your schedules when you&apos;re done. <br />
                     That&apos;s it 🎉 Good luck with your classes!
                 </>
             ),
-            action: tourActionFactory(() => goToNamedStep(TourStepName.saveAndLoad), {
-                selector: '#load-save-container',
-                eventType: 'click',
-            }),
+            position: 'bottom',
+            action: () => {
+                reselectStepWhenReady(TourStepName.saveAndLoad, '#load-save-container');
+            },
         },
     };
 }
