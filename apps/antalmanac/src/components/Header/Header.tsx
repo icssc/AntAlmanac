@@ -54,25 +54,31 @@ export function Header() {
         }
     }, [importedUser, session]);
     return (
-        <AppBar
-            position="static"
-            color="primary"
+        <Box
             sx={{
-                height: 52,
-                padding: 1,
-                boxShadow: 'none',
                 backgroundColor: BLUE,
+                paddingTop: 'env(safe-area-inset-top)',
             }}
         >
-            <Box
+            <AppBar
+                position="static"
+                color="primary"
                 sx={{
-                    display: 'flex',
-                    height: '100%',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    height: 52,
+                    px: 1,
+                    boxShadow: 'none',
+                    backgroundColor: BLUE,
                 }}
             >
-                <Logo />
+                <Box
+                    sx={{
+                        display: 'flex',
+                        height: '100%',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
+                >
+                    <Logo />
 
                 <Stack direction="row" sx={{ alignItems: 'center' }}>
                     <Import key="studylist" />

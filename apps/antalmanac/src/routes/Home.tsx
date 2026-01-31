@@ -82,7 +82,7 @@ export default function Home() {
             <PatchNotes />
             <InstallPWABanner />
 
-            <Stack component="main" height="100dvh">
+            <Stack component="main" height="calc(100svh + env(safe-area-inset-top))">
                 <Header />
                 {isMobile ? <MobileHome /> : <DesktopHome />}
             </Stack>
