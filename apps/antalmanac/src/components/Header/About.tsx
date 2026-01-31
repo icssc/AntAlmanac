@@ -128,7 +128,7 @@ const DonateButton = () => {
 
 export function About() {
     return (
-        <Stack direction="row" sx={{ justifyContent: 'space-evenly', alignItems: 'center' }}>
+        <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
             <DonateButton />
             <AboutButton />
             <FeedbackButton />

@@ -30,7 +30,7 @@ function markTourHasRun() {
 export function tourShouldRun(): boolean {
     return !(
         getLocalStorageTourHasRun() == 'true' ||
-        window.matchMedia('(max-width: 768px)').matches ||
+        window.matchMedia('(max-width: 799px)').matches ||
         getLocalStorageUserId() != null
     );
 }

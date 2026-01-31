@@ -70,6 +70,7 @@ export const Save = () => {
                 startIcon={<SaveIcon />}
                 loadingPosition="start"
                 onClick={validSession ? saveScheduleData : handleClickSignIn}
+                sx={{ fontSize: 'inherit' }}
                 disabled={skeletonMode || saving}
                 loading={saving}
             >
