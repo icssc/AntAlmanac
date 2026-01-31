@@ -52,6 +52,7 @@ function PatchNotes() {
                     <Link href="https://docs.icssc.club/docs/about/antalmanac/merge" target="_blank">
                         blog post
                     </Link>
+                    !
                 </Typography>
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
                     <Image src="/assets/merge-switcher.png" alt="4-year plan" width={350} height={50} />
