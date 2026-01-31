@@ -26,6 +26,7 @@ export default $config({
     },
     async run() {
         const domain = getDomain();
+        const dbUrl = process.env.DB_URL;
 
         const router = new sst.aws.Router('AntAlmanacRouter', {
             domain: {
@@ -42,7 +43,7 @@ export default $config({
             },
             cachePolicy: '92d18877-845e-47e7-97e6-895382b1bf7c',
             environment: {
-                DB_URL: $app.stage === 'production' ? process.env.PROD_DB_URL : process.env.DEV_DB_URL,
+                DB_URL: dbUrl,
                 MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN,
                 NEXT_PUBLIC_TILES_ENDPOINT: process.env.NEXT_PUBLIC_TILES_ENDPOINT,
                 ANTEATER_API_KEY: process.env.ANTEATER_API_KEY,
@@ -52,6 +53,32 @@ export default $config({
                 NEXT_PUBLIC_BASE_URL: domain,
                 NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY,
             },
+        });
+
+        const aantsLambda = new sst.aws.Function('AantsLambda', {
+            handler: 'apps/aants/src/lambda.handler',
+            timeout: '20 seconds', // TODO (@IsaacNguyen): Test how long AANTS takes to run and change accordingly
+            memory: '256 MB',
+            environment: {
+                DB_URL: dbUrl,
+                NODE_ENV: $app.stage === 'production' ? 'production' : 'development',
+                STAGE: $app.stage,
+            },
+            permissions: [
+                {
+                    actions: ['ses:SendEmail', 'ses:SendRawEmail', 'ses:SendBulkEmail', 'ses:SendBulkTemplatedEmail'],
+                    resources: [
+                        'arn:aws:ses:us-east-2:990864464737:identity/icssc@uci.edu',
+                        'arn:aws:ses:us-east-2:990864464737:template/*',
+                        'arn:aws:ses:us-east-2:990864464737:configuration-set/*',
+                    ],
+                },
+            ],
+        });
+
+        new sst.aws.Cron('NotificationCronRule', {
+            schedule: 'rate(5 minutes)', // AANTS runs every 5 minutes - TODO (@IsaacNguyen): Might change in future
+            job: aantsLambda.arn,
         });
     },
 });

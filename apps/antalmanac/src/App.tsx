@@ -16,6 +16,7 @@ import { ErrorPage } from '$routes/ErrorPage';
 import Feedback from '$routes/Feedback';
 import Home from '$routes/Home';
 import { OutagePage } from '$routes/OutagePage';
+import { Unsubscribe } from '$routes/UnsubscribePage';
 import AppThemeProvider from '$src/app/Theme';
 
 /**
@@ -40,6 +41,11 @@ const BROWSER_ROUTER = createBrowserRouter([
             {
                 path: '/',
                 element: <Home />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: '/unsubscribe/:userId',
+                element: <Unsubscribe />,
                 errorElement: <ErrorPage />,
             },
             {
