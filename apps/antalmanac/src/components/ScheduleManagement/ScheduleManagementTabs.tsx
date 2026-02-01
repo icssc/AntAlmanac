@@ -73,6 +73,7 @@ export function ScheduleManagementTabs() {
             sx={{
                 borderRadius: '4px 4px 0 0',
                 paddingBottom: 'env(safe-area-inset-bottom)',
+                borderWidth: '1px 0px 1px 0px',
             }}
         >
             <Tabs value={activeTab} indicatorColor="primary" variant="fullWidth" centered>
