@@ -12,7 +12,6 @@ import {
 import { useCallback, useState } from 'react';
 
 import { FeedbackAction } from '$components/HelpMenu/actions/FeedbackAction';
-import { HelpBoxAction } from '$components/HelpMenu/actions/HelpBoxAction';
 import { PatchNotesAction } from '$components/HelpMenu/actions/PatchNotesAction';
 import { TutorialAction } from '$components/HelpMenu/actions/TutorialAction';
 import { useIsMobile } from '$hooks/useIsMobile';
@@ -45,7 +44,7 @@ export function HelpMenu() {
         setOpenAutoSaveWarning(!openAutoSaveWarning);
     };
 
-    const actions = [FeedbackAction(), TutorialAction(), PatchNotesAction(), HelpBoxAction()]
+    const actions = [FeedbackAction(), TutorialAction(), PatchNotesAction()]
         // Two passes to help Typescript infer type
         .filter((action) => !!action)
         .filter((action) => !isMobile || !action.disableOnMobile) satisfies NonNullable<HelpMenuAction>[];
