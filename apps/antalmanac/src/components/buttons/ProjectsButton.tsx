@@ -8,7 +8,7 @@ export const ICSSCIcon = (props: SvgIconProps) => (
     </SvgIcon>
 );
 
-const ProjectsButton = () => {
+export const ProjectsButton = () => {
     return (
         <Tooltip title="Learn more about our projects!">
             <Button
@@ -24,5 +24,3 @@ const ProjectsButton = () => {
         </Tooltip>
     );
 };
-
-export default ProjectsButton;
