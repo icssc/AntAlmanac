@@ -109,12 +109,14 @@ const websocRouter = router({
     getMany: procedure
         .input(z.object({ params: z.record(z.string(), z.string()), fieldName: z.string() }))
         .query(async ({ input }) => {
-            const responses: WebsocAPIResponse[] = [];
-            for (const field of input.params[input.fieldName].trim().replace(' ', '').split(',')) {
-                const req = JSON.parse(JSON.stringify(input.params)) as Record<string, string>;
-                req[input.fieldName] = field;
-                responses.push(await queryWebSoc({ input: req }));
-            }
+            const fields = input.params[input.fieldName].trim().replace(' ', '').split(',');
+            const responses = await Promise.all(
+                fields.map((field) => {
+                    const req = JSON.parse(JSON.stringify(input.params)) as Record<string, string>;
+                    req[input.fieldName] = field;
+                    return queryWebSoc({ input: req });
+                })
+            );
             return combineWebsocResponses(responses);
         }),
     getCourseInfo: procedure.input(z.record(z.string(), z.string())).query(async ({ input }) => {
