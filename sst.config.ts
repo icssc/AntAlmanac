@@ -33,6 +33,11 @@ export default $config({
                 name: domain,
                 aliases: $app.stage === 'production' ? [`www.${domain}`] : undefined,
             },
+            transform: {
+                cachePolicy(_, opts) {
+                    opts.id = '92d18877-845e-47e7-97e6-895382b1bf7c';
+                },
+            },
         });
 
         new sst.aws.Nextjs('Website', {
