@@ -1,13 +1,14 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, SxProps } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 
 interface InstructorsCellProps {
     instructors: string[];
+    sx?: SxProps;
 }
 
-export const InstructorsCell = ({ instructors }: InstructorsCellProps) => {
+export const InstructorsCell = ({ instructors, sx }: InstructorsCellProps) => {
     const links = instructors.map((profName, index) => {
         if (profName === 'STAFF') {
             return <Box key={profName + index}>{profName}</Box>; // The key should be fine as we're not changing ['STAFF, 'STAFF']
@@ -36,5 +37,5 @@ export const InstructorsCell = ({ instructors }: InstructorsCellProps) => {
         );
     });
 
-    return <TableBodyCellContainer>{links}</TableBodyCellContainer>;
+    return <TableBodyCellContainer sx={sx}>{links}</TableBodyCellContainer>;
 };

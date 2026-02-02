@@ -56,8 +56,9 @@ export class DepartmentEnrollmentHistory {
 
     async find(courseNumber: string): Promise<EnrollmentHistory[] | null> {
         const cacheKey = this.department + courseNumber;
-        return (DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey] ??=
-            await this.queryEnrollmentHistory(courseNumber));
+        return (DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey] ??= await this.queryEnrollmentHistory(
+            courseNumber
+        ));
     }
 
     async queryEnrollmentHistory(courseNumber: string): Promise<EnrollmentHistory[] | null> {
