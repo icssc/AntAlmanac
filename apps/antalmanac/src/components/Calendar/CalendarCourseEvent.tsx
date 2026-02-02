@@ -1,33 +1,18 @@
 import { Box } from '@mui/material';
 import { memo } from 'react';
-import { shallow } from 'zustand/shallow';
 
 import type { CalendarEvent, CourseEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
 import locationIds from '$lib/locations/locations';
-import { useSelectedEventStore } from '$stores/SelectedEventStore';
 
 export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) => {
-    const setSelectedEvent = useSelectedEventStore((state) => state.setSelectedEvent, shallow);
-
-    const handleClick = (e: React.MouseEvent) => {
-        if (isSkeletonEvent(event)) {
-            return;
-        }
-
-        e.preventDefault();
-        e.stopPropagation();
-
-        setSelectedEvent(e, event);
-    };
-
     if (isSkeletonEvent(event)) {
         return;
     }
 
     if (event.isCustomEvent) {
         return (
-            <Box onClick={handleClick}>
+            <Box>
                 <Box
                     style={{
                         display: 'flex',
@@ -49,7 +34,7 @@ export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) =>
 
     const courseEvent = event as CourseEvent;
     return (
-        <Box onClick={handleClick}>
+        <Box>
             <Box
                 style={{
                     display: 'flex',

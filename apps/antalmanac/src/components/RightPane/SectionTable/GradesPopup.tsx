@@ -52,21 +52,21 @@ export interface GradesPopupProps {
     deptCode: string;
     courseNumber: string;
     instructor?: string;
-    isMobileScreen: boolean;
+    isMobile: boolean;
 }
 
 function GradesPopup(props: GradesPopupProps) {
     const { isDark } = useThemeStore();
 
-    const { deptCode, courseNumber, instructor = '', isMobileScreen } = props;
+    const { deptCode, courseNumber, instructor = '', isMobile } = props;
 
     const [loading, setLoading] = useState(true);
 
     const [gradeData, setGradeData] = useState<GradeData>();
 
-    const width = useMemo(() => (isMobileScreen ? 250 : 400), [isMobileScreen]);
+    const width = useMemo(() => (isMobile ? 250 : 400), [isMobile]);
 
-    const height = useMemo(() => (isMobileScreen ? 150 : 200), [isMobileScreen]);
+    const height = useMemo(() => (isMobile ? 150 : 200), [isMobile]);
 
     const graphTitle = useMemo(() => {
         return gradeData

@@ -1,13 +1,13 @@
-name: Deploy - Staging
+name: Deploy - Staging Shared
 
 on:
-    pull_request:
-        types: [opened, synchronize, reopened]
+    push:
+        branches: [scheduler, staging-shared]
     repository_dispatch:
         types: [deploy-command]
 
 concurrency:
-    group: sst-staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
+    group: sst-staging-shared
     cancel-in-progress: false
 
 env:
@@ -20,18 +20,12 @@ env:
     OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID }}
     OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
     GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
-    NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY }}
 
 jobs:
-    deploy-staging:
-        if: github.head_ref != 'staging-shared' && github.head_ref != 'scheduler'
+    deploy-staging-shared:
         runs-on: ubuntu-latest
-        environment:
-            name: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
-            url: https://scheduler-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}.antalmanac.com
-
         env:
-            SST_STAGE: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
+            SST_STAGE: staging-shared
 
         steps:
             - name: Checkout
@@ -44,7 +38,7 @@ jobs:
               uses: chrnorm/deployment-action@v2
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
-                  environment: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
+                  environment: staging-shared
                   ref: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
                   description: Staging deployment for PR #${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
 
@@ -85,7 +79,7 @@ jobs:
                   token: ${{ secrets.GITHUB_TOKEN }}
                   deployment-id: ${{ steps.create-deployment.outputs.deployment_id }}
                   state: success
-                  environment-url: https://scheduler-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}.antalmanac.com
+                  environment-url: https://staging-shared.antalmanac.com
 
             - name: Add reaction to comment
               if: github.event_name == 'repository_dispatch'

@@ -1,4 +1,4 @@
-import { useMediaQuery, useTheme, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
 import { useCallback, useEffect, useRef } from 'react';
@@ -11,7 +11,9 @@ import InstallPWABanner from '$components/InstallPWABanner';
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { BLUE } from '$src/globals';
+// import { SideNav } from '$src/shared-components/SideNav';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
 function MobileHome() {
@@ -74,9 +76,7 @@ function DesktopHome() {
 }
 
 export default function Home() {
-    const theme = useTheme();
-
-    const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMobile = useIsMobile();
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -84,8 +84,10 @@ export default function Home() {
             <InstallPWABanner />
 
             <Stack component="main" height="100dvh">
+                {/* <SideNav /> */}
+
                 <Header />
-                {isMobileScreen ? <MobileHome /> : <DesktopHome />}
+                {isMobile ? <MobileHome /> : <DesktopHome />}
             </Stack>
 
             <NotificationSnackbar />
