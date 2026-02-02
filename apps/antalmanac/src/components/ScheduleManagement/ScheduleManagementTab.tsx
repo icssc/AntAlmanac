@@ -17,7 +17,7 @@ export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps
     const handleClick = () => {
         setActiveTabValue(value);
     };
-    
+
     return (
         <Tab
             id={tab.id}

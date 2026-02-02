@@ -29,21 +29,21 @@ export const Unsubscribe = () => {
             sectionCode,
             courseTitle: '',
             sectionType: '',
-            notificationStatus: {
-                openStatus: false,
-                waitlistStatus: false,
-                fullStatus: false,
-                restrictionStatus: false,
+            notifyOn: {
+                notifyOnOpen: false,
+                notifyOnWaitlist: false,
+                notifyOnFull: false,
+                notifyOnRestriction: false,
             },
-            lastUpdated: '',
+            lastUpdatedStatus: '',
             lastCodes: '',
         };
 
         try {
             if (unsubscribeAll === 'true') {
-                await trpc.notifications.deleteAllNotifications.mutate({ id: userId });
+                await trpc.notifications.deleteAllNotifications.mutate({ userId });
             } else {
-                await trpc.notifications.deleteNotification.mutate({ id: userId, notification });
+                await trpc.notifications.deleteNotification.mutate({ userId, notification });
             }
             setDone(true);
         } catch (err) {

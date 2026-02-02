@@ -1,8 +1,6 @@
 import { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent, Notification } from '@packages/antalmanac-types';
 import { db } from '@packages/db/src/index';
 import * as schema from '@packages/db/src/schema';
-import { and, eq, ExtractTablesWithRelations, gt } from 'drizzle-orm';
-import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 import {
     schedules,
     users,
@@ -18,6 +16,8 @@ import {
     Session,
     subscriptions,
 } from '@packages/db/src/schema';
+import { and, eq, ExtractTablesWithRelations, gt } from 'drizzle-orm';
+import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
 type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;
