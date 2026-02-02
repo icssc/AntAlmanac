@@ -31,6 +31,12 @@ const ATTRIBUTION_MARKUP =
 const WORK_WEEK = ['All', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 const FULL_WEEK = ['All', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const weekendIndices = [0, 6];
+const CAMPUS_CENTER: LatLngTuple = [33.6459, -117.842717];
+const CAMPUS_BOUND_DELTA = 0.001;
+const CAMPUS_BOUNDS: [LatLngTuple, LatLngTuple] = [
+    [CAMPUS_CENTER[0] - CAMPUS_BOUND_DELTA, CAMPUS_CENTER[1] - CAMPUS_BOUND_DELTA],
+    [CAMPUS_CENTER[0] + CAMPUS_BOUND_DELTA, CAMPUS_CENTER[1] + CAMPUS_BOUND_DELTA],
+];
 
 interface MarkerContent {
     key: string;
@@ -299,13 +305,16 @@ export default function CourseMap() {
      */
     const startDestPairs = useMemo(() => {
         const allEvents = [...markersToDisplay, ...customEventMarkersToDisplay];
-        return allEvents.reduce((acc, cur, index) => {
-            acc.push([cur]);
-            if (index > 0) {
-                acc[index - 1].push(cur);
-            }
-            return acc;
-        }, [] as (typeof allEvents)[]);
+        return allEvents.reduce(
+            (acc, cur, index) => {
+                acc.push([cur]);
+                if (index > 0) {
+                    acc[index - 1].push(cur);
+                }
+                return acc;
+            },
+            [] as (typeof allEvents)[]
+        );
     }, [markersToDisplay, customEventMarkersToDisplay]);
 
     return (
@@ -313,7 +322,14 @@ export default function CourseMap() {
             sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}
             id="map-pane"
         >
-            <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
+            <MapContainer
+                ref={map}
+                center={CAMPUS_CENTER}
+                zoom={16}
+                style={{ height: '100%' }}
+                maxBounds={CAMPUS_BOUNDS}
+                maxBoundsViscosity={1}
+            >
                 {/* Menu floats above the map. */}
                 <Paper sx={{ position: 'relative', mx: 'auto', my: 2, width: '70%', zIndex: 400 }}>
                     <Tabs value={selectedDayIndex} onChange={handleChange} variant="fullWidth" sx={{ minHeight: 0 }}>
