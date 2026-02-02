@@ -16,6 +16,8 @@ import {
     Radio,
     RadioGroup,
     Stack,
+    Tab,
+    Tabs,
     TextField,
     Tooltip,
     Typography,
@@ -69,6 +71,9 @@ export function Import() {
     const [studyListText, setStudyListText] = useState('');
     const [zotcourseScheduleName, setZotcourseScheduleName] = useState('');
     const [aaUsername, setAAUsername] = useState('');
+    const [dialogTab, setDialogTab] = useState<'import' | 'export'>('import');
+    const [exportSchedules, setExportSchedules] = useState<ShortCourseSchedule[]>([]);
+    const [exportSelectedIndices, setExportSelectedIndices] = useState<Set<number>>(new Set());
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
@@ -98,6 +103,9 @@ export function Import() {
         dragCounterRef.current = 0;
         setImportedSchedules([]);
         setSelectedScheduleIndices(new Set());
+        setDialogTab('import');
+        setExportSelectedIndices(new Set());
+        setExportSchedules([]);
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
@@ -640,9 +648,20 @@ export function Import() {
         }
     }, [jsonImportExport, importSource]);
 
+    // Load schedules when export tab is opened
+    useEffect(() => {
+        if (openImportDialog && dialogTab === 'export') {
+            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+            setExportSchedules(scheduleSaveState.schedules);
+            setExportSelectedIndices(new Set(scheduleSaveState.schedules.map((_, index) => index)));
+        }
+    }, [openImportDialog, dialogTab]);
+
     return (
         <>
-            <Tooltip title="Import a schedule from your Study List">
+            <Tooltip
+                title={jsonImportExport ? 'Import or export schedule data' : 'Import a schedule from your Study List'}
+            >
                 <Button
                     onClick={handleOpen}
                     color="inherit"
@@ -651,218 +670,48 @@ export function Import() {
                     disabled={skeletonMode}
                     id="import-button"
                 >
-                    Import
+                    {jsonImportExport ? 'Import/Export' : 'Import'}
                 </Button>
             </Tooltip>
-            <Dialog open={openImportDialog} onClose={handleClose}>
-                <DialogTitle>Import Schedule</DialogTitle>
+            <Dialog open={openImportDialog} onClose={handleClose} maxWidth="sm" fullWidth>
+                {jsonImportExport && (
+                    <Tabs
+                        value={dialogTab}
+                        onChange={(_, newValue) => setDialogTab(newValue)}
+                        sx={{ borderBottom: 1, borderColor: 'divider' }}
+                    >
+                        <Tab label="Import" value="import" />
+                        <Tab label="Export" value="export" />
+                    </Tabs>
+                )}
+                <DialogTitle>{dialogTab === 'export' ? 'Export Schedules' : 'Import Schedule'}</DialogTitle>
                 <DialogContent>
-                    <FormControl>
-                        <RadioGroup
-                            name="changeImportSource"
-                            aria-label="changeImportSource"
-                            value={importSource}
-                            onChange={handleImportSourceChange}
-                        >
-                            <FormControlLabel
-                                value={ImportSource.STUDY_LIST_IMPORT}
-                                control={<Radio color="primary" />}
-                                label="From Study List"
-                            />
-                            <FormControlLabel
-                                value={ImportSource.ZOT_COURSE_IMPORT}
-                                control={<Radio color="primary" />}
-                                label="From Zotcourse"
-                            />
-                            <Tooltip title="Import from your unique user ID" placement="right">
-                                <FormControlLabel
-                                    value={ImportSource.AA_USERNAME_IMPORT}
-                                    control={<Radio color="primary" />}
-                                    label="From AntAlmanac unique user ID"
-                                    disabled={!sessionIsValid}
-                                />
-                            </Tooltip>
-                            {jsonImportExport && (
-                                <Tooltip title="Import from your schedule data" placement="right">
-                                    <FormControlLabel
-                                        value={ImportSource.JSON_IMPORT}
-                                        control={<Radio color="primary" />}
-                                        label="From JSON File"
-                                    />
-                                </Tooltip>
-                            )}
-                        </RadioGroup>
-                    </FormControl>
-                    {importSource === ImportSource.STUDY_LIST_IMPORT && (
-                        <Box>
-                            <DialogContentText>
-                                Paste the contents of your Study List below to import it into AntAlmanac.
-                                <br />
-                                To find your Study List, go to{' '}
-                                <a href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>WebReg</a> or{' '}
-                                <a href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</a>, and click
-                                on Study List once you&apos;ve logged in. Copy everything below the column names (Code,
-                                Dept, etc.) under the Enrolled Classes section.
-                            </DialogContentText>
-                            <InputLabel style={{ fontSize: '9px' }}>Study List</InputLabel>
-                            <TextField
-                                fullWidth
-                                multiline
-                                margin="dense"
-                                type="text"
-                                placeholder="Paste here"
-                                value={studyListText}
-                                onChange={handleStudyListTextChange}
-                            />
-                            <br />
-                        </Box>
-                    )}
-                    {importSource === ImportSource.ZOT_COURSE_IMPORT && (
-                        <Box>
-                            <DialogContentText>
-                                Paste your Zotcourse schedule name below to import it into AntAlmanac.
-                            </DialogContentText>
-                            <InputLabel style={{ fontSize: '9px' }}>Zotcourse Schedule</InputLabel>
-                            <TextField
-                                fullWidth
-                                multiline
-                                margin="dense"
-                                type="text"
-                                placeholder="Paste here"
-                                value={zotcourseScheduleName}
-                                onChange={handleZotcourseScheduleNameChange}
-                            />
-                            <br />
-                        </Box>
-                    )}
-                    {importSource === ImportSource.AA_USERNAME_IMPORT && (
-                        <Box
-                            component="form"
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                handleSubmit();
-                            }}
-                        >
-                            <DialogContentText>
-                                Paste your unique user ID here to import your schedule(s).
-                            </DialogContentText>
-                            <InputLabel style={{ fontSize: '9px' }}>AntAlmanac Schedule Name</InputLabel>
-                            <TextField
-                                fullWidth
-                                margin="dense"
-                                type="text"
-                                placeholder="Paste here"
-                                value={aaUsername}
-                                onChange={handleAAUsernameChange}
-                            />
-                            <br />
-                        </Box>
-                    )}
-
-                    {importSource !== ImportSource.AA_USERNAME_IMPORT && importSource !== ImportSource.JSON_IMPORT && (
-                        <Stack spacing={1}>
-                            <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
-                            <TermSelector />
-                        </Stack>
-                    )}
-                    {importSource === ImportSource.JSON_IMPORT && (
-                        <Box>
-                            <DialogContentText>
-                                Upload your schedule data JSON file here to import it into AntAlmanac.
+                    {dialogTab === 'export' ? (
+                        <>
+                            <DialogContentText sx={{ mb: 2 }}>
+                                Select which schedules you want to export. The exported file will be in JSON format and
+                                can be imported back into AntAlmanac.
                             </DialogContentText>
 
-                            <InputLabel style={{ fontSize: '9px', marginTop: '16px', marginBottom: '8px' }}>
-                                Schedule Data JSON File
-                            </InputLabel>
-
-                            <input
-                                ref={fileInputRef}
-                                id="json-file-input"
-                                type="file"
-                                accept=".json,application/json"
-                                style={{ display: 'none' }}
-                                onChange={handleFileInputChange}
-                            />
-
-                            <label
-                                htmlFor="json-file-input"
-                                onDragEnter={handleDragEnter}
-                                onDragOver={handleDragOver}
-                                onDragLeave={handleDragLeave}
-                                onDrop={handleDrop}
-                                style={{ display: 'block', cursor: 'pointer' }}
-                                aria-label="Upload JSON schedule file"
-                            >
-                                <Paper
-                                    sx={{
-                                        border: '2px dashed',
-                                        borderColor: isDragging || selectedFileName ? DODGER_BLUE : 'divider',
-                                        backgroundColor: isDragging ? 'action.hover' : 'background.paper',
-                                        padding: 3,
-                                        textAlign: 'center',
-                                        transition: 'all 0.2s ease-in-out',
-                                        '&:hover': {
-                                            borderColor: DODGER_BLUE,
-                                            backgroundColor: 'action.hover',
-                                        },
-                                    }}
-                                >
-                                    <Stack spacing={2} alignItems="center">
-                                        <CloudUpload
-                                            sx={{
-                                                fontSize: 48,
-                                                color: isDragging || selectedFileName ? DODGER_BLUE : 'text.secondary',
-                                            }}
-                                        />
-                                        {selectedFileName ? (
-                                            <>
-                                                <Typography
-                                                    variant="body1"
-                                                    sx={{ color: DODGER_BLUE }}
-                                                    fontWeight="medium"
-                                                >
-                                                    {selectedFileName}
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    Click to select a different file
-                                                </Typography>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Typography variant="body1" color="text.primary">
-                                                    Drag and drop your JSON file here
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    or click to browse
-                                                </Typography>
-                                            </>
-                                        )}
-                                    </Stack>
-                                </Paper>
-                            </label>
-
-                            {importedSchedules.length > 0 && (
-                                <Box sx={{ marginTop: 3 }}>
-                                    <DialogContentText sx={{ marginBottom: 2 }}>
-                                        Select which schedules you would like to import:
-                                    </DialogContentText>
+                            {exportSchedules.length > 0 && (
+                                <>
                                     <FormControlLabel
                                         control={
                                             <Checkbox
                                                 checked={
-                                                    selectedScheduleIndices.size === importedSchedules.length &&
-                                                    importedSchedules.length > 0
+                                                    exportSelectedIndices.size === exportSchedules.length &&
+                                                    exportSchedules.length > 0
                                                 }
                                                 indeterminate={
-                                                    selectedScheduleIndices.size > 0 &&
-                                                    selectedScheduleIndices.size < importedSchedules.length
+                                                    exportSelectedIndices.size > 0 &&
+                                                    exportSelectedIndices.size < exportSchedules.length
                                                 }
                                                 onChange={() => {
-                                                    if (selectedScheduleIndices.size === importedSchedules.length) {
-                                                        setSelectedScheduleIndices(new Set());
+                                                    if (exportSelectedIndices.size === exportSchedules.length) {
+                                                        setExportSelectedIndices(new Set());
                                                     } else {
-                                                        setSelectedScheduleIndices(
-                                                            new Set(importedSchedules.map((_, index) => index))
+                                                        setExportSelectedIndices(
+                                                            new Set(exportSchedules.map((_, index) => index))
                                                         );
                                                     }
                                                 }}
@@ -870,8 +719,7 @@ export function Import() {
                                         }
                                         label={
                                             <Typography variant="subtitle2" fontWeight="medium">
-                                                Select All ({selectedScheduleIndices.size} of {importedSchedules.length}
-                                                )
+                                                Select All ({exportSelectedIndices.size} of {exportSchedules.length})
                                             </Typography>
                                         }
                                         sx={{ marginBottom: 1 }}
@@ -887,15 +735,15 @@ export function Import() {
                                         }}
                                     >
                                         <Stack spacing={1}>
-                                            {importedSchedules.map((schedule, index) => (
+                                            {exportSchedules.map((schedule, index) => (
                                                 <Paper
                                                     key={index}
                                                     sx={{
                                                         p: 1.5,
-                                                        border: selectedScheduleIndices.has(index)
+                                                        border: exportSelectedIndices.has(index)
                                                             ? `2px solid ${DODGER_BLUE}`
                                                             : '2px solid transparent',
-                                                        backgroundColor: selectedScheduleIndices.has(index)
+                                                        backgroundColor: exportSelectedIndices.has(index)
                                                             ? 'action.selected'
                                                             : 'background.paper',
                                                         transition: 'all 0.2s ease-in-out',
@@ -904,9 +752,9 @@ export function Import() {
                                                     <FormControlLabel
                                                         control={
                                                             <Checkbox
-                                                                checked={selectedScheduleIndices.has(index)}
+                                                                checked={exportSelectedIndices.has(index)}
                                                                 onChange={() => {
-                                                                    setSelectedScheduleIndices((prev) => {
+                                                                    setExportSelectedIndices((prev) => {
                                                                         const newSet = new Set(prev);
                                                                         if (newSet.has(index)) {
                                                                             newSet.delete(index);
@@ -934,18 +782,366 @@ export function Import() {
                                             ))}
                                         </Stack>
                                     </Box>
+                                </>
+                            )}
+                        </>
+                    ) : (
+                        <>
+                            <FormControl>
+                                <RadioGroup
+                                    name="changeImportSource"
+                                    aria-label="changeImportSource"
+                                    value={importSource}
+                                    onChange={handleImportSourceChange}
+                                >
+                                    <FormControlLabel
+                                        value={ImportSource.STUDY_LIST_IMPORT}
+                                        control={<Radio color="primary" />}
+                                        label="From Study List"
+                                    />
+                                    <FormControlLabel
+                                        value={ImportSource.ZOT_COURSE_IMPORT}
+                                        control={<Radio color="primary" />}
+                                        label="From Zotcourse"
+                                    />
+                                    <Tooltip title="Import from your unique user ID" placement="right">
+                                        <FormControlLabel
+                                            value={ImportSource.AA_USERNAME_IMPORT}
+                                            control={<Radio color="primary" />}
+                                            label="From AntAlmanac unique user ID"
+                                            disabled={!sessionIsValid}
+                                        />
+                                    </Tooltip>
+                                    {jsonImportExport && (
+                                        <Tooltip title="Import from your schedule data" placement="right">
+                                            <FormControlLabel
+                                                value={ImportSource.JSON_IMPORT}
+                                                control={<Radio color="primary" />}
+                                                label="From JSON File"
+                                            />
+                                        </Tooltip>
+                                    )}
+                                </RadioGroup>
+                            </FormControl>
+                            {importSource === ImportSource.STUDY_LIST_IMPORT && (
+                                <Box>
+                                    <DialogContentText>
+                                        Paste the contents of your Study List below to import it into AntAlmanac.
+                                        <br />
+                                        To find your Study List, go to{' '}
+                                        <a href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>
+                                            WebReg
+                                        </a> or{' '}
+                                        <a href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</a>,
+                                        and click on Study List once you&apos;ve logged in. Copy everything below the
+                                        column names (Code, Dept, etc.) under the Enrolled Classes section.
+                                    </DialogContentText>
+                                    <InputLabel style={{ fontSize: '9px' }}>Study List</InputLabel>
+                                    <TextField
+                                        fullWidth
+                                        multiline
+                                        margin="dense"
+                                        type="text"
+                                        placeholder="Paste here"
+                                        value={studyListText}
+                                        onChange={handleStudyListTextChange}
+                                    />
+                                    <br />
                                 </Box>
                             )}
-                        </Box>
+                            {importSource === ImportSource.ZOT_COURSE_IMPORT && (
+                                <Box>
+                                    <DialogContentText>
+                                        Paste your Zotcourse schedule name below to import it into AntAlmanac.
+                                    </DialogContentText>
+                                    <InputLabel style={{ fontSize: '9px' }}>Zotcourse Schedule</InputLabel>
+                                    <TextField
+                                        fullWidth
+                                        multiline
+                                        margin="dense"
+                                        type="text"
+                                        placeholder="Paste here"
+                                        value={zotcourseScheduleName}
+                                        onChange={handleZotcourseScheduleNameChange}
+                                    />
+                                    <br />
+                                </Box>
+                            )}
+                            {importSource === ImportSource.AA_USERNAME_IMPORT && (
+                                <Box
+                                    component="form"
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        handleSubmit();
+                                    }}
+                                >
+                                    <DialogContentText>
+                                        Paste your unique user ID here to import your schedule(s).
+                                    </DialogContentText>
+                                    <InputLabel style={{ fontSize: '9px' }}>AntAlmanac Schedule Name</InputLabel>
+                                    <TextField
+                                        fullWidth
+                                        margin="dense"
+                                        type="text"
+                                        placeholder="Paste here"
+                                        value={aaUsername}
+                                        onChange={handleAAUsernameChange}
+                                    />
+                                    <br />
+                                </Box>
+                            )}
+
+                            {importSource !== ImportSource.AA_USERNAME_IMPORT &&
+                                importSource !== ImportSource.JSON_IMPORT && (
+                                    <Stack spacing={1}>
+                                        <DialogContentText>
+                                            Make sure you also have the right term selected.
+                                        </DialogContentText>
+                                        <TermSelector />
+                                    </Stack>
+                                )}
+                            {importSource === ImportSource.JSON_IMPORT && (
+                                <Box>
+                                    <DialogContentText>
+                                        Upload your schedule data JSON file here to import it into AntAlmanac.
+                                    </DialogContentText>
+
+                                    <InputLabel style={{ fontSize: '9px', marginTop: '16px', marginBottom: '8px' }}>
+                                        Schedule Data JSON File
+                                    </InputLabel>
+
+                                    <input
+                                        ref={fileInputRef}
+                                        id="json-file-input"
+                                        type="file"
+                                        accept=".json,application/json"
+                                        style={{ display: 'none' }}
+                                        onChange={handleFileInputChange}
+                                    />
+
+                                    <label
+                                        htmlFor="json-file-input"
+                                        onDragEnter={handleDragEnter}
+                                        onDragOver={handleDragOver}
+                                        onDragLeave={handleDragLeave}
+                                        onDrop={handleDrop}
+                                        style={{ display: 'block', cursor: 'pointer' }}
+                                        aria-label="Upload JSON schedule file"
+                                    >
+                                        <Paper
+                                            sx={{
+                                                border: '2px dashed',
+                                                borderColor: isDragging || selectedFileName ? DODGER_BLUE : 'divider',
+                                                backgroundColor: isDragging ? 'action.hover' : 'background.paper',
+                                                padding: 3,
+                                                textAlign: 'center',
+                                                transition: 'all 0.2s ease-in-out',
+                                                '&:hover': {
+                                                    borderColor: DODGER_BLUE,
+                                                    backgroundColor: 'action.hover',
+                                                },
+                                            }}
+                                        >
+                                            <Stack spacing={2} alignItems="center">
+                                                <CloudUpload
+                                                    sx={{
+                                                        fontSize: 48,
+                                                        color:
+                                                            isDragging || selectedFileName
+                                                                ? DODGER_BLUE
+                                                                : 'text.secondary',
+                                                    }}
+                                                />
+                                                {selectedFileName ? (
+                                                    <>
+                                                        <Typography
+                                                            variant="body1"
+                                                            sx={{ color: DODGER_BLUE }}
+                                                            fontWeight="medium"
+                                                        >
+                                                            {selectedFileName}
+                                                        </Typography>
+                                                        <Typography variant="body2" color="text.secondary">
+                                                            Click to select a different file
+                                                        </Typography>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Typography variant="body1" color="text.primary">
+                                                            Drag and drop your JSON file here
+                                                        </Typography>
+                                                        <Typography variant="body2" color="text.secondary">
+                                                            or click to browse
+                                                        </Typography>
+                                                    </>
+                                                )}
+                                            </Stack>
+                                        </Paper>
+                                    </label>
+
+                                    {importedSchedules.length > 0 && (
+                                        <Box sx={{ marginTop: 3 }}>
+                                            <DialogContentText sx={{ marginBottom: 2 }}>
+                                                Select which schedules you would like to import:
+                                            </DialogContentText>
+                                            <FormControlLabel
+                                                control={
+                                                    <Checkbox
+                                                        checked={
+                                                            selectedScheduleIndices.size === importedSchedules.length &&
+                                                            importedSchedules.length > 0
+                                                        }
+                                                        indeterminate={
+                                                            selectedScheduleIndices.size > 0 &&
+                                                            selectedScheduleIndices.size < importedSchedules.length
+                                                        }
+                                                        onChange={() => {
+                                                            if (
+                                                                selectedScheduleIndices.size ===
+                                                                importedSchedules.length
+                                                            ) {
+                                                                setSelectedScheduleIndices(new Set());
+                                                            } else {
+                                                                setSelectedScheduleIndices(
+                                                                    new Set(importedSchedules.map((_, index) => index))
+                                                                );
+                                                            }
+                                                        }}
+                                                    />
+                                                }
+                                                label={
+                                                    <Typography variant="subtitle2" fontWeight="medium">
+                                                        Select All ({selectedScheduleIndices.size} of{' '}
+                                                        {importedSchedules.length})
+                                                    </Typography>
+                                                }
+                                                sx={{ marginBottom: 1 }}
+                                            />
+                                            <Box
+                                                sx={{
+                                                    maxHeight: 300,
+                                                    overflow: 'auto',
+                                                    border: '1px solid',
+                                                    borderColor: 'divider',
+                                                    borderRadius: 1,
+                                                    p: 1,
+                                                }}
+                                            >
+                                                <Stack spacing={1}>
+                                                    {importedSchedules.map((schedule, index) => (
+                                                        <Paper
+                                                            key={index}
+                                                            sx={{
+                                                                p: 1.5,
+                                                                border: selectedScheduleIndices.has(index)
+                                                                    ? `2px solid ${DODGER_BLUE}`
+                                                                    : '2px solid transparent',
+                                                                backgroundColor: selectedScheduleIndices.has(index)
+                                                                    ? 'action.selected'
+                                                                    : 'background.paper',
+                                                                transition: 'all 0.2s ease-in-out',
+                                                            }}
+                                                        >
+                                                            <FormControlLabel
+                                                                control={
+                                                                    <Checkbox
+                                                                        checked={selectedScheduleIndices.has(index)}
+                                                                        onChange={() => {
+                                                                            setSelectedScheduleIndices((prev) => {
+                                                                                const newSet = new Set(prev);
+                                                                                if (newSet.has(index)) {
+                                                                                    newSet.delete(index);
+                                                                                } else {
+                                                                                    newSet.add(index);
+                                                                                }
+                                                                                return newSet;
+                                                                            });
+                                                                        }}
+                                                                    />
+                                                                }
+                                                                label={
+                                                                    <Box>
+                                                                        <Typography variant="body2" fontWeight="medium">
+                                                                            {schedule.scheduleName}
+                                                                        </Typography>
+                                                                        <Typography
+                                                                            variant="caption"
+                                                                            color="text.secondary"
+                                                                        >
+                                                                            {schedule.courses.length} course(s),{' '}
+                                                                            {schedule.customEvents.length} custom
+                                                                            event(s)
+                                                                        </Typography>
+                                                                    </Box>
+                                                                }
+                                                            />
+                                                        </Paper>
+                                                    ))}
+                                                </Stack>
+                                            </Box>
+                                        </Box>
+                                    )}
+                                </Box>
+                            )}
+                        </>
                     )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} color={isDark ? 'secondary' : 'primary'}>
-                        Import
-                    </Button>
+                    {dialogTab === 'export' ? (
+                        <Button
+                            onClick={() => {
+                                if (exportSelectedIndices.size === 0) {
+                                    openSnackbar('error', 'Please select at least one schedule to export.');
+                                    return;
+                                }
+
+                                try {
+                                    const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+                                    const schedulesToExport = scheduleSaveState.schedules.filter((_, index) =>
+                                        exportSelectedIndices.has(index)
+                                    );
+
+                                    const exportData = {
+                                        schedules: schedulesToExport,
+                                    };
+
+                                    const jsonString = JSON.stringify(exportData, null, 2);
+                                    const blob = new Blob([jsonString], { type: 'application/json' });
+                                    const url = URL.createObjectURL(blob);
+                                    const link = document.createElement('a');
+                                    link.href = url;
+                                    link.download = `antalmanac-schedules-${new Date().toISOString().split('T')[0]}.json`;
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                    URL.revokeObjectURL(url);
+
+                                    openSnackbar(
+                                        'success',
+                                        `Successfully exported ${schedulesToExport.length} schedule(s)!`
+                                    );
+                                    handleClose();
+                                } catch (error) {
+                                    console.error('Export error:', error);
+                                    const errorMessage =
+                                        error instanceof Error ? error.message : 'Failed to export schedules.';
+                                    openSnackbar('error', errorMessage);
+                                }
+                            }}
+                            color={isDark ? 'secondary' : 'primary'}
+                            variant="contained"
+                            disabled={exportSelectedIndices.size === 0}
+                        >
+                            Export ({exportSelectedIndices.size})
+                        </Button>
+                    ) : (
+                        <Button onClick={handleSubmit} color={isDark ? 'secondary' : 'primary'}>
+                            Import
+                        </Button>
+                    )}
                 </DialogActions>
             </Dialog>
 

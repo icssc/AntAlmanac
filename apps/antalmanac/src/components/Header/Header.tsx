@@ -17,7 +17,6 @@ import { useEffect, useState } from 'react';
 
 import { openSnackbar } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
-import { Export } from '$components/Header/Export';
 import { Import } from '$components/Header/Import';
 import { Logo } from '$components/Header/Logo';
 import { Save } from '$components/Header/Save';
@@ -32,7 +31,6 @@ import {
 import { BLUE } from '$src/globals';
 import { useIsMobile } from '$src/hooks/useIsMobile';
 import { useSessionStore } from '$stores/SessionStore';
-import { useJsonImportExportStore } from '$stores/SettingsStore';
 
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
@@ -40,7 +38,6 @@ export function Header() {
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const importedUser = getLocalStorageImportedUser() ?? '';
     const { session, sessionIsValid } = useSessionStore();
-    const jsonImportExport = useJsonImportExportStore((store) => store.jsonImportExport);
     const isMobile = useIsMobile();
 
     const platform =
@@ -205,7 +202,6 @@ export function Header() {
 
                 <Stack direction="row" alignItems="center">
                     <Import key="studylist" />
-                    {jsonImportExport && <Export />}
                     <Save />
                     {sessionIsValid ? <Signout onLogoutComplete={handleLogoutComplete} /> : <Signin />}
                 </Stack>
