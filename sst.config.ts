@@ -88,6 +88,7 @@ export default $config({
                     actions: ['ses:SendEmail', 'ses:SendTemplatedEmail'],
                     resources: [
                         'arn:aws:ses:us-east-2:990864464737:identity/icssc@uci.edu',
+                        'arn:aws:ses:us-east-2:990864464737:identity/icssc.club',
                         'arn:aws:ses:us-east-2:990864464737:template/*',
                         'arn:aws:ses:us-east-2:990864464737:configuration-set/*',
                     ],
