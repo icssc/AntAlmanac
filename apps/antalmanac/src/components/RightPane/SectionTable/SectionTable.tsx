@@ -1,4 +1,4 @@
-import { Assessment, ShowChart as ShowChartIcon } from '@mui/icons-material';
+import { Assessment, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
 import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useMemo } from 'react';
 
@@ -86,11 +86,6 @@ function SectionTable(props: SectionTableProps) {
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
     }, [activeColumns]);
 
-    /**
-     * Store the size for the custom PeterPortal icon.
-     */
-    const customIconSize = 18;
-
     return (
         <>
             <Box
@@ -114,16 +109,9 @@ function SectionTable(props: SectionTableProps) {
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}
                     analyticsAction={analyticsEnum.classSearch.actions.CLICK_REVIEWS}
-                    text="PeterPortal"
-                    icon={
-                        <img
-                            src={'assets/peterportal-logo.png'}
-                            alt="PeterPortal Icon"
-                            width={customIconSize}
-                            height={customIconSize}
-                        />
-                    }
-                    redirectLink={`https://peterportal.org/course/${encodeURIComponent(courseId)}`}
+                    text="Planner"
+                    icon={<Route />}
+                    redirectLink={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
                 />
 
                 <CourseInfoButton
