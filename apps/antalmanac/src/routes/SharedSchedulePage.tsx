@@ -219,6 +219,33 @@ export function SharedSchedulePage() {
         }
     }, [navigate, sessionIsValid, setOpenLoadingSchedule]);
 
+    const handleLoadSchedule = useCallback(async (sessionToken?: string) => {
+        if (sessionToken) {
+            const userDataResponse = await trpc.userData.getUserDataWithSession.query({
+                refreshToken: sessionToken,
+            });
+            const scheduleSaveState =
+                (userDataResponse as { userData?: ScheduleSaveState }).userData ?? userDataResponse;
+
+            if (scheduleSaveState) {
+                await AppStore.loadSchedule(scheduleSaveState as ScheduleSaveState);
+            }
+        } else {
+            const defaultTerm = getDefaultTerm();
+            const emptyScheduleData = {
+                scheduleName: defaultTerm.shortName.replaceAll(' ', '-'),
+                courses: [] as ShortCourse[],
+                customEvents: [] as RepeatingCustomEvent[],
+                scheduleNote: '',
+            } as ShortCourseSchedule;
+            const emptySchedule: ScheduleSaveState = {
+                schedules: [emptyScheduleData],
+                scheduleIndex: 0,
+            };
+            await AppStore.loadSchedule(emptySchedule);
+        }
+    }, []);
+
     const handleAddToMySchedules = useCallback(async () => {
         if (!scheduleId) {
             return;
@@ -237,16 +264,7 @@ export function SharedSchedulePage() {
                     throw new Error('No session token available');
                 }
 
-                const userDataResponse = await trpc.userData.getUserDataWithSession.query({
-                    refreshToken: sessionToken,
-                });
-                const scheduleSaveState =
-                    (userDataResponse as { userData?: ScheduleSaveState }).userData ?? userDataResponse;
-
-                if (scheduleSaveState) {
-                    await AppStore.loadSchedule(scheduleSaveState as ScheduleSaveState);
-                }
-
+                await handleLoadSchedule(sessionToken);
                 await importSharedScheduleById(scheduleId);
             } else {
                 const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
@@ -275,7 +293,7 @@ export function SharedSchedulePage() {
             }
             navigate('/');
         }
-    }, [scheduleId, sessionIsValid, navigate, setOpenLoadingSchedule]);
+    }, [scheduleId, sessionIsValid, navigate, setOpenLoadingSchedule, handleLoadSchedule]);
 
     const handleGoHome = useCallback(async () => {
         try {
@@ -285,34 +303,13 @@ export function SharedSchedulePage() {
                 AppStore.exitSkeletonMode();
             }
 
-            if (sessionIsValid) {
-                const sessionToken = useSessionStore.getState().session;
+            const sessionToken = useSessionStore.getState().session;
 
-                if (sessionToken) {
-                    const userDataResponse = await trpc.userData.getUserDataWithSession.query({
-                        refreshToken: sessionToken,
-                    });
-                    const scheduleSaveState =
-                        (userDataResponse as { userData?: ScheduleSaveState }).userData ?? userDataResponse;
-
-                    if (scheduleSaveState) {
-                        await AppStore.loadSchedule(scheduleSaveState as ScheduleSaveState);
-                    }
-                }
-            } else {
-                const defaultTerm = getDefaultTerm();
-                const emptyScheduleData = {
-                    scheduleName: defaultTerm.shortName.replaceAll(' ', '-'),
-                    courses: [] as ShortCourse[],
-                    customEvents: [] as RepeatingCustomEvent[],
-                    scheduleNote: '',
-                } as ShortCourseSchedule;
-                const emptySchedule: ScheduleSaveState = {
-                    schedules: [emptyScheduleData],
-                    scheduleIndex: 0,
-                };
-                await AppStore.loadSchedule(emptySchedule);
+            if (!sessionToken) {
+                throw new Error('No session token available');
             }
+
+            await handleLoadSchedule(sessionToken);
 
             setOpenLoadingSchedule(false);
             navigate('/');
@@ -321,7 +318,7 @@ export function SharedSchedulePage() {
             setOpenLoadingSchedule(false);
             navigate('/');
         }
-    }, [navigate, sessionIsValid, setOpenLoadingSchedule]);
+    }, [navigate, setOpenLoadingSchedule, handleLoadSchedule]);
 
     if (error) {
         return (
