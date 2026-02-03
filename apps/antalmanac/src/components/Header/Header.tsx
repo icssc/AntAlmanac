@@ -73,155 +73,162 @@ export function Header() {
     }, [importedUser, session]);
 
     return (
-        <AppBar
-            position="static"
-            color="primary"
+        <Box
             sx={{
-                height: 52,
-                padding: 1,
-                boxShadow: 'none',
                 backgroundColor: BLUE,
+                paddingTop: 'env(safe-area-inset-top)',
                 fontSize: '10.5px',
                 '@media (min-width: 800px)': {
                     fontSize: '12.25px',
                 },
             }}
         >
-            <Box
+            <AppBar
+                position="static"
+                color="primary"
                 sx={{
-                    display: 'flex',
-                    height: '100%',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    height: 52,
+                    px: 1,
+                    boxShadow: 'none',
+                    backgroundColor: BLUE,
                 }}
             >
-                <Stack direction="row" alignItems="center" gap={1}>
-                    {isMobile ? (
-                        <>
-                            <Button
-                                onClick={(event) => setAnchorEl(event.currentTarget)}
-                                endIcon={<UnfoldMore />}
-                                sx={{
-                                    minWidth: 'auto',
-                                    p: 0.5,
-                                    color: 'white',
-                                    '& .MuiTouchRipple-child': {
-                                        borderRadius: 0.5,
-                                        bgcolor: 'white',
-                                    },
-                                }}
-                            >
-                                <Logo />
-                            </Button>
-
-                            <Popover
-                                open={Boolean(anchorEl)}
-                                anchorEl={anchorEl}
-                                onClose={() => setAnchorEl(null)}
-                                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                            >
-                                <MenuList
-                                    subheader={
-                                        <ListSubheader component="div" sx={{ lineHeight: '30px' }}>
-                                            Switch Apps
-                                        </ListSubheader>
-                                    }
-                                    sx={{ width: 200 }}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        height: '100%',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
+                >
+                    <Stack direction="row" alignItems="center" gap={1}>
+                        {isMobile ? (
+                            <>
+                                <Button
+                                    onClick={(event) => setAnchorEl(event.currentTarget)}
+                                    endIcon={<UnfoldMore />}
+                                    sx={{
+                                        minWidth: 'auto',
+                                        p: 0.5,
+                                        color: 'white',
+                                        '& .MuiTouchRipple-child': {
+                                            borderRadius: 0.5,
+                                            bgcolor: 'white',
+                                        },
+                                    }}
                                 >
-                                    <MenuItem
-                                        component={Link}
-                                        href="/"
-                                        selected={platform === 'Scheduler'}
-                                        onClick={() => setAnchorEl(null)}
-                                        sx={{ minHeight: 'fit-content', textDecoration: 'none', color: 'inherit' }}
+                                    <Logo />
+                                </Button>
+
+                                <Popover
+                                    open={Boolean(anchorEl)}
+                                    anchorEl={anchorEl}
+                                    onClose={() => setAnchorEl(null)}
+                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                                    transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                                >
+                                    <MenuList
+                                        subheader={
+                                            <ListSubheader component="div" sx={{ lineHeight: '30px' }}>
+                                                Switch Apps
+                                            </ListSubheader>
+                                        }
+                                        sx={{ width: 200 }}
                                     >
-                                        <ListItemIcon>
-                                            <EventNote />
-                                        </ListItemIcon>
-                                        <Typography fontSize="15px" fontWeight={500}>
-                                            Scheduler
-                                        </Typography>
-                                    </MenuItem>
-                                    <MenuItem
+                                        <MenuItem
+                                            component={Link}
+                                            href="/"
+                                            selected={platform === 'Scheduler'}
+                                            onClick={() => setAnchorEl(null)}
+                                            sx={{ minHeight: 'fit-content', textDecoration: 'none', color: 'inherit' }}
+                                        >
+                                            <ListItemIcon>
+                                                <EventNote />
+                                            </ListItemIcon>
+                                            <Typography fontSize="15px" fontWeight={500}>
+                                                Scheduler
+                                            </Typography>
+                                        </MenuItem>
+                                        <MenuItem
+                                            component={Link}
+                                            href="/planner"
+                                            selected={platform === 'Planner'}
+                                            onClick={() => setAnchorEl(null)}
+                                            sx={{ minHeight: 'fit-content', textDecoration: 'none', color: 'inherit' }}
+                                        >
+                                            <ListItemIcon>
+                                                <Route />
+                                            </ListItemIcon>
+                                            <Typography fontSize="15px" fontWeight={500}>
+                                                Planner
+                                            </Typography>
+                                        </MenuItem>
+                                    </MenuList>
+                                </Popover>
+                            </>
+                        ) : (
+                            <>
+                                <Logo />
+                                <ButtonGroup variant="outlined" color="inherit">
+                                    <Button
+                                        variant="contained"
+                                        startIcon={<EventNote />}
+                                        sx={{
+                                            boxShadow: 'none',
+                                            bgcolor: 'white',
+                                            color: BLUE,
+                                            fontWeight: 500,
+                                            fontSize: 14,
+                                            py: 0.4,
+                                            '&:hover': { bgcolor: 'grey.100' },
+                                        }}
+                                    >
+                                        Scheduler
+                                    </Button>
+                                    <Button
                                         component={Link}
                                         href="/planner"
-                                        selected={platform === 'Planner'}
-                                        onClick={() => setAnchorEl(null)}
-                                        sx={{ minHeight: 'fit-content', textDecoration: 'none', color: 'inherit' }}
+                                        startIcon={<Route />}
+                                        sx={{
+                                            boxShadow: 'none',
+                                            color: 'white',
+                                            fontWeight: 500,
+                                            fontSize: 14,
+                                            py: 0.4,
+                                            textDecoration: 'none',
+                                        }}
                                     >
-                                        <ListItemIcon>
-                                            <Route />
-                                        </ListItemIcon>
-                                        <Typography fontSize="15px" fontWeight={500}>
-                                            Planner
-                                        </Typography>
-                                    </MenuItem>
-                                </MenuList>
-                            </Popover>
-                        </>
-                    ) : (
-                        <>
-                            <Logo />
-                            <ButtonGroup variant="outlined" color="inherit">
-                                <Button
-                                    variant="contained"
-                                    startIcon={<EventNote />}
-                                    sx={{
-                                        boxShadow: 'none',
-                                        bgcolor: 'white',
-                                        color: BLUE,
-                                        fontWeight: 500,
-                                        fontSize: 14,
-                                        py: 0.4,
-                                        '&:hover': { bgcolor: 'grey.100' },
-                                    }}
-                                >
-                                    Scheduler
-                                </Button>
-                                <Button
-                                    component={Link}
-                                    href="/planner"
-                                    startIcon={<Route />}
-                                    sx={{
-                                        boxShadow: 'none',
-                                        color: 'white',
-                                        fontWeight: 500,
-                                        fontSize: 14,
-                                        py: 0.4,
-                                        textDecoration: 'none',
-                                    }}
-                                >
-                                    Planner
-                                </Button>
-                            </ButtonGroup>
-                        </>
-                    )}
-                </Stack>
+                                        Planner
+                                    </Button>
+                                </ButtonGroup>
+                            </>
+                        )}
+                    </Stack>
 
-                <Stack direction="row" alignItems="center">
-                    <Import key="studylist" />
-                    <Save />
-                    {sessionIsValid ? <Signout onLogoutComplete={handleLogoutComplete} /> : <Signin />}
-                </Stack>
+                    <Stack direction="row" alignItems="center">
+                        <Import key="studylist" />
+                        <Save />
+                        {sessionIsValid ? <Signout onLogoutComplete={handleLogoutComplete} /> : <Signin />}
+                    </Stack>
 
-                <AlertDialog
-                    open={openSuccessfulSaved}
-                    title={`Schedule from "${importedUser}" has been saved to your account!`}
-                    severity="success"
-                    onClose={handleCloseSuccessfulSaved}
-                >
-                    NOTE: All changes made to your schedules will be saved to your Google account
-                </AlertDialog>
-                <AlertDialog
-                    open={openSignoutDialog}
-                    title="Signed out successfully"
-                    severity="info"
-                    onClose={handleCloseSignoutDialog}
-                >
-                    You have successfully signed out. Close to continue browsing AntAlmanac.
-                </AlertDialog>
-            </Box>
-        </AppBar>
+                    <AlertDialog
+                        open={openSuccessfulSaved}
+                        title={`Schedule from "${importedUser}" has been saved to your account!`}
+                        severity="success"
+                        onClose={handleCloseSuccessfulSaved}
+                    >
+                        NOTE: All changes made to your schedules will be saved to your Google account
+                    </AlertDialog>
+                    <AlertDialog
+                        open={openSignoutDialog}
+                        title="Signed out successfully"
+                        severity="info"
+                        onClose={handleCloseSignoutDialog}
+                    >
+                        You have successfully signed out. Close to continue browsing AntAlmanac.
+                    </AlertDialog>
+                </Box>
+            </AppBar>
+        </Box>
     );
 }
