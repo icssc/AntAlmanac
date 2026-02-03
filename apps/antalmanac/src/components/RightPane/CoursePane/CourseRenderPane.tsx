@@ -209,7 +209,7 @@ const ErrorMessage = () => {
         >
             {courseId ? (
                 <Link
-                    href={`https://peterportal.org/course/${encodeURIComponent(courseId)}`}
+                    href={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
                     target="_blank"
                     sx={{ width: '100%' }}
                 >
@@ -229,7 +229,7 @@ const ErrorMessage = () => {
                             <span style={{ textDecoration: 'underline' }}>
                                 {deptValue} {courseNumber}
                             </span>{' '}
-                            on PeterPortal!
+                            on AntAlmanac Planner!
                         </span>
                     </Alert>
                 </Link>
