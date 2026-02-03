@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { updateScheduleNote } from '$actions/AppStoreActions';
 import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEventDetailView';
+import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
 import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
 import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
@@ -348,6 +349,7 @@ function AddedSectionsGrid() {
                 <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
                 <ClearScheduleButton buttonSx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />
                 <ColumnToggleDropdown />
+                <NotificationsDialog buttonSx={buttonSx} />
             </Box>
             <Box sx={{ marginTop: 7 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
