@@ -16,28 +16,34 @@ const roboto = Roboto({
 });
 
 const lightTheme: PaletteOptions = {
-    primary: {
-        main: '#5191d6',
-    },
-    secondary: {
-        main: '#ffffff',
-    },
+    primary: { main: BLUE }, // #305db7
+    secondary: { main: BLUE },
     background: {
-        default: '#fafafa',
+        default: '#f5f6fc',
         paper: '#fff',
+    },
+    text: {
+        primary: '#212529',
+        secondary: '#606166',
+    },
+    error: {
+        main: '#ce0000',
     },
 };
 
 const darkTheme: PaletteOptions = {
-    primary: {
-        main: DODGER_BLUE,
-    },
-    secondary: {
-        main: '#ffffff',
-    },
+    primary: { main: BLUE }, // #305db7
+    secondary: { main: '#90B3F9' },
     background: {
-        default: '#303030',
-        paper: '#424242',
+        default: '#121212',
+        paper: '#1e1e1e',
+    },
+    text: {
+        primary: '#fff',
+        secondary: '#99999f',
+    },
+    error: {
+        main: '#ff3333',
     },
 };
 
@@ -100,6 +106,7 @@ export default function AppThemeProvider(props: Props) {
                                 ...(ownerState.variant === 'contained' &&
                                     ownerState.color === 'secondary' && {
                                         backgroundColor: '#E0E0E0',
+                                        color: '#212529',
                                         ':hover': {
                                             backgroundColor: '#D5D5D5',
                                         },
