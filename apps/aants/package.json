@@ -1,0 +1,39 @@
+{
+    "name": "aants",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "aants": "tsx src/index.ts",
+        "template": "tsx scripts/createTemplate.ts"
+    },
+    "keywords": [],
+    "author": "",
+    "dependencies": {
+        "@aws-sdk/client-sesv2": "^3.750.0",
+        "@aws-sdk/client-sqs": "^3.750.0",
+        "@icssc/libwebsoc-next": "1.0.0",
+        "@trpc/server": "^10.30.0",
+        "aws-sdk": "^2.1550.0",
+        "dotenv": "^16.4.5",
+        "drizzle-orm": "^0.36.3",
+        "pg": "^8.13.1",
+        "postgres": "^3.4.4",
+        "superjson": "^1.12.3",
+        "zod": "3.23.8"
+    },
+    "devDependencies": {
+        "@types/aws-lambda": "^8.10.130",
+        "@types/pg": "^8.11.10",
+        "@typescript-eslint/eslint-plugin": "^5.52.0",
+        "@typescript-eslint/parser": "^5.52.0",
+        "drizzle-kit": "^0.28.1",
+        "esbuild": "^0.17.19",
+        "eslint": "^8.34.0",
+        "eslint-config-prettier": "^8.6.0",
+        "eslint-plugin-import": "^2.27.5",
+        "tsx": "^3.12.7",
+        "typescript": "^5.6.3"
+    }
+}

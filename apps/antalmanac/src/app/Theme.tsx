@@ -169,7 +169,7 @@ export default function AppThemeProvider(props: Props) {
                         default: 0,
                         xxs: 400,
                         xs: 640,
-                        sm: 768,
+                        sm: 800,
                         md: 1024,
                         lg: 1280,
                         xl: 1536,

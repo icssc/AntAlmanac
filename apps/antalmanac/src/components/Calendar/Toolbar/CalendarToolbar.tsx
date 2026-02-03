@@ -137,6 +137,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     return (
         <Paper
             elevation={0}
+            square
             variant="outlined"
             sx={{
                 display: 'flex',
@@ -147,6 +148,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                 borderRadius: '4px 4px 0 0',
                 containerType: 'inline-size',
                 containerName: 'toolbar',
+                borderWidth: '1px 0px 1px 0px',
             }}
         >
             <Box gap={1} display="flex" alignItems="center">

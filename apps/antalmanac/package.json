@@ -62,6 +62,7 @@
         "leaflet.locatecontrol": "^0.79.0",
         "moment": "^2.29.4",
         "next": "16.0.10",
+        "next-pwa": "^5.6.0",
         "notistack": "^2.0.8",
         "pg": "^8.16.3",
         "posthog-js": "^1.236.1",
