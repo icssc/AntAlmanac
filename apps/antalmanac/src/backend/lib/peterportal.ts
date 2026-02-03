@@ -5,7 +5,7 @@ import { ppEnvSchema } from '../env';
 
 export type { Quarter, RoadmapContent, Roadmap, PeterPortalAPIResponse } from '@packages/antalmanac-types';
 
-export const PETERPORTAL_API_URL = 'https://peterportal.org/api/trpc/external.roadmaps.getByGoogleID';
+export const PETERPORTAL_API_URL = 'https://antalmanac.com/planner/api/trpc/external.roadmaps.getByGoogleID';
 
 export function getCurrentTerm(): { year: number; quarter: string } {
     const today = new Date();
