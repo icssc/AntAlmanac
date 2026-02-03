@@ -2,8 +2,12 @@ import { Add, Close } from '@mui/icons-material';
 import { useMediaQuery, useTheme, Stack, Alert, Button, Box, Typography, IconButton } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
-import type { ScheduleSaveState, ShortCourseSchedule, ShortCourse } from '@packages/antalmanac-types';
-import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import type {
+    ScheduleSaveState,
+    ShortCourseSchedule,
+    ShortCourse,
+    RepeatingCustomEvent,
+} from '@packages/antalmanac-types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Split from 'react-split';
