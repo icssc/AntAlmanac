@@ -343,9 +343,11 @@ export const importSharedScheduleById = async (scheduleId: string) => {
             });
 
             await autoSaveSchedule(accounts.providerAccountId, {
-                email: users.email,
-                name: users.name,
-                avatar: users.avatar,
+                userInfo: {
+                    email: users.email,
+                    name: users.name,
+                    avatar: users.avatar,
+                },
             });
         } catch (err) {
             console.error('Failed to auto-save after importing shared schedule:', err);
