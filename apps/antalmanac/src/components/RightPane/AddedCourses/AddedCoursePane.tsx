@@ -110,7 +110,7 @@ function CustomEventsBox() {
         return () => {
             AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
-    }, []);
+    }, [getCustomEvents]);
 
     useEffect(() => {
         const handleCustomEventsChange = () => {
@@ -124,7 +124,7 @@ function CustomEventsBox() {
             AppStore.off('customEventsChange', handleCustomEventsChange);
             AppStore.off('currentScheduleIndexChange', handleCustomEventsChange);
         };
-    }, []);
+    }, [getCustomEvents]);
 
     if (customEvents.length <= 0) {
         return null;
@@ -185,7 +185,7 @@ function ScheduleNoteBox() {
         return () => {
             AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
-    }, []);
+    }, [getScheduleNote]);
 
     useEffect(() => {
         const handleScheduleNoteChange = () => {
@@ -204,7 +204,7 @@ function ScheduleNoteBox() {
             AppStore.off('scheduleNotesChange', handleScheduleNoteChange);
             AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
         };
-    }, []);
+    }, [getScheduleNote]);
 
     return (
         <Box>
