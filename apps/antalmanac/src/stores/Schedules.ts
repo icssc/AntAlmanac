@@ -45,6 +45,7 @@ export class Schedules {
                 courses: [],
                 customEvents: [],
                 scheduleNoteId: scheduleNoteId,
+                id: undefined,
             },
         ];
         this.currentScheduleIndex = 0;
@@ -123,6 +124,7 @@ export class Schedules {
             courses: [],
             customEvents: [],
             scheduleNoteId: scheduleNoteId,
+            id: undefined,
         });
         // Setting schedule index manually otherwise 2 undo states are added
         this.currentScheduleIndex = this.getNumberOfSchedules() - 1;
@@ -553,6 +555,7 @@ export class Schedules {
     getScheduleAsSaveState(): ScheduleSaveState {
         const shortSchedules: ShortCourseSchedule[] = this.schedules.map((schedule) => {
             return {
+                id: schedule.id,
                 scheduleName: schedule.scheduleName,
                 customEvents: schedule.customEvents,
                 courses: schedule.courses.map((course) => {
@@ -666,6 +669,7 @@ export class Schedules {
         const schedule = this.skeletonSchedules[this.currentScheduleIndex];
         if (!schedule) {
             return {
+                id: undefined,
                 scheduleName: '',
                 courses: [],
                 customEvents: [],
