@@ -1,4 +1,10 @@
-import { CourseInfo, ScheduleCourse, ShortCourseSchedule, type User } from '@packages/antalmanac-types';
+import {
+    CourseInfo,
+    ScheduleCourse,
+    ShortCourseSchedule,
+    RepeatingCustomEvent,
+    type User,
+} from '@packages/antalmanac-types';
 import { db } from '@packages/db/src';
 import { TRPCError } from '@trpc/server';
 import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState, OAuth2Tokens } from 'arctic';
@@ -42,12 +48,14 @@ const saveGoogleSchema = type({
  * Hydrates schedule courses with full course information from WebSOC.
  * Transforms ShortCourse[] to ScheduleCourse[] by fetching course details.
  */
-async function hydrateScheduleCourses(schedules: ShortCourseSchedule[]): Promise<Array<{
-    scheduleName: string;
-    courses: ScheduleCourse[];
-    customEvents: any[];
-    scheduleNote: string;
-}>> {
+async function hydrateScheduleCourses(schedules: ShortCourseSchedule[]): Promise<
+    Array<{
+        scheduleName: string;
+        courses: ScheduleCourse[];
+        customEvents: RepeatingCustomEvent[];
+        scheduleNote: string;
+    }>
+> {
     // Build dictionary of all unique courses grouped by term
     const courseDict: { [term: string]: Set<string> } = {};
     for (const schedule of schedules) {
@@ -62,7 +70,7 @@ async function hydrateScheduleCourses(schedules: ShortCourseSchedule[]): Promise
 
     // Fetch course info from WebSOC for each term
     const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
-    
+
     const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
         const sectionCodes = Array.from(courseSet).join(',');
         try {
@@ -77,9 +85,9 @@ async function hydrateScheduleCourses(schedules: ShortCourseSchedule[]): Promise
     await Promise.all(websocRequests);
 
     // Hydrate each schedule with full course data
-    return schedules.map(schedule => {
+    return schedules.map((schedule) => {
         const hydratedCourses: ScheduleCourse[] = schedule.courses
-            .map(shortCourse => {
+            .map((shortCourse) => {
                 const courseInfoMap = courseInfoDict.get(shortCourse.term);
                 if (!courseInfoMap) {
                     return null;
@@ -189,7 +197,7 @@ const userDataRouter = router({
             }
 
             const hydratedSchedules = await hydrateScheduleCourses(userData.userData.schedules);
-            
+
             const result = {
                 ...userData,
                 userData: {
