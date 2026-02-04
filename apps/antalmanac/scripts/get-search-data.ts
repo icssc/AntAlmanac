@@ -85,6 +85,7 @@ async function main() {
                             sectionCode
                             sectionType
                             sectionNum
+                            instructors 
                         }
                     }
                 }
