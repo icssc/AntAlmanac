@@ -2,8 +2,8 @@ import { Tab, Tooltip } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 import { ScheduleManagementTabInfo } from '$components/ScheduleManagement/ScheduleManagementTabs';
-import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import { useTabStore } from '$stores/TabStore';
 
 interface ScheduleManagementTabProps {
