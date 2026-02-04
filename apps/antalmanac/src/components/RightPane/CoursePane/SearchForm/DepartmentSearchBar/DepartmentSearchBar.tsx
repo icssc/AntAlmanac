@@ -72,7 +72,7 @@ export function DepartmentSearchBar() {
                   )
                 : setRecentSearches((prev) => [newValue, ...prev].slice(0, 5));
         },
-        [recentSearches]
+        [recentSearches, options]
     );
 
     useEffect(() => {
