@@ -5,6 +5,7 @@ import type {
     WebsocSectionType,
     WebsocAPIDepartmentsResponse,
 } from '@packages/antalmanac-types';
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
@@ -92,6 +93,12 @@ const queryWebSocDepartments = async () => {
         },
     });
     const data = await response.json();
+    if (!data || !data.data) {
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Departments API returned no data',
+        });
+    }
     return data.data as WebsocAPIDepartmentsResponse;
 };
 
