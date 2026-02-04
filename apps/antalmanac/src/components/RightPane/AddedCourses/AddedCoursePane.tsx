@@ -86,7 +86,7 @@ function getCourses() {
 function CustomEventsBox() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    const getCustomEvents = () => {
+    const getCustomEvents = useCallback(() => {
         if (skeletonMode) {
             const skeletonSchedule = AppStore.getCurrentSkeletonSchedule();
             if (!skeletonSchedule.customEvents || skeletonSchedule.customEvents.length === 0) {
@@ -95,7 +95,7 @@ function CustomEventsBox() {
             return skeletonSchedule.customEvents;
         }
         return AppStore.schedule.getCurrentCustomEvents();
-    };
+    }, [skeletonMode]);
 
     const [customEvents, setCustomEvents] = useState(getCustomEvents);
 
@@ -152,7 +152,7 @@ function CustomEventsBox() {
 function ScheduleNoteBox() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    const getScheduleNote = () => {
+    const getScheduleNote = useCallback(() => {
         if (skeletonMode) {
             const skeletonSchedule = AppStore.getCurrentSkeletonSchedule();
             if (!skeletonSchedule.scheduleNote) {
@@ -161,7 +161,7 @@ function ScheduleNoteBox() {
             return skeletonSchedule.scheduleNote;
         }
         return AppStore.getCurrentScheduleNote();
-    };
+    }, [skeletonMode]);
 
     const [scheduleNote, setScheduleNote] = useState(getScheduleNote);
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
