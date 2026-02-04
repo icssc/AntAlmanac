@@ -1,7 +1,7 @@
 import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
 import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { changeCurrentSchedule } from '$actions/AppStoreActions';
 import { SortableList } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableList';
@@ -62,6 +62,8 @@ export function SelectSchedulePopover() {
     const [skeletonScheduleMapping, setSkeletonScheduleMapping] = useState(
         getScheduleItems(AppStore.getSkeletonScheduleNames())
     );
+
+    const anchorElementRef = useRef(null);
 
     const postHog = usePostHog();
 
@@ -142,6 +144,7 @@ export function SelectSchedulePopover() {
                 disableInteractive
             >
                 <Button
+                    ref={anchorElementRef}
                     size="small"
                     color="inherit"
                     variant="outlined"
@@ -157,8 +160,7 @@ export function SelectSchedulePopover() {
 
             <Popover
                 open={openScheduleSelect}
-                anchorReference="anchorPosition"
-                anchorPosition={{ top: 95, left: 0 }}
+                anchorEl={anchorElementRef.current}
                 onClose={handleClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >

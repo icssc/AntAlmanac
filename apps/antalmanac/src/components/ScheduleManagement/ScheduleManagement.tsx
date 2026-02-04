@@ -1,9 +1,10 @@
-import { GlobalStyles, Stack, useMediaQuery, useTheme } from '@mui/material';
+import { GlobalStyles, Stack } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { getLocalStorageSessionId } from '$lib/localStorage';
 import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import AppStore from '$stores/AppStore';
@@ -17,8 +18,7 @@ import { useTabStore } from '$stores/TabStore';
 export function ScheduleManagement() {
     const { activeTab, setActiveTab } = useTabStore();
     const { tab } = useParams();
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMobile = useIsMobile();
 
     const isSharedSchedulePage = useIsSharedSchedulePage();
 

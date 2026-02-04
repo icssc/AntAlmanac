@@ -6,6 +6,7 @@ import type {
     ShortCourseSchedule,
     RepeatingCustomEvent,
     CourseInfo,
+    CustomEventId,
 } from '@packages/antalmanac-types';
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
@@ -335,7 +336,7 @@ export class Schedules {
     /**
      * Get a reference ito the custom event that matches the ID.
      */
-    getExistingCustomEvent(customEventId: number) {
+    getExistingCustomEvent(customEventId: CustomEventId) {
         for (const customEvent of this.getAllCustomEvents()) {
             if (customEvent.customEventID === customEventId) {
                 return customEvent;
@@ -347,7 +348,7 @@ export class Schedules {
     /**
      * Get indices of schedules that contain the custom event.
      */
-    getIndexesOfCustomEvent(customEventId: number) {
+    getIndexesOfCustomEvent(customEventId: CustomEventId) {
         const indices: number[] = [];
 
         for (const scheduleIndex of this.schedules.keys()) {
@@ -383,7 +384,7 @@ export class Schedules {
      * Deletes custom event from the given indices.
      * @param scheduleIndices The schedule indices to delete the custom event from.
      */
-    deleteCustomEvent(customEventId: number, scheduleIndices = [this.getCurrentScheduleIndex()]) {
+    deleteCustomEvent(customEventId: CustomEventId, scheduleIndices = [this.getCurrentScheduleIndex()]) {
         this.addUndoState();
         for (const scheduleIndex of scheduleIndices) {
             const customEvents = this.schedules[scheduleIndex].customEvents;
@@ -397,7 +398,7 @@ export class Schedules {
     /**
      * Change color of a custom event
      */
-    changeCustomEventColor(customEventId: number, newColor: string) {
+    changeCustomEventColor(customEventId: CustomEventId, newColor: string) {
         this.addUndoState();
         const customEvent = this.getExistingCustomEvent(customEventId);
         if (customEvent) {
@@ -435,7 +436,7 @@ export class Schedules {
     /**
      * Checks if a schedule contains the custom event ID
      */
-    doesCustomEventExistInSchedule(customEventId: number, scheduleIndex: number) {
+    doesCustomEventExistInSchedule(customEventId: CustomEventId, scheduleIndex: number) {
         for (const customEvent of this.schedules.at(scheduleIndex)?.customEvents ?? []) {
             if (customEvent.customEventID === customEventId) {
                 return true;

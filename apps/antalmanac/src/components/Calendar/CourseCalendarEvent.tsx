@@ -1,6 +1,6 @@
 import { Delete, Search } from '@mui/icons-material';
 import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
-import { WebsocSectionFinalExam } from '@packages/antalmanac-types';
+import { CustomEventId, WebsocSectionFinalExam } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useRef } from 'react';
 import { Event } from 'react-big-calendar';
@@ -66,7 +66,7 @@ export interface CourseEvent extends CommonCalendarEvent {
  * https://github.com/icssc/AntAlmanac/wiki/The-Great-AntAlmanac-TypeScript-Rewritening%E2%84%A2#duplicate-interface-names-%EF%B8%8F
  */
 export interface CustomEvent extends CommonCalendarEvent {
-    customEventID: number;
+    customEventID: CustomEventId;
     isCustomEvent: true;
     building: string;
     days: string[];

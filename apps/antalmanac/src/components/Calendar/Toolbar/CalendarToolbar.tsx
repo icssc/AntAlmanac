@@ -90,7 +90,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             });
         }
         toggleDisplayFinalsSchedule();
-    }, [toggleDisplayFinalsSchedule]);
+    }, [toggleDisplayFinalsSchedule, postHog, showFinalsSchedule]);
 
     useEffect(() => {
         const handleSkeletonModeChange = () => {
@@ -139,6 +139,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     return (
         <Paper
             elevation={0}
+            square
             variant="outlined"
             sx={{
                 display: 'flex',
@@ -147,6 +148,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                 alignItems: 'center',
                 padding: 1,
                 borderRadius: '4px 4px 0 0',
+                borderWidth: '1px 0px 1px 0px',
             }}
         >
             <Box gap={1} display="flex" alignItems="center">

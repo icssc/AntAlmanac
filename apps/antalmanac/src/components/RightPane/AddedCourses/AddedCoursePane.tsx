@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { updateScheduleNote } from '$actions/AppStoreActions';
 import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEventDetailView';
+import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
 import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
 import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
@@ -135,7 +136,7 @@ function CustomEventsBox() {
             <Box display="flex" flexDirection="column" gap={1}>
                 {customEvents.map((customEvent) => {
                     return (
-                        <Box key={customEvent.title}>
+                        <Box key={customEvent.customEventID}>
                             <CustomEventDetailView
                                 customEvent={customEvent}
                                 scheduleNames={AppStore.getScheduleNames()}
@@ -401,6 +402,7 @@ function AddedSectionsGrid() {
                     </>
                 )}
                 <ColumnToggleDropdown />
+                <NotificationsDialog buttonSx={buttonSx} />
             </Box>
             <Box sx={{ marginTop: 7 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
@@ -451,7 +453,7 @@ export function AddedCoursePane() {
         return () => {
             AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
-    }, []);
+    }, [postHog]);
 
     const hasRegularCourses = AppStore.schedule.getCurrentCourses().length > 0;
     const skeletonSchedule = AppStore.getCurrentSkeletonSchedule();

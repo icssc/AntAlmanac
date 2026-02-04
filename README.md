@@ -101,7 +101,7 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
     - [nvm](https://github.com/nvm-sh/nvm) - Node-Version-Manager.
     - [fnm](https://github.com/Schniz/fnm) - Fast-Node-Manager.
-    - [nvm-widows](https://github.com/coreybutler/nvm-windows)
+    - [nvm-windows](https://github.com/coreybutler/nvm-windows)
 
     If none of those work for any reason, you can defer to your Operating System's
     package manager or [the downloads from the official website](https://nodejs.org/en/download).
@@ -219,8 +219,7 @@ This command runs `sst deploy --stage production` which:
 
 The following environment variables are required for deployment and should be configured in your AWS environment or CI/CD pipeline:
 
--   `PROD_DB_URL` - Production database connection string
--   `DEV_DB_URL` - Development database connection string
+-   `DB_URL` - Database connection string 
 -   `MAPBOX_ACCESS_TOKEN` - Mapbox API token for map features
 -   `NEXT_PUBLIC_TILES_ENDPOINT` - Endpoint for map tiles
 -   `ANTEATER_API_KEY` - API key for Anteater API
@@ -240,7 +239,7 @@ these sorts of permissions. Here are the different version managers again.
 
 -   [nvm](https://github.com/nvm-sh/nvm) - Node-Version-Manager.
 -   [fnm](https://github.com/Schniz/fnm) - Fast-Node-Manager.
--   [nvm-widows](https://github.com/coreybutler/nvm-windows)
+-   [nvm-windows](https://github.com/coreybutler/nvm-windows)
 
 A more convenient, but less secure way to resolve this is to run the command with admin privileges, e.g with `sudo`.
 
