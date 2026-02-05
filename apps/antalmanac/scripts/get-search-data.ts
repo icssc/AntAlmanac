@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 
 import { queryGraphQL } from '../src/backend/lib/helpers';
-import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';
+import { parseWebSocData, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';
 
 import 'dotenv/config';
 
@@ -120,16 +120,31 @@ async function main() {
             if (!res) {
                 throw new Error(`Error fetching section codes for ${term.shortName}.`);
             }
-            const parsedSectionData = parseSectionCodes(res);
+
+            const parsedWebsocData = parseWebSocData(res);
+            const parsedSectionCodes = parsedWebsocData.sectionCodes;
+            const parsedInstructors = parsedWebsocData.instructors;
+
             console.log(
-                `Fetched ${Object.keys(parsedSectionData).length} section codes for ${
+                `Fetched ${Object.keys(parsedSectionCodes).length} section codes for ${
                     term.shortName
                 } from Anteater API.`
             );
 
-            const fileName = join(__dirname, `../src/generated/terms/${parsedTerm}.json`);
-            await writeFile(fileName, JSON.stringify(parsedSectionData, null, 2));
-            return Object.keys(parsedSectionData).length;
+            console.log(
+                `Fetched ${Object.keys(parsedInstructors).length} instructors for ${term.shortName} from Anteater API.`
+            );
+
+            const sectionCodesFileName = join(__dirname, `../src/generated/terms/${parsedTerm}.json`);
+            await writeFile(sectionCodesFileName, JSON.stringify(parsedSectionCodes, null, 2));
+
+            const instructorsFileName = join(__dirname, `../src/generated/terms/${parsedTerm}_instructors.json`);
+            await writeFile(instructorsFileName, JSON.stringify(parsedInstructors, null, 2));
+
+            return {
+                sectionCount: Object.keys(parsedSectionCodes).length,
+                instructorCount: Object.keys(parsedInstructors).length,
+            };
         } catch (error) {
             console.error(`ERROR in promise ${index} for term "${term.shortName}":`);
             console.error(`Term details:`, {
@@ -144,9 +159,11 @@ async function main() {
     });
 
     const results = await Promise.all(termPromises);
-    count = results.reduce((acc, numKeys) => acc + numKeys, 0);
+    const totalSections = results.reduce((acc, r) => acc + r.sectionCount, 0);
+    const totalInstructors = results.reduce((acc, r) => acc + r.instructorCount, 0);
 
-    console.log(`Fetched ${count} section codes for ${termData.length} terms from Anteater API.`);
+    console.log(`Fetched ${totalSections} section codes for ${termData.length} terms from Anteater API.`);
+    console.log(`Fetched ${totalInstructors} unique instructors for ${termData.length} terms from Anteater API.`);
     console.log('Cache generated.');
 }
 
