@@ -29,4 +29,9 @@ export type SectionSearchResult = {
     sectionType: string;
 };
 
-export type SearchResult = GESearchResult | DepartmentSearchResult | CourseSearchResult | SectionSearchResult;
+export type InstructorSearchResult = {
+    type: 'INSTRUCTOR';
+    name: string;
+};
+
+export type SearchResult = GESearchResult | DepartmentSearchResult | CourseSearchResult | SectionSearchResult | InstructorSearchResult;
