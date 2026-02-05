@@ -18,6 +18,7 @@ import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
 import { DaySelector } from '$components/Calendar/Toolbar/CustomEventDialog/DaySelector';
 import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog/ScheduleSelector';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
+import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -51,6 +52,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
     );
 
     const postHog = usePostHog();
+    const secondaryColor = useSecondaryColor();
 
     const resetForm = () => {
         setStart(defaultCustomEventValues.start);
@@ -186,6 +188,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             margin="dense"
                             onChange={handleEventNameChange}
                             variant="outlined"
+                            color={secondaryColor ? 'secondary' : 'primary'}
                             InputLabelProps={{ variant: 'outlined' }}
                         />
                     </FormControl>
@@ -198,6 +201,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             fullWidth
                             variant="outlined"
                             InputLabelProps={{ variant: 'outlined' }}
+                            color={secondaryColor ? 'secondary' : 'primary'}
                         />
                         <TextField
                             onChange={handleEndTimeChange}
@@ -207,6 +211,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             fullWidth
                             variant="outlined"
                             InputLabelProps={{ variant: 'outlined' }}
+                            color={secondaryColor ? 'secondary' : 'primary'}
                         />
                     </FormControl>
                     <DaySelector onSelectDay={handleDayChange} days={days} />
