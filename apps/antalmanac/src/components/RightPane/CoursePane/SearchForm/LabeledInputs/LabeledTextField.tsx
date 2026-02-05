@@ -16,7 +16,7 @@ export const LabeledTextField = ({ id, label, textFieldProps, isAligned }: Label
 
     return (
         <LabeledInput label={label} isAligned={isAligned} id={textFieldId}>
-            <TextField size="small" variant="outlined" id={textFieldId} {...textFieldProps} />
+            <TextField size="small" variant="outlined" color="secondary" id={textFieldId} {...textFieldProps} />
         </LabeledInput>
     );
 };
