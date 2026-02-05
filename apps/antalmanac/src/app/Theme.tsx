@@ -6,7 +6,7 @@ import { Roboto } from 'next/font/google';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useMemo } from 'react';
 
-import { BLUE, DODGER_BLUE } from '$src/globals';
+import { BLUE, LIGHT_BLUE } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 
 const roboto = Roboto({
@@ -33,7 +33,7 @@ const lightTheme: PaletteOptions = {
 
 const darkTheme: PaletteOptions = {
     primary: { main: BLUE }, // #305db7
-    secondary: { main: '#90B3F9' },
+    secondary: { main: LIGHT_BLUE },
     background: {
         default: '#121212',
         paper: '#1e1e1e',
@@ -117,7 +117,7 @@ export default function AppThemeProvider(props: Props) {
                     MuiCssBaseline: {
                         styleOverrides: {
                             a: {
-                                color: appTheme === 'dark' ? DODGER_BLUE : BLUE,
+                                color: appTheme === 'dark' ? LIGHT_BLUE : BLUE,
                             },
                         },
                     },

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { useSecondaryColor } from '$hooks/useSecondary';
+import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { Grades } from '$lib/grades';
 
 async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
@@ -32,11 +32,11 @@ interface GpaCellProps {
 
 export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) => {
     const isMobile = useIsMobile();
+    const secondaryColor = useSecondaryColor();
 
     const [gpa, setGpa] = useState('');
     const [instructor, setInstructor] = useState('');
     const [anchorEl, setAnchorEl] = useState<Element>();
-    const secondaryColor = useSecondaryColor();
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl((currentAnchorEl) => (currentAnchorEl ? undefined : event.currentTarget));

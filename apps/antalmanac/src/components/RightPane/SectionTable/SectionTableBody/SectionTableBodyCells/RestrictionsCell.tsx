@@ -4,7 +4,6 @@ import { Fragment, useCallback, useMemo, useState } from 'react';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import restrictionsMapping from '$components/RightPane/SectionTable/static/restrictionsMapping.json';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { useSecondaryColor } from '$hooks/useSecondary';
 
 interface RestrictionsCellProps {
     restrictions: string;
@@ -12,7 +11,6 @@ interface RestrictionsCellProps {
 
 export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
     const isMobile = useIsMobile();
-    const secondaryColor = useSecondaryColor();
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const parsedRestrictions = useMemo(
@@ -51,7 +49,6 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{
-                    color: secondaryColor,
                     display: 'block',
                     marginTop: 1,
                 }}
@@ -74,7 +71,6 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                             }}
                             sx={{
                                 background: 'none',
-                                color: secondaryColor,
                                 border: 0,
                                 textDecoration: 'underline',
                             }}
@@ -98,7 +94,6 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                             href="https://www.reg.uci.edu/enrollment/restrict_codes.html"
                             target="_blank"
                             rel="noopener noreferrer"
-                            sx={{ color: secondaryColor }}
                         >
                             {restrictions}
                         </Typography>

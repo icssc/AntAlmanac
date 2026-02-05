@@ -1,5 +1,6 @@
 export const DODGER_BLUE = '#1e90ff';
 export const BLUE = '#305db7';
+export const LIGHT_BLUE = '#90B3F9';
 
 export const FEEDBACK_LINK = 'https://form.asana.com/?k=fZ3SGnuGknDmzTYdocgIUg&d=1208267282546207';
 export const DONATION_LINK = 'https://venmo.com/u/ICSSC';
