@@ -4,8 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { useSecondaryColor } from '$hooks/useSecondary';
 import { Grades } from '$lib/grades';
-import { usePrimaryColor } from '$src/hooks/usePrimaryColor';
 
 async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
     const namedInstructors = instructors.filter((instructor) => instructor !== 'STAFF');
@@ -36,7 +36,7 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
     const [gpa, setGpa] = useState('');
     const [instructor, setInstructor] = useState('');
     const [anchorEl, setAnchorEl] = useState<Element>();
-    const primaryColor = usePrimaryColor();
+    const secondaryColor = useSecondaryColor();
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl((currentAnchorEl) => (currentAnchorEl ? undefined : event.currentTarget));
@@ -66,7 +66,7 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
                     minWidth: 0,
                     fontWeight: 400,
                     fontSize: '1rem',
-                    color: primaryColor,
+                    color: secondaryColor,
                 }}
                 onClick={handleClick}
                 variant="text"
