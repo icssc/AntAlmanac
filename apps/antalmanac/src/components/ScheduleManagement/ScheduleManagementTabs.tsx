@@ -2,9 +2,7 @@ import { Event, FormatListBulleted, MyLocation, Search } from '@mui/icons-materi
 import { Paper, Tabs } from '@mui/material';
 
 import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleManagementTab';
-import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { useTabStore } from '$stores/TabStore';
-
 
 /**
  * Information about the tab navigation buttons.
@@ -66,7 +64,6 @@ const scheduleManagementTabs: Array<ScheduleManagementTabInfo> = [
 
 export function ScheduleManagementTabs() {
     const { activeTab } = useTabStore();
-    const secondaryColor = useSecondaryColor();
 
     return (
         <Paper
@@ -75,12 +72,7 @@ export function ScheduleManagementTabs() {
             square
             sx={{ borderRadius: '4px 4px 0 0', borderWidth: '1px 0px 1px 0px' }}
         >
-            <Tabs
-                value={activeTab}
-                indicatorColor={secondaryColor ? 'secondary' : 'primary'}
-                variant="fullWidth"
-                centered
-            >
+            <Tabs value={activeTab} indicatorColor="secondary" textColor="secondary" variant="fullWidth" centered>
                 {scheduleManagementTabs.map((tab, index) => (
                     <ScheduleManagementTab key={tab.label} tab={tab} value={index} />
                 ))}

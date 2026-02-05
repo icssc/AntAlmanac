@@ -1,11 +1,12 @@
 import { Box, Typography } from '@mui/material';
 
-import { BLUE } from '$src/globals';
+import { BLUE, LIGHT_BLUE } from '$src/globals';
 import { useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
 
 export function TimeSelector() {
     const [isMilitaryTime, setTimeFormat] = useTimeFormatStore((store) => [store.isMilitaryTime, store.setTimeFormat]);
     const isDark = useThemeStore((store) => store.isDark);
+    const accentColor = isDark ? LIGHT_BLUE : BLUE;
 
     const handleTimeFormatChange = (event: React.MouseEvent<HTMLDivElement>) => {
         const value = event.currentTarget.getAttribute('data-value');
@@ -36,13 +37,13 @@ export function TimeSelector() {
                         cursor: 'pointer',
                         fontWeight: 'bold',
                         fontSize: '1.1rem',
-                        backgroundColor: !isMilitaryTime ? BLUE : isDark ? '#333333' : '#f8f9fa',
-                        color: !isMilitaryTime ? '#fff' : BLUE,
+                        backgroundColor: !isMilitaryTime ? accentColor : isDark ? '#333333' : '#f8f9fa',
+                        color: !isMilitaryTime ? '#fff' : accentColor,
                         borderRight: `1px solid ${isDark ? '#8886' : '#d3d4d5'}`,
                         borderTopLeftRadius: 4,
                         borderBottomLeftRadius: 4,
                         '&:hover': {
-                            backgroundColor: !isMilitaryTime ? BLUE : isDark ? '#424649' : '#d3d4d5',
+                            backgroundColor: !isMilitaryTime ? accentColor : isDark ? '#424649' : '#d3d4d5',
                         },
                     }}
                 >
@@ -60,12 +61,12 @@ export function TimeSelector() {
                         cursor: 'pointer',
                         fontWeight: 'bold',
                         fontSize: '1.1rem',
-                        backgroundColor: isMilitaryTime ? BLUE : isDark ? '#333333' : '#f8f9fa',
-                        color: isMilitaryTime ? '#fff' : BLUE,
+                        backgroundColor: isMilitaryTime ? accentColor : isDark ? '#333333' : '#f8f9fa',
+                        color: isMilitaryTime ? '#fff' : accentColor,
                         borderTopRightRadius: 4,
                         borderBottomRightRadius: 4,
                         '&:hover': {
-                            backgroundColor: isMilitaryTime ? BLUE : isDark ? '#424649' : '#d3d4d5',
+                            backgroundColor: isMilitaryTime ? accentColor : isDark ? '#424649' : '#d3d4d5',
                         },
                     }}
                 >
