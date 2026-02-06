@@ -282,7 +282,7 @@ export const ScheduleCalendar = memo(() => {
     const shouldShowWeekView = showFinalsSchedule ? hasWeekendFinals : hasWeekendCourse;
     const calendarView = shouldShowWeekView ? Views.WEEK : Views.WORK_WEEK;
 
-    const finalsDateFormat = isMobile ? 'MM/DD' : 'ddd MM/DD';
+    const finalsDateFormat = isMobile ? 'M/DD' : 'ddd M/DD';
     const date = showFinalsSchedule ? finalsDate : new Date(2018, 0, 1);
 
     const formats = useMemo(
