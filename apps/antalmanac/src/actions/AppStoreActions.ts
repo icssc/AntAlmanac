@@ -137,13 +137,7 @@ export const saveSchedule = async (
                     },
                 });
 
-                if (result && 'scheduleIds' in result && Array.isArray(result.scheduleIds)) {
-                    const schedules = AppStore.getSchedules();
-                    for (let i = 0; i < Math.min(schedules.length, result.scheduleIds.length); i++) {
-                        schedules[i].id = result.scheduleIds[i];
-                    }
-                    AppStore.emit('scheduleNamesChange');
-                }
+                AppStore.setSchedules(result?.scheduleIds);
 
                 if (useSessionStore.getState().sessionIsValid) {
                     openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
@@ -194,13 +188,7 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
             },
         });
 
-        if (result && 'scheduleIds' in result && Array.isArray(result.scheduleIds)) {
-            const schedules = AppStore.getSchedules();
-            for (let i = 0; i < Math.min(schedules.length, result.scheduleIds.length); i++) {
-                schedules[i].id = result.scheduleIds[i];
-            }
-            AppStore.emit('scheduleNamesChange');
-        }
+        AppStore.setSchedules(result?.scheduleIds);
 
         deleteTempSaveData();
         AppStore.saveSchedule();

@@ -88,6 +88,17 @@ class AppStore extends EventEmitter {
         return this.schedule.getSchedules();
     }
 
+    setSchedules(scheduleIds: (string | undefined)[] | undefined) {
+        if (Array.isArray(scheduleIds)) {
+            const schedules = this.getSchedules();
+            const numSchedules = Math.min(schedules.length, scheduleIds.length);
+            for (let i = 0; i < numSchedules; i++) {
+                schedules[i].id = scheduleIds[i];
+            }
+            this.emit('scheduleNamesChange');
+        }
+    }
+
     getDefaultScheduleName() {
         return this.schedule.getDefaultScheduleName();
     }
