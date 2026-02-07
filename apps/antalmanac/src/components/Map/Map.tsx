@@ -18,12 +18,12 @@ const Routes = dynamic(() => import('./Routes'), { ssr: false });
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { UserLocator } from '$components/Map/UserLocator';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
 import locationIds from '$lib/locations/locations';
 import { notNull } from '$lib/utils';
-import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import AppStore from '$stores/AppStore';
 
 const ATTRIBUTION_MARKUP =
@@ -155,7 +155,7 @@ export default function CourseMap() {
     const map = useRef<Map | null>(null);
     const markerRef = createRef<Marker>();
     const [searchParams, setSearchParams] = useSearchParams();
-    const isSharedSchedulePage = useIsSharedSchedulePage();
+    const isReadonlyView = useIsReadonlyView();
     const [selectedDayIndex, setSelectedDay] = useState(0);
     const [markers, setMarkers] = useState(getCoursesPerBuilding());
     const [customEventMarkers, setCustomEventMarkers] = useState(getCustomEventPerBuilding());
@@ -226,7 +226,7 @@ export default function CourseMap() {
 
     const onBuildingChange = useCallback(
         (building?: ExtendedBuilding | null) => {
-            if (isSharedSchedulePage) {
+            if (isReadonlyView) {
                 const newSearchParams = new URLSearchParams(searchParams);
                 if (building?.id) {
                     newSearchParams.set('location', String(building.id));
@@ -238,7 +238,7 @@ export default function CourseMap() {
                 navigate(`/map?location=${building?.id}`);
             }
         },
-        [navigate, isSharedSchedulePage, searchParams, setSearchParams]
+        [navigate, isReadonlyView, searchParams, setSearchParams]
     );
 
     const days = useMemo(() => {
@@ -311,13 +311,16 @@ export default function CourseMap() {
      */
     const startDestPairs = useMemo(() => {
         const allEvents = [...markersToDisplay, ...customEventMarkersToDisplay];
-        return allEvents.reduce((acc, cur, index) => {
-            acc.push([cur]);
-            if (index > 0) {
-                acc[index - 1].push(cur);
-            }
-            return acc;
-        }, [] as (typeof allEvents)[]);
+        return allEvents.reduce(
+            (acc, cur, index) => {
+                acc.push([cur]);
+                if (index > 0) {
+                    acc[index - 1].push(cur);
+                }
+                return acc;
+            },
+            [] as (typeof allEvents)[]
+        );
     }, [markersToDisplay, customEventMarkersToDisplay]);
 
     return (

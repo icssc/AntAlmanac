@@ -11,9 +11,9 @@ import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePan
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
-import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import AppStore from '$stores/AppStore';
 
 /**
@@ -336,7 +336,7 @@ function SkeletonSchedule() {
 }
 
 function AddedSectionsGrid() {
-    const isSharedSchedulePage = useIsSharedSchedulePage();
+    const isReadonlyView = useIsReadonlyView();
     const [courses, setCourses] = useState(getCourses());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
@@ -395,7 +395,7 @@ function AddedSectionsGrid() {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Box sx={{ display: 'flex', width: 'fit-content', position: 'absolute', zIndex: 2 }}>
-                {!isSharedSchedulePage && (
+                {!isReadonlyView && (
                     <>
                         <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
                         <ClearScheduleButton buttonSx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />

@@ -31,8 +31,8 @@ import { ClearScheduleButton } from '$components/buttons/Clear';
 import DownloadButton from '$components/buttons/Download';
 import ScreenshotButton from '$components/buttons/Screenshot';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import AppStore from '$stores/AppStore';
 
 function handleUndo(postHog?: PostHog) {
@@ -73,7 +73,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const isMobile = useIsMobile();
     const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
     const menuOpen = Boolean(menuAnchorEl);
-    const isSharedSchedulePage = useIsSharedSchedulePage();
+    const isReadonlyView = useIsReadonlyView();
 
     const postHog = usePostHog();
 
@@ -161,7 +161,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             color={showFinalsSchedule ? 'primary' : 'inherit'}
                             onClick={handleToggleFinals}
                             id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
-                            disabled={skeletonMode && !isSharedSchedulePage}
+                            disabled={skeletonMode && !isReadonlyView}
                             size="small"
                             sx={{
                                 border: '1px solid',
@@ -179,7 +179,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             onClick={handleToggleFinals}
                             size="small"
                             id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
-                            disabled={skeletonMode && !isSharedSchedulePage}
+                            disabled={skeletonMode && !isReadonlyView}
                         >
                             Finals
                         </Button>
@@ -294,7 +294,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                         </IconButton>
                     </Tooltip>
 
-                    {!isSharedSchedulePage && (
+                    {!isReadonlyView && (
                         <ClearScheduleButton
                             size="medium"
                             fontSize="small"
