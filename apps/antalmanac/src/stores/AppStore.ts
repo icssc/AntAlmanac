@@ -88,10 +88,6 @@ class AppStore extends EventEmitter {
         return this.schedule.getSchedules();
     }
 
-    getDefaultScheduleName() {
-        return this.schedule.getDefaultScheduleName();
-    }
-
     getScheduleId(scheduleIndex: number) {
         return this.schedule.getScheduleId(scheduleIndex);
     }

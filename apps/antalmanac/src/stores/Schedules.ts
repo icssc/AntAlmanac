@@ -11,9 +11,8 @@ import type {
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 
-import { getDefaultTerm } from '$lib/termData';
 import { WebSOC } from '$lib/websoc';
-import { getColorForNewSection } from '$stores/scheduleHelpers';
+import { createEmptySchedule, getColorForNewSection } from '$stores/scheduleHelpers';
 
 /**
  * Manages state of schedules. Only one instance is really needed for the app.
@@ -39,15 +38,7 @@ export class Schedules {
     constructor() {
         const scheduleNoteId = Math.random();
 
-        this.schedules = [
-            {
-                scheduleName: `${getDefaultTerm().shortName.replaceAll(' ', '-')}`,
-                courses: [],
-                customEvents: [],
-                scheduleNoteId: scheduleNoteId,
-                id: undefined,
-            },
-        ];
+        this.schedules = [createEmptySchedule(scheduleNoteId)];
         this.currentScheduleIndex = 0;
         this.previousStates = [];
         this.futureStates = [];
@@ -65,10 +56,6 @@ export class Schedules {
             nextScheduleName = `${newScheduleName}(${counter++})`;
         }
         return nextScheduleName;
-    }
-
-    getDefaultScheduleName() {
-        return getDefaultTerm().shortName.replaceAll(' ', '-');
     }
 
     /**

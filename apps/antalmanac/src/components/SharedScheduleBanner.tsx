@@ -1,11 +1,6 @@
 import { Add, Close } from '@mui/icons-material';
 import { Alert, Box, Button, IconButton, Stack, Typography } from '@mui/material';
-import type {
-    RepeatingCustomEvent,
-    ScheduleSaveState,
-    ShortCourse,
-    ShortCourseSchedule,
-} from '@packages/antalmanac-types';
+import type { ScheduleSaveState } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -13,10 +8,10 @@ import { importSharedScheduleById, openSnackbar } from '$actions/AppStoreActions
 import { useIsMobile } from '$hooks/useIsMobile';
 import trpc from '$lib/api/trpc';
 import { removeLocalStorageUnsavedActions } from '$lib/localStorage';
-import { getDefaultTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { createEmptyShortCourseSchedule } from '$stores/scheduleHelpers';
 
 interface Props {
     error: string | null;
@@ -125,13 +120,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                 await AppStore.loadSchedule(scheduleSaveState as ScheduleSaveState);
             }
         } else {
-            const defaultTerm = getDefaultTerm();
-            const emptyScheduleData = {
-                scheduleName: defaultTerm.shortName.replaceAll(' ', '-'),
-                courses: [] as ShortCourse[],
-                customEvents: [] as RepeatingCustomEvent[],
-                scheduleNote: '',
-            } as ShortCourseSchedule;
+            const emptyScheduleData = createEmptyShortCourseSchedule();
             const emptySchedule: ScheduleSaveState = {
                 schedules: [emptyScheduleData],
                 scheduleIndex: 0,
