@@ -58,7 +58,11 @@ export function usePeterPortalRoadmaps() {
             }
 
             const roadmap = roadmaps.find((r) => r.id.toString() === selectedRoadmapId);
-            if (!roadmap) return;
+            if (!roadmap) {
+                setUserTakenCourses(new Set());
+                setFilterTakenCourses(false);
+                return;
+            }
 
             try {
                 const flatCourses = flattenRoadmapCourses(roadmap);
