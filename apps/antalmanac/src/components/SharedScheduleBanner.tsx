@@ -180,6 +180,15 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
         }
     }, []);
 
+    const loadSessionSchedule = useCallback(async () => {
+        const sessionToken = useSessionStore.getState().session;
+        if (!sessionToken) {
+            throw new Error('No session token available');
+        }
+
+        await handleLoadSchedule(sessionToken);
+    }, [handleLoadSchedule]);
+
     const handleAddToMySchedules = useCallback(async () => {
         if (!scheduleId) {
             return;
@@ -189,12 +198,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
             beginLoadingSchedule();
 
             if (sessionIsValid) {
-                const sessionToken = useSessionStore.getState().session;
-                if (!sessionToken) {
-                    throw new Error('No session token available');
-                }
-
-                await handleLoadSchedule(sessionToken);
+                loadSessionSchedule();
                 await importSharedScheduleById(scheduleId);
             } else {
                 const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
@@ -221,26 +225,20 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
 
         setOpenLoadingSchedule(false);
         navigate('/');
-    }, [scheduleId, sessionIsValid, navigate, setOpenLoadingSchedule, handleLoadSchedule, beginLoadingSchedule]);
+    }, [scheduleId, sessionIsValid, navigate, setOpenLoadingSchedule, beginLoadingSchedule, loadSessionSchedule]);
 
     const handleGoHome = useCallback(async () => {
         try {
             beginLoadingSchedule();
 
-            const sessionToken = useSessionStore.getState().session;
-
-            if (!sessionToken) {
-                throw new Error('No session token available');
-            }
-
-            await handleLoadSchedule(sessionToken);
+            loadSessionSchedule();
         } catch (err) {
             console.error('Error loading user data:', err);
         }
 
         setOpenLoadingSchedule(false);
         navigate('/');
-    }, [navigate, setOpenLoadingSchedule, handleLoadSchedule, beginLoadingSchedule]);
+    }, [navigate, setOpenLoadingSchedule, beginLoadingSchedule, loadSessionSchedule]);
 
     if (error) {
         return (
