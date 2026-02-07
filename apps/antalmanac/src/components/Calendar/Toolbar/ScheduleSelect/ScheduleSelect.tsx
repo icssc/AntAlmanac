@@ -56,6 +56,7 @@ export function SelectSchedulePopover() {
     const isReadonlyView = useIsReadonlyView();
     const { openScheduleSelect, setOpenScheduleSelect } = scheduleComponentsToggleStore();
 
+    const [anchorElement, setAnchorElement] = useState(null);
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const [scheduleMapping, setScheduleMapping] = useState(getScheduleItems());
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
@@ -82,6 +83,10 @@ export function SelectSchedulePopover() {
     const handleScheduleIndexChange = useCallback(() => {
         setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
     }, []);
+
+    useEffect(() => {
+        setAnchorElement(anchorElementRef.current);
+    }, [anchorElementRef]);
 
     useEffect(() => {
         AppStore.on('addedCoursesChange', handleScheduleIndexChange);
@@ -160,7 +165,7 @@ export function SelectSchedulePopover() {
 
             <Popover
                 open={openScheduleSelect}
-                anchorEl={anchorElementRef.current}
+                anchorEl={anchorElement}
                 onClose={handleClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >
