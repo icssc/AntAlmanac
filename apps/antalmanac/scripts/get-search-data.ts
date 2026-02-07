@@ -4,8 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 
-import { queryGraphQL } from '../src/backend/lib/helpers';
-import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';
+import { parseSectionCodes, termData } from '../src/backend/lib/term-section-codes';
 
 import 'dotenv/config';
 
@@ -73,24 +72,6 @@ async function main() {
     }
     console.log(`Fetched ${deptMap.size} departments.`);
 
-    const QUERY_TEMPLATE = `{
-        websoc(query: {year: "$$YEAR$$", quarter: $$QUARTER$$}) {
-            schools {
-                departments {
-                    deptCode
-                    courses {
-                        courseTitle
-                        courseNumber
-                        sections {
-                            sectionCode
-                            sectionType
-                            sectionNum
-                        }
-                    }
-                }
-            }
-        }
-    }`;
     await mkdir(join(__dirname, '../src/generated/'), { recursive: true });
     await mkdir(join(__dirname, '../src/generated/terms/'), { recursive: true });
     await writeFile(
@@ -106,20 +87,31 @@ async function main() {
     `
     );
     let count = 0;
-    const termPromises = termData.map(async (term, index) => {
+    // Process terms sequentially to avoid memory exhaustion
+    for (let index = 0; index < termData.length; index++) {
+        const term = termData[index];
         try {
             const [year, quarter] = term.shortName.split(' ');
             const parsedTerm = `${quarter}_${year}`;
-            const query = QUERY_TEMPLATE.replace('$$YEAR$$', year).replace('$$QUARTER$$', quarter);
 
             // TODO (@kevin): remove delay once AAPI resolves OOM issues
             await new Promise((resolve) => setTimeout(resolve, DELAY_MS * index));
 
-            const res = await queryGraphQL<SectionCodesGraphQLResponse>(query);
-            if (!res) {
+            // Use REST API instead of GraphQL
+            const params = new URLSearchParams({ year, quarter });
+            const url = `https://anteaterapi.com/v2/rest/websoc?${params}`;
+            const response = await fetch(url, { headers });
+            const restApiResponse = await response.json();
+
+            if (year == '2026' && quarter == 'Spring') {
+                await writeFile(join(__dirname, 'test.json'), JSON.stringify(restApiResponse, null, 2));
+            }
+
+            if (!restApiResponse.ok || !restApiResponse.data) {
                 throw new Error(`Error fetching section codes for ${term.shortName}.`);
             }
-            const parsedSectionData = parseSectionCodes(res);
+
+            const parsedSectionData = parseSectionCodes(restApiResponse.data);
             console.log(
                 `Fetched ${Object.keys(parsedSectionData).length} section codes for ${
                     term.shortName
@@ -127,10 +119,10 @@ async function main() {
             );
 
             const fileName = join(__dirname, `../src/generated/terms/${parsedTerm}.json`);
-            await writeFile(fileName, JSON.stringify(parsedSectionData, null, 2));
-            return Object.keys(parsedSectionData).length;
+            await writeFile(fileName, JSON.stringify(parsedSectionData));
+            count += Object.keys(parsedSectionData).length;
         } catch (error) {
-            console.error(`ERROR in promise ${index} for term "${term.shortName}":`);
+            console.error(`ERROR processing term "${term.shortName}":`);
             console.error(`Term details:`, {
                 shortName: term.shortName,
                 year: term.shortName.split(' ')[0],
@@ -140,10 +132,7 @@ async function main() {
 
             throw error;
         }
-    });
-
-    const results = await Promise.all(termPromises);
-    count = results.reduce((acc, numKeys) => acc + numKeys, 0);
+    }
 
     console.log(`Fetched ${count} section codes for ${termData.length} terms from Anteater API.`);
     console.log('Cache generated.');
