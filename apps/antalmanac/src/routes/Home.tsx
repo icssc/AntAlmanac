@@ -15,11 +15,11 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import { BLUE } from '$src/globals';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
-function MobileHome() {
+export function MobileHome() {
     return <ScheduleManagement />;
 }
 
-function DesktopHome() {
+export function DesktopHome() {
     const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
 
     const scheduleManagementRef = useRef<HTMLDivElement>(null);
