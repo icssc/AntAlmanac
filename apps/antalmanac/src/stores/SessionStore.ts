@@ -57,18 +57,17 @@ export const useSessionStore = create<SessionState>((set) => {
                     set({ session: session, sessionIsValid: true });
 
                     try {
-                        const { users } = await trpc.userData.getUserAndAccountBySessionToken
-                            .query({ token: session });
+                        const { users } = await trpc.userData.getUserAndAccountBySessionToken.query({ token: session });
                         let googleId = await trpc.userData.getGoogleIdByUserId.query({
                             userId: users.id,
                         });
-                        if (googleId?.startsWith("google_")) {
-                            googleId = googleId.slice("google_".length);
+                        if (googleId?.startsWith('google_')) {
+                            googleId = googleId.slice('google_'.length);
                         }
                         set({ googleId });
                     } catch (e) {
-                        console.error("Failed to load googleId:", e);
-                        set({ googleId: null })
+                        console.error('Failed to load googleId:', e);
+                        set({ googleId: null });
                     }
                 }
             } else {
@@ -80,11 +79,10 @@ export const useSessionStore = create<SessionState>((set) => {
             if (currentSession) {
                 await trpc.auth.invalidateSession.mutate({ token: currentSession });
                 removeLocalStorageSessionId();
-                window.location.reload();
                 set({
                     session: null,
                     sessionIsValid: false,
-                    isGoogleUser: false, 
+                    isGoogleUser: false,
                     email: null,
                     googleId: null,
                     filterTakenCourses: false,

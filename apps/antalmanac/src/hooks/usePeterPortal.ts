@@ -51,16 +51,12 @@ export function usePeterPortalRoadmaps() {
 
     useEffect(() => {
         async function flattenCourses() {
-            if (!googleId || !selectedRoadmapId) {
+            if (!googleId || !selectedRoadmapId || roadmaps.length === 0) {
                 setUserTakenCourses(new Set());
                 setFilterTakenCourses(false);
                 return;
             }
-            if (roadmaps.length === 0) {
-                setUserTakenCourses(new Set());
-                setFilterTakenCourses(false);
-                return;
-            }
+
             const roadmap = roadmaps.find((r) => r.id.toString() === selectedRoadmapId);
             if (!roadmap) return;
 
