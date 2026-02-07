@@ -98,13 +98,12 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                 AppStore.skeletonMode = true;
                 AppStore.emit('skeletonModeChange');
                 setScheduleName(sharedSchedule.scheduleName);
-                setOpenLoadingSchedule(false);
                 setError(null);
             } catch (err) {
                 console.error('Error loading shared schedule:', err);
                 setError('Failed to load shared schedule. It may not exist or may have been deleted.');
-                setOpenLoadingSchedule(false);
             }
+            setOpenLoadingSchedule(false);
         };
 
         loadSharedSchedule();
@@ -146,14 +145,12 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                 };
                 await AppStore.loadSchedule(emptySchedule);
             }
-
-            setOpenLoadingSchedule(false);
-            navigate('/');
         } catch (err) {
             console.error('Error exiting shared schedule:', err);
-            setOpenLoadingSchedule(false);
-            navigate('/');
         }
+
+        setOpenLoadingSchedule(false);
+        navigate('/');
     }, [navigate, sessionIsValid, setOpenLoadingSchedule, beginLoadingSchedule]);
 
     const handleLoadSchedule = useCallback(async (sessionToken?: string) => {
@@ -215,17 +212,15 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                     await importSharedScheduleById(scheduleId);
                 }
             }
-
-            setOpenLoadingSchedule(false);
-            navigate('/');
         } catch (err) {
             console.error('Error adding schedule to account:', err);
-            setOpenLoadingSchedule(false);
             if (AppStore.getSkeletonMode()) {
                 AppStore.exitSkeletonMode();
             }
-            navigate('/');
         }
+
+        setOpenLoadingSchedule(false);
+        navigate('/');
     }, [scheduleId, sessionIsValid, navigate, setOpenLoadingSchedule, handleLoadSchedule, beginLoadingSchedule]);
 
     const handleGoHome = useCallback(async () => {
@@ -239,14 +234,12 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
             }
 
             await handleLoadSchedule(sessionToken);
-
-            setOpenLoadingSchedule(false);
-            navigate('/');
         } catch (err) {
             console.error('Error loading user data:', err);
-            setOpenLoadingSchedule(false);
-            navigate('/');
         }
+
+        setOpenLoadingSchedule(false);
+        navigate('/');
     }, [navigate, setOpenLoadingSchedule, handleLoadSchedule, beginLoadingSchedule]);
 
     if (error) {
