@@ -37,6 +37,14 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
 
     const isMobileScreen = useIsMobile();
 
+    const beginLoadingSchedule = useCallback(() => {
+        setOpenLoadingSchedule(true);
+
+        if (AppStore.getSkeletonMode()) {
+            AppStore.exitSkeletonMode();
+        }
+    }, [setOpenLoadingSchedule]);
+
     useEffect(() => {
         if (currentScheduleIdRef.current !== scheduleId) {
             hasAttemptedLoadRef.current = false;
@@ -58,13 +66,9 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
             hasAttemptedLoadRef.current = true;
 
             try {
-                setOpenLoadingSchedule(true);
+                beginLoadingSchedule();
 
                 removeLocalStorageUnsavedActions();
-
-                if (AppStore.getSkeletonMode()) {
-                    AppStore.exitSkeletonMode();
-                }
 
                 const sharedSchedule = await trpc.userData.getSharedSchedule.query({
                     scheduleId,
@@ -108,15 +112,11 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
         return () => {
             setOpenLoadingSchedule(false);
         };
-    }, [scheduleId, setOpenLoadingSchedule, setError]);
+    }, [scheduleId, setOpenLoadingSchedule, setError, beginLoadingSchedule]);
 
     const handleExitSharedSchedule = useCallback(async () => {
         try {
-            setOpenLoadingSchedule(true);
-
-            if (AppStore.getSkeletonMode()) {
-                AppStore.exitSkeletonMode();
-            }
+            beginLoadingSchedule();
 
             if (sessionIsValid) {
                 const sessionToken = useSessionStore.getState().session;
@@ -154,7 +154,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
             setOpenLoadingSchedule(false);
             navigate('/');
         }
-    }, [navigate, sessionIsValid, setOpenLoadingSchedule]);
+    }, [navigate, sessionIsValid, setOpenLoadingSchedule, beginLoadingSchedule]);
 
     const handleLoadSchedule = useCallback(async (sessionToken?: string) => {
         if (sessionToken) {
@@ -189,11 +189,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
         }
 
         try {
-            setOpenLoadingSchedule(true);
-
-            if (AppStore.getSkeletonMode()) {
-                AppStore.exitSkeletonMode();
-            }
+            beginLoadingSchedule();
 
             if (sessionIsValid) {
                 const sessionToken = useSessionStore.getState().session;
@@ -230,15 +226,11 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
             }
             navigate('/');
         }
-    }, [scheduleId, sessionIsValid, navigate, setOpenLoadingSchedule, handleLoadSchedule]);
+    }, [scheduleId, sessionIsValid, navigate, setOpenLoadingSchedule, handleLoadSchedule, beginLoadingSchedule]);
 
     const handleGoHome = useCallback(async () => {
         try {
-            setOpenLoadingSchedule(true);
-
-            if (AppStore.getSkeletonMode()) {
-                AppStore.exitSkeletonMode();
-            }
+            beginLoadingSchedule();
 
             const sessionToken = useSessionStore.getState().session;
 
@@ -255,7 +247,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
             setOpenLoadingSchedule(false);
             navigate('/');
         }
-    }, [navigate, setOpenLoadingSchedule, handleLoadSchedule]);
+    }, [navigate, setOpenLoadingSchedule, handleLoadSchedule, beginLoadingSchedule]);
 
     if (error) {
         return (
