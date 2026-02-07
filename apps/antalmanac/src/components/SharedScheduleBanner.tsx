@@ -1,15 +1,16 @@
 import { Add, Close } from '@mui/icons-material';
-import { useMediaQuery, useTheme, Stack, Alert, Button, Box, Typography, IconButton } from '@mui/material';
+import { Alert, Box, Button, IconButton, Stack, Typography } from '@mui/material';
 import type {
-    ScheduleSaveState,
-    ShortCourseSchedule,
-    ShortCourse,
     RepeatingCustomEvent,
+    ScheduleSaveState,
+    ShortCourse,
+    ShortCourseSchedule,
 } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { importSharedScheduleById, openSnackbar } from '$actions/AppStoreActions';
+import { useIsMobile } from '$hooks/useIsMobile';
 import trpc from '$lib/api/trpc';
 import { removeLocalStorageUnsavedActions } from '$lib/localStorage';
 import { getDefaultTerm } from '$lib/termData';
@@ -23,16 +24,18 @@ interface Props {
 }
 
 const SharedScheduleBanner = ({ error, setError }: Props) => {
-    const theme = useTheme();
     const navigate = useNavigate();
     const { scheduleId } = useParams<{ scheduleId: string }>();
-    const { sessionIsValid } = useSessionStore();
-    const { setOpenLoadingSchedule } = scheduleComponentsToggleStore();
+
+    const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
+    const setOpenLoadingSchedule = scheduleComponentsToggleStore((state) => state.setOpenLoadingSchedule);
+
     const [scheduleName, setScheduleName] = useState<string | null>(null);
+
     const hasAttemptedLoadRef = useRef(false);
     const currentScheduleIdRef = useRef<string | undefined>(scheduleId);
 
-    const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMobileScreen = useIsMobile();
 
     useEffect(() => {
         if (currentScheduleIdRef.current !== scheduleId) {
