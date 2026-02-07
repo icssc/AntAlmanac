@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import trpc from '$lib/api/trpc';
+import { flattenRoadmapCourses } from '$src/backend/lib/peterportal';
 import { useSessionStore } from '$stores/SessionStore';
 
 export function usePeterPortalRoadmaps() {
@@ -64,7 +65,7 @@ export function usePeterPortalRoadmaps() {
             if (!roadmap) return;
 
             try {
-                const flatCourses = await trpc.roadmap.flattenRoadmapCourses.query({ roadmap });
+                const flatCourses = flattenRoadmapCourses(roadmap);
                 const courseSet = new Set<string>(flatCourses);
                 setUserTakenCourses(courseSet);
                 setFilterTakenCourses(true);
