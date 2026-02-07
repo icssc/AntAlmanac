@@ -36,3 +36,16 @@ export const safeUnreachableCase = <T>(v: never, retVal?: T): T | undefined => {
     console.error(`Reached a (safe) unreachable case: ${castedV}`);
     return retVal;
 };
+
+/**
+ * Generates a unique schedule name by appending a counter if the name already exists in the provided set.
+ */
+export function getNextScheduleName(newScheduleName: string, existingNames: Set<string | undefined>) {
+    let nextScheduleName = newScheduleName;
+    let counter = 1;
+
+    while (existingNames.has(nextScheduleName)) {
+        nextScheduleName = `${newScheduleName}(${counter++})`;
+    }
+    return nextScheduleName;
+}

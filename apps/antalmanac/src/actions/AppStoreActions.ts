@@ -16,6 +16,7 @@ import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { getNextScheduleName } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -208,14 +209,8 @@ export const mergeShortCourseSchedules = (
 ) => {
     const existingScheduleNames = new Set(currentSchedules.map((s: ShortCourseSchedule) => s.scheduleName));
     const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
-        let scheduleName = `${importMessage}${schedule.scheduleName}`;
-        let counter = 1;
-        const baseName = scheduleName;
-
-        while (existingScheduleNames.has(scheduleName)) {
-            scheduleName = `${baseName}(${counter})`;
-            counter++;
-        }
+        const baseName = `${importMessage}${schedule.scheduleName}`;
+        const scheduleName = getNextScheduleName(baseName, existingScheduleNames);
 
         existingScheduleNames.add(scheduleName);
 

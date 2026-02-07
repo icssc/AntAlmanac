@@ -12,6 +12,7 @@ import type {
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 
 import { getDefaultTerm } from '$lib/termData';
+import { getNextScheduleName } from '$lib/utils';
 import { WebSOC } from '$lib/websoc';
 import { getColorForNewSection } from '$stores/scheduleHelpers';
 
@@ -58,13 +59,7 @@ export class Schedules {
     getNextScheduleName(scheduleIndex: number, newScheduleName: string) {
         const scheduleNames = this.getScheduleNames();
         scheduleNames.splice(scheduleIndex, 1);
-        let nextScheduleName = newScheduleName;
-        let counter = 1;
-
-        while (scheduleNames.includes(nextScheduleName)) {
-            nextScheduleName = `${newScheduleName}(${counter++})`;
-        }
-        return nextScheduleName;
+        return getNextScheduleName(newScheduleName, new Set(scheduleNames));
     }
 
     getDefaultScheduleName() {
