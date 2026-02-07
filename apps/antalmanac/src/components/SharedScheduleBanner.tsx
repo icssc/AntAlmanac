@@ -69,7 +69,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                     scheduleId,
                 });
 
-                const scheduleSaveState = {
+                const scheduleSaveState: ScheduleSaveState = {
                     schedules: [
                         {
                             id: sharedSchedule.id,
@@ -113,11 +113,13 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
             const userDataResponse = await trpc.userData.getUserDataWithSession.query({
                 refreshToken: sessionToken,
             });
-            const scheduleSaveState =
-                (userDataResponse as { userData?: ScheduleSaveState }).userData ?? userDataResponse;
 
-            if (scheduleSaveState) {
-                await AppStore.loadSchedule(scheduleSaveState as ScheduleSaveState);
+            if (userDataResponse) {
+                const scheduleSaveState: ScheduleSaveState = userDataResponse.userData;
+
+                if (scheduleSaveState) {
+                    await AppStore.loadSchedule(scheduleSaveState);
+                }
             }
         } else {
             const emptyScheduleData = createEmptyShortCourseSchedule();
