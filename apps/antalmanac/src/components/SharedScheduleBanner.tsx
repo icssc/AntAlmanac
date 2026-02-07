@@ -113,47 +113,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
         };
     }, [scheduleId, setOpenLoadingSchedule, setError, beginLoadingSchedule]);
 
-    const handleExitSharedSchedule = useCallback(async () => {
-        try {
-            beginLoadingSchedule();
-
-            if (sessionIsValid) {
-                const sessionToken = useSessionStore.getState().session;
-
-                if (sessionToken) {
-                    const userDataResponse = await trpc.userData.getUserDataWithSession.query({
-                        refreshToken: sessionToken,
-                    });
-                    const scheduleSaveState =
-                        (userDataResponse as { userData?: ScheduleSaveState }).userData ?? userDataResponse;
-
-                    if (scheduleSaveState) {
-                        await AppStore.loadSchedule(scheduleSaveState as ScheduleSaveState);
-                    }
-                }
-            } else {
-                const defaultTerm = getDefaultTerm();
-                const emptyScheduleData = {
-                    scheduleName: defaultTerm.shortName.replaceAll(' ', '-'),
-                    courses: [] as ShortCourse[],
-                    customEvents: [] as RepeatingCustomEvent[],
-                    scheduleNote: '',
-                } as ShortCourseSchedule;
-                const emptySchedule: ScheduleSaveState = {
-                    schedules: [emptyScheduleData],
-                    scheduleIndex: 0,
-                };
-                await AppStore.loadSchedule(emptySchedule);
-            }
-        } catch (err) {
-            console.error('Error exiting shared schedule:', err);
-        }
-
-        setOpenLoadingSchedule(false);
-        navigate('/');
-    }, [navigate, sessionIsValid, setOpenLoadingSchedule, beginLoadingSchedule]);
-
-    const handleLoadSchedule = useCallback(async (sessionToken?: string) => {
+    const handleLoadSchedule = useCallback(async (sessionToken: string | null) => {
         if (sessionToken) {
             const userDataResponse = await trpc.userData.getUserDataWithSession.query({
                 refreshToken: sessionToken,
@@ -188,6 +148,20 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
 
         await handleLoadSchedule(sessionToken);
     }, [handleLoadSchedule]);
+
+    const handleExitSharedSchedule = useCallback(async () => {
+        try {
+            beginLoadingSchedule();
+
+            const sessionToken = useSessionStore.getState().session;
+            await handleLoadSchedule(sessionIsValid ? sessionToken : null);
+        } catch (err) {
+            console.error('Error exiting shared schedule:', err);
+        }
+
+        setOpenLoadingSchedule(false);
+        navigate('/');
+    }, [navigate, setOpenLoadingSchedule, beginLoadingSchedule, handleLoadSchedule, sessionIsValid]);
 
     const handleAddToMySchedules = useCallback(async () => {
         if (!scheduleId) {
