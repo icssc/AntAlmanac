@@ -23,7 +23,7 @@ import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManag
 import trpc from '$lib/api/trpc';
 import { removeLocalStorageUnsavedActions } from '$lib/localStorage';
 import { getDefaultTerm } from '$lib/termData';
-import { BLUE } from '$src/globals';
+import { BLUE, SHARED_SCHEDULE_PREFIX } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
@@ -272,7 +272,7 @@ export function SharedSchedulePage() {
                 const currentSchedule = currentSchedules.schedules[currentSchedules.scheduleIndex];
 
                 if (currentSchedule && currentSchedule.scheduleName === sharedSchedule.scheduleName) {
-                    const prefixedName = `(shared)-${sharedSchedule.scheduleName}`;
+                    const prefixedName = `${SHARED_SCHEDULE_PREFIX}${sharedSchedule.scheduleName}`;
                     AppStore.renameSchedule(currentSchedules.scheduleIndex, prefixedName);
                     openSnackbar(
                         'success',

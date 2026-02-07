@@ -17,6 +17,7 @@ import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import { getNextScheduleName } from '$lib/utils';
+import { IMPORTED_SCHEDULE_PREFIX, SHARED_SCHEDULE_PREFIX } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -251,7 +252,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
     const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
 
     if (scheduleSaveState?.schedules) {
-        mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, '(import)-');
+        mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, IMPORTED_SCHEDULE_PREFIX);
         currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
 
         scheduleComponentsToggleStore.setState({ openImportDialog: false, openLoadingSchedule: true });
@@ -306,7 +307,7 @@ export const importSharedScheduleById = async (scheduleId: string) => {
 
     const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
 
-    mergeShortCourseSchedules(currentSchedules.schedules, [incomingSchedule], '(shared)-');
+    mergeShortCourseSchedules(currentSchedules.schedules, [incomingSchedule], SHARED_SCHEDULE_PREFIX);
     currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
 
     scheduleComponentsToggleStore.setState({ openLoadingSchedule: true });
