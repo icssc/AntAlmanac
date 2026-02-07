@@ -22,3 +22,6 @@ export type HourMinute = Extract<WebsocSection['finalExam'], { examStatus: 'SCHE
 export type WebsocSectionType = WebsocCourse['sections'][number]['sectionType'];
 
 export type WebsocSectionStatus = WebsocCourse['sections'][number]['status'];
+
+export type WebsocTerm =
+    paths['/v2/rest/websoc/terms']['get']['responses'][200]['content']['application/json']['data'][number];
