@@ -7,14 +7,6 @@ export type { Quarter, RoadmapContent, Roadmap, PeterPortalAPIResponse } from '@
 
 export const PETERPORTAL_API_URL = 'https://antalmanac.com/planner/api/trpc/external.roadmaps.getByGoogleID';
 
-export function getCurrentTerm(): { year: number; quarter: string } {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth() + 1;
-    const quarter = month <= 3 ? 'Winter' : month <= 6 ? 'Spring' : month <= 9 ? 'Summer' : 'Fall';
-    return { year, quarter };
-}
-
 export const quarterSchema = z.object({
     name: z.string(),
     courses: z.array(z.string()),
