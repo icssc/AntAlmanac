@@ -18,6 +18,7 @@ import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
 import { DaySelector } from '$components/Calendar/Toolbar/CustomEventDialog/DaySelector';
 import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog/ScheduleSelector';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -52,6 +53,8 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
 
     const postHog = usePostHog();
 
+    const isReadonlyView = useIsReadonlyView();
+
     const resetForm = () => {
         setStart(defaultCustomEventValues.start);
         setEnd(defaultCustomEventValues.end);
@@ -61,7 +64,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
         setScheduleIndices([]);
     };
 
-    const disabled = !(scheduleIndices.length && days.includes(true));
+    const disableSubmit = !(scheduleIndices.length && days.includes(true));
 
     const handleSubmit = () => {
         handleClose();
@@ -150,17 +153,19 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
 
     const isDark = useThemeStore.getState().isDark;
 
+    const disableButton = isReadonlyView || skeletonMode;
+
     return (
         <>
             {props.customEvent ? (
                 <Tooltip title="Edit">
-                    <IconButton onClick={handleOpen}>
+                    <IconButton onClick={handleOpen} disabled={disableButton}>
                         <Edit fontSize="small" />
                     </IconButton>
                 </Tooltip>
             ) : (
                 <Tooltip title="Add custom events">
-                    <IconButton onClick={handleOpen} size="medium" disabled={skeletonMode}>
+                    <IconButton onClick={handleOpen} size="medium" disabled={disableButton}>
                         <Add fontSize="small" />
                     </IconButton>
                 </Tooltip>
@@ -222,8 +227,8 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                     <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} variant="contained" color="primary" disabled={disabled}>
-                        {disabled ? 'Specify schedule and day' : props.customEvent ? 'Save Changes' : 'Add Event'}
+                    <Button onClick={handleSubmit} variant="contained" color="primary" disabled={disableSubmit}>
+                        {disableSubmit ? 'Specify schedule and day' : props.customEvent ? 'Save Changes' : 'Add Event'}
                     </Button>
                 </DialogActions>
             </Dialog>
