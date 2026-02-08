@@ -1,5 +1,5 @@
 import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
-import { AACourse } from '@packages/antalmanac-types';
+import { AACourse, ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -238,7 +238,7 @@ function ScheduleNoteBox() {
 }
 
 function SkeletonSchedule() {
-    const getScheduleData = () => {
+    const getScheduleData = (): ShortCourseSchedule => {
         const skeletonSchedule = AppStore.getCurrentSkeletonSchedule();
         if (!skeletonSchedule.courses || skeletonSchedule.courses.length === 0) {
             const regularCourses = AppStore.schedule.getCurrentCourses();
@@ -252,6 +252,7 @@ function SkeletonSchedule() {
                     })),
                     customEvents: AppStore.schedule.getCurrentCustomEvents(),
                     scheduleNote: AppStore.getCurrentScheduleNote(),
+                    id: undefined,
                 };
             }
         }
