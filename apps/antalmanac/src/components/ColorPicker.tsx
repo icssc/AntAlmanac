@@ -85,15 +85,17 @@ const ColorPicker = memo(function ColorPicker({
     return (
         <>
             <Tooltip title="Change Color">
-                <IconButton
-                    sx={{ color: currColor, padding: '8px' }}
-                    onClick={(e) => {
-                        handleClick(e, postHog);
-                    }}
-                    disabled={isReadonlyView}
-                >
-                    <ColorLens fontSize="small" />
-                </IconButton>
+                <span>
+                    <IconButton
+                        sx={{ color: currColor, padding: '8px' }}
+                        onClick={(e) => {
+                            handleClick(e, postHog);
+                        }}
+                        disabled={isReadonlyView}
+                    >
+                        <ColorLens fontSize="small" />
+                    </IconButton>
+                </span>
             </Tooltip>
 
             <Popover

@@ -34,14 +34,16 @@ export function ClearScheduleButton({ skeletonMode, buttonSx, size, fontSize, di
 
     return (
         <Tooltip title="Clear schedule">
-            <IconButton
-                sx={buttonSx}
-                onClick={handleClearSchedule(postHog)}
-                size={size}
-                disabled={skeletonMode || disabled}
-            >
-                <DeleteOutline fontSize={fontSize} />
-            </IconButton>
+            <span>
+                <IconButton
+                    sx={buttonSx}
+                    onClick={handleClearSchedule(postHog)}
+                    size={size}
+                    disabled={skeletonMode || disabled}
+                >
+                    <DeleteOutline fontSize={fontSize} />
+                </IconButton>
+            </span>
         </Tooltip>
     );
 }

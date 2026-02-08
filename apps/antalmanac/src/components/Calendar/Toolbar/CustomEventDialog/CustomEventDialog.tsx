@@ -159,15 +159,19 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
         <>
             {props.customEvent ? (
                 <Tooltip title="Edit">
-                    <IconButton onClick={handleOpen} disabled={disableButton}>
-                        <Edit fontSize="small" />
-                    </IconButton>
+                    <span>
+                        <IconButton onClick={handleOpen} disabled={disableButton}>
+                            <Edit fontSize="small" />
+                        </IconButton>
+                    </span>
                 </Tooltip>
             ) : (
                 <Tooltip title="Add custom events">
-                    <IconButton onClick={handleOpen} size="medium" disabled={disableButton}>
-                        <Add fontSize="small" />
-                    </IconButton>
+                    <span>
+                        <IconButton onClick={handleOpen} size="medium" disabled={disableButton}>
+                            <Add fontSize="small" />
+                        </IconButton>
+                    </span>
                 </Tooltip>
             )}
             <Dialog open={open} onClose={handleClose} maxWidth={'xs'}>

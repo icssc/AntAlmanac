@@ -86,15 +86,17 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                     <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
 
                     <Tooltip title="Delete">
-                        <IconButton
-                            onClick={() => {
-                                deleteCustomEvent(customEvent.customEventID, [AppStore.getCurrentScheduleIndex()]);
-                            }}
-                            size="large"
-                            disabled={isReadonlyView}
-                        >
-                            <Delete fontSize="small" />
-                        </IconButton>
+                        <span>
+                            <IconButton
+                                onClick={() => {
+                                    deleteCustomEvent(customEvent.customEventID, [AppStore.getCurrentScheduleIndex()]);
+                                }}
+                                size="large"
+                                disabled={isReadonlyView}
+                            >
+                                <Delete fontSize="small" />
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 </CardActions>
             )}

@@ -284,14 +284,18 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                     <DownloadButton />
 
                     <Tooltip title="Undo last action">
-                        <IconButton onClick={handleUndo(postHog)} size="medium" disabled={isReadonlyView}>
-                            <UndoIcon fontSize="small" />
-                        </IconButton>
+                        <span>
+                            <IconButton onClick={handleUndo(postHog)} size="medium" disabled={isReadonlyView}>
+                                <UndoIcon fontSize="small" />
+                            </IconButton>
+                        </span>
                     </Tooltip>
                     <Tooltip title="Redo last action">
-                        <IconButton onClick={handleRedo(postHog)} size="medium" disabled={isReadonlyView}>
-                            <RedoIcon fontSize="small" />
-                        </IconButton>
+                        <span>
+                            <IconButton onClick={handleRedo(postHog)} size="medium" disabled={isReadonlyView}>
+                                <RedoIcon fontSize="small" />
+                            </IconButton>
+                        </span>
                     </Tooltip>
 
                     <ClearScheduleButton
