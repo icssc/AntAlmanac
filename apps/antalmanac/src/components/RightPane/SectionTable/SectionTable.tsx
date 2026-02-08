@@ -5,7 +5,6 @@ import { useMemo } from 'react';
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
-import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
 import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/EnrollmentHistoryPopup';
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
@@ -202,11 +201,7 @@ function SectionTable(props: SectionTableProps) {
                                             padding: 0,
                                         }}
                                     >
-                                        {label === 'Enrollment' && formattedTime ? (
-                                            <EnrollmentColumnHeader label={label} formattedTime={formattedTime} />
-                                        ) : (
-                                            label
-                                        )}
+                                        {label}
                                     </TableCell>
                                 ))}
                         </TableRow>
@@ -218,6 +213,7 @@ function SectionTable(props: SectionTableProps) {
                         allowHighlight={allowHighlight}
                         scheduleNames={scheduleNames}
                         analyticsCategory={analyticsCategory}
+                        formattedTime={formattedTime}
                     />
                 </Table>
             </TableContainer>
