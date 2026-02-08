@@ -20,6 +20,7 @@ runs:
 
     - name: Generate termData
       run: pnpm --filter antalmanac get-data
+      shell: bash
       env:
         ANTEATER_API_KEY: ${{ inputs.api-key }}
 
