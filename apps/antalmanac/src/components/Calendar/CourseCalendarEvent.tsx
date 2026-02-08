@@ -9,6 +9,7 @@ import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import ColorPicker from '$components/ColorPicker';
 import { MapLink } from '$components/buttons/MapLink';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
@@ -93,6 +94,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
     const paperRef = useRef<HTMLDivElement>(null);
     const quickSearch = useQuickSearch();
     const { isMilitaryTime } = useTimeFormatStore();
+    const isReadonlyView = useIsReadonlyView();
 
     const postHog = usePostHog();
 
@@ -164,6 +166,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                                     action: analyticsEnum.calendar.actions.DELETE_COURSE,
                                 });
                             }}
+                            disabled={isReadonlyView}
                         >
                             <Delete fontSize="inherit" />
                         </IconButton>
@@ -264,6 +267,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
                                 });
                             }}
+                            disabled={isReadonlyView}
                         >
                             <Delete fontSize="small" />
                         </IconButton>

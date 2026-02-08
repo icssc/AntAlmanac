@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { addSchedule } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
+import { getDefaultScheduleName } from '$stores/scheduleHelpers';
 
 /**
  * Dialog with a text field to add a schedule.
@@ -13,7 +14,7 @@ function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
     const isDark = useThemeStore((store) => store.isDark);
 
     const [name, setName] = useState(
-        AppStore.getNextScheduleName(AppStore.getScheduleNames().length, AppStore.getDefaultScheduleName())
+        AppStore.getNextScheduleName(AppStore.getScheduleNames().length, getDefaultScheduleName())
     );
 
     const handleCancel = () => {
@@ -48,7 +49,7 @@ function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
     };
 
     const handleScheduleNamesChange = useCallback(() => {
-        setName(AppStore.getNextScheduleName(AppStore.getScheduleNames().length, AppStore.getDefaultScheduleName()));
+        setName(AppStore.getNextScheduleName(AppStore.getScheduleNames().length, getDefaultScheduleName()));
     }, []);
 
     useEffect(() => {

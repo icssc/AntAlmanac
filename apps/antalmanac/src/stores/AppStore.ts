@@ -84,8 +84,23 @@ class AppStore extends EventEmitter {
         return this.schedule.getNextScheduleName(scheduleIndex, newScheduleName);
     }
 
-    getDefaultScheduleName() {
-        return this.schedule.getDefaultScheduleName();
+    getSchedules() {
+        return this.schedule.getSchedules();
+    }
+
+    setSchedules(scheduleIds: (string | undefined)[] | undefined) {
+        if (Array.isArray(scheduleIds)) {
+            const schedules = this.getSchedules();
+            const numSchedules = Math.min(schedules.length, scheduleIds.length);
+            for (let i = 0; i < numSchedules; i++) {
+                schedules[i].id = scheduleIds[i];
+            }
+            this.emit('scheduleNamesChange');
+        }
+    }
+
+    getScheduleId(scheduleIndex: number) {
+        return this.schedule.getScheduleId(scheduleIndex);
     }
 
     getCurrentScheduleIndex() {
@@ -181,6 +196,12 @@ class AppStore extends EventEmitter {
 
     getSkeletonMode() {
         return this.skeletonMode;
+    }
+
+    exitSkeletonMode() {
+        this.schedule.setSkeletonSchedules([]);
+        this.skeletonMode = false;
+        this.emit('skeletonModeChange');
     }
 
     hasUnsavedChanges() {
@@ -423,6 +444,7 @@ class AppStore extends EventEmitter {
 
     loadSkeletonSchedule(savedSchedule: ScheduleSaveState) {
         this.schedule.setSkeletonSchedules(savedSchedule.schedules);
+        this.schedule.setCurrentScheduleIndex(savedSchedule.scheduleIndex);
         this.skeletonMode = true;
 
         this.emit('addedCoursesChange');

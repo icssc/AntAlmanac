@@ -8,7 +8,9 @@ import { SortableList } from '$components/Calendar/Toolbar/ScheduleSelect/drag-a
 import { AddScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton';
 import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/DeleteScheduleButton';
 import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
+import { ShareScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/ShareScheduleButton';
 import { CopyScheduleButton } from '$components/buttons/Copy';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -51,8 +53,10 @@ function createScheduleSelector(index: number, postHog?: PostHog) {
  */
 export function SelectSchedulePopover() {
     const theme = useTheme();
+    const isReadonlyView = useIsReadonlyView();
     const { openScheduleSelect, setOpenScheduleSelect } = scheduleComponentsToggleStore();
 
+    const [anchorElement, setAnchorElement] = useState(null);
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const [scheduleMapping, setScheduleMapping] = useState(getScheduleItems());
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
@@ -79,6 +83,10 @@ export function SelectSchedulePopover() {
     const handleScheduleIndexChange = useCallback(() => {
         setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
     }, []);
+
+    useEffect(() => {
+        setAnchorElement(anchorElementRef.current);
+    }, [anchorElementRef]);
 
     useEffect(() => {
         AppStore.on('addedCoursesChange', handleScheduleIndexChange);
@@ -116,11 +124,14 @@ export function SelectSchedulePopover() {
     }, []);
 
     const scheduleMappingToUse = skeletonMode ? skeletonScheduleMapping : scheduleMapping;
+    const displayName = isReadonlyView
+        ? AppStore.getScheduleNames()[currentScheduleIndex] || scheduleMappingToUse[currentScheduleIndex]?.name
+        : scheduleMappingToUse[currentScheduleIndex]?.name;
 
     return (
         <Box>
             <Tooltip
-                title={scheduleMappingToUse[currentScheduleIndex]?.name}
+                title={displayName || ''}
                 enterDelay={200}
                 slotProps={{
                     popper: {
@@ -146,7 +157,7 @@ export function SelectSchedulePopover() {
                     sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
                 >
                     <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
-                        {scheduleMappingToUse[currentScheduleIndex]?.name || null}
+                        {displayName || null}
                     </Typography>
                     <ArrowDropDownIcon />
                 </Button>
@@ -154,7 +165,7 @@ export function SelectSchedulePopover() {
 
             <Popover
                 open={openScheduleSelect}
-                anchorEl={anchorElementRef.current}
+                anchorEl={anchorElement}
                 onClose={handleClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >
@@ -225,6 +236,7 @@ export function SelectSchedulePopover() {
                                         <Box display="flex" alignItems="center" gap={0.5}>
                                             <CopyScheduleButton index={index} disabled={skeletonMode} />
                                             <RenameScheduleButton index={index} disabled={skeletonMode} />
+                                            <ShareScheduleButton index={index} disabled={skeletonMode} />
                                             <DeleteScheduleButton index={index} disabled={skeletonMode} />
                                         </Box>
                                     </Box>

@@ -31,6 +31,7 @@ export function convertLegacySchedule(legacyUserData: LegacyUserData) {
             courses: [],
             customEvents: [],
             scheduleNote: '',
+            id: undefined,
         });
     }
     for (const course of legacyUserData.addedCourses) {
