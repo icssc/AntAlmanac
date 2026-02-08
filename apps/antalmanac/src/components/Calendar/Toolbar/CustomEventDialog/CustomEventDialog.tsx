@@ -186,6 +186,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             margin="dense"
                             onChange={handleEventNameChange}
                             variant="outlined"
+                            color="secondary"
                             InputLabelProps={{ variant: 'outlined' }}
                         />
                     </FormControl>
@@ -198,6 +199,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             fullWidth
                             variant="outlined"
                             InputLabelProps={{ variant: 'outlined' }}
+                            color="secondary"
                         />
                         <TextField
                             onChange={handleEndTimeChange}
@@ -207,6 +209,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             fullWidth
                             variant="outlined"
                             InputLabelProps={{ variant: 'outlined' }}
+                            color="secondary"
                         />
                     </FormControl>
                     <DaySelector onSelectDay={handleDayChange} days={days} />

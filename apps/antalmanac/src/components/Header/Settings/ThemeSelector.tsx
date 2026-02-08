@@ -2,7 +2,7 @@ import { LightMode, SettingsBrightness, DarkMode } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 
-import { BLUE } from '$src/globals';
+import { BLUE, LIGHT_BLUE } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
@@ -21,6 +21,7 @@ export function ThemeSelector() {
 
     const { forceUpdate } = useCoursePaneStore();
     const postHog = usePostHog();
+    const accentColor = isDark ? LIGHT_BLUE : BLUE;
 
     const handleThemeChange = (value: 'light' | 'dark' | 'system') => {
         forceUpdate();
@@ -60,15 +61,15 @@ export function ThemeSelector() {
                                 cursor: 'pointer',
                                 fontWeight: 'bold',
                                 fontSize: '1.1rem',
-                                backgroundColor: isSelected ? BLUE : isDark ? '#333333' : '#f8f9fa',
-                                color: isSelected ? '#fff' : BLUE,
+                                backgroundColor: isSelected ? accentColor : isDark ? '#333333' : '#f8f9fa',
+                                color: isSelected ? '#fff' : accentColor,
                                 borderRight: index < 2 ? `1px solid ${isDark ? '#8886' : '#d3d4d5'}` : 'none',
                                 borderTopLeftRadius: tab.value === 'light' ? 4 : 0,
                                 borderBottomLeftRadius: tab.value === 'light' ? 4 : 0,
                                 borderTopRightRadius: tab.value === 'dark' ? 4 : 0,
                                 borderBottomRightRadius: tab.value === 'dark' ? 4 : 0,
                                 '&:hover': {
-                                    backgroundColor: isSelected ? BLUE : isDark ? '#424649' : '#d3d4d5',
+                                    backgroundColor: isSelected ? accentColor : isDark ? '#424649' : '#d3d4d5',
                                 },
                             }}
                         >

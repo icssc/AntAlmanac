@@ -49,7 +49,6 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{
-                    color: 'primary.main',
                     display: 'block',
                     marginTop: 1,
                 }}
@@ -72,7 +71,6 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                             }}
                             sx={{
                                 background: 'none',
-                                color: 'primary.main',
                                 border: 0,
                                 textDecoration: 'underline',
                             }}
