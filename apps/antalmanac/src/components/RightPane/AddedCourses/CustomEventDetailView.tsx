@@ -76,24 +76,12 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
 
             {!skeletonMode && (
                 <CardActions disableSpacing={true} style={{ padding: 0 }}>
-                    <Box
-                        sx={{
-                            cursor: 'pointer',
-                            '& > div': {
-                                margin: '0px 8px 0px 4px',
-                                height: '20px',
-                                width: '20px',
-                                borderRadius: '50%',
-                            },
-                        }}
-                    >
-                        <ColorPicker
-                            color={customEvent.color as string}
-                            isCustomEvent={true}
-                            customEventID={customEvent.customEventID}
-                            analyticsCategory={analyticsEnum.addedClasses}
-                        />
-                    </Box>
+                    <ColorPicker
+                        color={customEvent.color as string}
+                        isCustomEvent={true}
+                        customEventID={customEvent.customEventID}
+                        analyticsCategory={analyticsEnum.addedClasses}
+                    />
 
                     <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
 
