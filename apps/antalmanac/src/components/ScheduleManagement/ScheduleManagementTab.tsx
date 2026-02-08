@@ -55,7 +55,7 @@ export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps
                 label={tab.label}
                 onClick={handleClick}
                 value={value}
-                disabled={true}
+                disabled={isSearchTab}
             />
         );
 
