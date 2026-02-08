@@ -23,7 +23,7 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - name: Generate termData
-              uses: ./.github/actions/cache-generated-termdata
+              uses: ./.github/actions/cache-generated-data
               with:
                 api-key: ${{ secrets.ANTEATER_API_KEY }}
 
