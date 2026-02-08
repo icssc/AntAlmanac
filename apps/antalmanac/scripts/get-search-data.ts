@@ -105,7 +105,7 @@ export const departments: Array<DepartmentSearchResult & { id: string }> = ${JSO
                     console.log(`Skipping ${term.shortName}, cache already exists.`);
                     return 0;
                 } else {
-                    console.log('Updating current term data...');
+                    console.log(`Updating data for current term (${term.shortName})...`);
                 }
             } catch {
                 console.log(`${term.shortName} doesn't exist in cache, rebuilding.`);
