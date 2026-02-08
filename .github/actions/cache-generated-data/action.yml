@@ -12,7 +12,7 @@ runs:
     - name: Restore termData cache
       uses: actions/cache/restore@v5
       with:
-        path: apps/antalmanac/generated
+        path: apps/antalmanac/src/generated
         key: termData-cache-${{ github.ref_name }}
         restore-keys: |
           termData-cache-${{ github.ref_name }}
@@ -27,5 +27,5 @@ runs:
     - name: Save termData cache
       uses: actions/cache/save@v5
       with:
-        path: apps/antalmanac/generated
+        path: apps/antalmanac/src/generated
         key: termData-cache-${{ github.ref_name }}
