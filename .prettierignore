@@ -29,3 +29,5 @@ public/
 .env
 .env.*
 !.env.sample
+
+apps/antalmanac/src/generated
