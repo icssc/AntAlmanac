@@ -334,7 +334,10 @@ export const importSharedScheduleById = async (scheduleId: string) => {
                 },
             });
         } catch (err) {
-            console.error('Failed to auto-save after importing shared schedule:', err);
+            openSnackbar(
+                'error',
+                '`Failed to load schedules. If this continues to happen, please submit a feedback form.`'
+            );
         }
     }
 
