@@ -6,6 +6,7 @@ import { memo, useCallback, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
 
 import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
@@ -35,6 +36,8 @@ const ColorPicker = memo(function ColorPicker({
     const [currColor, setCurrColor] = useState(color);
 
     const postHog = usePostHog();
+
+    const isReadonlyView = useIsReadonlyView();
 
     const updateColor = useCallback(
         (newColor: string) => {
@@ -83,10 +86,11 @@ const ColorPicker = memo(function ColorPicker({
         <>
             <Tooltip title="Change Color">
                 <IconButton
-                    style={{ color: currColor, padding: 8 }}
+                    sx={{ color: currColor, padding: '8px' }}
                     onClick={(e) => {
                         handleClick(e, postHog);
                     }}
+                    disabled={isReadonlyView}
                 >
                     <ColorLens fontSize="small" />
                 </IconButton>
