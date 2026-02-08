@@ -23,9 +23,9 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             - name: Generate termData
-              env:
-                  ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
-              run: pnpm --filter antalmanac get-data
+              uses: ./.github/actions/cache-generated-termdata
+              with:
+                api-key: ${{ secrets.ANTEATER_API_KEY }}
 
             - name: ESLint
               run: pnpm --filter antalmanac lint

@@ -46,6 +46,11 @@ jobs:
                   DB_URL: ${{ secrets.PROD_DB_URL }}
               run: pnpm db:migrate
 
+            - name: Generate termData
+              uses: ./.github/actions/cache-generated-termdata
+              with:
+                api-key: ${{ secrets.ANTEATER_API_KEY }}
+
             # TODO (@xgraceyan): Remove this stage once SST fixes deployments
             - name: Setup Pulumi
               uses: pulumi/actions@v5
