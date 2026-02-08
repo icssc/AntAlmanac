@@ -103,10 +103,6 @@ async function main() {
             const response = await fetch(url, { headers });
             const restApiResponse = await response.json();
 
-            if (year == '2026' && quarter == 'Spring') {
-                await writeFile(join(__dirname, 'test.json'), JSON.stringify(restApiResponse, null, 2));
-            }
-
             if (!restApiResponse.ok || !restApiResponse.data) {
                 throw new Error(`Error fetching section codes for ${term.shortName}.`);
             }
