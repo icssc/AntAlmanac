@@ -12,7 +12,7 @@ interface ShareScheduleButtonProps {
 
 export function ShareScheduleButton({ index, disabled }: ShareScheduleButtonProps) {
     const [copied, setCopied] = useState(false);
-    const { sessionIsValid } = useSessionStore();
+    const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
 
     const handleCopy = useCallback(async () => {
         const scheduleId = AppStore.getScheduleId(index);
