@@ -207,7 +207,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                         <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
 
                         <Tooltip title="More options">
-                            <IconButton onClick={handleMenuOpen} disabled={isReadonlyView}>
+                            <IconButton onClick={handleMenuOpen}>
                                 <MoreVertIcon fontSize="small" />
                             </IconButton>
                         </Tooltip>
@@ -238,7 +238,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                                 <ListItemText>Download Calendar</ListItemText>
                             </MenuItem>
 
-                            <MenuItem onClick={handleClearSchedule}>
+                            <MenuItem onClick={handleClearSchedule} disabled={isReadonlyView}>
                                 <ListItemIcon>
                                     <DeleteOutline fontSize="small" />
                                 </ListItemIcon>
@@ -284,14 +284,18 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                     <DownloadButton />
 
                     <Tooltip title="Undo last action">
-                        <IconButton onClick={handleUndo(postHog)} size="medium" disabled={isReadonlyView}>
-                            <UndoIcon fontSize="small" />
-                        </IconButton>
+                        <span>
+                            <IconButton onClick={handleUndo(postHog)} size="medium" disabled={isReadonlyView}>
+                                <UndoIcon fontSize="small" />
+                            </IconButton>
+                        </span>
                     </Tooltip>
                     <Tooltip title="Redo last action">
-                        <IconButton onClick={handleRedo(postHog)} size="medium" disabled={isReadonlyView}>
-                            <RedoIcon fontSize="small" />
-                        </IconButton>
+                        <span>
+                            <IconButton onClick={handleRedo(postHog)} size="medium" disabled={isReadonlyView}>
+                                <RedoIcon fontSize="small" />
+                            </IconButton>
+                        </span>
                     </Tooltip>
 
                     <ClearScheduleButton
