@@ -161,7 +161,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             color={showFinalsSchedule ? 'primary' : 'inherit'}
                             onClick={handleToggleFinals}
                             id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
-                            disabled={skeletonMode && !isReadonlyView}
+                            disabled={skeletonMode}
                             size="small"
                             sx={{
                                 border: '1px solid',
@@ -179,7 +179,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             onClick={handleToggleFinals}
                             size="small"
                             id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
-                            disabled={skeletonMode && !isReadonlyView}
+                            disabled={skeletonMode}
                         >
                             Finals
                         </Button>
@@ -297,8 +297,9 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                     <ClearScheduleButton
                         size="medium"
                         fontSize="small"
-                        skeletonMode={isReadonlyView}
+                        skeletonMode={skeletonMode}
                         analyticsCategory={analyticsEnum.calendar}
+                        disabled={isReadonlyView}
                     />
 
                     <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />

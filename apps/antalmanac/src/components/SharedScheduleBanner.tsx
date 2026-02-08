@@ -91,8 +91,6 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                 if (AppStore.getCurrentScheduleIndex() !== 0) {
                     AppStore.changeCurrentSchedule(0);
                 }
-                AppStore.skeletonMode = true;
-                AppStore.emit('skeletonModeChange');
                 setScheduleName(sharedSchedule.scheduleName);
                 setError(null);
             } catch (err) {
