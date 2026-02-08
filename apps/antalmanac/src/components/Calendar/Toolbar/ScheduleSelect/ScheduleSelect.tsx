@@ -128,6 +128,8 @@ export function SelectSchedulePopover() {
         ? AppStore.getScheduleNames()[currentScheduleIndex] || scheduleMappingToUse[currentScheduleIndex]?.name
         : scheduleMappingToUse[currentScheduleIndex]?.name;
 
+    const disableActionButtons = skeletonMode || isReadonlyView;
+
     return (
         <Box>
             <Tooltip
@@ -234,10 +236,10 @@ export function SelectSchedulePopover() {
                                         </Box>
 
                                         <Box display="flex" alignItems="center" gap={0.5}>
-                                            <CopyScheduleButton index={index} disabled={skeletonMode} />
-                                            <RenameScheduleButton index={index} disabled={skeletonMode} />
-                                            <ShareScheduleButton index={index} disabled={skeletonMode} />
-                                            <DeleteScheduleButton index={index} disabled={skeletonMode} />
+                                            <CopyScheduleButton index={index} disabled={disableActionButtons} />
+                                            <RenameScheduleButton index={index} disabled={disableActionButtons} />
+                                            <ShareScheduleButton index={index} disabled={disableActionButtons} />
+                                            <DeleteScheduleButton index={index} disabled={disableActionButtons} />
                                         </Box>
                                     </Box>
                                 </SortableList.Item>
@@ -245,7 +247,7 @@ export function SelectSchedulePopover() {
                         }}
                     />
                     <Box marginY={1} />
-                    <AddScheduleButton disabled={skeletonMode} />
+                    <AddScheduleButton disabled={disableActionButtons} />
                 </Box>
             </Popover>
         </Box>
