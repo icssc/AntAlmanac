@@ -161,7 +161,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             color={showFinalsSchedule ? 'primary' : 'inherit'}
                             onClick={handleToggleFinals}
                             id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
-                            disabled={skeletonMode && !isReadonlyView}
+                            disabled={skeletonMode}
                             size="small"
                             sx={{
                                 border: '1px solid',
@@ -179,7 +179,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             onClick={handleToggleFinals}
                             size="small"
                             id={showFinalsSchedule ? 'finals-button-pressed' : 'finals-button'}
-                            disabled={skeletonMode && !isReadonlyView}
+                            disabled={skeletonMode}
                         >
                             Finals
                         </Button>
@@ -198,16 +198,16 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             >
                 <Box display="flex" flexDirection="row" gap={0.5}>
                     <Box display="flex" flexWrap="nowrap" alignItems="center" gap={0.5}>
-                        <IconButton onClick={handleUndo(postHog)} disabled={skeletonMode}>
+                        <IconButton onClick={handleUndo(postHog)} disabled={isReadonlyView}>
                             <UndoIcon fontSize="small" />
                         </IconButton>
-                        <IconButton onClick={handleRedo(postHog)} disabled={skeletonMode}>
+                        <IconButton onClick={handleRedo(postHog)} disabled={isReadonlyView}>
                             <RedoIcon fontSize="small" />
                         </IconButton>
                         <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
 
                         <Tooltip title="More options">
-                            <IconButton onClick={handleMenuOpen} disabled={skeletonMode}>
+                            <IconButton onClick={handleMenuOpen} disabled={isReadonlyView}>
                                 <MoreVertIcon fontSize="small" />
                             </IconButton>
                         </Tooltip>
@@ -284,24 +284,23 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                     <DownloadButton />
 
                     <Tooltip title="Undo last action">
-                        <IconButton onClick={handleUndo(postHog)} size="medium" disabled={skeletonMode}>
+                        <IconButton onClick={handleUndo(postHog)} size="medium" disabled={isReadonlyView}>
                             <UndoIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="Redo last action">
-                        <IconButton onClick={handleRedo(postHog)} size="medium" disabled={skeletonMode}>
+                        <IconButton onClick={handleRedo(postHog)} size="medium" disabled={isReadonlyView}>
                             <RedoIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
 
-                    {!isReadonlyView && (
-                        <ClearScheduleButton
-                            size="medium"
-                            fontSize="small"
-                            skeletonMode={skeletonMode}
-                            analyticsCategory={analyticsEnum.calendar}
-                        />
-                    )}
+                    <ClearScheduleButton
+                        size="medium"
+                        fontSize="small"
+                        skeletonMode={skeletonMode}
+                        analyticsCategory={analyticsEnum.calendar}
+                        disabled={isReadonlyView}
+                    />
 
                     <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
                 </Box>

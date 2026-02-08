@@ -339,6 +339,8 @@ export const importSharedScheduleById = async (scheduleId: string) => {
                 '`Failed to load schedules. If this continues to happen, please submit a feedback form.`'
             );
         }
+    } else {
+        openSnackbar('warning', 'Schedule added to current session. Sign in to save permanently.');
     }
 
     openSnackbar('success', `Shared schedule "${incomingSchedule.scheduleName}" added to your account!`);
