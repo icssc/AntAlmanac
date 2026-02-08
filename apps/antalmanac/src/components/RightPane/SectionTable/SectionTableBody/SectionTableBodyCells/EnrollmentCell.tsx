@@ -45,7 +45,7 @@ export const EnrollmentCell = ({
             <Box>
                 <Box>
                     {showTooltip ? (
-                        <Tooltip title={<Typography fontSize={'small'}>Last updated at {formattedTime}</Typography>}>
+                        <Tooltip title={<Typography fontSize={'0.85rem'}>Last updated at {formattedTime}</Typography>}>
                             {enrollmentText}
                         </Tooltip>
                     ) : (
