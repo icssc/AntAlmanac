@@ -1,4 +1,5 @@
 import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText, Tooltip, Typography } from '@mui/material';
+import type { Roadmap } from '@packages/antalmanac-types';
 import { format, parse } from 'date-fns';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 
@@ -20,6 +21,41 @@ type InputEvent =
     | SelectChangeEvent<string | string[]>
     | Date
     | null;
+
+type RoadmapMenuItemsProps = {
+    isLoggedIn: boolean;
+    roadmaps: Roadmap[];
+};
+
+function getRoadmapMenuItems({ isLoggedIn, roadmaps }: RoadmapMenuItemsProps) {
+    if (!isLoggedIn) {
+        return [
+            <MenuItem key="signin" value="" disabled>
+                Sign In to filter
+            </MenuItem>,
+        ];
+    }
+
+    if (roadmaps.length === 0) {
+        return [
+            <MenuItem key="create" value="" onClick={() => window.open('https://antalmanac.com/planner', '_blank')}>
+                Create a roadmap!
+            </MenuItem>,
+        ];
+    }
+
+    return [
+        <MenuItem key="all" value="">
+            {' '}
+            Include all courses{' '}
+        </MenuItem>,
+        ...roadmaps.map((roadmap) => (
+            <MenuItem key={roadmap.id} value={roadmap.id.toString()}>
+                {roadmap.name}
+            </MenuItem>
+        )),
+    ];
+}
 
 export function AdvancedSearchTextFields() {
     const [instructor, setInstructor] = useState(() => RightPaneStore.getFormData().instructor);
@@ -352,30 +388,7 @@ export function AdvancedSearchTextFields() {
                         },
                     }}
                 >
-                    {!isLoggedIn && ( // not logged in
-                        <MenuItem value="" disabled>
-                            Sign In to filter
-                        </MenuItem>
-                    )}
-
-                    {isLoggedIn &&
-                        roadmaps.length === 0 && ( // logged in but no roadmaps
-                            <MenuItem value="" onClick={() => window.open('https://peterportal.org', '_blank')}>
-                                Create a roadmap!
-                            </MenuItem>
-                        )}
-
-                    {isLoggedIn &&
-                        roadmaps.length > 0 && ( // default
-                            <MenuItem value="">Include all courses</MenuItem>
-                        )}
-
-                    {isLoggedIn && // filter by roadmaps
-                        roadmaps.map((roadmap) => (
-                            <MenuItem key={roadmap.id} value={roadmap.id.toString()}>
-                                {roadmap.name}
-                            </MenuItem>
-                        ))}
+                    {getRoadmapMenuItems({ isLoggedIn, roadmaps })}
                 </LabeledSelect>
 
                 <LabeledSelect
