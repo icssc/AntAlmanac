@@ -10,8 +10,8 @@ import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelec
 import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
 import { ShareScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/ShareScheduleButton';
 import { CopyScheduleButton } from '$components/buttons/Copy';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 
@@ -53,9 +53,10 @@ function createScheduleSelector(index: number, postHog?: PostHog) {
  */
 export function SelectSchedulePopover() {
     const theme = useTheme();
-    const isSharedSchedulePage = useIsSharedSchedulePage();
+    const isReadonlyView = useIsReadonlyView();
     const { openScheduleSelect, setOpenScheduleSelect } = scheduleComponentsToggleStore();
 
+    const [anchorElement, setAnchorElement] = useState(null);
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const [scheduleMapping, setScheduleMapping] = useState(getScheduleItems());
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
@@ -82,6 +83,10 @@ export function SelectSchedulePopover() {
     const handleScheduleIndexChange = useCallback(() => {
         setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
     }, []);
+
+    useEffect(() => {
+        setAnchorElement(anchorElementRef.current);
+    }, [anchorElementRef]);
 
     useEffect(() => {
         AppStore.on('addedCoursesChange', handleScheduleIndexChange);
@@ -119,7 +124,7 @@ export function SelectSchedulePopover() {
     }, []);
 
     const scheduleMappingToUse = skeletonMode ? skeletonScheduleMapping : scheduleMapping;
-    const displayName = isSharedSchedulePage
+    const displayName = isReadonlyView
         ? AppStore.getScheduleNames()[currentScheduleIndex] || scheduleMappingToUse[currentScheduleIndex]?.name
         : scheduleMappingToUse[currentScheduleIndex]?.name;
 
@@ -160,7 +165,7 @@ export function SelectSchedulePopover() {
 
             <Popover
                 open={openScheduleSelect}
-                anchorEl={anchorElementRef.current}
+                anchorEl={anchorElement}
                 onClose={handleClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >

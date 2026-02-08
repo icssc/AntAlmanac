@@ -5,8 +5,8 @@ import { useParams } from 'react-router-dom';
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import { getLocalStorageSessionId } from '$lib/localStorage';
-import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import AppStore from '$stores/AppStore';
 import { paramsAreInURL } from '$stores/CoursePaneStore';
 import { useTabStore } from '$stores/TabStore';
@@ -20,7 +20,7 @@ export function ScheduleManagement() {
     const { tab } = useParams();
     const isMobile = useIsMobile();
 
-    const isSharedSchedulePage = useIsSharedSchedulePage();
+    const isReadonlyView = useIsReadonlyView();
 
     // Tab index mapped to the last known scrollTop.
     const [positions, setPositions] = useState<Record<number, number>>({});
@@ -53,7 +53,7 @@ export function ScheduleManagement() {
             return;
         }
 
-        if (isSharedSchedulePage) {
+        if (isReadonlyView) {
             setActiveTab('added');
             return;
         }
@@ -85,7 +85,7 @@ export function ScheduleManagement() {
         setActiveTab('search');
         // NB: We disable exhaustive deps here as `tab` is a dependency, but we only want this effect to run on mount
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isMobile, setActiveTab, isSharedSchedulePage]);
+    }, [isMobile, setActiveTab, isReadonlyView]);
 
     // Restore scroll position if it has been previously saved.
     useEffect(() => {

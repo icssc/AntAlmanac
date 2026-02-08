@@ -9,11 +9,11 @@ import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import ColorPicker from '$components/ColorPicker';
 import { MapLink } from '$components/buttons/MapLink';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import locationIds from '$lib/locations/locations';
-import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
 import { useQuickSearch } from '$src/hooks/useQuickSearch';
 import AppStore from '$stores/AppStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
@@ -94,7 +94,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
     const paperRef = useRef<HTMLDivElement>(null);
     const quickSearch = useQuickSearch();
     const { isMilitaryTime } = useTimeFormatStore();
-    const isSharedSchedulePage = useIsSharedSchedulePage();
+    const isReadonlyView = useIsReadonlyView();
 
     const postHog = usePostHog();
 
@@ -154,7 +154,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                             <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{`${title} ${sectionType}`}</span>
                         </Button>
                     </Tooltip>
-                    {!isSharedSchedulePage && (
+                    {!isReadonlyView && (
                         <Tooltip title="Delete">
                             <IconButton
                                 size="small"
@@ -268,7 +268,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
                                 });
                             }}
-                            disabled={isSharedSchedulePage}
+                            disabled={isReadonlyView}
                         >
                             <Delete fontSize="small" />
                         </IconButton>

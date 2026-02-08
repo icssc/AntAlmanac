@@ -1,9 +1,9 @@
-import { Tab, Tooltip } from '@mui/material';
+import { SxProps, Tab, Tooltip } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 import { ScheduleManagementTabInfo } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { useIsSharedSchedulePage } from '$src/hooks/useIsSharedSchedulePage';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import { useTabStore } from '$stores/TabStore';
 
 interface ScheduleManagementTabProps {
@@ -13,46 +13,49 @@ interface ScheduleManagementTabProps {
 
 export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps) => {
     const { setActiveTabValue } = useTabStore();
-    const isSharedSchedulePage = useIsSharedSchedulePage();
+    const isReadonlyView = useIsReadonlyView();
     const isSearchTab = value === 1;
     const isMobile = useIsMobile();
 
     const handleClick = (e: React.MouseEvent) => {
-        if (isSharedSchedulePage && isSearchTab) {
+        if (isReadonlyView && isSearchTab) {
             e.preventDefault();
             return;
         }
         setActiveTabValue(value);
-        if (isSharedSchedulePage) {
+        if (isReadonlyView) {
             e.preventDefault();
         }
     };
 
-    if (isSharedSchedulePage) {
+    const tabIconPosition = isMobile ? 'top' : 'start';
+    const tabStyles: SxProps = {
+        ...(isMobile
+            ? {
+                  minHeight: 'unset',
+                  minWidth: '25%',
+                  height: 56,
+              }
+            : {
+                  minHeight: 'auto',
+                  height: '44px',
+                  padding: 3,
+                  minWidth: '33%',
+              }),
+        display: isMobile || !tab.mobile ? 'flex' : 'none',
+    };
+
+    if (isReadonlyView) {
         const tabComponent = (
             <Tab
                 id={tab.id}
                 icon={tab.icon}
-                iconPosition={isMobile ? 'top' : 'start'}
-                sx={{
-                    ...(isMobile
-                        ? {
-                              minHeight: 'unset',
-                              minWidth: '25%',
-                              height: 56,
-                          }
-                        : {
-                              minHeight: 'auto',
-                              height: '44px',
-                              padding: 3,
-                              minWidth: '33%',
-                          }),
-                    display: isMobile || !tab.mobile ? 'flex' : 'none',
-                }}
+                iconPosition={tabIconPosition}
+                sx={tabStyles}
                 label={tab.label}
                 onClick={handleClick}
                 value={value}
-                disabled={isSearchTab}
+                disabled={true}
             />
         );
 
@@ -90,22 +93,8 @@ export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps
             component={Link}
             to={tab.href}
             icon={tab.icon}
-            iconPosition={isMobile ? 'top' : 'start'}
-            sx={{
-                ...(isMobile
-                    ? {
-                          minHeight: 'unset',
-                          minWidth: '25%',
-                          height: 56,
-                      }
-                    : {
-                          minHeight: 'auto',
-                          height: '44px',
-                          padding: 3,
-                          minWidth: '33%',
-                      }),
-                display: isMobile || !tab.mobile ? 'flex' : 'none',
-            }}
+            iconPosition={tabIconPosition}
+            sx={tabStyles}
             label={tab.label}
             onClick={handleClick}
             value={value}
