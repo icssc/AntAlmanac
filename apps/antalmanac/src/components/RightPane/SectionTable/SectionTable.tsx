@@ -13,8 +13,8 @@ import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTabl
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
-import { useTabStore } from '$stores/TabStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
+import { useTabStore } from '$stores/TabStore';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -69,7 +69,7 @@ const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
 function SectionTable(props: SectionTableProps) {
     const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory, missingSections = [] } = props;
-    const { isMilitaryTime } = useTimeFormatStore()
+    const { isMilitaryTime } = useTimeFormatStore();
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
@@ -85,10 +85,10 @@ function SectionTable(props: SectionTableProps) {
         return isNaN(date.getTime())
             ? null
             : date.toLocaleTimeString(undefined, {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: !isMilitaryTime,
-            });
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: !isMilitaryTime,
+              });
     }, [courseDetails.updatedAt, isMilitaryTime]);
 
     /**
@@ -202,7 +202,11 @@ function SectionTable(props: SectionTableProps) {
                                             padding: 0,
                                         }}
                                     >
-                                        {label === 'Enrollment' && formattedTime ? <EnrollmentColumnHeader label={label} formattedTime={formattedTime}/> : label}
+                                        {label === 'Enrollment' && formattedTime ? (
+                                            <EnrollmentColumnHeader label={label} formattedTime={formattedTime} />
+                                        ) : (
+                                            label
+                                        )}
                                     </TableCell>
                                 ))}
                         </TableRow>
