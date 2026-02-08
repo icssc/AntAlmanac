@@ -281,7 +281,7 @@ function SkeletonSchedule() {
     }, []);
 
     const sectionsByTerm: [string, string[]][] = useMemo(() => {
-        const courses = skeletonSchedule?.courses || [];
+        const courses = skeletonSchedule.courses;
         const result = courses.reduce(
             (accumulated, course) => {
                 accumulated[course.term] ??= [];
@@ -292,7 +292,7 @@ function SkeletonSchedule() {
         );
 
         return Object.entries(result);
-    }, [skeletonSchedule?.courses]);
+    }, [skeletonSchedule.courses]);
 
     return (
         <Box display="flex" flexDirection="column" gap={1}>
