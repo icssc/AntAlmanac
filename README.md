@@ -226,6 +226,7 @@ The following environment variables are required for deployment and should be co
 -   `OIDC_CLIENT_ID` - OAuth client ID for Google authentication
 -   `OIDC_ISSUER_URL` - OAuth issuer URL
 -   `GOOGLE_REDIRECT_URI` - OAuth redirect URI (automatically set based on stage)
+-   `ENABLE_AANTS_CRON` - (Optional) Set to `true` to enable AANTS Cron for staging instances. 
 
 # Troubleshooting
 
