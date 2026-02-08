@@ -207,7 +207,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                         <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
 
                         <Tooltip title="More options">
-                            <IconButton onClick={handleMenuOpen} disabled={isReadonlyView}>
+                            <IconButton onClick={handleMenuOpen}>
                                 <MoreVertIcon fontSize="small" />
                             </IconButton>
                         </Tooltip>
@@ -238,7 +238,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                                 <ListItemText>Download Calendar</ListItemText>
                             </MenuItem>
 
-                            <MenuItem onClick={handleClearSchedule}>
+                            <MenuItem onClick={handleClearSchedule} disabled={isReadonlyView}>
                                 <ListItemIcon>
                                     <DeleteOutline fontSize="small" />
                                 </ListItemIcon>
