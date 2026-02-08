@@ -16,6 +16,8 @@ import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { getNextScheduleName } from '$lib/utils';
+import { IMPORTED_SCHEDULE_PREFIX, SHARED_SCHEDULE_PREFIX } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -137,13 +139,7 @@ export const saveSchedule = async (
                     },
                 });
 
-                if (result && 'scheduleIds' in result && Array.isArray(result.scheduleIds)) {
-                    const schedules = AppStore.getSchedules();
-                    for (let i = 0; i < Math.min(schedules.length, result.scheduleIds.length); i++) {
-                        schedules[i].id = result.scheduleIds[i];
-                    }
-                    AppStore.emit('scheduleNamesChange');
-                }
+                AppStore.setSchedules(result?.scheduleIds);
 
                 if (useSessionStore.getState().sessionIsValid) {
                     openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
@@ -194,13 +190,7 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
             },
         });
 
-        if (result && 'scheduleIds' in result && Array.isArray(result.scheduleIds)) {
-            const schedules = AppStore.getSchedules();
-            for (let i = 0; i < Math.min(schedules.length, result.scheduleIds.length); i++) {
-                schedules[i].id = result.scheduleIds[i];
-            }
-            AppStore.emit('scheduleNamesChange');
-        }
+        AppStore.setSchedules(result?.scheduleIds);
 
         deleteTempSaveData();
         AppStore.saveSchedule();
@@ -220,14 +210,8 @@ export const mergeShortCourseSchedules = (
 ) => {
     const existingScheduleNames = new Set(currentSchedules.map((s: ShortCourseSchedule) => s.scheduleName));
     const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
-        let scheduleName = `${importMessage}${schedule.scheduleName}`;
-        let counter = 1;
-        const baseName = scheduleName;
-
-        while (existingScheduleNames.has(scheduleName)) {
-            scheduleName = `${baseName}(${counter})`;
-            counter++;
-        }
+        const baseName = `${importMessage}${schedule.scheduleName}`;
+        const scheduleName = getNextScheduleName(baseName, existingScheduleNames);
 
         existingScheduleNames.add(scheduleName);
 
@@ -268,7 +252,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
     const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
 
     if (scheduleSaveState?.schedules) {
-        mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, '(import)-');
+        mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, IMPORTED_SCHEDULE_PREFIX);
         currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
 
         scheduleComponentsToggleStore.setState({ openImportDialog: false, openLoadingSchedule: true });
@@ -323,7 +307,7 @@ export const importSharedScheduleById = async (scheduleId: string) => {
 
     const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
 
-    mergeShortCourseSchedules(currentSchedules.schedules, [incomingSchedule], '(shared)-');
+    mergeShortCourseSchedules(currentSchedules.schedules, [incomingSchedule], SHARED_SCHEDULE_PREFIX);
     currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
 
     scheduleComponentsToggleStore.setState({ openLoadingSchedule: true });
@@ -350,7 +334,10 @@ export const importSharedScheduleById = async (scheduleId: string) => {
                 },
             });
         } catch (err) {
-            console.error('Failed to auto-save after importing shared schedule:', err);
+            openSnackbar(
+                'error',
+                '`Failed to load schedules. If this continues to happen, please submit a feedback form.`'
+            );
         }
     }
 

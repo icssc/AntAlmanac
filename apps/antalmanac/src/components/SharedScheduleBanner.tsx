@@ -8,6 +8,7 @@ import { importSharedScheduleById, openSnackbar } from '$actions/AppStoreActions
 import { useIsMobile } from '$hooks/useIsMobile';
 import trpc from '$lib/api/trpc';
 import { removeLocalStorageUnsavedActions } from '$lib/localStorage';
+import { SHARED_SCHEDULE_PREFIX } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -171,7 +172,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                 const currentSchedule = currentSchedules.schedules[currentSchedules.scheduleIndex];
 
                 if (currentSchedule && currentSchedule.scheduleName === sharedSchedule.scheduleName) {
-                    const prefixedName = `(shared)-${sharedSchedule.scheduleName}`;
+                    const prefixedName = `${SHARED_SCHEDULE_PREFIX}${sharedSchedule.scheduleName}`;
                     AppStore.renameSchedule(currentSchedules.scheduleIndex, prefixedName);
                     openSnackbar(
                         'success',
