@@ -1,5 +1,7 @@
 import { AccessTimeFilled } from '@mui/icons-material';
-import { Box, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Tooltip, Typography } from '@mui/material';
+
+import { useIsMobile } from '$hooks/useIsMobile';
 
 interface EnrollmentColumnHeaderProps {
     label: string;
@@ -7,8 +9,7 @@ interface EnrollmentColumnHeaderProps {
 }
 
 export function EnrollmentColumnHeader(props: EnrollmentColumnHeaderProps) {
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMobile = useIsMobile();
 
     return (
         <Box display="flex" alignItems="center">

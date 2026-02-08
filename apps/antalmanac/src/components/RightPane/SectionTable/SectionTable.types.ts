@@ -13,4 +13,5 @@ export interface SectionTableProps {
     scheduleNames: string[];
     analyticsCategory: AnalyticsCategory;
     updatedAt?: string;
+    missingSections?: string[];
 }

@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
+import { CustomEventId, RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
 
 import { autoSaveSchedule } from '$actions/AppStoreActions';
 import trpc from '$lib/api/trpc';
@@ -16,8 +16,9 @@ import { useSessionStore } from '$stores/SessionStore';
 
 const MAX_UNSAVED_ACTIONS = 1000;
 
-export interface UndoAction {
-    type: 'undoAction';
+export interface UndoRedoAction {
+    type: 'undoRedoAction';
+    direction: 'undo' | 'redo';
 }
 
 export interface AddCourseAction {
@@ -41,7 +42,7 @@ export interface AddCustomEventAction {
 
 export interface DeleteCustomEventAction {
     type: 'deleteCustomEvent';
-    customEventId: number;
+    customEventId: CustomEventId;
     scheduleIndices: number[];
 }
 
@@ -53,7 +54,7 @@ export interface EditCustomEventAction {
 
 export interface ChangeCustomEventColorAction {
     type: 'changeCustomEventColor';
-    customEventId: number;
+    customEventId: CustomEventId;
     newColor: string;
 }
 
@@ -110,7 +111,7 @@ export type ActionType =
     | CopyScheduleAction
     | ReorderScheduleAction
     | ChangeCourseColorAction
-    | UndoAction;
+    | UndoRedoAction;
 
 function parseUnsavedActionsString(unsavedActionsString: string): ActionType[] {
     try {
@@ -137,15 +138,13 @@ class ActionTypesStore extends EventEmitter {
         }
 
         if (autoSave) {
-            const providerId = await trpc.userData.getUserAndAccountBySessionToken
-                .query({
-                    token: sessionStore.session,
-                })
-                .then((res) => res.accounts.providerAccountId);
+            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
+                token: sessionStore.session,
+            });
 
-            if (providerId) {
+            if (accounts.providerAccountId) {
                 this.emit('autoSaveStart');
-                await autoSaveSchedule(providerId);
+                await autoSaveSchedule(accounts.providerAccountId, { userInfo: users });
                 AppStore.unsavedChanges = false;
                 this.emit('autoSaveEnd');
             }
@@ -217,6 +216,8 @@ class ActionTypesStore extends EventEmitter {
                     break;
                 case 'reorderSchedule':
                     AppStore.schedule.reorderSchedule(action.from, action.to);
+                    break;
+                case 'undoRedoAction':
                     break;
                 default:
                     break;

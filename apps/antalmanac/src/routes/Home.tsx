@@ -1,4 +1,4 @@
-import { useMediaQuery, useTheme, Stack } from '@mui/material';
+import { Stack } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
 import { useCallback, useEffect, useRef } from 'react';
@@ -11,16 +11,12 @@ import InstallPWABanner from '$components/InstallPWABanner';
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { BLUE } from '$src/globals';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 
 function MobileHome() {
-    return (
-        <Stack component="main" height="100dvh">
-            <Header />
-            <ScheduleManagement />
-        </Stack>
-    );
+    return <ScheduleManagement />;
 }
 
 function DesktopHome() {
@@ -49,52 +45,47 @@ function DesktopHome() {
     }, [handleDrag]);
 
     return (
-        <>
-            <Stack height="100dvh">
-                <Header />
-
-                <Split
-                    sizes={[45, 55]}
-                    minSize={400}
-                    expandToMin={false}
-                    gutterSize={10}
-                    gutterAlign="center"
-                    snapOffset={30}
-                    dragInterval={1}
-                    direction="horizontal"
-                    cursor="col-resize"
-                    style={{ display: 'flex', flexGrow: 1, marginTop: 4 }}
-                    gutterStyle={() => ({
-                        backgroundColor: BLUE,
-                        width: '10px',
-                        // gutter contents are slightly offset to the right, this centers the content
-                        paddingRight: '1px',
-                    })}
-                    onDrag={handleDrag}
-                >
-                    <Stack direction="column">
-                        <ScheduleCalendar />
-                    </Stack>
-                    <Stack direction="column" ref={scheduleManagementRef}>
-                        <ScheduleManagement />
-                    </Stack>
-                </Split>
+        <Split
+            sizes={[45, 55]}
+            minSize={400}
+            expandToMin={false}
+            gutterSize={10}
+            gutterAlign="center"
+            snapOffset={0}
+            dragInterval={1}
+            direction="horizontal"
+            cursor="col-resize"
+            style={{ display: 'flex', flexGrow: 1, marginTop: 4 }}
+            gutterStyle={() => ({
+                backgroundColor: BLUE,
+                width: '10px',
+                // gutter contents are slightly offset to the right, this centers the content
+                paddingRight: '1px',
+            })}
+            onDrag={handleDrag}
+        >
+            <Stack direction="column">
+                <ScheduleCalendar />
             </Stack>
-        </>
+            <Stack direction="column" ref={scheduleManagementRef}>
+                <ScheduleManagement />
+            </Stack>
+        </Split>
     );
 }
 
 export default function Home() {
-    const theme = useTheme();
-
-    const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMobile = useIsMobile();
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <PatchNotes />
             <InstallPWABanner />
 
-            {isMobileScreen ? <MobileHome /> : <DesktopHome />}
+            <Stack component="main" height="calc(100svh + env(safe-area-inset-top))">
+                <Header />
+                {isMobile ? <MobileHome /> : <DesktopHome />}
+            </Stack>
 
             <NotificationSnackbar />
             <HelpMenu />

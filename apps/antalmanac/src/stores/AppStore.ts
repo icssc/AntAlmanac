@@ -1,6 +1,11 @@
 import { EventEmitter } from 'events';
 
-import type { ScheduleCourse, ScheduleSaveState, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import type {
+    ScheduleCourse,
+    ScheduleSaveState,
+    RepeatingCustomEvent,
+    CustomEventId,
+} from '@packages/antalmanac-types';
 import { SnackbarOrigin, VariantType } from 'notistack';
 
 import actionTypesStore from '$actions/ActionTypesStore';
@@ -17,12 +22,13 @@ import type {
     DeleteScheduleAction,
     ReorderScheduleAction,
     ChangeCourseColorAction,
-    UndoAction,
+    UndoRedoAction,
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
+import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 
 class AppStore extends EventEmitter {
     schedule: Schedules;
@@ -121,6 +127,7 @@ class AppStore extends EventEmitter {
         };
         actionTypesStore.autoSaveSchedule(action);
         this.emit('addedCoursesChange');
+
         return addedCourse;
     }
 
@@ -218,19 +225,41 @@ class AppStore extends EventEmitter {
         this.emit('addedCoursesChange');
     }
 
-    undoAction() {
-        this.schedule.revertState();
-        this.unsavedChanges = true;
-        const action: UndoAction = {
-            type: 'undoAction',
-        };
-        actionTypesStore.autoSaveSchedule(action);
+    private emitHistoryRelatedChanges() {
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
         this.emit('colorChange', false);
         this.emit('scheduleNamesChange');
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNotesChange');
+    }
+
+    undoAction() {
+        const reverted = this.schedule.revertState();
+        if (!reverted) {
+            return;
+        }
+        this.unsavedChanges = true;
+        const action: UndoRedoAction = {
+            type: 'undoRedoAction',
+            direction: 'undo',
+        };
+        actionTypesStore.autoSaveSchedule(action);
+        this.emitHistoryRelatedChanges();
+    }
+
+    redoAction() {
+        const advanced = this.schedule.advanceState();
+        if (!advanced) {
+            return;
+        }
+        this.unsavedChanges = true;
+        const action: UndoRedoAction = {
+            type: 'undoRedoAction',
+            direction: 'redo',
+        };
+        actionTypesStore.autoSaveSchedule(action);
+        this.emitHistoryRelatedChanges();
     }
 
     addCustomEvent(customEvent: RepeatingCustomEvent, scheduleIndices: number[]) {
@@ -257,7 +286,7 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    deleteCustomEvent(customEventId: number, scheduleIndices: number[]) {
+    deleteCustomEvent(customEventId: CustomEventId, scheduleIndices: number[]) {
         this.schedule.deleteCustomEvent(customEventId, scheduleIndices);
         this.unsavedChanges = true;
         const action: DeleteCustomEventAction = {
@@ -269,7 +298,7 @@ class AppStore extends EventEmitter {
         this.emit('customEventsChange');
     }
 
-    changeCustomEventColor(customEventId: number, newColor: string) {
+    changeCustomEventColor(customEventId: CustomEventId, newColor: string) {
         this.schedule.changeCustomEventColor(customEventId, newColor);
         this.unsavedChanges = true;
         const action: ChangeCustomEventColorAction = {
@@ -355,6 +384,7 @@ class AppStore extends EventEmitter {
     }
 
     async loadSchedule(savedSchedule: ScheduleSaveState) {
+        const hasDataChanged = JSON.stringify(this.schedule.getScheduleAsSaveState()) === JSON.stringify(savedSchedule);
         const loadSuccess = await this.loadScheduleFromSaveState(savedSchedule);
         if (!loadSuccess) {
             return false;
@@ -375,6 +405,12 @@ class AppStore extends EventEmitter {
         }
 
         this.schedule.clearPreviousStates();
+
+        if (hasDataChanged) {
+            deleteTempSaveData();
+        } else {
+            loadTempSaveData(savedSchedule.schedules.length);
+        }
 
         this.emit('addedCoursesChange');
         this.emit('customEventsChange');
@@ -403,6 +439,7 @@ class AppStore extends EventEmitter {
 
     changeCurrentSchedule(newScheduleIndex: number) {
         this.schedule.setCurrentScheduleIndex(newScheduleIndex);
+        setTempSaveData({ currentScheduleIndex: newScheduleIndex });
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNotesChange');
     }
@@ -456,7 +493,7 @@ class AppStore extends EventEmitter {
     ) {
         this.snackbarVariant = variant;
         this.snackbarMessage = message;
-        this.snackbarDuration = duration ? duration : this.snackbarDuration;
+        this.snackbarDuration = duration != null ? duration * 1000 : 3000;
         this.snackbarPosition = position ? position : this.snackbarPosition;
         this.snackbarStyle = style ? style : this.snackbarStyle;
         this.emit('openSnackbar');
