@@ -9,9 +9,9 @@ import { TutorialButton } from '$components/buttons/TutorialButton';
 export function About() {
     return (
         <Stack direction="row" sx={{ justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
-            <DonateButton />
-            <AboutButton />
             <FeedbackButton />
+            <AboutButton />
+            <DonateButton />
             <PatchNotesButton />
             <TutorialButton />
         </Stack>
