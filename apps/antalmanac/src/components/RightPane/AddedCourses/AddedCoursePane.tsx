@@ -220,20 +220,19 @@ function ScheduleNoteBox() {
                 label={disabled ? 'Editing is currently disabled' : 'Click here to start typing!'}
                 onChange={handleNoteChange}
                 value={scheduleNote}
-                inputProps={{
-                    maxLength: NOTE_MAX_LEN,
-                    style: { cursor: disabled ? 'not-allowed' : 'text' },
-                }}
-                InputLabelProps={{
-                    variant: 'filled',
-                }}
-                InputProps={{ disableUnderline: true }}
                 fullWidth
                 multiline
                 disabled={disabled}
-                sx={{
-                    '& .MuiInputBase-root': {
-                        cursor: disabled ? 'not-allowed' : 'text',
+                slotProps={{
+                    htmlInput: {
+                        maxLength: NOTE_MAX_LEN,
+                        sx: { cursor: disabled ? 'not-allowed' : 'text' },
+                    },
+                    inputLabel: {
+                        variant: 'filled',
+                    },
+                    input: {
+                        disableUnderline: true,
                     },
                 }}
             />
