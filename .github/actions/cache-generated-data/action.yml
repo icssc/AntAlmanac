@@ -13,10 +13,10 @@ runs:
       uses: actions/cache/restore@v5
       with:
         path: apps/antalmanac/src/generated
-        key: termData-cache-${{ github.ref_name }}
+        key: termData-cache-${{ github.ref_name }}-
         restore-keys: |
-          termData-cache-${{ github.ref_name }}
-          termData-cache-main
+          termData-cache-${{ github.ref_name }}-
+          termData-cache-main-
 
     - name: Generate termData
       run: pnpm --filter antalmanac get-data
@@ -28,4 +28,4 @@ runs:
       uses: actions/cache/save@v5
       with:
         path: apps/antalmanac/src/generated
-        key: termData-cache-${{ github.ref_name }}
+        key: termData-cache-${{ github.ref_name }}-${{ hashFiles('apps/antalmanac/src/generated/**/*') }}
