@@ -1,11 +1,13 @@
 import { Add, Close } from '@mui/icons-material';
 import { Alert, Box, Button, IconButton, Stack, Typography } from '@mui/material';
 import type { ScheduleSaveState } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { importSharedScheduleById, openSnackbar } from '$actions/AppStoreActions';
 import { useIsMobile } from '$hooks/useIsMobile';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { removeLocalStorageUnsavedActions } from '$lib/localStorage';
 import { SHARED_SCHEDULE_PREFIX } from '$src/globals';
@@ -25,6 +27,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
 
     const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
     const setOpenLoadingSchedule = scheduleComponentsToggleStore((state) => state.setOpenLoadingSchedule);
+    const postHog = usePostHog();
 
     const [scheduleName, setScheduleName] = useState<string | null>(null);
 
@@ -91,6 +94,14 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                 if (AppStore.getCurrentScheduleIndex() !== 0) {
                     AppStore.changeCurrentSchedule(0);
                 }
+
+                logAnalytics(postHog, {
+                    category: analyticsEnum.sharedSchedule,
+                    action: analyticsEnum.sharedSchedule.actions.OPEN,
+                    label: sharedSchedule.scheduleName,
+                    value: sharedSchedule.courses.length,
+                });
+
                 setScheduleName(sharedSchedule.scheduleName);
                 setError(null);
             } catch (err) {
@@ -105,7 +116,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
         return () => {
             setOpenLoadingSchedule(false);
         };
-    }, [scheduleId, setOpenLoadingSchedule, setError, beginLoadingSchedule]);
+    }, [scheduleId, setOpenLoadingSchedule, setError, beginLoadingSchedule, postHog]);
 
     const handleLoadSchedule = useCallback(async (sessionToken: string | null) => {
         if (sessionToken) {
