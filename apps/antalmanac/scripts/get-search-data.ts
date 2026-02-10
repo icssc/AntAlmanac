@@ -98,7 +98,6 @@ async function main() {
             // TODO (@kevin): remove delay once AAPI resolves OOM issues
             await new Promise((resolve) => setTimeout(resolve, DELAY_MS * index));
 
-            // Use GraphQL query
             const query = QUERY_TEMPLATE.replace('$$YEAR$$', year).replace('$$QUARTER$$', quarter);
             const res = await queryGraphQL<SectionCodesGraphQLResponse>(query);
 
