@@ -40,7 +40,10 @@ export function ShareScheduleButton({ index, disabled }: ShareScheduleButtonProp
             });
 
             setCopied(true);
-            AppStore.openSnackbar('success', 'Link copied to clipboard!');
+            AppStore.openSnackbar(
+                'success',
+                `Link copied to clipboard! Note: The link will become invalid after you change/save a schedule.`
+            );
             setTimeout(() => setCopied(false), 2000);
         } catch (err) {
             AppStore.openSnackbar('error', 'Failed to copy link');
