@@ -1,7 +1,6 @@
 import { useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-import { useIsSharedSchedulePage } from '$hooks/useIsSharedSchedulePage';
 import { useTabStore } from '$stores/TabStore';
 
 interface MapLinkProps {
@@ -12,9 +11,9 @@ interface MapLinkProps {
 export const MapLink = ({ buildingId, room }: MapLinkProps) => {
     const { setActiveTab } = useTabStore();
     const { pathname } = useLocation();
-    const isSharedPath = useIsSharedSchedulePage();
 
-    const toLocation = isSharedPath ? `${pathname}?location=${buildingId}` : `/map?location=${buildingId}`;
+    const isHomePage = pathname === '/' || pathname == '/added' || pathname == '/map';
+    const toLocation = isHomePage ? `/map?location=${buildingId}` : `${pathname}?location=${buildingId}`;
 
     const focusMap = useCallback(() => {
         setActiveTab('map');

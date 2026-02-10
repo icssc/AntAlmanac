@@ -82,6 +82,8 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
     const downloadButtonRef = useRef<HTMLDivElement>(null);
     const clearButtonRef = useRef<HTMLDivElement>(null);
 
+    const disableActionButtons = skeletonMode || isReadonlyView;
+
     const handleToggleFinals = useCallback(() => {
         if (!showFinalsSchedule) {
             logAnalytics(postHog, {
@@ -198,10 +200,10 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             >
                 <Box display="flex" flexDirection="row" gap={0.5}>
                     <Box display="flex" flexWrap="nowrap" alignItems="center" gap={0.5}>
-                        <IconButton onClick={handleUndo(postHog)} disabled={skeletonMode || isReadonlyView}>
+                        <IconButton onClick={handleUndo(postHog)} disabled={disableActionButtons}>
                             <UndoIcon fontSize="small" />
                         </IconButton>
-                        <IconButton onClick={handleRedo(postHog)} disabled={skeletonMode || isReadonlyView}>
+                        <IconButton onClick={handleRedo(postHog)} disabled={disableActionButtons}>
                             <RedoIcon fontSize="small" />
                         </IconButton>
                         <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
@@ -238,7 +240,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                                 <ListItemText>Download Calendar</ListItemText>
                             </MenuItem>
 
-                            <MenuItem onClick={handleClearSchedule} disabled={skeletonMode || isReadonlyView}>
+                            <MenuItem onClick={handleClearSchedule} disabled={disableActionButtons}>
                                 <ListItemIcon>
                                     <DeleteOutline fontSize="small" />
                                 </ListItemIcon>
@@ -285,22 +287,14 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
 
                     <Tooltip title="Undo last action">
                         <span>
-                            <IconButton
-                                onClick={handleUndo(postHog)}
-                                size="medium"
-                                disabled={skeletonMode || isReadonlyView}
-                            >
+                            <IconButton onClick={handleUndo(postHog)} size="medium" disabled={disableActionButtons}>
                                 <UndoIcon fontSize="small" />
                             </IconButton>
                         </span>
                     </Tooltip>
                     <Tooltip title="Redo last action">
                         <span>
-                            <IconButton
-                                onClick={handleRedo(postHog)}
-                                size="medium"
-                                disabled={skeletonMode || isReadonlyView}
-                            >
+                            <IconButton onClick={handleRedo(postHog)} size="medium" disabled={disableActionButtons}>
                                 <RedoIcon fontSize="small" />
                             </IconButton>
                         </span>
@@ -311,7 +305,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                         fontSize="small"
                         skeletonMode={skeletonMode}
                         analyticsCategory={analyticsEnum.calendar}
-                        disabled={skeletonMode || isReadonlyView}
+                        disabled={disableActionButtons}
                     />
 
                     <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />

@@ -1,7 +1,9 @@
 import { Check, Link } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 
@@ -13,6 +15,7 @@ interface ShareScheduleButtonProps {
 export function ShareScheduleButton({ index, disabled }: ShareScheduleButtonProps) {
     const [copied, setCopied] = useState(false);
     const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
+    const postHog = usePostHog();
 
     const handleCopy = useCallback(async () => {
         const scheduleId = AppStore.getScheduleId(index);
@@ -28,13 +31,21 @@ export function ShareScheduleButton({ index, disabled }: ShareScheduleButtonProp
 
         try {
             await navigator.clipboard.writeText(shareUrl);
+
+            const scheduleName = AppStore.getScheduleNames()[index];
+            logAnalytics(postHog, {
+                category: analyticsEnum.sharedSchedule,
+                action: analyticsEnum.sharedSchedule.actions.COPY_SCHEDULE,
+                label: scheduleName,
+            });
+
             setCopied(true);
             AppStore.openSnackbar('success', 'Link copied to clipboard!');
             setTimeout(() => setCopied(false), 2000);
         } catch (err) {
             AppStore.openSnackbar('error', 'Failed to copy link');
         }
-    }, [index]);
+    }, [index, postHog]);
 
     const isDisabled = disabled || !sessionIsValid;
     const tooltipTitle = !sessionIsValid
