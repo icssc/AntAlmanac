@@ -218,15 +218,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
 
         setOpenLoadingSchedule(false);
         navigate('/');
-    }, [
-        scheduleId,
-        sessionIsValid,
-        navigate,
-        setOpenLoadingSchedule,
-        beginLoadingSchedule,
-        loadSessionSchedule,
-        postHog,
-    ]);
+    }, [scheduleId, sessionIsValid, navigate, setOpenLoadingSchedule, beginLoadingSchedule, postHog]);
 
     const handleGoHome = useCallback(async () => {
         try {

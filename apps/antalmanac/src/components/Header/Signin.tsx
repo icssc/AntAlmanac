@@ -186,7 +186,7 @@ export const Signin = () => {
                 void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true, isSharedSchedulePage);
             }
         }
-    }, [loadScheduleAndSetLoadingAuth]);
+    }, [loadScheduleAndSetLoadingAuth, isSharedSchedulePage]);
 
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
