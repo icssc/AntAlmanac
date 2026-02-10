@@ -4,14 +4,8 @@ import { fileURLToPath } from 'node:url';
 
 import { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 
-import { queryGraphQL, queryHTTPS } from '../src/backend/lib/helpers';
-import {
-    parseSectionCodes,
-    parseSectionCodesREST,
-    SectionCodesGraphQLResponse,
-    SectionCodesRESTResponse,
-    termData,
-} from '../src/backend/lib/term-section-codes';
+import { queryGraphQL } from '../src/backend/lib/helpers';
+import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';
 
 import 'dotenv/config';
 
@@ -79,24 +73,7 @@ async function main() {
     }
     console.log(`Fetched ${deptMap.size} departments.`);
 
-    const QUERY_TEMPLATE = `{
-        websoc(query: {year: "$$YEAR$$", quarter: $$QUARTER$$}) {
-            schools {
-                departments {
-                    deptCode
-                    courses {
-                        courseTitle
-                        courseNumber
-                        sections {
-                            sectionCode
-                            sectionType
-                            sectionNum
-                        }
-                    }
-                }
-            }
-        }
-    }`;
+    const QUERY_TEMPLATE = `{websoc(query:{year:"$$YEAR$$",quarter:$$QUARTER$$}){schools{departments{deptCode courses{courseTitle courseNumber sections{sectionCode sectionType sectionNum}}}}}}`;
 
     await mkdir(join(__dirname, '../src/generated/'), { recursive: true });
     await mkdir(join(__dirname, '../src/generated/terms/'), { recursive: true });
@@ -121,24 +98,15 @@ async function main() {
             // TODO (@kevin): remove delay once AAPI resolves OOM issues
             await new Promise((resolve) => setTimeout(resolve, DELAY_MS * index));
 
-            let parsedSectionData: Record<string, unknown>;
+            // Use GraphQL query
+            const query = QUERY_TEMPLATE.replace('$$YEAR$$', year).replace('$$QUARTER$$', quarter);
+            const res = await queryGraphQL<SectionCodesGraphQLResponse>(query);
 
-            // Use REST API for Spring 2026, GraphQL for everything else
-            if (year === '2026' && quarter === 'Spring') {
-                const params = new URLSearchParams({ year, quarter });
-                const res = await queryHTTPS<SectionCodesRESTResponse>(params, headers);
-                if (!res) {
-                    throw new Error(`Error fetching section codes for ${term.shortName}.`);
-                }
-                parsedSectionData = parseSectionCodesREST(res);
-            } else {
-                const query = QUERY_TEMPLATE.replace('$$YEAR$$', year).replace('$$QUARTER$$', quarter);
-                const res = await queryGraphQL<SectionCodesGraphQLResponse>(query);
-                if (!res) {
-                    throw new Error(`Error fetching section codes for ${term.shortName}.`);
-                }
-                parsedSectionData = parseSectionCodes(res);
+            if (!res) {
+                throw new Error(`Error fetching section codes for ${term.shortName}.`);
             }
+
+            const parsedSectionData = parseSectionCodes(res);
 
             console.log(
                 `Fetched ${Object.keys(parsedSectionData).length} section codes for ${
