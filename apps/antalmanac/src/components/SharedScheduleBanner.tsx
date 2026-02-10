@@ -172,6 +172,8 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
         try {
             beginLoadingSchedule();
 
+            const sharedSchedule = await trpc.userData.getSharedSchedule.query({ scheduleId });
+
             if (sessionIsValid) {
                 const sessionToken = useSessionStore.getState().session;
                 if (sessionToken) {
@@ -187,7 +189,6 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                 await importSharedScheduleById(scheduleId);
             } else {
                 const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
-                const sharedSchedule = await trpc.userData.getSharedSchedule.query({ scheduleId });
                 const currentSchedule = currentSchedules.schedules[currentSchedules.scheduleIndex];
 
                 if (currentSchedule && currentSchedule.scheduleName === sharedSchedule.scheduleName) {
@@ -201,6 +202,13 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                     await importSharedScheduleById(scheduleId);
                 }
             }
+
+            logAnalytics(postHog, {
+                category: analyticsEnum.sharedSchedule,
+                action: analyticsEnum.sharedSchedule.actions.IMPORT_SCHEDULE,
+                label: sharedSchedule.scheduleName,
+                value: sessionIsValid ? 1 : 0,
+            });
         } catch (err) {
             console.error('Error adding schedule to account:', err);
             if (AppStore.getSkeletonMode()) {
@@ -210,7 +218,15 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
 
         setOpenLoadingSchedule(false);
         navigate('/');
-    }, [scheduleId, sessionIsValid, navigate, setOpenLoadingSchedule, beginLoadingSchedule, loadSessionSchedule]);
+    }, [
+        scheduleId,
+        sessionIsValid,
+        navigate,
+        setOpenLoadingSchedule,
+        beginLoadingSchedule,
+        loadSessionSchedule,
+        postHog,
+    ]);
 
     const handleGoHome = useCallback(async () => {
         try {
