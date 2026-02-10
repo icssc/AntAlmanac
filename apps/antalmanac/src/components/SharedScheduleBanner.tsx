@@ -162,7 +162,17 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
             beginLoadingSchedule();
 
             if (sessionIsValid) {
-                loadSessionSchedule();
+                const sessionToken = useSessionStore.getState().session;
+                if (sessionToken) {
+                    const userDataResponse = await trpc.userData.getUserDataWithSession.query({
+                        refreshToken: sessionToken,
+                    });
+
+                    if (userDataResponse?.userData) {
+                        await AppStore.loadSchedule(userDataResponse.userData);
+                    }
+                }
+
                 await importSharedScheduleById(scheduleId);
             } else {
                 const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
