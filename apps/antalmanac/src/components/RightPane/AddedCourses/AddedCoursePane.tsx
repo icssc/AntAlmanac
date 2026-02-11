@@ -399,12 +399,14 @@ function AddedSectionsGrid() {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Box sx={{ display: 'flex', width: 'fit-content', position: 'absolute', zIndex: 2 }}>
-                {!isReadonlyView && <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />}
                 {!isReadonlyView && (
-                    <ClearScheduleButton buttonSx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />
+                    <>
+                        <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
+                        <ClearScheduleButton buttonSx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />
+                    </>
                 )}
                 <ColumnToggleDropdown />
-                {!isReadonlyView && <NotificationsDialog buttonSx={buttonSx} />}
+                <NotificationsDialog buttonSx={buttonSx} />
             </Box>
             <Box sx={{ marginTop: 7 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
