@@ -23,6 +23,7 @@ import RightPaneStore from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { usePeterPortalRoadmaps } from '$hooks/usePeterPortal';
 import analyticsEnum from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
@@ -246,6 +247,7 @@ const ErrorMessage = () => {
 
 export default function CourseRenderPane(props: { id?: number }) {
     const { manualSearchEnabled } = useCoursePaneStore();
+    const { roadmaps } = usePeterPortalRoadmaps();
     const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
     const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
     const [loading, setLoading] = useState(true);
@@ -362,6 +364,17 @@ export default function CourseRenderPane(props: { id?: number }) {
             setHoveredEvent(undefined);
         };
     }, [setHoveredEvent]);
+
+    useEffect(() => {
+        const excludeRoadmapCourses = RightPaneStore.getFormData().excludeRoadmapCourses;
+
+        if (excludeRoadmapCourses && roadmaps.length > 0) {
+            const roadmapExists = roadmaps.some((r) => r.id.toString() === excludeRoadmapCourses);
+            if (!roadmapExists) {
+                openSnackbar('warning', 'Invalid roadmap selection. Showing all courses.');
+            }
+        }
+    }, [roadmaps, props.id]);
 
     return (
         <>
