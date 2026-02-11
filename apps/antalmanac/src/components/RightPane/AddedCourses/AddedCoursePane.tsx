@@ -152,6 +152,10 @@ function CustomEventsBox() {
 function ScheduleNoteBox() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
+    const isReadonlyView = useIsReadonlyView();
+
+    const disabled = skeletonMode || isReadonlyView;
+
     const getScheduleNote = useCallback(() => {
         if (skeletonMode) {
             const skeletonSchedule = AppStore.getCurrentSkeletonSchedule();
@@ -213,23 +217,22 @@ function ScheduleNoteBox() {
             <TextField
                 type="text"
                 variant="filled"
-                label="Click here to start typing!"
+                label={disabled ? 'Editing is currently disabled' : 'Click here to start typing!'}
                 onChange={handleNoteChange}
                 value={scheduleNote}
-                inputProps={{
-                    maxLength: NOTE_MAX_LEN,
-                    style: { cursor: skeletonMode ? 'not-allowed' : 'text' },
-                }}
-                InputLabelProps={{
-                    variant: 'filled',
-                }}
-                InputProps={{ disableUnderline: true }}
                 fullWidth
                 multiline
-                disabled={skeletonMode}
-                sx={{
-                    '& .MuiInputBase-root': {
-                        cursor: skeletonMode ? 'not-allowed' : 'text',
+                disabled={disabled}
+                slotProps={{
+                    htmlInput: {
+                        maxLength: NOTE_MAX_LEN,
+                        sx: { cursor: disabled ? 'not-allowed' : 'text' },
+                    },
+                    inputLabel: {
+                        variant: 'filled',
+                    },
+                    input: {
+                        disableUnderline: true,
                     },
                 }}
             />

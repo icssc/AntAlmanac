@@ -237,6 +237,9 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
         return (
             <>
                 <Alert severity="error">{error}</Alert>
+                <Typography>
+                    Note: Links to a shared schedule become invalid after the schedule is changed/saved.
+                </Typography>
                 <Button variant="contained" onClick={handleGoHome}>
                     Go Home
                 </Button>
