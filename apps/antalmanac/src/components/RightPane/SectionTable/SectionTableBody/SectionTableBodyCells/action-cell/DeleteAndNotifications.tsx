@@ -55,7 +55,7 @@ export const DeleteAndNotifications = memo(({ ...props }: DeleteAndNotifications
             </IconButton>
 
             {initialized ? (
-                <NotificationsMenu {...props} />
+                <NotificationsMenu {...props} disabled={isReadonlyView} />
             ) : (
                 <IconButton disabled>
                     <CircularProgress size={15} />

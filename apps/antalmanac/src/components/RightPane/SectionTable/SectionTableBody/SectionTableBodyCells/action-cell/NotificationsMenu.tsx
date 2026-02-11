@@ -23,10 +23,11 @@ interface NotificationsMenuProps {
     courseTitle: Course['title'];
     deptCode?: string;
     courseNumber?: string;
+    disabled?: boolean;
 }
 
 export const NotificationsMenu = memo(
-    ({ section, term, courseTitle, deptCode, courseNumber }: NotificationsMenuProps) => {
+    ({ section, term, courseTitle, deptCode, courseNumber, disabled }: NotificationsMenuProps) => {
         const notificationKey = section.sectionCode + ' ' + term;
         const loadNotifications = useNotificationStore(useShallow((store) => store.loadNotifications));
         const [notification, setNotifications] = useNotificationStore(
@@ -101,7 +102,7 @@ export const NotificationsMenu = memo(
 
         return (
             <>
-                <IconButton onClick={handleNotificationClick}>
+                <IconButton onClick={handleNotificationClick} disabled={disabled}>
                     {isGoogleUser ? (
                         hasNotifications ? (
                             <EditNotifications fontSize="small" />
