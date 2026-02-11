@@ -111,14 +111,11 @@ export const Signin = () => {
             if (!validSession) {
                 setOpenalert(true);
                 setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
-            } else if (sessionToken) {
-                updateSession(sessionToken);
-                if (!skipScheduleLoad) {
-                    await loadScheduleWithSessionToken();
-                }
-            } else if (sessionToken === '' && userID && userID !== '') {
-                await validateImportedUser(userID);
-                if (!skipScheduleLoad) {
+            } else if (!skipScheduleLoad) {
+                if (sessionToken && (await loadScheduleWithSessionToken())) {
+                    updateSession(sessionToken);
+                } else if (sessionToken === '' && userID && userID !== '') {
+                    await validateImportedUser(userID);
                     await loadSchedule(userID, rememberMe, 'GUEST');
                 }
             }
