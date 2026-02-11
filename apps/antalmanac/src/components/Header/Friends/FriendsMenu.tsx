@@ -185,18 +185,32 @@ export function FriendsMenu({ friendRequests = MOCK_REQUESTS, friends = MOCK_FRI
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'space-between',
-                                        py: 1,
-                                        px: 1,
-                                        borderRadius: 1,
+                                        p: 1.5,
+                                        mb: 1,
+                                        borderRadius: 2,
+                                        bgcolor: 'background.paper',
+                                        border: '1px solid',
+                                        borderColor: 'divider',
+                                        boxShadow: 'none',
                                         '&:hover': {
                                             bgcolor: 'action.hover',
+                                            borderColor: 'text.secondary',
                                         },
+                                        transition: 'all 0.2s ease',
                                     }}
                                 >
-                                    <Typography variant="body2" sx={{ flex: 1, fontSize: '1rem', pl: 0.5 }}>
-                                        {request.name || request.email}
-                                    </Typography>
-                                    <Stack direction="row" spacing={0.5}>
+                                    <Stack direction="row" alignItems="center" flex={1} overflow="hidden">
+                                        <Box sx={{ minWidth: 0, ml: 0.5 }}>
+                                            <Typography variant="body2" fontWeight={600} noWrap>
+                                                {request.name || request.email}
+                                            </Typography>
+                                            <Typography variant="caption" color="text.secondary" noWrap display="block">
+                                                {request.email}
+                                            </Typography>
+                                        </Box>
+                                    </Stack>
+
+                                    <Stack direction="row" spacing={0.5} alignItems="center">
                                         <Button
                                             size="small"
                                             variant="contained"
@@ -204,15 +218,16 @@ export function FriendsMenu({ friendRequests = MOCK_REQUESTS, friends = MOCK_FRI
                                             sx={{
                                                 bgcolor: '#4caf50',
                                                 color: 'white',
-                                                fontSize: '0.925rem',
+                                                fontSize: '0.8rem',
                                                 fontWeight: 600,
                                                 textTransform: 'none',
+                                                minWidth: 'auto',
                                                 px: 1.5,
                                                 py: 0.5,
-                                                boxShadow: 2,
+                                                boxShadow: 1,
                                                 '&:hover': {
                                                     bgcolor: '#388e3c',
-                                                    boxShadow: 3,
+                                                    boxShadow: 2,
                                                 },
                                             }}
                                         >
@@ -223,17 +238,18 @@ export function FriendsMenu({ friendRequests = MOCK_REQUESTS, friends = MOCK_FRI
                                             variant="contained"
                                             onClick={() => handleDecline(request.id)}
                                             sx={{
-                                                bgcolor: '#e57373',
+                                                bgcolor: '#ef5350',
                                                 color: 'white',
-                                                fontSize: '0.925rem',
+                                                fontSize: '0.8rem',
                                                 fontWeight: 600,
                                                 textTransform: 'none',
+                                                minWidth: 'auto',
                                                 px: 1.5,
                                                 py: 0.5,
-                                                boxShadow: 2,
+                                                boxShadow: 1,
                                                 '&:hover': {
                                                     bgcolor: '#d32f2f',
-                                                    boxShadow: 3,
+                                                    boxShadow: 2,
                                                 },
                                             }}
                                         >
@@ -244,8 +260,10 @@ export function FriendsMenu({ friendRequests = MOCK_REQUESTS, friends = MOCK_FRI
                                             onClick={(e) => handleOpenBlockMenu(e, request.id)}
                                             sx={{
                                                 color: 'text.secondary',
+                                                ml: 0.5,
                                                 '&:hover': {
                                                     bgcolor: 'action.hover',
+                                                    color: 'text.primary',
                                                 },
                                             }}
                                         >
@@ -286,17 +304,31 @@ export function FriendsMenu({ friendRequests = MOCK_REQUESTS, friends = MOCK_FRI
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'space-between',
-                                        py: 1,
-                                        px: 1,
-                                        borderRadius: 1,
+                                        p: 1.5,
+                                        mb: 1,
+                                        borderRadius: 2,
+                                        bgcolor: 'background.paper',
+                                        border: '1px solid',
+                                        borderColor: 'divider',
+                                        boxShadow: 'none',
                                         '&:hover': {
                                             bgcolor: 'action.hover',
+                                            borderColor: 'text.secondary',
                                         },
+                                        transition: 'all 0.2s ease',
                                     }}
                                 >
-                                    <Typography variant="body2" sx={{ flex: 1, fontSize: '1rem', pl: 0.5 }}>
-                                        {friend.name || friend.email}
-                                    </Typography>
+                                    <Stack direction="row" alignItems="center" flex={1} overflow="hidden">
+                                        <Box sx={{ minWidth: 0, ml: 0.5 }}>
+                                            <Typography variant="body2" fontWeight={600} noWrap>
+                                                {friend.name || friend.email}
+                                            </Typography>
+                                            <Typography variant="caption" color="text.secondary" noWrap display="block">
+                                                {friend.email}
+                                            </Typography>
+                                        </Box>
+                                    </Stack>
+
                                     <Button
                                         size="small"
                                         variant="contained"
@@ -308,6 +340,8 @@ export function FriendsMenu({ friendRequests = MOCK_REQUESTS, friends = MOCK_FRI
                                             py: 0.5,
                                             px: 1.5,
                                             boxShadow: 2,
+                                            ml: 1,
+                                            whiteSpace: 'nowrap',
                                             '&:hover': {
                                                 boxShadow: 3,
                                             },
