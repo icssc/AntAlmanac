@@ -17,6 +17,7 @@ import { useEffect, useState } from 'react';
 
 import { openSnackbar } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
+import { FriendsButton } from '$components/Header/Friends/FriendsButton';
 import { Import } from '$components/Header/Import';
 import { Logo } from '$components/Header/Logo';
 import { Save } from '$components/Header/Save';
@@ -208,6 +209,7 @@ export function Header() {
                     <Stack direction="row" alignItems="center">
                         <Import key="studylist" />
                         <Save />
+                        <FriendsButton />
                         {sessionIsValid ? <Signout onLogoutComplete={handleLogoutComplete} /> : <Signin />}
                     </Stack>
 
