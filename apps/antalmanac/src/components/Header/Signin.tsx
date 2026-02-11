@@ -262,7 +262,7 @@ export const Signin = () => {
                     },
                 }}
             >
-                <SettingsMenu user={null} />
+                <SettingsMenu user={null} onClose={() => setSettingsAnchorEl(null)} />
 
                 <Divider style={{ marginTop: '10px', marginBottom: '12px' }} />
 

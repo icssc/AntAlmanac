@@ -4,12 +4,17 @@ import { useCallback } from 'react';
 
 import { TutorialAction } from '$components/HelpMenu/actions/TutorialAction';
 
-export const TutorialButton = () => {
+interface TutorialButtonProps {
+    onMenuClose?: () => void;
+}
+
+export const TutorialButton = ({ onMenuClose }: TutorialButtonProps) => {
     const action = TutorialAction();
 
     const handleClick = useCallback(() => {
+        onMenuClose?.();
         action?.onClick();
-    }, [action]);
+    }, [action, onMenuClose]);
 
     if (!action) {
         return null;

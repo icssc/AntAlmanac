@@ -6,14 +6,18 @@ import { FeedbackButton } from '$components/buttons/FeedbackButton';
 import { PatchNotesButton } from '$components/buttons/PatchNotesButton';
 import { TutorialButton } from '$components/buttons/TutorialButton';
 
-export function About() {
+interface AboutProps {
+    onMenuClose?: () => void;
+}
+
+export function About({ onMenuClose }: AboutProps) {
     return (
         <Stack direction="row" sx={{ justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
             <FeedbackButton />
             <AboutButton />
             <DonateButton />
             <PatchNotesButton />
-            <TutorialButton />
+            <TutorialButton onMenuClose={onMenuClose} />
         </Stack>
     );
 }
