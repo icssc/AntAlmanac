@@ -204,6 +204,23 @@ export function AdvancedSearchTextFields() {
         setSignInOpen(false);
     }, []);
 
+    useEffect(() => {
+        if (!excludeRoadmapCourses) return;
+        if (!roadmaps || roadmaps.length === 0) return;
+
+        const exists = roadmaps.some((r) => r.id.toString() === excludeRoadmapCourses);
+
+        if (!exists) {
+            setExcludeRoadmapCourses('');
+            RightPaneStore.updateFormValue('excludeRoadmapCourses', '');
+
+            const url = new URL(window.location.href);
+            const params = new URLSearchParams(url.search);
+            params.delete('excludeRoadmapCourses');
+            history.replaceState({}, '', `${url.pathname}${params.toString() ? '?' + params.toString() : ''}`);
+        }
+    }, [roadmaps]);
+
     return (
         <>
             <Box
