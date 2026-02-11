@@ -3,6 +3,7 @@ import type { Roadmap } from '@packages/antalmanac-types';
 import { format, parse } from 'date-fns';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 
+import { openSnackbar } from '$actions/AppStoreActions';
 import {
     EXCLUDE_RESTRICTION_CODES_OPTIONS,
     DAYS_OPTIONS,
@@ -211,6 +212,7 @@ export function AdvancedSearchTextFields() {
         const exists = roadmaps.some((r) => r.id.toString() === excludeRoadmapCourses);
 
         if (!exists) {
+            openSnackbar('warning', 'Invalid roadmap selection. All courses shown.');
             setExcludeRoadmapCourses('');
             RightPaneStore.updateFormValue('excludeRoadmapCourses', '');
 
