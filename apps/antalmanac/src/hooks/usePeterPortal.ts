@@ -50,7 +50,7 @@ export function usePeterPortalRoadmaps() {
     }, [googleId]);
 
     useEffect(() => {
-        async function flattenCourses() {
+        function flattenCourses() {
             if (!googleId || !selectedRoadmapId || roadmaps.length === 0) {
                 setUserTakenCourses(new Set());
                 setFilterTakenCourses(false);
