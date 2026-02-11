@@ -42,6 +42,7 @@ const analyticsEnum: AnalyticsEnum = {
             SIGN_IN: 'Sign In',
             SIGN_IN_FAIL: 'Sign In Failure',
             SIGN_OUT: 'Sign Out',
+            SIGN_OUT_FAIL: 'Sign Out Failure',
             LOAD_SCHEDULE: 'Load Schedule',
             LOAD_SCHEDULE_FAIL: 'Load Schedule Failure',
             LOAD_SCHEDULE_LEGACY: 'Load Schedule Legacy',
