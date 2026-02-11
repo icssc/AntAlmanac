@@ -21,6 +21,7 @@ enum LocalStorageKeys {
     importedUser = 'importedUser',
     fromLoading = 'fromLoading',
     tempSaveData = 'tempSaveData',
+    skeletonBlueprint = 'skeletonBlueprint',
 }
 
 const LSK = LocalStorageKeys;
@@ -96,6 +97,7 @@ export function getLocalStorageSessionId() {
 export function removeLocalStorageSessionId() {
     window.localStorage.removeItem(LSK.sessionId);
 }
+
 // Helper functions for patchNotesKey
 export function setLocalStoragePatchNotesKey(value: string) {
     window.localStorage.setItem(LSK.patchNotesKey, value);
@@ -280,4 +282,16 @@ export function getLocalStorageTempSaveData() {
 
 export function removeLocalStorageTempSaveData() {
     window.localStorage.removeItem(LSK.tempSaveData);
+}
+
+export function setLocalStorageSkeletonBlueprint(value: string) {
+    window.localStorage.setItem(LSK.skeletonBlueprint, value);
+}
+
+export function getLocalStorageSkeletonBlueprint() {
+    return window.localStorage.getItem(LSK.skeletonBlueprint);
+}
+
+export function removeLocalStorageSkeletonBlueprint() {
+    window.localStorage.removeItem(LSK.skeletonBlueprint);
 }

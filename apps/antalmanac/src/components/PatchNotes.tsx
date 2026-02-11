@@ -1,5 +1,6 @@
 import {
     Backdrop,
+    Box,
     type BackdropProps,
     Button,
     Dialog,
@@ -7,7 +8,10 @@ import {
     DialogContent,
     DialogTitle,
     Typography,
+    Stack,
 } from '@mui/material';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -42,32 +46,76 @@ function PatchNotes() {
             data-testid={dialogTestId}
             slots={{ backdrop: PatchNotesBackdrop }}
         >
-            <DialogTitle>{"What's New - May 2025"}</DialogTitle>
+            <DialogTitle>{'Patch Notes Febuary 6, 2026'}</DialogTitle>
 
             <DialogContent>
-                <Typography>Features</Typography>
-                <ul>
-                    <li>
-                        Sign-in with Google! This will keep your schedules secure and enable exciting upcoming features.
-                        Stay tuned!
-                        <ul>
-                            <li>
-                                If you encounter any issues reach out to us via{' '}
-                                <a href="https://discord.gg/8CSGbGBqz8">discord</a> or our{' '}
-                                <a href="https://forms.gle/234567890">feedback form</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Automatic addition of new terms so you don&apos;t have to wait for us to do it manually.</li>
-                    <li>Filtering by day of the week in advanced search.</li>
-                    <li>Optimizations to speed up schedule saving.</li>
-                    <li>Outage page for the rare occasion that Antalmanac is down.</li>
-                </ul>
-                <Typography>Bug Fixes</Typography>
-                <ul>
-                    <li>Advanced search fields getting overridden by URL parameters.</li>
-                    <li>Off-by-one error in enrollment history graph.</li>
-                </ul>
+                <Stack spacing={2} alignItems="start">
+                    <Typography variant="h6">You can now create 4-year plans from AntAlmanac!</Typography>
+
+                    <Typography>
+                        AntAlmanac and PeterPortal are now unified into one ultimate course planning app. Learn more in
+                        our{' '}
+                        <Link href="https://docs.icssc.club/docs/about/antalmanac/merge" target="_blank">
+                            blog post
+                        </Link>
+                        !
+                    </Typography>
+
+                    <Stack
+                        direction="row"
+                        alignSelf="center"
+                        sx={{
+                            width: '100%',
+                            maxWidth: 350,
+                            display: 'flex',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Image
+                            src="/assets/merge-switcher.png"
+                            alt="4-year plan"
+                            width={350}
+                            height={50}
+                            style={{
+                                width: '100%',
+                                height: 'auto',
+                                maxWidth: '350px',
+                                borderRadius: 8,
+                            }}
+                        />
+                    </Stack>
+
+                    <Typography variant="h6">AntAlmanac Notification Tracking System (AANTS)!</Typography>
+
+                    <Typography>
+                        AANTS allows you to receive notifications when classes OPEN, CLOSE, WAITLIST, or have their
+                        restriction codes changed.
+                    </Typography>
+
+                    <Stack direction="row" alignSelf="center">
+                        <Box
+                            sx={{
+                                width: '100%',
+                                maxWidth: 425,
+                                display: 'flex',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Image
+                                src="/assets/aants-preview.png"
+                                alt="AANTS example"
+                                width={425}
+                                height={185}
+                                style={{
+                                    width: '100%',
+                                    height: 'auto',
+                                    maxWidth: '425px',
+                                    borderRadius: 8,
+                                }}
+                            />
+                        </Box>
+                    </Stack>
+                </Stack>
             </DialogContent>
 
             <DialogActions>

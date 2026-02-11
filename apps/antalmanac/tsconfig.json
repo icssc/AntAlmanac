@@ -1,19 +1,25 @@
 {
     "compilerOptions": {
-        "target": "es2015",
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "node",
         "lib": ["dom", "dom.iterable", "esnext"],
         "allowJs": true,
         "skipLibCheck": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
         "strict": true,
+        "incremental": true,
         "forceConsistentCasingInFileNames": true,
-        "module": "esnext",
-        "moduleResolution": "node",
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
         "jsx": "react-jsx",
+        "plugins": [
+            {
+                "name": "next"
+            }
+        ],
         "baseUrl": ".",
         "paths": {
             "$assets/*": ["src/assets/*"],
@@ -28,5 +34,7 @@
             "$stores/*": ["src/stores/*"],
             "$src/*": ["src/*"]
         }
-    }
+    },
+    "include": ["./dist/types/**/*.ts", "./next-env.d.ts", "./src", ".next/types/**/*.ts", ".next/dev/types/**/*.ts"],
+    "exclude": ["./node_modules"]
 }

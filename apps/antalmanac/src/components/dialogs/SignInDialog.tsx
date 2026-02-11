@@ -7,7 +7,7 @@ import { loginUser } from '$actions/AppStoreActions';
 interface SignInDialogProps {
     open: boolean;
     isDark: boolean;
-    action: 'Load' | 'Save';
+    feature: 'Load' | 'Save' | 'Notification';
     onClose: () => void;
 }
 
@@ -35,12 +35,14 @@ export function SignInDialog(props: SignInDialogProps) {
                 padding: '1rem',
             }}
         >
-            <DialogTitle>Save</DialogTitle>
+            <DialogTitle>{props.feature === 'Notification' ? 'Sign in to Use Notifications' : 'Save'}</DialogTitle>
             <DialogContent>
                 <Stack spacing={1}>
-                    <Alert severity="info" variant={isDark ? 'outlined' : 'standard'} sx={{ fontSize: 'small' }}>
-                        All changes made will be saved to your Google account
-                    </Alert>
+                    {props.feature === 'Save' && (
+                        <Alert severity="info" variant={isDark ? 'outlined' : 'standard'} sx={{ fontSize: 'small' }}>
+                            All changes made will be saved to your Google account
+                        </Alert>
+                    )}
                     <Button
                         onClick={() => loginUser(postHog)}
                         startIcon={<GoogleIcon />}

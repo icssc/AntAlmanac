@@ -5,178 +5,31 @@ import {
     Stack,
     Alert,
     AlertTitle,
-    CircularProgress,
     Button,
     Dialog,
     DialogActions,
     DialogContent,
     DialogContentText,
-    DialogTitle,
+    Popover,
     TextField,
     AlertColor,
+    ListItemIcon,
+    ListItemText,
+    MenuItem,
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useState, useCallback } from 'react';
 
-import { loadSchedule, saveSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
+import { loadSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
+import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
+import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import { analyticsIdentifyUser } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
-import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
-
-interface SignInButtonProps {
-    action: typeof saveSchedule;
-    actionSecondary?: () => void;
-    disabled: boolean;
-    loading: boolean;
-    colorType: 'primary' | 'secondary';
-    id?: string;
-    isDark: boolean;
-}
-
-interface SignInIconProps {
-    loading: boolean;
-}
-function SignInIcon(props: SignInIconProps) {
-    return props.loading ? <CircularProgress size={20} color="inherit" /> : <AccountCircle />;
-}
-
-const SignInButton: React.FC<SignInButtonProps> = ({
-    action,
-    actionSecondary,
-    disabled,
-    loading,
-    colorType,
-    id,
-    isDark,
-}: SignInButtonProps) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const [userID, setUserID] = useState('');
-    const [rememberMe] = useState(true);
-
-    const handleOpen = useCallback(() => {
-        setIsOpen(true);
-        if (typeof Storage !== 'undefined') {
-            const savedUserID = getLocalStorageUserId();
-            if (savedUserID !== null) {
-                setUserID(savedUserID);
-            }
-        }
-    }, []);
-
-    const enterEvent = useCallback(
-        (event: KeyboardEvent) => {
-            const charCode = event.which ? event.which : event.keyCode;
-
-            if (charCode === 13 || charCode === 10) {
-                event.preventDefault();
-                // Handle enter key press directly
-                setIsOpen(false);
-                document.removeEventListener('keydown', enterEvent, false);
-                // this `void` is for eslint "no floating promises"
-                void action(userID, rememberMe);
-                setUserID('');
-                return false;
-            }
-        },
-        [action, userID, rememberMe]
-    );
-
-    const handleClose = useCallback(
-        (wasCancelled: boolean) => {
-            if (wasCancelled) {
-                setIsOpen(false);
-                document.removeEventListener('keydown', enterEvent, false);
-                setUserID('');
-            } else {
-                setIsOpen(false);
-                document.removeEventListener('keydown', enterEvent, false);
-                // this `void` is for eslint "no floating promises"
-                void action(userID, rememberMe);
-                setUserID('');
-            }
-        },
-        [action, userID, rememberMe, enterEvent]
-    );
-
-    useEffect(() => {
-        if (isOpen) {
-            document.addEventListener('keydown', enterEvent, false);
-        } else {
-            document.removeEventListener('keydown', enterEvent, false);
-        }
-
-        return () => {
-            document.removeEventListener('keydown', enterEvent, false);
-        };
-    }, [isOpen, enterEvent]);
-
-    return (
-        <>
-            <LoadingButton
-                id={id}
-                onClick={handleOpen}
-                color="inherit"
-                startIcon={<SignInIcon loading={loading} />}
-                disabled={disabled}
-                loading={false}
-                fullWidth
-            >
-                Sign in
-            </LoadingButton>
-            <Dialog open={isOpen} onClose={() => handleClose(true)}>
-                <DialogTitle>Sign in</DialogTitle>
-                <DialogContent>
-                    <Stack spacing={1}>
-                        <LoadingButton
-                            onClick={actionSecondary}
-                            color="primary"
-                            variant="contained"
-                            startIcon={<Google />}
-                            size="large"
-                            fullWidth
-                        >
-                            Sign in with Google
-                        </LoadingButton>
-                        <Divider>or</Divider>
-                        <DialogContentText>Enter your unique user ID here to sign in your schedule.</DialogContentText>
-
-                        <Alert severity="info" variant={isDark ? 'outlined' : 'standard'}>
-                            <AlertTitle>
-                                Note: Existing schedules saved to a unique user ID can no longer be updated.
-                            </AlertTitle>
-                            Please sign up with your Google account to save your schedules.
-                        </Alert>
-
-                        <TextField
-                            // eslint-disable-next-line jsx-a11y/no-autofocus
-                            autoFocus
-                            margin="dense"
-                            label="Unique User ID"
-                            type="text"
-                            fullWidth
-                            placeholder="Enter here"
-                            value={userID}
-                            onChange={(event) => setUserID(event.target.value)}
-                        />
-                    </Stack>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => handleClose(true)} color={colorType}>
-                        Cancel
-                    </Button>
-                    <Button onClick={() => handleClose(false)} color={colorType}>
-                        Sign in
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </>
-    );
-};
 
 const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = {
     SESSION_EXPIRED: {
@@ -191,19 +44,34 @@ const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = 
 
 export const Signin = () => {
     const isDark = useThemeStore((store) => store.isDark);
-
     const { updateSession } = useSessionStore();
-
     const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = scheduleComponentsToggleStore();
 
     const [openAlert, setOpenalert] = useState(false);
-    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-
+    const [settingsAnchorEl, setSettingsAnchorEl] = useState<null | HTMLElement>(null);
     const [alertMessage, setAlertMessage] = useState<{ title: string; severity: AlertColor }>(
         ALERT_MESSAGES.SCHEDULE_IMPORTED
     );
 
     const postHog = usePostHog();
+    const [isOpen, setIsOpen] = useState(false);
+    const [userID, setUserID] = useState('');
+    const [rememberMe] = useState(true);
+
+    const handleOpen = useCallback(() => {
+        setIsOpen(true);
+        setSettingsAnchorEl(null);
+        if (typeof Storage !== 'undefined') {
+            const savedUserID = getLocalStorageUserId();
+            if (savedUserID !== null) {
+                setUserID(savedUserID);
+            }
+        }
+    }, []);
+
+    const handleSettingsOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setSettingsAnchorEl(event.currentTarget);
+    };
 
     const validateImportedUser = useCallback(async (userID: string) => {
         try {
@@ -249,7 +117,7 @@ export const Signin = () => {
                 updateSession(sessionToken);
             } else if (sessionToken === '' && userID && userID !== '') {
                 await validateImportedUser(userID);
-                await loadSchedule(userID, rememberMe, 'GUEST', postHog); // fallback to guest
+                await loadSchedule(userID, rememberMe, 'GUEST', postHog);
             }
 
             setOpenLoadingSchedule(false);
@@ -262,17 +130,49 @@ export const Signin = () => {
         setLocalStorageFromLoading('true');
     };
 
-    useEffect(() => {
-        const handleSkeletonModeChange = () => {
-            setSkeletonMode(AppStore.getSkeletonMode());
-        };
+    const enterEvent = useCallback(
+        (event: KeyboardEvent) => {
+            const charCode = event.which ? event.which : event.keyCode;
 
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+            if (charCode === 13 || charCode === 10) {
+                event.preventDefault();
+                setIsOpen(false);
+                document.removeEventListener('keydown', enterEvent, false);
+                void loadScheduleAndSetLoading(userID, rememberMe);
+                setUserID('');
+                return false;
+            }
+        },
+        [loadScheduleAndSetLoading, userID, rememberMe]
+    );
+
+    const handleClose = useCallback(
+        (wasCancelled: boolean) => {
+            if (wasCancelled) {
+                setIsOpen(false);
+                document.removeEventListener('keydown', enterEvent, false);
+                setUserID('');
+            } else {
+                setIsOpen(false);
+                document.removeEventListener('keydown', enterEvent, false);
+                void loadScheduleAndSetLoading(userID, rememberMe);
+                setUserID('');
+            }
+        },
+        [loadScheduleAndSetLoading, userID, rememberMe, enterEvent]
+    );
+
+    useEffect(() => {
+        if (isOpen) {
+            document.addEventListener('keydown', enterEvent, false);
+        } else {
+            document.removeEventListener('keydown', enterEvent, false);
+        }
 
         return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+            document.removeEventListener('keydown', enterEvent, false);
         };
-    }, []);
+    }, [isOpen, enterEvent]);
 
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
@@ -287,15 +187,105 @@ export const Signin = () => {
 
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
-            <SignInButton
-                id="load-button"
-                action={loadScheduleAndSetLoading}
-                actionSecondary={handleLogin}
-                disabled={skeletonMode}
+            <ProfileMenuButtons
+                user={null}
+                handleOpen={handleOpen}
+                handleSettingsOpen={handleSettingsOpen}
                 loading={loadingSchedule}
-                colorType={isDark ? 'secondary' : 'primary'}
-                isDark={isDark}
             />
+
+            <Dialog open={isOpen} onClose={() => handleClose(true)}>
+                <DialogContent>
+                    <Stack spacing={1}>
+                        <LoadingButton
+                            onClick={handleLogin}
+                            color="primary"
+                            variant="contained"
+                            startIcon={<Google />}
+                            size="large"
+                            fullWidth
+                        >
+                            Sign in with Google
+                        </LoadingButton>
+                        <Divider>or</Divider>
+                        <DialogContentText>Enter your unique user ID here to sign in your schedule.</DialogContentText>
+
+                        <Alert severity="info" variant={isDark ? 'outlined' : 'standard'}>
+                            <AlertTitle>
+                                Note: Existing schedules saved to a unique user ID can no longer be updated.
+                            </AlertTitle>
+                            Please sign up with your Google account to save your schedules.
+                        </Alert>
+
+                        <TextField
+                            margin="dense"
+                            label="Unique User ID"
+                            type="text"
+                            fullWidth
+                            placeholder="Enter here"
+                            value={userID}
+                            onChange={(event) => setUserID(event.target.value)}
+                        />
+                    </Stack>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => handleClose(true)} color={isDark ? 'secondary' : 'primary'}>
+                        Cancel
+                    </Button>
+                    <Button onClick={() => handleClose(false)} color={isDark ? 'secondary' : 'primary'}>
+                        Sign in
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <Popover
+                open={Boolean(settingsAnchorEl)}
+                anchorEl={settingsAnchorEl}
+                onClose={() => setSettingsAnchorEl(null)}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                slotProps={{
+                    paper: {
+                        sx: {
+                            width: {
+                                xs: 300,
+                                sm: 300,
+                                md: 330,
+                            },
+                            p: '16px 20px',
+                            borderRadius: 2,
+                            border: '1px solid',
+                            borderColor: 'background.default',
+                        },
+                    },
+                }}
+            >
+                <SettingsMenu user={null} />
+
+                <Divider style={{ marginTop: '10px', marginBottom: '12px' }} />
+
+                <MenuItem onClick={handleOpen} sx={{ px: 1, py: 1.25, borderRadius: 1 }}>
+                    <ListItemIcon>
+                        <AccountCircle />
+                    </ListItemIcon>
+                    <ListItemText
+                        primary="Sign in"
+                        primaryTypographyProps={{
+                            sx: {
+                                fontSize: '1rem',
+                                fontWeight: 600,
+                                textTransform: 'uppercase',
+                            },
+                        }}
+                    />
+                </MenuItem>
+            </Popover>
 
             <AlertDialog
                 open={openAlert}

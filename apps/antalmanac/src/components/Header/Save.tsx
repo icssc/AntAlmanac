@@ -49,11 +49,11 @@ export const Save = () => {
 
     const saveScheduleData = async () => {
         if (validSession && session) {
-            const accounts = await trpc.userData.getUserAndAccountBySessionToken
-                .query({ token: session })
-                .then((res) => res.accounts);
+            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
+                token: session,
+            });
             setSaving(true);
-            await saveSchedule(accounts.providerAccountId, true, postHog);
+            await saveSchedule(accounts.providerAccountId, true, users, postHog);
             setSaving(false);
         }
     };
@@ -77,6 +77,7 @@ export const Save = () => {
                 startIcon={<SaveIcon />}
                 loadingPosition="start"
                 onClick={validSession ? saveScheduleData : handleClickSignIn}
+                sx={{ fontSize: 'inherit' }}
                 disabled={skeletonMode || saving}
                 loading={saving}
             >
@@ -126,7 +127,7 @@ export const Save = () => {
                 </Alert>
             </Snackbar>
 
-            <SignInDialog isDark={isDark} open={openSignInDialog} onClose={handleClickSignIn} action="Save" />
+            <SignInDialog isDark={isDark} open={openSignInDialog} onClose={handleClickSignIn} feature="Save" />
         </Stack>
     );
 };

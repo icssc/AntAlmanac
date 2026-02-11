@@ -1,39 +1,69 @@
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Avatar, Menu, ListItemIcon, ListItemText, MenuItem, IconButton } from '@mui/material';
+import { ListItemIcon, ListItemText, MenuItem, Popover, Divider } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
-import { useEffect, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useCallback, type MouseEvent } from 'react';
 
+import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
+import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
+import { getErrorMessage } from '$lib/utils';
 import { useSessionStore } from '$stores/SessionStore';
 
-export function Signout() {
+interface SignoutProps {
+    onLogoutComplete?: () => void;
+}
+
+export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [user, setUser] = useState<null | User>(null);
-    const navigate = useNavigate();
+    const [user, setUser] = useState<Pick<User, 'name' | 'avatar' | 'email'> | null>(null);
+    const { session, sessionIsValid, clearSession } = useSessionStore();
     const postHog = usePostHog();
 
-    const handleLogout = async () => {
-        logAnalytics(postHog, {
-            category: analyticsEnum.auth,
-            action: analyticsEnum.auth.actions.SIGN_OUT,
-        });
-        postHog?.reset();
-        clearSession();
-        navigate('/');
-    };
-
-    const { session, sessionIsValid, clearSession } = useSessionStore();
-
     const open = Boolean(anchorEl);
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleClick = (event: MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
-    const handleClose = () => {
+
+    const handleLogout = async () => {
         setAnchorEl(null);
+        if (!session) {
+            await clearSession();
+            onLogoutComplete?.();
+            return;
+        }
+
+        try {
+            const { logoutUrl } = await trpc.userData.logout.mutate({
+                sessionToken: session,
+                redirectUrl: window.location.origin,
+            });
+
+            await clearSession();
+            onLogoutComplete?.();
+
+            if (logoutUrl) {
+                window.location.href = logoutUrl;
+            }
+
+            logAnalytics(postHog, {
+                category: analyticsEnum.auth,
+                action: analyticsEnum.auth.actions.SIGN_OUT,
+            });
+        } catch (error) {
+            console.error('Error during logout', error);
+            // Even on error, clear session and show dialog
+            await clearSession();
+            onLogoutComplete?.();
+            logAnalytics(postHog, {
+                category: analyticsEnum.auth,
+                action: analyticsEnum.auth.actions.SIGN_OUT_FAIL,
+                error: getErrorMessage(error),
+            });
+        } finally {
+            postHog?.reset();
+        }
     };
 
     const handleAuthChange = useCallback(async () => {
@@ -41,7 +71,11 @@ export function Signout() {
             const userData = await trpc.userData.getUserAndAccountBySessionToken
                 .query({ token: session ?? '' })
                 .then((res) => res.users);
-            setUser(userData);
+            setUser({
+                name: userData.name ?? undefined,
+                avatar: userData.avatar ?? undefined,
+                email: userData.email ?? undefined,
+            });
         }
     }, [session, sessionIsValid, setUser]);
 
@@ -53,40 +87,55 @@ export function Signout() {
 
     return (
         <div id="load-save-container">
-            <IconButton
-                aria-controls={open ? 'basic-menu' : undefined}
-                color="inherit"
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-                sx={{ width: 'fit-content' }}
-            >
-                {user?.avatar ? (
-                    <Avatar
-                        sx={{ width: '2rem', height: '2rem' }}
-                        src={`${user?.avatar}`}
-                        alt={`${user?.name}-photo`}
-                    />
-                ) : (
-                    <AccountCircleIcon />
-                )}
-            </IconButton>
-            <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                onClose={handleClose}
+            <ProfileMenuButtons user={user} handleOpen={handleClick} handleSettingsOpen={handleClick} />
+            <Popover
                 open={open}
-                MenuListProps={{
-                    'aria-labelledby': 'basic-button',
+                anchorEl={anchorEl}
+                onClose={() => setAnchorEl(null)}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                slotProps={{
+                    paper: {
+                        sx: {
+                            width: {
+                                xs: 300,
+                                sm: 300,
+                                md: 330,
+                            },
+                            p: '16px 20px',
+                            borderRadius: 2,
+                            border: '1px solid',
+                            borderColor: 'background.default',
+                        },
+                    },
                 }}
             >
-                <MenuItem onClick={handleLogout}>
+                <SettingsMenu user={user} />
+
+                <Divider style={{ marginTop: '10px', marginBottom: '12px' }} />
+
+                <MenuItem onClick={handleLogout} sx={{ px: 1, py: 1.25, borderRadius: 1 }}>
                     <ListItemIcon>
                         <LogoutIcon />
                     </ListItemIcon>
-                    <ListItemText>Log out</ListItemText>
+                    <ListItemText
+                        primary="Log out"
+                        primaryTypographyProps={{
+                            sx: {
+                                fontSize: '1rem',
+                                fontWeight: 600,
+                                textTransform: 'uppercase',
+                            },
+                        }}
+                    />
                 </MenuItem>
-            </Menu>
+            </Popover>
         </div>
     );
 }

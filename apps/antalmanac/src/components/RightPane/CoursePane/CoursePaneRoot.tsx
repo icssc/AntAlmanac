@@ -42,7 +42,7 @@ export function CoursePaneRoot() {
         WebSOC.clearCache();
         Grades.clearCache();
         forceUpdate();
-    }, [forceUpdate]);
+    }, [forceUpdate, postHog]);
 
     const handleKeydown = useCallback(
         (event: KeyboardEvent) => {
@@ -60,7 +60,7 @@ export function CoursePaneRoot() {
     }, [handleKeydown]);
 
     return (
-        <Box sx={{ height: 0, flexGrow: 1, position: 'relative' }}>
+        <Box sx={{ height: 0, flexGrow: 1 }}>
             <CoursePaneButtonRow
                 showSearch={!searchFormIsDisplayed}
                 onDismissSearchResults={displaySearch}

@@ -32,6 +32,7 @@ const analyticsEnum: AnalyticsEnum = {
             DISPLAY_FINALS: 'Display Finals',
             CHANGE_SCHEDULE: 'Change Schedule',
             UNDO: 'Undo',
+            REDO: 'Redo',
             DOWNLOAD: 'Download Schedule',
         },
     },
