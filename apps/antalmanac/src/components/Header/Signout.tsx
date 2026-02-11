@@ -21,6 +21,7 @@ export function Signout() {
             category: analyticsEnum.auth,
             action: analyticsEnum.auth.actions.SIGN_OUT,
         });
+        postHog?.reset();
         clearSession();
         navigate('/');
     };

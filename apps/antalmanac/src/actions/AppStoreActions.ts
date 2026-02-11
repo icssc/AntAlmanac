@@ -11,7 +11,7 @@ import { TRPCError } from '@trpc/server';
 import { SnackbarOrigin, VariantType } from 'notistack';
 import { PostHog } from 'posthog-js/react';
 
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
@@ -392,7 +392,12 @@ export const loadScheduleWithSessionToken = async (postHog?: PostHog) => {
         });
         const scheduleSaveState = userDataResponse?.userData ?? userDataResponse;
 
+        console.log('userDataResponse>>>', userDataResponse);
+
+        const userId = userDataResponse?.userId;
+
         if (isEmptySchedule(scheduleSaveState.schedules)) {
+            analyticsIdentifyUser(postHog, userId);
             logAnalytics(postHog, {
                 category: analyticsEnum.auth,
                 action: analyticsEnum.auth.actions.LOAD_SCHEDULE,
@@ -404,6 +409,7 @@ export const loadScheduleWithSessionToken = async (postHog?: PostHog) => {
             analyticsErrorMessage = "Couldn't find schedules";
             openSnackbar('error', `Couldn't find schedules for this account`);
         } else if (await AppStore.loadSchedule(scheduleSaveState)) {
+            analyticsIdentifyUser(postHog, userId);
             openSnackbar('success', `Schedule loaded.`);
             logAnalytics(postHog, {
                 category: analyticsEnum.auth,
