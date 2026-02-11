@@ -32,7 +32,7 @@ const WORK_WEEK = ['All', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 const FULL_WEEK = ['All', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const weekendIndices = [0, 6];
 const CAMPUS_CENTER: LatLngTuple = [33.6459, -117.842717];
-const CAMPUS_BOUND_DELTA = 0.04;
+const CAMPUS_BOUND_DELTA = 0.01;
 const CAMPUS_BOUNDS: [LatLngTuple, LatLngTuple] = [
     [CAMPUS_CENTER[0] - CAMPUS_BOUND_DELTA, CAMPUS_CENTER[1] - CAMPUS_BOUND_DELTA],
     [CAMPUS_CENTER[0] + CAMPUS_BOUND_DELTA, CAMPUS_CENTER[1] + CAMPUS_BOUND_DELTA],
