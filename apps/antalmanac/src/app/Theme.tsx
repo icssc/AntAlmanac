@@ -35,8 +35,8 @@ const darkTheme: PaletteOptions = {
     primary: { main: BLUE }, // #305db7
     secondary: { main: LIGHT_BLUE },
     background: {
-        default: '#121212',
-        paper: '#1e1e1e',
+        default: '#1E1E1E',
+        paper: '#1E1E1E',
     },
     text: {
         primary: '#fff',
