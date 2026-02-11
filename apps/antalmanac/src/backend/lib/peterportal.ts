@@ -1,4 +1,4 @@
-import type { PeterPortalAPIResponse, Roadmap } from '@packages/antalmanac-types';
+import type { Roadmap } from '@packages/antalmanac-types';
 import { z } from 'zod';
 
 import { ppEnvSchema } from '../env';
@@ -25,8 +25,7 @@ export const roadmapSchema = z.object({
     content: z.array(roadmapContentSchema),
 });
 
-export async function fetchUserRoadmapsPeterPortal(userId: string) {
-    // maybe add a return promise
+export async function fetchUserRoadmapsPeterPortal(userId: string): Promise<Roadmap[]> {
     const env = ppEnvSchema.parse(process.env);
     const apiKey = env.PETERPORTAL_CLIENT_API_KEY;
 
@@ -46,8 +45,10 @@ export async function fetchUserRoadmapsPeterPortal(userId: string) {
         if (!response.ok) {
             throw new Error(`Failed to fetch: ${response.statusText}`);
         }
-        const data: PeterPortalAPIResponse = await response.json();
-        return data.result?.data ?? [];
+        const data = await response.json();
+        const validRoadmaps = z.array(roadmapSchema).parse(data.result?.data ?? []);
+
+        return validRoadmaps;
     } catch (e) {
         console.error('PeterPortal fetch failed:', e);
         return [];
@@ -59,7 +60,7 @@ export function flattenRoadmapCourses(roadmap: Roadmap): string[] {
 
     for (const year of roadmap.content ?? []) {
         for (const q of year.quarters ?? []) {
-            q.courses?.forEach((c) => courses.add(c));
+            q.courses.forEach((c) => courses.add(c));
         }
     }
     return Array.from(courses);
