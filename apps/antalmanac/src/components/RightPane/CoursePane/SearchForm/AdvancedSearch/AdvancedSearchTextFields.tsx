@@ -221,7 +221,7 @@ export function AdvancedSearchTextFields() {
             params.delete('excludeRoadmapCourses');
             history.replaceState({}, '', `${url.pathname}${params.toString() ? '?' + params.toString() : ''}`);
         }
-    }, [roadmaps]);
+    }, [roadmaps, excludeRoadmapCourses]);
 
     return (
         <>
