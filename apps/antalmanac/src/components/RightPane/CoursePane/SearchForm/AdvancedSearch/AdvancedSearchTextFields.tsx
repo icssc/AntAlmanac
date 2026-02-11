@@ -103,16 +103,6 @@ export function AdvancedSearchTextFields() {
         };
     }, [resetField]);
 
-    useEffect(() => {
-        if (excludeRoadmapCourses && roadmaps.length > 0) {
-            const roadmapExists = roadmaps.some((r) => r.id.toString() === excludeRoadmapCourses);
-            if (!roadmapExists) {
-                setExcludeRoadmapCourses('');
-                updateValue('excludeRoadmapCourses', '');
-            }
-        }
-    }, [excludeRoadmapCourses, roadmaps]);
-
     const updateValue = (name: AdvancedSearchParam, stringValue: string) => {
         const stateObj = { url: 'url' };
         const url = new URL(window.location.href);
