@@ -1,6 +1,5 @@
 import { Close, Save as SaveIcon } from '@mui/icons-material';
-import { LoadingButton } from '@mui/lab';
-import { Stack, Snackbar, Alert, Link, IconButton } from '@mui/material';
+import { Stack, Snackbar, Alert, Link, IconButton, Button } from '@mui/material';
 import { useState, useEffect } from 'react';
 
 import actionTypesStore from '$actions/ActionTypesStore';
@@ -47,6 +46,7 @@ export const Save = () => {
             });
             setSaving(true);
             await saveSchedule(accounts.providerAccountId, true, users);
+            await new Promise((res) => setTimeout(res, 5000));
             setSaving(false);
         }
     };
@@ -64,7 +64,7 @@ export const Save = () => {
     }, []);
     return (
         <Stack direction="row">
-            <LoadingButton
+            <Button
                 id="save-button"
                 color="inherit"
                 startIcon={<SaveIcon />}
@@ -75,7 +75,7 @@ export const Save = () => {
                 loading={saving}
             >
                 Save
-            </LoadingButton>
+            </Button>
 
             <Snackbar open={openAutoSaveWarning} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
                 <Alert
