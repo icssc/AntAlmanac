@@ -1,17 +1,42 @@
 import { Box, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
-import { BLUE, LIGHT_BLUE } from '$src/globals';
-import { useTimeFormatStore, useThemeStore } from '$stores/SettingsStore';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 
 export function TimeSelector() {
+    const theme = useTheme();
+    const accentColor = theme.palette.secondary.main;
+    const segment = theme.palette.settingsSegment;
+
     const [isMilitaryTime, setTimeFormat] = useTimeFormatStore((store) => [store.isMilitaryTime, store.setTimeFormat]);
-    const isDark = useThemeStore((store) => store.isDark);
-    const accentColor = isDark ? LIGHT_BLUE : BLUE;
+
+    const borderColor = segment.border;
+    const inactiveBackgroundColor = segment.background;
+    const inactiveHoverBackgroundColor = segment.hoverBackground;
 
     const handleTimeFormatChange = (event: React.MouseEvent<HTMLDivElement>) => {
         const value = event.currentTarget.getAttribute('data-value');
         setTimeFormat(value === 'true');
     };
+
+    const getSegmentSx = (selected: boolean, position: 'left' | 'right') => ({
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '8px 20px',
+        cursor: 'pointer',
+        fontWeight: 'bold',
+        fontSize: '1.1rem',
+        backgroundColor: selected ? accentColor : inactiveBackgroundColor,
+        color: selected ? '#fff' : accentColor,
+        ...(position === 'left' ? { borderRight: `1px solid ${borderColor}` } : null),
+        ...(position === 'left' ? { borderTopLeftRadius: 4, borderBottomLeftRadius: 4 } : null),
+        ...(position === 'right' ? { borderTopRightRadius: 4, borderBottomRightRadius: 4 } : null),
+        '&:hover': {
+            backgroundColor: selected ? accentColor : inactiveHoverBackgroundColor,
+        },
+    });
 
     return (
         <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 0.5 }}>
@@ -21,55 +46,14 @@ export function TimeSelector() {
             <Box
                 sx={{
                     display: 'flex',
-                    border: `1px solid ${isDark ? '#8886' : '#d3d4d5'}`,
+                    border: `1px solid ${borderColor}`,
                     borderRadius: '4px',
                 }}
             >
-                <Box
-                    data-value="false"
-                    onClick={handleTimeFormatChange}
-                    sx={{
-                        flex: 1,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: '8px 20px',
-                        cursor: 'pointer',
-                        fontWeight: 'bold',
-                        fontSize: '1.1rem',
-                        backgroundColor: !isMilitaryTime ? accentColor : isDark ? '#333333' : '#f8f9fa',
-                        color: !isMilitaryTime ? '#fff' : accentColor,
-                        borderRight: `1px solid ${isDark ? '#8886' : '#d3d4d5'}`,
-                        borderTopLeftRadius: 4,
-                        borderBottomLeftRadius: 4,
-                        '&:hover': {
-                            backgroundColor: !isMilitaryTime ? accentColor : isDark ? '#424649' : '#d3d4d5',
-                        },
-                    }}
-                >
+                <Box data-value="false" onClick={handleTimeFormatChange} sx={getSegmentSx(!isMilitaryTime, 'left')}>
                     12 Hour
                 </Box>
-                <Box
-                    data-value="true"
-                    onClick={handleTimeFormatChange}
-                    sx={{
-                        flex: 1,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: '8px 20px',
-                        cursor: 'pointer',
-                        fontWeight: 'bold',
-                        fontSize: '1.1rem',
-                        backgroundColor: isMilitaryTime ? accentColor : isDark ? '#333333' : '#f8f9fa',
-                        color: isMilitaryTime ? '#fff' : accentColor,
-                        borderTopRightRadius: 4,
-                        borderBottomRightRadius: 4,
-                        '&:hover': {
-                            backgroundColor: isMilitaryTime ? accentColor : isDark ? '#424649' : '#d3d4d5',
-                        },
-                    }}
-                >
+                <Box data-value="true" onClick={handleTimeFormatChange} sx={getSegmentSx(isMilitaryTime, 'right')}>
                     24 Hour
                 </Box>
             </Box>

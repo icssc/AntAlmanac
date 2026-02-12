@@ -18,6 +18,11 @@ const roboto = Roboto({
 const lightTheme: PaletteOptions = {
     primary: { main: BLUE }, // #305db7
     secondary: { main: BLUE },
+    settingsSegment: {
+        border: '#d3d4d5',
+        background: '#f8f9fa',
+        hoverBackground: '#d3d4d5',
+    },
     background: {
         default: '#f5f6fc',
         paper: '#fff',
@@ -34,6 +39,11 @@ const lightTheme: PaletteOptions = {
 const darkTheme: PaletteOptions = {
     primary: { main: BLUE }, // #305db7
     secondary: { main: LIGHT_BLUE },
+    settingsSegment: {
+        border: '#8886',
+        background: '#333333',
+        hoverBackground: '#424649',
+    },
     background: {
         default: '#1E1E1E',
         paper: '#1E1E1E',
@@ -55,6 +65,22 @@ declare module '@mui/material/styles' {
     interface BreakpointOverrides {
         xxs: true;
         default: true;
+    }
+
+    interface Palette {
+        settingsSegment: {
+            border: string;
+            background: string;
+            hoverBackground: string;
+        };
+    }
+
+    interface PaletteOptions {
+        settingsSegment?: {
+            border: string;
+            background: string;
+            hoverBackground: string;
+        };
     }
 }
 
