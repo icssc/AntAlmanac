@@ -2,7 +2,7 @@
 
 import { Popover } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import { shallow } from 'zustand/shallow';
+import { useShallow } from 'zustand/react/shallow';
 
 import { CourseCalendarEvent, isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
 import AppStore from '$stores/AppStore';
@@ -10,8 +10,7 @@ import { useSelectedEventStore } from '$stores/SelectedEventStore';
 
 export function CalendarEventPopover() {
     const [anchorEl, selectedEvent, setSelectedEvent] = useSelectedEventStore(
-        (state) => [state.selectedEventAnchorEl, state.selectedEvent, state.setSelectedEvent],
-        shallow
+        useShallow((state) => [state.selectedEventAnchorEl, state.selectedEvent, state.setSelectedEvent])
     );
 
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
