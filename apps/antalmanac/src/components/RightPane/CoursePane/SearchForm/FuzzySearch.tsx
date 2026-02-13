@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
-import { PureComponent } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import UAParser from 'ua-parser-js';
 
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
@@ -50,84 +50,30 @@ const isIpad = () => {
 
 interface FuzzySearchProps {
     toggleSearch: () => void;
-    toggleShowManualSearch: () => void;
     postHog?: PostHog;
-}
-
-interface FuzzySearchState {
-    cache: Record<string, Record<string, SearchResult> | undefined>;
-    open: boolean;
-    results: Record<string, SearchResult> | undefined;
-    value: string;
-    loading: boolean;
-    requestTimestamp?: number;
-    pendingRequest?: number;
-    currentTerm: string;
 }
 
 interface SearchOption {
     key: string;
     result: SearchResult;
 }
-class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
-    state: FuzzySearchState = {
-        cache: {},
-        open: false,
-        results: {},
-        value: '',
-        loading: false,
-        requestTimestamp: undefined,
-        pendingRequest: undefined,
-        currentTerm: RightPaneStore.getFormData().term,
-    };
 
-    componentDidMount() {
-        RightPaneStore.on('formDataChange', this.handleFormDataChange);
-    }
+const FuzzySearch = ({ toggleSearch, postHog }: FuzzySearchProps) => {
+    const [cache, setCache] = useState<Record<string, Record<string, SearchResult> | undefined>>({});
+    const [open, setOpen] = useState<boolean>(false);
+    const [results, setResults] = useState<Record<string, SearchResult> | undefined>({});
+    const [value, setValue] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
+    const [pendingRequest, setPendingRequest] = useState<number | undefined>(undefined);
+    const [currentTerm, setCurrentTerm] = useState<string>(RightPaneStore.getFormData().term);
 
-    componentWillUnmount() {
-        RightPaneStore.off('formDataChange', this.handleFormDataChange);
-    }
+    const requestTimestampRef = useRef<number | undefined>(undefined);
 
-    private getCacheKey = (term: string, query: string): string => {
+    const getCacheKey = (term: string, query: string): string => {
         return `${term}:${query}`;
     };
 
-    handleFormDataChange = () => {
-        const newTerm = RightPaneStore.getFormData().term;
-
-        if (newTerm !== this.state.currentTerm && this.state.value.length >= 2) {
-            const cacheKey = this.getCacheKey(newTerm, this.state.value);
-
-            if (this.state.cache[cacheKey]) {
-                this.setState({
-                    currentTerm: newTerm,
-                    results: this.state.cache[cacheKey],
-                    open: false,
-                });
-            } else {
-                const requestTimestamp = Date.now();
-
-                this.setState(
-                    {
-                        currentTerm: newTerm,
-                        results: {},
-                        loading: true,
-                        requestTimestamp,
-                        open: false,
-                    },
-                    () => {
-                        window.clearTimeout(this.state.pendingRequest);
-                        this.maybeDoSearchFactory(requestTimestamp)();
-                    }
-                );
-            }
-        } else if (newTerm !== this.state.currentTerm) {
-            this.setState({ currentTerm: newTerm });
-        }
-    };
-
-    doSearch = (option: SearchOption) => {
+    const doSearch = (option: SearchOption) => {
         const result = option.result;
         if (!result) {
             return;
@@ -157,16 +103,16 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
             default:
                 break;
         }
-        this.props.toggleSearch();
-        logAnalytics(this.props.postHog, {
+        toggleSearch();
+        logAnalytics(postHog, {
             category: analyticsEnum.classSearch,
             action: analyticsEnum.classSearch.actions.FUZZY_SEARCH,
         });
     };
 
-    filterOptions = (options: SearchOption[]) => options;
+    const filterOptions = (options: SearchOption[]) => options;
 
-    getOptionLabel = (option: SearchOption) => {
+    const getOptionLabel = (option: SearchOption) => {
         const object = option.result;
         if (!object) return option.key;
         switch (object.type) {
@@ -188,86 +134,118 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         }
     };
 
-    requestIsCurrent = (requestTimestamp: number) => this.state.requestTimestamp === requestTimestamp;
+    const requestIsCurrent = useCallback(
+        (requestTimestamp: number) => requestTimestampRef.current === requestTimestamp,
+        []
+    );
 
     // Returns a function for use with setTimeout that exhibits the following behavior:
     // If the request is current, make the request. Then, if it is still current, update the component's
     // state to reflect the results of the query.
-    maybeDoSearchFactory = (requestTimestamp: number) => () => {
-        if (!this.requestIsCurrent(requestTimestamp)) return;
+    const maybeDoSearchFactory = useCallback(
+        (requestTimestamp: number, requestQuery: string) => () => {
+            if (!requestIsCurrent(requestTimestamp)) return;
 
-        const requestTerm = RightPaneStore.getFormData().term;
-        const requestQuery = this.state.value;
+            const requestTerm = RightPaneStore.getFormData().term;
 
-        trpc.search.doSearch
-            .query({ query: requestQuery, term: requestTerm })
-            .then((result) => {
-                if (!this.requestIsCurrent(requestTimestamp)) return;
+            trpc.search.doSearch
+                .query({ query: requestQuery, term: requestTerm })
+                .then((result) => {
+                    if (!requestIsCurrent(requestTimestamp)) return;
 
-                const cacheKey = this.getCacheKey(requestTerm, requestQuery);
+                    const cacheKey = getCacheKey(requestTerm, requestQuery);
 
-                this.setState({
-                    cache: {
-                        ...this.state.cache,
+                    setCache((cache) => ({
+                        ...cache,
                         [cacheKey]: result,
-                    },
-                    results: result,
-                    loading: false,
-                    pendingRequest: undefined,
-                    requestTimestamp: undefined,
+                    }));
+                    setResults(result);
+                    setLoading(false);
+                    setPendingRequest(undefined);
+                    requestTimestampRef.current = undefined;
+                })
+                .catch((e) => {
+                    if (!requestIsCurrent(requestTimestamp)) return;
+                    setResults({});
+                    setLoading(false);
+                    console.error(e);
                 });
-            })
-            .catch((e) => {
-                if (!this.requestIsCurrent(requestTimestamp)) return;
-                this.setState({ results: {}, loading: false });
-                console.error(e);
-            });
-    };
+        },
+        [requestIsCurrent]
+    );
 
-    onInputChange = (_event: unknown, value: string, reason: AutocompleteInputChangeReason) => {
-        const lowerCaseValue = value.toLowerCase();
+    const handleFormDataChange = useCallback(() => {
+        const newTerm = RightPaneStore.getFormData().term;
+
+        if (newTerm !== currentTerm && value.length >= 2) {
+            const cacheKey = getCacheKey(newTerm, value);
+
+            if (cache[cacheKey]) {
+                setCurrentTerm(newTerm);
+                setResults(cache[cacheKey]);
+                setOpen(false);
+            } else {
+                const requestTimestamp = Date.now();
+
+                setCurrentTerm(newTerm);
+                setResults({});
+                setLoading(true);
+                requestTimestampRef.current = requestTimestamp;
+                setOpen(false);
+
+                window.clearTimeout(pendingRequest);
+                maybeDoSearchFactory(requestTimestamp, value)();
+            }
+        } else if (newTerm !== currentTerm) {
+            setCurrentTerm(newTerm);
+        }
+    }, [cache, currentTerm, value, maybeDoSearchFactory, pendingRequest]);
+
+    const onInputChange = (_event: unknown, inputValue: string, reason: AutocompleteInputChangeReason) => {
+        const lowerCaseValue = inputValue.toLowerCase();
         if (reason === 'input') {
-            this.setState(
-                {
-                    open: lowerCaseValue.length >= 2,
-                    value: lowerCaseValue.slice(-1) === ' ' ? lowerCaseValue.slice(0, -1) : lowerCaseValue,
-                },
-                () => {
-                    if (lowerCaseValue.length < 2) return;
+            const newValue = lowerCaseValue.slice(-1) === ' ' ? lowerCaseValue.slice(0, -1) : lowerCaseValue;
 
-                    const cacheKey = this.getCacheKey(this.state.currentTerm, this.state.value);
+            setOpen(lowerCaseValue.length >= 2);
+            setValue(newValue);
 
-                    if (this.state.cache[cacheKey]) {
-                        this.setState({ results: this.state.cache[cacheKey] });
-                    } else {
-                        const requestTimestamp = Date.now();
-                        this.setState({ results: {}, loading: true, requestTimestamp }, () => {
-                            window.clearTimeout(this.state.pendingRequest);
-                            const pendingRequest = window.setTimeout(
-                                this.maybeDoSearchFactory(requestTimestamp),
-                                SEARCH_TIMEOUT_MS
-                            );
-                            this.setState({ pendingRequest });
-                        });
-                    }
+            if (lowerCaseValue.length >= 2) {
+                const cacheKey = getCacheKey(currentTerm, newValue);
+
+                if (cache[cacheKey]) {
+                    setResults(cache[cacheKey]);
+                } else {
+                    const requestTimestamp = Date.now();
+
+                    setResults({});
+                    setLoading(true);
+                    requestTimestampRef.current = requestTimestamp;
+
+                    window.clearTimeout(pendingRequest);
+                    const newPendingRequest = window.setTimeout(
+                        maybeDoSearchFactory(requestTimestamp, newValue),
+                        SEARCH_TIMEOUT_MS
+                    );
+                    setPendingRequest(newPendingRequest);
                 }
-            );
+            }
         }
     };
 
-    onChange = (_event: unknown, option: SearchOption | null) => {
+    const onChange = (_event: unknown, option: SearchOption | null) => {
         if (option) {
-            this.setState({ open: false, value: '' }, () => {
-                this.doSearch(option);
-            });
+            setOpen(false);
+            setValue('');
+
+            doSearch(option);
         }
     };
 
-    onClose = () => {
-        this.setState({ open: false });
+    const onClose = () => {
+        setOpen(false);
     };
 
-    groupBy = (option: SearchOption) => {
+    const groupBy = (option: SearchOption) => {
         const isCourse = option.result.type === resultType.COURSE;
         if (!isCourse) return groupType.UNGROUPED;
 
@@ -275,7 +253,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         return isOffered ? groupType.OFFERED : groupType.NOT_OFFERED;
     };
 
-    renderGroup = (params: AutocompleteRenderGroupParams) => {
+    const renderGroup = (params: AutocompleteRenderGroupParams) => {
         if (params.group === groupType.UNGROUPED) {
             return <Box key={params.key}>{params.children}</Box>;
         }
@@ -302,9 +280,12 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         );
     };
 
-    renderOption = (props: React.HTMLAttributes<HTMLLIElement>, option: SearchOption) => {
+    const renderOption = (
+        componentProps: React.HTMLAttributes<HTMLLIElement> & { key: string },
+        option: SearchOption
+    ) => {
         const object = option.result;
-        const { key, ...restProps } = props as React.HTMLAttributes<HTMLLIElement> & { key: string };
+        const { key, ...restProps } = componentProps;
         if (!object)
             return (
                 <Box component="li" key={key} {...restProps}>
@@ -312,7 +293,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 </Box>
             );
 
-        const label = this.getOptionLabel(option);
+        const label = getOptionLabel(option);
         const isCourse = object.type === resultType.COURSE;
 
         const isOffered = isCourse && 'isOffered' in object && object.isOffered;
@@ -333,45 +314,51 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         );
     };
 
-    onFocus = () => {
-        if (this.state.value.length >= 2) {
-            this.setState({ open: true });
+    const onFocus = () => {
+        if (value.length >= 2) {
+            setOpen(true);
         }
     };
 
-    render() {
-        return (
-            <LabeledAutocomplete
-                label="Search"
-                autocompleteProps={{
-                    loading: this.state.loading,
-                    fullWidth: true,
-                    options: Object.entries(this.state.results ?? {}).map(([key, result]) => ({ key, result })),
-                    autoHighlight: true,
-                    filterOptions: this.filterOptions,
-                    getOptionLabel: this.getOptionLabel,
-                    renderOption: this.renderOption,
-                    groupBy: this.groupBy,
-                    renderGroup: this.renderGroup,
-                    onChange: this.onChange,
-                    id: 'fuzzy-search',
-                    noOptionsText: 'No results found! Please try broadening your search.',
-                    onClose: this.onClose,
-                    onInputChange: this.onInputChange,
-                    open: this.state.open,
-                    popupIcon: '',
-                    clearOnBlur: false,
-                }}
-                textFieldProps={{
-                    autoFocus: !isMobile(),
-                    placeholder: 'Search for courses, departments, GEs...',
-                    fullWidth: true,
-                    onFocus: this.onFocus,
-                }}
-                isAligned
-            />
-        );
-    }
-}
+    useEffect(() => {
+        RightPaneStore.on('formDataChange', handleFormDataChange);
+
+        return () => {
+            RightPaneStore.off('formDataChange', handleFormDataChange);
+        };
+    }, [handleFormDataChange]);
+
+    return (
+        <LabeledAutocomplete
+            label="Search"
+            autocompleteProps={{
+                loading: loading,
+                fullWidth: true,
+                options: Object.entries(results ?? {}).map(([key, result]) => ({ key, result })),
+                autoHighlight: true,
+                filterOptions: filterOptions,
+                getOptionLabel: getOptionLabel,
+                renderOption: renderOption,
+                groupBy: groupBy,
+                renderGroup: renderGroup,
+                onChange: onChange,
+                id: 'fuzzy-search',
+                noOptionsText: 'No results found! Please try broadening your search.',
+                onClose: onClose,
+                onInputChange: onInputChange,
+                open: open,
+                popupIcon: '',
+                clearOnBlur: false,
+            }}
+            textFieldProps={{
+                autoFocus: !isMobile(),
+                placeholder: 'Search for courses, departments, GEs...',
+                fullWidth: true,
+                onFocus: onFocus,
+            }}
+            isAligned
+        />
+    );
+};
 
 export default FuzzySearch;
