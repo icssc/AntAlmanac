@@ -39,6 +39,8 @@ const emojiMap: Record<string, string> = {
 
 const romanArr = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
 
+const MIN_QUERY_LENGTH = 2;
+
 const isMobile = () => {
     const parser = new UAParser();
     return parser.getDevice().type === 'mobile' || parser.getDevice().type === 'tablet' || isIpad();
@@ -177,7 +179,7 @@ const FuzzySearch = ({ toggleSearch, postHog }: FuzzySearchProps) => {
     const handleFormDataChange = useCallback(() => {
         const newTerm = RightPaneStore.getFormData().term;
 
-        if (newTerm !== currentTerm && value.length >= 2) {
+        if (newTerm !== currentTerm && value.length >= MIN_QUERY_LENGTH) {
             const cacheKey = getCacheKey(newTerm, value);
 
             if (cache[cacheKey]) {
@@ -206,10 +208,10 @@ const FuzzySearch = ({ toggleSearch, postHog }: FuzzySearchProps) => {
         if (reason === 'input') {
             const newValue = lowerCaseValue.slice(-1) === ' ' ? lowerCaseValue.slice(0, -1) : lowerCaseValue;
 
-            setOpen(lowerCaseValue.length >= 2);
+            setOpen(lowerCaseValue.length >= MIN_QUERY_LENGTH);
             setValue(newValue);
 
-            if (lowerCaseValue.length >= 2) {
+            if (lowerCaseValue.length >= MIN_QUERY_LENGTH) {
                 const cacheKey = getCacheKey(currentTerm, newValue);
 
                 if (cache[cacheKey]) {
@@ -315,7 +317,7 @@ const FuzzySearch = ({ toggleSearch, postHog }: FuzzySearchProps) => {
     };
 
     const onFocus = () => {
-        if (value.length >= 2) {
+        if (value.length >= MIN_QUERY_LENGTH) {
             setOpen(true);
         }
     };
