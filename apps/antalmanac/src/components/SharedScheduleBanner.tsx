@@ -30,6 +30,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
     const postHog = usePostHog();
 
     const [scheduleName, setScheduleName] = useState<string | null>(null);
+    const [isAddingSchedule, setIsAddingSchedule] = useState(false);
 
     const hasAttemptedLoadRef = useRef(false);
     const currentScheduleIdRef = useRef<string | undefined>(scheduleId);
@@ -169,6 +170,8 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
             return;
         }
 
+        setIsAddingSchedule(true);
+
         try {
             beginLoadingSchedule();
 
@@ -295,7 +298,12 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                             <Add />
                         </IconButton>
                     ) : (
-                        <Button variant="contained" onClick={handleAddToMySchedules} size="large">
+                        <Button
+                            variant="contained"
+                            onClick={handleAddToMySchedules}
+                            size="large"
+                            loading={isAddingSchedule}
+                        >
                             Add to My Schedules
                         </Button>
                     )}
