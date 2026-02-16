@@ -112,16 +112,16 @@ export const Signin = () => {
                 setOpenalert(true);
                 setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
             } else {
-                let didLoadScheduleSucceed = true;
+                let isLoadScheduleSucceed = true;
                 if (sessionToken) {
                     if (!skipScheduleLoad) {
-                        didLoadScheduleSucceed = await loadScheduleWithSessionToken();
+                        isLoadScheduleSucceed = await loadScheduleWithSessionToken();
                     }
-                    if (didLoadScheduleSucceed) {
+                    if (isLoadScheduleSucceed) {
                         updateSession(sessionToken);
                     }
                 }
-                if ((sessionToken === '' && userID) || !didLoadScheduleSucceed) {
+                if ((sessionToken === '' && userID) || !isLoadScheduleSucceed) {
                     await validateImportedUser(userID);
                     if (!skipScheduleLoad) {
                         await loadSchedule(userID, rememberMe, 'GUEST');
