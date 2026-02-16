@@ -111,12 +111,21 @@ export const Signin = () => {
             if (!validSession) {
                 setOpenalert(true);
                 setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
-            } else if (!skipScheduleLoad) {
-                if (sessionToken && (await loadScheduleWithSessionToken())) {
-                    updateSession(sessionToken);
-                } else if (sessionToken === '' && userID && userID !== '') {
+            } else {
+                let isLoadScheduleSucceed = true;
+                if (sessionToken) {
+                    if (!skipScheduleLoad) {
+                        isLoadScheduleSucceed = await loadScheduleWithSessionToken();
+                    }
+                    if (isLoadScheduleSucceed) {
+                        updateSession(sessionToken);
+                    }
+                }
+                if ((sessionToken === '' && userID) || !isLoadScheduleSucceed) {
                     await validateImportedUser(userID);
-                    await loadSchedule(userID, rememberMe, 'GUEST');
+                    if (!skipScheduleLoad) {
+                        await loadSchedule(userID, rememberMe, 'GUEST');
+                    }
                 }
             }
 
