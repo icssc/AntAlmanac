@@ -12,7 +12,6 @@ import {
     Stack,
     Typography,
 } from '@mui/material';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { openSnackbar } from '$actions/AppStoreActions';
@@ -136,7 +135,7 @@ export function Header() {
                                         sx={{ width: 200 }}
                                     >
                                         <MenuItem
-                                            component={Link}
+                                            component="a"
                                             href="/"
                                             selected={platform === 'Scheduler'}
                                             onClick={() => setAnchorEl(null)}
@@ -150,7 +149,7 @@ export function Header() {
                                             </Typography>
                                         </MenuItem>
                                         <MenuItem
-                                            component={Link}
+                                            component="a"
                                             href="/planner"
                                             selected={platform === 'Planner'}
                                             onClick={() => setAnchorEl(null)}
@@ -186,7 +185,7 @@ export function Header() {
                                         Scheduler
                                     </Button>
                                     <Button
-                                        component={Link}
+                                        component="a"
                                         href="/planner"
                                         startIcon={<Route />}
                                         sx={{
