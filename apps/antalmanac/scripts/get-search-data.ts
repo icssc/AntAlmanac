@@ -27,8 +27,10 @@ async function main() {
     if (!apiKey) throw new Error('ANTEATER_API_KEY is required');
 
     try {
-        const cacheFolderStatistics = await stat(join(__dirname, '../src/generated/searchData.ts'));
+        await mkdir(join(__dirname, '../src/generated/'), { recursive: true });
+        await mkdir(join(__dirname, '../src/generated/terms/'), { recursive: true });
 
+        const cacheFolderStatistics = await stat(join(__dirname, '../src/generated/searchData.ts'));
         const lastModifiedDate = cacheFolderStatistics.mtime;
         const currentDate = new Date();
         const validCacheMs = VALID_CACHE_TIME_DAYS * 24 * 60 * 60 * 1000;
@@ -92,21 +94,9 @@ async function main() {
             }
         }
     }`;
-    await mkdir(join(__dirname, '../src/generated/'), { recursive: true });
-    await mkdir(join(__dirname, '../src/generated/terms/'), { recursive: true });
-    await writeFile(
-        join(__dirname, '../src/generated/searchData.ts'),
-        `
-    import type { CourseSearchResult, DepartmentSearchResult } from "@packages/antalmanac-types";
-    export const departments: Array<DepartmentSearchResult & { id: string }> = ${JSON.stringify(
-        Array.from(deptMap.values())
-    )};
-    export const courses: Array<CourseSearchResult & { id: string }> = ${JSON.stringify(
-        Array.from(courseMap.values())
-    )};
-    `
-    );
-    let count = 0;
+
+    const allInstructorNames = new Set<string>();
+
     const termPromises = termData.map(async (term, index) => {
         try {
             const [year, quarter] = term.shortName.split(' ');
@@ -122,28 +112,22 @@ async function main() {
             }
 
             const parsedWebsocData = parseWebSocData(res);
-            const parsedSectionCodes = parsedWebsocData.sectionCodes;
-            const parsedInstructors = parsedWebsocData.instructors;
+            const { sectionCodes, instructorNames } = parsedWebsocData;
 
-            console.log(
-                `Fetched ${Object.keys(parsedSectionCodes).length} section codes for ${
-                    term.shortName
-                } from Anteater API.`
-            );
+            instructorNames.forEach((name) => allInstructorNames.add(name));
 
-            console.log(
-                `Fetched ${Object.keys(parsedInstructors).length} instructors for ${term.shortName} from Anteater API.`
-            );
+            console.log(`Fetched ${Object.keys(sectionCodes).length} section codes for ${term.shortName}.`);
+            console.log(`Fetched ${instructorNames.size} instructors for ${term.shortName}.`);
 
             const sectionCodesFileName = join(__dirname, `../src/generated/terms/${parsedTerm}.json`);
-            await writeFile(sectionCodesFileName, JSON.stringify(parsedSectionCodes, null, 2));
+            await writeFile(sectionCodesFileName, JSON.stringify(sectionCodes, null, 2));
 
-            const instructorsFileName = join(__dirname, `../src/generated/terms/${parsedTerm}_instructors.json`);
-            await writeFile(instructorsFileName, JSON.stringify(parsedInstructors, null, 2));
+            const instructorNamesFileName = join(__dirname, `../src/generated/terms/${parsedTerm}_instructors.json`);
+            await writeFile(instructorNamesFileName, JSON.stringify(Array.from(instructorNames)));
 
             return {
-                sectionCount: Object.keys(parsedSectionCodes).length,
-                instructorCount: Object.keys(parsedInstructors).length,
+                sectionCount: Object.keys(sectionCodes).length,
+                instructorCount: instructorNames.size,
             };
         } catch (error) {
             console.error(`ERROR in promise ${index} for term "${term.shortName}":`);
@@ -159,11 +143,27 @@ async function main() {
     });
 
     const results = await Promise.all(termPromises);
+
+    await writeFile(
+        join(__dirname, '../src/generated/searchData.ts'),
+        `
+    import type { CourseSearchResult, DepartmentSearchResult, InstructorSearchResult } from "@packages/antalmanac-types";
+    export const departments: Array<DepartmentSearchResult & { id: string }> = ${JSON.stringify(
+        Array.from(deptMap.values())
+    )};
+    export const courses: Array<CourseSearchResult & { id: string }> = ${JSON.stringify(
+        Array.from(courseMap.values())
+    )};
+    export const instructors: Array<InstructorSearchResult & { id: string }> = ${JSON.stringify(
+        Array.from(allInstructorNames).map((name) => ({ id: name, type: 'INSTRUCTOR', name }))
+    )};
+    `
+    );
+
     const totalSections = results.reduce((acc, r) => acc + r.sectionCount, 0);
     const totalInstructors = results.reduce((acc, r) => acc + r.instructorCount, 0);
-
-    console.log(`Fetched ${totalSections} section codes for ${termData.length} terms from Anteater API.`);
-    console.log(`Fetched ${totalInstructors} unique instructors for ${termData.length} terms from Anteater API.`);
+    console.log(`Fetched ${totalSections} section codes for ${termData.length} terms.`);
+    console.log(`Fetched ${totalInstructors} instructor entries, ${allInstructorNames.size} unique.`);
     console.log('Cache generated.');
 }
 

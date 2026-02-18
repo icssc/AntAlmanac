@@ -20,9 +20,12 @@ export function CoursePaneRoot() {
     const handleSearch = useCallback(() => {
         if (!advancedSearchEnabled) {
             RightPaneStore.storePrevFormData();
+            const currentInstructor = RightPaneStore.getFormData().instructor;
             RightPaneStore.resetAdvancedSearchValues();
+            if (currentInstructor) {
+                RightPaneStore.updateFormValue('instructor', currentInstructor);
+            }
         }
-
         if (RightPaneStore.formDataIsValid()) {
             displaySections();
             forceUpdate();

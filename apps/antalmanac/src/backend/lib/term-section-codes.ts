@@ -15,13 +15,13 @@ export interface SectionCodesGraphQLResponse {
     };
 }
 export interface ParsedWebSocData {
-    sectionCodes: Record<string, SectionSearchResult>; // Search by Code (Unique)
-    instructors: Record<string, SectionSearchResult[]>; // Search by Name (Grouped)
+    sectionCodes: Record<string, SectionSearchResult>;
+    instructorNames: Set<string>;
 }
 
 export function parseWebSocData(response: SectionCodesGraphQLResponse): ParsedWebSocData {
     const sectionCodes: Record<string, SectionSearchResult> = {};
-    const instructors: Record<string, SectionSearchResult[]> = {};
+    const instructorNames = new Set<string>();
 
     response.data.websoc.schools.forEach((school: WebsocSchool) => {
         school.departments.forEach((department: WebsocDepartment) => {
@@ -36,21 +36,15 @@ export function parseWebSocData(response: SectionCodesGraphQLResponse): ParsedWe
                         sectionType: section.sectionType,
                     };
 
-                    const sectionCode = section.sectionCode;
-                    sectionCodes[sectionCode] = data;
+                    sectionCodes[section.sectionCode] = data;
 
-                    section.instructors.forEach((name) => {
-                        if (!instructors[name]) {
-                            instructors[name] = [];
-                        }
-                        instructors[name].push(data);
-                    });
+                    section.instructors.forEach((name) => instructorNames.add(name));
                 });
             });
         });
     });
 
-    return { sectionCodes, instructors };
+    return { sectionCodes, instructorNames };
 }
 
 export type Term = {

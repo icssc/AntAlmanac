@@ -2,7 +2,12 @@ import { readFile } from 'fs/promises';
 import { join } from 'node:path';
 
 import uFuzzy from '@leeoniya/ufuzzy';
-import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
+import type {
+    GESearchResult,
+    InstructorSearchResult,
+    SearchResult,
+    SectionSearchResult,
+} from '@packages/antalmanac-types';
 import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';
 
@@ -52,12 +57,22 @@ const searchRouter = router({
             const parsedTerm = `${quarter}_${year}`;
 
             let termSectionCodes: Record<string, SectionSearchResult>;
+            let termInstructorSet: Set<string>;
+
             try {
                 const filePath = join(termsFolderPath, `${parsedTerm}.json`);
                 const fileContent = await readFile(filePath, 'utf-8');
                 termSectionCodes = JSON.parse(fileContent);
             } catch (err) {
                 throw new Error(`Failed to load term data for ${parsedTerm}: ${err}`);
+            }
+
+            try {
+                const instructorFilePath = join(termsFolderPath, `${parsedTerm}_instructors.json`);
+                const instructorFileContent = await readFile(instructorFilePath, 'utf-8');
+                termInstructorSet = new Set(JSON.parse(instructorFileContent) as string[]);
+            } catch (err) {
+                throw new Error(`Failed to load instructor data for ${parsedTerm}: ${err}`);
             }
 
             const offeredCourseSet = new Set(
@@ -86,17 +101,35 @@ const searchRouter = router({
             const matchedGEs = u.search(toMutable(geCategoryKeys), query)[0]?.map((i) => geCategoryKeys[i]) ?? [];
             if (matchedGEs.length) return Object.fromEntries(matchedGEs.map(toGESearchResult));
 
+            // Only return instructors teaching this term
+            const termInstructorList = Array.from(termInstructorSet).map((name) => ({
+                id: name,
+                name,
+                type: 'INSTRUCTOR' as const,
+            }));
+
+            const matchedInstructors: InstructorSearchResult[] = fuzzysort
+                .go(query, termInstructorList, {
+                    key: 'name',
+                    limit: MAX_AUTOCOMPLETE_RESULTS - matchedSections.length,
+                    threshold: 0.7,
+                })
+                .map((result) => ({
+                    type: 'INSTRUCTOR' as const,
+                    name: result.obj.name,
+                }));
+
             const matchedDepts =
-                matchedSections.length === MAX_AUTOCOMPLETE_RESULTS
+                matchedSections.length + matchedInstructors.length === MAX_AUTOCOMPLETE_RESULTS
                     ? []
                     : fuzzysort.go(query, searchData.departments, {
                           keys: ['id', 'name', 'alias'],
-                          limit: MAX_AUTOCOMPLETE_RESULTS - matchedSections.length,
+                          limit: MAX_AUTOCOMPLETE_RESULTS - matchedSections.length - matchedInstructors.length,
                           threshold: 0.7,
                       });
 
             const matchedCourses =
-                matchedSections.length + matchedDepts.length === MAX_AUTOCOMPLETE_RESULTS
+                matchedSections.length + matchedInstructors.length + matchedDepts.length === MAX_AUTOCOMPLETE_RESULTS
                     ? []
                     : fuzzysort
                           .go(query, searchData.courses, {
@@ -120,10 +153,17 @@ const searchRouter = router({
                               if (a.obj.isOffered === b.obj.isOffered) return 0;
                               return a.obj.isOffered ? -1 : 1;
                           })
-                          .slice(0, MAX_AUTOCOMPLETE_RESULTS - matchedDepts.length - matchedSections.length);
+                          .slice(
+                              0,
+                              MAX_AUTOCOMPLETE_RESULTS -
+                                  matchedDepts.length -
+                                  matchedSections.length -
+                                  matchedInstructors.length
+                          );
 
             return Object.fromEntries([
                 ...matchedSections.map((x) => [x.sectionCode, x]),
+                ...matchedInstructors.map((x) => [`instructor:${x.name}`, x]),
                 ...matchedDepts.map((x) => [x.obj.id, x.obj]),
                 ...matchedCourses.map((x) => [x.obj.id, x.obj]),
             ]);

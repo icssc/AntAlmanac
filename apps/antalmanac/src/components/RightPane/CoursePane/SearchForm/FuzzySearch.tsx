@@ -22,10 +22,11 @@ const resultType = {
     DEPARTMENT: 'DEPARTMENT',
     COURSE: 'COURSE',
     SECTION: 'SECTION',
+    INSTRUCTOR: 'INSTRUCTOR',
 } as const;
 
 const groupType = {
-    UNGROUPED: '__ungrgouped__',
+    UNGROUPED: '__ungrouped__',
     NOT_OFFERED: '__notOffered__',
     OFFERED: '__offered__',
 } as const;
@@ -35,6 +36,7 @@ const emojiMap: Record<string, string> = {
     DEPARTMENT: '🏢', // U+1F3E2 :office:
     COURSE: '📚', // U+1F4DA :books:
     SECTION: '📝', // U+1F4DD :memo:
+    INSTRUCTOR: '👩‍🏫',
 };
 
 const romanArr = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
@@ -150,6 +152,11 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 RightPaneStore.updateFormValue('courseNumber', number);
                 break;
             }
+            case resultType.INSTRUCTOR: {
+                const instructorName = option.key.replace('instructor:', '');
+                RightPaneStore.updateFormValue('instructor', instructorName);
+                break;
+            }
             case resultType.SECTION: {
                 RightPaneStore.updateFormValue('sectionCode', result.sectionCode);
                 break;
@@ -183,6 +190,8 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 return `${emojiMap.COURSE} ${object.metadata.department} ${object.metadata.number}: ${object.name}`;
             case resultType.SECTION:
                 return `${emojiMap.SECTION} ${object.sectionCode} ${object.sectionType} ${object.sectionNum}: ${object.department} ${object.courseNumber}`;
+            case resultType.INSTRUCTOR:
+                return `${emojiMap.INSTRUCTOR} ${object.name}`;
             default:
                 return '';
         }
