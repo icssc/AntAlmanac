@@ -101,6 +101,9 @@ pnpm install
 log "Starting PostgreSQL container"
 docker compose up -d --build
 
+log "Waiting for PostgreSQL container to start"
+sleep 5
+
 log "Running database migrations"
 pnpm db:migrate
 
