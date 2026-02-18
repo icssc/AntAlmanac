@@ -78,6 +78,24 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
         return accumulator;
     }, []);
 };
+
+function getFilteredCourses(
+    allCourses: (WebsocSchool | WebsocDepartment | AACourse)[]
+): (WebsocSchool | WebsocDepartment | AACourse)[] {
+    const { manualSearchEnabled } = useCoursePaneStore.getState();
+    const { filterTakenCourses, userTakenCourses } = useSessionStore.getState();
+    if (manualSearchEnabled && filterTakenCourses && userTakenCourses.size > 0) {
+        return allCourses.filter((item) => {
+            if ('sections' in item && 'deptCode' in item && 'courseNumber' in item) {
+                const courseKey = `${item.deptCode}${item.courseNumber}`.replace(/\s+/g, '');
+                return !userTakenCourses.has(courseKey);
+            }
+            return true;
+        });
+    }
+    return allCourses;
+}
+
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
     const isMobile = useIsMobile();
@@ -300,21 +318,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             setError(false);
             setWebsocResp(websocJsonResp);
             const allCourses = flattenSOCObject(websocJsonResp);
-
-            const { filterTakenCourses, userTakenCourses } = useSessionStore.getState();
-
-            const filteredCourses =
-                manualSearchEnabled && filterTakenCourses && userTakenCourses.size > 0
-                    ? allCourses.filter((item) => {
-                          if ('sections' in item && 'deptCode' in item && 'courseNumber' in item) {
-                              const courseKey = `${item.deptCode}${item.courseNumber}`.replace(/\s+/g, '');
-                              return !userTakenCourses.has(courseKey);
-                          }
-                          return true;
-                      })
-                    : allCourses;
-
-            setCourseData(filteredCourses);
+            setCourseData(getFilteredCourses(allCourses));
         } catch (error) {
             console.error(error);
             setError(true);
@@ -333,7 +337,8 @@ export default function CourseRenderPane(props: { id?: number }) {
             if (websocResp == null) {
                 return;
             }
-            setCourseData(flattenSOCObject(websocResp));
+            const flattened = flattenSOCObject(websocResp);
+            setCourseData(getFilteredCourses(flattened));
         };
 
         AppStore.on('currentScheduleIndexChange', changeColors);
