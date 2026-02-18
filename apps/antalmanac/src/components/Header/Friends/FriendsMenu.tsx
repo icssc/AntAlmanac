@@ -15,8 +15,11 @@ import {
     DialogContentText,
     DialogActions,
 } from '@mui/material';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+import { openSnackbar } from '$actions/AppStoreActions';
+import trpc from '$lib/api/trpc';
+import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface FriendRequest {
@@ -31,45 +34,124 @@ interface Friend {
     email: string;
 }
 
-interface FriendsMenuProps {
-    // These will be populated with real data later
-    friendRequests?: FriendRequest[];
-    friends?: Friend[];
-}
-
-// Mock data for demonstration purposes
-const MOCK_REQUESTS: FriendRequest[] = [
-    { id: '1', name: 'John Doe', email: 'john.doe@uci.edu' },
-    { id: '2', email: 'jane.smith@uci.edu' },
-];
-
-const MOCK_FRIENDS: Friend[] = [
-    { id: '1', name: 'Alice Johnson', email: 'alice.j@uci.edu' },
-    { id: '2', name: 'Bob Williams', email: 'bob.w@uci.edu' },
-    { id: '3', email: 'charlie.brown@uci.edu' },
-];
-
-export function FriendsMenu({ friendRequests = MOCK_REQUESTS, friends = MOCK_FRIENDS }: FriendsMenuProps) {
+export function FriendsMenu() {
     const isDark = useThemeStore((store) => store.isDark);
+    const session = useSessionStore((store) => store.session);
+    const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
+
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
+    const [friends, setFriends] = useState<Friend[]>([]);
     const [email, setEmail] = useState('');
     const [blockMenuAnchor, setBlockMenuAnchor] = useState<{ element: HTMLElement; requestId: string } | null>(null);
     const [blockDialogOpen, setBlockDialogOpen] = useState(false);
     const [userToBlock, setUserToBlock] = useState<string | null>(null);
 
-    const handleAddFriend = () => {
-        // TODO: Implement add friend logic
-        console.log('Adding friend:', email);
-        setEmail('');
+    const loadFriendsData = useCallback(async () => {
+        if (!sessionIsValid || !session) {
+            setCurrentUserId(null);
+            setFriendRequests([]);
+            setFriends([]);
+            return;
+        }
+
+        try {
+            const { users } = await trpc.userData.getUserAndAccountBySessionToken.query({
+                token: session,
+            });
+
+            const userId = users.id;
+            setCurrentUserId(userId);
+
+            const [friendsResult, pendingResult] = await Promise.all([
+                trpc.friends.getFriends.query({ userId }),
+                trpc.friends.getPendingRequests.query({ userId }),
+            ]);
+
+            setFriends(
+                friendsResult.map((friend) => ({
+                    id: friend.id,
+                    name: friend.name ?? undefined,
+                    email: friend.email ?? '',
+                }))
+            );
+
+            setFriendRequests(
+                pendingResult.map((request) => ({
+                    id: request.id,
+                    name: request.name ?? undefined,
+                    email: request.email ?? '',
+                }))
+            );
+        } catch (error) {
+            console.error('Failed to load friends data:', error);
+            openSnackbar('error', 'Failed to load friends data.');
+        }
+    }, [session, sessionIsValid]);
+
+    useEffect(() => {
+        void loadFriendsData();
+    }, [loadFriendsData]);
+
+    const handleAddFriend = async () => {
+        if (!currentUserId) {
+            openSnackbar('warning', 'You must be signed in to add friends.');
+            return;
+        }
+
+        try {
+            await trpc.friends.sendFriendRequestByEmail.mutate({
+                requesterId: currentUserId,
+                email: email.trim(),
+            });
+
+            openSnackbar('success', 'Friend request sent.');
+            setEmail('');
+            await loadFriendsData();
+        } catch (error) {
+            console.error('Error sending friend request:', error);
+            if (error instanceof Error) {
+                openSnackbar('error', error.message);
+            } else {
+                openSnackbar('error', 'Failed to send friend request.');
+            }
+        }
     };
 
-    const handleAccept = (requestId: string) => {
-        // TODO: Implement accept logic
-        console.log('Accepting request:', requestId);
+    const handleAccept = async (requesterId: string) => {
+        if (!currentUserId) {
+            return;
+        }
+
+        try {
+            await trpc.friends.acceptFriendRequest.mutate({
+                requesterId,
+                addresseeId: currentUserId,
+            });
+            openSnackbar('success', 'Friend request accepted.');
+            await loadFriendsData();
+        } catch (error) {
+            console.error('Error accepting friend request:', error);
+            openSnackbar('error', 'Failed to accept friend request.');
+        }
     };
 
-    const handleDecline = (requestId: string) => {
-        // TODO: Implement decline logic
-        console.log('Declining request:', requestId);
+    const handleDecline = async (requesterId: string) => {
+        if (!currentUserId) {
+            return;
+        }
+
+        try {
+            await trpc.friends.removeFriend.mutate({
+                userId: currentUserId,
+                friendId: requesterId,
+            });
+            openSnackbar('info', 'Friend request declined.');
+            await loadFriendsData();
+        } catch (error) {
+            console.error('Error declining friend request:', error);
+            openSnackbar('error', 'Failed to decline friend request.');
+        }
     };
 
     const handleOpenBlockMenu = (event: React.MouseEvent<HTMLElement>, requestId: string) => {
@@ -329,26 +411,42 @@ export function FriendsMenu({ friendRequests = MOCK_REQUESTS, friends = MOCK_FRI
                                         </Box>
                                     </Stack>
 
-                                    <Button
-                                        size="small"
-                                        variant="contained"
-                                        onClick={() => handleViewSchedule(friend.id)}
-                                        sx={{
-                                            fontSize: '1rem',
-                                            fontWeight: 600,
-                                            textTransform: 'none',
-                                            py: 0.5,
-                                            px: 1.5,
-                                            boxShadow: 2,
-                                            ml: 1,
-                                            whiteSpace: 'nowrap',
-                                            '&:hover': {
-                                                boxShadow: 3,
-                                            },
-                                        }}
-                                    >
-                                        View Schedule
-                                    </Button>
+                                    <Stack direction="row" spacing={0.5} alignItems="center">
+                                        <Button
+                                            size="small"
+                                            variant="contained"
+                                            onClick={() => handleViewSchedule(friend.id)}
+                                            sx={{
+                                                fontSize: '1rem',
+                                                fontWeight: 600,
+                                                textTransform: 'none',
+                                                py: 0.5,
+                                                px: 1.5,
+                                                boxShadow: 2,
+                                                ml: 1,
+                                                whiteSpace: 'nowrap',
+                                                '&:hover': {
+                                                    boxShadow: 3,
+                                                },
+                                            }}
+                                        >
+                                            View Schedule
+                                        </Button>
+                                        <IconButton
+                                            size="small"
+                                            onClick={(e) => handleOpenFriendMenu(e, friend.id)}
+                                            sx={{
+                                                color: 'text.secondary',
+                                                ml: 0.5,
+                                                '&:hover': {
+                                                    bgcolor: 'action.hover',
+                                                    color: 'text.primary',
+                                                },
+                                            }}
+                                        >
+                                            <MoreVert fontSize="small" />
+                                        </IconButton>
+                                    </Stack>
                                 </Box>
                             ))
                         )}
@@ -373,6 +471,25 @@ export function FriendsMenu({ friendRequests = MOCK_REQUESTS, friends = MOCK_FRI
                 <MenuItem onClick={handleBlockClick} sx={{ color: 'error.main' }}>
                     <Block sx={{ mr: 1, fontSize: '1.25rem' }} />
                     Block User
+                </MenuItem>
+            </Menu>
+
+            {/* Friend Menu */}
+            <Menu
+                anchorEl={friendMenuAnchor?.element}
+                open={Boolean(friendMenuAnchor)}
+                onClose={handleCloseFriendMenu}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+            >
+                <MenuItem onClick={handleUnfriend} sx={{ color: 'error.main' }}>
+                    Unfriend
                 </MenuItem>
             </Menu>
 
