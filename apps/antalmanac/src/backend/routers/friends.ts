@@ -51,9 +51,13 @@ const friendsRouter = router({
             }
 
             if (existing?.status === 'PENDING') {
+                const theyRequestedYou =
+                    existing.requesterId === addressee.id && existing.addresseeId === input.requesterId;
                 throw new TRPCError({
                     code: 'BAD_REQUEST',
-                    message: 'A friend request is already pending with this user.',
+                    message: theyRequestedYou
+                        ? 'This user has already sent you a friend request. Check your Requests tab to accept.'
+                        : 'A friend request is already pending with this user.',
                 });
             }
 
