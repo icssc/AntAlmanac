@@ -85,9 +85,7 @@ export function SettingsMenu({ user, onClose }: SettingsMenuProps) {
                 </Divider>
 
                 <ExperimentalMenu />
-                <Divider style={{ marginTop: '10px', marginBottom: '12px' }}>
-                    {/* <Typography variant="subtitle2">Help Menu</Typography> */}
-                </Divider>
+                <Divider style={{ marginTop: '10px', marginBottom: '12px' }} />
                 <About onMenuClose={onClose} />
             </Stack>
         </Stack>
