@@ -219,7 +219,8 @@ export function AdvancedSearchTextFields() {
             const url = new URL(window.location.href);
             const params = new URLSearchParams(url.search);
             params.delete('excludeRoadmapCourses');
-            history.replaceState({}, '', `${url.pathname}${params.toString() ? '?' + params.toString() : ''}`);
+            const newUrl = params.toString() ? `${url.pathname}?${params.toString()}` : url.pathname;
+            history.replaceState({}, '', newUrl);
         }
     }, [roadmaps, excludeRoadmapCourses]);
 
