@@ -67,7 +67,7 @@ export const subscriptions = pgTable(
          * Environment when this subscription was created (e.g. "production", "staging-1337", "staging-1447").
          * AANTS only sends emails when its STAGE matches this value.
          */
-        environment: text('environment').notNull(),
+        environment: text('environment'),
     },
     (table) => [
         primaryKey({
