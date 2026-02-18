@@ -46,6 +46,7 @@ export function FriendsMenu() {
     const [blockMenuAnchor, setBlockMenuAnchor] = useState<{ element: HTMLElement; requestId: string } | null>(null);
     const [blockDialogOpen, setBlockDialogOpen] = useState(false);
     const [userToBlock, setUserToBlock] = useState<string | null>(null);
+    const [friendMenuAnchor, setFriendMenuAnchor] = useState<{ element: HTMLElement; friendId: string } | null>(null);
 
     const loadFriendsData = useCallback(async () => {
         if (!sessionIsValid || !session) {
@@ -187,6 +188,33 @@ export function FriendsMenu() {
     const handleViewSchedule = (friendId: string) => {
         // TODO: Implement view schedule logic
         console.log('Viewing schedule for:', friendId);
+    };
+
+    const handleOpenFriendMenu = (event: React.MouseEvent<HTMLElement>, friendId: string) => {
+        setFriendMenuAnchor({ element: event.currentTarget, friendId });
+    };
+
+    const handleCloseFriendMenu = () => {
+        setFriendMenuAnchor(null);
+    };
+
+    const handleUnfriend = async () => {
+        if (!currentUserId || !friendMenuAnchor) {
+            return;
+        }
+
+        try {
+            await trpc.friends.removeFriend.mutate({
+                userId: currentUserId,
+                friendId: friendMenuAnchor.friendId,
+            });
+            openSnackbar('info', 'Friend removed.');
+            setFriendMenuAnchor(null);
+            await loadFriendsData();
+        } catch (error) {
+            console.error('Error removing friend:', error);
+            openSnackbar('error', 'Failed to remove friend.');
+        }
     };
 
     return (
