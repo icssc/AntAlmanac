@@ -30,7 +30,10 @@ const ALIASES: Record<string, string | undefined> = {
 
 async function main() {
     const apiKey = process.env.ANTEATER_API_KEY;
-    if (!apiKey) throw new Error('ANTEATER_API_KEY is required');
+    const headers = apiKey ? { Authorization: `Bearer ${apiKey}` } : undefined;
+    if (!apiKey) {
+        console.warn('ANTEATER_API_KEY is not set. Continuing without Authorization header.');
+    }
 
     try {
         const cacheFolderStatistics = await stat(join(__dirname, '../src/generated/searchData.ts'));
@@ -49,7 +52,6 @@ async function main() {
 
     console.log('Generating cache for fuzzy search.');
     console.log('Fetching courses from Anteater API...');
-    const headers = { Authorization: `Bearer ${apiKey}` };
     const courses: Course[] = [];
     for (let skip = 0; skip < MAX_COURSES; skip += 100) {
         await fetch(`https://anteaterapi.com/v2/rest/courses?take=100&skip=${skip}`, { headers })
