@@ -65,6 +65,11 @@ const BROWSER_ROUTER = createBrowserRouter([
                 errorElement: <ErrorPage />,
             },
             {
+                path: '/share/friend/:userId',
+                element: <SharedSchedulePage />,
+                errorElement: <ErrorPage />,
+            },
+            {
                 path: '/share/:scheduleId',
                 element: <SharedSchedulePage />,
                 errorElement: <ErrorPage />,

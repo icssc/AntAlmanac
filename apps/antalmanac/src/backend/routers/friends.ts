@@ -180,8 +180,9 @@ const friendsRouter = router({
      */
     getBlockedUsers: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
         return await db
-            .select()
+            .select({ id: users.id, name: users.name, email: users.email })
             .from(friendships)
+            .innerJoin(users, eq(friendships.addresseeId, users.id))
             .where(and(eq(friendships.requesterId, input.userId), eq(friendships.status, 'BLOCKED')));
     }),
 

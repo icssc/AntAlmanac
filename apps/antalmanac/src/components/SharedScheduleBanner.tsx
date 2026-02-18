@@ -3,7 +3,7 @@ import { Alert, Box, Button, IconButton, Stack, Typography } from '@mui/material
 import type { ScheduleSaveState } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useMatch, useNavigate, useParams } from 'react-router-dom';
 
 import { importSharedScheduleById, openSnackbar } from '$actions/AppStoreActions';
 import { useIsMobile } from '$hooks/useIsMobile';
@@ -23,7 +23,13 @@ interface Props {
 
 const SharedScheduleBanner = ({ error, setError }: Props) => {
     const navigate = useNavigate();
-    const { scheduleId } = useParams<{ scheduleId: string }>();
+    const location = useLocation();
+    const friendMatch = useMatch('/share/friend/:userId');
+    const params = useParams<{ scheduleId?: string; userId?: string }>();
+
+    const friendUserId = friendMatch?.params?.userId;
+    const scheduleId = !friendMatch ? params.scheduleId : undefined;
+    const friendName = (location.state as { friendName?: string } | null)?.friendName ?? 'Friend';
 
     const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
     const setOpenLoadingSchedule = scheduleComponentsToggleStore((state) => state.setOpenLoadingSchedule);
@@ -32,7 +38,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
     const [scheduleName, setScheduleName] = useState<string | null>(null);
 
     const hasAttemptedLoadRef = useRef(false);
-    const currentScheduleIdRef = useRef<string | undefined>(scheduleId);
+    const currentLoadKeyRef = useRef<string>(`${friendUserId ?? ''}-${scheduleId ?? ''}`);
 
     const isMobileScreen = useIsMobile();
 
@@ -44,17 +50,59 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
         }
     }, [setOpenLoadingSchedule]);
 
+    const loadFriendSchedules = useCallback(
+        async (userId: string) => {
+            try {
+                beginLoadingSchedule();
+                removeLocalStorageUnsavedActions();
+
+                const userData = await trpc.userData.getUserData.query({ userId });
+
+                if (!userData?.userData?.schedules?.length) {
+                    setError("This friend doesn't have any schedules to view.");
+                    return;
+                }
+
+                const schedules = userData.userData.schedules;
+                const scheduleIndex = Math.min(
+                    Math.max(0, userData.userData.scheduleIndex ?? 0),
+                    Math.max(0, schedules.length - 1)
+                );
+                const loadSuccess = await AppStore.loadSchedule({ schedules, scheduleIndex });
+
+                if (!loadSuccess) {
+                    throw new Error('Failed to load friend schedules');
+                }
+                setScheduleName(null);
+                setError(null);
+            } catch (err) {
+                console.error('Error loading friend schedules:', err);
+                setError("Couldn't load this friend's schedules.");
+            } finally {
+                setOpenLoadingSchedule(false);
+            }
+        },
+        [beginLoadingSchedule, setError, setOpenLoadingSchedule]
+    );
+
     useEffect(() => {
-        if (currentScheduleIdRef.current !== scheduleId) {
+        const loadKey = `${friendUserId ?? ''}-${scheduleId ?? ''}`;
+        if (currentLoadKeyRef.current !== loadKey) {
             hasAttemptedLoadRef.current = false;
-            currentScheduleIdRef.current = scheduleId;
+            currentLoadKeyRef.current = loadKey;
         }
 
         if (hasAttemptedLoadRef.current) {
             return;
         }
 
-        const loadSharedSchedule = async () => {
+        const loadContent = async () => {
+            if (friendUserId) {
+                hasAttemptedLoadRef.current = true;
+                await loadFriendSchedules(friendUserId);
+                return;
+            }
+
             if (!scheduleId) {
                 setError('Invalid schedule ID');
                 setOpenLoadingSchedule(false);
@@ -66,7 +114,6 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
 
             try {
                 beginLoadingSchedule();
-
                 removeLocalStorageUnsavedActions();
 
                 const sharedSchedule = await trpc.userData.getSharedSchedule.query({
@@ -111,12 +158,20 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
             setOpenLoadingSchedule(false);
         };
 
-        loadSharedSchedule();
+        loadContent();
 
         return () => {
             setOpenLoadingSchedule(false);
         };
-    }, [scheduleId, setOpenLoadingSchedule, setError, beginLoadingSchedule, postHog]);
+    }, [
+        friendUserId,
+        scheduleId,
+        setOpenLoadingSchedule,
+        setError,
+        beginLoadingSchedule,
+        loadFriendSchedules,
+        postHog,
+    ]);
 
     const handleLoadSchedule = useCallback(async (sessionToken: string | null) => {
         if (sessionToken) {
@@ -165,14 +220,15 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
     }, [navigate, setOpenLoadingSchedule, beginLoadingSchedule, handleLoadSchedule, sessionIsValid]);
 
     const handleAddToMySchedules = useCallback(async () => {
-        if (!scheduleId) {
+        const idToImport = friendUserId ? AppStore.getScheduleId(AppStore.getCurrentScheduleIndex()) : scheduleId;
+        if (!idToImport) {
             return;
         }
 
         try {
             beginLoadingSchedule();
 
-            const sharedSchedule = await trpc.userData.getSharedSchedule.query({ scheduleId });
+            const sharedSchedule = await trpc.userData.getSharedSchedule.query({ scheduleId: idToImport });
 
             if (sessionIsValid) {
                 const sessionToken = useSessionStore.getState().session;
@@ -186,7 +242,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                     }
                 }
 
-                await importSharedScheduleById(scheduleId);
+                await importSharedScheduleById(idToImport);
             } else {
                 const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
                 const currentSchedule = currentSchedules.schedules[currentSchedules.scheduleIndex];
@@ -199,7 +255,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                         `Shared schedule "${sharedSchedule.scheduleName}" added to your schedules!`
                     );
                 } else {
-                    await importSharedScheduleById(scheduleId);
+                    await importSharedScheduleById(idToImport);
                 }
             }
 
@@ -218,7 +274,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
 
         setOpenLoadingSchedule(false);
         navigate('/');
-    }, [scheduleId, sessionIsValid, navigate, setOpenLoadingSchedule, beginLoadingSchedule, postHog]);
+    }, [friendUserId, scheduleId, sessionIsValid, navigate, setOpenLoadingSchedule, beginLoadingSchedule, postHog]);
 
     const handleGoHome = useCallback(async () => {
         try {
@@ -271,8 +327,18 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                         alignItems: 'center',
                     }}
                 >
-                    Viewing Shared Schedule:{' '}
-                    <strong style={{ whiteSpace: 'nowrap', marginLeft: '0.25rem' }}>{scheduleName}</strong>
+                    {friendUserId ? (
+                        <>
+                            Viewing{' '}
+                            <strong style={{ whiteSpace: 'nowrap', marginLeft: '0.25rem' }}>{friendName}</strong>
+                            &apos;s schedules
+                        </>
+                    ) : (
+                        <>
+                            Viewing Shared Schedule:{' '}
+                            <strong style={{ whiteSpace: 'nowrap', marginLeft: '0.25rem' }}>{scheduleName}</strong>
+                        </>
+                    )}
                 </Typography>
                 <Stack direction="row" spacing={1} alignItems="center" sx={{ flexShrink: 0 }}>
                     {isMobileScreen ? (
