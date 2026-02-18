@@ -7,6 +7,8 @@ import {
     Menu,
     MenuItem,
     Stack,
+    Tab,
+    Tabs,
     TextField,
     Typography,
     Dialog,
@@ -42,6 +44,8 @@ export function FriendsMenu() {
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
     const [friends, setFriends] = useState<Friend[]>([]);
+    const [blockedFriends, setBlockedFriends] = useState<Friend[]>([]);
+    const [activeTab, setActiveTab] = useState<'requests' | 'friends' | 'blocked'>('friends');
     const [email, setEmail] = useState('');
     const [blockMenuAnchor, setBlockMenuAnchor] = useState<{ element: HTMLElement; requestId: string } | null>(null);
     const [blockDialogOpen, setBlockDialogOpen] = useState(false);
@@ -53,6 +57,7 @@ export function FriendsMenu() {
             setCurrentUserId(null);
             setFriendRequests([]);
             setFriends([]);
+            setBlockedFriends([]);
             return;
         }
 
@@ -64,9 +69,10 @@ export function FriendsMenu() {
             const userId = users.id;
             setCurrentUserId(userId);
 
-            const [friendsResult, pendingResult] = await Promise.all([
+            const [friendsResult, pendingResult, blockedResult] = await Promise.all([
                 trpc.friends.getFriends.query({ userId }),
                 trpc.friends.getPendingRequests.query({ userId }),
+                trpc.friends.getBlockedUsers.query({ userId }),
             ]);
 
             setFriends(
@@ -82,6 +88,14 @@ export function FriendsMenu() {
                     id: request.id,
                     name: request.name ?? undefined,
                     email: request.email ?? '',
+                }))
+            );
+
+            setBlockedFriends(
+                blockedResult.map((user) => ({
+                    id: user.id,
+                    name: user.name ?? undefined,
+                    email: user.email ?? '',
                 }))
             );
         } catch (error) {
@@ -171,12 +185,23 @@ export function FriendsMenu() {
         }
     };
 
-    const handleConfirmBlock = () => {
-        if (userToBlock) {
-            // TODO: Implement block logic
-            console.log('Blocking user:', userToBlock);
+    const handleConfirmBlock = async () => {
+        if (!currentUserId || !userToBlock) {
+            return;
+        }
+
+        try {
+            await trpc.friends.blockUser.mutate({
+                userId: currentUserId,
+                blockId: userToBlock,
+            });
+            openSnackbar('info', 'User blocked.');
             setUserToBlock(null);
             setBlockDialogOpen(false);
+            await loadFriendsData();
+        } catch (error) {
+            console.error('Error blocking user:', error);
+            openSnackbar('error', 'Failed to block user.');
         }
     };
 
@@ -214,6 +239,28 @@ export function FriendsMenu() {
         } catch (error) {
             console.error('Error removing friend:', error);
             openSnackbar('error', 'Failed to remove friend.');
+        }
+    };
+
+    const handleChangeTab = (_: React.SyntheticEvent, value: 'requests' | 'friends' | 'blocked') => {
+        setActiveTab(value);
+    };
+
+    const handleUnblock = async (blockedId: string) => {
+        if (!currentUserId) {
+            return;
+        }
+
+        try {
+            await trpc.friends.unblockUser.mutate({
+                userId: currentUserId,
+                blockId: blockedId,
+            });
+            openSnackbar('info', 'User unblocked.');
+            await loadFriendsData();
+        } catch (error) {
+            console.error('Error unblocking user:', error);
+            openSnackbar('error', 'Failed to unblock user.');
         }
     };
 
