@@ -16,7 +16,7 @@ interface Props {
 /**
  * Wraps components common to all pages that should look and feel like the home page.
  *
- * @param chilren The body of the page, usually the desktop/home components
+ * @param children The body of the page, usually the desktop/home components
  * plus whatever a page might want to add on to that.
  */
 function HomePageWrapper({ children }: Props) {
