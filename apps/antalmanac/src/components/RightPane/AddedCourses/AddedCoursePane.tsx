@@ -354,14 +354,8 @@ function AddedSectionsGrid() {
                 <ColumnToggleDropdown />
             </Box>
             <Box sx={{ marginTop: 7 }}>
-                {isMobile ? (
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                        <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
-                        <SelectSchedulePopover />
-                    </Box>
-                ) : (
-                    <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
-                )}
+                <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
+                {isMobile && <SelectSchedulePopover />}
                 {courses.length < 1 ? NoCoursesBox : null}
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
