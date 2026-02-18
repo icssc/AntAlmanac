@@ -82,13 +82,13 @@ function SectionTable(props: SectionTableProps) {
     const formattedTime = useMemo(() => {
         if (!courseDetails.updatedAt) return null;
         const date = new Date(courseDetails.updatedAt);
-        return isNaN(date.getTime())
-            ? null
-            : date.toLocaleTimeString(undefined, {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: !isMilitaryTime,
-              });
+        if (isNaN(date.getTime())) return null;
+        const timeString = date.toLocaleTimeString(undefined, {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: !isMilitaryTime,
+        });
+        return timeString.replace(/^0(\d)/, '$1');
     }, [courseDetails.updatedAt, isMilitaryTime]);
 
     /**

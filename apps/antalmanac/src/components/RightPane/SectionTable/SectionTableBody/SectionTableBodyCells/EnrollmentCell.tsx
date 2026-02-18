@@ -43,7 +43,7 @@ export const EnrollmentCell = ({
     return (
         <TableBodyCellContainer>
             <Box>
-                <Box>
+                <Box sx={{ cursor: 'pointer' }}>
                     {showTooltip ? (
                         <Tooltip title={<Typography fontSize={'0.85rem'}>Last updated at {formattedTime}</Typography>}>
                             {enrollmentText}
