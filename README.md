@@ -120,48 +120,20 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
 ### Quick Start
 
-1. Clone the AntAlmanac repository or your fork.
 
+1. Copy this and run the script:
     ```bash
-    git clone https://github.com/icssc/AntAlmanac.git
+    git clone https://github.com/icssc/AntAlmanac && cd AntAlmanac && git checkout dsns/create-dev-environment && ./start.sh
     ```
 
-2. Navigate to the root directory and install the dependencies.
+2. View the local website at http://localhost:3000.
+   As you make changes to the application, those changes will be automatically reflected on the local website with hot reloading.
 
-    ```bash
-    cd AntAlmanac && pnpm install
-    ```
-
-3. Start the local PostgreSQL database using Docker Compose.
-
-    ```bash
-    docker compose up -d --build
-    ```
-
-    This will start a PostgreSQL database on port 5432 with the credentials specified in `docker-compose.yml`.
-
-4. Set up environment variables. Create a `.env` file in the root directory based on the `.env.example`.
-
-5. Run database migrations to set up the database schema.
-
-    ```bash
-    pnpm db:migrate
-    ```
-
-6. Fetch the static data (course information, term data, etc.).
-
-    ```bash
-    cd apps/antalmanac && pnpm get-data
-    ```
-
-7. Start the development server.
-
+3. In the future, start the development server using
     ```bash
     pnpm dev
     ```
 
-8. View the local website at http://localhost:3000.
-   As you make changes to the application, those changes will be automatically reflected on the local website with hot reloading.
 
 ### Additional Commands
 
