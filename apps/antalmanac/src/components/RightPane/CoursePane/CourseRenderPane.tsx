@@ -264,6 +264,8 @@ const ErrorMessage = () => {
 
 export default function CourseRenderPane(props: { id?: number }) {
     const { manualSearchEnabled } = useCoursePaneStore();
+    const filterTakenCourses = useSessionStore((s) => s.filterTakenCourses);
+    const userTakenCourses = useSessionStore((s) => s.userTakenCourses);
     const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
     const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
     const [loading, setLoading] = useState(true);
@@ -347,6 +349,12 @@ export default function CourseRenderPane(props: { id?: number }) {
             AppStore.off('currentScheduleIndexChange', changeColors);
         };
     }, [websocResp]);
+
+    useEffect(() => {
+        if (websocResp == null) return;
+        const flattened = flattenSOCObject(websocResp);
+        setCourseData(getFilteredCourses(flattened));
+    }, [filterTakenCourses, userTakenCourses, websocResp]);
 
     useEffect(() => {
         loadCourses();

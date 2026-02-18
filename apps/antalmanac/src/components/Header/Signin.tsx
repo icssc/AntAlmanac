@@ -110,7 +110,7 @@ export const Signin = () => {
                 setOpenalert(true);
                 setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
             } else if (sessionToken && (await loadScheduleWithSessionToken())) {
-                updateSession(sessionToken);
+                await updateSession(sessionToken);
             } else if (sessionToken === '' && userID && userID !== '') {
                 await validateImportedUser(userID);
                 await loadSchedule(userID, rememberMe, 'GUEST');
