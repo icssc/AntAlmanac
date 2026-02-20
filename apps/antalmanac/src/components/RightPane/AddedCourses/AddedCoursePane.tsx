@@ -1,5 +1,5 @@
 import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
-import { AACourse } from '@packages/antalmanac-types';
+import { AACourse, ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -11,6 +11,7 @@ import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePan
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
@@ -88,13 +89,23 @@ function getCourses() {
 function CustomEventsBox() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    const [customEvents, setCustomEvents] = useState(
-        skeletonMode ? AppStore.getCurrentSkeletonSchedule().customEvents : AppStore.schedule.getCurrentCustomEvents()
-    );
+    const getCustomEvents = useCallback(() => {
+        if (skeletonMode) {
+            const skeletonSchedule = AppStore.getCurrentSkeletonSchedule();
+            if (!skeletonSchedule.customEvents || skeletonSchedule.customEvents.length === 0) {
+                return AppStore.schedule.getCurrentCustomEvents();
+            }
+            return skeletonSchedule.customEvents;
+        }
+        return AppStore.schedule.getCurrentCustomEvents();
+    }, [skeletonMode]);
+
+    const [customEvents, setCustomEvents] = useState(getCustomEvents);
 
     useEffect(() => {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
+            setCustomEvents(getCustomEvents());
         };
 
         AppStore.on('skeletonModeChange', handleSkeletonModeChange);
@@ -102,11 +113,11 @@ function CustomEventsBox() {
         return () => {
             AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
-    }, []);
+    }, [getCustomEvents]);
 
     useEffect(() => {
         const handleCustomEventsChange = () => {
-            setCustomEvents([...AppStore.schedule.getCurrentCustomEvents()]);
+            setCustomEvents(getCustomEvents());
         };
 
         AppStore.on('customEventsChange', handleCustomEventsChange);
@@ -116,7 +127,7 @@ function CustomEventsBox() {
             AppStore.off('customEventsChange', handleCustomEventsChange);
             AppStore.off('currentScheduleIndexChange', handleCustomEventsChange);
         };
-    }, []);
+    }, [getCustomEvents]);
 
     if (customEvents.length <= 0) {
         return null;
@@ -143,9 +154,19 @@ function CustomEventsBox() {
 
 function ScheduleNoteBox() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-    const [scheduleNote, setScheduleNote] = useState(
-        skeletonMode ? AppStore.getCurrentSkeletonSchedule().scheduleNote : AppStore.getCurrentScheduleNote()
-    );
+
+    const getScheduleNote = useCallback(() => {
+        if (skeletonMode) {
+            const skeletonSchedule = AppStore.getCurrentSkeletonSchedule();
+            if (!skeletonSchedule.scheduleNote) {
+                return AppStore.getCurrentScheduleNote();
+            }
+            return skeletonSchedule.scheduleNote;
+        }
+        return AppStore.getCurrentScheduleNote();
+    }, [skeletonMode]);
+
+    const [scheduleNote, setScheduleNote] = useState(getScheduleNote);
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
 
     const handleNoteChange = useCallback(
@@ -159,6 +180,7 @@ function ScheduleNoteBox() {
     useEffect(() => {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
+            setScheduleNote(getScheduleNote());
         };
 
         AppStore.on('skeletonModeChange', handleSkeletonModeChange);
@@ -166,15 +188,16 @@ function ScheduleNoteBox() {
         return () => {
             AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
-    }, []);
+    }, [getScheduleNote]);
 
     useEffect(() => {
         const handleScheduleNoteChange = () => {
-            setScheduleNote(AppStore.getCurrentScheduleNote());
+            setScheduleNote(getScheduleNote());
         };
 
         const handleScheduleIndexChange = () => {
             setScheduleIndex(AppStore.getCurrentScheduleIndex());
+            setScheduleNote(getScheduleNote());
         };
 
         AppStore.on('scheduleNotesChange', handleScheduleNoteChange);
@@ -184,7 +207,7 @@ function ScheduleNoteBox() {
             AppStore.off('scheduleNotesChange', handleScheduleNoteChange);
             AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
         };
-    }, []);
+    }, [getScheduleNote]);
 
     return (
         <Box>
@@ -218,25 +241,51 @@ function ScheduleNoteBox() {
 }
 
 function SkeletonSchedule() {
-    const [skeletonSchedule, setSkeletonSchedule] = useState(AppStore.getCurrentSkeletonSchedule());
+    const getScheduleData = (): ShortCourseSchedule => {
+        const skeletonSchedule = AppStore.getCurrentSkeletonSchedule();
+        if (!skeletonSchedule.courses || skeletonSchedule.courses.length === 0) {
+            const regularCourses = AppStore.schedule.getCurrentCourses();
+            if (regularCourses.length > 0) {
+                return {
+                    scheduleName: AppStore.schedule.getScheduleName(AppStore.getCurrentScheduleIndex()) || '',
+                    courses: regularCourses.map((course) => ({
+                        sectionCode: course.section.sectionCode,
+                        term: course.term,
+                        color: course.section.color,
+                    })),
+                    customEvents: AppStore.schedule.getCurrentCustomEvents(),
+                    scheduleNote: AppStore.getCurrentScheduleNote(),
+                    id: undefined,
+                };
+            }
+        }
+        return skeletonSchedule;
+    };
+
+    const [skeletonSchedule, setSkeletonSchedule] = useState(getScheduleData);
     const postHog = usePostHog();
 
     useEffect(() => {
         const updateSkeletonSchedule = () => {
-            setSkeletonSchedule(AppStore.getCurrentSkeletonSchedule());
+            setSkeletonSchedule(getScheduleData());
         };
 
         AppStore.on('skeletonScheduleChange', updateSkeletonSchedule);
         AppStore.on('currentScheduleIndexChange', updateSkeletonSchedule);
+        AppStore.on('addedCoursesChange', updateSkeletonSchedule);
+        AppStore.on('customEventsChange', updateSkeletonSchedule);
 
         return () => {
             AppStore.off('skeletonScheduleChange', updateSkeletonSchedule);
             AppStore.off('currentScheduleIndexChange', updateSkeletonSchedule);
+            AppStore.off('addedCoursesChange', updateSkeletonSchedule);
+            AppStore.off('customEventsChange', updateSkeletonSchedule);
         };
     }, []);
 
     const sectionsByTerm: [string, string[]][] = useMemo(() => {
-        const result = skeletonSchedule.courses.reduce(
+        const courses = skeletonSchedule.courses;
+        const result = courses.reduce(
             (accumulated, course) => {
                 accumulated[course.term] ??= [];
                 accumulated[course.term].push(course.sectionCode);
@@ -291,6 +340,7 @@ function SkeletonSchedule() {
 }
 
 function AddedSectionsGrid() {
+    const isReadonlyView = useIsReadonlyView();
     const [courses, setCourses] = useState(getCourses());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
@@ -349,8 +399,12 @@ function AddedSectionsGrid() {
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Box sx={{ display: 'flex', width: 'fit-content', position: 'absolute', zIndex: 2 }}>
-                <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
-                <ClearScheduleButton buttonSx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />
+                {!isReadonlyView && (
+                    <>
+                        <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
+                        <ClearScheduleButton buttonSx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />
+                    </>
+                )}
                 <ColumnToggleDropdown />
                 <NotificationsDialog buttonSx={buttonSx} />
             </Box>
@@ -405,5 +459,11 @@ export function AddedCoursePane() {
         };
     }, [postHog]);
 
-    return <Box>{skeletonMode ? <SkeletonSchedule /> : <AddedSectionsGrid />}</Box>;
+    const hasRegularCourses = AppStore.schedule.getCurrentCourses().length > 0;
+    const skeletonSchedule = AppStore.getCurrentSkeletonSchedule();
+    const hasSkeletonCourses = skeletonSchedule.courses && skeletonSchedule.courses.length > 0;
+
+    const shouldShowAddedSectionsGrid = !skeletonMode || (skeletonMode && hasRegularCourses && !hasSkeletonCourses);
+
+    return <Box>{shouldShowAddedSectionsGrid ? <AddedSectionsGrid /> : <SkeletonSchedule />}</Box>;
 }

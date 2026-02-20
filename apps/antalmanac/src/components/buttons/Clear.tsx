@@ -26,16 +26,24 @@ interface ClearScheduleButtonProps {
     size?: 'small' | 'medium' | 'large' | undefined;
     fontSize?: 'small' | 'medium' | 'large' | 'inherit' | undefined;
     analyticsCategory?: AnalyticsCategory;
+    disabled?: boolean;
 }
 
-export function ClearScheduleButton({ skeletonMode, buttonSx, size, fontSize }: ClearScheduleButtonProps) {
+export function ClearScheduleButton({ skeletonMode, buttonSx, size, fontSize, disabled }: ClearScheduleButtonProps) {
     const postHog = usePostHog();
 
     return (
         <Tooltip title="Clear schedule">
-            <IconButton sx={buttonSx} onClick={handleClearSchedule(postHog)} size={size} disabled={skeletonMode}>
-                <DeleteOutline fontSize={fontSize} />
-            </IconButton>
+            <span>
+                <IconButton
+                    sx={buttonSx}
+                    onClick={handleClearSchedule(postHog)}
+                    size={size}
+                    disabled={skeletonMode || disabled}
+                >
+                    <DeleteOutline fontSize={fontSize} />
+                </IconButton>
+            </span>
         </Tooltip>
     );
 }

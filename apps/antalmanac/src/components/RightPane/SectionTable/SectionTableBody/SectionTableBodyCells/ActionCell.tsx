@@ -8,6 +8,7 @@ import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions'
 import ColorPicker from '$components/ColorPicker';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 
@@ -46,6 +47,7 @@ interface ActionProps {
  */
 export function ColorAndDelete({ section, term }: ActionProps) {
     const isMobile = useIsMobile();
+    const isReadonlyView = useIsReadonlyView();
 
     const flexDirection = isMobile ? 'column' : undefined;
 
@@ -69,9 +71,11 @@ export function ColorAndDelete({ section, term }: ActionProps) {
                 alignItems: 'center',
             }}
         >
-            <IconButton onClick={handleClick}>
-                <Delete fontSize="small" />
-            </IconButton>
+            {!isReadonlyView && (
+                <IconButton onClick={handleClick}>
+                    <Delete fontSize="small" />
+                </IconButton>
+            )}
 
             <ColorPicker
                 key={AppStore.getCurrentScheduleIndex()}
