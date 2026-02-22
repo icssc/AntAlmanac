@@ -6,6 +6,7 @@ import { useShallow } from 'zustand/react/shallow';
 
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
+import { getDefaultTerm } from '$lib/termData';
 import { NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -44,6 +45,8 @@ export const NotificationsMenu = memo(
                 fetchUserData: state.fetchUserData,
             }))
         );
+
+        const isTermCurrent = term === getDefaultTerm().shortName;
 
         useEffect(() => {
             if (isGoogleUser) {
@@ -99,21 +102,25 @@ export const NotificationsMenu = memo(
             setSignInOpen(false);
         }, []);
 
+        const tooltipText = !isGoogleUser
+            ? 'Sign in to access notifications'
+            : isTermCurrent
+              ? null
+              : "Notifications are only available for the current enrollment period's courses";
+
         return (
             <>
-                <IconButton onClick={handleNotificationClick}>
-                    {isGoogleUser ? (
-                        hasNotifications ? (
-                            <EditNotifications fontSize="small" />
-                        ) : (
-                            <NotificationAddOutlined fontSize="small" />
-                        )
-                    ) : (
-                        <Tooltip title="Sign in to access notifications">
-                            <NotificationAddOutlined fontSize="small" sx={{ opacity: 0.5 }} />
-                        </Tooltip>
-                    )}
-                </IconButton>
+                <Tooltip title={tooltipText}>
+                    <span>
+                        <IconButton onClick={handleNotificationClick} disabled={!isTermCurrent || !isGoogleUser}>
+                            {hasNotifications ? (
+                                <EditNotifications fontSize="small" />
+                            ) : (
+                                <NotificationAddOutlined fontSize="small" />
+                            )}
+                        </IconButton>
+                    </span>
+                </Tooltip>
 
                 <Menu
                     anchorEl={anchorEl}
