@@ -1,12 +1,19 @@
-import { WebsocResponse, WebsocSection, WebsocCourse, WebsocSchool, WebsocDepartment } from '@icssc/libwebsoc-next';
+import type {
+    WebsocCourse,
+    WebsocDepartment,
+    WebsocResponse,
+    WebsocSchool,
+    WebsocSection,
+} from '@icssc/libwebsoc-next';
 
-import { batchCourseCodes, sendNotification, CourseDetails } from './helpers/notificationDispatch';
+import type { CourseDetails } from './helpers/notificationDispatch';
+import { batchCourseCodes, sendNotification } from './helpers/notificationDispatch';
 import {
-    getUpdatedClasses,
-    getSubscriptionSectionCodes,
-    updateSubscriptionStatus,
     getLastUpdatedStatus,
+    getSubscriptionSectionCodes,
+    getUpdatedClasses,
     getUsers,
+    updateSubscriptionStatus,
 } from './helpers/subscriptionData';
 
 /**
@@ -99,7 +106,7 @@ async function processSchool(school: WebsocSchool, quarter: string, year: string
 
 /**
  * Processes a batch of section codes and sends notifications to users if the status and/or restriction codes have changed.
- * If there are missing codes, retry them individually to work around WebSoc's ignoring requests for section codes from the same course.
+ * Uses AnteaterAPI which doesn't have the section code limit that direct WebSoc has.
  * @param batch - The batch of section codes to process.
  * @param quarter - The academic quarter of the batch.
  * @param year - The academic year of the batch.
@@ -124,24 +131,11 @@ async function processBatch(batch: string[], quarter: string, year: string) {
     const notProcessed = batch.filter((code) => !processedSectionCodes.has(code));
 
     if (notProcessed.length > 0) {
-        console.log(
-            `[BATCH] ${notProcessed.length} section codes not found in initial response, retrying individually`
-        );
+        console.log(`[BATCH] ${notProcessed.length} section codes not found in response`);
     }
 
+    console.log(`[BATCH] Processing ${processedSectionCodes.size} sections from response`);
     await Promise.all(response.schools.map((school) => processSchool(school, quarter, year)));
-
-    if (notProcessed.length > 0) {
-        await Promise.all(
-            notProcessed.map(async (missingCode) => {
-                console.log(`[RETRY] Retrying section code: ${missingCode}`);
-                const retryResponse: WebsocResponse = (await getUpdatedClasses(quarter, year, [missingCode])) || {
-                    schools: [],
-                };
-                await Promise.all(retryResponse.schools.map((school) => processSchool(school, quarter, year)));
-            })
-        );
-    }
 }
 
 /**
