@@ -78,7 +78,7 @@ async function getSubscriptionSectionCodes(): Promise<TermGrouping | undefined> 
             .where(eq(subscriptions.environment, stage));
 
         // group together by year and quarter
-        const groupedByTerm = result.reduce((acc: TermGrouping, { quarter, year, sectionCode }) => {
+        const groupedByTerm = result.reduce<TermGrouping>((acc, { quarter, year, sectionCode }) => {
             if (quarter && year) {
                 const term = `${quarter}-${year}`;
                 if (!acc[term]) {
@@ -111,6 +111,7 @@ async function updateSubscriptionStatus(
     lastCodes: string
 ): Promise<void> {
     try {
+        const stage = process.env.STAGE!;
         await db
             .update(subscriptions)
             .set({ lastUpdatedStatus: lastUpdatedStatus, lastCodes: lastCodes })
@@ -118,7 +119,8 @@ async function updateSubscriptionStatus(
                 and(
                     eq(subscriptions.year, year),
                     eq(subscriptions.quarter, quarter),
-                    eq(subscriptions.sectionCode, sectionCode)
+                    eq(subscriptions.sectionCode, sectionCode),
+                    eq(subscriptions.environment, stage)
                 )
             );
     } catch (error) {
@@ -145,6 +147,7 @@ async function getLastUpdatedStatus(
     }
 
     try {
+        const stage = process.env.STAGE!;
         const rows = await db
             .selectDistinct({
                 sectionCode: subscriptions.sectionCode,
@@ -156,6 +159,7 @@ async function getLastUpdatedStatus(
                 and(
                     eq(subscriptions.year, year),
                     eq(subscriptions.quarter, quarter),
+                    eq(subscriptions.environment, stage),
                     inArray(subscriptions.sectionCode, sectionCodes)
                 )
             );
