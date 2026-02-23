@@ -27,5 +27,5 @@ jobs:
                   ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
               run: pnpm --filter antalmanac get-data
 
-            - name: ESLint
-              run: pnpm --filter antalmanac lint
+            - name: Lint
+              run: pnpm lint
