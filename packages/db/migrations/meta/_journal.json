@@ -61,8 +61,22 @@
         {
             "idx": 8,
             "version": "7",
+            "when": 1771441270972,
+            "tag": "0008_skinny_ser_duncan",
+            "breakpoints": true
+        },
+        {
+            "idx": 9,
+            "version": "7",
             "when": 1771412341810,
-            "tag": "0008_old_misty_knight",
+            "tag": "0009_old_misty_knight",
+            "breakpoints": true
+        },
+        {
+            "idx": 10,
+            "version": "7",
+            "when": 1771441270973,
+            "tag": "0010_friendships_no_self_friend",
             "breakpoints": true
         }
     ]
