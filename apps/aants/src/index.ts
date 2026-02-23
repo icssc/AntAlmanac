@@ -9,10 +9,12 @@ import type {
 import type { CourseDetails } from './helpers/notificationDispatch';
 import { batchCourseCodes, sendNotification } from './helpers/notificationDispatch';
 import {
+    filterUsersToNotify,
     getLastUpdatedStatus,
     getSubscriptionSectionCodes,
+    getSubscriptionsForSections,
     getUpdatedClasses,
-    getUsers,
+    type SubscriptionWithUser,
     updateSubscriptionStatus,
 } from './helpers/subscriptionData';
 
@@ -39,6 +41,11 @@ interface FlattenedSection {
     course: WebsocCourse;
 }
 
+interface PreviousState {
+    lastUpdatedStatus: WebsocSection['status'] | null;
+    lastCodes: string | null;
+}
+
 /**
  * Processes a section of a course and sends notifications to users if and only if the status and/or restriction codes have changed.
  * Also updates the subscription status in the database to the most current status and restriction codes.
@@ -48,12 +55,12 @@ async function processSection(
     course: WebsocCourse,
     quarter: string,
     year: string,
-    previousStatuses: Map<string, { lastUpdatedStatus: WebsocSection['status'] | null; lastCodes: string | null }>
+    previousState: PreviousState | undefined,
+    sectionSubscriptions: SubscriptionWithUser[]
 ) {
     const { sectionCode, instructors, meetings, status, restrictions, sectionType } = section;
     const instructor = instructors.join(', ');
 
-    const previousState = previousStatuses.get(sectionCode);
     const previousStatus = previousState?.lastUpdatedStatus || null;
     const previousRestrictions = previousState?.lastCodes || '';
 
@@ -72,7 +79,7 @@ async function processSection(
         `  Changes: status=${statusChanged ? `${previousStatus}→${status}` : 'none'}, codes=${codesChanged ? `${previousRestrictions}→${restrictions}` : 'none'}`
     );
 
-    const users = await getUsers(quarter, year, sectionCode, status, statusChanged, codesChanged);
+    const users = filterUsersToNotify(sectionSubscriptions, status, statusChanged, codesChanged);
 
     const meeting = meetings[0];
     const courseDetails: CourseDetails = {
@@ -127,10 +134,19 @@ async function processBatch(batch: string[], quarter: string, year: string) {
     console.log(`[BATCH] Processing ${flatSections.length} sections from response`);
 
     const sectionCodes = flatSections.map((s) => s.section.sectionCode);
-    const previousStatuses = await getLastUpdatedStatus(year, quarter, sectionCodes);
+
+    // Batch fetch: get all previous statuses and all subscriptions in 2 queries
+    const [previousStatuses, allSubscriptions] = await Promise.all([
+        getLastUpdatedStatus(year, quarter, sectionCodes),
+        getSubscriptionsForSections(year, quarter, sectionCodes),
+    ]);
 
     await Promise.all(
-        flatSections.map(({ section, course }) => processSection(section, course, quarter, year, previousStatuses))
+        flatSections.map(({ section, course }) => {
+            const previousState = previousStatuses.get(section.sectionCode);
+            const sectionSubscriptions = allSubscriptions.get(section.sectionCode) || [];
+            return processSection(section, course, quarter, year, previousState, sectionSubscriptions);
+        })
     );
 }
 

@@ -1,9 +1,9 @@
 import type { WebsocAPIResponse, WebsocSection } from '@packages/anteater-api-types';
-import { and, eq, inArray, or } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 
 import { db } from '../../../../packages/db/src/index';
-import { users } from '../../../../packages/db/src/schema/auth/user';
-import { subscriptions } from '../../../../packages/db/src/schema/subscription';
+import { type User as DbUser, users } from '../../../../packages/db/src/schema/auth/user';
+import { type Subscription, subscriptions } from '../../../../packages/db/src/schema/subscription';
 
 const ANTEATER_API_BASE_URL = 'https://anteaterapi.com/v2/rest/websoc';
 
@@ -173,75 +173,102 @@ async function getLastUpdatedStatus(
     return result;
 }
 
-/**
- * Fetches all users who are subscribed to a specific class section and have enabled notifications
- * for the current type of status change (status and/or restriction codes changes)
- * @param quarter - The academic quarter of the subscription.
- * @param year - The academic year of the subscription.
- * @param sectionCode - The section code of the class.
- * @param status - The status of the class.
- * @param statusChanged - True if the class status has changed.
- * @param codesChanged - True if the class restriction codes have changed.
- * @returns A promise that resolves to an array of user information, or undefined if an error occurs.
- */
+export type SubscriptionWithUser = Pick<
+    Subscription,
+    'sectionCode' | 'notifyOnOpen' | 'notifyOnWaitlist' | 'notifyOnFull' | 'notifyOnRestriction'
+> & {
+    userId: DbUser['id'];
+    userName: DbUser['name'];
+    email: DbUser['email'];
+};
 
-async function getUsers(
-    quarter: string,
+/**
+ * Fetches all subscriptions with user info for the given section codes.
+ * @returns Map of sectionCode -> array of subscriptions with user info and notification preferences.
+ */
+async function getSubscriptionsForSections(
     year: string,
-    sectionCode: string,
+    quarter: string,
+    sectionCodes: string[]
+): Promise<Map<string, SubscriptionWithUser[]>> {
+    const result = new Map<string, SubscriptionWithUser[]>();
+    if (sectionCodes.length === 0) return result;
+
+    try {
+        const stage = process.env.STAGE!;
+        const rows = await db
+            .select({
+                sectionCode: subscriptions.sectionCode,
+                userId: users.id,
+                userName: users.name,
+                email: users.email,
+                notifyOnOpen: subscriptions.notifyOnOpen,
+                notifyOnWaitlist: subscriptions.notifyOnWaitlist,
+                notifyOnFull: subscriptions.notifyOnFull,
+                notifyOnRestriction: subscriptions.notifyOnRestriction,
+            })
+            .from(subscriptions)
+            .innerJoin(users, eq(subscriptions.userId, users.id))
+            .where(
+                and(
+                    eq(subscriptions.year, year),
+                    eq(subscriptions.quarter, quarter),
+                    eq(subscriptions.environment, stage),
+                    inArray(subscriptions.sectionCode, sectionCodes)
+                )
+            );
+
+        for (const row of rows) {
+            const existing = result.get(row.sectionCode) || [];
+            existing.push(row);
+            result.set(row.sectionCode, existing);
+        }
+    } catch (error) {
+        console.error('Error getting subscriptions for sections:', error);
+    }
+
+    return result;
+}
+
+/**
+ * Filters subscriptions to find users who should be notified based on status and notification preferences.
+ */
+function filterUsersToNotify(
+    subscriptionsForSection: SubscriptionWithUser[],
     status: WebsocSection['status'],
     statusChanged: boolean,
     codesChanged: boolean
-): Promise<User[] | undefined> {
-    try {
-        const statusColumnMap = {
-            '': null,
-            OPEN: subscriptions.notifyOnOpen,
-            Waitl: subscriptions.notifyOnWaitlist,
-            FULL: subscriptions.notifyOnFull,
-            NewOnly: null,
-        } as const;
-
-        const statusColumn = statusColumnMap[status];
-
-        const stage = process.env.STAGE!;
-        const baseConditions = [
-            eq(subscriptions.year, year),
-            eq(subscriptions.quarter, quarter),
-            eq(subscriptions.sectionCode, sectionCode),
-            eq(subscriptions.environment, stage),
-        ];
-
-        let notificationCondition: ReturnType<typeof eq> | ReturnType<typeof or> | undefined;
-        if (statusChanged === true && codesChanged === true) {
-            if (statusColumn) {
-                notificationCondition = or(eq(statusColumn, true), eq(subscriptions.notifyOnRestriction, true));
-            } else {
-                notificationCondition = eq(subscriptions.notifyOnRestriction, true);
+): User[] {
+    return subscriptionsForSection
+        .filter((sub) => {
+            if (statusChanged && codesChanged) {
+                const statusMatch =
+                    (status === 'OPEN' && sub.notifyOnOpen) ||
+                    (status === 'Waitl' && sub.notifyOnWaitlist) ||
+                    (status === 'FULL' && sub.notifyOnFull);
+                return statusMatch || sub.notifyOnRestriction;
+            } else if (statusChanged) {
+                if (status === 'OPEN') return sub.notifyOnOpen;
+                if (status === 'Waitl') return sub.notifyOnWaitlist;
+                if (status === 'FULL') return sub.notifyOnFull;
+                return false;
+            } else if (codesChanged) {
+                return sub.notifyOnRestriction;
             }
-        } else if (statusChanged === true) {
-            if (statusColumn) {
-                notificationCondition = eq(statusColumn, true);
-            } else {
-                // TODO (@IsaacNguyen): Handle NewOnly status if that's something we want to support
-                return [];
-            }
-        } else if (codesChanged === true) {
-            notificationCondition = eq(subscriptions.notifyOnRestriction, true);
-        }
-
-        const allConditions = notificationCondition ? [...baseConditions, notificationCondition] : baseConditions;
-
-        const result = await db
-            .select({ userName: users.name, email: users.email, userId: users.id })
-            .from(subscriptions)
-            .innerJoin(users, eq(subscriptions.userId, users.id))
-            .where(and(...allConditions));
-
-        return result;
-    } catch (error) {
-        console.error('Error getting users:', error);
-    }
+            return false;
+        })
+        .map((sub) => ({
+            userId: sub.userId,
+            userName: sub.userName,
+            email: sub.email,
+        }));
 }
 
-export { getUpdatedClasses, getSubscriptionSectionCodes, updateSubscriptionStatus, getLastUpdatedStatus, getUsers };
+export {
+    getUpdatedClasses,
+    getSubscriptionSectionCodes,
+    updateSubscriptionStatus,
+    getLastUpdatedStatus,
+    getSubscriptionsForSections,
+    filterUsersToNotify,
+};
