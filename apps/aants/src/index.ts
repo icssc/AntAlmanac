@@ -1,10 +1,12 @@
 import type {
+    HourMinute,
+    WebsocAPIResponse,
     WebsocCourse,
     WebsocDepartment,
-    WebsocResponse,
     WebsocSchool,
     WebsocSection,
-} from '@icssc/libwebsoc-next';
+    WebsocSectionMeeting,
+} from '@packages/anteater-api-types';
 
 import type { CourseDetails } from './helpers/notificationDispatch';
 import { batchCourseCodes, sendNotification } from './helpers/notificationDispatch';
@@ -15,6 +17,24 @@ import {
     getUsers,
     updateSubscriptionStatus,
 } from './helpers/subscriptionData';
+
+/**
+ * Formats meeting time into a readable string like "3:30PM-4:50PM".
+ */
+function formatMeetingTime(meeting: WebsocSectionMeeting): string {
+    if (meeting.timeIsTBA) {
+        return 'TBA';
+    }
+
+    const formatTime = (time: HourMinute) => {
+        const hour = time.hour % 12 || 12;
+        const minute = time.minute.toString().padStart(2, '0');
+        const period = time.hour >= 12 ? 'PM' : 'AM';
+        return `${hour}:${minute}${period}`;
+    };
+
+    return `${formatTime(meeting.startTime)}-${formatTime(meeting.endTime)}`;
+}
 
 /**
  * Processes a section of a course and sends notifications to users if and only if the status and/or restriction codes have changed.
@@ -49,11 +69,12 @@ async function processSection(section: WebsocSection, course: WebsocCourse, quar
 
     const users = await getUsers(quarter, year, sectionCode, status, statusChanged, codesChanged);
 
+    const meeting = meetings[0];
     const courseDetails: CourseDetails = {
         sectionCode: sectionCode,
         instructor,
-        days: meetings[0].days,
-        hours: meetings[0].time,
+        days: meeting && !meeting.timeIsTBA ? meeting.days : 'TBA',
+        hours: meeting ? formatMeetingTime(meeting) : 'TBA',
         currentStatus: status,
         restrictionCodes: restrictions,
         deptCode: course.deptCode,
@@ -81,7 +102,7 @@ async function processSection(section: WebsocSection, course: WebsocCourse, quar
  * @param year - The academic year of the course.
  */
 async function processCourse(course: WebsocCourse, quarter: string, year: string) {
-    await Promise.all(course.sections.map((section) => processSection(section, course, quarter, year)));
+    await Promise.all(course.sections.map((section: WebsocSection) => processSection(section, course, quarter, year)));
 }
 
 /**
@@ -91,7 +112,7 @@ async function processCourse(course: WebsocCourse, quarter: string, year: string
  * @param year - The academic year of the department.
  */
 async function processDepartment(department: WebsocDepartment, quarter: string, year: string) {
-    await Promise.all(department.courses.map((course) => processCourse(course, quarter, year)));
+    await Promise.all(department.courses.map((course: WebsocCourse) => processCourse(course, quarter, year)));
 }
 
 /**
@@ -101,7 +122,9 @@ async function processDepartment(department: WebsocDepartment, quarter: string, 
  * @param year - The academic year of the school.
  */
 async function processSchool(school: WebsocSchool, quarter: string, year: string) {
-    await Promise.all(school.departments.map((department) => processDepartment(department, quarter, year)));
+    await Promise.all(
+        school.departments.map((department: WebsocDepartment) => processDepartment(department, quarter, year))
+    );
 }
 
 /**
@@ -113,7 +136,7 @@ async function processSchool(school: WebsocSchool, quarter: string, year: string
  */
 async function processBatch(batch: string[], quarter: string, year: string) {
     console.log(`[BATCH] Processing ${batch.length} section codes for ${quarter} ${year}`);
-    const response: WebsocResponse = (await getUpdatedClasses(quarter, year, batch)) || { schools: [] };
+    const response: WebsocAPIResponse = (await getUpdatedClasses(quarter, year, batch)) || { schools: [] };
 
     const processedSectionCodes = new Set<string>();
     if (response?.schools) {
@@ -135,7 +158,7 @@ async function processBatch(batch: string[], quarter: string, year: string) {
     }
 
     console.log(`[BATCH] Processing ${processedSectionCodes.size} sections from response`);
-    await Promise.all(response.schools.map((school) => processSchool(school, quarter, year)));
+    await Promise.all(response.schools.map((school: WebsocSchool) => processSchool(school, quarter, year)));
 }
 
 /**
