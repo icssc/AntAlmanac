@@ -14,7 +14,7 @@ function getDomain() {
 }
 
 const isPermanentStage = ['production', 'scheduler', 'staging-shared'];
-const AANTS_STAGES = [];
+const AANTS_STAGES = ['production', 'staging-1520'];
 
 export default $config({
     app(input) {
