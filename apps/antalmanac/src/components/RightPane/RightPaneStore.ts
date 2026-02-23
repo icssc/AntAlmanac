@@ -1,27 +1,30 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from "events";
 
-import { AdvancedSearchParam, ManualSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
-import { getDefaultTerm } from '$lib/termData';
+import {
+    AdvancedSearchParam,
+    ManualSearchParam,
+} from "$components/RightPane/CoursePane/SearchForm/constants";
+import { getDefaultTerm } from "$lib/termData";
 
 const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {
-    instructor: '',
-    units: '',
-    endTime: '',
-    startTime: '',
-    coursesFull: 'ANY',
-    building: '',
-    room: '',
-    division: '',
-    excludeRestrictionCodes: '',
-    days: '',
+    instructor: "",
+    units: "",
+    endTime: "",
+    startTime: "",
+    coursesFull: "ANY",
+    building: "",
+    room: "",
+    division: "",
+    excludeRestrictionCodes: "",
+    days: "",
 };
 
 const defaultFormValues: Record<ManualSearchParam, string> = {
-    deptValue: 'ALL',
-    ge: 'ANY',
+    deptValue: "ALL",
+    ge: "ANY",
     term: getDefaultTerm().shortName,
-    courseNumber: '',
-    sectionCode: '',
+    courseNumber: "",
+    sectionCode: "",
     ...defaultAdvancedSearchValues,
 };
 
@@ -44,11 +47,11 @@ class RightPaneStore extends EventEmitter {
         this.setMaxListeners(15);
         this.formData = structuredClone(defaultFormValues);
         const search = new URLSearchParams(window.location.search);
-        this.urlSectionCodeValue = search.get('sectionCode') || '';
-        this.urlTermValue = search.get('term') || '';
-        this.urlGEValue = search.get('ge') || '';
-        this.urlCourseNumValue = search.get('courseNumber') || '';
-        this.urlDeptValue = search.get('deptValue') || '';
+        this.urlSectionCodeValue = search.get("sectionCode") || "";
+        this.urlTermValue = search.get("term") || "";
+        this.urlGEValue = search.get("ge") || "";
+        this.urlCourseNumValue = search.get("courseNumber") || "";
+        this.urlDeptValue = search.get("deptValue") || "";
 
         this.updateFormDataFromURL(search);
     }
@@ -64,7 +67,7 @@ class RightPaneStore extends EventEmitter {
             }
         });
 
-        this.emit('formDataChange');
+        this.emit("formDataChange");
     };
 
     getFormData = () => {
@@ -83,7 +86,7 @@ class RightPaneStore extends EventEmitter {
 
     updateFormValue = (field: ManualSearchParam, value: string) => {
         this.formData[field] = value;
-        this.emit('formDataChange');
+        this.emit("formDataChange");
     };
 
     storePrevFormData = () => {
@@ -96,23 +99,26 @@ class RightPaneStore extends EventEmitter {
         }
         this.formData = this.prevFormData;
         this.prevFormData = undefined;
-        this.emit('formDataChange');
+        this.emit("formDataChange");
     };
 
     resetFormValues = () => {
         this.formData = structuredClone(defaultFormValues);
-        this.emit('formReset');
+        this.emit("formReset");
     };
 
     resetAdvancedSearchValues = () => {
         Object.assign(this.formData, defaultAdvancedSearchValues);
-        this.emit('formDataChange');
+        this.emit("formDataChange");
     };
 
     formDataIsValid = () => {
         const { ge, deptValue, sectionCode, instructor } = this.formData;
         return (
-            ge.toUpperCase() !== 'ANY' || deptValue.toUpperCase() !== 'ALL' || sectionCode !== '' || instructor !== ''
+            ge.toUpperCase() !== "ANY" ||
+            deptValue.toUpperCase() !== "ALL" ||
+            sectionCode !== "" ||
+            instructor !== ""
         );
     };
 

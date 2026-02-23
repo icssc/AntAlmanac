@@ -6,12 +6,16 @@ function endpointTransform(path: string) {
     if (process.env.NEXT_PUBLIC_LOCAL_SERVER) {
         return `http://localhost:3000${path}`;
     }
-    return process.env.NODE_ENV === 'development'
+    return process.env.NODE_ENV === "development"
         ? `https://dev.api.antalmanac.com${path}`
         : `https://api.antalmanac.com${path}`;
 }
 
-export const LOOKUP_NOTIFICATIONS_ENDPOINT = endpointTransform('/api/notifications/lookupNotifications');
-export const REGISTER_NOTIFICATIONS_ENDPOINT = endpointTransform('/api/notifications/registerNotifications');
-export const MAPBOX_PROXY_DIRECTIONS_ENDPOINT = endpointTransform('/mapbox/directions');
-export const TILES_URL = process.env.NEXT_PUBLIC_TILES_ENDPOINT || 'tile.openstreetmap.org';
+export const LOOKUP_NOTIFICATIONS_ENDPOINT = endpointTransform(
+    "/api/notifications/lookupNotifications",
+);
+export const REGISTER_NOTIFICATIONS_ENDPOINT = endpointTransform(
+    "/api/notifications/registerNotifications",
+);
+export const MAPBOX_PROXY_DIRECTIONS_ENDPOINT = endpointTransform("/mapbox/directions");
+export const TILES_URL = process.env.NEXT_PUBLIC_TILES_ENDPOINT || "tile.openstreetmap.org";

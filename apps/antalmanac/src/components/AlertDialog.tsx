@@ -1,6 +1,13 @@
-import { Alert, Box, Dialog, DialogContent, AlertColor, DialogActions, Button } from '@mui/material';
-
-import { useThemeStore } from '$stores/SettingsStore';
+import { useThemeStore } from "$stores/SettingsStore";
+import {
+    Alert,
+    AlertColor,
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+} from "@mui/material";
 
 interface AlertDialogProps {
     open: boolean;
@@ -10,18 +17,24 @@ interface AlertDialogProps {
     defaultAction?: boolean;
     onClose?: () => void;
 }
-export const AlertDialog = ({ open, title, children, severity = 'info', onClose }: AlertDialogProps) => {
+export const AlertDialog = ({
+    open,
+    title,
+    children,
+    severity = "info",
+    onClose,
+}: AlertDialogProps) => {
     const isDark = useThemeStore((store) => store.isDark);
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogContent sx={{ fontSize: 'small' }}>
+            <DialogContent sx={{ fontSize: "small" }}>
                 <Alert
                     severity={severity}
-                    variant={isDark ? 'outlined' : 'standard'}
+                    variant={isDark ? "outlined" : "standard"}
                     sx={{
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 'medium',
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "medium",
                     }}
                 >
                     {title}

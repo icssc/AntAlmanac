@@ -1,7 +1,4 @@
-import { PostHog } from 'posthog-js/react';
-import { create } from 'zustand';
-
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import analyticsEnum, { logAnalytics } from "$lib/analytics/analytics";
 import {
     getLocalStorageAutoSave,
     getLocalStoragePreviewMode,
@@ -11,9 +8,11 @@ import {
     setLocalStoragePreviewMode,
     setLocalStorageShow24HourTime,
     setLocalStorageTheme,
-} from '$lib/localStorage';
+} from "$lib/localStorage";
+import { PostHog } from "posthog-js/react";
+import { create } from "zustand";
 
-export type ThemeSetting = 'light' | 'dark' | 'system';
+export type ThemeSetting = "light" | "dark" | "system";
 
 export interface ThemeStore {
     /**
@@ -23,31 +22,31 @@ export interface ThemeStore {
     /**
      * The 'derived' theme, based on user settings and device preferences
      */
-    appTheme: 'light' | 'dark';
+    appTheme: "light" | "dark";
     isDark: boolean;
 
     setAppTheme: (themeSetting: ThemeSetting, postHog?: PostHog) => void;
 }
 
 function themeShouldBeDark(themeSetting: ThemeSetting) {
-    if (themeSetting == 'system') return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return themeSetting == 'dark';
+    if (themeSetting == "system") return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return themeSetting == "dark";
 }
 
 export const useThemeStore = create<ThemeStore>((set) => {
-    const storedThemeSetting: ThemeSetting = (getLocalStorageTheme() ?? 'system') as ThemeSetting;
+    const storedThemeSetting: ThemeSetting = (getLocalStorageTheme() ?? "system") as ThemeSetting;
     const isDark = themeShouldBeDark(storedThemeSetting);
 
     return {
         themeSetting: storedThemeSetting,
-        appTheme: isDark ? 'dark' : 'light',
+        appTheme: isDark ? "dark" : "light",
         isDark: isDark,
 
         setAppTheme: (themeSetting, postHog) => {
             setLocalStorageTheme(themeSetting);
 
             const isDark = themeShouldBeDark(themeSetting);
-            const appTheme = isDark ? 'dark' : 'light';
+            const appTheme = isDark ? "dark" : "light";
 
             set({ appTheme, themeSetting, isDark });
 
@@ -66,12 +65,13 @@ export interface TimeFormatStore {
 }
 
 export const useTimeFormatStore = create<TimeFormatStore>((set) => {
-    const isMilitaryTime = typeof Storage !== 'undefined' && getLocalStorageShow24HourTime() == 'true';
+    const isMilitaryTime =
+        typeof Storage !== "undefined" && getLocalStorageShow24HourTime() == "true";
 
     return {
         isMilitaryTime,
         setTimeFormat: (isMilitaryTime) => {
-            if (typeof Storage !== 'undefined') {
+            if (typeof Storage !== "undefined") {
                 setLocalStorageShow24HourTime(isMilitaryTime.toString());
             }
             set({ isMilitaryTime });
@@ -84,12 +84,12 @@ export interface PreviewStore {
 }
 
 export const usePreviewStore = create<PreviewStore>((set) => {
-    const previewMode = typeof Storage !== 'undefined' && getLocalStoragePreviewMode() == 'true';
+    const previewMode = typeof Storage !== "undefined" && getLocalStoragePreviewMode() == "true";
 
     return {
         previewMode: previewMode,
         setPreviewMode: (previewMode) => {
-            if (typeof Storage !== 'undefined') {
+            if (typeof Storage !== "undefined") {
                 setLocalStoragePreviewMode(previewMode.toString());
             }
 
@@ -104,12 +104,12 @@ export interface AutoSaveStore {
 }
 
 export const useAutoSaveStore = create<AutoSaveStore>((set) => {
-    const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() == 'true';
+    const autoSave = typeof Storage !== "undefined" && getLocalStorageAutoSave() == "true";
 
     return {
         autoSave,
         setAutoSave: (autoSave) => {
-            if (typeof Storage !== 'undefined') {
+            if (typeof Storage !== "undefined") {
                 setLocalStorageAutoSave(autoSave.toString());
             }
             set({ autoSave });

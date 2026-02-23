@@ -1,17 +1,16 @@
-import { PlayLesson } from '@mui/icons-material';
-import { useTour } from '@reactour/tour';
-import { useCallback, useEffect } from 'react';
-import { useShallow } from 'zustand/react/shallow';
-
-import { HelpMenuAction } from '$components/HelpMenu/HelpMenu';
-import { stepsFactory, tourShouldRun } from '$lib/TutorialHelpers';
-import { removeSampleClasses } from '$lib/tourExampleGeneration';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { HelpMenuAction } from "$components/HelpMenu/HelpMenu";
+import { removeSampleClasses } from "$lib/tourExampleGeneration";
+import { stepsFactory, tourShouldRun } from "$lib/TutorialHelpers";
+import { useCoursePaneStore } from "$stores/CoursePaneStore";
+import { PlayLesson } from "@mui/icons-material";
+import { useTour } from "@reactour/tour";
+import { useCallback, useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 export function TutorialAction(): HelpMenuAction {
     const { setCurrentStep, setIsOpen, setSteps, isOpen } = useTour();
     const [displaySearch, disableManualSearch] = useCoursePaneStore(
-        useShallow((state) => [state.displaySearch, state.disableManualSearch])
+        useShallow((state) => [state.displaySearch, state.disableManualSearch]),
     );
 
     const handleClick = useCallback(() => {
@@ -38,5 +37,10 @@ export function TutorialAction(): HelpMenuAction {
         setSteps(stepsFactory(setCurrentStep));
     }, [setCurrentStep, setSteps]);
 
-    return { icon: <PlayLesson />, name: 'Start Tutorial', disableOnMobile: true, onClick: handleClick };
+    return {
+        icon: <PlayLesson />,
+        name: "Start Tutorial",
+        disableOnMobile: true,
+        onClick: handleClick,
+    };
 }

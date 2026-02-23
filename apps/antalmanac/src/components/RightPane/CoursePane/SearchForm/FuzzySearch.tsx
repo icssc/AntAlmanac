@@ -1,51 +1,50 @@
+import { LabeledAutocomplete } from "$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete";
+import RightPaneStore from "$components/RightPane/RightPaneStore";
+import analyticsEnum, { logAnalytics } from "$lib/analytics/analytics";
+import trpc from "$lib/api/trpc";
 import {
     type AutocompleteInputChangeReason,
     type AutocompleteRenderGroupParams,
     Box,
     Divider,
     Typography,
-} from '@mui/material';
-import type { SearchResult } from '@packages/antalmanac-types';
-import { PostHog } from 'posthog-js/react';
-import { PureComponent } from 'react';
-import UAParser from 'ua-parser-js';
-
-import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
+} from "@mui/material";
+import type { SearchResult } from "@packages/antalmanac-types";
+import { PostHog } from "posthog-js/react";
+import { PureComponent } from "react";
+import UAParser from "ua-parser-js";
 
 const SEARCH_TIMEOUT_MS = 150;
 
 const resultType = {
-    GE_CATEGORY: 'GE_CATEGORY',
-    DEPARTMENT: 'DEPARTMENT',
-    COURSE: 'COURSE',
-    SECTION: 'SECTION',
+    GE_CATEGORY: "GE_CATEGORY",
+    DEPARTMENT: "DEPARTMENT",
+    COURSE: "COURSE",
+    SECTION: "SECTION",
 } as const;
 
 const groupType = {
-    UNGROUPED: '__ungrgouped__',
-    NOT_OFFERED: '__notOffered__',
-    OFFERED: '__offered__',
+    UNGROUPED: "__ungrgouped__",
+    NOT_OFFERED: "__notOffered__",
+    OFFERED: "__offered__",
 } as const;
 
 const emojiMap: Record<string, string> = {
-    GE_CATEGORY: '🏫', // U+1F3EB :school:
-    DEPARTMENT: '🏢', // U+1F3E2 :office:
-    COURSE: '📚', // U+1F4DA :books:
-    SECTION: '📝', // U+1F4DD :memo:
+    GE_CATEGORY: "🏫", // U+1F3EB :school:
+    DEPARTMENT: "🏢", // U+1F3E2 :office:
+    COURSE: "📚", // U+1F4DA :books:
+    SECTION: "📝", // U+1F4DD :memo:
 };
 
-const romanArr = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
+const romanArr = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
 
 const isMobile = () => {
     const parser = new UAParser();
-    return parser.getDevice().type === 'mobile' || parser.getDevice().type === 'tablet' || isIpad();
+    return parser.getDevice().type === "mobile" || parser.getDevice().type === "tablet" || isIpad();
 };
 
 const isIpad = () => {
-    return navigator.userAgent.includes('Mac') && 'ontouchend' in document;
+    return navigator.userAgent.includes("Mac") && "ontouchend" in document;
 };
 
 interface FuzzySearchProps {
@@ -74,7 +73,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         cache: {},
         open: false,
         results: {},
-        value: '',
+        value: "",
         loading: false,
         requestTimestamp: undefined,
         pendingRequest: undefined,
@@ -82,11 +81,11 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
     };
 
     componentDidMount() {
-        RightPaneStore.on('formDataChange', this.handleFormDataChange);
+        RightPaneStore.on("formDataChange", this.handleFormDataChange);
     }
 
     componentWillUnmount() {
-        RightPaneStore.off('formDataChange', this.handleFormDataChange);
+        RightPaneStore.off("formDataChange", this.handleFormDataChange);
     }
 
     private getCacheKey = (term: string, query: string): string => {
@@ -119,7 +118,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                     () => {
                         window.clearTimeout(this.state.pendingRequest);
                         this.maybeDoSearchFactory(requestTimestamp)();
-                    }
+                    },
                 );
             }
         } else if (newTerm !== this.state.currentTerm) {
@@ -134,24 +133,24 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         }
         const term = RightPaneStore.getFormData().term;
         RightPaneStore.resetFormValues();
-        RightPaneStore.updateFormValue('term', term);
+        RightPaneStore.updateFormValue("term", term);
         switch (result.type) {
             case resultType.GE_CATEGORY: {
-                const geCode = option.key.split('-')[1].toUpperCase();
-                RightPaneStore.updateFormValue('ge', `GE-${geCode}`);
+                const geCode = option.key.split("-")[1].toUpperCase();
+                RightPaneStore.updateFormValue("ge", `GE-${geCode}`);
                 break;
             }
             case resultType.DEPARTMENT:
-                RightPaneStore.updateFormValue('deptValue', option.key);
+                RightPaneStore.updateFormValue("deptValue", option.key);
                 break;
             case resultType.COURSE: {
                 const { department, number } = result.metadata;
-                RightPaneStore.updateFormValue('deptValue', department);
-                RightPaneStore.updateFormValue('courseNumber', number);
+                RightPaneStore.updateFormValue("deptValue", department);
+                RightPaneStore.updateFormValue("courseNumber", number);
                 break;
             }
             case resultType.SECTION: {
-                RightPaneStore.updateFormValue('sectionCode', result.sectionCode);
+                RightPaneStore.updateFormValue("sectionCode", result.sectionCode);
                 break;
             }
             default:
@@ -171,7 +170,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         if (!object) return option.key;
         switch (object.type) {
             case resultType.GE_CATEGORY: {
-                const cat = option.key.split('-')[1].toLowerCase();
+                const cat = option.key.split("-")[1].toLowerCase();
                 const num = parseInt(cat);
                 return `${emojiMap.GE_CATEGORY} GE ${cat.replace(num.toString(), romanArr[num - 1])} (${cat}): ${
                     object.name
@@ -184,11 +183,12 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
             case resultType.SECTION:
                 return `${emojiMap.SECTION} ${object.sectionCode} ${object.sectionType} ${object.sectionNum}: ${object.department} ${object.courseNumber}`;
             default:
-                return '';
+                return "";
         }
     };
 
-    requestIsCurrent = (requestTimestamp: number) => this.state.requestTimestamp === requestTimestamp;
+    requestIsCurrent = (requestTimestamp: number) =>
+        this.state.requestTimestamp === requestTimestamp;
 
     // Returns a function for use with setTimeout that exhibits the following behavior:
     // If the request is current, make the request. Then, if it is still current, update the component's
@@ -226,11 +226,14 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
     onInputChange = (_event: unknown, value: string, reason: AutocompleteInputChangeReason) => {
         const lowerCaseValue = value.toLowerCase();
-        if (reason === 'input') {
+        if (reason === "input") {
             this.setState(
                 {
                     open: lowerCaseValue.length >= 2,
-                    value: lowerCaseValue.slice(-1) === ' ' ? lowerCaseValue.slice(0, -1) : lowerCaseValue,
+                    value:
+                        lowerCaseValue.slice(-1) === " "
+                            ? lowerCaseValue.slice(0, -1)
+                            : lowerCaseValue,
                 },
                 () => {
                     if (lowerCaseValue.length < 2) return;
@@ -245,19 +248,19 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                             window.clearTimeout(this.state.pendingRequest);
                             const pendingRequest = window.setTimeout(
                                 this.maybeDoSearchFactory(requestTimestamp),
-                                SEARCH_TIMEOUT_MS
+                                SEARCH_TIMEOUT_MS,
                             );
                             this.setState({ pendingRequest });
                         });
                     }
-                }
+                },
             );
         }
     };
 
     onChange = (_event: unknown, option: SearchOption | null) => {
         if (option) {
-            this.setState({ open: false, value: '' }, () => {
+            this.setState({ open: false, value: "" }, () => {
                 this.doSearch(option);
             });
         }
@@ -271,7 +274,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         const isCourse = option.result.type === resultType.COURSE;
         if (!isCourse) return groupType.UNGROUPED;
 
-        const isOffered = 'isOffered' in option.result && option.result.isOffered;
+        const isOffered = "isOffered" in option.result && option.result.isOffered;
         return isOffered ? groupType.OFFERED : groupType.NOT_OFFERED;
     };
 
@@ -291,8 +294,8 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                         mt: 1,
                         mb: 1,
                         ml: 0.5,
-                        '&::before': { width: '0px' },
-                        '&::after': { borderColor: 'text.primary', opacity: 0.45 },
+                        "&::before": { width: "0px" },
+                        "&::after": { borderColor: "text.primary", opacity: 0.45 },
                     }}
                 >
                     <Typography variant="subtitle1">{label}</Typography>
@@ -304,7 +307,9 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
 
     renderOption = (props: React.HTMLAttributes<HTMLLIElement>, option: SearchOption) => {
         const object = option.result;
-        const { key, ...restProps } = props as React.HTMLAttributes<HTMLLIElement> & { key: string };
+        const { key, ...restProps } = props as React.HTMLAttributes<HTMLLIElement> & {
+            key: string;
+        };
         if (!object)
             return (
                 <Box component="li" key={key} {...restProps}>
@@ -315,7 +320,7 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
         const label = this.getOptionLabel(option);
         const isCourse = object.type === resultType.COURSE;
 
-        const isOffered = isCourse && 'isOffered' in object && object.isOffered;
+        const isOffered = isCourse && "isOffered" in object && object.isOffered;
 
         return (
             <Box
@@ -323,8 +328,8 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 key={key}
                 {...restProps}
                 sx={{
-                    display: 'flex',
-                    alignItems: 'center',
+                    display: "flex",
+                    alignItems: "center",
                     opacity: isCourse && !isOffered ? 0.6 : 1,
                 }}
             >
@@ -346,7 +351,10 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                 autocompleteProps={{
                     loading: this.state.loading,
                     fullWidth: true,
-                    options: Object.entries(this.state.results ?? {}).map(([key, result]) => ({ key, result })),
+                    options: Object.entries(this.state.results ?? {}).map(([key, result]) => ({
+                        key,
+                        result,
+                    })),
                     autoHighlight: true,
                     filterOptions: this.filterOptions,
                     getOptionLabel: this.getOptionLabel,
@@ -354,17 +362,17 @@ class FuzzySearch extends PureComponent<FuzzySearchProps, FuzzySearchState> {
                     groupBy: this.groupBy,
                     renderGroup: this.renderGroup,
                     onChange: this.onChange,
-                    id: 'fuzzy-search',
-                    noOptionsText: 'No results found! Please try broadening your search.',
+                    id: "fuzzy-search",
+                    noOptionsText: "No results found! Please try broadening your search.",
                     onClose: this.onClose,
                     onInputChange: this.onInputChange,
                     open: this.state.open,
-                    popupIcon: '',
+                    popupIcon: "",
                     clearOnBlur: false,
                 }}
                 textFieldProps={{
                     autoFocus: !isMobile(),
-                    placeholder: 'Search for courses, departments, GEs...',
+                    placeholder: "Search for courses, departments, GEs...",
                     fullWidth: true,
                     onFocus: this.onFocus,
                 }}

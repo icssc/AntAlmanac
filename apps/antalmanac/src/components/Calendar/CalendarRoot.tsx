@@ -1,32 +1,41 @@
-'use client';
+"use client";
 
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import './calendar.css';
-
-import { Box, Backdrop, useTheme } from '@mui/material';
-import moment from 'moment';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
-import { useShallow } from 'zustand/react/shallow';
-import { shallow } from 'zustand/shallow';
-
-import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
-import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
-import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
-import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
-import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
-import { skeletonBlueprintVariations } from '$components/Calendar/skeletonBlueprintVariations';
-import { useIsMobile } from '$hooks/useIsMobile';
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import "./calendar.css";
+import { CalendarCourseEvent } from "$components/Calendar/CalendarCourseEvent";
+import { CalendarCourseEventWrapper } from "$components/Calendar/CalendarCourseEventWrapper";
+import { CalendarEventPopover } from "$components/Calendar/CalendarEventPopover";
+import type {
+    CalendarEvent,
+    CourseEvent,
+    SkeletonEvent,
+} from "$components/Calendar/CourseCalendarEvent";
+import { skeletonBlueprintVariations } from "$components/Calendar/skeletonBlueprintVariations";
+import { CalendarToolbar } from "$components/Calendar/Toolbar/CalendarToolbar";
+import { useIsMobile } from "$hooks/useIsMobile";
 import {
     getLocalStorageSkeletonBlueprint,
     removeLocalStorageSkeletonBlueprint,
     setLocalStorageSkeletonBlueprint,
-} from '$lib/localStorage';
-import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
-import AppStore from '$stores/AppStore';
-import { useHoveredStore } from '$stores/HoveredStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+} from "$lib/localStorage";
+import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from "$lib/termData";
+import AppStore from "$stores/AppStore";
+import { useHoveredStore } from "$stores/HoveredStore";
+import { scheduleComponentsToggleStore } from "$stores/ScheduleComponentsToggleStore";
+import { useThemeStore, useTimeFormatStore } from "$stores/SettingsStore";
+import { Backdrop, Box, useTheme } from "@mui/material";
+import moment from "moment";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+    Calendar,
+    Components,
+    DateLocalizer,
+    Views,
+    ViewsProps,
+    momentLocalizer,
+} from "react-big-calendar";
+import { useShallow } from "zustand/react/shallow";
+import { shallow } from "zustand/shallow";
 
 /*
 //  * Always start week on Saturday for finals potentially on weekends.
@@ -36,8 +45,8 @@ import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
  * Normal schedules: Su ... Sa (Sa rightmost)
  */
 // eslint-disable-next-line import/no-named-as-default-member
-moment.defineLocale('en-us', {
-    parentLocale: 'en',
+moment.defineLocale("en-us", {
+    parentLocale: "en",
     week: {
         dow: 0, // Sunday = 0, Monday = 1, ..., Saturday = 6
     },
@@ -45,13 +54,13 @@ moment.defineLocale('en-us', {
 
 // Finals locale: week starts Saturday (Sa ... Fr)
 // eslint-disable-next-line import/no-named-as-default-member
-moment.defineLocale('en-us-finals', {
-    parentLocale: 'en-us',
+moment.defineLocale("en-us-finals", {
+    parentLocale: "en-us",
     week: { dow: 6 },
 });
 
 // eslint-disable-next-line import/no-named-as-default-member
-moment.locale('en-us');
+moment.locale("en-us");
 const CALENDAR_VIEWS: ViewsProps<CalendarEvent, object> = [Views.WEEK, Views.WORK_WEEK];
 const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
     event: CalendarCourseEvent,
@@ -63,15 +72,19 @@ const CALENDAR_MAX_DATE = new Date(2018, 0, 1, 23);
 export const ScheduleCalendar = memo(() => {
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
     const [eventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
-    const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
-    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
+    const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(() =>
+        AppStore.getFinalEventsInCalendar(),
+    );
+    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() =>
+        AppStore.getCurrentScheduleIndex(),
+    );
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
 
     const theme = useTheme();
     const { isMilitaryTime } = useTimeFormatStore();
     const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
         (state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal],
-        shallow
+        shallow,
     );
     const isDark = useThemeStore(useShallow((store) => store.isDark));
 
@@ -82,7 +95,7 @@ export const ScheduleCalendar = memo(() => {
 
     const onlyCourseEvents = useMemo(
         () => eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[],
-        [eventsInCalendar]
+        [eventsInCalendar],
     );
 
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
@@ -144,14 +157,14 @@ export const ScheduleCalendar = memo(() => {
             end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
 
             return {
-                color: '#6d6d6d',
+                color: "#6d6d6d",
                 start,
                 end,
-                title: '',
+                title: "",
                 isSkeletonEvent: true,
             } as SkeletonEvent;
         },
-        []
+        [],
     );
 
     const createSkeletonEvents = useCallback((): SkeletonEvent[] => {
@@ -198,17 +211,17 @@ export const ScheduleCalendar = memo(() => {
     }, [events]);
 
     const eventStyleGetter = useCallback((event: CalendarEvent | SkeletonEvent) => {
-        const isSkeletonEvent = 'isSkeletonEvent' in event && event.isSkeletonEvent;
+        const isSkeletonEvent = "isSkeletonEvent" in event && event.isSkeletonEvent;
 
         const style = {
             backgroundColor: event.color,
-            cursor: 'pointer',
-            borderStyle: 'none',
-            borderRadius: '4px',
-            color: colorContrastSufficient(event.color) ? 'white' : 'black',
+            cursor: "pointer",
+            borderStyle: "none",
+            borderRadius: "4px",
+            color: colorContrastSufficient(event.color) ? "white" : "black",
         };
 
-        return isSkeletonEvent ? { style, className: 'calendar-loading-event' } : { style };
+        return isSkeletonEvent ? { style, className: "calendar-loading-event" } : { style };
     }, []);
 
     /**
@@ -221,12 +234,12 @@ export const ScheduleCalendar = memo(() => {
             }
 
             const style = {
-                backgroundColor: isDark ? theme.palette.background.paper : '',
+                backgroundColor: isDark ? theme.palette.background.paper : "",
             };
 
             return { style };
         },
-        [isDark, theme]
+        [isDark, theme],
     );
 
     const colorContrastSufficient = (bg: string) => {
@@ -234,7 +247,7 @@ export const ScheduleCalendar = memo(() => {
         const minBrightnessDiff = 125;
 
         const backgroundRegexResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(
-            bg.slice(0, 7)
+            bg.slice(0, 7),
         ) as RegExpExecArray; // returns {hex, r, g, b}
         const backgroundRGB = {
             r: parseInt(backgroundRegexResult[1], 16),
@@ -252,9 +265,11 @@ export const ScheduleCalendar = memo(() => {
         return Math.abs(bgBrightness - textBrightness) > minBrightnessDiff;
     };
 
-    const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
-    const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
-    const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
+    const hasWeekendCourse = events.some(
+        (event) => event.start.getDay() === 0 || event.start.getDay() === 6,
+    );
+    const calendarTimeFormat = isMilitaryTime ? "HH:mm" : "h:mm A";
+    const calendarGutterTimeFormat = isMilitaryTime ? "HH:mm" : "h A";
 
     const finalsDate = hoveredCalendarizedFinal
         ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
@@ -264,7 +279,7 @@ export const ScheduleCalendar = memo(() => {
 
     const finalsStartsOnSaturday = showFinalsSchedule && finalsDate.getDay() === 6;
 
-    const culture = finalsStartsOnSaturday ? 'en-us-finals' : 'en-us';
+    const culture = finalsStartsOnSaturday ? "en-us-finals" : "en-us";
 
     const calendarLocalizer = useMemo(() => {
         // eslint-disable-next-line import/no-named-as-default-member
@@ -282,24 +297,30 @@ export const ScheduleCalendar = memo(() => {
     const shouldShowWeekView = showFinalsSchedule ? hasWeekendFinals : hasWeekendCourse;
     const calendarView = shouldShowWeekView ? Views.WEEK : Views.WORK_WEEK;
 
-    const finalsDateFormat = isMobile ? 'M/DD' : 'ddd M/DD';
+    const finalsDateFormat = isMobile ? "M/DD" : "ddd M/DD";
     const date = showFinalsSchedule ? finalsDate : new Date(2018, 0, 1);
 
     const formats = useMemo(
         () => ({
             timeGutterFormat: (date: Date, culture?: string, localizer?: DateLocalizer) =>
-                date.getMinutes() > 0 || !localizer ? '' : localizer.format(date, calendarGutterTimeFormat, culture),
-            dayFormat: showFinalsSchedule ? finalsDateFormat : 'ddd',
-            eventTimeRangeFormat: (range: { start: Date; end: Date }, culture?: string, localizer?: DateLocalizer) =>
+                date.getMinutes() > 0 || !localizer
+                    ? ""
+                    : localizer.format(date, calendarGutterTimeFormat, culture),
+            dayFormat: showFinalsSchedule ? finalsDateFormat : "ddd",
+            eventTimeRangeFormat: (
+                range: { start: Date; end: Date },
+                culture?: string,
+                localizer?: DateLocalizer,
+            ) =>
                 localizer
                     ? `${localizer.format(range.start, calendarTimeFormat, culture)} - ${localizer.format(
                           range.end,
                           calendarTimeFormat,
-                          culture
+                          culture,
                       )}`
-                    : '',
+                    : "",
         }),
-        [calendarGutterTimeFormat, calendarTimeFormat, finalsDateFormat, showFinalsSchedule]
+        [calendarGutterTimeFormat, calendarTimeFormat, finalsDateFormat, showFinalsSchedule],
     );
 
     useEffect(() => {
@@ -313,18 +334,18 @@ export const ScheduleCalendar = memo(() => {
             setScheduleNames(AppStore.getScheduleNames());
         };
 
-        AppStore.on('addedCoursesChange', updateEventsInCalendar);
-        AppStore.on('customEventsChange', updateEventsInCalendar);
-        AppStore.on('colorChange', updateEventsInCalendar);
-        AppStore.on('currentScheduleIndexChange', updateEventsInCalendar);
-        AppStore.on('scheduleNamesChange', updateScheduleNames);
+        AppStore.on("addedCoursesChange", updateEventsInCalendar);
+        AppStore.on("customEventsChange", updateEventsInCalendar);
+        AppStore.on("colorChange", updateEventsInCalendar);
+        AppStore.on("currentScheduleIndexChange", updateEventsInCalendar);
+        AppStore.on("scheduleNamesChange", updateScheduleNames);
 
         return () => {
-            AppStore.off('addedCoursesChange', updateEventsInCalendar);
-            AppStore.off('customEventsChange', updateEventsInCalendar);
-            AppStore.off('colorChange', updateEventsInCalendar);
-            AppStore.off('currentScheduleIndexChange', updateEventsInCalendar);
-            AppStore.off('scheduleNamesChange', updateScheduleNames);
+            AppStore.off("addedCoursesChange", updateEventsInCalendar);
+            AppStore.off("customEventsChange", updateEventsInCalendar);
+            AppStore.off("colorChange", updateEventsInCalendar);
+            AppStore.off("currentScheduleIndexChange", updateEventsInCalendar);
+            AppStore.off("scheduleNamesChange", updateScheduleNames);
         };
     }, []);
 
@@ -333,18 +354,18 @@ export const ScheduleCalendar = memo(() => {
             id="calendar-root"
             borderRadius={1}
             flexGrow={1}
-            height={'0px'}
+            height={"0px"}
             display="flex"
             flexDirection="column"
             position="relative"
         >
             <Backdrop
                 sx={(theme) => ({
-                    color: '#ffff',
-                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                    color: "#ffff",
+                    backgroundColor: "rgba(0, 0, 0, 0.1)",
                     zIndex: theme.zIndex.drawer + 1,
-                    position: 'absolute',
-                    padding: ' 0',
+                    position: "absolute",
+                    padding: " 0",
                 })}
                 open={loadingSchedule}
             />
@@ -388,4 +409,4 @@ export const ScheduleCalendar = memo(() => {
     );
 });
 
-ScheduleCalendar.displayName = 'ScheduleCalendar';
+ScheduleCalendar.displayName = "ScheduleCalendar";

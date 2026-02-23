@@ -1,8 +1,8 @@
-import { db } from '@packages/db/src/index';
-import { z } from 'zod';
+import { db } from "@packages/db/src/index";
+import { z } from "zod";
 
-import { RDS } from '../../backend/lib/rds';
-import { procedure, router } from '../trpc';
+import { RDS } from "../../backend/lib/rds";
+import { procedure, router } from "../trpc";
 
 const NotifyOnSchema = z.object({
     notifyOnOpen: z.boolean(),
@@ -29,15 +29,19 @@ const notificationsRouter = router({
     set: procedure
         .input(z.object({ userId: z.string(), notifications: z.array(NotificationSchema) }))
         .mutation(async ({ input }) => {
-            const stage = process.env.STAGE?.trim() || '';
+            const stage = process.env.STAGE?.trim() || "";
             await Promise.all(
-                input.notifications.map((notification) => RDS.upsertNotification(db, input.userId, notification, stage))
+                input.notifications.map((notification) =>
+                    RDS.upsertNotification(db, input.userId, notification, stage),
+                ),
             );
         }),
 
-    updateNotifications: procedure.input(z.object({ notification: NotificationSchema })).mutation(async ({ input }) => {
-        await RDS.updateAllNotifications(db, input.notification);
-    }),
+    updateNotifications: procedure
+        .input(z.object({ notification: NotificationSchema }))
+        .mutation(async ({ input }) => {
+            await RDS.updateAllNotifications(db, input.notification);
+        }),
 
     deleteNotification: procedure
         .input(z.object({ userId: z.string(), notification: NotificationSchema }))
@@ -45,9 +49,11 @@ const notificationsRouter = router({
             await RDS.deleteNotification(db, input.notification, input.userId);
         }),
 
-    deleteAllNotifications: procedure.input(z.object({ userId: z.string() })).mutation(async ({ input }) => {
-        await RDS.deleteAllNotifications(db, input.userId);
-    }),
+    deleteAllNotifications: procedure
+        .input(z.object({ userId: z.string() }))
+        .mutation(async ({ input }) => {
+            await RDS.deleteAllNotifications(db, input.userId);
+        }),
 });
 
 export default notificationsRouter;

@@ -1,4 +1,31 @@
-import { ContentPasteGo } from '@mui/icons-material';
+import {
+    addCourse,
+    addCustomEvent,
+    importScheduleWithUsername,
+    importValidatedSchedule,
+    openSnackbar,
+} from "$actions/AppStoreActions";
+import { AlertDialog } from "$components/AlertDialog";
+import { TermSelector } from "$components/RightPane/CoursePane/SearchForm/TermSelector";
+import RightPaneStore from "$components/RightPane/RightPaneStore";
+import analyticsEnum, { logAnalytics } from "$lib/analytics/analytics";
+import { QueryZotcourseError } from "$lib/customErrors";
+import { warnMultipleTerms } from "$lib/helpers";
+import {
+    getLocalStorageDataCache,
+    getLocalStorageOnFirstSignin,
+    getLocalStorageUserId,
+    removeLocalStorageOnFirstSignin,
+    removeLocalStorageUserId,
+} from "$lib/localStorage";
+import { WebSOC } from "$lib/websoc";
+import { ZotcourseResponse, queryZotcourse } from "$lib/zotcourse";
+import { BLUE } from "$src/globals";
+import AppStore from "$stores/AppStore";
+import { scheduleComponentsToggleStore } from "$stores/ScheduleComponentsToggleStore";
+import { useSessionStore } from "$stores/SessionStore";
+import { useThemeStore } from "$stores/SettingsStore";
+import { ContentPasteGo } from "@mui/icons-material";
 import {
     AlertColor,
     Box,
@@ -16,54 +43,26 @@ import {
     Stack,
     TextField,
     Tooltip,
-} from '@mui/material';
-import { CourseInfo } from '@packages/antalmanac-types';
-import { usePostHog } from 'posthog-js/react';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-
-import {
-    addCustomEvent,
-    openSnackbar,
-    addCourse,
-    importScheduleWithUsername,
-    importValidatedSchedule,
-} from '$actions/AppStoreActions';
-import { AlertDialog } from '$components/AlertDialog';
-import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { QueryZotcourseError } from '$lib/customErrors';
-import { warnMultipleTerms } from '$lib/helpers';
-import {
-    getLocalStorageDataCache,
-    getLocalStorageOnFirstSignin,
-    getLocalStorageUserId,
-    removeLocalStorageOnFirstSignin,
-    removeLocalStorageUserId,
-} from '$lib/localStorage';
-import { WebSOC } from '$lib/websoc';
-import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
-import { BLUE } from '$src/globals';
-import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
+} from "@mui/material";
+import { CourseInfo } from "@packages/antalmanac-types";
+import { usePostHog } from "posthog-js/react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 enum ImportSource {
-    ZOT_COURSE_IMPORT = 'zotcourse',
-    STUDY_LIST_IMPORT = 'studylist',
-    AA_USERNAME_IMPORT = 'username',
+    ZOT_COURSE_IMPORT = "zotcourse",
+    STUDY_LIST_IMPORT = "studylist",
+    AA_USERNAME_IMPORT = "username",
 }
 
 export function Import() {
-    const [alertDialogTitle, setAlertDialogTitle] = useState('');
-    const [alertDialogSeverity, setAlertDialogSeverity] = useState<AlertColor>('error');
+    const [alertDialogTitle, setAlertDialogTitle] = useState("");
+    const [alertDialogSeverity, setAlertDialogSeverity] = useState<AlertColor>("error");
     const [alertDialog, setAlertDialog] = useState(false);
-    const [importSource, setImportSource] = useState('studylist');
-    const [studyListText, setStudyListText] = useState('');
-    const [zotcourseScheduleName, setZotcourseScheduleName] = useState('');
-    const [aaUsername, setAAUsername] = useState('');
+    const [importSource, setImportSource] = useState("studylist");
+    const [studyListText, setStudyListText] = useState("");
+    const [zotcourseScheduleName, setZotcourseScheduleName] = useState("");
+    const [aaUsername, setAAUsername] = useState("");
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
@@ -90,7 +89,8 @@ export function Import() {
         switch (importSource) {
             case ImportSource.ZOT_COURSE_IMPORT:
                 try {
-                    const zotcourseImport: ZotcourseResponse = await queryZotcourse(zotcourseScheduleName);
+                    const zotcourseImport: ZotcourseResponse =
+                        await queryZotcourse(zotcourseScheduleName);
                     sectionCodes = zotcourseImport.codes;
                     for (const event of zotcourseImport.customEvents) {
                         addCustomEvent(event, [currentSchedule]);
@@ -98,9 +98,9 @@ export function Import() {
                     uploadSectionCodes(sectionCodes, term, currentSchedule);
                 } catch (e) {
                     if (e instanceof QueryZotcourseError) {
-                        openSnackbar('error', e.message);
+                        openSnackbar("error", e.message);
                     } else {
-                        openSnackbar('error', 'Could not import from Zotcourse.');
+                        openSnackbar("error", "Could not import from Zotcourse.");
                     }
                     console.error(e);
                     handleClose();
@@ -117,36 +117,36 @@ export function Import() {
                 const importStatus = await importScheduleWithUsername(aaUsername);
                 if (importStatus.error) {
                     setAlertDialog(true);
-                    setAlertDialogSeverity('error');
+                    setAlertDialogSeverity("error");
                     if (importStatus.error instanceof Error) {
                         setAlertDialogTitle(importStatus.error.message);
                     } else {
-                        setAlertDialogTitle('Error importing schedule');
+                        setAlertDialogTitle("Error importing schedule");
                     }
                 } else if (importStatus.imported) {
                     setAlertDialog(true);
-                    setAlertDialogSeverity('info');
+                    setAlertDialogSeverity("info");
                     setAlertDialogTitle(`Note: "${aaUsername}" has already been imported`);
                 }
                 break;
             }
             default:
-                openSnackbar('error', 'Invalid import source.');
+                openSnackbar("error", "Invalid import source.");
                 handleClose();
                 return;
         }
 
         if (!sectionCodes && importSource !== ImportSource.AA_USERNAME_IMPORT) {
             openSnackbar(
-                'error',
+                "error",
                 `Cannot import an empty ${
-                    importSource === ImportSource.ZOT_COURSE_IMPORT ? 'Zotcourse' : 'Study List'
-                }.`
+                    importSource === ImportSource.ZOT_COURSE_IMPORT ? "Zotcourse" : "Study List"
+                }.`,
             );
             handleClose();
             return;
         }
-        setStudyListText('');
+        setStudyListText("");
         handleClose();
     };
 
@@ -161,17 +161,21 @@ export function Import() {
         setAlertDialog(false);
     };
 
-    const uploadSectionCodes = async (sectionCodes: string[], term: string, currentSchedule: number) => {
+    const uploadSectionCodes = async (
+        sectionCodes: string[],
+        term: string,
+        currentSchedule: number,
+    ) => {
         try {
             const term = RightPaneStore.getFormData().term;
 
             const sectionsAdded = addCoursesMultiple(
                 await WebSOC.getCourseInfo({
                     term,
-                    sectionCodes: sectionCodes.join(','),
+                    sectionCodes: sectionCodes.join(","),
                 }),
                 term,
-                currentSchedule
+                currentSchedule,
             );
 
             logAnalytics(postHog, {
@@ -181,21 +185,24 @@ export function Import() {
             });
 
             if (sectionsAdded === sectionCodes.length) {
-                openSnackbar('success', `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`);
+                openSnackbar(
+                    "success",
+                    `Successfully imported ${sectionsAdded} of ${sectionsAdded} classes!`,
+                );
             } else if (sectionsAdded !== 0) {
                 openSnackbar(
-                    'warning',
+                    "warning",
                     `Only successfully imported ${sectionsAdded} of ${sectionCodes.length} classes. 
-                        Please make sure that you selected the correct term and that none of your classes are missing.`
+                        Please make sure that you selected the correct term and that none of your classes are missing.`,
                 );
             } else {
                 openSnackbar(
-                    'error',
-                    'Failed to import any classes! Please make sure that you pasted the correct Study List.'
+                    "error",
+                    "Failed to import any classes! Please make sure that you pasted the correct Study List.",
                 );
             }
         } catch (e) {
-            openSnackbar('error', 'An error occurred while trying to import the Study List.');
+            openSnackbar("error", "An error occurred while trying to import the Study List.");
             console.error(e);
         }
     };
@@ -203,7 +210,7 @@ export function Import() {
     const addCoursesMultiple = (
         courseInfo: { [sectionCode: string]: CourseInfo },
         term: string,
-        scheduleIndex: number
+        scheduleIndex: number,
     ) => {
         for (const section of Object.values(courseInfo)) {
             addCourse(section.section, section.courseDetails, term, scheduleIndex, true, postHog);
@@ -225,17 +232,20 @@ export function Import() {
         setStudyListText(event.currentTarget.value);
     }, []);
 
-    const handleZotcourseScheduleNameChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        setZotcourseScheduleName(event.currentTarget.value);
-    }, []);
+    const handleZotcourseScheduleNameChange = useCallback(
+        (event: React.ChangeEvent<HTMLInputElement>) => {
+            setZotcourseScheduleName(event.currentTarget.value);
+        },
+        [],
+    );
 
     const handleAAUsernameChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setAAUsername(event.currentTarget.value);
     }, []);
 
     const handleFirstTimeSignin = useCallback(async () => {
-        const newUserFlag = getLocalStorageOnFirstSignin() ?? '';
-        if (newUserFlag !== '') {
+        const newUserFlag = getLocalStorageOnFirstSignin() ?? "";
+        if (newUserFlag !== "") {
             const savedUserId = getLocalStorageUserId();
             if (savedUserId) setAAUsername(savedUserId);
             handleOpen();
@@ -252,10 +262,10 @@ export function Import() {
         if (sessionIsValid && getLocalStorageDataCache() === null) {
             handleFirstTimeSignin();
         }
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+        AppStore.on("skeletonModeChange", handleSkeletonModeChange);
 
         return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+            AppStore.off("skeletonModeChange", handleSkeletonModeChange);
         };
     }, [handleFirstTimeSignin, sessionIsValid]);
 
@@ -265,7 +275,7 @@ export function Import() {
                 <Button
                     onClick={handleOpen}
                     color="inherit"
-                    sx={{ fontSize: 'inherit' }}
+                    sx={{ fontSize: "inherit" }}
                     startIcon={<ContentPasteGo />}
                     disabled={skeletonMode}
                     id="import-button"
@@ -306,15 +316,22 @@ export function Import() {
                     {importSource === ImportSource.STUDY_LIST_IMPORT && (
                         <Box>
                             <DialogContentText>
-                                Paste the contents of your Study List below to import it into AntAlmanac.
+                                Paste the contents of your Study List below to import it into
+                                AntAlmanac.
                                 <br />
-                                To find your Study List, go to{' '}
-                                <a href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>WebReg</a> or{' '}
-                                <a href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</a>, and click
-                                on Study List once you&apos;ve logged in. Copy everything below the column names (Code,
-                                Dept, etc.) under the Enrolled Classes section.
+                                To find your Study List, go to{" "}
+                                <a href={"https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh"}>
+                                    WebReg
+                                </a>{" "}
+                                or{" "}
+                                <a href={"https://www.reg.uci.edu/access/student/welcome/"}>
+                                    StudentAccess
+                                </a>
+                                , and click on Study List once you&apos;ve logged in. Copy
+                                everything below the column names (Code, Dept, etc.) under the
+                                Enrolled Classes section.
                             </DialogContentText>
-                            <InputLabel style={{ fontSize: '9px' }}>Study List</InputLabel>
+                            <InputLabel style={{ fontSize: "9px" }}>Study List</InputLabel>
                             <TextField
                                 fullWidth
                                 multiline
@@ -330,9 +347,10 @@ export function Import() {
                     {importSource === ImportSource.ZOT_COURSE_IMPORT && (
                         <Box>
                             <DialogContentText>
-                                Paste your Zotcourse schedule name below to import it into AntAlmanac.
+                                Paste your Zotcourse schedule name below to import it into
+                                AntAlmanac.
                             </DialogContentText>
-                            <InputLabel style={{ fontSize: '9px' }}>Zotcourse Schedule</InputLabel>
+                            <InputLabel style={{ fontSize: "9px" }}>Zotcourse Schedule</InputLabel>
                             <TextField
                                 fullWidth
                                 multiline
@@ -356,7 +374,9 @@ export function Import() {
                             <DialogContentText>
                                 Paste your unique user ID here to import your schedule(s).
                             </DialogContentText>
-                            <InputLabel style={{ fontSize: '9px' }}>AntAlmanac Schedule Name</InputLabel>
+                            <InputLabel style={{ fontSize: "9px" }}>
+                                AntAlmanac Schedule Name
+                            </InputLabel>
                             <TextField
                                 fullWidth
                                 margin="dense"
@@ -371,16 +391,18 @@ export function Import() {
 
                     {importSource !== ImportSource.AA_USERNAME_IMPORT && (
                         <Stack spacing={1}>
-                            <DialogContentText>Make sure you also have the right term selected.</DialogContentText>
+                            <DialogContentText>
+                                Make sure you also have the right term selected.
+                            </DialogContentText>
                             <TermSelector />
                         </Stack>
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>
+                    <Button onClick={handleClose} color={isDark ? "secondary" : "primary"}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} color={isDark ? 'secondary' : 'primary'}>
+                    <Button onClick={handleSubmit} color={isDark ? "secondary" : "primary"}>
                         Import
                     </Button>
                 </DialogActions>
@@ -392,9 +414,9 @@ export function Import() {
                 onClose={handleCloseAlertDialog}
                 severity={alertDialogSeverity}
             >
-                {alertDialogSeverity === 'error' ? (
+                {alertDialogSeverity === "error" ? (
                     <Box>
-                        If you think this is a mistake please submit a{' '}
+                        If you think this is a mistake please submit a{" "}
                         <Link to="https://forms.gle/k81f2aNdpdQYeKK8A">bug report</Link>
                     </Box>
                 ) : (

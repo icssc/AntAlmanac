@@ -1,6 +1,5 @@
-import { OAuth2Client } from 'arctic';
-
-import { oidcOAuthEnvSchema } from '$src/backend/env';
+import { oidcOAuthEnvSchema } from "$src/backend/env";
+import { OAuth2Client } from "arctic";
 
 const { OIDC_CLIENT_ID, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
 

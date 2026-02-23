@@ -1,17 +1,16 @@
+import { deleteSchedule } from "$actions/AppStoreActions";
+import AppStore from "$stores/AppStore";
+import { useThemeStore } from "$stores/SettingsStore";
 import {
     Button,
     Dialog,
     DialogActions,
     DialogContent,
     DialogContentText,
-    DialogTitle,
     type DialogProps,
-} from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
-
-import { deleteSchedule } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
-import { useThemeStore } from '$stores/SettingsStore';
+    DialogTitle,
+} from "@mui/material";
+import { useCallback, useEffect, useState } from "react";
 
 interface ScheduleNameDialogProps extends DialogProps {
     /**
@@ -38,12 +37,12 @@ function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
     const [name, setName] = useState<string>(AppStore.getScheduleNames()[index]);
 
     const handleCancel = useCallback(() => {
-        onClose?.({}, 'escapeKeyDown');
+        onClose?.({}, "escapeKeyDown");
     }, [onClose]);
 
     const handleDelete = useCallback(() => {
         deleteSchedule(index);
-        onClose?.({}, 'escapeKeyDown');
+        onClose?.({}, "escapeKeyDown");
     }, [index, onClose]);
 
     const handleScheduleNamesChange = useCallback(() => {
@@ -52,9 +51,9 @@ function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
 
     useEffect(() => {
         handleScheduleNamesChange();
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
+        AppStore.on("scheduleNamesChange", handleScheduleNamesChange);
         return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
+            AppStore.off("scheduleNamesChange", handleScheduleNamesChange);
         };
     }, [handleScheduleNamesChange]);
 
@@ -63,11 +62,13 @@ function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
             <DialogTitle>Delete Schedule</DialogTitle>
 
             <DialogContent>
-                <DialogContentText>Are you sure you want to delete &#34;{name}&#34;?</DialogContentText>
+                <DialogContentText>
+                    Are you sure you want to delete &#34;{name}&#34;?
+                </DialogContentText>
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={handleCancel} color={isDark ? 'secondary' : 'primary'}>
+                <Button onClick={handleCancel} color={isDark ? "secondary" : "primary"}>
                     Cancel
                 </Button>
                 <Button onClick={handleDelete} variant="contained" color="primary">

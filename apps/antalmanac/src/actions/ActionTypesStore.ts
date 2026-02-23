@@ -1,97 +1,96 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from "events";
 
-import { CustomEventId, RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
-
-import { autoSaveSchedule } from '$actions/AppStoreActions';
-import trpc from '$lib/api/trpc';
+import { autoSaveSchedule } from "$actions/AppStoreActions";
+import trpc from "$lib/api/trpc";
 import {
     getLocalStorageAutoSave,
     getLocalStorageUnsavedActions,
     removeLocalStorageUnsavedActions,
     setLocalStorageUnsavedActions,
-} from '$lib/localStorage';
-import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
+} from "$lib/localStorage";
+import AppStore from "$stores/AppStore";
+import { scheduleComponentsToggleStore } from "$stores/ScheduleComponentsToggleStore";
+import { useSessionStore } from "$stores/SessionStore";
+import { CustomEventId, RepeatingCustomEvent, ScheduleCourse } from "@packages/antalmanac-types";
 
 const MAX_UNSAVED_ACTIONS = 1000;
 
 export interface UndoRedoAction {
-    type: 'undoRedoAction';
-    direction: 'undo' | 'redo';
+    type: "undoRedoAction";
+    direction: "undo" | "redo";
 }
 
 export interface AddCourseAction {
-    type: 'addCourse';
+    type: "addCourse";
     course: ScheduleCourse;
     scheduleIndex: number;
 }
 
 export interface DeleteCourseAction {
-    type: 'deleteCourse';
+    type: "deleteCourse";
     sectionCode: string;
     term: string;
     scheduleIndex: number;
 }
 
 export interface AddCustomEventAction {
-    type: 'addCustomEvent';
+    type: "addCustomEvent";
     customEvent: RepeatingCustomEvent;
     scheduleIndices: number[];
 }
 
 export interface DeleteCustomEventAction {
-    type: 'deleteCustomEvent';
+    type: "deleteCustomEvent";
     customEventId: CustomEventId;
     scheduleIndices: number[];
 }
 
 export interface EditCustomEventAction {
-    type: 'editCustomEvent';
+    type: "editCustomEvent";
     editedCustomEvent: RepeatingCustomEvent;
     newScheduleIndices: number[];
 }
 
 export interface ChangeCustomEventColorAction {
-    type: 'changeCustomEventColor';
+    type: "changeCustomEventColor";
     customEventId: CustomEventId;
     newColor: string;
 }
 
 export interface ClearScheduleAction {
-    type: 'clearSchedule';
+    type: "clearSchedule";
 }
 
 export interface AddScheduleAction {
-    type: 'addSchedule';
+    type: "addSchedule";
     newScheduleName: string;
 }
 
 export interface RenameScheduleAction {
-    type: 'renameSchedule';
+    type: "renameSchedule";
     scheduleIndex: number;
     newScheduleName: string;
 }
 
 export interface DeleteScheduleAction {
-    type: 'deleteSchedule';
+    type: "deleteSchedule";
     scheduleIndex: number;
 }
 
 export interface CopyScheduleAction {
-    type: 'copySchedule';
+    type: "copySchedule";
     scheduleIndex: number;
     newScheduleName: string;
 }
 
 export interface ReorderScheduleAction {
-    type: 'reorderSchedule';
+    type: "reorderSchedule";
     from: number;
     to: number;
 }
 
 export interface ChangeCourseColorAction {
-    type: 'changeCourseColor';
+    type: "changeCourseColor";
     sectionCode: string;
     term: string;
     newColor: string;
@@ -128,7 +127,7 @@ class ActionTypesStore extends EventEmitter {
 
     async autoSaveSchedule(action: ActionType) {
         const sessionStore = useSessionStore.getState();
-        const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() == 'true';
+        const autoSave = typeof Storage !== "undefined" && getLocalStorageAutoSave() == "true";
 
         if (!sessionStore.sessionIsValid || !sessionStore.session) {
             if (autoSave) {
@@ -143,10 +142,10 @@ class ActionTypesStore extends EventEmitter {
             });
 
             if (accounts.providerAccountId) {
-                this.emit('autoSaveStart');
+                this.emit("autoSaveStart");
                 await autoSaveSchedule(accounts.providerAccountId, { userInfo: users });
                 AppStore.unsavedChanges = false;
-                this.emit('autoSaveEnd');
+                this.emit("autoSaveEnd");
             }
         } else {
             const unsavedActionsString = getLocalStorageUnsavedActions();
@@ -169,7 +168,7 @@ class ActionTypesStore extends EventEmitter {
         if (unsavedActionsString == null) {
             return;
         }
-        if (!confirm('You have unsaved changes. Would you like to load them?')) {
+        if (!confirm("You have unsaved changes. Would you like to load them?")) {
             removeLocalStorageUnsavedActions();
             return;
         }
@@ -178,46 +177,60 @@ class ActionTypesStore extends EventEmitter {
 
         actions.forEach((action) => {
             switch (action.type) {
-                case 'addCourse':
+                case "addCourse":
                     AppStore.schedule.addCourse(action.course, action.scheduleIndex);
                     break;
-                case 'deleteCourse':
-                    AppStore.schedule.deleteCourse(action.sectionCode, action.term, action.scheduleIndex);
+                case "deleteCourse":
+                    AppStore.schedule.deleteCourse(
+                        action.sectionCode,
+                        action.term,
+                        action.scheduleIndex,
+                    );
                     break;
-                case 'addCustomEvent':
+                case "addCustomEvent":
                     AppStore.schedule.addCustomEvent(action.customEvent, action.scheduleIndices);
                     break;
-                case 'deleteCustomEvent':
-                    AppStore.schedule.deleteCustomEvent(action.customEventId, action.scheduleIndices);
+                case "deleteCustomEvent":
+                    AppStore.schedule.deleteCustomEvent(
+                        action.customEventId,
+                        action.scheduleIndices,
+                    );
                     break;
-                case 'editCustomEvent':
-                    AppStore.schedule.editCustomEvent(action.editedCustomEvent, action.newScheduleIndices);
+                case "editCustomEvent":
+                    AppStore.schedule.editCustomEvent(
+                        action.editedCustomEvent,
+                        action.newScheduleIndices,
+                    );
                     break;
-                case 'changeCustomEventColor':
+                case "changeCustomEventColor":
                     AppStore.schedule.changeCustomEventColor(action.customEventId, action.newColor);
                     break;
-                case 'changeCourseColor':
-                    AppStore.schedule.changeCourseColor(action.sectionCode, action.term, action.newColor);
+                case "changeCourseColor":
+                    AppStore.schedule.changeCourseColor(
+                        action.sectionCode,
+                        action.term,
+                        action.newColor,
+                    );
                     break;
-                case 'clearSchedule':
+                case "clearSchedule":
                     AppStore.schedule.clearCurrentSchedule();
                     break;
-                case 'addSchedule':
+                case "addSchedule":
                     AppStore.schedule.addNewSchedule(action.newScheduleName);
                     break;
-                case 'renameSchedule':
+                case "renameSchedule":
                     AppStore.schedule.renameSchedule(action.scheduleIndex, action.newScheduleName);
                     break;
-                case 'copySchedule':
+                case "copySchedule":
                     AppStore.schedule.copySchedule(action.scheduleIndex, action.newScheduleName);
                     break;
-                case 'deleteSchedule':
+                case "deleteSchedule":
                     AppStore.schedule.deleteSchedule(action.scheduleIndex);
                     break;
-                case 'reorderSchedule':
+                case "reorderSchedule":
                     AppStore.schedule.reorderSchedule(action.from, action.to);
                     break;
-                case 'undoRedoAction':
+                case "undoRedoAction":
                     break;
                 default:
                     break;

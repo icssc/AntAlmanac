@@ -1,10 +1,9 @@
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import { Button, Collapse, Typography } from '@mui/material';
-import { useCallback, useEffect } from 'react';
-
-import { AdvancedSearchTextFields } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchTextFields';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { AdvancedSearchTextFields } from "$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchTextFields";
+import RightPaneStore from "$components/RightPane/RightPaneStore";
+import { useCoursePaneStore } from "$stores/CoursePaneStore";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import { Button, Collapse, Typography } from "@mui/material";
+import { useCallback, useEffect } from "react";
 
 export function AdvancedSearch() {
     const { advancedSearchEnabled, toggleAdvancedSearch } = useCoursePaneStore();
@@ -14,7 +13,7 @@ export function AdvancedSearch() {
     };
 
     const resetField = useCallback(() => {
-        const stateObj = { url: 'url' };
+        const stateObj = { url: "url" };
         const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
 
@@ -24,21 +23,24 @@ export function AdvancedSearch() {
         }
 
         const param = urlParam.toString();
-        const new_url = `${param.trim() ? '?' : ''}${param}`;
-        history.replaceState(stateObj, 'url', '/' + new_url);
+        const new_url = `${param.trim() ? "?" : ""}${param}`;
+        history.replaceState(stateObj, "url", "/" + new_url);
     }, []);
 
     useEffect(() => {
-        RightPaneStore.on('formReset', resetField);
+        RightPaneStore.on("formReset", resetField);
 
         return () => {
-            RightPaneStore.off('formReset', resetField);
+            RightPaneStore.off("formReset", resetField);
         };
     }, [resetField]);
 
     return (
         <>
-            <Button onClick={handleExpand} sx={{ textTransform: 'none', display: 'flex', justifyContent: 'start' }}>
+            <Button
+                onClick={handleExpand}
+                sx={{ textTransform: "none", display: "flex", justifyContent: "start" }}
+            >
                 <Typography noWrap>Advanced Search Options</Typography>
                 {advancedSearchEnabled ? <ExpandLess /> : <ExpandMore />}
             </Button>

@@ -6,21 +6,20 @@
 name: Mark stale issues and pull requests
 
 on:
-  schedule:
-  - cron: '28 12 * * *'
+    schedule:
+        - cron: "28 12 * * *"
 
 jobs:
-  stale:
+    stale:
+        runs-on: ubuntu-latest
+        permissions:
+            issues: write
+            pull-requests: write
 
-    runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      pull-requests: write
-
-    steps:
-    - uses: actions/stale@v5
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        days-before-close: -1
-        days-before-issue-stale: 90
-        days-before-pr-stale: 30
+        steps:
+            - uses: actions/stale@v5
+              with:
+                  repo-token: ${{ secrets.GITHUB_TOKEN }}
+                  days-before-close: -1
+                  days-before-issue-stale: 90
+                  days-before-pr-stale: 30

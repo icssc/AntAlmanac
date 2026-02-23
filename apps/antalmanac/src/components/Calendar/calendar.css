@@ -100,13 +100,18 @@
 }
 
 .rbc-event.calendar-loading-event {
-    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 100%
+    );
     background-size: 200% 100%;
     animation: calendar-loading-shimmer 2s ease-in-out infinite;
 }
 
 .rbc-event.calendar-loading-event::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;

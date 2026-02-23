@@ -1,4 +1,11 @@
-import { ArrowBack, Visibility, Refresh } from '@mui/icons-material';
+import { NotificationsDialog } from "$components/RightPane/AddedCourses/Notifications/NotificationsDialog";
+import analyticsEnum, { logAnalytics } from "$lib/analytics/analytics";
+import {
+    SECTION_TABLE_COLUMNS,
+    type SectionTableColumn,
+    useColumnStore,
+} from "$stores/ColumnStore";
+import { ArrowBack, Refresh, Visibility } from "@mui/icons-material";
 import {
     Box,
     Checkbox,
@@ -6,46 +13,42 @@ import {
     IconButton,
     ListItemText,
     MenuItem,
+    Popover,
     Select,
-    Tooltip,
     type SelectChangeEvent,
     type SxProps,
-    Popover,
-} from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
-import { useCallback, useMemo, useState } from 'react';
-
-import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
+    Tooltip,
+} from "@mui/material";
+import { usePostHog } from "posthog-js/react";
+import { useCallback, useMemo, useState } from "react";
 
 /**
  * All the interactive buttons have the same styles.
  */
 const buttonSx: SxProps = {
-    backgroundColor: 'rgba(236, 236, 236, 1)',
+    backgroundColor: "rgba(236, 236, 236, 1)",
     marginRight: 1,
     padding: 1.5,
-    boxShadow: '2',
-    color: 'black',
-    '&:hover': {
-        backgroundColor: 'grey',
+    boxShadow: "2",
+    color: "black",
+    "&:hover": {
+        backgroundColor: "grey",
     },
-    pointerEvents: 'auto',
+    pointerEvents: "auto",
 };
 
 const columnLabels: Record<SectionTableColumn, string> = {
-    action: 'Action',
-    sectionCode: 'Code',
-    sectionDetails: 'Type',
-    instructors: 'Instructors',
-    gpa: 'GPA',
-    dayAndTime: 'Times',
-    location: 'Places',
-    sectionEnrollment: 'Enrollment',
-    restrictions: 'Restrictions',
-    status: 'Status',
-    syllabus: 'Syllabus',
+    action: "Action",
+    sectionCode: "Code",
+    sectionDetails: "Type",
+    instructors: "Instructors",
+    gpa: "GPA",
+    dayAndTime: "Times",
+    location: "Places",
+    sectionEnrollment: "Enrollment",
+    restrictions: "Restrictions",
+    status: "Status",
+    syllabus: "Syllabus",
 };
 
 /**
@@ -57,7 +60,7 @@ const columnLabels: Record<SectionTableColumn, string> = {
  * up being invisible anyways, making it empty ensures that it doesn't take up space.
  */
 function renderEmptySelectValue() {
-    return '';
+    return "";
 }
 
 const COLUMN_LABEL_ENTRIES = Object.entries(columnLabels);
@@ -83,11 +86,11 @@ export function ColumnToggleDropdown() {
                 category: analyticsEnum.classSearch,
                 action: analyticsEnum.classSearch.actions.TOGGLE_COLUMNS,
             });
-            if (typeof e.target.value !== 'string') {
+            if (typeof e.target.value !== "string") {
                 setSelectedColumns(e.target.value);
             }
         },
-        [setSelectedColumns, postHog]
+        [setSelectedColumns, postHog],
     );
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -100,7 +103,7 @@ export function ColumnToggleDropdown() {
 
     const selectedColumnNames = useMemo(
         () => SECTION_TABLE_COLUMNS.filter((_, index) => selectedColumns[index]),
-        [selectedColumns]
+        [selectedColumns],
     );
 
     return (
@@ -111,7 +114,12 @@ export function ColumnToggleDropdown() {
                 </IconButton>
             </Tooltip>
 
-            <Popover open={open} anchorEl={anchorEl} onClose={handleClose} sx={{ visibility: 'hidden' }}>
+            <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                sx={{ visibility: "hidden" }}
+            >
                 <FormControl>
                     <Select
                         multiple
@@ -124,11 +132,14 @@ export function ColumnToggleDropdown() {
                     >
                         {COLUMN_LABEL_ENTRIES
                             // Disallow toggling the action column (the one to add courses)
-                            .filter(([column]) => column !== 'action')
+                            .filter(([column]) => column !== "action")
                             // Add 1 to the index to offset the action column being filtered out
                             .map(([column, label], index) => (
                                 <MenuItem key={column} value={column}>
-                                    <Checkbox checked={selectedColumns[index + 1]} color="default" />
+                                    <Checkbox
+                                        checked={selectedColumns[index + 1]}
+                                        color="default"
+                                    />
                                     <ListItemText primary={label} />
                                 </MenuItem>
                             ))}
@@ -160,10 +171,10 @@ export function CoursePaneButtonRow(props: CoursePaneButtonRowProps) {
     return (
         <Box
             sx={{
-                display: props.showSearch ? 'block' : 'none',
-                width: 'fit-content',
+                display: props.showSearch ? "block" : "none",
+                width: "fit-content",
                 zIndex: 3,
-                position: 'absolute',
+                position: "absolute",
             }}
         >
             <Tooltip title="Back">

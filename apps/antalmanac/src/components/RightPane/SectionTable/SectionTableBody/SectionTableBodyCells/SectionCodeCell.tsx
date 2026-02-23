@@ -1,11 +1,10 @@
-import { Chip, Tooltip } from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
-import { useState } from 'react';
-
-import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
-import { clickToCopy } from '$lib/helpers';
-import { useThemeStore } from '$stores/SettingsStore';
+import { TableBodyCellContainer } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer";
+import { AnalyticsCategory, logAnalytics } from "$lib/analytics/analytics";
+import { clickToCopy } from "$lib/helpers";
+import { useThemeStore } from "$stores/SettingsStore";
+import { Chip, Tooltip } from "@mui/material";
+import { usePostHog } from "posthog-js/react";
+import { useState } from "react";
 
 interface SectionCodeCellProps {
     sectionCode: string;
@@ -27,7 +26,7 @@ export const SectionCodeCell = ({ sectionCode, analyticsCategory }: SectionCodeC
     };
 
     return (
-        <TableBodyCellContainer sx={{ width: '8%' }}>
+        <TableBodyCellContainer sx={{ width: "8%" }}>
             <Tooltip title="Click to copy section code" placement="bottom" enterDelay={150}>
                 <Chip
                     onClick={(event) => {
@@ -41,7 +40,7 @@ export const SectionCodeCell = ({ sectionCode, analyticsCategory }: SectionCodeC
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                     style={{
-                        color: isHovered ? (isDark ? 'gold' : 'blueviolet') : '',
+                        color: isHovered ? (isDark ? "gold" : "blueviolet") : "",
                     }}
                     size="small"
                 />

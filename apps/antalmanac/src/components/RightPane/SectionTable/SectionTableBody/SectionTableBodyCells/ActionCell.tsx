@@ -1,15 +1,14 @@
-import { Add, ArrowDropDown, Delete } from '@mui/icons-material';
-import { Box, IconButton, Menu, MenuItem, Tooltip } from '@mui/material';
-import { AASection, CourseDetails } from '@packages/antalmanac-types';
-import { usePostHog } from 'posthog-js/react';
-import { useState } from 'react';
-
-import { addCourse, deleteCourse, openSnackbar } from '$actions/AppStoreActions';
-import ColorPicker from '$components/ColorPicker';
-import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { useIsMobile } from '$hooks/useIsMobile';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import AppStore from '$stores/AppStore';
+import { addCourse, deleteCourse, openSnackbar } from "$actions/AppStoreActions";
+import ColorPicker from "$components/ColorPicker";
+import { TableBodyCellContainer } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer";
+import { useIsMobile } from "$hooks/useIsMobile";
+import analyticsEnum, { logAnalytics } from "$lib/analytics/analytics";
+import AppStore from "$stores/AppStore";
+import { Add, ArrowDropDown, Delete } from "@mui/icons-material";
+import { Box, IconButton, Menu, MenuItem, Tooltip } from "@mui/material";
+import { AASection, CourseDetails } from "@packages/antalmanac-types";
+import { usePostHog } from "posthog-js/react";
+import { useState } from "react";
 
 /**
  * Props received by components that perform actions on a specified section.
@@ -47,7 +46,7 @@ interface ActionProps {
 export function ColorAndDelete({ section, term }: ActionProps) {
     const isMobile = useIsMobile();
 
-    const flexDirection = isMobile ? 'column' : undefined;
+    const flexDirection = isMobile ? "column" : undefined;
 
     const postHog = usePostHog();
 
@@ -63,10 +62,10 @@ export function ColorAndDelete({ section, term }: ActionProps) {
     return (
         <Box
             sx={{
-                display: 'flex',
+                display: "flex",
                 flexDirection: flexDirection,
-                justifyContent: 'space-evenly',
-                alignItems: 'center',
+                justifyContent: "space-evenly",
+                alignItems: "center",
             }}
         >
             <IconButton onClick={handleClick}>
@@ -89,16 +88,22 @@ export function ColorAndDelete({ section, term }: ActionProps) {
  * Copying a specific class's link will only copy its section code.
  * If there is random value let in the url, it will interfere with the generated url.
  */
-const fieldsToReset = ['sectionCode', 'courseNumber', 'deptValue', 'ge', 'term'];
+const fieldsToReset = ["sectionCode", "courseNumber", "deptValue", "ge", "term"];
 
 /**
  * Sections that have not been added to a schedule can be added to a schedule.
  */
-export function ScheduleAddCell({ section, courseDetails, term, scheduleNames, scheduleConflict }: ActionProps) {
+export function ScheduleAddCell({
+    section,
+    courseDetails,
+    term,
+    scheduleNames,
+    scheduleConflict,
+}: ActionProps) {
     const isMobile = useIsMobile();
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-    const flexDirection = isMobile ? 'column' : undefined;
+    const flexDirection = isMobile ? "column" : undefined;
     const open = Boolean(anchorEl);
 
     const postHog = usePostHog();
@@ -108,7 +113,7 @@ export function ScheduleAddCell({ section, courseDetails, term, scheduleNames, s
 
         for (const meeting of section.meetings) {
             if (meeting.timeIsTBA) {
-                openSnackbar('success', 'Online/TBA class added');
+                openSnackbar("success", "Online/TBA class added");
                 break;
             }
         }
@@ -132,15 +137,15 @@ export function ScheduleAddCell({ section, courseDetails, term, scheduleNames, s
         const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
         fieldsToReset.forEach((field) => urlParam.delete(field));
-        urlParam.append('sectionCode', String(section.sectionCode));
+        urlParam.append("sectionCode", String(section.sectionCode));
         const new_url = `${url.origin.toString()}/?${urlParam.toString()}`;
         navigator.clipboard.writeText(new_url.toString()).then(
             () => {
-                openSnackbar('success', 'Course Link Copied!');
+                openSnackbar("success", "Course Link Copied!");
             },
             () => {
-                openSnackbar('error', 'Fail to copy the link!');
-            }
+                openSnackbar("error", "Fail to copy the link!");
+            },
         );
         setAnchorEl(null);
     };
@@ -156,15 +161,21 @@ export function ScheduleAddCell({ section, courseDetails, term, scheduleNames, s
     return (
         <Box
             sx={{
-                display: 'flex',
+                display: "flex",
                 flexDirection: flexDirection,
-                justifyContent: 'space-evenly',
-                alignItems: 'center',
+                justifyContent: "space-evenly",
+                alignItems: "center",
             }}
         >
             {scheduleConflict ? (
-                <Tooltip title="This course overlaps with another event in your calendar!" arrow disableInteractive>
-                    <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
+                <Tooltip
+                    title="This course overlaps with another event in your calendar!"
+                    arrow
+                    disableInteractive
+                >
+                    <IconButton
+                        onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}
+                    >
                         <Add fontSize="small" />
                     </IconButton>
                 </Tooltip>
@@ -183,12 +194,12 @@ export function ScheduleAddCell({ section, courseDetails, term, scheduleNames, s
                 open={open}
                 onClose={handleClose}
                 anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
+                    vertical: "bottom",
+                    horizontal: "left",
                 }}
                 transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left',
+                    vertical: "top",
+                    horizontal: "left",
                 }}
             >
                 {scheduleNames.map((name, index) => (
@@ -203,7 +214,7 @@ export function ScheduleAddCell({ section, courseDetails, term, scheduleNames, s
     );
 }
 
-export interface ActionCellProps extends Omit<ActionProps, 'classes'> {
+export interface ActionCellProps extends Omit<ActionProps, "classes"> {
     /**
      * Whether the section has been added.
      */

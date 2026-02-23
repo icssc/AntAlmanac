@@ -1,7 +1,6 @@
-import { WebsocSectionStatus } from '@packages/antalmanac-types';
-import { Link } from 'react-router-dom';
-
-import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { TableBodyCellContainer } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer";
+import { WebsocSectionStatus } from "@packages/antalmanac-types";
+import { Link } from "react-router-dom";
 
 interface SyllabusCellProps {
     webURL: WebsocSectionStatus;

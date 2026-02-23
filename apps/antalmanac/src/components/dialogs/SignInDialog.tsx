@@ -1,12 +1,11 @@
-import GoogleIcon from '@mui/icons-material/Google';
-import { Button, Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
-
-import { loginUser } from '$actions/AppStoreActions';
+import { loginUser } from "$actions/AppStoreActions";
+import GoogleIcon from "@mui/icons-material/Google";
+import { Alert, Button, Dialog, DialogContent, DialogTitle, Stack } from "@mui/material";
 
 interface SignInDialogProps {
     open: boolean;
     isDark: boolean;
-    feature: 'Load' | 'Save' | 'Notification';
+    feature: "Load" | "Save" | "Notification";
     onClose: () => void;
 }
 
@@ -21,22 +20,28 @@ export function SignInDialog(props: SignInDialogProps) {
         <Dialog
             open={open}
             onClose={handleClose}
-            maxWidth={'xl'}
+            maxWidth={"xl"}
             fullScreen={true}
             sx={{
-                '& .MuiDialog-paper': {
-                    width: 'fit-content',
-                    height: 'fit-content',
-                    borderRadius: '0.5rem',
+                "& .MuiDialog-paper": {
+                    width: "fit-content",
+                    height: "fit-content",
+                    borderRadius: "0.5rem",
                 },
-                padding: '1rem',
+                padding: "1rem",
             }}
         >
-            <DialogTitle>{props.feature === 'Notification' ? 'Sign in to Use Notifications' : 'Save'}</DialogTitle>
+            <DialogTitle>
+                {props.feature === "Notification" ? "Sign in to Use Notifications" : "Save"}
+            </DialogTitle>
             <DialogContent>
                 <Stack spacing={1}>
-                    {props.feature === 'Save' && (
-                        <Alert severity="info" variant={isDark ? 'outlined' : 'standard'} sx={{ fontSize: 'small' }}>
+                    {props.feature === "Save" && (
+                        <Alert
+                            severity="info"
+                            variant={isDark ? "outlined" : "standard"}
+                            sx={{ fontSize: "small" }}
+                        >
                             All changes made will be saved to your Google account
                         </Alert>
                     )}

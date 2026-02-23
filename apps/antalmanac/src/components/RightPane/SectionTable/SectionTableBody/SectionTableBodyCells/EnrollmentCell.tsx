@@ -1,8 +1,7 @@
-import { Box, Tooltip, Typography } from '@mui/material';
-import { WebsocSectionEnrollment } from '@packages/antalmanac-types';
-
-import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { useIsMobile } from '$hooks/useIsMobile';
+import { TableBodyCellContainer } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer";
+import { useIsMobile } from "$hooks/useIsMobile";
+import { Box, Tooltip, Typography } from "@mui/material";
+import { WebsocSectionEnrollment } from "@packages/antalmanac-types";
 
 interface EnrollmentCellProps {
     numCurrentlyEnrolled: WebsocSectionEnrollment;
@@ -43,21 +42,27 @@ export const EnrollmentCell = ({
     return (
         <TableBodyCellContainer>
             <Box>
-                <Box sx={{ cursor: 'pointer' }}>
+                <Box sx={{ cursor: "pointer" }}>
                     {showTooltip ? (
-                        <Tooltip title={<Typography fontSize={'0.85rem'}>Last updated at {formattedTime}</Typography>}>
+                        <Tooltip
+                            title={
+                                <Typography fontSize={"0.85rem"}>
+                                    Last updated at {formattedTime}
+                                </Typography>
+                            }
+                        >
                             {enrollmentText}
                         </Tooltip>
                     ) : (
                         enrollmentText
                     )}
                 </Box>
-                {numOnWaitlist !== '' && (
+                {numOnWaitlist !== "" && (
                     <Box>
                         WL: {numOnWaitlist} / {numWaitlistCap}
                     </Box>
                 )}
-                {numNewOnlyReserved !== '' && <Box>NOR: {numNewOnlyReserved}</Box>}
+                {numNewOnlyReserved !== "" && <Box>NOR: {numNewOnlyReserved}</Box>}
             </Box>
         </TableBodyCellContainer>
     );

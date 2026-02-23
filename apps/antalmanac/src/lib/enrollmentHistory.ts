@@ -1,6 +1,6 @@
-import { termData } from './termData';
+import trpc from "$lib/api/trpc";
 
-import trpc from '$lib/api/trpc';
+import { termData } from "./termData";
 
 // This represents the enrollment history of a course section during one quarter
 export interface EnrollmentHistoryGraphQL {
@@ -56,19 +56,23 @@ export class DepartmentEnrollmentHistory {
 
     async find(courseNumber: string): Promise<EnrollmentHistory[] | null> {
         const cacheKey = this.department + courseNumber;
-        return (DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey] ??= await this.queryEnrollmentHistory(
-            courseNumber
-        ));
+        return (DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey] ??=
+            await this.queryEnrollmentHistory(courseNumber));
     }
 
     async queryEnrollmentHistory(courseNumber: string): Promise<EnrollmentHistory[] | null> {
-        const res = await trpc.enrollHist.get.query({ department: this.department, courseNumber, sectionType: 'Lec' });
+        const res = await trpc.enrollHist.get.query({
+            department: this.department,
+            courseNumber,
+            sectionType: "Lec",
+        });
 
         if (!res?.length) {
             return null;
         }
 
-        const parsedEnrollmentHistory = DepartmentEnrollmentHistory.parseEnrollmentHistoryResponse(res);
+        const parsedEnrollmentHistory =
+            DepartmentEnrollmentHistory.parseEnrollmentHistoryResponse(res);
         DepartmentEnrollmentHistory.sortEnrollmentHistory(parsedEnrollmentHistory);
         return parsedEnrollmentHistory;
     }
@@ -98,7 +102,7 @@ export class DepartmentEnrollmentHistory {
                     totalEnrolled: Number(enrollmentHistory.totalEnrolledHistory[i]),
                     maxCapacity: Number(enrollmentHistory.maxCapacityHistory[i]),
                     waitlist:
-                        enrollmentHistory.waitlistHistory[i] === '-1'
+                        enrollmentHistory.waitlistHistory[i] === "-1"
                             ? null
                             : Number(enrollmentHistory.waitlistHistory[i]),
                 });

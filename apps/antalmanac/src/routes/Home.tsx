@@ -1,26 +1,27 @@
-import { Stack } from '@mui/material';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
-import { useCallback, useEffect, useRef } from 'react';
-import Split from 'react-split';
-
-import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
-import { Header } from '$components/Header/Header';
-import { HelpMenu } from '$components/HelpMenu/HelpMenu';
-import InstallPWABanner from '$components/InstallPWABanner';
-import { NotificationSnackbar } from '$components/NotificationSnackbar';
-import PatchNotes from '$components/PatchNotes';
-import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
-import { useIsMobile } from '$hooks/useIsMobile';
-import { BLUE } from '$src/globals';
-import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
+import { ScheduleCalendar } from "$components/Calendar/CalendarRoot";
+import { Header } from "$components/Header/Header";
+import { HelpMenu } from "$components/HelpMenu/HelpMenu";
+import InstallPWABanner from "$components/InstallPWABanner";
+import { NotificationSnackbar } from "$components/NotificationSnackbar";
+import PatchNotes from "$components/PatchNotes";
+import { ScheduleManagement } from "$components/ScheduleManagement/ScheduleManagement";
+import { useIsMobile } from "$hooks/useIsMobile";
+import { BLUE } from "$src/globals";
+import { useScheduleManagementStore } from "$stores/ScheduleManagementStore";
+import { Stack } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFnsV2";
+import { useCallback, useEffect, useRef } from "react";
+import Split from "react-split";
 
 function MobileHome() {
     return <ScheduleManagement />;
 }
 
 function DesktopHome() {
-    const setScheduleManagementWidth = useScheduleManagementStore((state) => state.setScheduleManagementWidth);
+    const setScheduleManagementWidth = useScheduleManagementStore(
+        (state) => state.setScheduleManagementWidth,
+    );
 
     const scheduleManagementRef = useRef<HTMLDivElement>(null);
 
@@ -37,10 +38,10 @@ function DesktopHome() {
     useEffect(() => {
         handleDrag();
 
-        window.addEventListener('resize', handleDrag);
+        window.addEventListener("resize", handleDrag);
 
         return () => {
-            window.removeEventListener('resize', handleDrag);
+            window.removeEventListener("resize", handleDrag);
         };
     }, [handleDrag]);
 
@@ -55,12 +56,12 @@ function DesktopHome() {
             dragInterval={1}
             direction="horizontal"
             cursor="col-resize"
-            style={{ display: 'flex', flexGrow: 1, marginTop: 4 }}
+            style={{ display: "flex", flexGrow: 1, marginTop: 4 }}
             gutterStyle={() => ({
                 backgroundColor: BLUE,
-                width: '10px',
+                width: "10px",
                 // gutter contents are slightly offset to the right, this centers the content
-                paddingRight: '1px',
+                paddingRight: "1px",
             })}
             onDrag={handleDrag}
         >

@@ -1,8 +1,8 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 // Adapted from https://stackoverflow.com/questions/51503754/typescript-type-beforeinstallpromptevent
 type UserChoice = Promise<{
-    outcome: 'accepted' | 'dismissed';
+    outcome: "accepted" | "dismissed";
     platform: string;
 }>;
 

@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, MenuItem, Select, type SelectChangeEvent } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, type SelectChangeEvent } from "@mui/material";
 
 interface ScheduleSelectorProps {
     scheduleIndices: number[];
@@ -6,11 +6,15 @@ interface ScheduleSelectorProps {
     scheduleNames: string[];
 }
 
-export function ScheduleSelector({ scheduleIndices, onSelectScheduleIndices, scheduleNames }: ScheduleSelectorProps) {
+export function ScheduleSelector({
+    scheduleIndices,
+    onSelectScheduleIndices,
+    scheduleNames,
+}: ScheduleSelectorProps) {
     const handleChange = (event: SelectChangeEvent<typeof scheduleIndices>) => {
         const value = event.target.value;
 
-        if (typeof value === 'string') {
+        if (typeof value === "string") {
             return;
         }
 

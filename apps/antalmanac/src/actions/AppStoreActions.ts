@@ -1,3 +1,11 @@
+import analyticsEnum, { courseNumAsDecimal, logAnalytics } from "$lib/analytics/analytics";
+import trpc from "$lib/api/trpc";
+import { warnMultipleTerms } from "$lib/helpers";
+import { setLocalStorageDataCache, setLocalStorageUserId } from "$lib/localStorage";
+import AppStore from "$stores/AppStore";
+import { deleteTempSaveData } from "$stores/localTempSaveDataHelpers";
+import { scheduleComponentsToggleStore } from "$stores/ScheduleComponentsToggleStore";
+import { useSessionStore } from "$stores/SessionStore";
 import type {
     CourseDetails,
     CustomEventId,
@@ -6,20 +14,11 @@ import type {
     ShortCourseSchedule,
     User,
     WebsocSection,
-} from '@packages/antalmanac-types';
-import { TRPCClientError } from '@trpc/client';
-import { TRPCError } from '@trpc/server';
-import { SnackbarOrigin, VariantType } from 'notistack';
-import { PostHog } from 'posthog-js/react';
-
-import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
-import { warnMultipleTerms } from '$lib/helpers';
-import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
-import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
+} from "@packages/antalmanac-types";
+import { TRPCClientError } from "@trpc/client";
+import { TRPCError } from "@trpc/server";
+import { SnackbarOrigin, VariantType } from "notistack";
+import { PostHog } from "posthog-js/react";
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
     onError: (scheduleName: string) => unknown;
@@ -36,7 +35,7 @@ export const addCourse = (
     term: string,
     scheduleIndex: number,
     quiet?: boolean,
-    postHog?: PostHog
+    postHog?: PostHog,
 ) => {
     logAnalytics(postHog, {
         category: analyticsEnum.classSearch,
@@ -56,7 +55,7 @@ export const addCourse = (
         courseTitle: courseDetails.courseTitle,
         courseComment: courseDetails.courseComment,
         prerequisiteLink: courseDetails.prerequisiteLink,
-        section: { ...section, color: '' },
+        section: { ...section, color: "" },
         sectionTypes: courseDetails.sectionTypes,
     };
 
@@ -74,7 +73,7 @@ export const openSnackbar = (
     message: string,
     duration?: number,
     position?: SnackbarOrigin,
-    style?: { [cssPropertyName: string]: string }
+    style?: { [cssPropertyName: string]: string },
 ) => {
     AppStore.openSnackbar(variant, message, duration, position, style);
 };
@@ -89,7 +88,7 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
             return false;
         }
 
-        if (schedule.scheduleNote !== '') {
+        if (schedule.scheduleNote !== "") {
             return false;
         }
     }
@@ -101,7 +100,7 @@ export const saveSchedule = async (
     providerId: string,
     rememberMe: boolean,
     userInfo?: { email?: string | null; name?: string | null; avatar?: string | null },
-    postHog?: PostHog
+    postHog?: PostHog,
 ) => {
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
@@ -111,7 +110,7 @@ export const saveSchedule = async (
     });
 
     if (providerId != null) {
-        providerId = providerId.replace(/\s+/g, '');
+        providerId = providerId.replace(/\s+/g, "");
 
         if (providerId.length > 0) {
             const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
@@ -119,7 +118,7 @@ export const saveSchedule = async (
             if (
                 isEmptySchedule(scheduleSaveState.schedules) &&
                 !confirm(
-                    "You are attempting to save empty schedule(s). If this is unintentional, this may overwrite your existing schedules that haven't loaded yet!"
+                    "You are attempting to save empty schedule(s). If this is unintentional, this may overwrite your existing schedules that haven't loaded yet!",
                 )
             ) {
                 return;
@@ -138,11 +137,14 @@ export const saveSchedule = async (
                 });
 
                 if (useSessionStore.getState().sessionIsValid) {
-                    openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
+                    openSnackbar(
+                        "success",
+                        `Schedule saved. Don't forget to sign up for classes on WebReg!`,
+                    );
                 } else {
                     openSnackbar(
-                        'success',
-                        `Schedule saved under username "${providerId}". Don't forget to sign up for classes on WebReg!`
+                        "success",
+                        `Schedule saved under username "${providerId}". Don't forget to sign up for classes on WebReg!`,
                     );
                 }
                 deleteTempSaveData();
@@ -150,12 +152,15 @@ export const saveSchedule = async (
             } catch (e) {
                 if (e instanceof TRPCError) {
                     if (useSessionStore.getState().sessionIsValid) {
-                        openSnackbar('error', `Schedule could not be saved`);
+                        openSnackbar("error", `Schedule could not be saved`);
                     } else {
-                        openSnackbar('error', `Schedule could not be saved under username "${providerId}`);
+                        openSnackbar(
+                            "error",
+                            `Schedule could not be saved under username "${providerId}`,
+                        );
                     }
                 } else {
-                    openSnackbar('error', 'Network error or server is down.');
+                    openSnackbar("error", "Network error or server is down.");
                 }
             }
         }
@@ -170,7 +175,7 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
         label: providerID,
     });
     if (providerID == null) return;
-    providerID = providerID.replace(/\s+/g, '');
+    providerID = providerID.replace(/\s+/g, "");
     if (providerID.length < 0) return;
 
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
@@ -190,9 +195,9 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
         AppStore.saveSchedule();
     } catch (e) {
         if (e instanceof TRPCError) {
-            openSnackbar('error', `Schedule could not be auto-saved under username "${providerID}`);
+            openSnackbar("error", `Schedule could not be auto-saved under username "${providerID}`);
         } else {
-            openSnackbar('error', 'Network error or server is down.');
+            openSnackbar("error", "Network error or server is down.");
         }
     }
 }
@@ -200,13 +205,15 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
 export const mergeShortCourseSchedules = (
     currentSchedules: ShortCourseSchedule[],
     incomingSchedule: ShortCourseSchedule[],
-    importMessage = ''
+    importMessage = "",
 ) => {
-    const existingScheduleNames = new Set(currentSchedules.map((s: ShortCourseSchedule) => s.scheduleName));
+    const existingScheduleNames = new Set(
+        currentSchedules.map((s: ShortCourseSchedule) => s.scheduleName),
+    );
     const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
         let scheduleName = schedule.scheduleName;
         if (existingScheduleNames.has(schedule.scheduleName)) {
-            scheduleName = scheduleName + '(1)';
+            scheduleName = scheduleName + "(1)";
         }
         return {
             ...schedule,
@@ -234,27 +241,39 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
     }
 
     const userAndAccount = await trpc.userData.getUserAndAccountBySessionToken.query({
-        token: session.session ?? '',
+        token: session.session ?? "",
     });
     const { users, accounts } = userAndAccount;
 
-    const incomingData: User | null = await trpc.userData.getUserData.query({ userId: incomingUser.id });
+    const incomingData: User | null = await trpc.userData.getUserData.query({
+        userId: incomingUser.id,
+    });
     const scheduleSaveState =
-        incomingData !== null && 'userData' in incomingData ? incomingData.userData : incomingData;
+        incomingData !== null && "userData" in incomingData ? incomingData.userData : incomingData;
 
     const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
 
     if (scheduleSaveState?.schedules) {
-        mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, '(import)-');
+        mergeShortCourseSchedules(
+            currentSchedules.schedules,
+            scheduleSaveState.schedules,
+            "(import)-",
+        );
         currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
 
-        scheduleComponentsToggleStore.setState({ openImportDialog: false, openLoadingSchedule: true });
+        scheduleComponentsToggleStore.setState({
+            openImportDialog: false,
+            openLoadingSchedule: true,
+        });
 
         const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
         if (isScheduleLoaded) {
-            openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
+            openSnackbar("success", `Schedule with name "${username}" imported successfully!`);
 
-            scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
+            scheduleComponentsToggleStore.setState({
+                openScheduleSelect: true,
+                openLoadingSchedule: false,
+            });
 
             await saveSchedule(accounts.providerAccountId, true, users);
 
@@ -286,8 +305,8 @@ export const importScheduleWithUsername = async (username: string) => {
 export const loadSchedule = async (
     providerId: string,
     rememberMe: boolean,
-    accountType: 'OIDC' | 'GOOGLE' | 'GUEST',
-    postHog?: PostHog
+    accountType: "OIDC" | "GOOGLE" | "GUEST",
+    postHog?: PostHog,
 ) => {
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
@@ -298,9 +317,11 @@ export const loadSchedule = async (
     if (
         providerId != null &&
         (!AppStore.hasUnsavedChanges() ||
-            window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
+            window.confirm(
+                `Are you sure you want to load a different schedule? You have unsaved changes!`,
+            ))
     ) {
-        providerId = providerId.replace(/\s+/g, '');
+        providerId = providerId.replace(/\s+/g, "");
         if (providerId.length > 0) {
             if (rememberMe) {
                 setLocalStorageUserId(providerId);
@@ -312,14 +333,16 @@ export const loadSchedule = async (
                     providerId,
                 });
 
-                const userDataResponse = await trpc.userData.getUserData.query({ userId: account.userId });
+                const userDataResponse = await trpc.userData.getUserData.query({
+                    userId: account.userId,
+                });
                 const scheduleSaveState = userDataResponse?.userData;
 
                 let error = false;
 
                 if (scheduleSaveState !== undefined) {
                     if (await AppStore.loadSchedule(scheduleSaveState)) {
-                        openSnackbar('success', `Schedule loaded.`);
+                        openSnackbar("success", `Schedule loaded.`);
                     } else {
                         AppStore.loadSkeletonSchedule(scheduleSaveState);
                         error = true;
@@ -330,21 +353,21 @@ export const loadSchedule = async (
 
                 if (error) {
                     openSnackbar(
-                        'error',
+                        "error",
                         `Network error loading course information for "${providerId}". 	              
-                        If this continues to happen, please submit a feedback form.`
+                        If this continues to happen, please submit a feedback form.`,
                     );
                 }
             } catch (e) {
                 if (e instanceof TRPCClientError) {
                     if (e.data.httpStatus === 404) {
-                        openSnackbar('error', e.message);
+                        openSnackbar("error", e.message);
                     }
                     return;
                 }
                 openSnackbar(
-                    'error',
-                    '`Failed to load schedules. If this continues to happen, please submit a feedback form.`'
+                    "error",
+                    "`Failed to load schedules. If this continues to happen, please submit a feedback form.`",
                 );
             }
         }
@@ -360,7 +383,7 @@ export const loadScheduleWithSessionToken = async () => {
     // });
     try {
         const userDataResponse = await trpc.userData.getUserDataWithSession.query({
-            refreshToken: useSessionStore.getState().session ?? '',
+            refreshToken: useSessionStore.getState().session ?? "",
         });
         const scheduleSaveState = userDataResponse?.userData;
         if (scheduleSaveState !== undefined && isEmptySchedule(scheduleSaveState.schedules)) {
@@ -368,22 +391,25 @@ export const loadScheduleWithSessionToken = async () => {
         }
 
         if (scheduleSaveState === undefined) {
-            openSnackbar('error', `Couldn't find schedules for this account`);
+            openSnackbar("error", `Couldn't find schedules for this account`);
         } else if (await AppStore.loadSchedule(scheduleSaveState)) {
-            openSnackbar('success', `Schedule loaded.`);
+            openSnackbar("success", `Schedule loaded.`);
             return true;
         } else {
             AppStore.loadSkeletonSchedule(scheduleSaveState);
             openSnackbar(
-                'error',
+                "error",
                 `Network error loading course information". 	              
-                        If this continues to happen, please submit a feedback form.`
+                        If this continues to happen, please submit a feedback form.`,
             );
         }
         return false;
     } catch (e) {
-        console.error('Error in loadScheduleWithSessionToken:', e);
-        openSnackbar('error', `Failed to load schedules. If this continues to happen, please submit a feedback form.`);
+        console.error("Error in loadScheduleWithSessionToken:", e);
+        openSnackbar(
+            "error",
+            `Failed to load schedules. If this continues to happen, please submit a feedback form.`,
+        );
         return false;
     }
 };
@@ -403,8 +429,8 @@ export const loginUser = async () => {
             window.location.href = authUrl.toString();
         }
     } catch (error) {
-        console.error('Error during login initiation', error);
-        openSnackbar('error', 'Error during login initiation. Please Try Again.');
+        console.error("Error during login initiation", error);
+        openSnackbar("error", "Error during login initiation. Please Try Again.");
     }
 };
 
@@ -416,7 +442,10 @@ export const deleteCustomEvent = (customEventID: CustomEventId, scheduleIndices:
     AppStore.deleteCustomEvent(customEventID, scheduleIndices);
 };
 
-export const editCustomEvent = (editedCustomEvent: RepeatingCustomEvent, newScheduleIndices: number[]) => {
+export const editCustomEvent = (
+    editedCustomEvent: RepeatingCustomEvent,
+    newScheduleIndices: number[],
+) => {
     AppStore.editCustomEvent(editedCustomEvent, newScheduleIndices);
 };
 
@@ -429,13 +458,19 @@ export const addCustomEvent = (customEvent: RepeatingCustomEvent, scheduleIndice
 };
 
 export const undoDelete = (event: KeyboardEvent | null) => {
-    if (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey) && !event.shiftKey)) {
+    if (
+        event == null ||
+        (event.keyCode === 90 && (event.ctrlKey || event.metaKey) && !event.shiftKey)
+    ) {
         AppStore.undoAction();
     }
 };
 
 export const redoDelete = (event: KeyboardEvent | null) => {
-    if (event == null || (event.keyCode === 90 && (event.ctrlKey || event.metaKey) && event.shiftKey)) {
+    if (
+        event == null ||
+        (event.keyCode === 90 && (event.ctrlKey || event.metaKey) && event.shiftKey)
+    ) {
         AppStore.redoAction();
     }
 };
@@ -460,7 +495,7 @@ export const copySchedule = (
     scheduleIndex: number,
     newScheduleName: string,
     options?: CopyScheduleOptions,
-    postHog?: PostHog
+    postHog?: PostHog,
 ) => {
     logAnalytics(postHog, {
         category: analyticsEnum.addedClasses,

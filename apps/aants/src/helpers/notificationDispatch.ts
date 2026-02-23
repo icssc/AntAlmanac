@@ -1,16 +1,15 @@
-import { WebsocSection } from '@icssc/libwebsoc-next';
+import { WebsocSection } from "@icssc/libwebsoc-next";
 
-import { aantsEnvSchema } from '../env';
-
-import { queueEmail } from './emailQueue';
-import { User } from './subscriptionData';
+import { aantsEnvSchema } from "../env";
+import { queueEmail } from "./emailQueue";
+import { User } from "./subscriptionData";
 
 export interface CourseDetails {
     sectionCode: string;
     instructor: string;
     days: string;
     hours: string;
-    currentStatus: WebsocSection['status'];
+    currentStatus: WebsocSection["status"];
     restrictionCodes: string;
     deptCode: string;
     courseNumber: string;
@@ -43,20 +42,20 @@ function batchCourseCodes(codes: string[]): string[][] {
  */
 function getFormattedTime(): string {
     const now = new Date();
-    const timeZone = 'America/Los_Angeles'; // PST/PDT
+    const timeZone = "America/Los_Angeles"; // PST/PDT
 
     return (
-        new Intl.DateTimeFormat('en-US', {
-            hour: 'numeric',
-            minute: '2-digit',
+        new Intl.DateTimeFormat("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
             hour12: true,
             timeZone,
         }).format(now) +
-        ' on ' +
-        new Intl.DateTimeFormat('en-US', {
-            month: 'numeric',
-            day: 'numeric',
-            year: 'numeric',
+        " on " +
+        new Intl.DateTimeFormat("en-US", {
+            month: "numeric",
+            day: "numeric",
+            year: "numeric",
             timeZone,
         }).format(now)
     );
@@ -73,7 +72,7 @@ async function sendNotification(
     courseDetails: CourseDetails,
     users: User[],
     statusChanged: boolean,
-    codesChanged: boolean
+    codesChanged: boolean,
 ) {
     const {
         sectionCode,
@@ -94,7 +93,7 @@ async function sendNotification(
         const parts = [];
 
         if (statusChanged) {
-            const status = currentStatus === 'Waitl' ? 'WAITLISTED' : currentStatus;
+            const status = currentStatus === "Waitl" ? "WAITLISTED" : currentStatus;
             parts.push(`The class is now <strong>${status}</strong>`);
         }
 
@@ -102,22 +101,24 @@ async function sendNotification(
             parts.push(`The class now has restriction codes <strong>${restrictionCodes}</strong>`);
         }
 
-        const notification = parts.map((p) => `- ${p}`).join('<br>');
+        const notification = parts.map((p) => `- ${p}`).join("<br>");
 
         const time = getFormattedTime();
 
         // Add staging prefix to subject line if not in production
-        const isStaging = env.NODE_ENV !== 'production';
-        const stagingPrefix = isStaging ? '[SQS] [STAGING] ' : '';
+        const isStaging = env.NODE_ENV !== "production";
+        const stagingPrefix = isStaging ? "[SQS] [STAGING] " : "";
 
-        const usersWithEmail = users.filter((user): user is User & { email: string } => user.email !== null);
+        const usersWithEmail = users.filter(
+            (user): user is User & { email: string } => user.email !== null,
+        );
 
         // Send each email as a separate SQS message
         await Promise.all(
             usersWithEmail.map((user) =>
                 queueEmail({
-                    FromEmailAddress: 'no-reply@icssc.club',
-                    TemplateName: 'CourseNotification',
+                    FromEmailAddress: "no-reply@icssc.club",
+                    TemplateName: "CourseNotification",
                     Destination: {
                         ToAddresses: [user.email],
                     },
@@ -138,13 +139,13 @@ async function sendNotification(
                         year: year,
                         stagingPrefix: stagingPrefix,
                     }),
-                })
-            )
+                }),
+            ),
         );
 
         return { queued: usersWithEmail.length };
     } catch (error) {
-        console.error('Error sending bulk emails:', error);
+        console.error("Error sending bulk emails:", error);
         throw error;
     }
 }

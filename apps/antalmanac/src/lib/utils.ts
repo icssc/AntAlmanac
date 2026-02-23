@@ -25,8 +25,13 @@ export function notNull<T>(value: T): value is NonNullable<T> {
  * const indices = indicesOrNull.filter(notNull)
  * ```
  */
-export function getReferencesOccurring(reference: string[], input?: string | string[] | null): boolean[] {
-    return input ? reference.map((reference) => input.includes(reference)) : reference.map(() => false);
+export function getReferencesOccurring(
+    reference: string[],
+    input?: string | string[] | null,
+): boolean[] {
+    return input
+        ? reference.map((reference) => input.includes(reference))
+        : reference.map(() => false);
 }
 
 export const safeUnreachableCase = <T>(v: never, retVal?: T): T | undefined => {

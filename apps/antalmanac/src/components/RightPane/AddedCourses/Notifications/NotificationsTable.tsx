@@ -1,16 +1,15 @@
+import { NotificationTableRow } from "$components/RightPane/AddedCourses/Notifications/NotificationsTableRow";
 import {
-    TableContainer,
     Paper,
     Table,
-    TableHead,
-    TableRow,
-    TableCell,
     TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
     TablePagination,
-} from '@mui/material';
-import { memo, useCallback, useState } from 'react';
-
-import { NotificationTableRow } from '$components/RightPane/AddedCourses/Notifications/NotificationsTableRow';
+    TableRow,
+} from "@mui/material";
+import { memo, useCallback, useState } from "react";
 
 interface NotificationsTableProps {
     keys: string[];
@@ -73,4 +72,4 @@ export const NotificationsTable = memo(({ keys }: NotificationsTableProps) => {
     );
 });
 
-NotificationsTable.displayName = 'NotificationsTable';
+NotificationsTable.displayName = "NotificationsTable";

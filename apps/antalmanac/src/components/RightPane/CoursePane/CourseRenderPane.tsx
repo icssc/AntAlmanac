@@ -1,36 +1,38 @@
-import { Close } from '@mui/icons-material';
-import { Alert, Box, IconButton, Link, useTheme } from '@mui/material';
+import { openSnackbar } from "$actions/AppStoreActions";
+import { SchoolDeptCard } from "$components/RightPane/CoursePane/SchoolDeptCard";
+import darkModeLoadingGif from "$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif";
+import loadingGif from "$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif";
+import darkNoNothing from "$components/RightPane/CoursePane/static/dark-no_results.png";
+import noNothing from "$components/RightPane/CoursePane/static/no_results.png";
+import RightPaneStore from "$components/RightPane/RightPaneStore";
+import GeDataFetchProvider from "$components/RightPane/SectionTable/GEDataFetchProvider";
+import SectionTableLazyWrapper from "$components/RightPane/SectionTable/SectionTableLazyWrapper";
+import { useIsMobile } from "$hooks/useIsMobile";
+import analyticsEnum from "$lib/analytics/analytics";
+import { Grades } from "$lib/grades";
+import {
+    getLocalStorageRecruitmentDismissalTime,
+    setLocalStorageRecruitmentDismissalTime,
+} from "$lib/localStorage";
+import { WebSOC } from "$lib/websoc";
+import { BLUE } from "$src/globals";
+import AppStore from "$stores/AppStore";
+import { useHoveredStore } from "$stores/HoveredStore";
+import { useThemeStore } from "$stores/SettingsStore";
+import { Close } from "@mui/icons-material";
+import { Alert, Box, IconButton, Link, useTheme } from "@mui/material";
 import {
     AACourse,
     AASection,
+    GE,
+    WebsocAPIResponse,
     WebsocDepartment,
     WebsocSchool,
-    WebsocAPIResponse,
     WebsocSectionType,
-    GE,
-} from '@packages/antalmanac-types';
-import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
-import LazyLoad from 'react-lazyload';
-
-import { openSnackbar } from '$actions/AppStoreActions';
-import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
-import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
-import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
-import darkNoNothing from '$components/RightPane/CoursePane/static/dark-no_results.png';
-import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
-import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
-import { useIsMobile } from '$hooks/useIsMobile';
-import analyticsEnum from '$lib/analytics/analytics';
-import { Grades } from '$lib/grades';
-import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
-import { WebSOC } from '$lib/websoc';
-import { BLUE } from '$src/globals';
-import AppStore from '$stores/AppStore';
-import { useHoveredStore } from '$stores/HoveredStore';
-import { useThemeStore } from '$stores/SettingsStore';
+} from "@packages/antalmanac-types";
+import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
+import LazyLoad from "react-lazyload";
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
@@ -39,42 +41,47 @@ function getColors() {
             accumulator[section.sectionCode] = section.color;
             return accumulator;
         },
-        {} as Record<string, string>
+        {} as Record<string, string>,
     );
 
     return courseColors;
 }
 
-const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocDepartment | AACourse)[] => {
+const flattenSOCObject = (
+    SOCObject: WebsocAPIResponse,
+): (WebsocSchool | WebsocDepartment | AACourse)[] => {
     const courseColors = getColors();
 
-    return SOCObject.schools.reduce((accumulator: (WebsocSchool | WebsocDepartment | AACourse)[], school) => {
-        accumulator.push(school);
+    return SOCObject.schools.reduce(
+        (accumulator: (WebsocSchool | WebsocDepartment | AACourse)[], school) => {
+            accumulator.push(school);
 
-        school.departments.forEach((dept) => {
-            accumulator.push(dept);
+            school.departments.forEach((dept) => {
+                accumulator.push(dept);
 
-            dept.courses.forEach((course) => {
-                for (const section of course.sections) {
-                    (section as AASection).color = courseColors[section.sectionCode];
-                }
+                dept.courses.forEach((course) => {
+                    for (const section of course.sections) {
+                        (section as AASection).color = courseColors[section.sectionCode];
+                    }
 
-                const sectionTypesSet = new Set<WebsocSectionType>();
+                    const sectionTypesSet = new Set<WebsocSectionType>();
 
-                course.sections.forEach((section) => {
-                    sectionTypesSet.add(section.sectionType);
+                    course.sections.forEach((section) => {
+                        sectionTypesSet.add(section.sectionType);
+                    });
+
+                    const sectionTypes = [...sectionTypesSet];
+
+                    (course as AACourse).sectionTypes = sectionTypes;
+
+                    accumulator.push(course as AACourse);
                 });
-
-                const sectionTypes = [...sectionTypesSet];
-
-                (course as AACourse).sectionTypes = sectionTypes;
-
-                accumulator.push(course as AACourse);
             });
-        });
 
-        return accumulator;
-    }, []);
+            return accumulator;
+        },
+        [],
+    );
 };
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
@@ -86,8 +93,8 @@ const RecruitmentBanner = () => {
     const dismissedRecently =
         recruitmentDismissalTime !== null &&
         Date.now() - parseInt(recruitmentDismissalTime) < 11 * 7 * 24 * 3600 * 1000;
-    const isSearchCS = ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(
-        RightPaneStore.getFormData().deptValue.toUpperCase()
+    const isSearchCS = ["COMPSCI", "IN4MATX", "I&C SCI", "STATS"].includes(
+        RightPaneStore.getFormData().deptValue.toUpperCase(),
     );
     const displayRecruitmentBanner = bannerVisibility && !dismissedRecently && isSearchCS;
 
@@ -99,7 +106,7 @@ const RecruitmentBanner = () => {
     return (
         <Box
             sx={(theme) => ({
-                position: 'fixed',
+                position: "fixed",
                 bottom: 5,
                 right: isMobile ? 5 : 75,
                 zIndex: theme.zIndex.snackbar,
@@ -110,19 +117,28 @@ const RecruitmentBanner = () => {
                     icon={false}
                     severity="info"
                     style={{
-                        color: 'unset',
+                        color: "unset",
                         backgroundColor: theme.palette.background.paper,
-                        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+                        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
                     }}
                     action={
-                        <IconButton aria-label="close" size="small" color="inherit" onClick={handleClick}>
+                        <IconButton
+                            aria-label="close"
+                            size="small"
+                            color="inherit"
+                            onClick={handleClick}
+                        >
                             <Close fontSize="inherit" />
                         </IconButton>
                     }
                 >
                     Interested in web development?
                     <br />
-                    <a href="https://forms.gle/v32Cx65vwhnmxGPv8" target="__blank" rel="noopener noreferrer">
+                    <a
+                        href="https://forms.gle/v32Cx65vwhnmxGPv8"
+                        target="__blank"
+                        rel="noopener noreferrer"
+                    >
                         Join ICSSC and work on AntAlmanac and other projects!
                     </a>
                     <br />
@@ -139,7 +155,7 @@ const RecruitmentBanner = () => {
  */
 const SectionTableWrapped = (
     index: number,
-    data: { scheduleNames: string[]; courseData: (WebsocSchool | WebsocDepartment | AACourse)[] }
+    data: { scheduleNames: string[]; courseData: (WebsocSchool | WebsocDepartment | AACourse)[] },
 ) => {
     const { courseData, scheduleNames } = data;
     const formData = RightPaneStore.getFormData();
@@ -148,11 +164,23 @@ const SectionTableWrapped = (
 
     if ((courseData[index] as WebsocSchool).departments !== undefined) {
         const school = courseData[index] as WebsocSchool;
-        component = <SchoolDeptCard comment={school.schoolComment} type={'school'} name={school.schoolName} />;
+        component = (
+            <SchoolDeptCard
+                comment={school.schoolComment}
+                type={"school"}
+                name={school.schoolName}
+            />
+        );
     } else if ((courseData[index] as WebsocDepartment).courses !== undefined) {
         const dept = courseData[index] as WebsocDepartment;
-        component = <SchoolDeptCard name={`Department of ${dept.deptName}`} comment={dept.deptComment} type={'dept'} />;
-    } else if (formData.ge !== 'ANY') {
+        component = (
+            <SchoolDeptCard
+                name={`Department of ${dept.deptName}`}
+                comment={dept.deptComment}
+                type={"dept"}
+            />
+        );
+    } else if (formData.ge !== "ANY") {
         const course = courseData[index] as AACourse;
         component = (
             <GeDataFetchProvider
@@ -182,8 +210,14 @@ const SectionTableWrapped = (
 const LoadingMessage = () => {
     const isDark = useThemeStore((store) => store.isDark);
     return (
-        <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Image src={isDark ? darkModeLoadingGif : loadingGif} alt="Loading courses" unoptimized />
+        <Box
+            sx={{ height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}
+        >
+            <Image
+                src={isDark ? darkModeLoadingGif : loadingGif}
+                alt="Loading courses"
+                unoptimized
+            />
         </Box>
     );
 };
@@ -192,41 +226,41 @@ const ErrorMessage = () => {
     const { isDark } = useThemeStore();
 
     const formData = RightPaneStore.getFormData();
-    const deptValue = formData.deptValue.replace(' ', '').toUpperCase() || null;
-    const courseNumber = formData.courseNumber.replace(/\s+/g, '').toUpperCase() || null;
+    const deptValue = formData.deptValue.replace(" ", "").toUpperCase() || null;
+    const courseNumber = formData.courseNumber.replace(/\s+/g, "").toUpperCase() || null;
     const courseId = deptValue && courseNumber ? `${deptValue}${courseNumber}` : null;
 
     return (
         <Box
             sx={{
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                flexDirection: 'column',
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "column",
             }}
         >
             {courseId ? (
                 <Link
                     href={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
                     target="_blank"
-                    sx={{ width: '100%' }}
+                    sx={{ width: "100%" }}
                 >
                     <Alert
                         variant="filled"
                         severity="info"
                         sx={{
-                            display: 'flex',
-                            alignItems: 'center',
+                            display: "flex",
+                            alignItems: "center",
                             fontSize: 14,
                             backgroundColor: BLUE,
-                            color: 'white',
+                            color: "white",
                         }}
                     >
                         <span>
-                            Search for{' '}
-                            <span style={{ textDecoration: 'underline' }}>
+                            Search for{" "}
+                            <span style={{ textDecoration: "underline" }}>
                                 {deptValue} {courseNumber}
-                            </span>{' '}
+                            </span>{" "}
                             on AntAlmanac Planner!
                         </span>
                     </Alert>
@@ -236,7 +270,7 @@ const ErrorMessage = () => {
             <Image
                 src={isDark ? darkNoNothing : noNothing}
                 alt="No Results Found"
-                style={{ objectFit: 'contain', width: '80%', height: '80%', pointerEvents: 'none' }}
+                style={{ objectFit: "contain", width: "80%", height: "80%", pointerEvents: "none" }}
             />
         </Box>
     );
@@ -244,7 +278,9 @@ const ErrorMessage = () => {
 
 export default function CourseRenderPane(props: { id?: number }) {
     const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
-    const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
+    const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>(
+        [],
+    );
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
@@ -270,8 +306,8 @@ export default function CourseRenderPane(props: { id?: number }) {
             building: formData.building,
             room: formData.room,
             division: formData.division,
-            excludeRestrictionCodes: formData.excludeRestrictionCodes.split('').join(','), // comma delimited string (e.g. ABC -> A,B,C)
-            days: formData.days.split(/(?=[A-Z])/).join(','), // split on capital letters (e.g. MTuF -> M,Tu,F)
+            excludeRestrictionCodes: formData.excludeRestrictionCodes.split("").join(","), // comma delimited string (e.g. ABC -> A,B,C)
+            days: formData.days.split(/(?=[A-Z])/).join(","), // split on capital letters (e.g. MTuF -> M,Tu,F)
         };
 
         const gradesQueryParams = {
@@ -284,13 +320,13 @@ export default function CourseRenderPane(props: { id?: number }) {
         try {
             // Query websoc for course information and populate gradescache
             const [websocJsonResp, _] = await Promise.all([
-                websocQueryParams.units.includes(',')
-                    ? WebSOC.queryMultiple(websocQueryParams, 'units')
+                websocQueryParams.units.includes(",")
+                    ? WebSOC.queryMultiple(websocQueryParams, "units")
                     : WebSOC.query(websocQueryParams),
                 // Catch the error here so that the course pane still loads even if the grades cache fails to populate
                 Grades.populateGradesCache(gradesQueryParams).catch((error) => {
                     console.error(error);
-                    openSnackbar('error', 'Error loading grades information');
+                    openSnackbar("error", "Error loading grades information");
                 }),
             ]);
 
@@ -300,7 +336,7 @@ export default function CourseRenderPane(props: { id?: number }) {
         } catch (error) {
             console.error(error);
             setError(true);
-            openSnackbar('error', 'We ran into an error while looking up class info');
+            openSnackbar("error", "We ran into an error while looking up class info");
         } finally {
             setLoading(false);
         }
@@ -318,19 +354,19 @@ export default function CourseRenderPane(props: { id?: number }) {
             setCourseData(flattenSOCObject(websocResp));
         };
 
-        AppStore.on('currentScheduleIndexChange', changeColors);
+        AppStore.on("currentScheduleIndexChange", changeColors);
 
         return () => {
-            AppStore.off('currentScheduleIndexChange', changeColors);
+            AppStore.off("currentScheduleIndexChange", changeColors);
         };
     }, [websocResp]);
 
     useEffect(() => {
         loadCourses();
-        AppStore.on('scheduleNamesChange', updateScheduleNames);
+        AppStore.on("scheduleNamesChange", updateScheduleNames);
 
         return () => {
-            AppStore.off('scheduleNamesChange', updateScheduleNames);
+            AppStore.off("scheduleNamesChange", updateScheduleNames);
         };
     }, [loadCourses, props.id]);
 
@@ -347,7 +383,7 @@ export default function CourseRenderPane(props: { id?: number }) {
 
     return (
         <>
-            <Box sx={{ height: '56px' }} />
+            <Box sx={{ height: "56px" }} />
 
             {loading ? (
                 <LoadingMessage />
@@ -357,19 +393,30 @@ export default function CourseRenderPane(props: { id?: number }) {
                 <>
                     <RecruitmentBanner />
                     <Box>
-                        {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
-                            let heightEstimate = 200;
-                            if ((courseData[index] as AACourse).sections !== undefined)
-                                heightEstimate = (courseData[index] as AACourse).sections.length * 60 + 20 + 40;
-                            return (
-                                <LazyLoad once key={index} overflow height={heightEstimate} offset={1000}>
-                                    {SectionTableWrapped(index, {
-                                        courseData: courseData,
-                                        scheduleNames: scheduleNames,
-                                    })}
-                                </LazyLoad>
-                            );
-                        })}
+                        {courseData.map(
+                            (_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
+                                let heightEstimate = 200;
+                                if ((courseData[index] as AACourse).sections !== undefined)
+                                    heightEstimate =
+                                        (courseData[index] as AACourse).sections.length * 60 +
+                                        20 +
+                                        40;
+                                return (
+                                    <LazyLoad
+                                        once
+                                        key={index}
+                                        overflow
+                                        height={heightEstimate}
+                                        offset={1000}
+                                    >
+                                        {SectionTableWrapped(index, {
+                                            courseData: courseData,
+                                            scheduleNames: scheduleNames,
+                                        })}
+                                    </LazyLoad>
+                                );
+                            },
+                        )}
                     </Box>
                 </>
             )}

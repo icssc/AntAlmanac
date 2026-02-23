@@ -1,17 +1,16 @@
-import { Delete } from '@mui/icons-material';
-import { Box, Card, CardActions, CardHeader, IconButton, Tooltip } from '@mui/material';
-import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
-import moment from 'moment';
-import { useEffect, useState } from 'react';
-
-import { deleteCustomEvent } from '$actions/AppStoreActions';
-import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import ColorPicker from '$components/ColorPicker';
-import { MapLink } from '$components/buttons/MapLink';
-import analyticsEnum from '$lib/analytics/analytics';
-import buildingCatalogue from '$lib/locations/buildingCatalogue';
-import AppStore from '$stores/AppStore';
-import { useTimeFormatStore } from '$stores/SettingsStore';
+import { deleteCustomEvent } from "$actions/AppStoreActions";
+import { MapLink } from "$components/buttons/MapLink";
+import { CustomEventDialog } from "$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog";
+import ColorPicker from "$components/ColorPicker";
+import analyticsEnum from "$lib/analytics/analytics";
+import buildingCatalogue from "$lib/locations/buildingCatalogue";
+import AppStore from "$stores/AppStore";
+import { useTimeFormatStore } from "$stores/SettingsStore";
+import { Delete } from "@mui/icons-material";
+import { Box, Card, CardActions, CardHeader, IconButton, Tooltip } from "@mui/material";
+import type { RepeatingCustomEvent } from "@packages/antalmanac-types";
+import moment from "moment";
+import { useEffect, useState } from "react";
 
 interface CustomEventDetailViewProps {
     scheduleNames: string[];
@@ -29,10 +28,10 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
             setSkeletonMode(AppStore.getSkeletonMode());
         };
 
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+        AppStore.on("skeletonModeChange", handleSkeletonModeChange);
 
         return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+            AppStore.off("skeletonModeChange", handleSkeletonModeChange);
         };
     }, []);
 
@@ -47,10 +46,12 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
             minutes: parseInt(end.slice(3, 5)),
         });
 
-        const dayAbbreviations = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        const daysString = days.map((includeDate, index) => (includeDate ? dayAbbreviations[index] : '')).join(' ');
+        const dayAbbreviations = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const daysString = days
+            .map((includeDate, index) => (includeDate ? dayAbbreviations[index] : ""))
+            .join(" ");
 
-        const timeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
+        const timeFormat = isMilitaryTime ? "HH:mm" : "h:mm A";
 
         return `${startTime.format(timeFormat)} — ${endTime.format(timeFormat)} • ${daysString}`;
     };
@@ -58,17 +59,24 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
     return (
         <Card>
             <CardHeader
-                titleTypographyProps={{ variant: 'subtitle1' }}
+                titleTypographyProps={{ variant: "subtitle1" }}
                 title={customEvent.title}
-                subheader={readableDateAndTimeFormat(customEvent.start, customEvent.end, customEvent.days)}
+                subheader={readableDateAndTimeFormat(
+                    customEvent.start,
+                    customEvent.end,
+                    customEvent.days,
+                )}
                 style={{
-                    padding: !skeletonMode ? '8px 8px 0 8px' : 8,
+                    padding: !skeletonMode ? "8px 8px 0 8px" : 8,
                 }}
             />
-            <Box sx={{ margin: '0.75rem', color: '#bbbbbb', fontSize: '1rem' }}>
+            <Box sx={{ margin: "0.75rem", color: "#bbbbbb", fontSize: "1rem" }}>
                 <MapLink
                     buildingId={Number(customEvent.building) || 0}
-                    room={(customEvent.building && buildingCatalogue[+customEvent.building]?.name) || ''}
+                    room={
+                        (customEvent.building && buildingCatalogue[+customEvent.building]?.name) ||
+                        ""
+                    }
                 />
             </Box>
 
@@ -76,12 +84,12 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                 <CardActions disableSpacing={true} style={{ padding: 0 }}>
                     <Box
                         sx={{
-                            cursor: 'pointer',
-                            '& > div': {
-                                margin: '0px 8px 0px 4px',
-                                height: '20px',
-                                width: '20px',
-                                borderRadius: '50%',
+                            cursor: "pointer",
+                            "& > div": {
+                                margin: "0px 8px 0px 4px",
+                                height: "20px",
+                                width: "20px",
+                                borderRadius: "50%",
                             },
                         }}
                     >
@@ -93,12 +101,17 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                         />
                     </Box>
 
-                    <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
+                    <CustomEventDialog
+                        customEvent={customEvent}
+                        scheduleNames={props.scheduleNames}
+                    />
 
                     <Tooltip title="Delete">
                         <IconButton
                             onClick={() => {
-                                deleteCustomEvent(customEvent.customEventID, [AppStore.getCurrentScheduleIndex()]);
+                                deleteCustomEvent(customEvent.customEventID, [
+                                    AppStore.getCurrentScheduleIndex(),
+                                ]);
                             }}
                             size="large"
                         >

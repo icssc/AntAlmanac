@@ -1,9 +1,8 @@
-import { Clear as ClearIcon } from '@mui/icons-material';
-import { IconButton, Tooltip } from '@mui/material';
-import { useCallback, useState } from 'react';
-
-import DeleteScheduleDialog from '$components/dialogs/DeleteSchedule';
-import AppStore from '$stores/AppStore';
+import DeleteScheduleDialog from "$components/dialogs/DeleteSchedule";
+import AppStore from "$stores/AppStore";
+import { Clear as ClearIcon } from "@mui/icons-material";
+import { IconButton, Tooltip } from "@mui/material";
+import { useCallback, useState } from "react";
 
 interface DeleteScheduleButtonProps {
     index: number;

@@ -1,18 +1,23 @@
-import { Help } from '@mui/icons-material';
-import { Stack, Box, Typography, Tooltip, Switch } from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
-
-import actionTypesStore from '$actions/ActionTypesStore';
-import { autoSaveSchedule } from '$actions/AppStoreActions';
-import { getLocalStorageUserId } from '$lib/localStorage';
-import appStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { usePreviewStore, useAutoSaveStore } from '$stores/SettingsStore';
+import actionTypesStore from "$actions/ActionTypesStore";
+import { autoSaveSchedule } from "$actions/AppStoreActions";
+import { getLocalStorageUserId } from "$lib/localStorage";
+import appStore from "$stores/AppStore";
+import { scheduleComponentsToggleStore } from "$stores/ScheduleComponentsToggleStore";
+import { useSessionStore } from "$stores/SessionStore";
+import { useAutoSaveStore, usePreviewStore } from "$stores/SettingsStore";
+import { Help } from "@mui/icons-material";
+import { Box, Stack, Switch, Tooltip, Typography } from "@mui/material";
+import { usePostHog } from "posthog-js/react";
 
 export function ExperimentalMenu() {
-    const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
-    const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
+    const [previewMode, setPreviewMode] = usePreviewStore((store) => [
+        store.previewMode,
+        store.setPreviewMode,
+    ]);
+    const [autoSave, setAutoSave] = useAutoSaveStore((store) => [
+        store.autoSave,
+        store.setAutoSave,
+    ]);
     const { sessionIsValid, session } = useSessionStore();
     const { setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
 
@@ -40,41 +45,52 @@ export function ExperimentalMenu() {
             return;
         }
 
-        actionTypesStore.emit('autoSaveStart');
+        actionTypesStore.emit("autoSaveStart");
         await autoSaveSchedule(savedUserID, { postHog });
         appStore.unsavedChanges = false;
-        actionTypesStore.emit('autoSaveEnd');
+        actionTypesStore.emit("autoSaveEnd");
     };
 
     return (
-        <Stack sx={{ width: '100%', display: 'flex', alignItems: 'middle' }}>
-            <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
-                <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        <Stack sx={{ width: "100%", display: "flex", alignItems: "middle" }}>
+            <Box style={{ display: "flex", justifyContent: "space-between", width: "1" }}>
+                <Box style={{ display: "flex", alignItems: "center", gap: 4 }}>
                     <Typography
                         variant="h6"
                         style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            alignContent: 'center',
+                            display: "flex",
+                            alignItems: "center",
+                            alignContent: "center",
                         }}
                     >
                         Hover to Preview
                     </Typography>
-                    <Tooltip title={<Typography>Hover over courses to preview them in your calendar!</Typography>}>
+                    <Tooltip
+                        title={
+                            <Typography>
+                                Hover over courses to preview them in your calendar!
+                            </Typography>
+                        }
+                    >
                         <Help />
                     </Tooltip>
                 </Box>
-                <Switch color={'primary'} value={previewMode} checked={previewMode} onChange={handlePreviewChange} />
+                <Switch
+                    color={"primary"}
+                    value={previewMode}
+                    checked={previewMode}
+                    onChange={handlePreviewChange}
+                />
             </Box>
 
-            <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
-                <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Box style={{ display: "flex", justifyContent: "space-between", width: "1" }}>
+                <Box style={{ display: "flex", alignItems: "center", gap: 4 }}>
                     <Typography
                         variant="h6"
                         style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            alignContent: 'center',
+                            display: "flex",
+                            alignItems: "center",
+                            alignContent: "center",
                         }}
                     >
                         Auto Save
@@ -83,7 +99,12 @@ export function ExperimentalMenu() {
                         <Help />
                     </Tooltip>
                 </Box>
-                <Switch color={'primary'} value={autoSave} checked={autoSave} onChange={handleAutoSaveChange} />
+                <Switch
+                    color={"primary"}
+                    value={autoSave}
+                    checked={autoSave}
+                    onChange={handleAutoSaveChange}
+                />
             </Box>
         </Stack>
     );

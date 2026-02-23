@@ -1,7 +1,6 @@
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
-
-import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { LabeledTextField } from "$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField";
+import RightPaneStore from "$components/RightPane/RightPaneStore";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 
 export function CourseNumberSearchBar() {
     const [value, setValue] = useState(() => RightPaneStore.getFormData().courseNumber);
@@ -10,19 +9,19 @@ export function CourseNumberSearchBar() {
         const newValue = event.target.value;
 
         setValue(newValue);
-        RightPaneStore.updateFormValue('courseNumber', newValue);
+        RightPaneStore.updateFormValue("courseNumber", newValue);
 
         const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
-        urlParam.delete('courseNumber');
+        urlParam.delete("courseNumber");
 
         if (newValue) {
-            urlParam.set('courseNumber', newValue);
+            urlParam.set("courseNumber", newValue);
         }
 
         const param = urlParam.toString();
-        const new_url = `${param.trim() ? '?' : ''}${param}`;
-        history.replaceState({ url: 'url' }, 'url', '/' + new_url);
+        const new_url = `${param.trim() ? "?" : ""}${param}`;
+        history.replaceState({ url: "url" }, "url", "/" + new_url);
     };
 
     const resetField = useCallback(() => {
@@ -30,10 +29,10 @@ export function CourseNumberSearchBar() {
     }, []);
 
     useEffect(() => {
-        RightPaneStore.on('formReset', resetField);
+        RightPaneStore.on("formReset", resetField);
 
         return () => {
-            RightPaneStore.off('formReset', resetField);
+            RightPaneStore.off("formReset", resetField);
         };
     }, [resetField]);
 
@@ -41,10 +40,10 @@ export function CourseNumberSearchBar() {
         <LabeledTextField
             label="Course Number(s)"
             textFieldProps={{
-                type: 'search',
+                type: "search",
                 value,
                 onChange: handleChange,
-                placeholder: 'ex. 6B, 17, 30-40',
+                placeholder: "ex. 6B, 17, 30-40",
                 fullWidth: true,
                 sx: {
                     minWidth: 200,

@@ -1,20 +1,25 @@
-import { Box } from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect } from 'react';
-
-import { openSnackbar } from '$actions/AppStoreActions';
-import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
-import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
-import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { Grades } from '$lib/grades';
-import { WebSOC } from '$lib/websoc';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { openSnackbar } from "$actions/AppStoreActions";
+import { CoursePaneButtonRow } from "$components/RightPane/CoursePane/CoursePaneButtonRow";
+import CourseRenderPane from "$components/RightPane/CoursePane/CourseRenderPane";
+import { SearchForm } from "$components/RightPane/CoursePane/SearchForm/SearchForm";
+import RightPaneStore from "$components/RightPane/RightPaneStore";
+import analyticsEnum, { logAnalytics } from "$lib/analytics/analytics";
+import { Grades } from "$lib/grades";
+import { WebSOC } from "$lib/websoc";
+import { useCoursePaneStore } from "$stores/CoursePaneStore";
+import { Box } from "@mui/material";
+import { usePostHog } from "posthog-js/react";
+import { useCallback, useEffect } from "react";
 
 export function CoursePaneRoot() {
-    const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections, advancedSearchEnabled } =
-        useCoursePaneStore();
+    const {
+        key,
+        forceUpdate,
+        searchFormIsDisplayed,
+        displaySearch,
+        displaySections,
+        advancedSearchEnabled,
+    } = useCoursePaneStore();
     const postHog = usePostHog();
 
     const handleSearch = useCallback(() => {
@@ -28,8 +33,8 @@ export function CoursePaneRoot() {
             forceUpdate();
         } else {
             openSnackbar(
-                'error',
-                `Please provide one of the following: Department, GE, Section Code/Range, or Instructor`
+                "error",
+                `Please provide one of the following: Department, GE, Section Code/Range, or Instructor`,
             );
         }
     }, [advancedSearchEnabled, displaySections, forceUpdate]);
@@ -46,16 +51,16 @@ export function CoursePaneRoot() {
 
     const handleKeydown = useCallback(
         (event: KeyboardEvent) => {
-            if (event.key === 'Escape') displaySearch();
+            if (event.key === "Escape") displaySearch();
         },
-        [displaySearch]
+        [displaySearch],
     );
 
     useEffect(() => {
-        document.addEventListener('keydown', handleKeydown, false);
+        document.addEventListener("keydown", handleKeydown, false);
 
         return () => {
-            document.removeEventListener('keydown', handleKeydown, false);
+            document.removeEventListener("keydown", handleKeydown, false);
         };
     }, [handleKeydown]);
 

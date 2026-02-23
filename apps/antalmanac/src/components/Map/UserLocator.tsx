@@ -1,7 +1,7 @@
-import { control } from 'leaflet';
-import 'leaflet.locatecontrol';
-import { memo, useEffect, useRef } from 'react';
-import { useMap } from 'react-leaflet';
+import { control } from "leaflet";
+import "leaflet.locatecontrol";
+import { memo, useEffect, useRef } from "react";
+import { useMap } from "react-leaflet";
 
 export const UserLocator = memo(() => {
     const map = useMap();
@@ -10,7 +10,7 @@ export const UserLocator = memo(() => {
     useEffect(() => {
         if (!hasCreatedControl.current) {
             const userLocator = control.locate({
-                position: 'topleft',
+                position: "topleft",
                 flyTo: true,
             });
 
@@ -24,4 +24,4 @@ export const UserLocator = memo(() => {
     return null;
 });
 
-UserLocator.displayName = 'UserLocator';
+UserLocator.displayName = "UserLocator";

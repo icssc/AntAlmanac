@@ -1,8 +1,7 @@
-import { Delete } from '@mui/icons-material';
-import { IconButton, Box } from '@mui/material';
-
-import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { useNotificationStore } from '$stores/NotificationStore';
+import { TableBodyCellContainer } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer";
+import { useNotificationStore } from "$stores/NotificationStore";
+import { Delete } from "@mui/icons-material";
+import { Box, IconButton } from "@mui/material";
 
 interface DeleteNotificationButtonProps {
     notificationKey: string;
@@ -19,11 +18,11 @@ export const NotificationTableDeleteCell = ({ notificationKey }: DeleteNotificat
         <TableBodyCellContainer>
             <Box
                 sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: '100%',
-                    height: '100%',
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "100%",
+                    height: "100%",
                 }}
             >
                 <IconButton onClick={handleDelete}>

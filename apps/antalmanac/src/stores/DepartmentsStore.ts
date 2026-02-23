@@ -1,7 +1,6 @@
-import { create } from 'zustand';
-
-import { DEPARTMENT_MAP } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/constants';
-import { WebSOC } from '$lib/websoc';
+import { DEPARTMENT_MAP } from "$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/constants";
+import { WebSOC } from "$lib/websoc";
+import { create } from "zustand";
 
 interface DepartmentsState {
     departments: Record<string, string> | null;
@@ -17,11 +16,14 @@ export const useDepartmentsStore = create<DepartmentsState>((set, get) => ({
         try {
             const departmentsData = await WebSOC.getDepartments();
             const departmentsMap = Object.fromEntries(
-                departmentsData.map((dept) => [dept.deptCode, `${dept.deptCode}: ${dept.deptName}`])
+                departmentsData.map((dept) => [
+                    dept.deptCode,
+                    `${dept.deptCode}: ${dept.deptName}`,
+                ]),
             );
             set({ departments: departmentsMap });
         } catch (error) {
-            console.error('Error loading departments: ', error);
+            console.error("Error loading departments: ", error);
             set({ departments: DEPARTMENT_MAP }); //fallback to hardcoded departments
         }
     },

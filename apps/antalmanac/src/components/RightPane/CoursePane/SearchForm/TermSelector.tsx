@@ -1,22 +1,21 @@
-import { useCallback, useEffect, useState } from 'react';
-
-import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { termData } from '$lib/termData';
+import { LabeledAutocomplete } from "$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete";
+import RightPaneStore from "$components/RightPane/RightPaneStore";
+import { termData } from "$lib/termData";
+import { useCallback, useEffect, useState } from "react";
 
 export function TermSelector() {
     const [term, setTerm] = useState<string>(() => RightPaneStore.getFormData().term);
 
     const handleChange = (_: unknown, option: string | null) => {
-        const value = option ?? termData.at(0)?.shortName ?? '';
+        const value = option ?? termData.at(0)?.shortName ?? "";
 
         setTerm(value);
 
         const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('term', value);
-        history.replaceState({ url: 'url' }, 'url', `/?${urlParams}`);
+        urlParams.set("term", value);
+        history.replaceState({ url: "url" }, "url", `/?${urlParams}`);
 
-        RightPaneStore.updateFormValue('term', value);
+        RightPaneStore.updateFormValue("term", value);
     };
 
     const resetField = useCallback(() => {
@@ -24,10 +23,10 @@ export function TermSelector() {
     }, []);
 
     useEffect(() => {
-        RightPaneStore.on('formReset', resetField);
+        RightPaneStore.on("formReset", resetField);
 
         return () => {
-            RightPaneStore.off('formReset', resetField);
+            RightPaneStore.off("formReset", resetField);
         };
     }, [resetField]);
 
@@ -37,11 +36,12 @@ export function TermSelector() {
             autocompleteProps={{
                 value: term,
                 options: termData.map((term) => term.shortName),
-                getOptionLabel: (option) => termData.find((term) => term.shortName === option)?.longName ?? '',
+                getOptionLabel: (option) =>
+                    termData.find((term) => term.shortName === option)?.longName ?? "",
                 autoHighlight: true,
                 openOnFocus: true,
                 onChange: handleChange,
-                noOptionsText: 'No terms match the search',
+                noOptionsText: "No terms match the search",
             }}
             textFieldProps={{
                 fullWidth: true,

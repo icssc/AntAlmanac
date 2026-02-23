@@ -1,4 +1,4 @@
-import { ScheduleSaveState } from '@packages/antalmanac-types';
+import { ScheduleSaveState } from "@packages/antalmanac-types";
 
 interface LegacyShortCourseInfo {
     color: string;
@@ -30,7 +30,7 @@ export function convertLegacySchedule(legacyUserData: LegacyUserData) {
             scheduleName: scheduleName,
             courses: [],
             customEvents: [],
-            scheduleNote: '',
+            scheduleNote: "",
         });
     }
     for (const course of legacyUserData.addedCourses) {

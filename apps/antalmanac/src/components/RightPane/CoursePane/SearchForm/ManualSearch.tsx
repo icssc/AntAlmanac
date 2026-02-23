@@ -1,10 +1,9 @@
-import { Box, Button } from '@mui/material';
-
-import { AdvancedSearch } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearch';
-import { CourseNumberSearchBar } from '$components/RightPane/CoursePane/SearchForm/CourseNumberSearchBar';
-import { DepartmentSearchBar } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/DepartmentSearchBar';
-import { GeSelector } from '$components/RightPane/CoursePane/SearchForm/GeSelector';
-import SectionCodeSearchBar from '$components/RightPane/CoursePane/SearchForm/SectionCodeSearchBar';
+import { AdvancedSearch } from "$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearch";
+import { CourseNumberSearchBar } from "$components/RightPane/CoursePane/SearchForm/CourseNumberSearchBar";
+import { DepartmentSearchBar } from "$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/DepartmentSearchBar";
+import { GeSelector } from "$components/RightPane/CoursePane/SearchForm/GeSelector";
+import SectionCodeSearchBar from "$components/RightPane/CoursePane/SearchForm/SectionCodeSearchBar";
+import { Box, Button } from "@mui/material";
 
 interface ManualSearchProps {
     onSubmit: VoidFunction;
@@ -15,24 +14,24 @@ export function ManualSearch({ onSubmit, onReset }: ManualSearchProps) {
     return (
         <Box
             sx={{
-                display: 'flex',
-                flexDirection: 'column',
+                display: "flex",
+                flexDirection: "column",
                 gap: 0.5,
             }}
         >
             <Box
                 sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
+                    display: "flex",
+                    flexDirection: "column",
                     gap: 2,
                 }}
             >
                 <Box
                     sx={{
-                        display: 'flex',
-                        width: '100%',
+                        display: "flex",
+                        width: "100%",
                         gap: 2,
-                        flexWrap: 'wrap',
+                        flexWrap: "wrap",
                     }}
                 >
                     <DepartmentSearchBar />
@@ -41,10 +40,10 @@ export function ManualSearch({ onSubmit, onReset }: ManualSearchProps) {
 
                 <Box
                     sx={{
-                        display: 'flex',
-                        width: '100%',
+                        display: "flex",
+                        width: "100%",
                         gap: 2,
-                        flexWrap: 'wrap',
+                        flexWrap: "wrap",
                     }}
                 >
                     <GeSelector />
@@ -56,13 +55,19 @@ export function ManualSearch({ onSubmit, onReset }: ManualSearchProps) {
 
             <Box
                 sx={{
-                    display: 'flex',
-                    width: '100%',
+                    display: "flex",
+                    width: "100%",
                     gap: 2,
-                    justifyContent: 'center',
+                    justifyContent: "center",
                 }}
             >
-                <Button color="primary" variant="contained" type="submit" onClick={onSubmit} sx={{ width: '50%' }}>
+                <Button
+                    color="primary"
+                    variant="contained"
+                    type="submit"
+                    onClick={onSubmit}
+                    sx={{ width: "50%" }}
+                >
                     Search
                 </Button>
 

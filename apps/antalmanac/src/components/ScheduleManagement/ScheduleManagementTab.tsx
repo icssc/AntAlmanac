@@ -1,9 +1,8 @@
-import { Tab } from '@mui/material';
-import { Link } from 'react-router-dom';
-
-import { ScheduleManagementTabInfo } from '$components/ScheduleManagement/ScheduleManagementTabs';
-import { useIsMobile } from '$hooks/useIsMobile';
-import { useTabStore } from '$stores/TabStore';
+import { ScheduleManagementTabInfo } from "$components/ScheduleManagement/ScheduleManagementTabs";
+import { useIsMobile } from "$hooks/useIsMobile";
+import { useTabStore } from "$stores/TabStore";
+import { Tab } from "@mui/material";
+import { Link } from "react-router-dom";
 
 interface ScheduleManagementTabProps {
     tab: ScheduleManagementTabInfo;
@@ -24,21 +23,21 @@ export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps
             component={Link}
             to={tab.href}
             icon={tab.icon}
-            iconPosition={isMobile ? 'top' : 'start'}
+            iconPosition={isMobile ? "top" : "start"}
             sx={{
                 ...(isMobile
                     ? {
-                          minHeight: 'unset',
-                          minWidth: '25%',
+                          minHeight: "unset",
+                          minWidth: "25%",
                           height: 56,
                       }
                     : {
-                          minHeight: 'auto',
-                          height: '44px',
+                          minHeight: "auto",
+                          height: "44px",
                           padding: 3,
-                          minWidth: '33%',
+                          minWidth: "33%",
                       }),
-                display: isMobile || !tab.mobile ? 'flex' : 'none',
+                display: isMobile || !tab.mobile ? "flex" : "none",
             }}
             label={tab.label}
             onClick={handleClick}

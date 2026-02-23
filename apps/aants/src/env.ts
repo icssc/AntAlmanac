@@ -1,7 +1,7 @@
-import * as dotenv from 'dotenv';
-import { z } from 'zod';
+import * as dotenv from "dotenv";
+import { z } from "zod";
 
-dotenv.config({ path: '../.env' });
+dotenv.config({ path: "../.env" });
 
 /**
  * Environment variables required by aants to connect to the RDS instance.

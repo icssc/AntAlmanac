@@ -1,8 +1,7 @@
-import { ContentCopy } from '@mui/icons-material';
-import { IconButton, SxProps, Tooltip } from '@mui/material';
-import { useCallback, useState } from 'react';
-
-import CopyScheduleDialog from '$components/dialogs/CopySchedule';
+import CopyScheduleDialog from "$components/dialogs/CopySchedule";
+import { ContentCopy } from "@mui/icons-material";
+import { IconButton, SxProps, Tooltip } from "@mui/material";
+import { useCallback, useState } from "react";
 
 interface CopyScheduleButtonProps {
     index: number;

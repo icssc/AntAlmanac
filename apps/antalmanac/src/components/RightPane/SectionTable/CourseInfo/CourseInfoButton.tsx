@@ -1,10 +1,9 @@
-import { Box, Button, Paper, Popover, useTheme } from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
-import { useCallback, useState } from 'react';
-
-import { useIsMobile } from '$hooks/useIsMobile';
-import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
-import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
+import { useIsMobile } from "$hooks/useIsMobile";
+import { AnalyticsCategory, logAnalytics } from "$lib/analytics/analytics";
+import { useScheduleManagementStore } from "$stores/ScheduleManagementStore";
+import { Box, Button, Paper, Popover, useTheme } from "@mui/material";
+import { usePostHog } from "posthog-js/react";
+import { useCallback, useState } from "react";
 
 interface CourseInfoButtonProps {
     text: string;
@@ -29,8 +28,12 @@ export const CourseInfoButton = ({
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
-    const scheduleManagementWidth = useScheduleManagementStore((state) => state.scheduleManagementWidth);
-    const compact = isMobile || (scheduleManagementWidth && scheduleManagementWidth < theme.breakpoints.values.xs);
+    const scheduleManagementWidth = useScheduleManagementStore(
+        (state) => state.scheduleManagementWidth,
+    );
+    const compact =
+        isMobile ||
+        (scheduleManagementWidth && scheduleManagementWidth < theme.breakpoints.values.xs);
 
     const handleClick = useCallback(
         (event: React.MouseEvent<HTMLElement>) => {
@@ -48,7 +51,7 @@ export const CourseInfoButton = ({
                 setAnchorEl(anchorEl ? null : event.currentTarget);
             }
         },
-        [analyticsAction, analyticsCategory, anchorEl, popupContent, redirectLink, postHog]
+        [analyticsAction, analyticsCategory, anchorEl, popupContent, redirectLink, postHog],
     );
 
     const handleClose = useCallback(() => {
@@ -56,16 +59,16 @@ export const CourseInfoButton = ({
     }, []);
 
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: "flex" }}>
             <Button variant="contained" size="small" color="primary" onClick={handleClick}>
-                <span style={{ display: 'flex', gap: 4 }}>
+                <span style={{ display: "flex", gap: 4 }}>
                     {icon}
                     {compact ? null : (
                         <span
                             style={{
-                                whiteSpace: 'nowrap',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
                             }}
                         >
                             {text}
@@ -80,8 +83,8 @@ export const CourseInfoButton = ({
                     anchorEl={anchorEl}
                     onClose={handleClose}
                     anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
+                        vertical: "bottom",
+                        horizontal: "left",
                     }}
                 >
                     <Paper>{popupContent}</Paper>

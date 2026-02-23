@@ -1,17 +1,16 @@
-import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
-import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
-import { PostHog, usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-
-import { changeCurrentSchedule } from '$actions/AppStoreActions';
-import { SortableList } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableList';
-import { AddScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton';
-import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/DeleteScheduleButton';
-import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
-import { CopyScheduleButton } from '$components/buttons/Copy';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { changeCurrentSchedule } from "$actions/AppStoreActions";
+import { CopyScheduleButton } from "$components/buttons/Copy";
+import { SortableList } from "$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableList";
+import { AddScheduleButton } from "$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton";
+import { DeleteScheduleButton } from "$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/DeleteScheduleButton";
+import { RenameScheduleButton } from "$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton";
+import analyticsEnum, { logAnalytics } from "$lib/analytics/analytics";
+import AppStore from "$stores/AppStore";
+import { scheduleComponentsToggleStore } from "$stores/ScheduleComponentsToggleStore";
+import { ArrowDropDown as ArrowDropDownIcon } from "@mui/icons-material";
+import { Box, Button, Popover, Tooltip, Typography, useTheme } from "@mui/material";
+import { PostHog, usePostHog } from "posthog-js/react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type EventContext = {
     triggeredBy?: string;
@@ -53,11 +52,13 @@ export function SelectSchedulePopover() {
     const theme = useTheme();
     const { openScheduleSelect, setOpenScheduleSelect } = scheduleComponentsToggleStore();
 
-    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+    const [currentScheduleIndex, setCurrentScheduleIndex] = useState(
+        AppStore.getCurrentScheduleIndex(),
+    );
     const [scheduleMapping, setScheduleMapping] = useState(getScheduleItems());
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const [skeletonScheduleMapping, setSkeletonScheduleMapping] = useState(
-        getScheduleItems(AppStore.getSkeletonScheduleNames())
+        getScheduleItems(AppStore.getSkeletonScheduleNames()),
     );
 
     const anchorElementRef = useRef(null);
@@ -81,22 +82,22 @@ export function SelectSchedulePopover() {
     }, []);
 
     useEffect(() => {
-        AppStore.on('addedCoursesChange', handleScheduleIndexChange);
-        AppStore.on('customEventsChange', handleScheduleIndexChange);
-        AppStore.on('colorChange', handleScheduleIndexChange);
-        AppStore.on('currentScheduleIndexChange', handleScheduleIndexChange);
+        AppStore.on("addedCoursesChange", handleScheduleIndexChange);
+        AppStore.on("customEventsChange", handleScheduleIndexChange);
+        AppStore.on("colorChange", handleScheduleIndexChange);
+        AppStore.on("currentScheduleIndexChange", handleScheduleIndexChange);
 
         return () => {
-            AppStore.off('addedCoursesChange', handleScheduleIndexChange);
-            AppStore.off('customEventsChange', handleScheduleIndexChange);
-            AppStore.off('colorChange', handleScheduleIndexChange);
-            AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
+            AppStore.off("addedCoursesChange", handleScheduleIndexChange);
+            AppStore.off("customEventsChange", handleScheduleIndexChange);
+            AppStore.off("colorChange", handleScheduleIndexChange);
+            AppStore.off("currentScheduleIndexChange", handleScheduleIndexChange);
         };
     }, [handleScheduleIndexChange]);
 
     useEffect(() => {
         const handleScheduleNamesChange = (context?: EventContext) => {
-            if (context?.triggeredBy === 'reorder') {
+            if (context?.triggeredBy === "reorder") {
                 return;
             }
             setScheduleMapping(getScheduleItems());
@@ -106,12 +107,12 @@ export function SelectSchedulePopover() {
             setSkeletonScheduleMapping(getScheduleItems(AppStore.getSkeletonScheduleNames()));
         };
 
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+        AppStore.on("scheduleNamesChange", handleScheduleNamesChange);
+        AppStore.on("skeletonModeChange", handleSkeletonModeChange);
 
         return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+            AppStore.off("scheduleNamesChange", handleScheduleNamesChange);
+            AppStore.off("skeletonModeChange", handleSkeletonModeChange);
         };
     }, []);
 
@@ -126,7 +127,7 @@ export function SelectSchedulePopover() {
                     popper: {
                         modifiers: [
                             {
-                                name: 'offset',
+                                name: "offset",
                                 options: {
                                     offset: [-2, -10],
                                 },
@@ -143,9 +144,14 @@ export function SelectSchedulePopover() {
                     color="inherit"
                     variant="outlined"
                     onClick={handleClick}
-                    sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
+                    sx={{ minWidth, maxWidth, justifyContent: "space-between" }}
                 >
-                    <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
+                    <Typography
+                        whiteSpace="nowrap"
+                        textOverflow="ellipsis"
+                        overflow="hidden"
+                        textTransform="none"
+                    >
                         {scheduleMappingToUse[currentScheduleIndex]?.name || null}
                     </Typography>
                     <ArrowDropDownIcon />
@@ -156,7 +162,7 @@ export function SelectSchedulePopover() {
                 open={openScheduleSelect}
                 anchorEl={anchorElementRef.current}
                 onClose={handleClose}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
             >
                 <Box padding={1}>
                     <SortableList
@@ -168,10 +174,10 @@ export function SelectSchedulePopover() {
                                 <SortableList.Item id={item.id}>
                                     <Box
                                         sx={{
-                                            display: 'flex',
+                                            display: "flex",
                                             gap: 1,
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
                                             flexGrow: 1,
                                         }}
                                     >
@@ -184,7 +190,7 @@ export function SelectSchedulePopover() {
                                                     popper: {
                                                         modifiers: [
                                                             {
-                                                                name: 'offset',
+                                                                name: "offset",
                                                                 options: {
                                                                     offset: [-2, -10],
                                                                 },
@@ -200,15 +206,17 @@ export function SelectSchedulePopover() {
                                                     sx={{
                                                         minWidth,
                                                         maxWidth,
-                                                        width: '100%',
-                                                        display: 'flex',
-                                                        justifyContent: 'flex-start',
+                                                        width: "100%",
+                                                        display: "flex",
+                                                        justifyContent: "flex-start",
                                                         background:
                                                             index === currentScheduleIndex
                                                                 ? theme.palette.action.selected
                                                                 : undefined,
                                                     }}
-                                                    onClick={() => createScheduleSelector(index, postHog)()}
+                                                    onClick={() =>
+                                                        createScheduleSelector(index, postHog)()
+                                                    }
                                                 >
                                                     <Typography
                                                         overflow="hidden"
@@ -223,9 +231,18 @@ export function SelectSchedulePopover() {
                                         </Box>
 
                                         <Box display="flex" alignItems="center" gap={0.5}>
-                                            <CopyScheduleButton index={index} disabled={skeletonMode} />
-                                            <RenameScheduleButton index={index} disabled={skeletonMode} />
-                                            <DeleteScheduleButton index={index} disabled={skeletonMode} />
+                                            <CopyScheduleButton
+                                                index={index}
+                                                disabled={skeletonMode}
+                                            />
+                                            <RenameScheduleButton
+                                                index={index}
+                                                disabled={skeletonMode}
+                                            />
+                                            <DeleteScheduleButton
+                                                index={index}
+                                                disabled={skeletonMode}
+                                            />
                                         </Box>
                                     </Box>
                                 </SortableList.Item>

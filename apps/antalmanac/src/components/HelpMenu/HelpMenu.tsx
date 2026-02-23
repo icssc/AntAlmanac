@@ -1,25 +1,24 @@
-import { Close, TipsAndUpdates, Warning } from '@mui/icons-material';
+import { FeedbackAction } from "$components/HelpMenu/actions/FeedbackAction";
+import { PatchNotesAction } from "$components/HelpMenu/actions/PatchNotesAction";
+import { TutorialAction } from "$components/HelpMenu/actions/TutorialAction";
+import { useIsMobile } from "$hooks/useIsMobile";
+import { getLocalStorageAutoSave } from "$lib/localStorage";
+import { BLUE } from "$src/globals";
+import { scheduleComponentsToggleStore } from "$stores/ScheduleComponentsToggleStore";
+import { useSessionStore } from "$stores/SessionStore";
+import { useThemeStore } from "$stores/SettingsStore";
+import { Close, TipsAndUpdates, Warning } from "@mui/icons-material";
 import {
-    Stack,
     Backdrop,
     Box,
+    IconButton,
     SpeedDial,
     SpeedDialAction,
+    Stack,
     type SvgIconProps,
     Tooltip,
-    IconButton,
-} from '@mui/material';
-import { useCallback, useState } from 'react';
-
-import { FeedbackAction } from '$components/HelpMenu/actions/FeedbackAction';
-import { PatchNotesAction } from '$components/HelpMenu/actions/PatchNotesAction';
-import { TutorialAction } from '$components/HelpMenu/actions/TutorialAction';
-import { useIsMobile } from '$hooks/useIsMobile';
-import { getLocalStorageAutoSave } from '$lib/localStorage';
-import { BLUE } from '$src/globals';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
+} from "@mui/material";
+import { useCallback, useState } from "react";
 
 export type HelpMenuAction = {
     icon: React.ReactElement<SvgIconProps>;
@@ -32,9 +31,10 @@ export function HelpMenu() {
     const isMobile = useIsMobile();
     const [open, setOpen] = useState(false);
     const { sessionIsValid, session } = useSessionStore();
-    const { openAutoSaveWarning, setOpenAutoSaveWarning, openLoadingSchedule } = scheduleComponentsToggleStore();
+    const { openAutoSaveWarning, setOpenAutoSaveWarning, openLoadingSchedule } =
+        scheduleComponentsToggleStore();
 
-    const autoSave = getLocalStorageAutoSave() ?? 'false';
+    const autoSave = getLocalStorageAutoSave() ?? "false";
 
     const isWaitingToLogin = session !== null && !sessionIsValid;
 
@@ -47,7 +47,9 @@ export function HelpMenu() {
     const actions = [FeedbackAction(), TutorialAction(), PatchNotesAction()]
         // Two passes to help Typescript infer type
         .filter((action) => !!action)
-        .filter((action) => !isMobile || !action.disableOnMobile) satisfies NonNullable<HelpMenuAction>[];
+        .filter(
+            (action) => !isMobile || !action.disableOnMobile,
+        ) satisfies NonNullable<HelpMenuAction>[];
 
     const handleClick = useCallback(() => setOpen((prev) => !prev), []);
     const handleClose = useCallback(() => setOpen(false), []);
@@ -58,20 +60,20 @@ export function HelpMenu() {
             handleClose();
             action();
         },
-        [handleClose]
+        [handleClose],
     );
 
     return (
         <Stack
             sx={(theme) => ({
-                position: 'fixed',
+                position: "fixed",
                 bottom: `calc(${isMobile ? 65 : 16}px + env(safe-area-inset-bottom))`, // Magic number
                 right: 8,
                 zIndex: theme.zIndex.fab,
-                pointerEvents: 'none',
+                pointerEvents: "none",
                 // MUI SpeedDial controls pointer events itself
-                '& > *:not(.MuiSpeedDial-root)': {
-                    pointerEvents: 'auto',
+                "& > *:not(.MuiSpeedDial-root)": {
+                    pointerEvents: "auto",
                 },
             })}
             spacing={1}
@@ -79,7 +81,7 @@ export function HelpMenu() {
         >
             <Backdrop
                 sx={{
-                    zIndex: 'inherit',
+                    zIndex: "inherit",
                 }}
                 open={open}
                 onClick={handleClose}
@@ -91,11 +93,11 @@ export function HelpMenu() {
                     <Tooltip title="Help Menu" placement="left">
                         <Box
                             sx={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                width: '100%',
-                                height: '100%',
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                width: "100%",
+                                height: "100%",
                             }}
                         >
                             {open ? <Close /> : <TipsAndUpdates />}
@@ -105,7 +107,7 @@ export function HelpMenu() {
                 onClick={handleClick}
                 open={open}
                 FabProps={{
-                    size: 'medium',
+                    size: "medium",
                     sx: {
                         backgroundColor: BLUE,
                     },
@@ -120,31 +122,34 @@ export function HelpMenu() {
                         onClick={(e) => {
                             handleClickAction(e, action.onClick);
                         }}
-                        sx={{ whiteSpace: 'nowrap' }}
+                        sx={{ whiteSpace: "nowrap" }}
                     />
                 ))}
             </SpeedDial>
 
-            {!sessionIsValid && autoSave === 'true' && !openLoadingSchedule && !isWaitingToLogin && (
-                <IconButton
-                    aria-label="warning"
-                    color="warning"
-                    size="large"
-                    onClick={handleOpenAutoSaveWarning}
-                    sx={{
-                        bgcolor: isDark ? 'warning.dark' : 'warning.main',
-                        color: 'white',
-                        height: '4rem',
-                        width: '4rem',
-                        padding: 0,
-                        '&:hover': {
-                            bgcolor: isDark ? 'warning.dark' : 'warning.main',
-                        },
-                    }}
-                >
-                    <Warning />
-                </IconButton>
-            )}
+            {!sessionIsValid &&
+                autoSave === "true" &&
+                !openLoadingSchedule &&
+                !isWaitingToLogin && (
+                    <IconButton
+                        aria-label="warning"
+                        color="warning"
+                        size="large"
+                        onClick={handleOpenAutoSaveWarning}
+                        sx={{
+                            bgcolor: isDark ? "warning.dark" : "warning.main",
+                            color: "white",
+                            height: "4rem",
+                            width: "4rem",
+                            padding: 0,
+                            "&:hover": {
+                                bgcolor: isDark ? "warning.dark" : "warning.main",
+                            },
+                        }}
+                    >
+                        <Warning />
+                    </IconButton>
+                )}
         </Stack>
     );
 }

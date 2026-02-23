@@ -1,6 +1,6 @@
-import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
+import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
 
-import { aantsEnvSchema } from '../env';
+import { aantsEnvSchema } from "../env";
 
 const env = aantsEnvSchema.parse(process.env);
 const sqsClient = new SQSClient({});
@@ -30,7 +30,7 @@ export async function queueEmail(emailRequest: EmailRequest): Promise<void> {
 
         await sqsClient.send(command);
     } catch (error) {
-        console.error('Error queueing email to SQS:', error);
+        console.error("Error queueing email to SQS:", error);
         throw error;
     }
 }

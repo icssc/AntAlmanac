@@ -1,29 +1,31 @@
-import { useCallback, useEffect, useState } from 'react';
-
-import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { useDepartments } from '$hooks/useDepartments';
-import { getLocalStorageRecentlySearched, setLocalStorageRecentlySearched } from '$lib/localStorage';
+import { LabeledAutocomplete } from "$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete";
+import RightPaneStore from "$components/RightPane/RightPaneStore";
+import { useDepartments } from "$hooks/useDepartments";
+import {
+    getLocalStorageRecentlySearched,
+    setLocalStorageRecentlySearched,
+} from "$lib/localStorage";
+import { useCallback, useEffect, useState } from "react";
 
 const DEFAULT_DEPARTMENTS: Record<string, string> = {
-    ALL: 'ALL: Include All Departments',
+    ALL: "ALL: Include All Departments",
 };
 
 const parseLocalStorageRecentlySearched = (): string[] => {
     try {
-        const data = JSON.parse(getLocalStorageRecentlySearched() ?? '[]');
+        const data = JSON.parse(getLocalStorageRecentlySearched() ?? "[]");
 
         if (!Array.isArray(data)) {
             return [];
         }
 
-        if (data.every((x) => typeof x === 'string')) {
+        if (data.every((x) => typeof x === "string")) {
             return data;
         }
 
         return [];
     } catch (e) {
-        console.error('An error occurred:', e);
+        console.error("An error occurred:", e);
         return [];
     }
 };
@@ -31,12 +33,16 @@ const parseLocalStorageRecentlySearched = (): string[] => {
 export function DepartmentSearchBar() {
     const { departments } = useDepartments();
 
-    const departmentsWithAll = departments ? { ...DEFAULT_DEPARTMENTS, ...departments } : DEFAULT_DEPARTMENTS;
+    const departmentsWithAll = departments
+        ? { ...DEFAULT_DEPARTMENTS, ...departments }
+        : DEFAULT_DEPARTMENTS;
 
     const options = Object.keys(departmentsWithAll);
 
     const [value, setValue] = useState(() => RightPaneStore.getFormData().deptValue);
-    const [recentSearches, setRecentSearches] = useState<typeof options>(() => parseLocalStorageRecentlySearched());
+    const [recentSearches, setRecentSearches] = useState<typeof options>(() =>
+        parseLocalStorageRecentlySearched(),
+    );
 
     const resetField = useCallback(() => {
         setValue(() => RightPaneStore.getFormData().deptValue);
@@ -47,41 +53,41 @@ export function DepartmentSearchBar() {
             const newValue = option ?? options[0]; // options[0] corresponds to `ALL`
 
             setValue(newValue);
-            RightPaneStore.updateFormValue('deptValue', newValue);
+            RightPaneStore.updateFormValue("deptValue", newValue);
 
-            const stateObj = { url: 'url' };
+            const stateObj = { url: "url" };
             const url = new URL(window.location.href);
             const urlParam = new URLSearchParams(url.search);
 
-            urlParam.delete('deptValue');
+            urlParam.delete("deptValue");
 
-            if (newValue != 'ALL') {
-                urlParam.append('deptValue', newValue);
+            if (newValue != "ALL") {
+                urlParam.append("deptValue", newValue);
             }
             const param = urlParam.toString();
-            const new_url = `${param.trim() ? '?' : ''}${param}`;
-            history.replaceState(stateObj, 'url', '/' + new_url);
+            const new_url = `${param.trim() ? "?" : ""}${param}`;
+            history.replaceState(stateObj, "url", "/" + new_url);
 
-            if (newValue === 'ALL') return;
+            if (newValue === "ALL") return;
 
             if (recentSearches.includes(newValue)) {
                 setRecentSearches((prev) =>
                     prev.sort((a, b) => {
                         return a === newValue ? -1 : b === newValue ? 1 : 0;
-                    })
+                    }),
                 );
             } else {
                 setRecentSearches((prev) => [newValue, ...prev].slice(0, 5));
             }
         },
-        [recentSearches, options]
+        [recentSearches, options],
     );
 
     useEffect(() => {
-        RightPaneStore.on('formReset', resetField);
+        RightPaneStore.on("formReset", resetField);
 
         return () => {
-            RightPaneStore.off('formReset', resetField);
+            RightPaneStore.off("formReset", resetField);
         };
     }, [resetField]);
 
@@ -100,8 +106,9 @@ export function DepartmentSearchBar() {
                 getOptionLabel: (option) => departmentsWithAll[option.toUpperCase()] ?? option,
                 onChange: handleChange,
                 includeInputInList: true,
-                noOptionsText: 'No departments match the search',
-                groupBy: (option) => (recentSearches.includes(option) ? 'Recently Searched' : 'Departments'),
+                noOptionsText: "No departments match the search",
+                groupBy: (option) =>
+                    recentSearches.includes(option) ? "Recently Searched" : "Departments",
             }}
             textFieldProps={{
                 fullWidth: true,

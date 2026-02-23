@@ -1,10 +1,17 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
-import type { DialogProps } from '@mui/material';
-import { useState, useEffect, useCallback } from 'react';
-
-import { addSchedule } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
-import { useThemeStore } from '$stores/SettingsStore';
+import { addSchedule } from "$actions/AppStoreActions";
+import AppStore from "$stores/AppStore";
+import { useThemeStore } from "$stores/SettingsStore";
+import {
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    TextField,
+} from "@mui/material";
+import type { DialogProps } from "@mui/material";
+import { useCallback, useEffect, useState } from "react";
 
 /**
  * Dialog with a text field to add a schedule.
@@ -13,11 +20,14 @@ function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
     const isDark = useThemeStore((store) => store.isDark);
 
     const [name, setName] = useState(
-        AppStore.getNextScheduleName(AppStore.getScheduleNames().length, AppStore.getDefaultScheduleName())
+        AppStore.getNextScheduleName(
+            AppStore.getScheduleNames().length,
+            AppStore.getDefaultScheduleName(),
+        ),
     );
 
     const handleCancel = () => {
-        onClose?.({}, 'escapeKeyDown');
+        onClose?.({}, "escapeKeyDown");
     };
 
     const handleNameChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -26,35 +36,40 @@ function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
 
     const submitName = () => {
         addSchedule(name);
-        onClose?.({}, 'escapeKeyDown');
+        onClose?.({}, "escapeKeyDown");
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
         onKeyDown?.(event);
 
         switch (event.key) {
-            case 'Enter': {
+            case "Enter": {
                 event.stopPropagation();
                 event.preventDefault();
                 submitName();
                 break;
             }
 
-            case 'Escape': {
-                onClose?.({}, 'escapeKeyDown');
+            case "Escape": {
+                onClose?.({}, "escapeKeyDown");
                 break;
             }
         }
     };
 
     const handleScheduleNamesChange = useCallback(() => {
-        setName(AppStore.getNextScheduleName(AppStore.getScheduleNames().length, AppStore.getDefaultScheduleName()));
+        setName(
+            AppStore.getNextScheduleName(
+                AppStore.getScheduleNames().length,
+                AppStore.getDefaultScheduleName(),
+            ),
+        );
     }, []);
 
     useEffect(() => {
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
+        AppStore.on("scheduleNamesChange", handleScheduleNamesChange);
         return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
+            AppStore.off("scheduleNamesChange", handleScheduleNamesChange);
         };
     }, [handleScheduleNamesChange]);
 
@@ -69,10 +84,15 @@ function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={handleCancel} color={isDark ? 'secondary' : 'primary'}>
+                <Button onClick={handleCancel} color={isDark ? "secondary" : "primary"}>
                     Cancel
                 </Button>
-                <Button onClick={submitName} variant="contained" color="primary" disabled={name?.trim() === ''}>
+                <Button
+                    onClick={submitName}
+                    variant="contained"
+                    color="primary"
+                    disabled={name?.trim() === ""}
+                >
                     Add Schedule
                 </Button>
             </DialogActions>

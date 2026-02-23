@@ -1,9 +1,12 @@
-import { Box } from '@mui/material';
-import { memo } from 'react';
-
-import type { CalendarEvent, CourseEvent, Location } from '$components/Calendar/CourseCalendarEvent';
-import { isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
-import locationIds from '$lib/locations/locations';
+import type {
+    CalendarEvent,
+    CourseEvent,
+    Location,
+} from "$components/Calendar/CourseCalendarEvent";
+import { isSkeletonEvent } from "$components/Calendar/CourseCalendarEvent";
+import locationIds from "$lib/locations/locations";
+import { Box } from "@mui/material";
+import { memo } from "react";
 
 export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) => {
     if (isSkeletonEvent(event)) {
@@ -15,18 +18,29 @@ export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) =>
             <Box>
                 <Box
                     style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        justifyContent: 'space-between',
+                        display: "flex",
+                        flexWrap: "wrap",
+                        justifyContent: "space-between",
                         fontWeight: 500,
-                        fontSize: '0.8rem',
+                        fontSize: "0.8rem",
                     }}
                 >
                     <Box>{event.title}</Box>
                 </Box>
 
-                <Box style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontSize: '0.7rem' }}>
-                    <Box>{Object.keys(locationIds).find((key) => locationIds[key] === parseInt(event.building))}</Box>
+                <Box
+                    style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        justifyContent: "space-between",
+                        fontSize: "0.7rem",
+                    }}
+                >
+                    <Box>
+                        {Object.keys(locationIds).find(
+                            (key) => locationIds[key] === parseInt(event.building),
+                        )}
+                    </Box>
                 </Box>
             </Box>
         );
@@ -37,25 +51,32 @@ export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) =>
         <Box>
             <Box
                 style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    justifyContent: 'space-between',
+                    display: "flex",
+                    flexWrap: "wrap",
+                    justifyContent: "space-between",
                     fontWeight: 500,
-                    fontSize: '0.8rem',
+                    fontSize: "0.8rem",
                 }}
             >
                 <Box>{courseEvent.title}</Box>
-                <Box style={{ fontSize: '0.8rem' }}> {courseEvent.sectionType}</Box>
+                <Box style={{ fontSize: "0.8rem" }}> {courseEvent.sectionType}</Box>
             </Box>
-            <Box style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', fontSize: '0.7rem' }}>
+            <Box
+                style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    justifyContent: "space-between",
+                    fontSize: "0.7rem",
+                }}
+            >
                 <Box>
                     {courseEvent.showLocationInfo
                         ? courseEvent.locations
                               .map((location: Location) => `${location.building} ${location.room}`)
-                              .join(', ')
+                              .join(", ")
                         : courseEvent.locations.length > 1
-                        ? `${courseEvent.locations.length} Locations`
-                        : `${courseEvent.locations[0].building} ${courseEvent.locations[0].room}`}
+                          ? `${courseEvent.locations.length} Locations`
+                          : `${courseEvent.locations[0].building} ${courseEvent.locations[0].room}`}
                 </Box>
                 <Box>{courseEvent.sectionCode}</Box>
             </Box>
@@ -63,4 +84,4 @@ export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) =>
     );
 });
 
-CalendarCourseEvent.displayName = 'CalendarCourseEvent';
+CalendarCourseEvent.displayName = "CalendarCourseEvent";

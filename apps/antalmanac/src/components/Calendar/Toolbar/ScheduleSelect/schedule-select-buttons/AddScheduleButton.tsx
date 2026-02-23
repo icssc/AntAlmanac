@@ -1,8 +1,7 @@
-import { Add as AddIcon } from '@mui/icons-material';
-import { Box, Button, Typography } from '@mui/material';
-import { useCallback, useState } from 'react';
-
-import AddScheduleDialog from '$components/dialogs/AddSchedule';
+import AddScheduleDialog from "$components/dialogs/AddSchedule";
+import { Add as AddIcon } from "@mui/icons-material";
+import { Box, Button, Typography } from "@mui/material";
+import { useCallback, useState } from "react";
 
 interface AddScheduleButtonProps {
     disabled: boolean;
@@ -24,9 +23,19 @@ export function AddScheduleButton({ disabled }: AddScheduleButtonProps) {
 
     return (
         <Box>
-            <Button color="inherit" onClick={handleOpen} sx={{ display: 'flex', gap: 1 }} disabled={disabled}>
+            <Button
+                color="inherit"
+                onClick={handleOpen}
+                sx={{ display: "flex", gap: 1 }}
+                disabled={disabled}
+            >
                 <AddIcon />
-                <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
+                <Typography
+                    whiteSpace="nowrap"
+                    textOverflow="ellipsis"
+                    overflow="hidden"
+                    textTransform="none"
+                >
                     Add Schedule
                 </Typography>
             </Button>

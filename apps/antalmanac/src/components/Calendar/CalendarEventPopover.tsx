@@ -1,17 +1,16 @@
-'use client';
+"use client";
 
-import { Popover } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
-import { shallow } from 'zustand/shallow';
-
-import { CourseCalendarEvent, isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
-import AppStore from '$stores/AppStore';
-import { useSelectedEventStore } from '$stores/SelectedEventStore';
+import { CourseCalendarEvent, isSkeletonEvent } from "$components/Calendar/CourseCalendarEvent";
+import AppStore from "$stores/AppStore";
+import { useSelectedEventStore } from "$stores/SelectedEventStore";
+import { Popover } from "@mui/material";
+import { useCallback, useEffect, useState } from "react";
+import { shallow } from "zustand/shallow";
 
 export function CalendarEventPopover() {
     const [anchorEl, selectedEvent, setSelectedEvent] = useSelectedEventStore(
         (state) => [state.selectedEventAnchorEl, state.selectedEvent, state.setSelectedEvent],
-        shallow
+        shallow,
     );
 
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
@@ -25,10 +24,10 @@ export function CalendarEventPopover() {
             setScheduleNames(AppStore.getScheduleNames());
         };
 
-        AppStore.on('scheduleNamesChange', updateScheduleNames);
+        AppStore.on("scheduleNamesChange", updateScheduleNames);
 
         return () => {
-            AppStore.off('scheduleNamesChange', updateScheduleNames);
+            AppStore.off("scheduleNamesChange", updateScheduleNames);
         };
     }, []);
 
@@ -42,12 +41,12 @@ export function CalendarEventPopover() {
             open={Boolean(anchorEl) && !!selectedEvent}
             onClose={handleClosePopover}
             anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
             }}
             transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
+                vertical: "top",
+                horizontal: "left",
             }}
         >
             <CourseCalendarEvent

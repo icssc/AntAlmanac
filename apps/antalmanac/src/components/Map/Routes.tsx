@@ -1,11 +1,10 @@
+import { MAPBOX_PROXY_DIRECTIONS_ENDPOINT } from "$lib/api/endpoints";
 // eslint-disable-next-line import/default
-import L from 'leaflet';
-import type { LatLngTuple } from 'leaflet';
-import 'leaflet-routing-machine';
-import { useEffect } from 'react';
-import { useMap } from 'react-leaflet';
-
-import { MAPBOX_PROXY_DIRECTIONS_ENDPOINT } from '$lib/api/endpoints';
+import L from "leaflet";
+import "leaflet-routing-machine";
+import type { LatLngTuple } from "leaflet";
+import { useEffect } from "react";
+import { useMap } from "react-leaflet";
 
 interface ClassRoutesProps {
     /**
@@ -43,12 +42,12 @@ function Routes(props: ClassRoutesProps) {
         const waypoints = latLngTuples.map((latLngTuple) => L.latLng(latLngTuple));
 
         const routerControl = L.Routing.control({
-            router: L.Routing.mapbox('', {
+            router: L.Routing.mapbox("", {
                 /**
                  * Default is mapbox/driving. More options:
                  * @see {@link https://docs.mapbox.com/api/navigation/directions/#routing-profiles}
                  */
-                profile: 'mapbox/walking',
+                profile: "mapbox/walking",
 
                 serviceUrl: MAPBOX_PROXY_DIRECTIONS_ENDPOINT,
             }),
@@ -78,7 +77,7 @@ function Routes(props: ClassRoutesProps) {
                 const totalTime = route.summary?.totalTime || 0;
                 const totalDistance = route.summary?.totalDistance || 0;
 
-                const duration = totalTime > 30 ? `${Math.round(totalTime / 60)} min` : '<1 min';
+                const duration = totalTime > 30 ? `${Math.round(totalTime / 60)} min` : "<1 min";
                 const miles = `${Math.floor(totalDistance / 1.609 / 10) / 100} mi`;
 
                 const content = `
@@ -107,18 +106,18 @@ function Routes(props: ClassRoutesProps) {
                  * @see {@link https://github.com/perliedman/leaflet-routing-machine/issues/117}
                  */
                 line.eachLayer((lineLayer) => {
-                    lineLayer.on('click', (leafletMouseEvent) => {
+                    lineLayer.on("click", (leafletMouseEvent) => {
                         leafletPopup.setLatLng(leafletMouseEvent.latlng).addTo(map);
                     });
-                    lineLayer.on('mouseover', (leafletMouseEvent) => {
+                    lineLayer.on("mouseover", (leafletMouseEvent) => {
                         leafletPopup.setLatLng(leafletMouseEvent.latlng).addTo(map);
                     });
-                    lineLayer.on('mousemove', (leafletMouseEvent) => {
+                    lineLayer.on("mousemove", (leafletMouseEvent) => {
                         leafletPopup.setLatLng(leafletMouseEvent.latlng).addTo(map);
                     });
                 });
 
-                map.on('mousemove', (leafletMouseEvent) => {
+                map.on("mousemove", (leafletMouseEvent) => {
                     if (!line.getBounds().contains(leafletMouseEvent.latlng)) {
                         leafletPopup.remove();
                     }

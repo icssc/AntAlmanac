@@ -1,25 +1,24 @@
-import { InfoOutlined } from '@mui/icons-material';
-import { Box, Button, Popover, Skeleton } from '@mui/material';
-import type { PrerequisiteTree } from '@packages/antalmanac-types';
-import { usePostHog } from 'posthog-js/react';
-import { useState } from 'react';
-
-import PrereqTree from '$components/RightPane/SectionTable/PrereqTree';
-import { useIsMobile } from '$hooks/useIsMobile';
-import analyticsEnum, { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
+import PrereqTree from "$components/RightPane/SectionTable/PrereqTree";
+import { useIsMobile } from "$hooks/useIsMobile";
+import analyticsEnum, { AnalyticsCategory, logAnalytics } from "$lib/analytics/analytics";
+import trpc from "$lib/api/trpc";
+import { InfoOutlined } from "@mui/icons-material";
+import { Box, Button, Popover, Skeleton } from "@mui/material";
+import type { PrerequisiteTree } from "@packages/antalmanac-types";
+import { usePostHog } from "posthog-js/react";
+import { useState } from "react";
 
 const noCourseInfo = {
-    id: '',
-    department: '',
-    courseNumber: '',
-    title: 'No description available',
+    id: "",
+    department: "",
+    courseNumber: "",
+    title: "No description available",
     prerequisite_tree: {},
     prerequisite_list: [],
-    prerequisite_text: '',
+    prerequisite_text: "",
     prerequisite_for: [],
-    description: '',
-    ge_list: '',
+    description: "",
+    ge_list: "",
 };
 
 interface CourseInfoBarProps {
@@ -70,7 +69,7 @@ export const CourseInfoBar = ({
 
         try {
             const res = await trpc.course.get.query({
-                id: `${deptCode.replace(/\s/g, '')}${courseNumber.replace(/\s/g, '')}`,
+                id: `${deptCode.replace(/\s/g, "")}${courseNumber.replace(/\s/g, "")}`,
             });
 
             if (!res) {
@@ -88,7 +87,7 @@ export const CourseInfoBar = ({
                 prerequisite_text: res.prerequisiteText,
                 prerequisite_for: res.dependencies.map((x) => x.id),
                 description: res.description,
-                ge_list: res.geList.join(', '),
+                ge_list: res.geList.join(", "),
             });
         } catch {
             setCourseInfo(noCourseInfo);
@@ -112,7 +111,14 @@ export const CourseInfoBar = ({
                 </Box>
             );
         } else {
-            const { title, prerequisite_tree, prerequisite_text, prerequisite_for, description, ge_list } = courseInfo;
+            const {
+                title,
+                prerequisite_tree,
+                prerequisite_text,
+                prerequisite_for,
+                description,
+                ge_list,
+            } = courseInfo;
 
             return (
                 <Box sx={{ margin: 1.5, maxWidth: 500 }}>
@@ -122,13 +128,14 @@ export const CourseInfoBar = ({
                     <p>{description}</p>
                     {Object.keys(prerequisite_tree).length > 0 && <PrereqTree {...courseInfo} />}
 
-                    {prerequisite_text !== '' && (
+                    {prerequisite_text !== "" && (
                         <p>
                             <a
                                 onClick={() => {
                                     logAnalytics(postHog, {
                                         category: analyticsCategory,
-                                        action: analyticsEnum.classSearch.actions.CLICK_PREREQUISITES,
+                                        action: analyticsEnum.classSearch.actions
+                                            .CLICK_PREREQUISITES,
                                     });
                                 }}
                                 href={prerequisiteLink}
@@ -143,11 +150,11 @@ export const CourseInfoBar = ({
                     {prerequisite_for.length !== 0 && (
                         <p>
                             <span style={{ marginRight: 4 }}>Prerequisite for:</span>
-                            {prerequisite_for.join(', ')}
+                            {prerequisite_for.join(", ")}
                         </p>
                     )}
 
-                    {ge_list !== '' && (
+                    {ge_list !== "" && (
                         <p>
                             <span style={{ marginRight: 4 }}>General Education Categories:</span>
                             {ge_list}
@@ -174,7 +181,9 @@ export const CourseInfoBar = ({
                     void togglePopover(currentTarget);
                 }}
             >
-                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <span
+                    style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+                >
                     {`${deptCode} ${courseNumber} | ${courseTitle}`}
                 </span>
             </Button>
@@ -184,12 +193,12 @@ export const CourseInfoBar = ({
                 open={Boolean(anchorEl)}
                 onClose={() => togglePopover(null)}
                 anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
+                    vertical: "bottom",
+                    horizontal: "center",
                 }}
                 transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
+                    vertical: "top",
+                    horizontal: "center",
                 }}
             >
                 {getPopoverContent()}

@@ -1,18 +1,18 @@
-import { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import AppStore from "$stores/AppStore";
+import { RepeatingCustomEvent } from "@packages/antalmanac-types";
 
-import trpc from './api/trpc';
-import { QueryZotcourseError } from './customErrors';
-
-import AppStore from '$stores/AppStore';
+import trpc from "./api/trpc";
+import { QueryZotcourseError } from "./customErrors";
 
 export interface ZotcourseResponse {
     codes: string[];
     customEvents: RepeatingCustomEvent[];
 }
 export async function queryZotcourse(schedule_name: string) {
-    if (!schedule_name) throw new QueryZotcourseError('Cannot import an empty Zotcourse schedule name');
+    if (!schedule_name)
+        throw new QueryZotcourseError("Cannot import an empty Zotcourse schedule name");
     const response = await trpc.zotcourse.getUserData.mutate({ scheduleName: schedule_name });
-    if (!response.success) throw new QueryZotcourseError('Cannot import an invalid Zotcourse');
+    if (!response.success) throw new QueryZotcourseError("Cannot import an invalid Zotcourse");
     // For custom event, there is no course attribute in each.
     const codes = response.data
         .filter((section: { eventType: number }) => section.eventType === 3)
@@ -28,7 +28,7 @@ export async function queryZotcourse(schedule_name: string) {
                 days: days.map((_, index) => event.dow.includes(index)),
                 scheduleIndices: [AppStore.getCurrentScheduleIndex()],
                 customEventID: Date.now(),
-                color: '#551a8b',
+                color: "#551a8b",
             };
         }) as RepeatingCustomEvent[];
     return {

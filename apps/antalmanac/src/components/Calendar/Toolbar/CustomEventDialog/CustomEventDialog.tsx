@@ -1,4 +1,11 @@
-import { Add, Edit } from '@mui/icons-material';
+import { addCustomEvent, editCustomEvent } from "$actions/AppStoreActions";
+import { DaySelector } from "$components/Calendar/Toolbar/CustomEventDialog/DaySelector";
+import { ScheduleSelector } from "$components/Calendar/Toolbar/CustomEventDialog/ScheduleSelector";
+import { BuildingSelect, ExtendedBuilding } from "$components/inputs/BuildingSelect";
+import analyticsEnum, { logAnalytics } from "$lib/analytics/analytics";
+import AppStore from "$stores/AppStore";
+import { useThemeStore } from "$stores/SettingsStore";
+import { Add, Edit } from "@mui/icons-material";
 import {
     Button,
     Dialog,
@@ -9,18 +16,10 @@ import {
     IconButton,
     TextField,
     Tooltip,
-} from '@mui/material';
-import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useState } from 'react';
-
-import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
-import { DaySelector } from '$components/Calendar/Toolbar/CustomEventDialog/DaySelector';
-import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog/ScheduleSelector';
-import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import AppStore from '$stores/AppStore';
-import { useThemeStore } from '$stores/SettingsStore';
+} from "@mui/material";
+import type { RepeatingCustomEvent } from "@packages/antalmanac-types";
+import { usePostHog } from "posthog-js/react";
+import { useCallback, useEffect, useState } from "react";
 
 interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;
@@ -29,9 +28,9 @@ interface CustomEventDialogProps {
 }
 
 const defaultCustomEventValues: RepeatingCustomEvent = {
-    start: '10:30',
-    end: '15:30',
-    title: '',
+    start: "10:30",
+    end: "15:30",
+    title: "",
     days: [false, false, false, false, false, false, false],
     customEventID: 0,
     building: undefined,
@@ -47,7 +46,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
     const [title, setTitle] = useState(props.customEvent?.title ?? defaultCustomEventValues.title);
     const [days, setDays] = useState(props.customEvent?.days ?? defaultCustomEventValues.days);
     const [building, setBuilding] = useState<string | undefined>(
-        props.customEvent?.building ?? defaultCustomEventValues.building
+        props.customEvent?.building ?? defaultCustomEventValues.building,
     );
 
     const postHog = usePostHog();
@@ -120,7 +119,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
         if (!days.some((day) => day) || scheduleIndices.length === 0) return;
 
         const newCustomEvent: RepeatingCustomEvent = {
-            color: props.customEvent?.color ?? '#551a8b',
+            color: props.customEvent?.color ?? "#551a8b",
             title: title,
             days: days,
             start: start,
@@ -143,10 +142,10 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             setSkeletonMode(AppStore.getSkeletonMode());
         };
 
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+        AppStore.on("skeletonModeChange", handleSkeletonModeChange);
 
         return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+            AppStore.off("skeletonModeChange", handleSkeletonModeChange);
         };
     }, []);
 
@@ -167,16 +166,16 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                     </IconButton>
                 </Tooltip>
             )}
-            <Dialog open={open} onClose={handleClose} maxWidth={'xs'}>
+            <Dialog open={open} onClose={handleClose} maxWidth={"xs"}>
                 <DialogTitle id="form-dialog-title">
-                    {props.customEvent ? 'Edit a Custom Event' : 'Add a Custom Event'}
+                    {props.customEvent ? "Edit a Custom Event" : "Add a Custom Event"}
                 </DialogTitle>
                 <DialogContent
                     sx={(theme) => ({
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '12px',
-                        paddingTop: '12px',
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "12px",
+                        paddingTop: "12px",
                         minWidth: { sm: theme.breakpoints.values.xxs },
                     })}
                 >
@@ -188,10 +187,13 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             margin="dense"
                             onChange={handleEventNameChange}
                             variant="outlined"
-                            InputLabelProps={{ variant: 'outlined' }}
+                            InputLabelProps={{ variant: "outlined" }}
                         />
                     </FormControl>
-                    <FormControl fullWidth sx={{ display: 'flex', flexDirection: 'row', gap: '12px' }}>
+                    <FormControl
+                        fullWidth
+                        sx={{ display: "flex", flexDirection: "row", gap: "12px" }}
+                    >
                         <TextField
                             onChange={handleStartTimeChange}
                             label="Start Time"
@@ -199,7 +201,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             defaultValue={start}
                             fullWidth
                             variant="outlined"
-                            InputLabelProps={{ variant: 'outlined' }}
+                            InputLabelProps={{ variant: "outlined" }}
                         />
                         <TextField
                             onChange={handleEndTimeChange}
@@ -208,11 +210,15 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                             defaultValue={end}
                             fullWidth
                             variant="outlined"
-                            InputLabelProps={{ variant: 'outlined' }}
+                            InputLabelProps={{ variant: "outlined" }}
                         />
                     </FormControl>
                     <DaySelector onSelectDay={handleDayChange} days={days} />
-                    <BuildingSelect value={building} onChange={handleBuildingChange} variant="outlined" />
+                    <BuildingSelect
+                        value={building}
+                        onChange={handleBuildingChange}
+                        variant="outlined"
+                    />
                     <ScheduleSelector
                         scheduleIndices={scheduleIndices}
                         onSelectScheduleIndices={handleSelectScheduleIndices}
@@ -221,11 +227,20 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                 </DialogContent>
 
                 <DialogActions>
-                    <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>
+                    <Button onClick={handleClose} color={isDark ? "secondary" : "primary"}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} variant="contained" color="primary" disabled={disabled}>
-                        {disabled ? 'Specify schedule and day' : props.customEvent ? 'Save Changes' : 'Add Event'}
+                    <Button
+                        onClick={handleSubmit}
+                        variant="contained"
+                        color="primary"
+                        disabled={disabled}
+                    >
+                        {disabled
+                            ? "Specify schedule and day"
+                            : props.customEvent
+                              ? "Save Changes"
+                              : "Add Event"}
                     </Button>
                 </DialogActions>
             </Dialog>

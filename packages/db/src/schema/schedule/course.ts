@@ -1,6 +1,6 @@
-import { integer, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core';
+import { integer, pgTable, primaryKey, text, timestamp } from "drizzle-orm/pg-core";
 
-import { schedules } from './index';
+import { schedules } from "./index";
 
 /**
  * coursesInSchedule have a N:1 relation with schedules.
@@ -11,34 +11,34 @@ import { schedules } from './index';
  * for the courses by querying PPA with the section code and term.
  */
 export const coursesInSchedule = pgTable(
-    'coursesInSchedule',
+    "coursesInSchedule",
     {
-        scheduleId: text('scheduleId')
-            .references(() => schedules.id, { onDelete: 'cascade' })
+        scheduleId: text("scheduleId")
+            .references(() => schedules.id, { onDelete: "cascade" })
             .notNull(),
 
         /**
          * The course's section code.
          */
-        sectionCode: integer('sectionCode').notNull(),
+        sectionCode: integer("sectionCode").notNull(),
 
         /**
          * @example Winter 2024.
          */
-        term: text('term').notNull(),
+        term: text("term").notNull(),
 
         /**
          * Color that the course has when displayed on calendar.
          */
-        color: text('color').notNull(),
+        color: text("color").notNull(),
 
-        lastUpdated: timestamp('last_updated', { withTimezone: true }).defaultNow(),
+        lastUpdated: timestamp("last_updated", { withTimezone: true }).defaultNow(),
     },
     (table) => [
         primaryKey({
             columns: [table.scheduleId, table.sectionCode, table.term],
         }),
-    ]
+    ],
 );
 
 export type CourseInSchedule = typeof coursesInSchedule.$inferSelect;

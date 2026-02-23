@@ -1,7 +1,6 @@
-import { GitHub } from '@mui/icons-material';
-import { Button, Tooltip } from '@mui/material';
-
-import { GITHUB_LINK } from '$src/globals';
+import { GITHUB_LINK } from "$src/globals";
+import { GitHub } from "@mui/icons-material";
+import { Button, Tooltip } from "@mui/material";
 
 export const GitHubButton = () => {
     return (

@@ -1,19 +1,23 @@
-import { AccountCircle, Menu } from '@mui/icons-material';
-import { Button, IconButton, CircularProgress } from '@mui/material';
-import { User } from '@packages/antalmanac-types';
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
-
-import AppStore from '$stores/AppStore';
+import AppStore from "$stores/AppStore";
+import { AccountCircle, Menu } from "@mui/icons-material";
+import { Button, CircularProgress, IconButton } from "@mui/material";
+import { User } from "@packages/antalmanac-types";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
 interface ProfileMenuButtonsProps {
-    user: Pick<User, 'name' | 'avatar' | 'email'> | null;
+    user: Pick<User, "name" | "avatar" | "email"> | null;
     handleOpen: (event: React.MouseEvent<HTMLElement>) => void;
     handleSettingsOpen: (event: React.MouseEvent<HTMLElement>) => void;
     loading?: boolean;
 }
 
-export function ProfileMenuButtons({ user, handleOpen, handleSettingsOpen, loading = false }: ProfileMenuButtonsProps) {
+export function ProfileMenuButtons({
+    user,
+    handleOpen,
+    handleSettingsOpen,
+    loading = false,
+}: ProfileMenuButtonsProps) {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     useEffect(() => {
@@ -21,10 +25,10 @@ export function ProfileMenuButtons({ user, handleOpen, handleSettingsOpen, loadi
             setSkeletonMode(AppStore.getSkeletonMode());
         };
 
-        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+        AppStore.on("skeletonModeChange", handleSkeletonModeChange);
 
         return () => {
-            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+            AppStore.off("skeletonModeChange", handleSkeletonModeChange);
         };
     }, []);
 
@@ -33,11 +37,13 @@ export function ProfileMenuButtons({ user, handleOpen, handleSettingsOpen, loadi
             <>
                 <Button
                     variant="text"
-                    startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <AccountCircle />}
+                    startIcon={
+                        loading ? <CircularProgress size={20} color="inherit" /> : <AccountCircle />
+                    }
                     color="inherit"
                     onClick={handleOpen}
                     disabled={skeletonMode}
-                    sx={{ fontSize: 'inherit' }}
+                    sx={{ fontSize: "inherit" }}
                 >
                     Sign In
                 </Button>
@@ -53,12 +59,12 @@ export function ProfileMenuButtons({ user, handleOpen, handleSettingsOpen, loadi
     return (
         <Button
             sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                padding: '6px 8px',
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                padding: "6px 8px",
                 borderRadius: 24,
-                border: 'none',
+                border: "none",
             }}
             onClick={handleOpen}
             variant="text"
@@ -68,10 +74,16 @@ export function ProfileMenuButtons({ user, handleOpen, handleSettingsOpen, loadi
             {avatar ? (
                 <Image
                     src={avatar}
-                    alt={name ?? 'User avatar'}
+                    alt={name ?? "User avatar"}
                     width={24}
                     height={24}
-                    style={{ width: 24, height: 24, borderRadius: '100%', color: 'inherit', whiteSpace: 'normal' }}
+                    style={{
+                        width: 24,
+                        height: 24,
+                        borderRadius: "100%",
+                        color: "inherit",
+                        whiteSpace: "normal",
+                    }}
                 />
             ) : (
                 <AccountCircle sx={{ width: 24, height: 24 }} />

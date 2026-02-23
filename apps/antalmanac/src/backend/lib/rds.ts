@@ -1,36 +1,49 @@
-import { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent, Notification } from '@packages/antalmanac-types';
-import { db } from '@packages/db/src/index';
-import * as schema from '@packages/db/src/schema';
 import {
-    schedules,
-    users,
+    Notification,
+    RepeatingCustomEvent,
+    ShortCourse,
+    ShortCourseSchedule,
+    User,
+} from "@packages/antalmanac-types";
+import { db } from "@packages/db/src/index";
+import * as schema from "@packages/db/src/schema";
+import {
+    Account,
+    AccountType,
+    CourseInSchedule,
+    CustomEvent,
+    Schedule,
+    Session,
     accounts,
     coursesInSchedule,
     customEvents,
-    AccountType,
-    Schedule,
-    CourseInSchedule,
-    CustomEvent,
+    schedules,
     sessions,
-    Account,
-    Session,
     subscriptions,
-} from '@packages/db/src/schema';
-import { and, eq, ExtractTablesWithRelations, gt } from 'drizzle-orm';
-import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
+    users,
+} from "@packages/db/src/schema";
+import { ExtractTablesWithRelations, and, eq, gt } from "drizzle-orm";
+import { PgQueryResultHKT, PgTransaction } from "drizzle-orm/pg-core";
 
-type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
-type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;
+type Transaction = PgTransaction<
+    PgQueryResultHKT,
+    typeof schema,
+    ExtractTablesWithRelations<typeof schema>
+>;
+type DatabaseOrTransaction = Omit<typeof db, "$client"> | Transaction;
 
 export class RDS {
     /**
      * If a guest user with the specified name exists, return their ID, otherwise return null.
      */
-    private static async guestUserIdWithNameOrNull(tx: Transaction, name: string): Promise<string | null> {
+    private static async guestUserIdWithNameOrNull(
+        tx: Transaction,
+        name: string,
+    ): Promise<string | null> {
         return tx
             .select({ id: accounts.userId })
             .from(accounts)
-            .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.providerAccountId, name)))
+            .where(and(eq(accounts.accountType, "GUEST"), eq(accounts.providerAccountId, name)))
             .limit(1)
             .then((xs) => xs[0]?.id ?? null);
     }
@@ -59,7 +72,7 @@ export class RDS {
 
         await tx
             .insert(accounts)
-            .values({ userId, accountType: 'GUEST', providerAccountId: name })
+            .values({ userId, accountType: "GUEST", providerAccountId: name })
             .onConflictDoNothing()
             .execute();
 
@@ -74,16 +87,21 @@ export class RDS {
      */
     static async getAccountByProviderId(
         db: DatabaseOrTransaction,
-        accountType: Account['accountType'],
-        providerId: string
+        accountType: Account["accountType"],
+        providerId: string,
     ): Promise<Account | null> {
         return db.transaction((tx) =>
             tx
                 .select()
                 .from(accounts)
-                .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerId)))
+                .where(
+                    and(
+                        eq(accounts.accountType, accountType),
+                        eq(accounts.providerAccountId, providerId),
+                    ),
+                )
                 .limit(1)
-                .then((res) => res[0] ?? null)
+                .then((res) => res[0] ?? null),
         );
     }
 
@@ -93,11 +111,11 @@ export class RDS {
                 .select()
                 .from(accounts)
                 .innerJoin(users, eq(accounts.userId, users.id))
-                .where(and(eq(users.name, name), eq(accounts.accountType, 'GUEST')))
+                .where(and(eq(users.name, name), eq(accounts.accountType, "GUEST")))
                 .execute()
                 .then((res) => {
                     return { users: res[0].users, accounts: res[0].accounts };
-                })
+                }),
         );
     }
 
@@ -114,7 +132,7 @@ export class RDS {
                 .select()
                 .from(users)
                 .where(eq(users.id, userId))
-                .then((res) => res[0])
+                .then((res) => res[0]),
         );
     }
 
@@ -124,7 +142,7 @@ export class RDS {
                 .select()
                 .from(users)
                 .where(eq(users.email, email))
-                .then((res) => res[0])
+                .then((res) => res[0]),
         );
     }
     /**
@@ -136,24 +154,26 @@ export class RDS {
      */
     static async registerUserAccount(
         db: DatabaseOrTransaction,
-        accountType: Account['accountType'],
+        accountType: Account["accountType"],
         providerId: string,
         name?: string,
         email?: string,
-        avatar?: string
+        avatar?: string,
     ) {
         // ! TODO @KevinWu098
         // ! Auth uses hardcoded migration logic to handle cases in which stale userIDs
         // ! still contain non OIDC google ids. This is not correct and needs to be fixed.
         // ! Auth and operations upon users and accounts should not depend on localStorage. This is a hack.
-        const oidcProviderId = providerId.startsWith('google_') ? providerId : `google_${providerId}`;
-        if (accountType !== 'OIDC') {
-            throw new Error('Invalid account type. Must be OIDC.');
+        const oidcProviderId = providerId.startsWith("google_")
+            ? providerId
+            : `google_${providerId}`;
+        if (accountType !== "OIDC") {
+            throw new Error("Invalid account type. Must be OIDC.");
         }
 
         // First check if an account with OIDC providerId already exists
         const existingAccount = await this.getAccountByProviderId(db, accountType, oidcProviderId);
-        if (existingAccount && accountType === 'OIDC') {
+        if (existingAccount && accountType === "OIDC") {
             return { ...existingAccount, newUser: false };
         }
 
@@ -163,9 +183,9 @@ export class RDS {
             const result = await db
                 .insert(users)
                 .values({
-                    avatar: avatar ?? '',
+                    avatar: avatar ?? "",
                     name: name,
-                    email: email ?? '',
+                    email: email ?? "",
                 })
                 .returning({ userId: users.id })
                 .then((res) => res[0]);
@@ -184,7 +204,7 @@ export class RDS {
             .update(users)
             .set({
                 name: name,
-                email: email ?? '',
+                email: email ?? "",
                 avatar: avatar ?? existingUser.avatar,
                 lastUpdated: new Date(),
             })
@@ -210,7 +230,7 @@ export class RDS {
         tx: Transaction,
         userId: string,
         schedule: ShortCourseSchedule,
-        index: number
+        index: number,
     ) {
         // Add schedule
         const dbSchedule = {
@@ -221,7 +241,10 @@ export class RDS {
             lastUpdated: new Date(),
         };
 
-        const scheduleResult = await tx.insert(schedules).values(dbSchedule).returning({ id: schedules.id });
+        const scheduleResult = await tx
+            .insert(schedules)
+            .values(dbSchedule)
+            .returning({ id: schedules.id });
 
         const scheduleId = scheduleResult[0].id;
         if (scheduleId === undefined) {
@@ -235,7 +258,9 @@ export class RDS {
             }),
 
             this.upsertCustomEvents(tx, scheduleId, schedule.customEvents).catch((error) => {
-                throw new Error(`Failed to insert custom events for ${schedule.scheduleName}: ${error}`);
+                throw new Error(
+                    `Failed to insert custom events for ${schedule.scheduleName}: ${error}`,
+                );
             }),
         ]);
 
@@ -253,11 +278,11 @@ export class RDS {
         return db.transaction(async (tx) => {
             const account = await this.registerUserAccount(
                 db,
-                'OIDC',
+                "OIDC",
                 userData.id,
                 userData.name,
                 userData.email,
-                userData.avatar
+                userData.avatar,
             );
             const userId = account.userId;
             if (!account) {
@@ -265,16 +290,25 @@ export class RDS {
             }
 
             // Add schedules and courses
-            const scheduleIds = await this.upsertSchedulesAndContents(tx, userId, userData.userData.schedules);
+            const scheduleIds = await this.upsertSchedulesAndContents(
+                tx,
+                userId,
+                userData.userData.schedules,
+            );
 
             // Update user's current schedule index
             const scheduleIndex = userData.userData.scheduleIndex;
 
             const currentScheduleId =
-                scheduleIndex === undefined || scheduleIndex >= scheduleIds.length ? null : scheduleIds[scheduleIndex];
+                scheduleIndex === undefined || scheduleIndex >= scheduleIds.length
+                    ? null
+                    : scheduleIds[scheduleIndex];
 
             if (currentScheduleId !== null) {
-                await tx.update(users).set({ currentScheduleId: currentScheduleId }).where(eq(users.id, userId));
+                await tx
+                    .update(users)
+                    .set({ currentScheduleId: currentScheduleId })
+                    .where(eq(users.id, userId));
             }
 
             return userId;
@@ -285,13 +319,15 @@ export class RDS {
     private static async upsertSchedulesAndContents(
         tx: Transaction,
         userId: string,
-        scheduleArray: ShortCourseSchedule[]
+        scheduleArray: ShortCourseSchedule[],
     ): Promise<string[]> {
         // Drop all schedules, which will cascade to courses and custom events
         await tx.delete(schedules).where(eq(schedules.userId, userId));
 
         return Promise.all(
-            scheduleArray.map((schedule, index) => this.upsertScheduleAndContents(tx, userId, schedule, index))
+            scheduleArray.map((schedule, index) =>
+                this.upsertScheduleAndContents(tx, userId, schedule, index),
+            ),
         );
     }
 
@@ -299,7 +335,11 @@ export class RDS {
      * Drops all courses in the schedule and re-add them,
      * deduplicating by section code and term.
      * */
-    private static async upsertCourses(tx: Transaction, scheduleId: string, courses: ShortCourse[]) {
+    private static async upsertCourses(
+        tx: Transaction,
+        scheduleId: string,
+        courses: ShortCourse[],
+    ) {
         await tx.delete(coursesInSchedule).where(eq(coursesInSchedule.scheduleId, scheduleId));
 
         if (courses.length === 0) {
@@ -331,7 +371,7 @@ export class RDS {
     private static async upsertCustomEvents(
         tx: Transaction,
         scheduleId: string,
-        repeatingCustomEvents: RepeatingCustomEvent[]
+        repeatingCustomEvents: RepeatingCustomEvent[],
     ) {
         if (repeatingCustomEvents.length === 0) {
             return;
@@ -342,7 +382,7 @@ export class RDS {
             title: event.title,
             start: event.start,
             end: event.end,
-            days: event.days.map((day) => (day ? '1' : '0')).join(''),
+            days: event.days.map((day) => (day ? "1" : "0")).join(""),
             color: event.color,
             building: event.building,
             lastUpdated: new Date(),
@@ -401,12 +441,17 @@ export class RDS {
     private static async getUserAndAccount(
         db: DatabaseOrTransaction,
         accountType: AccountType,
-        providerAccountId: string
+        providerAccountId: string,
     ) {
         const res = await db
             .select()
             .from(accounts)
-            .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerAccountId)))
+            .where(
+                and(
+                    eq(accounts.accountType, accountType),
+                    eq(accounts.providerAccountId, providerAccountId),
+                ),
+            )
             .leftJoin(users, eq(accounts.userId, users.id))
             .limit(1);
 
@@ -422,10 +467,13 @@ export class RDS {
      */
     private static aggregateUserData(
         sectionResults: { schedules: Schedule; coursesInSchedule: CourseInSchedule | null }[],
-        customEventResults: { schedules: Schedule; customEvents: CustomEvent | null }[]
+        customEventResults: { schedules: Schedule; customEvents: CustomEvent | null }[],
     ): (ShortCourseSchedule & { id: string; index: number })[] {
         // Map from schedule ID to schedule data
-        const schedulesMapping: Record<string, ShortCourseSchedule & { id: string; index: number }> = {};
+        const schedulesMapping: Record<
+            string,
+            ShortCourseSchedule & { id: string; index: number }
+        > = {};
 
         // Add courses to schedules
         sectionResults.forEach(({ schedules: schedule, coursesInSchedule: course }) => {
@@ -467,7 +515,7 @@ export class RDS {
                     title: customEvent.title,
                     start: customEvent.start,
                     end: customEvent.end,
-                    days: customEvent.days.split('').map((day) => day === '1'),
+                    days: customEvent.days.split("").map((day) => day === "1"),
                     color: customEvent.color ?? undefined,
                     building: customEvent.building ?? undefined,
                 });
@@ -493,7 +541,7 @@ export class RDS {
                 .select()
                 .from(sessions)
                 .where(eq(sessions.refreshToken, refreshToken))
-                .then((res) => res[0] ?? null)
+                .then((res) => res[0] ?? null),
         );
     }
 
@@ -523,9 +571,15 @@ export class RDS {
      * @param refreshToken - The refresh token of the session to be removed. If null, no action is taken.
      * @returns A promise that resolves when the session is removed.
      */
-    static async removeSession(db: DatabaseOrTransaction, userId: string, refreshToken: string | null) {
+    static async removeSession(
+        db: DatabaseOrTransaction,
+        userId: string,
+        refreshToken: string | null,
+    ) {
         if (refreshToken) {
-            await db.delete(sessions).where(and(eq(sessions.userId, userId), eq(sessions.refreshToken, refreshToken)));
+            await db
+                .delete(sessions)
+                .where(and(eq(sessions.userId, userId), eq(sessions.refreshToken, refreshToken)));
         }
     }
 
@@ -541,13 +595,13 @@ export class RDS {
     static async upsertSession(
         db: DatabaseOrTransaction,
         userId: string,
-        refreshToken?: string
+        refreshToken?: string,
     ): Promise<Session | null> {
         return db.transaction(async (tx) => {
             const currentSession = await tx
                 .select()
                 .from(sessions)
-                .where(eq(sessions.refreshToken, refreshToken ?? ''))
+                .where(eq(sessions.refreshToken, refreshToken ?? ""))
                 .then((res) => res[0] ?? null);
 
             if (currentSession) return currentSession;
@@ -621,7 +675,7 @@ export class RDS {
                 .execute()
                 .then((res) => {
                     return { users: res[0].users, accounts: res[0].accounts };
-                })
+                }),
         );
     }
 
@@ -638,13 +692,20 @@ export class RDS {
      */
     static async flagImportedUser(db: DatabaseOrTransaction, providerId: string) {
         try {
-            const { users: user, accounts } = await this.getGuestAccountAndUserByName(db, providerId);
+            const { users: user, accounts } = await this.getGuestAccountAndUserByName(
+                db,
+                providerId,
+            );
             if (user.imported) {
                 return false;
             }
 
             await db.transaction((tx) =>
-                tx.update(users).set({ imported: true }).where(eq(users.id, accounts.userId)).execute()
+                tx
+                    .update(users)
+                    .set({ imported: true })
+                    .where(eq(users.id, accounts.userId))
+                    .execute(),
             );
             return true;
         } catch {
@@ -660,7 +721,9 @@ export class RDS {
      * @returns A promise that resolves to the notifications associated with a userId, or an empty array if not found.
      */
     static async retrieveNotifications(db: DatabaseOrTransaction, userId: string) {
-        return db.transaction((tx) => tx.select().from(subscriptions).where(eq(subscriptions.userId, userId)));
+        return db.transaction((tx) =>
+            tx.select().from(subscriptions).where(eq(subscriptions.userId, userId)),
+        );
     }
 
     /**
@@ -676,17 +739,17 @@ export class RDS {
         db: DatabaseOrTransaction,
         userId: string,
         notification: Notification,
-        environmentValue?: string | null
+        environmentValue?: string | null,
     ) {
-        const environment = environmentValue ?? '';
+        const environment = environmentValue ?? "";
         return db.transaction((tx) =>
             tx
                 .insert(subscriptions)
                 .values({
                     userId,
                     sectionCode: notification.sectionCode,
-                    year: notification.term.split(' ')[0],
-                    quarter: notification.term.split(' ')[1],
+                    year: notification.term.split(" ")[0],
+                    quarter: notification.term.split(" ")[1],
                     notifyOnOpen: notification.notifyOn.notifyOnOpen,
                     notifyOnWaitlist: notification.notifyOn.notifyOnWaitlist,
                     notifyOnFull: notification.notifyOn.notifyOnFull,
@@ -711,7 +774,7 @@ export class RDS {
                         lastCodes: notification.lastCodes,
                         environment: environment,
                     },
-                })
+                }),
         );
     }
 
@@ -733,10 +796,10 @@ export class RDS {
                 .where(
                     and(
                         eq(subscriptions.sectionCode, notification.sectionCode),
-                        eq(subscriptions.year, notification.term.split(' ')[0]),
-                        eq(subscriptions.quarter, notification.term.split(' ')[1])
-                    )
-                )
+                        eq(subscriptions.year, notification.term.split(" ")[0]),
+                        eq(subscriptions.quarter, notification.term.split(" ")[1]),
+                    ),
+                ),
         );
     }
 
@@ -748,7 +811,11 @@ export class RDS {
      * @param userId - The ID of the user for whom we're deleting a notification.
      * @returns A promise that deletes a user's notification.
      */
-    static async deleteNotification(db: DatabaseOrTransaction, notification: Notification, userId: string) {
+    static async deleteNotification(
+        db: DatabaseOrTransaction,
+        notification: Notification,
+        userId: string,
+    ) {
         return db.transaction((tx) =>
             tx
                 .delete(subscriptions)
@@ -756,10 +823,10 @@ export class RDS {
                     and(
                         eq(subscriptions.userId, userId),
                         eq(subscriptions.sectionCode, notification.sectionCode),
-                        eq(subscriptions.year, notification.term.split(' ')[0]),
-                        eq(subscriptions.quarter, notification.term.split(' ')[1])
-                    )
-                )
+                        eq(subscriptions.year, notification.term.split(" ")[0]),
+                        eq(subscriptions.quarter, notification.term.split(" ")[1]),
+                    ),
+                ),
         );
     }
 
@@ -771,6 +838,8 @@ export class RDS {
      * @returns A promise that deletes all of a user's notifications.
      */
     static async deleteAllNotifications(db: DatabaseOrTransaction, userId: string) {
-        return db.transaction((tx) => tx.delete(subscriptions).where(eq(subscriptions.userId, userId)));
+        return db.transaction((tx) =>
+            tx.delete(subscriptions).where(eq(subscriptions.userId, userId)),
+        );
     }
 }

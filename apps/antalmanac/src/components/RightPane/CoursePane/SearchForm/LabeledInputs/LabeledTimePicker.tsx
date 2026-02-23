@@ -1,9 +1,8 @@
-import { Box, TextField, TextFieldProps } from '@mui/material';
-import { DesktopTimePicker, TimePickerProps } from '@mui/x-date-pickers';
-import { useId, forwardRef, useState } from 'react';
-
-import { CustomInputBox } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/CustomInputBox';
-import { CustomInputLabel } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/CustomInputLabel';
+import { CustomInputBox } from "$components/RightPane/CoursePane/SearchForm/LabeledInputs/CustomInputBox";
+import { CustomInputLabel } from "$components/RightPane/CoursePane/SearchForm/LabeledInputs/CustomInputLabel";
+import { Box, TextField, TextFieldProps } from "@mui/material";
+import { DesktopTimePicker, TimePickerProps } from "@mui/x-date-pickers";
+import { forwardRef, useId, useState } from "react";
 
 interface LabeledTimePickerProps {
     label: string;
@@ -12,17 +11,29 @@ interface LabeledTimePickerProps {
     isAligned?: boolean;
 }
 
-export const LabeledTimePicker = ({ label, timePickerProps, textFieldProps, isAligned }: LabeledTimePickerProps) => {
+export const LabeledTimePicker = ({
+    label,
+    timePickerProps,
+    textFieldProps,
+    isAligned,
+}: LabeledTimePickerProps) => {
     const id = useId();
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const TimePickerTextField = forwardRef<HTMLInputElement, TextFieldProps>((params, ref) => (
-        <TextField size="small" variant="outlined" {...params} {...textFieldProps} id={id} inputRef={ref} />
+        <TextField
+            size="small"
+            variant="outlined"
+            {...params}
+            {...textFieldProps}
+            id={id}
+            inputRef={ref}
+        />
     ));
-    TimePickerTextField.displayName = 'TimePickerTextField';
+    TimePickerTextField.displayName = "TimePickerTextField";
 
     return (
-        <Box sx={{ display: 'flex', width: '100%', flex: 1 }}>
+        <Box sx={{ display: "flex", width: "100%", flex: 1 }}>
             <CustomInputLabel label={label} id={id} isAligned={isAligned} />
             <CustomInputBox
                 boxProps={{

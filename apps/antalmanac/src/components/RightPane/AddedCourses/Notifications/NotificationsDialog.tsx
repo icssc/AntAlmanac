@@ -1,14 +1,23 @@
-import { Notifications } from '@mui/icons-material';
-import { Dialog, DialogContent, DialogTitle, DialogActions, Button, IconButton, SxProps, Tooltip, Box } from '@mui/material';
-import { useCallback, useState, useEffect } from 'react';
-import { useShallow } from 'zustand/react/shallow';
-
-import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
-import { NotificationsTabs } from '$components/RightPane/AddedCourses/Notifications/NotificationsTabs';
-import { SignInDialog } from '$components/dialogs/SignInDialog';
-import { useNotificationStore } from '$stores/NotificationStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
+import { SignInDialog } from "$components/dialogs/SignInDialog";
+import { NotificationEmailTooltip } from "$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip";
+import { NotificationsTabs } from "$components/RightPane/AddedCourses/Notifications/NotificationsTabs";
+import { useNotificationStore } from "$stores/NotificationStore";
+import { useSessionStore } from "$stores/SessionStore";
+import { useThemeStore } from "$stores/SettingsStore";
+import { Notifications } from "@mui/icons-material";
+import {
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+    SxProps,
+    Tooltip,
+} from "@mui/material";
+import { useCallback, useEffect, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 interface NotificationsDialogProps {
     disabled?: boolean;
@@ -26,7 +35,7 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
             session: state.session,
             isGoogleUser: state.isGoogleUser,
             fetchUserData: state.fetchUserData,
-        }))
+        })),
     );
 
     useEffect(() => {
@@ -57,7 +66,9 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
 
     return (
         <>
-            <Tooltip title={isGoogleUser ? 'Notifications Menu' : 'Sign in to access notifications'}>
+            <Tooltip
+                title={isGoogleUser ? "Notifications Menu" : "Sign in to access notifications"}
+            >
                 <IconButton
                     sx={{
                         ...buttonSx,
@@ -73,7 +84,7 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
 
             <Dialog open={open} onClose={handleClose} fullWidth>
                 <DialogTitle>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                         Manage Notifications
                         <NotificationEmailTooltip sessionToken={session} />
                     </Box>
@@ -82,13 +93,18 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
                     <NotificationsTabs />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} variant="text" sx={{ color: 'white' }}>
+                    <Button onClick={handleClose} variant="text" sx={{ color: "white" }}>
                         Close
                     </Button>
                 </DialogActions>
             </Dialog>
 
-            <SignInDialog isDark={isDark} open={signInOpen} onClose={handleSignInClose} feature="Notification" />
+            <SignInDialog
+                isDark={isDark}
+                open={signInOpen}
+                onClose={handleSignInClose}
+                feature="Notification"
+            />
         </>
     );
 }

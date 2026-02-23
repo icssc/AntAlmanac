@@ -1,11 +1,15 @@
-import { ScheduleCourse, HourMinute, WebsocSectionFinalExam, WebsocSectionMeeting } from '@packages/antalmanac-types';
+import AppStore from "$stores/AppStore";
+import {
+    HourMinute,
+    ScheduleCourse,
+    WebsocSectionFinalExam,
+    WebsocSectionMeeting,
+} from "@packages/antalmanac-types";
 
-import AppStore from '$stores/AppStore';
-
-const CURRENT_TERM = '2024 Winter'; // TODO: Check the current term when that PR's in
+const CURRENT_TERM = "2024 Winter"; // TODO: Check the current term when that PR's in
 let sampleClassesSectionCodes: Array<string> = [];
 
-const finalsDaysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
+const finalsDaysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
 
 type FinalsDaysOfWeek = (typeof finalsDaysOfWeek)[number];
 
@@ -14,14 +18,14 @@ export function addSampleClasses() {
 
     const sampleClassesOptions: sampleClassOptions[] = [
         {
-            courseTitle: 'Nice',
-            deptCode: 'GEN&SEX',
-            courseNumber: '69',
-            instructors: ['Your mother'],
+            courseTitle: "Nice",
+            deptCode: "GEN&SEX",
+            courseNumber: "69",
+            instructors: ["Your mother"],
             meetings: [
                 {
-                    bldg: ['DBH'],
-                    days: 'MWF',
+                    bldg: ["DBH"],
+                    days: "MWF",
                     startTime: {
                         hour: 10,
                         minute: 0,
@@ -37,8 +41,8 @@ export function addSampleClasses() {
         {
             meetings: [
                 {
-                    bldg: ['ELH 100'],
-                    days: 'TuTh',
+                    bldg: ["ELH 100"],
+                    days: "TuTh",
                     startTime: {
                         hour: 9,
                         minute: 30,
@@ -54,8 +58,8 @@ export function addSampleClasses() {
         {
             meetings: [
                 {
-                    bldg: ['SSH 100'],
-                    days: 'MWF',
+                    bldg: ["SSH 100"],
+                    days: "MWF",
                     startTime: {
                         hour: 11,
                         minute: 0,
@@ -71,8 +75,8 @@ export function addSampleClasses() {
         {
             meetings: [
                 {
-                    bldg: ['ALP 100'],
-                    days: 'TuTh',
+                    bldg: ["ALP 100"],
+                    days: "TuTh",
                     startTime: {
                         hour: 11,
                         minute: 0,
@@ -96,7 +100,12 @@ export function addSampleClasses() {
 }
 
 export function removeSampleClasses() {
-    AppStore.deleteCourses(sampleClassesSectionCodes, CURRENT_TERM, AppStore.getCurrentScheduleIndex(), false);
+    AppStore.deleteCourses(
+        sampleClassesSectionCodes,
+        CURRENT_TERM,
+        AppStore.getCurrentScheduleIndex(),
+        false,
+    );
     sampleClassesSectionCodes = [];
 }
 
@@ -124,13 +133,15 @@ function randomStartEndTime(duration: number): [HourMinute, HourMinute] {
     return [start, end];
 }
 
-type NonStrictPartialWebsocSectionMeeting = Partial<Extract<WebsocSectionMeeting, { timeIsTBA: false }>> & {
+type NonStrictPartialWebsocSectionMeeting = Partial<
+    Extract<WebsocSectionMeeting, { timeIsTBA: false }>
+> & {
     timeIsTBA?: boolean;
 };
 
 export function sampleMeetingsFactory({
-    bldg = ['DBH 1200'],
-    days = 'MWF',
+    bldg = ["DBH 1200"],
+    days = "MWF",
     startTime = {
         hour: 11,
         minute: 0,
@@ -153,19 +164,19 @@ export function sampleMeetingsFactory({
 }
 
 type NonStrictPartialWebsocSectionFinalExam = Partial<
-    Omit<Extract<WebsocSectionFinalExam, { examStatus: 'SCHEDULED_FINAL' }>, 'examStatus'>
-> & { examStatus?: WebsocSectionFinalExam['examStatus'] };
+    Omit<Extract<WebsocSectionFinalExam, { examStatus: "SCHEDULED_FINAL" }>, "examStatus">
+> & { examStatus?: WebsocSectionFinalExam["examStatus"] };
 
 export function sampleFinalExamFactory({
-    examStatus = 'SCHEDULED_FINAL',
+    examStatus = "SCHEDULED_FINAL",
     dayOfWeek,
     month = 11,
     day = 12,
     startTime,
     endTime,
-    bldg = ['DBH'],
+    bldg = ["DBH"],
 }: NonStrictPartialWebsocSectionFinalExam): WebsocSectionFinalExam {
-    if (examStatus === 'NO_FINAL') return { examStatus };
+    if (examStatus === "NO_FINAL") return { examStatus };
 
     const [randomStartTime, randomEndTime] = randomStartEndTime(120);
     startTime = startTime ?? randomStartTime;
@@ -193,46 +204,46 @@ interface sampleClassOptions {
 }
 
 export function sampleClassFactory({
-    courseComment = '',
-    courseNumber = '-1',
-    courseTitle = 'Example class',
-    deptCode = 'CS',
-    instructors = ['Professor X'],
+    courseComment = "",
+    courseNumber = "-1",
+    courseTitle = "Example class",
+    deptCode = "CS",
+    instructors = ["Professor X"],
     meetings,
     finalExam,
 }: sampleClassOptions): ScheduleCourse {
     return {
-        sectionTypes: ['Lec'],
+        sectionTypes: ["Lec"],
         courseComment: courseComment,
-        courseNumber: courseNumber == '-1' ? randint(100, 199).toString() : courseNumber,
+        courseNumber: courseNumber == "-1" ? randint(100, 199).toString() : courseNumber,
         courseTitle: courseTitle,
         deptCode: deptCode,
-        prerequisiteLink: '',
+        prerequisiteLink: "",
         term: CURRENT_TERM,
         section: {
-            color: '#FF0000',
+            color: "#FF0000",
             instructors: instructors,
             isCancelled: false,
-            maxCapacity: '500',
+            maxCapacity: "500",
             meetings: meetings ?? sampleMeetingsFactory({}),
             finalExam: finalExam ?? sampleFinalExamFactory({}),
             numCurrentlyEnrolled: {
-                sectionEnrolled: '500',
-                totalEnrolled: '500',
+                sectionEnrolled: "500",
+                totalEnrolled: "500",
             },
-            numNewOnlyReserved: '0',
-            numOnWaitlist: '99',
-            numRequested: '0',
-            numWaitlistCap: '100',
-            restrictions: '',
+            numNewOnlyReserved: "0",
+            numOnWaitlist: "99",
+            numRequested: "0",
+            numWaitlistCap: "100",
+            restrictions: "",
             sectionCode: randint(10000, 99999).toString(),
-            sectionComment: '',
-            sectionNum: '1',
-            sectionType: 'Lec',
-            status: 'Waitl',
-            units: '4',
+            sectionComment: "",
+            sectionNum: "1",
+            sectionType: "Lec",
+            status: "Waitl",
+            units: "4",
             updatedAt: null,
-            webURL: '',
+            webURL: "",
         },
     };
 }

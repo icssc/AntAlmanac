@@ -1,7 +1,6 @@
-import { Box, BoxProps } from '@mui/material';
-import { grey } from '@mui/material/colors';
-
-import { useThemeStore } from '$stores/SettingsStore';
+import { useThemeStore } from "$stores/SettingsStore";
+import { Box, BoxProps } from "@mui/material";
+import { grey } from "@mui/material/colors";
 
 interface CustomInputBoxProps {
     children: React.ReactNode;
@@ -15,14 +14,14 @@ export const CustomInputBox = ({ children, boxProps }: CustomInputBoxProps) => {
             {...boxProps}
             flexGrow={1}
             sx={{
-                '& .MuiOutlinedInput-root': {
+                "& .MuiOutlinedInput-root": {
                     minWidth: 100,
                     borderTopLeftRadius: 0,
                     borderBottomLeftRadius: 0,
-                    '&:hover:not(.Mui-focused) .MuiOutlinedInput-notchedOutline': {
+                    "&:hover:not(.Mui-focused) .MuiOutlinedInput-notchedOutline": {
                         borderColor: isDark ? grey[500] : grey[600],
                     },
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                         borderWidth: 1,
                     },
                 },

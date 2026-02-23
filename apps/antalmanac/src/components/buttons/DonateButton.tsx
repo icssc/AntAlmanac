@@ -1,7 +1,6 @@
-import { FavoriteRounded } from '@mui/icons-material';
-import { Button, Tooltip } from '@mui/material';
-
-import { DONATION_LINK } from '$src/globals';
+import { DONATION_LINK } from "$src/globals";
+import { FavoriteRounded } from "@mui/icons-material";
+import { Button, Tooltip } from "@mui/material";
 
 export const DonateButton = () => {
     return (

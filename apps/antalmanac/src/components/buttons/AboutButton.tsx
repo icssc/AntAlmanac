@@ -1,11 +1,18 @@
-import { Info } from '@mui/icons-material';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
-import { useCallback, useState } from 'react';
-
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { DONATION_LINK } from '$src/globals';
-import { useThemeStore } from '$stores/SettingsStore';
+import analyticsEnum, { logAnalytics } from "$lib/analytics/analytics";
+import { DONATION_LINK } from "$src/globals";
+import { useThemeStore } from "$stores/SettingsStore";
+import { Info } from "@mui/icons-material";
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Link,
+} from "@mui/material";
+import { usePostHog } from "posthog-js/react";
+import { useCallback, useState } from "react";
 
 export const AboutButton = () => {
     const [open, setOpen] = useState(false);
@@ -26,7 +33,13 @@ export const AboutButton = () => {
 
     return (
         <>
-            <Button onClick={handleOpen} color="inherit" startIcon={<Info />} size="large" variant="text">
+            <Button
+                onClick={handleOpen}
+                color="inherit"
+                startIcon={<Info />}
+                size="large"
+                variant="text"
+            >
                 About
             </Button>
             <Dialog open={open} onClose={handleClose}>
@@ -36,32 +49,36 @@ export const AboutButton = () => {
                         AntAlmanac is a schedule planning tool for UCI students.
                         <br />
                         <br />
-                        Interested in helping out? Join our{' '}
+                        Interested in helping out? Join our{" "}
                         <Link target="_blank" href="https://discord.gg/GzF76D7UhY">
                             Discord
-                        </Link>{' '}
-                        or checkout the{' '}
+                        </Link>{" "}
+                        or checkout the{" "}
                         <Link target="_blank" href="https://github.com/icssc/AntAlmanac">
                             code on GitHub
                         </Link>
                         .
                         <br />
                         <br />
-                        This website is maintained by the{' '}
+                        This website is maintained by the{" "}
                         <Link target="_blank" href="https://studentcouncil.ics.uci.edu/">
                             ICS Student Council
-                        </Link>{' '}
+                        </Link>{" "}
                         Projects Committee and built by students from the UCI community.
                         <br />
                         <br />
-                        To support the ongoing development and enhancement of AntAlmanac, consider making a{' '}
+                        To support the ongoing development and enhancement of AntAlmanac, consider
+                        making a{" "}
                         <Link target="_blank" href={DONATION_LINK}>
                             donation
                         </Link>
                         ; your generosity helps us continue our mission.
                         <br />
                         <br />
-                        <Link target="_blank" href="https://github.com/icssc/AntAlmanac/contributors">
+                        <Link
+                            target="_blank"
+                            href="https://github.com/icssc/AntAlmanac/contributors"
+                        >
                             <img
                                 src="https://contrib.rocks/image?repo=icssc/antalmanac"
                                 width="100%"
@@ -71,7 +88,7 @@ export const AboutButton = () => {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>
+                    <Button onClick={handleClose} color={isDark ? "secondary" : "primary"}>
                         Close
                     </Button>
                 </DialogActions>

@@ -1,12 +1,11 @@
+import { terms } from "$generated/termData";
 import {
     SectionSearchResult,
     WebsocCourse,
     WebsocDepartment,
     WebsocSchool,
     WebsocSection,
-} from '@packages/antalmanac-types';
-
-import { terms } from '$generated/termData';
+} from "@packages/antalmanac-types";
 export interface SectionCodesGraphQLResponse {
     data: {
         websoc: {
@@ -21,7 +20,9 @@ export interface SectionCodesRESTResponse {
     };
 }
 
-export function parseSectionCodesREST(response: SectionCodesRESTResponse): Record<string, SectionSearchResult> {
+export function parseSectionCodesREST(
+    response: SectionCodesRESTResponse,
+): Record<string, SectionSearchResult> {
     const results: Record<string, SectionSearchResult> = {};
     response.data.schools.forEach((school: WebsocSchool) => {
         school.departments.forEach((department: WebsocDepartment) => {
@@ -29,7 +30,7 @@ export function parseSectionCodesREST(response: SectionCodesRESTResponse): Recor
                 course.sections.forEach((section: WebsocSection) => {
                     const sectionCode = section.sectionCode;
                     results[sectionCode] = {
-                        type: 'SECTION',
+                        type: "SECTION",
                         department: department.deptCode,
                         courseNumber: course.courseNumber,
                         sectionCode: section.sectionCode,
@@ -44,7 +45,9 @@ export function parseSectionCodesREST(response: SectionCodesRESTResponse): Recor
     return results;
 }
 
-export function parseSectionCodes(response: SectionCodesGraphQLResponse): Record<string, SectionSearchResult> {
+export function parseSectionCodes(
+    response: SectionCodesGraphQLResponse,
+): Record<string, SectionSearchResult> {
     const results: Record<string, SectionSearchResult> = {};
     response.data.websoc.schools.forEach((school: WebsocSchool) => {
         school.departments.forEach((department: WebsocDepartment) => {
@@ -52,7 +55,7 @@ export function parseSectionCodes(response: SectionCodesGraphQLResponse): Record
                 course.sections.forEach((section: WebsocSection) => {
                     const sectionCode = section.sectionCode;
                     results[sectionCode] = {
-                        type: 'SECTION',
+                        type: "SECTION",
                         department: department.deptCode,
                         courseNumber: course.courseNumber,
                         sectionCode: section.sectionCode,

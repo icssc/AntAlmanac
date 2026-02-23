@@ -6,30 +6,30 @@ import type {
     WebsocSchool,
     WebsocSection,
     WebsocSectionMeeting,
-} from '@packages/anteater-api-types';
+} from "@packages/anteater-api-types";
 
-import type { CourseDetails } from './helpers/notificationDispatch';
-import { batchCourseCodes, sendNotification } from './helpers/notificationDispatch';
+import type { CourseDetails } from "./helpers/notificationDispatch";
+import { batchCourseCodes, sendNotification } from "./helpers/notificationDispatch";
 import {
     getLastUpdatedStatus,
     getSubscriptionSectionCodes,
     getUpdatedClasses,
     getUsers,
     updateSubscriptionStatus,
-} from './helpers/subscriptionData';
+} from "./helpers/subscriptionData";
 
 /**
  * Formats meeting time into a readable string like "3:30PM-4:50PM".
  */
 function formatMeetingTime(meeting: WebsocSectionMeeting): string {
     if (meeting.timeIsTBA) {
-        return 'TBA';
+        return "TBA";
     }
 
     const formatTime = (time: HourMinute) => {
         const hour = time.hour % 12 || 12;
-        const minute = time.minute.toString().padStart(2, '0');
-        const period = time.hour >= 12 ? 'PM' : 'AM';
+        const minute = time.minute.toString().padStart(2, "0");
+        const period = time.hour >= 12 ? "PM" : "AM";
         return `${hour}:${minute}${period}`;
     };
 
@@ -44,27 +44,34 @@ function formatMeetingTime(meeting: WebsocSectionMeeting): string {
  * @param quarter - The academic quarter of the course.
  * @param year - The academic year of the course.
  */
-async function processSection(section: WebsocSection, course: WebsocCourse, quarter: string, year: string) {
+async function processSection(
+    section: WebsocSection,
+    course: WebsocCourse,
+    quarter: string,
+    year: string,
+) {
     const { sectionCode, instructors, meetings, status, restrictions, sectionType } = section;
-    const instructor = instructors.join(', ');
+    const instructor = instructors.join(", ");
 
     const previousState = await getLastUpdatedStatus(year, quarter, sectionCode);
     const previousStatus = previousState?.lastUpdatedStatus || null;
-    const previousRestrictions = previousState?.lastCodes || '';
+    const previousRestrictions = previousState?.lastCodes || "";
 
     const statusChanged = previousStatus !== status;
     const codesChanged = previousRestrictions !== restrictions;
 
     if (!statusChanged && !codesChanged) {
         console.log(
-            `[SKIP] ${course.deptCode} ${course.courseNumber} ${sectionCode} - No changes (status: ${status}, codes: ${restrictions})`
+            `[SKIP] ${course.deptCode} ${course.courseNumber} ${sectionCode} - No changes (status: ${status}, codes: ${restrictions})`,
         );
         return;
     }
 
-    console.log(`[PROCESSING] ${course.deptCode} ${course.courseNumber} ${sectionCode} - ${course.courseTitle}`);
     console.log(
-        `  Changes: status=${statusChanged ? `${previousStatus}→${status}` : 'none'}, codes=${codesChanged ? `${previousRestrictions}→${restrictions}` : 'none'}`
+        `[PROCESSING] ${course.deptCode} ${course.courseNumber} ${sectionCode} - ${course.courseTitle}`,
+    );
+    console.log(
+        `  Changes: status=${statusChanged ? `${previousStatus}→${status}` : "none"}, codes=${codesChanged ? `${previousRestrictions}→${restrictions}` : "none"}`,
     );
 
     const users = await getUsers(quarter, year, sectionCode, status, statusChanged, codesChanged);
@@ -73,8 +80,8 @@ async function processSection(section: WebsocSection, course: WebsocCourse, quar
     const courseDetails: CourseDetails = {
         sectionCode: sectionCode,
         instructor,
-        days: meeting && !meeting.timeIsTBA ? meeting.days : 'TBA',
-        hours: meeting ? formatMeetingTime(meeting) : 'TBA',
+        days: meeting && !meeting.timeIsTBA ? meeting.days : "TBA",
+        hours: meeting ? formatMeetingTime(meeting) : "TBA",
         currentStatus: status,
         restrictionCodes: restrictions,
         deptCode: course.deptCode,
@@ -86,10 +93,14 @@ async function processSection(section: WebsocSection, course: WebsocCourse, quar
     };
 
     if (users && users.length > 0) {
-        console.log(`  Notifying ${users.length} user(s) for ${course.deptCode} ${course.courseNumber} ${sectionCode}`);
+        console.log(
+            `  Notifying ${users.length} user(s) for ${course.deptCode} ${course.courseNumber} ${sectionCode}`,
+        );
         await sendNotification(courseDetails, users, statusChanged, codesChanged);
     } else {
-        console.log(`  No users to notify for ${course.deptCode} ${course.courseNumber} ${sectionCode}`);
+        console.log(
+            `  No users to notify for ${course.deptCode} ${course.courseNumber} ${sectionCode}`,
+        );
     }
 
     await updateSubscriptionStatus(year, quarter, sectionCode, status, restrictions);
@@ -102,7 +113,11 @@ async function processSection(section: WebsocSection, course: WebsocCourse, quar
  * @param year - The academic year of the course.
  */
 async function processCourse(course: WebsocCourse, quarter: string, year: string) {
-    await Promise.all(course.sections.map((section: WebsocSection) => processSection(section, course, quarter, year)));
+    await Promise.all(
+        course.sections.map((section: WebsocSection) =>
+            processSection(section, course, quarter, year),
+        ),
+    );
 }
 
 /**
@@ -112,7 +127,9 @@ async function processCourse(course: WebsocCourse, quarter: string, year: string
  * @param year - The academic year of the department.
  */
 async function processDepartment(department: WebsocDepartment, quarter: string, year: string) {
-    await Promise.all(department.courses.map((course: WebsocCourse) => processCourse(course, quarter, year)));
+    await Promise.all(
+        department.courses.map((course: WebsocCourse) => processCourse(course, quarter, year)),
+    );
 }
 
 /**
@@ -123,7 +140,9 @@ async function processDepartment(department: WebsocDepartment, quarter: string, 
  */
 async function processSchool(school: WebsocSchool, quarter: string, year: string) {
     await Promise.all(
-        school.departments.map((department: WebsocDepartment) => processDepartment(department, quarter, year))
+        school.departments.map((department: WebsocDepartment) =>
+            processDepartment(department, quarter, year),
+        ),
     );
 }
 
@@ -136,7 +155,9 @@ async function processSchool(school: WebsocSchool, quarter: string, year: string
  */
 async function processBatch(batch: string[], quarter: string, year: string) {
     console.log(`[BATCH] Processing ${batch.length} section codes for ${quarter} ${year}`);
-    const response: WebsocAPIResponse = (await getUpdatedClasses(quarter, year, batch)) || { schools: [] };
+    const response: WebsocAPIResponse = (await getUpdatedClasses(quarter, year, batch)) || {
+        schools: [],
+    };
 
     const processedSectionCodes = new Set<string>();
     if (response?.schools) {
@@ -158,7 +179,9 @@ async function processBatch(batch: string[], quarter: string, year: string) {
     }
 
     console.log(`[BATCH] Processing ${processedSectionCodes.size} sections from response`);
-    await Promise.all(response.schools.map((school: WebsocSchool) => processSchool(school, quarter, year)));
+    await Promise.all(
+        response.schools.map((school: WebsocSchool) => processSchool(school, quarter, year)),
+    );
 }
 
 /**
@@ -166,15 +189,15 @@ async function processBatch(batch: string[], quarter: string, year: string) {
  */
 export async function scanAndNotify() {
     try {
-        console.log('[SCAN] Starting subscription scan...');
+        console.log("[SCAN] Starting subscription scan...");
         const subscriptions = await getSubscriptionSectionCodes();
         if (!subscriptions) {
-            console.log('[SCAN] No subscriptions found');
+            console.log("[SCAN] No subscriptions found");
             return;
         }
 
         const termCounts = Object.entries(subscriptions).map(([term, sectionCodes]) => {
-            const [quarter, year] = term.split('-');
+            const [quarter, year] = term.split("-");
             return { term, quarter, year, count: sectionCodes.length };
         });
 
@@ -185,20 +208,20 @@ export async function scanAndNotify() {
 
         await Promise.all(
             Object.entries(subscriptions).map(([term, sectionCodes]) => {
-                const [quarter, year] = term.split('-');
+                const [quarter, year] = term.split("-");
                 const batches = batchCourseCodes(sectionCodes.map(String));
                 console.log(
-                    `[SCAN] Processing ${term}: ${sectionCodes.length} sections in ${batches.length} batch(es)`
+                    `[SCAN] Processing ${term}: ${sectionCodes.length} sections in ${batches.length} batch(es)`,
                 );
                 return Promise.all(batches.map((batch) => processBatch(batch, quarter, year)));
-            })
+            }),
         );
 
-        console.log('[SCAN] All subscriptions processed!');
+        console.log("[SCAN] All subscriptions processed!");
     } catch (error) {
         console.error(
-            '[ERROR] Error in managing subscription:',
-            error instanceof Error ? error.message : String(error)
+            "[ERROR] Error in managing subscription:",
+            error instanceof Error ? error.message : String(error),
         );
         throw error;
     }
