@@ -1,9 +1,17 @@
-import { request, Term, Quarter, WebsocSection, WebsocResponse } from '@icssc/libwebsoc-next';
-import { eq, and, or } from 'drizzle-orm';
+import type { WebsocResponse, WebsocSection } from '@icssc/libwebsoc-next';
+import { and, eq, or } from 'drizzle-orm';
 
 import { db } from '../../../../packages/db/src/index';
 import { users } from '../../../../packages/db/src/schema/auth/user';
 import { subscriptions } from '../../../../packages/db/src/schema/subscription';
+
+const ANTEATER_API_BASE_URL = 'https://anteaterapi.com/v2/rest/websoc';
+
+interface AnteaterAPIResponse {
+    ok: boolean;
+    data?: WebsocResponse;
+    message?: string;
+}
 
 interface TermGrouping {
     [term: string]: string[];
@@ -21,7 +29,7 @@ export interface User {
 }
 
 /**
- * Fetches updated class information for specific section codes within a given term from WebSoc.
+ * Fetches updated class information for specific section codes within a given term from AnteaterAPI.
  * @param quarter - The academic quarter (e.g., "Fall", "Winter", "Spring", "Summer1", "Summer10wk", "Summer2").
  * @param year - The academic year (e.g., "2023").
  * @param sections - An array of section codes to fetch.
@@ -33,12 +41,21 @@ async function getUpdatedClasses(
     sections: string[]
 ): Promise<WebsocResponse | undefined> {
     try {
-        const term: Term = {
-            year: year,
-            quarter: quarter as Quarter,
-        };
-        const response = await request(term, { sectionCodes: sections.join(',') });
-        return response;
+        const params = new URLSearchParams({
+            year,
+            quarter,
+            sectionCodes: sections.join(','),
+        });
+
+        const response = await fetch(`${ANTEATER_API_BASE_URL}?${params.toString()}`);
+        const json: AnteaterAPIResponse = await response.json();
+
+        if (!json.ok) {
+            console.error('AnteaterAPI error:', json.message);
+            return undefined;
+        }
+
+        return json.data;
     } catch (error) {
         console.error('Error getting class information:', error);
     }
