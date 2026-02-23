@@ -1,4 +1,4 @@
-import type { WebsocResponse, WebsocSection } from '@icssc/libwebsoc-next';
+import type { WebsocAPIResponse, WebsocSection } from '@packages/anteater-api-types';
 import { and, eq, or } from 'drizzle-orm';
 
 import { db } from '../../../../packages/db/src/index';
@@ -9,7 +9,7 @@ const ANTEATER_API_BASE_URL = 'https://anteaterapi.com/v2/rest/websoc';
 
 interface AnteaterAPIResponse {
     ok: boolean;
-    data?: WebsocResponse;
+    data?: WebsocAPIResponse;
     message?: string;
 }
 
@@ -39,7 +39,7 @@ async function getUpdatedClasses(
     quarter: string,
     year: string,
     sections: string[]
-): Promise<WebsocResponse | undefined> {
+): Promise<WebsocAPIResponse | undefined> {
     try {
         const params = new URLSearchParams({
             year,
