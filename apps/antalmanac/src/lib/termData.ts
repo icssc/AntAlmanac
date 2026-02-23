@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { terms } from '$generated/termData';
 
@@ -25,6 +27,9 @@ const termData = terms.filter((term) => {
 
 // The index of the default term in termData, as per WebSOC
 const defaultTerm = termData.findIndex((term) => !term.isSummerTerm);
+
+/** Short names of terms whose courses' enrollment can change */
+const openEnrollmentTerms = getOpenEnrollmentTerms();
 
 /**
  * Get the default term.
@@ -60,6 +65,41 @@ function getFinalsStartDateForTerm(term: string) {
     }
 
     return new Date(termThatMatches.finalsStartDate);
+}
+
+export function canTermEnrollmentChange(termShortName: Term['shortName']) {
+    return openEnrollmentTerms.has(termShortName);
+}
+
+function getOpenEnrollmentTerms() {
+    const openEnrollmentTerms: Set<Term['shortName']> = new Set();
+
+    for (const term of termData) {
+        if (new Date().getFullYear() - term.startDate.getFullYear() > 1) {
+            break;
+        }
+        if (isTermEnrollmentOpen(term)) {
+            openEnrollmentTerms.add(term.shortName);
+        }
+    }
+
+    return openEnrollmentTerms;
+}
+
+function isTermEnrollmentOpen(term: Term): boolean {
+    const instructionStartDate = moment(term.startDate);
+    const isTermShort = moment(term.finalsStartDate).diff(instructionStartDate, 'week') < 9;
+    const hasWeekZero = term.startDate.getDay() !== 1;
+
+    let weeksUntilDropDeadline = 1;
+    if (isTermShort) {
+        weeksUntilDropDeadline = 0;
+    }
+    if (hasWeekZero) {
+        weeksUntilDropDeadline++;
+    }
+
+    return moment() <= instructionStartDate.add(weeksUntilDropDeadline, 'week').day(5);
 }
 
 export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStartDate, getFinalsStartDateForTerm };

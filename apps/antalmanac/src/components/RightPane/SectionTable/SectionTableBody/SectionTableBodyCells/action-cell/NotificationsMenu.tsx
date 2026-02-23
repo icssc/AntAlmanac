@@ -6,7 +6,7 @@ import { useShallow } from 'zustand/react/shallow';
 
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import { getDefaultTerm } from '$lib/termData';
+import { canTermEnrollmentChange, Term } from '$lib/termData';
 import { NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -20,7 +20,7 @@ const MENU_ITEMS: { status: keyof NotifyOn; label: string }[] = [
 
 interface NotificationsMenuProps {
     section: AASection;
-    term: string;
+    term: Term['shortName'];
     courseTitle: Course['title'];
     deptCode?: string;
     courseNumber?: string;
@@ -46,7 +46,7 @@ export const NotificationsMenu = memo(
             }))
         );
 
-        const isTermCurrent = term === getDefaultTerm().shortName;
+        const isTermCurrent = canTermEnrollmentChange(term);
 
         useEffect(() => {
             if (isGoogleUser) {

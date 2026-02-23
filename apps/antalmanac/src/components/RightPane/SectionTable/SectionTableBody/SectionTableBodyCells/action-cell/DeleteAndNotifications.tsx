@@ -8,13 +8,14 @@ import { useShallow } from 'zustand/react/shallow';
 import { deleteCourse } from '$actions/AppStoreActions';
 import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { Term } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useNotificationStore } from '$stores/NotificationStore';
 
 interface DeleteAndNotificationsProps {
     courseTitle: Course['title'];
     section: AASection;
-    term: string;
+    term: Term['shortName'];
     lastUpdated: string;
     lastCodes: string;
     courseDetails: CourseDetails;
