@@ -13,7 +13,7 @@
     "dependencies": {
         "@aws-sdk/client-sesv2": "^3.750.0",
         "@aws-sdk/client-sqs": "^3.750.0",
-        "@icssc/libwebsoc-next": "1.0.0",
+        "@packages/anteater-api-types": "workspace:*",
         "@trpc/server": "^10.30.0",
         "aws-sdk": "^2.1550.0",
         "dotenv": "^16.4.5",
