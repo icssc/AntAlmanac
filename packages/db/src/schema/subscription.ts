@@ -1,4 +1,4 @@
-import { integer, boolean, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
+import { boolean, pgTable, primaryKey, text } from 'drizzle-orm/pg-core';
 
 import { users } from './auth/user';
 
@@ -30,18 +30,18 @@ export const subscriptions = pgTable(
         quarter: text('quarter').notNull(),
 
         /**
-         * Status since polling script last updated 
-         * @example "OPEN" | "Waitl" | "FULL" | 
+         * Status since polling script last updated
+         * @example "OPEN" | "Waitl" | "FULL" |
          */
 
         lastUpdatedStatus: text('lastUpdatedStatus'),
 
         /**
-         * Restriction codes since polling script last updated 
+         * Restriction codes since polling script last updated
          * @example "A,L" | "B" | None
          */
 
-        lastCodes: text('lastCodes').default(""),
+        lastCodes: text('lastCodes').default(''),
 
         /**
          * Boolean if user wants to be notified when the section is OPEN
@@ -58,12 +58,16 @@ export const subscriptions = pgTable(
          */
         notifyOnFull: boolean('notifyOnFull').default(false),
 
-          /**
+        /**
          * Boolean if user wants to be notified when the section has RESTRICTION CODE CHANGES
          */
         notifyOnRestriction: boolean('notifyOnRestriction').default(false),
 
-
+        /**
+         * Environment when this subscription was created (e.g. "production", "staging-1337", "staging-1447").
+         * AANTS only sends emails when its STAGE matches this value.
+         */
+        environment: text('environment'),
     },
     (table) => [
         primaryKey({

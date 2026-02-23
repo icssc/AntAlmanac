@@ -50,13 +50,15 @@ async function getUpdatedClasses(
  */
 async function getSubscriptionSectionCodes(): Promise<TermGrouping | undefined> {
     try {
+        const stage = process.env.STAGE;
         const result = await db
             .selectDistinct({
                 sectionCode: subscriptions.sectionCode,
                 quarter: subscriptions.quarter,
                 year: subscriptions.year,
             })
-            .from(subscriptions);
+            .from(subscriptions)
+            .where(eq(subscriptions.environment, stage));
 
         // group together by year and quarter
         const groupedByTerm = result.reduce((acc: TermGrouping, { quarter, year, sectionCode }) => {
@@ -172,10 +174,12 @@ async function getUsers(
 
         const statusColumn = statusColumnMap[status];
 
+        const stage = process.env.STAGE;
         const baseConditions = [
             eq(subscriptions.year, year),
             eq(subscriptions.quarter, quarter),
             eq(subscriptions.sectionCode, sectionCode),
+            eq(subscriptions.environment, stage),
         ];
 
         let notificationCondition;
