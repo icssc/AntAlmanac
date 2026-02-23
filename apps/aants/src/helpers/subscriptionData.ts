@@ -1,5 +1,5 @@
 import type { WebsocAPIResponse, WebsocSection } from '@packages/anteater-api-types';
-import { and, eq, or } from 'drizzle-orm';
+import { and, eq, inArray, or } from 'drizzle-orm';
 
 import { db } from '../../../../packages/db/src/index';
 import { users } from '../../../../packages/db/src/schema/auth/user';
@@ -67,7 +67,7 @@ async function getUpdatedClasses(
  */
 async function getSubscriptionSectionCodes(): Promise<TermGrouping | undefined> {
     try {
-        const stage = process.env.STAGE;
+        const stage = process.env.STAGE!;
         const result = await db
             .selectDistinct({
                 sectionCode: subscriptions.sectionCode,
@@ -127,21 +127,27 @@ async function updateSubscriptionStatus(
 }
 
 /**
- * Fetches the last updated status and restriction codes for a specific class section from the database.
- * This function makes the assumption that all class subscriptions always have the same status and restriction codes.
- * @param year - The academic year of the subscription.
- * @param quarter - The academic quarter of the subscription.
- * @param sectionCode - The section code of the class.
- * @returns A promise that resolves to the last updated status and restriction codes of a class section, or undefined if an error occurs.
+ * Fetches the last updated status and restriction codes for multiple class sections from the database.
+ * @param year - The academic year of the subscriptions.
+ * @param quarter - The academic quarter of the subscriptions.
+ * @param sectionCodes - Array of section codes to fetch.
+ * @returns A map of sectionCode -> ClassStatus.
  */
 async function getLastUpdatedStatus(
     year: string,
     quarter: string,
-    sectionCode: string
-): Promise<ClassStatus | undefined> {
+    sectionCodes: string[]
+): Promise<Map<string, ClassStatus>> {
+    const result = new Map<string, ClassStatus>();
+
+    if (sectionCodes.length === 0) {
+        return result;
+    }
+
     try {
-        const result = await db
-            .select({
+        const rows = await db
+            .selectDistinct({
+                sectionCode: subscriptions.sectionCode,
                 lastUpdatedStatus: subscriptions.lastUpdatedStatus,
                 lastCodes: subscriptions.lastCodes,
             })
@@ -150,15 +156,21 @@ async function getLastUpdatedStatus(
                 and(
                     eq(subscriptions.year, year),
                     eq(subscriptions.quarter, quarter),
-                    eq(subscriptions.sectionCode, sectionCode)
+                    inArray(subscriptions.sectionCode, sectionCodes)
                 )
-            )
-            .limit(1);
+            );
 
-        return result?.[0] as ClassStatus;
+        for (const row of rows) {
+            result.set(row.sectionCode, {
+                lastUpdatedStatus: row.lastUpdatedStatus as WebsocSection['status'] | null,
+                lastCodes: row.lastCodes,
+            });
+        }
     } catch (error) {
         console.error('Error getting last updated status:', error);
     }
+
+    return result;
 }
 
 /**
@@ -182,16 +194,17 @@ async function getUsers(
     codesChanged: boolean
 ): Promise<User[] | undefined> {
     try {
-        const statusColumnMap: Record<WebsocSection['status'], any> = {
+        const statusColumnMap = {
+            '': null,
             OPEN: subscriptions.notifyOnOpen,
             Waitl: subscriptions.notifyOnWaitlist,
             FULL: subscriptions.notifyOnFull,
             NewOnly: null,
-        };
+        } as const;
 
         const statusColumn = statusColumnMap[status];
 
-        const stage = process.env.STAGE;
+        const stage = process.env.STAGE!;
         const baseConditions = [
             eq(subscriptions.year, year),
             eq(subscriptions.quarter, quarter),
@@ -199,7 +212,7 @@ async function getUsers(
             eq(subscriptions.environment, stage),
         ];
 
-        let notificationCondition;
+        let notificationCondition: ReturnType<typeof eq> | ReturnType<typeof or> | undefined;
         if (statusChanged === true && codesChanged === true) {
             if (statusColumn) {
                 notificationCondition = or(eq(statusColumn, true), eq(subscriptions.notifyOnRestriction, true));
