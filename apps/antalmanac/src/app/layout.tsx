@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 
 import './globals.css';
 
@@ -9,6 +9,14 @@ export const metadata: Metadata = {
     description: ANTALMANAC_DESCRIPTION,
     manifest: '/manifest.json',
     metadataBase: new URL('https://antalmanac.com'),
+    icons: {
+        icon: [
+            { url: '/favicon.ico' },
+            { url: '/favicon-96x96.png', type: 'image/png', sizes: '96x96' },
+            { url: '/favicon.svg', type: 'image/svg+xml' },
+        ],
+        apple: '/apple-touch-icon.png',
+    },
     twitter: {
         card: 'summary_large_image',
         title: 'AntAlmanac',
@@ -42,8 +50,12 @@ export const metadata: Metadata = {
     ],
 };
 
-export const viewport = {
+export const viewport: Viewport = {
     themeColor: '#305db7',
+    width: 'device-width',
+    initialScale: 1,
+    userScalable: false,
+    viewportFit: 'cover',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

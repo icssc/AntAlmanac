@@ -12,3 +12,5 @@ export const RepeatingCustomEventSchema = type({
 });
 
 export type RepeatingCustomEvent = typeof RepeatingCustomEventSchema.infer;
+
+export type CustomEventId = typeof RepeatingCustomEventSchema.infer.customEventID;

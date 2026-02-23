@@ -12,7 +12,6 @@ import {
 import { useCallback, useState } from 'react';
 
 import { FeedbackAction } from '$components/HelpMenu/actions/FeedbackAction';
-import { HelpBoxAction } from '$components/HelpMenu/actions/HelpBoxAction';
 import { PatchNotesAction } from '$components/HelpMenu/actions/PatchNotesAction';
 import { TutorialAction } from '$components/HelpMenu/actions/TutorialAction';
 import { useIsMobile } from '$hooks/useIsMobile';
@@ -32,10 +31,12 @@ export type HelpMenuAction = {
 export function HelpMenu() {
     const isMobile = useIsMobile();
     const [open, setOpen] = useState(false);
-    const { sessionIsValid } = useSessionStore();
-    const { openAutoSaveWarning, setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
+    const { sessionIsValid, session } = useSessionStore();
+    const { openAutoSaveWarning, setOpenAutoSaveWarning, openLoadingSchedule } = scheduleComponentsToggleStore();
 
     const autoSave = getLocalStorageAutoSave() ?? 'false';
+
+    const isWaitingToLogin = session !== null && !sessionIsValid;
 
     const isDark = useThemeStore((state) => state.isDark);
 
@@ -43,7 +44,7 @@ export function HelpMenu() {
         setOpenAutoSaveWarning(!openAutoSaveWarning);
     };
 
-    const actions = [FeedbackAction(), TutorialAction(), PatchNotesAction(), HelpBoxAction()]
+    const actions = [FeedbackAction(), TutorialAction(), PatchNotesAction()]
         // Two passes to help Typescript infer type
         .filter((action) => !!action)
         .filter((action) => !isMobile || !action.disableOnMobile) satisfies NonNullable<HelpMenuAction>[];
@@ -64,9 +65,14 @@ export function HelpMenu() {
         <Stack
             sx={(theme) => ({
                 position: 'fixed',
-                bottom: isMobile ? 65 : 16, // Magic number
+                bottom: `calc(${isMobile ? 65 : 16}px + env(safe-area-inset-bottom))`, // Magic number
                 right: 8,
                 zIndex: theme.zIndex.fab,
+                pointerEvents: 'none',
+                // MUI SpeedDial controls pointer events itself
+                '& > *:not(.MuiSpeedDial-root)': {
+                    pointerEvents: 'auto',
+                },
             })}
             spacing={1}
             alignItems="center"
@@ -119,7 +125,7 @@ export function HelpMenu() {
                 ))}
             </SpeedDial>
 
-            {!sessionIsValid && autoSave === 'true' && (
+            {!sessionIsValid && autoSave === 'true' && !openLoadingSchedule && !isWaitingToLogin && (
                 <IconButton
                     aria-label="warning"
                     color="warning"

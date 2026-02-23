@@ -16,6 +16,7 @@ import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover'
 import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { skeletonBlueprintVariations } from '$components/Calendar/skeletonBlueprintVariations';
+import { useIsMobile } from '$hooks/useIsMobile';
 import {
     getLocalStorageSkeletonBlueprint,
     removeLocalStorageSkeletonBlueprint,
@@ -28,17 +29,29 @@ import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleS
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 
 /*
- * Always start week on Saturday for finals potentially on weekends.
- * CALENDAR_VIEWS will set the correct day range
+//  * Always start week on Saturday for finals potentially on weekends.
+//  * CALENDAR_VIEWS will set the correct day range
+ * Start week on Sunday so Saturday appears after Friday.
+ * This ensures the standard week layout: Su, M, Tu, W, Th, F, Sa
+ * Normal schedules: Su ... Sa (Sa rightmost)
  */
 // eslint-disable-next-line import/no-named-as-default-member
-moment.updateLocale('en-us', {
+moment.defineLocale('en-us', {
+    parentLocale: 'en',
     week: {
-        dow: 6,
+        dow: 0, // Sunday = 0, Monday = 1, ..., Saturday = 6
     },
 });
 
-const CALENDAR_LOCALIZER: DateLocalizer = momentLocalizer(moment);
+// Finals locale: week starts Saturday (Sa ... Fr)
+// eslint-disable-next-line import/no-named-as-default-member
+moment.defineLocale('en-us-finals', {
+    parentLocale: 'en-us',
+    week: { dow: 6 },
+});
+
+// eslint-disable-next-line import/no-named-as-default-member
+moment.locale('en-us');
 const CALENDAR_VIEWS: ViewsProps<CalendarEvent, object> = [Views.WEEK, Views.WORK_WEEK];
 const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
     event: CalendarCourseEvent,
@@ -65,18 +78,21 @@ export const ScheduleCalendar = memo(() => {
     const { openLoadingSchedule: loadingSchedule } = scheduleComponentsToggleStore();
     const hasHadEventsRef = useRef(false);
 
+    const isMobile = useIsMobile();
+
     const onlyCourseEvents = useMemo(
         () => eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[],
         [eventsInCalendar]
     );
 
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
-        if (showFinalsSchedule)
-            return hoveredCalendarizedFinal
+        return showFinalsSchedule
+            ? hoveredCalendarizedFinal
                 ? [...finalsEventsInCalendar, hoveredCalendarizedFinal]
-                : finalsEventsInCalendar;
-        else
-            return hoveredCalendarizedCourses ? [...eventsInCalendar, ...hoveredCalendarizedCourses] : eventsInCalendar;
+                : finalsEventsInCalendar
+            : hoveredCalendarizedCourses
+              ? [...eventsInCalendar, ...hoveredCalendarizedCourses]
+              : eventsInCalendar;
     }, [
         eventsInCalendar,
         finalsEventsInCalendar,
@@ -87,11 +103,9 @@ export const ScheduleCalendar = memo(() => {
 
     useEffect(() => {
         if (!loadingSchedule) {
-            const courseEvents = eventsInCalendar.filter((event) => !event.isCustomEvent);
-
-            if (courseEvents.length > 0) {
+            if (eventsInCalendar.length > 0) {
                 hasHadEventsRef.current = true;
-                const skeletonBlueprint = courseEvents
+                const skeletonBlueprint = eventsInCalendar
                     .map((event) => {
                         const dayOffset = event.start.getDate() - BASE_DATE.getDate();
                         return {
@@ -248,7 +262,27 @@ export const ScheduleCalendar = memo(() => {
           ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
           : getDefaultFinalsStartDate();
 
-    const finalsDateFormat = 'ddd MM/DD';
+    const finalsStartsOnSaturday = showFinalsSchedule && finalsDate.getDay() === 6;
+
+    const culture = finalsStartsOnSaturday ? 'en-us-finals' : 'en-us';
+
+    const calendarLocalizer = useMemo(() => {
+        // eslint-disable-next-line import/no-named-as-default-member
+        moment.locale(culture);
+        return momentLocalizer(moment);
+    }, [culture]);
+
+    // Check if there are any finals on weekends (else only display M-F)
+    const hasWeekendFinals =
+        showFinalsSchedule &&
+        [...finalsEventsInCalendar, hoveredCalendarizedFinal]
+            .filter(Boolean)
+            .some((event) => event != null && [0, 6].includes(event.start.getDay()));
+
+    const shouldShowWeekView = showFinalsSchedule ? hasWeekendFinals : hasWeekendCourse;
+    const calendarView = shouldShowWeekView ? Views.WEEK : Views.WORK_WEEK;
+
+    const finalsDateFormat = isMobile ? 'M/DD' : 'ddd M/DD';
     const date = showFinalsSchedule ? finalsDate : new Date(2018, 0, 1);
 
     const formats = useMemo(
@@ -324,12 +358,14 @@ export const ScheduleCalendar = memo(() => {
                 <CalendarEventPopover />
 
                 <Calendar<CalendarEvent, object>
-                    localizer={CALENDAR_LOCALIZER}
+                    key={`${culture}-${calendarView}`}
+                    localizer={calendarLocalizer}
+                    culture={culture}
                     toolbar={false}
                     formats={formats}
                     views={CALENDAR_VIEWS}
                     defaultView={Views.WORK_WEEK}
-                    view={hasWeekendCourse ? Views.WEEK : Views.WORK_WEEK}
+                    view={calendarView}
                     onView={() => {
                         return;
                     }}

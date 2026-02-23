@@ -6,23 +6,29 @@ on:
     repository_dispatch:
         types: [deploy-command]
 
+concurrency:
+    group: sst-staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
+    cancel-in-progress: false
+
 env:
     AWS_REGION: ${{ secrets.AWS_REGION }}
 
-    DEV_DB_URL: ${{ secrets.DEV_DB_URL }}
+    DB_URL: ${{ secrets.DEV_DB_URL }}
     MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
     NEXT_PUBLIC_TILES_ENDPOINT: ${{ secrets.NEXT_PUBLIC_TILES_ENDPOINT }}
     ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
     OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID }}
     OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
     GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
+    NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY }}
 
 jobs:
     deploy-staging:
+        if: github.head_ref != 'staging-shared' && github.head_ref != 'scheduler'
         runs-on: ubuntu-latest
         environment:
-            name: staging
-            url: https://staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}.antalmanac.com
+            name: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
+            url: https://scheduler-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}.antalmanac.com
 
         env:
             SST_STAGE: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
@@ -38,7 +44,7 @@ jobs:
               uses: chrnorm/deployment-action@v2
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
-                  environment: staging
+                  environment: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
                   ref: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
                   description: Staging deployment for PR #${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
 
@@ -60,6 +66,12 @@ jobs:
                   DB_URL: ${{ secrets.DEV_DB_URL }}
               run: pnpm db:migrate
 
+            # TODO (@xgraceyan): Remove this stage once SST fixes deployments
+            - name: Setup Pulumi
+              uses: pulumi/actions@v5
+              with:
+                  pulumi-version: 3.138.0 # Any version < 3.214.0 works
+
             - name: Deploy SST (staging)
               id: deploy
               run: |
@@ -73,7 +85,7 @@ jobs:
                   token: ${{ secrets.GITHUB_TOKEN }}
                   deployment-id: ${{ steps.create-deployment.outputs.deployment_id }}
                   state: success
-                  environment-url: https://staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}.antalmanac.com
+                  environment-url: https://scheduler-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}.antalmanac.com
 
             - name: Add reaction to comment
               if: github.event_name == 'repository_dispatch'
