@@ -23,7 +23,8 @@ const NotificationSchema = z.object({
 
 const notificationsRouter = router({
     get: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
-        return await RDS.retrieveNotifications(db, input.userId);
+        const stage = process.env.STAGE?.trim() || '';
+        return await RDS.retrieveNotifications(db, input.userId, stage);
     }),
 
     set: procedure

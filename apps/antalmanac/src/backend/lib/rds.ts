@@ -653,14 +653,20 @@ export class RDS {
     }
 
     /**
-     * Retrieves notifications associated with a specified user
+     * Retrieves notifications associated with a specified user, filtered to the current environment.
      *
      * @param db - The database or transaction object to use for the operation.
      * @param userId - The ID of the user for whom we're retrieving notifications.
+     * @param environment - The current environment (e.g. "production", "staging-####").
      * @returns A promise that resolves to the notifications associated with a userId, or an empty array if not found.
      */
-    static async retrieveNotifications(db: DatabaseOrTransaction, userId: string) {
-        return db.transaction((tx) => tx.select().from(subscriptions).where(eq(subscriptions.userId, userId)));
+    static async retrieveNotifications(db: DatabaseOrTransaction, userId: string, environment: string) {
+        return db.transaction((tx) =>
+            tx
+                .select()
+                .from(subscriptions)
+                .where(and(eq(subscriptions.userId, userId), eq(subscriptions.environment, environment)))
+        );
     }
 
     /**
