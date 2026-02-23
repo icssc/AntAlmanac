@@ -470,7 +470,7 @@ export const copySchedule = (
     try {
         AppStore.copySchedule(scheduleIndex, newScheduleName);
         options?.onSuccess(newScheduleName);
-    } catch (error) {
+    } catch {
         options?.onError(newScheduleName);
     }
 };

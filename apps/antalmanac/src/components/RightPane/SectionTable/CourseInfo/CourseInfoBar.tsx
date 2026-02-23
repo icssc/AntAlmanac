@@ -90,7 +90,7 @@ export const CourseInfoBar = ({
                 description: res.description,
                 ge_list: res.geList.join(', '),
             });
-        } catch (e) {
+        } catch {
             setCourseInfo(noCourseInfo);
         }
     };

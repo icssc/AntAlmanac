@@ -131,9 +131,11 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
 
         resetForm();
 
-        props.customEvent
-            ? editCustomEvent(newCustomEvent, scheduleIndices)
-            : addCustomEvent(newCustomEvent, scheduleIndices);
+        if (props.customEvent) {
+            editCustomEvent(newCustomEvent, scheduleIndices);
+        } else {
+            addCustomEvent(newCustomEvent, scheduleIndices);
+        }
     };
 
     useEffect(() => {
