@@ -3,8 +3,9 @@ import { Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/mater
 import type { AASection, Course } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { SignInDialog } from '$components/dialogs/SignInDialog';
+
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
+import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -36,11 +37,10 @@ export const NotificationsMenu = memo(
         const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
         const [signInOpen, setSignInOpen] = useState(false);
 
-        const { session, isGoogleUser, fetchUserData } = useSessionStore(
+        const { session, isGoogleUser } = useSessionStore(
             useShallow((state) => ({
                 session: state.session,
                 isGoogleUser: state.isGoogleUser,
-                fetchUserData: state.fetchUserData,
             }))
         );
 
@@ -49,10 +49,6 @@ export const NotificationsMenu = memo(
                 loadNotifications();
             }
         }, [isGoogleUser, loadNotifications]);
-
-        // useEffect(() => {
-        //     fetchUserData(session);
-        // }, [session, fetchUserData]);
 
         const notifyOn = notification?.notifyOn;
         const hasNotifications = notifyOn && Object.values(notifyOn).some((n) => n);
