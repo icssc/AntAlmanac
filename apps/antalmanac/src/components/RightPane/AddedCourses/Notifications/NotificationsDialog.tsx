@@ -1,6 +1,16 @@
 import { Notifications } from '@mui/icons-material';
-import { Dialog, DialogContent, DialogTitle, DialogActions, Button, IconButton, SxProps, Tooltip, Box } from '@mui/material';
-import { useCallback, useState, useEffect } from 'react';
+import {
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+    type SxProps,
+    Tooltip,
+} from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
@@ -21,11 +31,10 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
     const loadNotifications = useNotificationStore(useShallow((store) => store.loadNotifications));
     const isDark = useThemeStore((store) => store.isDark);
 
-    const { session, isGoogleUser, fetchUserData } = useSessionStore(
+    const { session, isGoogleUser } = useSessionStore(
         useShallow((state) => ({
             session: state.session,
             isGoogleUser: state.isGoogleUser,
-            fetchUserData: state.fetchUserData,
         }))
     );
 
@@ -34,10 +43,6 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
             loadNotifications();
         }
     }, [isGoogleUser, loadNotifications]);
-
-    useEffect(() => {
-        fetchUserData(session);
-    }, [session, fetchUserData]);
 
     const handleOpen = useCallback(() => {
         if (isGoogleUser) {
