@@ -1,23 +1,10 @@
-import { EventNote, Route, UnfoldMore } from '@mui/icons-material';
-import {
-    AppBar,
-    Box,
-    Button,
-    ButtonGroup,
-    ListItemIcon,
-    ListSubheader,
-    MenuItem,
-    MenuList,
-    Popover,
-    Stack,
-    Typography,
-} from '@mui/material';
+import { AppBar, Box, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import { openSnackbar } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
+import { AppSwitcher } from '$components/Header/AppSwitcher';
 import { Import } from '$components/Header/Import';
-import { Logo } from '$components/Header/Logo';
 import { Save } from '$components/Header/Save';
 import { Signin } from '$components/Header/Signin';
 import { Signout } from '$components/Header/Signout';
@@ -34,12 +21,9 @@ import { useSessionStore } from '$stores/SessionStore';
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
-    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const importedUser = getLocalStorageImportedUser() ?? '';
     const { session, sessionIsValid } = useSessionStore();
     const isMobile = useIsMobile();
-
-    const platform = window.location.pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
 
     const clearStorage = () => {
         removeLocalStorageImportedUser();
@@ -101,107 +85,7 @@ export function Header() {
                     }}
                 >
                     <Stack direction="row" alignItems="center" gap={1}>
-                        {isMobile ? (
-                            <>
-                                <Button
-                                    onClick={(event) => setAnchorEl(event.currentTarget)}
-                                    endIcon={<UnfoldMore />}
-                                    sx={{
-                                        minWidth: 'auto',
-                                        p: 0.5,
-                                        color: 'white',
-                                        '& .MuiTouchRipple-child': {
-                                            borderRadius: 0.5,
-                                            bgcolor: 'white',
-                                        },
-                                    }}
-                                >
-                                    <Logo />
-                                </Button>
-
-                                <Popover
-                                    open={Boolean(anchorEl)}
-                                    anchorEl={anchorEl}
-                                    onClose={() => setAnchorEl(null)}
-                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                                    transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                                >
-                                    <MenuList
-                                        subheader={
-                                            <ListSubheader component="div" sx={{ lineHeight: '30px' }}>
-                                                Switch Apps
-                                            </ListSubheader>
-                                        }
-                                        sx={{ width: 200 }}
-                                    >
-                                        <MenuItem
-                                            component="a"
-                                            href="/"
-                                            selected={platform === 'Scheduler'}
-                                            onClick={() => setAnchorEl(null)}
-                                            sx={{ minHeight: 'fit-content', textDecoration: 'none', color: 'inherit' }}
-                                        >
-                                            <ListItemIcon>
-                                                <EventNote />
-                                            </ListItemIcon>
-                                            <Typography fontSize="15px" fontWeight={500}>
-                                                Scheduler
-                                            </Typography>
-                                        </MenuItem>
-                                        <MenuItem
-                                            component="a"
-                                            href="/planner"
-                                            selected={platform === 'Planner'}
-                                            onClick={() => setAnchorEl(null)}
-                                            sx={{ minHeight: 'fit-content', textDecoration: 'none', color: 'inherit' }}
-                                        >
-                                            <ListItemIcon>
-                                                <Route />
-                                            </ListItemIcon>
-                                            <Typography fontSize="15px" fontWeight={500}>
-                                                Planner
-                                            </Typography>
-                                        </MenuItem>
-                                    </MenuList>
-                                </Popover>
-                            </>
-                        ) : (
-                            <>
-                                <Logo />
-                                <ButtonGroup variant="outlined" color="inherit">
-                                    <Button
-                                        variant="contained"
-                                        startIcon={<EventNote />}
-                                        sx={{
-                                            boxShadow: 'none',
-                                            bgcolor: 'white',
-                                            color: BLUE,
-                                            fontWeight: 500,
-                                            fontSize: 14,
-                                            py: 0.4,
-                                            '&:hover': { bgcolor: 'grey.100' },
-                                        }}
-                                    >
-                                        Scheduler
-                                    </Button>
-                                    <Button
-                                        component="a"
-                                        href="/planner"
-                                        startIcon={<Route />}
-                                        sx={{
-                                            boxShadow: 'none',
-                                            color: 'white',
-                                            fontWeight: 500,
-                                            fontSize: 14,
-                                            py: 0.4,
-                                            textDecoration: 'none',
-                                        }}
-                                    >
-                                        Planner
-                                    </Button>
-                                </ButtonGroup>
-                            </>
-                        )}
+                        <AppSwitcher isMobile={isMobile} />
                     </Stack>
 
                     <Stack direction="row" alignItems="center">
