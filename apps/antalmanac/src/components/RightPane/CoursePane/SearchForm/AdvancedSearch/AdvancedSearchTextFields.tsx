@@ -14,7 +14,7 @@ import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/L
 import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import { usePeterPortalRoadmaps } from '$hooks/usePeterPortal';
+import { usePlannerRoadmaps } from '$hooks/usePlanner';
 import { safeUnreachableCase } from '$lib/utils';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -76,7 +76,7 @@ export function AdvancedSearchTextFields() {
     const [excludeRoadmapCourses, setExcludeRoadmapCourses] = useState(
         () => RightPaneStore.getFormData().excludeRoadmapCourses
     );
-    const { roadmaps } = usePeterPortalRoadmaps();
+    const { roadmaps } = usePlannerRoadmaps();
     const isLoggedIn = useSessionStore((s) => s.googleId !== null);
     const [signInOpen, setSignInOpen] = useState(false);
     const isDark = useThemeStore((store) => store.isDark);
@@ -404,7 +404,11 @@ export function AdvancedSearchTextFields() {
                     <LabeledSelect
                         label={
                             <Tooltip
-                                title={<Typography sx={{ fontSize: '0.8rem' }}>Data from PeterPortal.org</Typography>}
+                                title={
+                                    <Typography sx={{ fontSize: '0.8rem' }}>
+                                        Data from AntAlmanac.com/planner
+                                    </Typography>
+                                }
                             >
                                 <Box>Exclude Taken Courses</Box>
                             </Tooltip>
@@ -481,7 +485,7 @@ export function AdvancedSearchTextFields() {
                     </LabeledSelect>
                 </Box>
             </Box>
-            <SignInDialog open={signInOpen} onClose={handleSignInClose} isDark={isDark} feature="PeterPortal" />
+            <SignInDialog open={signInOpen} onClose={handleSignInClose} isDark={isDark} feature="Planner" />
         </>
     );
 }

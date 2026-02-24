@@ -34,10 +34,10 @@ export const aapiEnvSchema = z.object({
 });
 
 /**
- * Environment variables required by the backend to connect to the PeterPortal API.
+ * Environment variables required by the backend to connect to the Planner API.
  */
-export const ppEnvSchema = z.object({
-    PETERPORTAL_CLIENT_API_KEY: z.string(),
+export const plannerEnvSchema = z.object({
+    PLANNER_CLIENT_API_KEY: z.string(),
 });
 
 /**

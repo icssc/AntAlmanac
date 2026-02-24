@@ -5,7 +5,7 @@ export * from './user';
 export * from './legacy';
 export * from './search';
 export * from './websoc';
-export * from './peterportal';
+export * from './planner';
 export * from './notification';
 export * from '@packages/anteater-api-types/src/calendar';
 export * from '@packages/anteater-api-types/src/courses';

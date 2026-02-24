@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
-import { fetchUserRoadmapsPeterPortal } from '../lib/peterportal';
+import { fetchUserPlannerRoadmaps } from '../lib/planner';
 import { procedure, router } from '../trpc';
 
 const roadmapRouter = router({
-    fetchUserRoadmapsPeterPortal: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
-        return await fetchUserRoadmapsPeterPortal(input.userId);
+    fetchUserPlannerRoadmaps: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
+        return await fetchUserPlannerRoadmaps(input.userId);
     }),
 });
 

@@ -16,7 +16,7 @@ export interface Roadmap {
     content: RoadmapContent[];
 }
 
-export interface PeterPortalAPIResponse {
+export interface PlannerAPIResponse {
     result: {
         data: Roadmap[];
     };

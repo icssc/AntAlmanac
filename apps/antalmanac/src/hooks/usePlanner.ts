@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react';
 
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import trpc from '$lib/api/trpc';
-import { flattenRoadmapCourses } from '$src/backend/lib/peterportal';
+import { flattenRoadmapCourses } from '$src/backend/lib/planner';
 import { useSessionStore } from '$stores/SessionStore';
 
-export function usePeterPortalRoadmaps() {
+export function usePlannerRoadmaps() {
     const googleId = useSessionStore((s) => s.googleId);
     const setUserTakenCourses = useSessionStore((s) => s.setUserTakenCourses);
     const setFilterTakenCourses = useSessionStore((s) => s.setFilterTakenCourses);
@@ -35,12 +35,12 @@ export function usePeterPortalRoadmaps() {
                 return;
             }
             try {
-                const data = await trpc.roadmap.fetchUserRoadmapsPeterPortal.query({
+                const data = await trpc.roadmap.fetchUserPlannerRoadmaps.query({
                     userId: googleId,
                 });
                 if (active) setRoadmaps(data ?? []);
             } catch (e) {
-                console.error('Failed to fetch PeterPortal roadmaps:', e);
+                console.error('Failed to fetch Planner roadmaps:', e);
             }
         }
         loadRoadmaps();

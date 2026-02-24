@@ -6,7 +6,7 @@ import { loginUser } from '$actions/AppStoreActions';
 interface SignInDialogProps {
     open: boolean;
     isDark: boolean;
-    feature: 'Load' | 'Save' | 'Notification' | 'PeterPortal';
+    feature: 'Load' | 'Save' | 'Notification' | 'Planner';
     onClose: () => void;
 }
 
@@ -21,8 +21,8 @@ export function SignInDialog(props: SignInDialogProps) {
         switch (props.feature) {
             case 'Notification':
                 return 'Sign in to Use Notifications';
-            case 'PeterPortal':
-                return 'Sign in to use Filter by PeterPortal Roadmap';
+            case 'Planner':
+                return 'Sign in to Use Filter by Planner';
             case 'Save':
             default:
                 return 'Save';

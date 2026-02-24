@@ -7,7 +7,7 @@ import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePane
 import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { usePeterPortalRoadmaps } from '$hooks/usePeterPortal';
+import { usePlannerRoadmaps } from '$hooks/usePlanner';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { WebSOC } from '$lib/websoc';
@@ -17,7 +17,7 @@ export function CoursePaneRoot() {
     const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections, advancedSearchEnabled } =
         useCoursePaneStore();
     const postHog = usePostHog();
-    usePeterPortalRoadmaps();
+    usePlannerRoadmaps();
 
     const handleSearch = useCallback(() => {
         if (!advancedSearchEnabled) {

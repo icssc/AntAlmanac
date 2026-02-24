@@ -1,11 +1,11 @@
 import type { Roadmap } from '@packages/antalmanac-types';
 import { z } from 'zod';
 
-import { ppEnvSchema } from '../env';
+import { plannerEnvSchema } from '../env';
 
-export type { Quarter, RoadmapContent, Roadmap, PeterPortalAPIResponse } from '@packages/antalmanac-types';
+export type { Quarter, RoadmapContent, Roadmap, PlannerAPIResponse } from '@packages/antalmanac-types';
 
-export const PETERPORTAL_API_URL = 'https://antalmanac.com/planner/api/trpc/external.roadmaps.getByGoogleID';
+export const PLANNER_API_URL = 'https://antalmanac.com/planner/api/trpc/external.roadmaps.getByGoogleID';
 
 export const quarterSchema = z.object({
     name: z.string(),
@@ -25,13 +25,13 @@ export const roadmapSchema = z.object({
     content: z.array(roadmapContentSchema),
 });
 
-export async function fetchUserRoadmapsPeterPortal(userId: string): Promise<Roadmap[]> {
-    const env = ppEnvSchema.parse(process.env);
-    const apiKey = env.PETERPORTAL_CLIENT_API_KEY;
+export async function fetchUserPlannerRoadmaps(userId: string): Promise<Roadmap[]> {
+    const env = plannerEnvSchema.parse(process.env);
+    const apiKey = env.PLANNER_CLIENT_API_KEY;
 
     const searchParams = new URLSearchParams();
     searchParams.set('input', JSON.stringify({ googleUserId: userId }));
-    const url = `${PETERPORTAL_API_URL}?${searchParams}`;
+    const url = `${PLANNER_API_URL}?${searchParams}`;
 
     try {
         const response = await fetch(url, {
@@ -50,7 +50,7 @@ export async function fetchUserRoadmapsPeterPortal(userId: string): Promise<Road
 
         return validRoadmaps;
     } catch (e) {
-        console.error('PeterPortal fetch failed:', e);
+        console.error('Planner fetch failed:', e);
         return [];
     }
 }
