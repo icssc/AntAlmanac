@@ -599,57 +599,35 @@ export class Schedules {
             const uniqueCourses = new Set<string>();
 
             // Extract unique (term, deptCode, courseNumber) combinations
+            // Use '|' as separator since term contains spaces and courseNumber may contain letters
             for (const [term, courseInfoMap] of courseInfoDict) {
                 for (const [, courseInfo] of Object.entries(courseInfoMap)) {
-                    const key = `${term}-${courseInfo.courseDetails.deptCode}-${courseInfo.courseDetails.courseNumber}`;
+                    const key = `${term}|${courseInfo.courseDetails.deptCode}|${courseInfo.courseDetails.courseNumber}`;
                     uniqueCourses.add(key);
                 }
             }
 
-            // Group courses by (term, deptCode) to batch queries
-            const coursesByDept = new Map<string, string[]>();
-            for (const courseKey of uniqueCourses) {
-                const [term, deptCode] = courseKey.split('-') as [string, string, string];
-                const deptKey = `${term}-${deptCode}`;
-                if (!coursesByDept.has(deptKey)) {
-                    coursesByDept.set(deptKey, []);
-                }
-                coursesByDept.get(deptKey)!.push(courseKey);
-            }
-
-            // Fetch full course data for each (term, deptCode) combination
-            const fullCourseRequests = Array.from(coursesByDept.entries()).map(async ([deptKey, courseKeys]) => {
-                const [term, deptCode] = deptKey.split('-') as [string, string];
+            // Fetch sectionTypes for each unique (term, deptCode, courseNumber) individually
+            const fullCourseRequests = Array.from(uniqueCourses).map(async (courseKey) => {
+                const [term, deptCode, courseNumber] = courseKey.split('|') as [string, string, string];
                 try {
-                    // Query all courses in this dept at once (WebSOC returns all courses when courseNumber is omitted)
-                    const fullData = await WebSOC.query({ term, deptCode });
+                    const fullData = await WebSOC.query({ term, deptCode, courseNumber });
 
-                    // Build a map of courseNumber -> sectionTypes for this dept
-                    const courseSectionTypesMap = new Map<string, CourseDetails['sectionTypes']>();
-
+                    const sectionTypesSet = new Set<CourseDetails['sectionTypes'][number]>();
                     for (const school of fullData.schools) {
                         for (const dept of school.departments) {
+                            if (dept.deptCode !== deptCode) continue;
                             for (const course of dept.courses) {
-                                const sectionTypesSet = new Set<CourseDetails['sectionTypes'][number]>();
+                                if (course.courseNumber !== courseNumber) continue;
                                 course.sections.forEach((section) => {
                                     sectionTypesSet.add(section.sectionType);
                                 });
-                                courseSectionTypesMap.set(course.courseNumber, Array.from(sectionTypesSet));
                             }
                         }
                     }
-
-                    // Store results in the main dictionary
-                    for (const courseKey of courseKeys) {
-                        const courseNumber = courseKey.split('-')[2];
-                        const sectionTypes = courseSectionTypesMap.get(courseNumber);
-                        if (sectionTypes) {
-                            completeSectionTypesDict.set(courseKey, sectionTypes);
-                        }
-                    }
+                    completeSectionTypesDict.set(courseKey, Array.from(sectionTypesSet));
                 } catch (e) {
-                    console.error(`Failed to fetch full course data for ${deptKey}:`, e);
-                    // Fall back to incomplete sectionTypes from courseInfo
+                    console.error(`Failed to fetch course data for ${courseKey}:`, e);
                 }
             });
 
@@ -671,7 +649,7 @@ export class Schedules {
                         }
 
                         // Use complete sectionTypes if available
-                        const courseKey = `${shortCourse.term}-${courseInfo.courseDetails.deptCode}-${courseInfo.courseDetails.courseNumber}`;
+                        const courseKey = `${shortCourse.term}|${courseInfo.courseDetails.deptCode}|${courseInfo.courseDetails.courseNumber}`;
                         const completeSectionTypes = completeSectionTypesDict.get(courseKey);
 
                         const courseDetails = { ...courseInfo.courseDetails };
