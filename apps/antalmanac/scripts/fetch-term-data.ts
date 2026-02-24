@@ -80,13 +80,11 @@ async function main() {
     const calendarTerms = await fetchCalendarTerms();
     console.log(`Fetched ${calendarTerms?.length} calendar terms.`);
 
-    const sortedTerms = calendarTerms
-        .filter((term) => Number(term.year) >= 2024)
-        .sort((a, b) => {
-            const dateA = new Date(a.instructionStart).getTime();
-            const dateB = new Date(b.instructionStart).getTime();
-            return dateB - dateA;
-        });
+    const sortedTerms = calendarTerms.sort((a, b) => {
+        const dateA = new Date(a.instructionStart).getTime();
+        const dateB = new Date(b.instructionStart).getTime();
+        return dateB - dateA;
+    });
 
     const termEntries = sortedTerms.map(serializeTerm).join(',\n');
     const fileContent = `import type { Term } from '$lib/termData';
