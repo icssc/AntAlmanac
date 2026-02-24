@@ -41,10 +41,19 @@ export const plannerEnvSchema = z.object({
 });
 
 /**
+ * STAGE: "production" on production; staging instance on staging (e.g. "staging-1337").
+ * Used to set subscription.environment so only that AANTS instance sends emails.
+ */
+export const stagingEnvSchema = z.object({
+    STAGE: z.string().optional(),
+});
+
+/**
  * Environment variables required by the backend during runtime.
  */
 export const backendEnvSchema = z
     .object({})
+    .merge(stagingEnvSchema)
     .merge(oidcOAuthEnvSchema)
     .merge(rdsEnvSchema)
     .merge(mapboxEnvSchema)
