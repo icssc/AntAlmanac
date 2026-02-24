@@ -328,7 +328,7 @@ export default function CourseRenderPane(props: { id?: number }) {
         } finally {
             setLoading(false);
         }
-    }, [manualSearchEnabled]);
+    }, []);
 
     const updateScheduleNames = () => {
         setScheduleNames(AppStore.getScheduleNames());
