@@ -1,9 +1,8 @@
-import { Box, Link, Typography, Skeleton } from '@mui/material';
-import { useState, useEffect, useMemo } from 'react';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-
-import { Grades, type GradesProps } from '$lib/grades';
-import { useThemeStore } from '$stores/SettingsStore';
+import { Grades, type GradesProps } from "$lib/grades";
+import { useThemeStore } from "$stores/SettingsStore";
+import { Box, Link, Skeleton, Typography } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 export interface GradeData {
     grades: {
         name: string;
@@ -15,21 +14,22 @@ export interface GradeData {
 async function getGradeData(
     deptCode: string,
     courseNumber: string,
-    instructor: string
+    instructor: string,
 ): Promise<GradeData | undefined> {
-    const courseGrades = await Grades.queryGrades(deptCode, courseNumber, instructor, false).catch((e) => {
-        console.error(e);
-        return undefined;
-    });
+    const courseGrades = await Grades.queryGrades(deptCode, courseNumber, instructor, false).catch(
+        (e) => {
+            console.error(e);
+            return undefined;
+        },
+    );
 
     if (!courseGrades) {
         return undefined;
     }
 
-    const totalGrades = Object.values(Object.entries(courseGrades).filter(([key]) => key !== 'averageGPA')).reduce(
-        (acc, [_, value]) => acc + value,
-        0
-    );
+    const totalGrades = Object.values(
+        Object.entries(courseGrades).filter(([key]) => key !== "averageGPA"),
+    ).reduce((acc, [_, value]) => acc + value, 0);
 
     /**
      * Format data for displaying in chart.
@@ -37,10 +37,10 @@ async function getGradeData(
      * @example { gradeACount: 10, gradeBCount: 20 }
      */
     const grades = Object.entries(courseGrades)
-        .filter(([key]) => key !== 'averageGPA')
+        .filter(([key]) => key !== "averageGPA")
         .map(([key, value]) => {
             return {
-                name: key.replace('grade', '').replace('Count', ''),
+                name: key.replace("grade", "").replace("Count", ""),
                 all: Number(((value / totalGrades) * 100).toFixed(2)),
             };
         });
@@ -58,7 +58,7 @@ export interface GradesPopupProps {
 function GradesPopup(props: GradesPopupProps) {
     const { isDark } = useThemeStore();
 
-    const { deptCode, courseNumber, instructor = '', isMobile } = props;
+    const { deptCode, courseNumber, instructor = "", isMobile } = props;
 
     const [loading, setLoading] = useState(true);
 
@@ -70,13 +70,13 @@ function GradesPopup(props: GradesPopupProps) {
 
     const graphTitle = useMemo(() => {
         return gradeData
-            ? `${deptCode} ${courseNumber}${
-                  instructor ? ` — ${instructor}` : ''
+            ? `${deptCode} ${courseNumber}${instructor ? ` — ${instructor}` : ""} | Average GPA: ${
                   // GPA is `null` if the class is pass/no-pass only.
                   // This is more correct compared to returning a zero GPA,
                   // which so far has not happened, but is entirely possible.
-              } | Average GPA: ${gradeData.courseGrades.averageGPA?.toFixed(2) ?? 'n/a'}`
-            : 'Grades are not available for this class.';
+                  gradeData.courseGrades.averageGPA?.toFixed(2) ?? "n/a"
+              }`
+            : "Grades are not available for this class.";
     }, [gradeData, deptCode, courseNumber, instructor]);
 
     // const gpaString = useMemo(
@@ -116,18 +116,18 @@ function GradesPopup(props: GradesPopupProps) {
     }
 
     const encodedDept = encodeURIComponent(deptCode);
-    const axisColor = isDark ? '#fff' : '#000';
+    const axisColor = isDark ? "#fff" : "#000";
 
     return (
-        <Box sx={{ padding: '4px' }}>
+        <Box sx={{ padding: "4px" }}>
             <Typography
                 sx={{
-                    marginTop: '.5rem',
-                    textAlign: 'center',
+                    marginTop: ".5rem",
+                    textAlign: "center",
                     fontWeight: 500,
-                    marginRight: '2rem',
-                    marginLeft: '2rem',
-                    marginBottom: '.5rem',
+                    marginRight: "2rem",
+                    marginLeft: "2rem",
+                    marginBottom: ".5rem",
                 }}
             >
                 {graphTitle}
@@ -136,10 +136,10 @@ function GradesPopup(props: GradesPopupProps) {
                 href={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
                 target="_blank"
                 rel="noopener noreferrer"
-                sx={{ display: 'flex', height, width }}
+                sx={{ display: "flex", height, width }}
             >
                 <ResponsiveContainer width="95%" height="95%">
-                    <BarChart data={gradeData.grades} style={{ cursor: 'pointer' }}>
+                    <BarChart data={gradeData.grades} style={{ cursor: "pointer" }}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
                         <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} unit="%" />
@@ -148,7 +148,7 @@ function GradesPopup(props: GradesPopupProps) {
                                 <GradeTooltip
                                     active={active ?? false}
                                     payload={(payload as Array<Payload>) ?? null}
-                                    label={label ?? ''}
+                                    label={label ?? ""}
                                 />
                             )}
                             position={{ y: 100 }}
@@ -169,14 +169,18 @@ const GradeTooltip = (props: GradeTooltipProps) => {
             <>
                 <Box
                     sx={{
-                        backgroundColor: '#5182ed',
-                        padding: '5px',
-                        border: '1px solid #000',
-                        borderRadius: '5px',
-                        boxShadow: '0 0 5px 0 rgba(0, 0, 0, 0.5)',
+                        backgroundColor: "#5182ed",
+                        padding: "5px",
+                        border: "1px solid #000",
+                        borderRadius: "5px",
+                        boxShadow: "0 0 5px 0 rgba(0, 0, 0, 0.5)",
                     }}
                 >
-                    <Typography variant="body1" align="center" sx={{ color: '#fff', fontWeight: 500 }}>
+                    <Typography
+                        variant="body1"
+                        align="center"
+                        sx={{ color: "#fff", fontWeight: 500 }}
+                    >
                         {`${label}: ${payload[0].value}%`}
                     </Typography>
                 </Box>

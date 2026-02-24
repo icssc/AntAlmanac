@@ -1,17 +1,16 @@
+import { renameSchedule } from "$actions/AppStoreActions";
+import AppStore from "$stores/AppStore";
 import {
     Box,
     Button,
     Dialog,
     DialogActions,
     DialogContent,
+    type DialogProps,
     DialogTitle,
     TextField,
-    type DialogProps,
-} from '@mui/material';
-import { useCallback, useState, useEffect } from 'react';
-
-import { renameSchedule } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
+} from "@mui/material";
+import { useCallback, useEffect, useState } from "react";
 
 interface ScheduleNameDialogProps extends DialogProps {
     /**
@@ -37,7 +36,7 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
     const [name, setName] = useState(AppStore.getScheduleNames()[index]);
 
     const handleCancel = useCallback(() => {
-        onClose?.({}, 'escapeKeyDown');
+        onClose?.({}, "escapeKeyDown");
     }, [onClose]);
 
     const handleNameChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -46,24 +45,24 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
 
     const submitName = useCallback(() => {
         renameSchedule(index, name);
-        onClose?.({}, 'escapeKeyDown');
+        onClose?.({}, "escapeKeyDown");
     }, [onClose, name, index]);
 
     const handleKeyDown = useCallback(
         (event: React.KeyboardEvent<HTMLDivElement>) => {
             onKeyDown?.(event);
 
-            if (event.key === 'Enter') {
+            if (event.key === "Enter") {
                 event.preventDefault();
                 event.stopPropagation();
                 submitName();
             }
 
-            if (event.key === 'Escape') {
-                onClose?.({}, 'escapeKeyDown');
+            if (event.key === "Escape") {
+                onClose?.({}, "escapeKeyDown");
             }
         },
-        [onClose, submitName, onKeyDown]
+        [onClose, submitName, onKeyDown],
     );
 
     const handleScheduleNamesChange = useCallback(() => {
@@ -72,10 +71,10 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
 
     useEffect(() => {
         handleScheduleNamesChange();
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
+        AppStore.on("scheduleNamesChange", handleScheduleNamesChange);
 
         return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
+            AppStore.off("scheduleNamesChange", handleScheduleNamesChange);
         };
     }, [handleScheduleNamesChange]);
 
@@ -90,10 +89,15 @@ function RenameScheduleDialog(props: ScheduleNameDialogProps) {
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={handleCancel} color={'inherit'}>
+                <Button onClick={handleCancel} color={"inherit"}>
                     Cancel
                 </Button>
-                <Button onClick={submitName} variant="contained" color="primary" disabled={name?.trim() === ''}>
+                <Button
+                    onClick={submitName}
+                    variant="contained"
+                    color="primary"
+                    disabled={name?.trim() === ""}
+                >
                     Rename Schedule
                 </Button>
             </DialogActions>

@@ -1,9 +1,8 @@
-import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
-import { useTabStore } from '$stores/TabStore';
+import RightPaneStore from "$components/RightPane/RightPaneStore";
+import { useCoursePaneStore } from "$stores/CoursePaneStore";
+import { useTabStore } from "$stores/TabStore";
+import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function useQuickSearch() {
     const { displaySections, forceUpdate } = useCoursePaneStore();
@@ -20,17 +19,17 @@ export function useQuickSearch() {
 
             const href = `/?${Object.entries(queryParams)
                 .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-                .join('&')}`;
+                .join("&")}`;
 
             RightPaneStore.resetFormValues();
-            RightPaneStore.updateFormValue('deptValue', deptValue);
-            RightPaneStore.updateFormValue('courseNumber', courseNumber);
-            RightPaneStore.updateFormValue('term', termValue);
+            RightPaneStore.updateFormValue("deptValue", deptValue);
+            RightPaneStore.updateFormValue("courseNumber", courseNumber);
+            RightPaneStore.updateFormValue("term", termValue);
             navigate(href, { replace: false });
-            setActiveTab('search');
+            setActiveTab("search");
             displaySections();
             forceUpdate();
         },
-        [displaySections, forceUpdate, navigate, setActiveTab]
+        [displaySections, forceUpdate, navigate, setActiveTab],
     );
 }

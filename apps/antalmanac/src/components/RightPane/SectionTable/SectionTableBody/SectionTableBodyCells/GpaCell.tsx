@@ -1,14 +1,13 @@
-import { Button, Popover } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
-
-import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
-import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { useIsMobile } from '$hooks/useIsMobile';
-import { Grades } from '$lib/grades';
-import { usePrimaryColor } from '$src/hooks/usePrimaryColor';
+import GradesPopup from "$components/RightPane/SectionTable/GradesPopup";
+import { TableBodyCellContainer } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer";
+import { useIsMobile } from "$hooks/useIsMobile";
+import { Grades } from "$lib/grades";
+import { usePrimaryColor } from "$src/hooks/usePrimaryColor";
+import { Button, Popover } from "@mui/material";
+import { useCallback, useEffect, useState } from "react";
 
 async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
-    const namedInstructors = instructors.filter((instructor) => instructor !== 'STAFF');
+    const namedInstructors = instructors.filter((instructor) => instructor !== "STAFF");
 
     // Get the GPA of the first instructor of this section where data exists
     for (const instructor of namedInstructors) {
@@ -33,8 +32,8 @@ interface GpaCellProps {
 export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) => {
     const isMobile = useIsMobile();
 
-    const [gpa, setGpa] = useState('');
-    const [instructor, setInstructor] = useState('');
+    const [gpa, setGpa] = useState("");
+    const [instructor, setInstructor] = useState("");
     const [anchorEl, setAnchorEl] = useState<Element>();
     const primaryColor = usePrimaryColor();
 
@@ -65,7 +64,7 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
                     paddingY: 0,
                     minWidth: 0,
                     fontWeight: 400,
-                    fontSize: '1rem',
+                    fontSize: "1rem",
                     color: primaryColor,
                 }}
                 onClick={handleClick}
@@ -77,7 +76,7 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
                 open={Boolean(anchorEl)}
                 onClose={hideDistribution}
                 anchorEl={anchorEl}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
             >
                 <GradesPopup
                     deptCode={deptCode}

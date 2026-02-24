@@ -1,11 +1,10 @@
-import { Chip, SxProps, TableCellProps, Tooltip } from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
-import { useState } from 'react';
-
-import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { clickToCopy } from '$lib/helpers';
-import { useThemeStore } from '$stores/SettingsStore';
+import { TableBodyCellContainer } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer";
+import analyticsEnum, { logAnalytics } from "$lib/analytics/analytics";
+import { clickToCopy } from "$lib/helpers";
+import { useThemeStore } from "$stores/SettingsStore";
+import { Chip, SxProps, TableCellProps, Tooltip } from "@mui/material";
+import { usePostHog } from "posthog-js/react";
+import { useState } from "react";
 
 interface CourseCodeCellProps extends TableCellProps {
     sectionCode: string;
@@ -27,7 +26,7 @@ export const CourseCodeCell = ({ sectionCode, sx, ...rest }: CourseCodeCellProps
     };
 
     return (
-        <TableBodyCellContainer sx={{ width: '8%', ...sx }} {...rest}>
+        <TableBodyCellContainer sx={{ width: "8%", ...sx }} {...rest}>
             <Tooltip title="Click to copy course code" placement="bottom" enterDelay={150}>
                 <Chip
                     onClick={(event) => {
@@ -42,7 +41,7 @@ export const CourseCodeCell = ({ sectionCode, sx, ...rest }: CourseCodeCellProps
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                     style={{
-                        color: isHovered ? (isDark ? 'gold' : 'blueviolet') : '',
+                        color: isHovered ? (isDark ? "gold" : "blueviolet") : "",
                     }}
                     size="small"
                 />

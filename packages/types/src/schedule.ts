@@ -1,7 +1,8 @@
-import { type, arrayOf } from 'arktype';
-import { RepeatingCustomEvent, RepeatingCustomEventSchema } from './customevent';
-import { AASection } from './websoc';
-import { WebsocSectionType } from '@packages/anteater-api-types';
+import { WebsocSectionType } from "@packages/anteater-api-types";
+import { arrayOf, type } from "arktype";
+
+import { RepeatingCustomEvent, RepeatingCustomEventSchema } from "./customevent";
+import { AASection } from "./websoc";
 
 export type ScheduleCourse = {
     courseComment: string;
@@ -22,27 +23,27 @@ export type Schedule = {
 };
 
 export const ShortCourseSchema = type({
-    color: 'string',
-    term: 'string',
-    sectionCode: 'string',
+    color: "string",
+    term: "string",
+    sectionCode: "string",
 });
 export type ShortCourse = typeof ShortCourseSchema.infer;
 
 export const ShortCourseScheduleSchema = type([
     {
-        scheduleName: 'string',
+        scheduleName: "string",
         courses: arrayOf(ShortCourseSchema),
         customEvents: arrayOf(RepeatingCustomEventSchema),
-        'scheduleNote?': 'string',
+        "scheduleNote?": "string",
     },
-    '|>',
-    (s) => ({ scheduleNote: '', ...s }),
+    "|>",
+    (s) => ({ scheduleNote: "", ...s }),
 ]);
 export type ShortCourseSchedule = typeof ShortCourseScheduleSchema.infer;
 
 export const ScheduleSaveStateSchema = type({
     schedules: arrayOf(ShortCourseScheduleSchema),
-    scheduleIndex: 'number',
+    scheduleIndex: "number",
 });
 export type ScheduleSaveState = typeof ScheduleSaveStateSchema.infer;
 

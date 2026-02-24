@@ -1,17 +1,16 @@
-import { Add } from '@mui/icons-material';
-import { Box, IconButton, Tooltip } from '@mui/material';
-import { AASection, CourseDetails } from '@packages/antalmanac-types';
-import { usePostHog } from 'posthog-js/react';
-import { memo } from 'react';
-
-import { addCourse, openSnackbar } from '$actions/AppStoreActions';
-import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { DeleteAndNotifications } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/DeleteAndNotifications';
-import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
-import { useIsMobile } from '$hooks/useIsMobile';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import AppStore from '$stores/AppStore';
-import { type NotifyOn } from '$stores/NotificationStore';
+import { addCourse, openSnackbar } from "$actions/AppStoreActions";
+import { DeleteAndNotifications } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/DeleteAndNotifications";
+import { NotificationsMenu } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu";
+import { TableBodyCellContainer } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer";
+import { useIsMobile } from "$hooks/useIsMobile";
+import analyticsEnum, { logAnalytics } from "$lib/analytics/analytics";
+import AppStore from "$stores/AppStore";
+import { type NotifyOn } from "$stores/NotificationStore";
+import { Add } from "@mui/icons-material";
+import { Box, IconButton, Tooltip } from "@mui/material";
+import { AASection, CourseDetails } from "@packages/antalmanac-types";
+import { usePostHog } from "posthog-js/react";
+import { memo } from "react";
 
 /**
  * Props received by components that perform actions on a specified section.
@@ -58,13 +57,13 @@ export function ScheduleAddCell({
     scheduleConflict,
 }: ActionProps) {
     const isMobile = useIsMobile();
-    const flexDirection = isMobile ? 'column' : undefined;
+    const flexDirection = isMobile ? "column" : undefined;
     const postHog = usePostHog();
 
     const closeAndAddCourse = (scheduleIndex: number, specificSchedule?: boolean) => {
         for (const meeting of section.meetings) {
             if (meeting.timeIsTBA) {
-                openSnackbar('success', 'Online/TBA class added');
+                openSnackbar("success", "Online/TBA class added");
                 break;
             }
         }
@@ -83,15 +82,21 @@ export function ScheduleAddCell({
     return (
         <Box
             sx={{
-                display: 'flex',
+                display: "flex",
                 flexDirection: flexDirection,
-                justifyContent: 'space-evenly',
-                alignItems: 'center',
+                justifyContent: "space-evenly",
+                alignItems: "center",
             }}
         >
             {scheduleConflict ? (
-                <Tooltip title="This course overlaps with another event in your calendar!" arrow disableInteractive>
-                    <IconButton onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}>
+                <Tooltip
+                    title="This course overlaps with another event in your calendar!"
+                    arrow
+                    disableInteractive
+                >
+                    <IconButton
+                        onClick={() => closeAndAddCourse(AppStore.getCurrentScheduleIndex())}
+                    >
                         <Add fontSize="small" />
                     </IconButton>
                 </Tooltip>
@@ -112,7 +117,7 @@ export function ScheduleAddCell({
     );
 }
 
-export interface ActionCellProps extends Omit<ActionProps, 'classes'> {
+export interface ActionCellProps extends Omit<ActionProps, "classes"> {
     /**
      * Whether the section has been added.
      */
@@ -124,7 +129,7 @@ export interface ActionCellProps extends Omit<ActionProps, 'classes'> {
  */
 export const ActionCell = memo(({ ...props }: ActionCellProps) => {
     return (
-        <TableBodyCellContainer sx={{ width: '8%' }}>
+        <TableBodyCellContainer sx={{ width: "8%" }}>
             {props.addedCourse ? (
                 <DeleteAndNotifications {...props} courseTitle={props.courseDetails.courseTitle} />
             ) : (
@@ -134,4 +139,4 @@ export const ActionCell = memo(({ ...props }: ActionCellProps) => {
     );
 });
 
-ActionCell.displayName = 'ActionCell';
+ActionCell.displayName = "ActionCell";

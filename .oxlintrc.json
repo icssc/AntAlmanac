@@ -2,7 +2,14 @@
     "$schema": "./node_modules/oxlint/configuration_schema.json",
     "plugins": null,
     "categories": {},
-    "rules": {},
+    "rules": {
+        "sort-imports": [
+            "error",
+            {
+                "ignoreDeclarationSort": true
+            }
+        ]
+    },
     "globals": {},
     "ignorePatterns": []
 }

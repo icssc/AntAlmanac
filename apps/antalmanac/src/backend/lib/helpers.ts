@@ -1,13 +1,15 @@
-export async function queryGraphQL<PromiseReturnType>(queryString: string): Promise<PromiseReturnType | null> {
+export async function queryGraphQL<PromiseReturnType>(
+    queryString: string,
+): Promise<PromiseReturnType | null> {
     const query = JSON.stringify({
         query: queryString,
     });
 
-    const res = await fetch('https://anteaterapi.com/v2/graphql', {
-        method: 'POST',
+    const res = await fetch("https://anteaterapi.com/v2/graphql", {
+        method: "POST",
         headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
+            "Content-Type": "application/json",
+            Accept: "application/json",
         },
         body: query,
     });
@@ -23,13 +25,13 @@ export async function queryGraphQL<PromiseReturnType>(queryString: string): Prom
 
 export async function queryHTTPS<PromiseReturnType>(
     params: URLSearchParams,
-    headers?: Record<string, string>
+    headers?: Record<string, string>,
 ): Promise<PromiseReturnType | null> {
     const res = await fetch(`https://anteaterapi.com/v2/rest/websoc?${params.toString()}`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
+            "Content-Type": "application/json",
+            Accept: "application/json",
             ...headers,
         },
     });

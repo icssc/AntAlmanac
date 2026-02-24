@@ -1,24 +1,23 @@
-import { TableRow, useTheme } from '@mui/material';
-import { AASection, CourseDetails } from '@packages/antalmanac-types';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { DayAndTimeCell } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DayAndTimeCell";
+import { DetailsCell } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell";
+import { EnrollmentCell } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/EnrollmentCell";
+import { GpaCell } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/GpaCell";
+import { InstructorsCell } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/InstructorsCell";
+import { LocationsCell } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/LocationsCell";
+import { RestrictionsCell } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/RestrictionsCell";
+import { SectionCodeCell } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SectionCodeCell";
+import { StatusCell } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/StatusCell";
+import { SyllabusCell } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SyllabusCell";
+import { AnalyticsCategory } from "$lib/analytics/analytics";
+import AppStore from "$stores/AppStore";
+import { type SectionTableColumn, useColumnStore } from "$stores/ColumnStore";
+import { useHoveredStore } from "$stores/HoveredStore";
+import { usePreviewStore, useThemeStore } from "$stores/SettingsStore";
+import { TableRow, useTheme } from "@mui/material";
+import { AASection, CourseDetails } from "@packages/antalmanac-types";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 
-import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
-
-import { DayAndTimeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DayAndTimeCell';
-import { DetailsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell';
-import { EnrollmentCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/EnrollmentCell';
-import { GpaCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/GpaCell';
-import { InstructorsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/InstructorsCell';
-import { LocationsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/LocationsCell';
-import { RestrictionsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/RestrictionsCell';
-import { SectionCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SectionCodeCell';
-import { StatusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/StatusCell';
-import { SyllabusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SyllabusCell';
-import { AnalyticsCategory } from '$lib/analytics/analytics';
-import AppStore from '$stores/AppStore';
-import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
-import { useHoveredStore } from '$stores/HoveredStore';
-import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
+import { ActionCell } from "./SectionTableBodyCells/action-cell/ActionCell";
 
 interface SectionTableBodyRowProps {
     section: AASection;
@@ -66,7 +65,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
     const [addedCourse, setAddedCourse] = useState(
-        AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
+        AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`),
     );
 
     // Stable references to event listeners will synchronize React state with the store.
@@ -89,12 +88,12 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
 
     // Attach event listeners to the store.
     useEffect(() => {
-        AppStore.on('addedCoursesChange', updateHighlight);
-        AppStore.on('currentScheduleIndexChange', updateHighlight);
+        AppStore.on("addedCoursesChange", updateHighlight);
+        AppStore.on("currentScheduleIndexChange", updateHighlight);
 
         return () => {
-            AppStore.removeListener('addedCoursesChange', updateHighlight);
-            AppStore.removeListener('currentScheduleIndexChange', updateHighlight);
+            AppStore.removeListener("addedCoursesChange", updateHighlight);
+            AppStore.removeListener("currentScheduleIndexChange", updateHighlight);
         };
     }, [updateHighlight]);
 
@@ -103,8 +102,8 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             /* allowHighlight is always false on CourseRenderPane and always true on AddedCoursePane */
             const computedAddedCourseStyle = allowHighlight
                 ? isDark
-                    ? { backgroundColor: '#b0b04f' }
-                    : { backgroundColor: '#fcfc97' }
+                    ? { backgroundColor: "#b0b04f" }
+                    : { backgroundColor: "#fcfc97" }
                 : {};
 
             return computedAddedCourseStyle;
@@ -113,8 +112,8 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         if (scheduleConflict) {
             const computedScheduleConflictStyle = scheduleConflict
                 ? isDark
-                    ? { backgroundColor: '#121212', opacity: '0.6' }
-                    : { backgroundColor: '#a0a0a0', opacity: '1' }
+                    ? { backgroundColor: "#121212", opacity: "0.6" }
+                    : { backgroundColor: "#a0a0a0", opacity: "1" }
                 : {};
 
             return computedScheduleConflictStyle;
@@ -129,7 +128,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
              * CSS errors occur when combining the `nth-of-type` selector with the computed styling, so it's split into two separate props
              */
             sx={{
-                '&:nth-of-type(odd)': {
+                "&:nth-of-type(odd)": {
                     backgroundColor: theme.palette.action.hover,
                 },
             }}
@@ -164,4 +163,4 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     );
 });
 
-SectionTableBodyRow.displayName = 'SectionTableBodyRow';
+SectionTableBodyRow.displayName = "SectionTableBodyRow";

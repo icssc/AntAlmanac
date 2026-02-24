@@ -26,5 +26,5 @@ outputs:
         description: Deployment ID.
 
 runs:
-    using: 'node20'
-    main: 'src/main.js'
+    using: "node20"
+    main: "src/main.js"

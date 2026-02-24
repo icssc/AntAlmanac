@@ -1,16 +1,24 @@
-import { Autocomplete, type AutocompleteProps, Popper, type PopperProps, type TextFieldProps } from '@mui/material';
-import { useEffect, useId, useState } from 'react';
-
-import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
+import { LabeledTextField } from "$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField";
+import {
+    Autocomplete,
+    type AutocompleteProps,
+    Popper,
+    type PopperProps,
+    type TextFieldProps,
+} from "@mui/material";
+import { useEffect, useId, useState } from "react";
 
 interface LabeledAutocompleteProps<
     T,
     Multiple extends boolean = false,
     DisableClearable extends boolean = false,
-    FreeSolo extends boolean = false
+    FreeSolo extends boolean = false,
 > {
     label: string;
-    autocompleteProps: Omit<AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>, 'renderInput'>;
+    autocompleteProps: Omit<
+        AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>,
+        "renderInput"
+    >;
     textFieldProps?: TextFieldProps;
     isAligned?: boolean;
 }
@@ -31,11 +39,11 @@ const ResponsivePopper = (props: PopperProps) => {
         ro.observe(el);
 
         // Fallback
-        window.addEventListener('resize', update);
+        window.addEventListener("resize", update);
 
         return () => {
             ro.disconnect();
-            window.removeEventListener('resize', update);
+            window.removeEventListener("resize", update);
         };
     }, [anchorEl]);
 
@@ -64,9 +72,9 @@ export const LabeledAutocomplete = <T,>({
             size="small"
             id={id}
             sx={{
-                display: 'flex',
+                display: "flex",
                 flex: 1,
-                width: '100%',
+                width: "100%",
             }}
             {...autocompleteProps}
             PopperComponent={ResponsivePopper}

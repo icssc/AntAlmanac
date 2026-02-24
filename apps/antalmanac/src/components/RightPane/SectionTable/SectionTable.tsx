@@ -1,20 +1,32 @@
-import { Assessment, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
-import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { useMemo } from 'react';
-
-import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
-import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
-import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
-import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
-import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/EnrollmentHistoryPopup';
-import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
-import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
-import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
-import { useIsMobile } from '$hooks/useIsMobile';
-import analyticsEnum from '$lib/analytics/analytics';
-import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
-import { useTimeFormatStore } from '$stores/SettingsStore';
-import { useTabStore } from '$stores/TabStore';
+import { CourseInfoBar } from "$components/RightPane/SectionTable/CourseInfo/CourseInfoBar";
+import { CourseInfoButton } from "$components/RightPane/SectionTable/CourseInfo/CourseInfoButton";
+import { CourseInfoSearchButton } from "$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton";
+import { EnrollmentColumnHeader } from "$components/RightPane/SectionTable/EnrollmentColumnHeader";
+import { EnrollmentHistoryPopup } from "$components/RightPane/SectionTable/EnrollmentHistoryPopup";
+import GradesPopup from "$components/RightPane/SectionTable/GradesPopup";
+import { SectionTableProps } from "$components/RightPane/SectionTable/SectionTable.types";
+import { SectionTableBody } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBody";
+import { useIsMobile } from "$hooks/useIsMobile";
+import analyticsEnum from "$lib/analytics/analytics";
+import {
+    SECTION_TABLE_COLUMNS,
+    type SectionTableColumn,
+    useColumnStore,
+} from "$stores/ColumnStore";
+import { useTimeFormatStore } from "$stores/SettingsStore";
+import { useTabStore } from "$stores/TabStore";
+import { Assessment, Route, ShowChart as ShowChartIcon } from "@mui/icons-material";
+import {
+    Alert,
+    Box,
+    Paper,
+    Table,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+} from "@mui/material";
+import { useMemo } from "react";
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -23,52 +35,62 @@ interface TableHeaderColumnDetails {
     width?: string;
 }
 
-const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHeaderColumnDetails> = {
+const tableHeaderColumns: Record<
+    Exclude<SectionTableColumn, "action">,
+    TableHeaderColumnDetails
+> = {
     sectionCode: {
-        label: 'Code',
-        width: '8%',
+        label: "Code",
+        width: "8%",
     },
     sectionDetails: {
-        label: 'Type',
-        width: '8%',
+        label: "Type",
+        width: "8%",
     },
     instructors: {
-        label: 'Instructors',
-        width: '15%',
+        label: "Instructors",
+        width: "15%",
     },
     gpa: {
-        label: 'GPA',
-        width: '5%',
+        label: "GPA",
+        width: "5%",
     },
     dayAndTime: {
-        label: 'Times',
-        width: '15%',
+        label: "Times",
+        width: "15%",
     },
     location: {
-        label: 'Places',
-        width: '8%',
+        label: "Places",
+        width: "8%",
     },
     sectionEnrollment: {
-        label: 'Enrollment',
-        width: '9%',
+        label: "Enrollment",
+        width: "9%",
     },
     restrictions: {
-        label: 'Restr',
-        width: '8%',
+        label: "Restr",
+        width: "8%",
     },
     status: {
-        label: 'Status',
-        width: '8%',
+        label: "Status",
+        width: "8%",
     },
     syllabus: {
-        label: 'Syllabus',
-        width: '8%',
+        label: "Syllabus",
+        width: "8%",
     },
 };
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
 function SectionTable(props: SectionTableProps) {
-    const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory, missingSections = [] } = props;
+    const {
+        courseDetails,
+        term,
+        allowHighlight,
+        scheduleNames,
+        analyticsCategory,
+        missingSections = [],
+    } = props;
     const { isMilitaryTime } = useTimeFormatStore();
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
@@ -76,7 +98,7 @@ function SectionTable(props: SectionTableProps) {
     const isMobile = useIsMobile();
 
     const courseId = useMemo(() => {
-        return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
+        return courseDetails.deptCode.replaceAll(" ", "") + courseDetails.courseNumber;
     }, [courseDetails.deptCode, courseDetails.courseNumber]);
 
     const formattedTime = useMemo(() => {
@@ -84,11 +106,11 @@ function SectionTable(props: SectionTableProps) {
         const date = new Date(courseDetails.updatedAt);
         if (isNaN(date.getTime())) return null;
         const timeString = date.toLocaleTimeString(undefined, {
-            hour: '2-digit',
-            minute: '2-digit',
+            hour: "2-digit",
+            minute: "2-digit",
             hour12: !isMilitaryTime,
         });
-        return timeString.replace(/^0(\d)/, '$1');
+        return timeString.replace(/^0(\d)/, "$1");
     }, [courseDetails.updatedAt, isMilitaryTime]);
 
     /**
@@ -104,10 +126,10 @@ function SectionTable(props: SectionTableProps) {
         <>
             <Box
                 sx={{
-                    display: 'flex',
-                    gap: '4px',
-                    marginBottom: '8px',
-                    marginTop: '4px',
+                    display: "flex",
+                    gap: "4px",
+                    marginBottom: "8px",
+                    marginTop: "4px",
                 }}
             >
                 <CourseInfoBar
@@ -118,7 +140,9 @@ function SectionTable(props: SectionTableProps) {
                     analyticsCategory={analyticsCategory}
                 />
 
-                {activeTab !== 2 ? null : <CourseInfoSearchButton courseDetails={courseDetails} term={term} />}
+                {activeTab !== 2 ? null : (
+                    <CourseInfoSearchButton courseDetails={courseDetails} term={term} />
+                )}
 
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}
@@ -161,18 +185,18 @@ function SectionTable(props: SectionTableProps) {
                     severity="warning"
                     sx={{
                         mb: 1,
-                        '& .MuiAlert-message': {
-                            display: 'flex',
-                            alignItems: 'center',
+                        "& .MuiAlert-message": {
+                            display: "flex",
+                            alignItems: "center",
                         },
                     }}
                 >
-                    Missing required sections: {missingSections.join(', ')}
+                    Missing required sections: {missingSections.join(", ")}
                 </Alert>
             )}
             <TableContainer
                 component={Paper}
-                sx={{ margin: '8px 0px 8px 0px', width: '100%' }}
+                sx={{ margin: "8px 0px 8px 0px", width: "100%" }}
                 elevation={0}
                 variant="outlined"
             >
@@ -180,8 +204,8 @@ function SectionTable(props: SectionTableProps) {
                     size="small"
                     sx={{
                         minWidth: `${tableMinWidth}px`,
-                        width: '100%',
-                        tableLayout: 'fixed',
+                        width: "100%",
+                        tableLayout: "fixed",
                     }}
                 >
                     <TableHead>
@@ -189,11 +213,13 @@ function SectionTable(props: SectionTableProps) {
                             <TableCell
                                 sx={{
                                     padding: 0,
-                                    width: isMobile ? '6%' : '8%',
+                                    width: isMobile ? "6%" : "8%",
                                 }}
                             />
                             {tableHeaderColumnEntries
-                                .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
+                                .filter(([column]) =>
+                                    activeColumns.includes(column as SectionTableColumn),
+                                )
                                 .map(([column, { label, width }]) => (
                                     <TableCell
                                         key={column}
@@ -202,7 +228,11 @@ function SectionTable(props: SectionTableProps) {
                                             padding: 0,
                                         }}
                                     >
-                                        {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
+                                        {label === "Enrollment" ? (
+                                            <EnrollmentColumnHeader label={label} />
+                                        ) : (
+                                            label
+                                        )}
                                     </TableCell>
                                 ))}
                         </TableRow>

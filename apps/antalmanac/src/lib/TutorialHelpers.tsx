@@ -1,35 +1,38 @@
-import { StepType } from '@reactour/tour';
+import { addSampleClasses } from "$lib/tourExampleGeneration";
+import { useTabStore } from "$stores/TabStore";
+import { StepType } from "@reactour/tour";
 
-import { getLocalStorageTourHasRun, getLocalStorageUserId, setLocalStorageTourHasRun } from './localStorage';
-
-import { addSampleClasses } from '$lib/tourExampleGeneration';
-import { useTabStore } from '$stores/TabStore';
+import {
+    getLocalStorageTourHasRun,
+    getLocalStorageUserId,
+    setLocalStorageTourHasRun,
+} from "./localStorage";
 
 export enum TourStepName {
-    welcome = 'welcome',
-    searchBar = 'searchBar',
-    importButton = 'importButton',
-    calendar = 'calendar',
-    finalsButton = 'finalsButton',
-    showFinals = 'showFinals',
-    addedCoursesTab = 'addedCoursesTab',
-    addedCoursePane = 'addedCoursePane',
-    map = 'map',
-    mapPane = 'mapPane',
-    saveAndLoad = 'saveAndLoad',
+    welcome = "welcome",
+    searchBar = "searchBar",
+    importButton = "importButton",
+    calendar = "calendar",
+    finalsButton = "finalsButton",
+    showFinals = "showFinals",
+    addedCoursesTab = "addedCoursesTab",
+    addedCoursePane = "addedCoursePane",
+    map = "map",
+    mapPane = "mapPane",
+    saveAndLoad = "saveAndLoad",
 }
 
 // Preserves ordering of steps as defined in enum.
 export const tourStepNames = Object.values(TourStepName);
 
 function markTourHasRun() {
-    setLocalStorageTourHasRun('true');
+    setLocalStorageTourHasRun("true");
 }
 
 function waitForElementRect(
     selector: string,
     onReady: (el: Element) => void,
-    options: { timeoutMs?: number; minWidth?: number; minHeight?: number } = {}
+    options: { timeoutMs?: number; minWidth?: number; minHeight?: number } = {},
 ) {
     const timeoutMs = options.timeoutMs ?? 8000;
     const minWidth = options.minWidth ?? 5;
@@ -57,7 +60,10 @@ function waitForElementRect(
     requestAnimationFrame(tick);
 }
 
-function isElementRectReady(selector: string, options: { minWidth?: number; minHeight?: number } = {}): boolean {
+function isElementRectReady(
+    selector: string,
+    options: { minWidth?: number; minHeight?: number } = {},
+): boolean {
     const el = document.querySelector(selector);
     if (!el) return false;
     const rect = el.getBoundingClientRect();
@@ -69,8 +75,8 @@ function isElementRectReady(selector: string, options: { minWidth?: number; minH
 /** Only run tour if it hasn't run before, we're on desktop, and there isn't a user ID saved */
 export function tourShouldRun(): boolean {
     return !(
-        getLocalStorageTourHasRun() == 'true' ||
-        window.matchMedia('(max-width: 799px)').matches ||
+        getLocalStorageTourHasRun() == "true" ||
+        window.matchMedia("(max-width: 799px)").matches ||
         getLocalStorageUserId() != null
     );
 }
@@ -79,14 +85,14 @@ function KbdCard(props: { children?: React.ReactNode }) {
     return (
         <div
             style={{
-                borderRadius: '0.25rem',
-                border: '1px solid #ccc',
-                backgroundColor: '#f7f7f7',
-                display: 'inline',
-                verticalAlign: 'middle',
-                textAlign: 'center',
-                fontFamily: 'monospace',
-                padding: '0.05rem 0.3rem',
+                borderRadius: "0.25rem",
+                border: "1px solid #ccc",
+                backgroundColor: "#f7f7f7",
+                display: "inline",
+                verticalAlign: "middle",
+                textAlign: "center",
+                fontFamily: "monospace",
+                padding: "0.05rem 0.3rem",
             }}
         >
             {props.children}
@@ -94,7 +100,9 @@ function KbdCard(props: { children?: React.ReactNode }) {
     );
 }
 
-export function namedStepsFactory(goToStep: (step: number) => void): Record<TourStepName, StepType> {
+export function namedStepsFactory(
+    goToStep: (step: number) => void,
+): Record<TourStepName, StepType> {
     const setActiveTab = useTabStore.getState().setActiveTab;
 
     const goToNamedStep = (stepName: TourStepName) => {
@@ -116,15 +124,15 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
 
         waitForElementRect(selector, () => {
             // Nudge layout + re-select step so Reactour recomputes target geometry.
-            window.dispatchEvent(new Event('resize'));
+            window.dispatchEvent(new Event("resize"));
             goToNamedStep(stepName);
         });
     };
 
     return {
         welcome: {
-            selector: '#root',
-            position: 'center',
+            selector: "#root",
+            position: "center",
             content: (
                 <>
                     Welcome to AntAlmanac!
@@ -133,7 +141,8 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
                     <br />
                     Press <KbdCard>Esc</KbdCard> to exit.
                     <hr />
-                    You can always review the tour by clicking the button in the bottom right corner.
+                    You can always review the tour by clicking the button in the bottom right
+                    corner.
                 </>
             ),
             actionAfter: () => {
@@ -141,35 +150,35 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
             },
         },
         searchBar: {
-            selector: '#fuzzy-search',
-            content: 'You can search for your classes here!',
+            selector: "#fuzzy-search",
+            content: "You can search for your classes here!",
             action: () => {
                 markTourHasRun();
-                setActiveTab('search');
-                reselectStepWhenReady(TourStepName.searchBar, '#fuzzy-search');
+                setActiveTab("search");
+                reselectStepWhenReady(TourStepName.searchBar, "#fuzzy-search");
             },
-            mutationObservables: ['#fuzzy-search'],
+            mutationObservables: ["#fuzzy-search"],
         },
         importButton: {
-            selector: '#import-button',
-            content: 'Quickly add your classes from WebReg or Zotcourse!',
-            position: 'bottom',
+            selector: "#import-button",
+            content: "Quickly add your classes from WebReg or Zotcourse!",
+            position: "bottom",
         },
         calendar: {
-            selector: '#calendar-root',
-            content: 'See the classes in your schedule!',
-            position: 'right',
+            selector: "#calendar-root",
+            content: "See the classes in your schedule!",
+            position: "right",
             action: () => {
                 addSampleClasses();
-                const finalsButtonPressed = document.getElementById('finals-button-pressed');
+                const finalsButtonPressed = document.getElementById("finals-button-pressed");
                 if (!finalsButtonPressed) return;
                 finalsButtonPressed.click(); // To switch back to normal view
             },
-            resizeObservables: ['#calendar-root'],
-            mutationObservables: ['#calendar-root'],
+            resizeObservables: ["#calendar-root"],
+            mutationObservables: ["#calendar-root"],
         },
         finalsButton: {
-            selector: '#finals-button, #finals-button-pressed',
+            selector: "#finals-button, #finals-button-pressed",
             content: (
                 <>
                     <b>Click</b> to see your finals
@@ -181,90 +190,93 @@ export function namedStepsFactory(goToStep: (step: number) => void): Record<Tour
                     goToNamedStep(TourStepName.showFinals);
                 },
                 // Only move to the next step if the button is toggled from off to on, not vice versa.
-                { selector: '#finals-button', eventType: 'click' }
+                { selector: "#finals-button", eventType: "click" },
             ),
         },
         showFinals: {
-            selector: '#calendar-root',
-            content: 'See your finals on the calendar',
+            selector: "#calendar-root",
+            content: "See your finals on the calendar",
             /** Click the finals button if the user hasn't already */
             action: () => {
                 // If the button has been clicked, we need to wait for the id to change.
                 setTimeout(() => {
-                    document.getElementById('finals-button')?.click();
+                    document.getElementById("finals-button")?.click();
                 }, 50);
             },
             actionAfter: () => {
                 // Switch back to normal calendar
                 setTimeout(() => {
-                    document.getElementById('finals-button-pressed')?.click();
+                    document.getElementById("finals-button-pressed")?.click();
                 }, 50);
             },
         },
         addedCoursesTab: {
-            selector: '#added-courses-tab',
+            selector: "#added-courses-tab",
             content: (
                 <>
                     <b>Select</b> the added courses tab for a list of your courses and details
                 </>
             ),
             action: tourActionFactory(() => goToNamedStep(TourStepName.addedCoursePane), {
-                selector: '#added-courses-tab',
-                eventType: 'click',
+                selector: "#added-courses-tab",
+                eventType: "click",
             }),
         },
         addedCoursePane: {
-            selector: '#course-pane-box',
+            selector: "#course-pane-box",
             content: (
                 <>
                     <b>Select</b> the added courses tab for a list of your courses and details
                 </>
             ),
-            action: () => setActiveTab('added'),
-            mutationObservables: ['#course-pane-box'],
+            action: () => setActiveTab("added"),
+            mutationObservables: ["#course-pane-box"],
         },
         map: {
-            selector: '#map-tab',
+            selector: "#map-tab",
             content: (
                 <>
                     <b>Select</b> the map tab to see where your classes are.
                 </>
             ),
-            action: tourActionFactory(() => reselectStepWhenReady(TourStepName.mapPane, '#map-pane'), {
-                selector: '#map-tab',
-                eventType: 'click',
-            }),
+            action: tourActionFactory(
+                () => reselectStepWhenReady(TourStepName.mapPane, "#map-pane"),
+                {
+                    selector: "#map-tab",
+                    eventType: "click",
+                },
+            ),
         },
         mapPane: {
-            selector: '#map-pane',
-            content: 'Click on a day to see your route!',
+            selector: "#map-pane",
+            content: "Click on a day to see your route!",
             action: () => {
-                setActiveTab('map');
+                setActiveTab("map");
 
-                if (!window.location.pathname.includes('/map')) {
+                if (!window.location.pathname.includes("/map")) {
                     // Clicking the tab will also navigate via the Link component
                     setTimeout(() => {
-                        document.getElementById('map-tab')?.click();
+                        document.getElementById("map-tab")?.click();
                     }, 0);
                 }
 
                 // Ensure this step anchors only after #map-pane is measurable.
-                reselectStepWhenReady(TourStepName.mapPane, '#map-pane');
+                reselectStepWhenReady(TourStepName.mapPane, "#map-pane");
             },
-            mutationObservables: ['#root', '#map-pane'],
-            resizeObservables: ['#root', '#map-pane'],
+            mutationObservables: ["#root", "#map-pane"],
+            resizeObservables: ["#root", "#map-pane"],
         },
         saveAndLoad: {
-            selector: '#load-save-container',
+            selector: "#load-save-container",
             content: (
                 <>
                     <b>Sign in</b> to save your schedules when you&apos;re done. <br />
                     That&apos;s it 🎉 Good luck with your classes!
                 </>
             ),
-            position: 'bottom',
+            position: "bottom",
             action: () => {
-                reselectStepWhenReady(TourStepName.saveAndLoad, '#load-save-container');
+                reselectStepWhenReady(TourStepName.saveAndLoad, "#load-save-container");
             },
         },
     };
@@ -306,7 +318,10 @@ function runOneCallableFactory(callable: Function): RunOnceCallable {
  * @param waitFor Field and value to watch for in the tour store.
  * @returns The function that can be used as a tour step action.
  */
-function tourActionFactory(func: () => void, waitFor: { selector?: string; eventType?: string } = {}) {
+function tourActionFactory(
+    func: () => void,
+    waitFor: { selector?: string; eventType?: string } = {},
+) {
     const action = () => {
         if (!(waitFor?.eventType && waitFor?.selector && func)) return;
 

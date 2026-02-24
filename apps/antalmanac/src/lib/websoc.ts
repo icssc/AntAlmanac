@@ -1,6 +1,5 @@
-import { WebsocAPIResponse } from '@packages/antalmanac-types';
-
-import trpc from '$lib/api/trpc';
+import trpc from "$lib/api/trpc";
+import { WebsocAPIResponse } from "@packages/antalmanac-types";
 
 type CacheEntry = WebsocAPIResponse & {
     timestamp: number;

@@ -1,29 +1,29 @@
-import { scope } from 'arktype';
+import { scope } from "arktype";
 
 const types = scope({
     legacyCourse: {
-        color: 'string',
-        term: 'string',
-        sectionCode: 'string',
-        scheduleIndices: 'number[]',
+        color: "string",
+        term: "string",
+        sectionCode: "string",
+        scheduleIndices: "number[]",
     },
     legacyCustomEvent: {
-        customEventID: 'string',
-        color: 'string',
-        title: 'string',
-        days: 'boolean[]',
-        scheduleIndices: 'number[]',
-        start: 'string',
-        end: 'string',
+        customEventID: "string",
+        color: "string",
+        title: "string",
+        days: "boolean[]",
+        scheduleIndices: "number[]",
+        start: "string",
+        end: "string",
     },
     legacyUserData: {
-        addedCourses: 'legacyCourse[]',
-        scheduleNames: 'string[]',
-        customEvents: 'legacyCustomEvent[]',
+        addedCourses: "legacyCourse[]",
+        scheduleNames: "string[]",
+        customEvents: "legacyCustomEvent[]",
     },
     legacyUser: {
-        _id: 'string',
-        userData: 'legacyUserData',
+        _id: "string",
+        userData: "legacyUserData",
     },
 }).compile();
 

@@ -1,36 +1,39 @@
-import { describe, test, expect } from 'vitest';
-import { parseDaysString, SHORT_DAYS } from '$stores/calendarizeHelpers';
+import { SHORT_DAYS, parseDaysString } from "$stores/calendarizeHelpers";
+import { describe, expect, test } from "vitest";
 
-describe('parse days string', () => {
+describe("parse days string", () => {
     // This is a hardcoded example.
-    test('hardcoded one day', () => {
-        expect(parseDaysString('Su')).toEqual([0]);
-        expect(parseDaysString('M')).toEqual([1]);
-        expect(parseDaysString('Tu')).toEqual([2]);
-        expect(parseDaysString('W')).toEqual([3]);
-        expect(parseDaysString('Th')).toEqual([4]);
-        expect(parseDaysString('F')).toEqual([5]);
-        expect(parseDaysString('Sa')).toEqual([6]);
+    test("hardcoded one day", () => {
+        expect(parseDaysString("Su")).toEqual([0]);
+        expect(parseDaysString("M")).toEqual([1]);
+        expect(parseDaysString("Tu")).toEqual([2]);
+        expect(parseDaysString("W")).toEqual([3]);
+        expect(parseDaysString("Th")).toEqual([4]);
+        expect(parseDaysString("F")).toEqual([5]);
+        expect(parseDaysString("Sa")).toEqual([6]);
     });
 
     // Same as the one above, but done dynamically.
     // TODO: it might be possible to do all these tests with a single for loop.
 
-    test('one day', () => {
+    test("one day", () => {
         for (const day of SHORT_DAYS) {
             expect(parseDaysString(day)).toEqual([SHORT_DAYS.indexOf(day)]);
         }
     });
 
-    test('two days', () => {
+    test("two days", () => {
         for (const day1 of SHORT_DAYS) {
             for (const day2 of SHORT_DAYS) {
-                expect(parseDaysString(`${day1}${day2}`)).toEqual([SHORT_DAYS.indexOf(day1), SHORT_DAYS.indexOf(day2)]);
+                expect(parseDaysString(`${day1}${day2}`)).toEqual([
+                    SHORT_DAYS.indexOf(day1),
+                    SHORT_DAYS.indexOf(day2),
+                ]);
             }
         }
     });
 
-    test('three days', () => {
+    test("three days", () => {
         for (const day1 of SHORT_DAYS) {
             for (const day2 of SHORT_DAYS) {
                 for (const day3 of SHORT_DAYS) {
@@ -44,7 +47,7 @@ describe('parse days string', () => {
         }
     });
 
-    test('four days', () => {
+    test("four days", () => {
         for (const day1 of SHORT_DAYS) {
             for (const day2 of SHORT_DAYS) {
                 for (const day3 of SHORT_DAYS) {
@@ -61,15 +64,18 @@ describe('parse days string', () => {
         }
     });
 
-    test('two days scrambled order', () => {
+    test("two days scrambled order", () => {
         for (const day1 of SHORT_DAYS) {
             for (const day2 of SHORT_DAYS) {
-                expect(parseDaysString(`${day2}${day1}`)).toEqual([SHORT_DAYS.indexOf(day2), SHORT_DAYS.indexOf(day1)]);
+                expect(parseDaysString(`${day2}${day1}`)).toEqual([
+                    SHORT_DAYS.indexOf(day2),
+                    SHORT_DAYS.indexOf(day1),
+                ]);
             }
         }
     });
 
-    test('three days scrambled order', () => {
+    test("three days scrambled order", () => {
         for (const day1 of SHORT_DAYS) {
             for (const day2 of SHORT_DAYS) {
                 for (const day3 of SHORT_DAYS) {
@@ -83,7 +89,7 @@ describe('parse days string', () => {
         }
     });
 
-    test('four days scrambled order', () => {
+    test("four days scrambled order", () => {
         for (const day1 of SHORT_DAYS) {
             for (const day2 of SHORT_DAYS) {
                 for (const day3 of SHORT_DAYS) {

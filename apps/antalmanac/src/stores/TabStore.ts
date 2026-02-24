@@ -1,6 +1,6 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
-type TabName = 'calendar' | 'search' | 'added' | 'map';
+type TabName = "calendar" | "search" | "added" | "map";
 
 const TabMap: Record<TabName, number> = {
     calendar: 0,

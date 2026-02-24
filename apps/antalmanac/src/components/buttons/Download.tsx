@@ -1,9 +1,8 @@
-import { Download } from '@mui/icons-material';
-import { IconButton, Tooltip } from '@mui/material';
-import { PostHog, usePostHog } from 'posthog-js/react';
-
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { exportCalendar } from '$lib/download';
+import analyticsEnum, { logAnalytics } from "$lib/analytics/analytics";
+import { exportCalendar } from "$lib/download";
+import { Download } from "@mui/icons-material";
+import { IconButton, Tooltip } from "@mui/material";
+import { PostHog, usePostHog } from "posthog-js/react";
 
 const exportCalendarEvent = (postHog?: PostHog) => {
     return () => {

@@ -1,5 +1,5 @@
-import { DynamoDB } from 'aws-sdk';
-import { Key, WriteRequest } from 'aws-sdk/clients/dynamodb';
+import { DynamoDB } from "aws-sdk";
+import { Key, WriteRequest } from "aws-sdk/clients/dynamodb";
 
 interface CopyProps {
     sourceTableName: string;
@@ -12,12 +12,12 @@ interface CopyProps {
 
 async function main() {
     const config: DynamoDB.ClientConfiguration = {
-        region: 'us-west-1',
-        accessKeyId: '',
-        secretAccessKey: '',
+        region: "us-west-1",
+        accessKeyId: "",
+        secretAccessKey: "",
     };
 
-    const sourceTableName = '';
+    const sourceTableName = "";
     const sourceDdbClient = new DynamoDB.DocumentClient(config);
     const sourceDdb = new DynamoDB(config);
 
@@ -31,10 +31,10 @@ async function main() {
             } else {
                 console.log(data);
             }
-        }
+        },
     );
 
-    const destinationTableName = '';
+    const destinationTableName = "";
     const destinationDdbClient = new DynamoDB.DocumentClient(config);
     const destinationDdb = new DynamoDB(config);
 
@@ -48,7 +48,7 @@ async function main() {
             } else {
                 console.log(data);
             }
-        }
+        },
     );
 
     const props: CopyProps = {
@@ -75,7 +75,7 @@ function copyStartingFrom(props: CopyProps, ExclusiveStartKey?: Key) {
             ExclusiveStartKey,
         },
         (err, data) => {
-            console.log('Completed scan!');
+            console.log("Completed scan!");
 
             console.log({ err });
             console.log({ data });
@@ -91,11 +91,11 @@ function copyStartingFrom(props: CopyProps, ExclusiveStartKey?: Key) {
             });
 
             if (items == null || LastEvaluatedKey == null) {
-                console.log('No more items to copy!');
+                console.log("No more items to copy!");
                 return;
             }
 
-            console.log('Copying items...');
+            console.log("Copying items...");
 
             destinationDdbClient.batchWrite(
                 {
@@ -110,15 +110,15 @@ function copyStartingFrom(props: CopyProps, ExclusiveStartKey?: Key) {
                     }
 
                     console.log({ data });
-                    console.log('Copied items!');
-                    console.log('Waiting until next copy...');
+                    console.log("Copied items!");
+                    console.log("Waiting until next copy...");
 
                     setTimeout(() => {
                         copyStartingFrom(props, LastEvaluatedKey);
                     }, 200);
-                }
+                },
             );
-        }
+        },
     );
 }
 

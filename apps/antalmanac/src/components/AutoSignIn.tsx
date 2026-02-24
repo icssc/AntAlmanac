@@ -1,10 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { loginUser } from "$actions/AppStoreActions";
+import trpc from "$lib/api/trpc";
+import { getLocalStorageSessionId } from "$lib/localStorage";
+import { useEffect, useRef } from "react";
 
-import { loginUser } from '$actions/AppStoreActions';
-import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId } from '$lib/localStorage';
-
-const AUTH_ORIGIN = 'https://auth.icssc.club';
+const AUTH_ORIGIN = "https://auth.icssc.club";
 const SESSION_CHECK_TIMEOUT = 5000;
 
 interface SessionCheckResult {
@@ -63,13 +62,13 @@ function checkIcsscSession(): Promise<SessionCheckResult> {
             resolve({ valid: false, user: null });
         }, SESSION_CHECK_TIMEOUT);
 
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
+        const iframe = document.createElement("iframe");
+        iframe.style.display = "none";
         iframe.src = `${AUTH_ORIGIN}/session/check?origin=${encodeURIComponent(window.location.origin)}`;
 
         const handleMessage = (event: MessageEvent) => {
             if (event.origin !== AUTH_ORIGIN) return;
-            if (event.data?.type !== 'icssc-session-check') return;
+            if (event.data?.type !== "icssc-session-check") return;
 
             cleanup();
             resolve({
@@ -80,13 +79,13 @@ function checkIcsscSession(): Promise<SessionCheckResult> {
 
         const cleanup = () => {
             clearTimeout(timeout);
-            window.removeEventListener('message', handleMessage);
+            window.removeEventListener("message", handleMessage);
             if (iframe.parentNode) {
                 iframe.parentNode.removeChild(iframe);
             }
         };
 
-        window.addEventListener('message', handleMessage);
+        window.addEventListener("message", handleMessage);
         document.body.appendChild(iframe);
     });
 }

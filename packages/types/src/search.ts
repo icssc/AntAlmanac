@@ -1,16 +1,16 @@
 export type GESearchResult = {
-    type: 'GE_CATEGORY';
+    type: "GE_CATEGORY";
     name: string;
 };
 
 export type DepartmentSearchResult = {
-    type: 'DEPARTMENT';
+    type: "DEPARTMENT";
     name: string;
     alias?: string;
 };
 
 export type CourseSearchResult = {
-    type: 'COURSE';
+    type: "COURSE";
     name: string;
     alias?: string;
     metadata: {
@@ -21,7 +21,7 @@ export type CourseSearchResult = {
 };
 
 export type SectionSearchResult = {
-    type: 'SECTION';
+    type: "SECTION";
     department: string;
     courseNumber: string;
     sectionCode: string;
@@ -29,4 +29,8 @@ export type SectionSearchResult = {
     sectionType: string;
 };
 
-export type SearchResult = GESearchResult | DepartmentSearchResult | CourseSearchResult | SectionSearchResult;
+export type SearchResult =
+    | GESearchResult
+    | DepartmentSearchResult
+    | CourseSearchResult
+    | SectionSearchResult;

@@ -1,30 +1,29 @@
-'use client';
+"use client";
 
-import { CssBaseline, type PaletteOptions } from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Roboto } from 'next/font/google';
-import { usePostHog } from 'posthog-js/react';
-import { useEffect, useMemo } from 'react';
-
-import { BLUE, DODGER_BLUE } from '$src/globals';
-import { useThemeStore } from '$stores/SettingsStore';
+import { BLUE, DODGER_BLUE } from "$src/globals";
+import { useThemeStore } from "$stores/SettingsStore";
+import { CssBaseline, type PaletteOptions } from "@mui/material";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { Roboto } from "next/font/google";
+import { usePostHog } from "posthog-js/react";
+import { useEffect, useMemo } from "react";
 
 const roboto = Roboto({
-    weight: ['300', '400', '500', '700'],
-    subsets: ['latin'],
-    display: 'swap',
+    weight: ["300", "400", "500", "700"],
+    subsets: ["latin"],
+    display: "swap",
 });
 
 const lightTheme: PaletteOptions = {
     primary: {
-        main: '#5191d6',
+        main: "#5191d6",
     },
     secondary: {
-        main: '#ffffff',
+        main: "#ffffff",
     },
     background: {
-        default: '#fafafa',
-        paper: '#fff',
+        default: "#fafafa",
+        paper: "#fff",
     },
 };
 
@@ -33,11 +32,11 @@ const darkTheme: PaletteOptions = {
         main: DODGER_BLUE,
     },
     secondary: {
-        main: '#ffffff',
+        main: "#ffffff",
     },
     background: {
-        default: '#303030',
-        paper: '#424242',
+        default: "#303030",
+        paper: "#424242",
     },
 };
 
@@ -45,7 +44,7 @@ interface Props {
     children?: React.ReactNode;
 }
 
-declare module '@mui/material/styles' {
+declare module "@mui/material/styles" {
     interface BreakpointOverrides {
         xxs: true;
         default: true;
@@ -61,15 +60,15 @@ export default function AppThemeProvider(props: Props) {
 
     useEffect(() => {
         const onChange = (e: MediaQueryListEvent) => {
-            setAppTheme(e.matches ? 'dark' : 'light', postHog);
+            setAppTheme(e.matches ? "dark" : "light", postHog);
         };
 
-        const mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
+        const mediaQueryList = window.matchMedia("(prefers-color-scheme: dark)");
 
-        mediaQueryList.addEventListener('change', onChange);
+        mediaQueryList.addEventListener("change", onChange);
 
         return () => {
-            mediaQueryList.removeEventListener('change', onChange);
+            mediaQueryList.removeEventListener("change", onChange);
         };
     }, [setAppTheme, postHog]);
 
@@ -83,25 +82,25 @@ export default function AppThemeProvider(props: Props) {
                     MuiAppBar: {
                         styleOverrides: {
                             root: {
-                                backgroundImage: 'none',
+                                backgroundImage: "none",
                             },
                         },
                     },
                     MuiButton: {
                         styleOverrides: {
                             root: ({ ownerState }) => ({
-                                ...(ownerState.variant === 'contained' &&
-                                    ownerState.color === 'primary' && {
+                                ...(ownerState.variant === "contained" &&
+                                    ownerState.color === "primary" && {
                                         backgroundColor: BLUE,
-                                        ':hover': {
-                                            backgroundColor: '#003A75',
+                                        ":hover": {
+                                            backgroundColor: "#003A75",
                                         },
                                     }),
-                                ...(ownerState.variant === 'contained' &&
-                                    ownerState.color === 'secondary' && {
-                                        backgroundColor: '#E0E0E0',
-                                        ':hover': {
-                                            backgroundColor: '#D5D5D5',
+                                ...(ownerState.variant === "contained" &&
+                                    ownerState.color === "secondary" && {
+                                        backgroundColor: "#E0E0E0",
+                                        ":hover": {
+                                            backgroundColor: "#D5D5D5",
                                         },
                                     }),
                             }),
@@ -110,7 +109,7 @@ export default function AppThemeProvider(props: Props) {
                     MuiCssBaseline: {
                         styleOverrides: {
                             a: {
-                                color: appTheme === 'dark' ? DODGER_BLUE : BLUE,
+                                color: appTheme === "dark" ? DODGER_BLUE : BLUE,
                             },
                         },
                     },
@@ -118,44 +117,44 @@ export default function AppThemeProvider(props: Props) {
                     MuiDialog: {
                         styleOverrides: {
                             paper: {
-                                backgroundImage: 'none',
+                                backgroundImage: "none",
                             },
                         },
                     },
                     MuiDrawer: {
                         styleOverrides: {
                             paper: {
-                                backgroundImage: 'none',
+                                backgroundImage: "none",
                             },
                         },
                     },
                     MuiInputLabel: {
                         defaultProps: {
-                            variant: 'standard',
+                            variant: "standard",
                         },
                     },
                     MuiPopover: {
                         styleOverrides: {
                             paper: {
-                                backgroundImage: 'none',
+                                backgroundImage: "none",
                             },
                         },
                     },
                     MuiSelect: {
                         defaultProps: {
-                            variant: 'standard',
+                            variant: "standard",
                         },
                     },
                     MuiTextField: {
                         defaultProps: {
-                            variant: 'standard',
+                            variant: "standard",
                         },
                     },
                     MuiAlert: {
                         styleOverrides: {
                             standardWarning: {
-                                backgroundColor: '#FFEA99',
-                                color: '#302800ff',
+                                backgroundColor: "#FFEA99",
+                                color: "#302800ff",
                             },
                         },
                     },
@@ -176,11 +175,11 @@ export default function AppThemeProvider(props: Props) {
                     },
                 },
                 palette: {
-                    mode: appTheme === 'dark' ? 'dark' : 'light',
-                    ...(appTheme === 'dark' ? darkTheme : lightTheme),
+                    mode: appTheme === "dark" ? "dark" : "light",
+                    ...(appTheme === "dark" ? darkTheme : lightTheme),
                 },
             }),
-        [appTheme]
+        [appTheme],
     );
 
     return (

@@ -1,7 +1,6 @@
-import { Select, SelectProps } from '@mui/material';
-import { useId } from 'react';
-
-import { LabeledInput } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledInput';
+import { LabeledInput } from "$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledInput";
+import { Select, SelectProps } from "@mui/material";
+import { useId } from "react";
 
 interface LabeledSelectProps<T = string | string[]> {
     label: string;

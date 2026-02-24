@@ -1,19 +1,22 @@
+import { getDefaultTerm } from "$lib/termData";
+import { WebSOC } from "$lib/websoc";
+import { getColorForNewSection } from "$stores/scheduleHelpers";
 import type {
+    CourseInfo,
+    CustomEventId,
+    RepeatingCustomEvent,
     Schedule,
     ScheduleCourse,
     ScheduleSaveState,
     ScheduleUndoState,
     ShortCourseSchedule,
-    RepeatingCustomEvent,
-    CourseInfo,
-    CustomEventId,
-} from '@packages/antalmanac-types';
+} from "@packages/antalmanac-types";
 
-import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
-
-import { getDefaultTerm } from '$lib/termData';
-import { WebSOC } from '$lib/websoc';
-import { getColorForNewSection } from '$stores/scheduleHelpers';
+import {
+    calendarizeCourseEvents,
+    calendarizeCustomEvents,
+    calendarizeFinals,
+} from "./calendarizeHelpers";
 
 /**
  * Manages state of schedules. Only one instance is really needed for the app.
@@ -41,7 +44,7 @@ export class Schedules {
 
         this.schedules = [
             {
-                scheduleName: `${getDefaultTerm().shortName.replaceAll(' ', '-')}`,
+                scheduleName: `${getDefaultTerm().shortName.replaceAll(" ", "-")}`,
                 courses: [],
                 customEvents: [],
                 scheduleNoteId: scheduleNoteId,
@@ -50,7 +53,7 @@ export class Schedules {
         this.currentScheduleIndex = 0;
         this.previousStates = [];
         this.futureStates = [];
-        this.scheduleNoteMap = { [scheduleNoteId]: '' };
+        this.scheduleNoteMap = { [scheduleNoteId]: "" };
         this.skeletonSchedules = [];
     }
 
@@ -67,7 +70,7 @@ export class Schedules {
     }
 
     getDefaultScheduleName() {
-        return getDefaultTerm().shortName.replaceAll(' ', '-');
+        return getDefaultTerm().shortName.replaceAll(" ", "-");
     }
 
     getCurrentScheduleIndex() {
@@ -119,7 +122,7 @@ export class Schedules {
         });
         // Setting schedule index manually otherwise 2 undo states are added
         this.currentScheduleIndex = this.getNumberOfSchedules() - 1;
-        this.scheduleNoteMap[scheduleNoteId] = '';
+        this.scheduleNoteMap[scheduleNoteId] = "";
     }
 
     /**
@@ -128,7 +131,10 @@ export class Schedules {
      */
     renameSchedule(scheduleIndex: number, newScheduleName: string) {
         this.addUndoState();
-        this.schedules[scheduleIndex].scheduleName = this.getNextScheduleName(scheduleIndex, newScheduleName);
+        this.schedules[scheduleIndex].scheduleName = this.getNextScheduleName(
+            scheduleIndex,
+            newScheduleName,
+        );
     }
 
     /**
@@ -164,7 +170,8 @@ export class Schedules {
         for (const customEvent of this.getCurrentCustomEvents()) {
             this.addCustomEvent(customEvent, [to], false);
         }
-        this.currentScheduleIndex = this.previousStates[this.previousStates.length - 1].scheduleIndex; // return to previously selected schedule index
+        this.currentScheduleIndex =
+            this.previousStates[this.previousStates.length - 1].scheduleIndex; // return to previously selected schedule index
     }
 
     /**
@@ -191,7 +198,11 @@ export class Schedules {
      * Get a set of "{sectionCode} {term}" section codes in current schedule.
      */
     getAddedSectionCodes() {
-        return new Set(this.getCurrentCourses().map((course) => `${course.section.sectionCode} ${course.term}`));
+        return new Set(
+            this.getCurrentCourses().map(
+                (course) => `${course.section.sectionCode} ${course.term}`,
+            ),
+        );
     }
 
     /**
@@ -239,12 +250,15 @@ export class Schedules {
             this.addUndoState();
         }
 
-        const existingSection = this.getExistingCourseInSchedule(newCourse.section.sectionCode, newCourse.term);
+        const existingSection = this.getExistingCourseInSchedule(
+            newCourse.section.sectionCode,
+            newCourse.term,
+        );
 
         const existsInSchedule = this.doesCourseExistInSchedule(
             newCourse.section.sectionCode,
             newCourse.term,
-            scheduleIndex
+            scheduleIndex,
         );
 
         // If it's already present in a schedule, then no need to push it.
@@ -264,7 +278,7 @@ export class Schedules {
                 // New colors are drawn from a Set of unused colors across the newCourse's term
                 color: getColorForNewSection(
                     newCourse,
-                    this.getAllCourses().filter((course) => course.term === newCourse.term)
+                    this.getAllCourses().filter((course) => course.term === newCourse.term),
                 ),
             },
         };
@@ -305,7 +319,9 @@ export class Schedules {
     deleteCourse(sectionCode: string, term: string, scheduleIndex: number) {
         this.addUndoState();
         this.setCurrentScheduleIndex(scheduleIndex);
-        this.schedules[scheduleIndex].courses = this.schedules[this.currentScheduleIndex].courses.filter((course) => {
+        this.schedules[scheduleIndex].courses = this.schedules[
+            this.currentScheduleIndex
+        ].courses.filter((course) => {
             return !(course.section.sectionCode === sectionCode && course.term === term);
         });
     }
@@ -362,7 +378,11 @@ export class Schedules {
     /**
      * Adds a new custom event to given indices
      */
-    addCustomEvent(newCustomEvent: RepeatingCustomEvent, scheduleIndices: number[], addUndoState = true) {
+    addCustomEvent(
+        newCustomEvent: RepeatingCustomEvent,
+        scheduleIndices: number[],
+        addUndoState = true,
+    ) {
         if (addUndoState) {
             this.addUndoState();
         }
@@ -377,11 +397,16 @@ export class Schedules {
      * Deletes custom event from the given indices.
      * @param scheduleIndices The schedule indices to delete the custom event from.
      */
-    deleteCustomEvent(customEventId: CustomEventId, scheduleIndices = [this.getCurrentScheduleIndex()]) {
+    deleteCustomEvent(
+        customEventId: CustomEventId,
+        scheduleIndices = [this.getCurrentScheduleIndex()],
+    ) {
         this.addUndoState();
         for (const scheduleIndex of scheduleIndices) {
             const customEvents = this.schedules[scheduleIndex].customEvents;
-            const index = customEvents.findIndex((customEvent) => customEvent.customEventID === customEventId);
+            const index = customEvents.findIndex(
+                (customEvent) => customEvent.customEventID === customEventId,
+            );
             if (index !== undefined) {
                 customEvents.splice(index, 1);
             }
@@ -584,7 +609,7 @@ export class Schedules {
             const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
 
             const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
-                const sectionCodes = Array.from(courseSet).join(',');
+                const sectionCodes = Array.from(courseSet).join(",");
                 const courseInfo = await WebSOC.getCourseInfo({ term, sectionCodes });
                 courseInfoDict.set(term, courseInfo);
             });
@@ -600,7 +625,7 @@ export class Schedules {
                 for (const shortCourse of shortCourseSchedule.courses) {
                     const courseInfoMap = courseInfoDict.get(shortCourse.term);
                     if (courseInfoMap !== undefined) {
-                        const courseInfo = courseInfoMap[shortCourse.sectionCode.padStart(5, '0')];
+                        const courseInfo = courseInfoMap[shortCourse.sectionCode.padStart(5, "0")];
                         if (courseInfo === undefined) {
                             // Class doesn't exist/was cancelled
                             continue;
@@ -617,12 +642,12 @@ export class Schedules {
                 }
 
                 const scheduleNoteId = Math.random();
-                if ('scheduleNote' in shortCourseSchedule) {
+                if ("scheduleNote" in shortCourseSchedule) {
                     this.scheduleNoteMap[scheduleNoteId] = shortCourseSchedule.scheduleNote;
                 } else {
                     // If this is a schedule that was saved before schedule notes were implemented,
                     // just give each schedule an empty schedule note
-                    this.scheduleNoteMap[scheduleNoteId] = '';
+                    this.scheduleNoteMap[scheduleNoteId] = "";
                 }
 
                 this.schedules.push({
@@ -635,7 +660,7 @@ export class Schedules {
         } catch (e) {
             console.error(e);
             this.revertState();
-            throw new Error('Unable to load schedule');
+            throw new Error("Unable to load schedule");
         }
     }
 
@@ -643,7 +668,7 @@ export class Schedules {
         const scheduleNoteId = this.schedules[this.currentScheduleIndex]?.scheduleNoteId;
 
         if (scheduleNoteId == null) {
-            return '';
+            return "";
         }
 
         return this.scheduleNoteMap[scheduleNoteId];

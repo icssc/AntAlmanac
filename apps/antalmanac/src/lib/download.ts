@@ -1,51 +1,76 @@
-import type { HourMinute } from '@packages/antalmanac-types';
-import { saveAs } from 'file-saver';
-import { createEvents, type EventAttributes } from 'ics';
+import { openSnackbar } from "$actions/AppStoreActions";
+import type { CustomEvent, FinalExam } from "$components/Calendar/CourseCalendarEvent";
+import buildingCatalogue from "$lib/locations/buildingCatalogue";
+import { getDefaultTerm, termData } from "$lib/termData";
+import AppStore from "$stores/AppStore";
+import type { HourMinute } from "@packages/antalmanac-types";
+import { saveAs } from "file-saver";
+import { type EventAttributes, createEvents } from "ics";
 
-import { notNull } from './utils';
+import { notNull } from "./utils";
 
-import { openSnackbar } from '$actions/AppStoreActions';
-import type { CustomEvent, FinalExam } from '$components/Calendar/CourseCalendarEvent';
-import buildingCatalogue from '$lib/locations/buildingCatalogue';
-import { getDefaultTerm, termData } from '$lib/termData';
-import AppStore from '$stores/AppStore';
-
-export const quarterStartDates = Object.fromEntries(termData.map((term) => [term.shortName, term.startDate]));
+export const quarterStartDates = Object.fromEntries(
+    termData.map((term) => [term.shortName, term.startDate]),
+);
 
 export const months: Record<string, number> = { Mar: 3, Jun: 6, Jul: 7, Aug: 8, Sep: 9, Dec: 12 };
 
-export const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'] as const;
+export const daysOfWeek = ["Su", "M", "Tu", "W", "Th", "F", "Sa"] as const;
 
-export const daysOffset: Record<string, number> = { SU: -1, MO: 0, TU: 1, WE: 2, TH: 3, FR: 4, SA: 5 };
+export const daysOffset: Record<string, number> = {
+    SU: -1,
+    MO: 0,
+    TU: 1,
+    WE: 2,
+    TH: 3,
+    FR: 4,
+    SA: 5,
+};
 
-export const fallDaysOffset: Record<string, number> = { TH: 0, FR: 1, SA: 2, SU: 3, MO: 4, TU: 5, WE: 6 };
+export const fallDaysOffset: Record<string, number> = {
+    TH: 0,
+    FR: 1,
+    SA: 2,
+    SU: 3,
+    MO: 4,
+    TU: 5,
+    WE: 6,
+};
 
-export const translateDaysForIcs = { Su: 'SU', M: 'MO', Tu: 'TU', W: 'WE', Th: 'TH', F: 'FR', Sa: 'SA' };
+export const translateDaysForIcs = {
+    Su: "SU",
+    M: "MO",
+    Tu: "TU",
+    W: "WE",
+    Th: "TH",
+    F: "FR",
+    Sa: "SA",
+};
 
 export const vTimeZoneSection =
-    'BEGIN:VTIMEZONE\n' +
-    'TZID:America/Los_Angeles\n' +
-    'X-LIC-LOCATION:America/Los_Angeles\n' +
-    'BEGIN:DAYLIGHT\n' +
-    'TZOFFSETFROM:-0800\n' +
-    'TZOFFSETTO:-0700\n' +
-    'TZNAME:PDT\n' +
-    'DTSTART:19700308T020000\n' +
-    'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU\n' +
-    'END:DAYLIGHT\n' +
-    'BEGIN:STANDARD\n' +
-    'TZOFFSETFROM:-0700\n' +
-    'TZOFFSETTO:-0800\n' +
-    'TZNAME:PST\n' +
-    'DTSTART:19701101T020000\n' +
-    'RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU\n' +
-    'END:STANDARD\n' +
-    'END:VTIMEZONE\n' +
-    'BEGIN:VEVENT';
+    "BEGIN:VTIMEZONE\n" +
+    "TZID:America/Los_Angeles\n" +
+    "X-LIC-LOCATION:America/Los_Angeles\n" +
+    "BEGIN:DAYLIGHT\n" +
+    "TZOFFSETFROM:-0800\n" +
+    "TZOFFSETTO:-0700\n" +
+    "TZNAME:PDT\n" +
+    "DTSTART:19700308T020000\n" +
+    "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU\n" +
+    "END:DAYLIGHT\n" +
+    "BEGIN:STANDARD\n" +
+    "TZOFFSETFROM:-0700\n" +
+    "TZOFFSETTO:-0800\n" +
+    "TZNAME:PST\n" +
+    "DTSTART:19701101T020000\n" +
+    "RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU\n" +
+    "END:STANDARD\n" +
+    "END:VTIMEZONE\n" +
+    "BEGIN:VEVENT";
 
-export const CALENDAR_ID = 'antalmanac/ics';
+export const CALENDAR_ID = "antalmanac/ics";
 
-export const CALENDAR_OUTPUT = 'local' as const;
+export const CALENDAR_OUTPUT = "local" as const;
 
 /**
  * @example [YEAR, MONTH, DAY, HOUR, MINUTE]
@@ -83,7 +108,7 @@ export function getClassStartDate(term: string, bydays: string[]) {
     // Since Fall quarter starts on a Thursday,
     // the first byday and offset will be different from other quarters.
     // Sort by this ordering: [TH, FR, SA, SU, MO, TU, WE]
-    if (getQuarter(term) === 'Fall') {
+    if (getQuarter(term) === "Fall") {
         bydays.sort((day1, day2) => {
             return fallDaysOffset[day1] - fallDaysOffset[day2];
         });
@@ -119,7 +144,7 @@ export function dateToIcs(date: Date) {
 export function getFirstClass(
     date: YearMonthDay,
     startTime: HourMinute,
-    endTime: HourMinute
+    endTime: HourMinute,
 ): [DateTimeArray, DateTimeArray] {
     const [classStartTime, classEndTime] = parseTimes(startTime, endTime);
     return [
@@ -157,7 +182,7 @@ export function getFirstClass(
  * ```
  */
 export function getExamTime(exam: FinalExam, year: number): [DateTimeArray, DateTimeArray] | [] {
-    if (exam.examStatus === 'SCHEDULED_FINAL') {
+    if (exam.examStatus === "SCHEDULED_FINAL") {
         const month = exam.month;
         const day = exam.day;
         const [examStartTime, examEndTime] = parseTimes(exam.startTime, exam.endTime);
@@ -190,7 +215,7 @@ export function parseTimes(startTime: HourMinute, endTime: HourMinute) {
  * @example "2019 Fall" -> "2019"
  */
 export function getYear(term: string) {
-    return parseInt(term.split(' ')[0]);
+    return parseInt(term.split(" ")[0]);
 }
 
 /**
@@ -199,7 +224,7 @@ export function getYear(term: string) {
  * @example "2019 Fall" -> "Fall"
  */
 export function getQuarter(term: string) {
-    return term.split(' ')[1];
+    return term.split(" ")[1];
 }
 
 /**
@@ -208,7 +233,7 @@ export function getQuarter(term: string) {
  * @example 10 for quarters and Summer Session 10wk, 5 for Summer Sessions I and II.
  */
 export function getTermLength(quarter: string) {
-    return quarter.startsWith('Summer') && quarter !== 'Summer10wk' ? 5 : 10;
+    return quarter.startsWith("Summer") && quarter !== "Summer10wk" ? 5 : 10;
 }
 
 /**
@@ -223,12 +248,12 @@ export function getRRule(bydays: string[], quarter: string) {
     let count = getTermLength(quarter) * bydays.length;
 
     switch (quarter) {
-        case 'Fall':
+        case "Fall":
             for (const byday of bydays) {
                 switch (byday) {
-                    case 'TH':
-                    case 'FR':
-                    case 'SA':
+                    case "TH":
+                    case "FR":
+                    case "SA":
                         count += 1; // account for Week 0 course meetings
                         break;
                     default:
@@ -236,11 +261,11 @@ export function getRRule(bydays: string[], quarter: string) {
                 }
             }
             break;
-        case 'Summer1':
-            if (bydays.includes('MO')) count += 1; // instruction ends Monday of Week 6
+        case "Summer1":
+            if (bydays.includes("MO")) count += 1; // instruction ends Monday of Week 6
             break;
-        case 'Summer10wk':
-            if (bydays.includes('FR')) count -= 1; // instruction ends Thursday of Week 10
+        case "Summer10wk":
+            if (bydays.includes("FR")) count -= 1; // instruction ends Thursday of Week 10
             break;
         default:
             break;
@@ -251,7 +276,7 @@ export function getRRule(bydays: string[], quarter: string) {
 
 export function getEventsFromCourses(
     events = AppStore.getEventsWithFinalsInCalendar(),
-    _term?: string
+    _term?: string,
 ): EventAttributes[] {
     const customEventIDs = new Set();
     const calendarEvents = events.flatMap((event) => {
@@ -260,13 +285,13 @@ export function getEventsFromCourses(
             // so we just use the default term.
             const term = _term ?? getDefaultTerm(events).shortName;
             const { title, start, end, building } = event as CustomEvent;
-            const days = getByDays(event.days.join(''));
+            const days = getByDays(event.days.join(""));
             const rrule = getRRule(days, getQuarter(term));
             const eventStartDate = getClassStartDate(term, days);
             const [firstClassStart, firstClassEnd] = getFirstClass(
                 eventStartDate,
                 { hour: start.getHours(), minute: start.getMinutes() },
-                { hour: end.getHours(), minute: end.getMinutes() }
+                { hour: end.getHours(), minute: end.getMinutes() },
             );
             const customEventID = event.customEventID;
             if (customEventIDs.has(customEventID)) {
@@ -274,9 +299,9 @@ export function getEventsFromCourses(
             }
             customEventIDs.add(customEventID);
             const customEvent: EventAttributes = {
-                productId: 'antalmanac/ics',
-                startOutputType: 'local' as const,
-                endOutputType: 'local' as const,
+                productId: "antalmanac/ics",
+                startOutputType: "local" as const,
+                endOutputType: "local" as const,
                 title: title,
                 location: buildingCatalogue[Number(building)]?.name,
                 start: firstClassStart,
@@ -285,7 +310,8 @@ export function getEventsFromCourses(
             };
             return customEvent;
         } else {
-            const { term, title, courseTitle, instructors, sectionType, start, end, finalExam } = event;
+            const { term, title, courseTitle, instructors, sectionType, start, end, finalExam } =
+                event;
             const courseEvents: EventAttributes[] = event.locations
                 .map((location) => {
                     if (location.days === undefined) {
@@ -295,7 +321,7 @@ export function getEventsFromCourses(
 
                     const [finalStart, finalEnd] = getExamTime(finalExam, getYear(term));
 
-                    if (sectionType === 'Fin' && finalStart && finalEnd) {
+                    if (sectionType === "Fin" && finalStart && finalEnd) {
                         return {
                             productId: CALENDAR_ID,
                             startOutputType: CALENDAR_OUTPUT,
@@ -311,18 +337,18 @@ export function getEventsFromCourses(
                         const [firstClassStart, firstClassEnd] = getFirstClass(
                             classStartDate,
                             { hour: start.getHours(), minute: start.getMinutes() },
-                            { hour: end.getHours(), minute: end.getMinutes() }
+                            { hour: end.getHours(), minute: end.getMinutes() },
                         );
 
                         const rrule = getRRule(days, getQuarter(term));
 
                         // Add VEvent to events array.
                         return {
-                            productId: 'antalmanac/ics',
-                            startOutputType: 'local' as const,
-                            endOutputType: 'local' as const,
+                            productId: "antalmanac/ics",
+                            startOutputType: "local" as const,
+                            endOutputType: "local" as const,
                             title: `${title} ${sectionType}`,
-                            description: `${courseTitle}\nTaught by ${instructors.join('/')}`,
+                            description: `${courseTitle}\nTaught by ${instructors.join("/")}`,
                             location: `${location.building} ${location.room}`,
                             start: firstClassStart,
                             end: firstClassEnd,
@@ -345,23 +371,23 @@ export function exportCalendar() {
     // Callback function triggers a download of the .ics file
     createEvents(events, (error, value) => {
         if (error) {
-            openSnackbar('error', 'Something went wrong! Unable to download schedule.', 5);
+            openSnackbar("error", "Something went wrong! Unable to download schedule.", 5);
             console.log(error);
             return;
         }
 
         // Add timezone information to start and end times for events
         const icsString = value
-            .replaceAll('DTSTART', 'DTSTART;TZID=America/Los_Angeles')
-            .replaceAll('DTEND', 'DTEND;TZID=America/Los_Angeles');
+            .replaceAll("DTSTART", "DTSTART;TZID=America/Los_Angeles")
+            .replaceAll("DTEND", "DTEND;TZID=America/Los_Angeles");
 
         // Inject the VTIMEZONE section into the .ics file.
-        const data = new Blob([icsString.replace('BEGIN:VEVENT', vTimeZoneSection)], {
-            type: 'text/calendar;charset=utf-8',
+        const data = new Blob([icsString.replace("BEGIN:VEVENT", vTimeZoneSection)], {
+            type: "text/calendar;charset=utf-8",
         });
 
         // Download the .ics file
-        saveAs(data, 'schedule.ics');
-        openSnackbar('success', 'Schedule downloaded!', 5);
+        saveAs(data, "schedule.ics");
+        openSnackbar("success", "Schedule downloaded!", 5);
     });
 }

@@ -1,5 +1,6 @@
-import { ScheduleSaveStateSchema } from './schedule';
-import { type } from 'arktype';
+import { type } from "arktype";
+
+import { ScheduleSaveStateSchema } from "./schedule";
 
 /**
  * Users are stored in one shared table.
@@ -14,13 +15,13 @@ export const UserSchema = type({
      *
      * TODO: Handle case where existing ID conflicts with the Google ID.
      */
-    id: 'string',
+    id: "string",
 
     /**
      * Some users will have a Google ID from logging in via Google OAuth.
      * They can still use their ID to log in.
      */
-    'googleId?': 'string',
+    "googleId?": "string",
 
     /**
      * Users can view other users' schedules, even anonymously.
@@ -31,7 +32,7 @@ export const UserSchema = type({
      * - public: Other users can view, but can't edit, i.e. "read-only".
      * - open: Anybody can view and edit.
      */
-    'visibility?': 'string',
+    "visibility?": "string",
 
     /**
      * User data is stored in a JSON.
@@ -40,10 +41,10 @@ export const UserSchema = type({
 
     // Additional fields. Can be provided by Google OAuth.
 
-    'name?': 'string',
-    'email?': 'string',
-    'avatar?': 'string',
-    'imported?': 'boolean',
+    "name?": "string",
+    "email?": "string",
+    "avatar?": "string",
+    "imported?": "boolean",
 });
 
 export type User = typeof UserSchema.infer;

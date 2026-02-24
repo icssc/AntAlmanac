@@ -1,6 +1,5 @@
-import { GE } from '@packages/antalmanac-types';
-
-import trpc from '$lib/api/trpc';
+import trpc from "$lib/api/trpc";
+import { GE } from "@packages/antalmanac-types";
 
 export interface GradesProps {
     averageGPA: number | null;
@@ -55,22 +54,24 @@ class _Grades {
         instructor?: string;
         sectionCode?: string;
     }): Promise<void> => {
-        department = department != 'ALL' ? department : undefined;
-        ge = ge != 'ANY' ? ge : undefined;
-        instructor = instructor != '' ? instructor : undefined;
-        sectionCode = sectionCode != '' ? sectionCode : undefined;
+        department = department != "ALL" ? department : undefined;
+        ge = ge != "ANY" ? ge : undefined;
+        instructor = instructor != "" ? instructor : undefined;
+        sectionCode = sectionCode != "" ? sectionCode : undefined;
 
         if (!department && !ge && !instructor && !sectionCode)
-            throw new Error('populateGradesCache: Must provide either department, ge, instructor, or section code');
+            throw new Error(
+                "populateGradesCache: Must provide either department, ge, instructor, or section code",
+            );
 
-        const queryKey = `${department ?? ''}${ge ?? ''}`;
+        const queryKey = `${department ?? ""}${ge ?? ""}`;
 
         // If the whole query has already been cached, return
         if (this.cachedQueries.has(queryKey)) return;
 
         const groupedGrades = await trpc.grades.aggregateByOffering.mutate({ department, ge });
 
-        if (!groupedGrades) throw new Error('populateGradesCache: Failed to query grades');
+        if (!groupedGrades) throw new Error("populateGradesCache: Failed to query grades");
 
         // Populate cache
         for (const course of groupedGrades) {
@@ -104,10 +105,10 @@ class _Grades {
     queryGrades = async (
         department: string,
         courseNumber: string,
-        instructor = '',
-        cacheOnly = true
+        instructor = "",
+        cacheOnly = true,
     ): Promise<GradesProps | null> => {
-        instructor = instructor.replace('STAFF', '').trim(); // Ignore STAFF
+        instructor = instructor.replace("STAFF", "").trim(); // Ignore STAFF
 
         const cacheKey = department + courseNumber + instructor;
 

@@ -1,30 +1,32 @@
-import { describe, test, expect } from 'vitest';
+import buildingCatalogue from "$lib/locations/buildingCatalogue";
+import locationIds from "$lib/locations/locations";
+import { describe, expect, test } from "vitest";
 
-import buildingCatalogue from '$lib/locations/buildingCatalogue';
-import locationIds from '$lib/locations/locations';
-
-describe('locationIds', () => {
-    test('no duplicate names', () => {
+describe("locationIds", () => {
+    test("no duplicate names", () => {
         const names = Object.keys(locationIds);
         const uniqueNames = new Set(names);
         expect(names.length).toBe(uniqueNames.size);
     });
 });
 
-describe('buildingCatalogue', () => {
-    test('no duplicate names', () => {
+describe("buildingCatalogue", () => {
+    test("no duplicate names", () => {
         const names = Object.values(buildingCatalogue).map((building) => building.name);
         const uniqueNames = new Set(names);
         expect(names.length).toBe(uniqueNames.size);
     });
 });
 
-describe('locationIds and buildingCatalogue', () => {
-    test('all locationIds are in buildingCatalogue', () => {
+describe("locationIds and buildingCatalogue", () => {
+    test("all locationIds are in buildingCatalogue", () => {
         const locationNames = Object.keys(locationIds);
         const buildingNames = Object.values(buildingCatalogue).map((building) => {
-            const buildingName = building.name.includes('(')
-                ? building.name.substring(building.name.indexOf('(') + 1, building.name.indexOf(')'))
+            const buildingName = building.name.includes("(")
+                ? building.name.substring(
+                      building.name.indexOf("(") + 1,
+                      building.name.indexOf(")"),
+                  )
                 : building.name;
             return buildingName;
         });
@@ -33,12 +35,12 @@ describe('locationIds and buildingCatalogue', () => {
         }
     });
 
-    test('all buildingCatalogue are in locationIds', () => {
+    test("all buildingCatalogue are in locationIds", () => {
         const locationNames = Object.keys(locationIds);
         const buildingNames = Object.values(buildingCatalogue).map((building) => building.name);
         for (const buildingName of buildingNames) {
-            const name = buildingName.includes('(')
-                ? buildingName.substring(buildingName.indexOf('(') + 1, buildingName.indexOf(')'))
+            const name = buildingName.includes("(")
+                ? buildingName.substring(buildingName.indexOf("(") + 1, buildingName.indexOf(")"))
                 : buildingName;
             expect(locationNames).toContain(name);
         }

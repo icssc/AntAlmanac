@@ -1,7 +1,6 @@
-import { Box, Typography, SxProps } from '@mui/material';
-import { Link } from 'react-router-dom';
-
-import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { TableBodyCellContainer } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer";
+import { Box, SxProps, Typography } from "@mui/material";
+import { Link } from "react-router-dom";
 
 interface InstructorsCellProps {
     instructors: string[];
@@ -10,19 +9,19 @@ interface InstructorsCellProps {
 
 export const InstructorsCell = ({ instructors, sx }: InstructorsCellProps) => {
     const links = instructors.map((profName, index) => {
-        if (profName === 'STAFF') {
+        if (profName === "STAFF") {
             return <Box key={profName + index}>{profName}</Box>; // The key should be fine as we're not changing ['STAFF, 'STAFF']
         }
 
-        const lastName = profName.substring(0, profName.indexOf(','));
+        const lastName = profName.substring(0, profName.indexOf(","));
         return (
             <Box key={profName}>
                 <Typography
                     variant="body2"
                     sx={{
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        textOverflow: 'ellipsis',
+                        overflow: "hidden",
+                        whiteSpace: "nowrap",
+                        textOverflow: "ellipsis",
                     }}
                 >
                     <Link

@@ -1,18 +1,17 @@
+import { copySchedule } from "$actions/AppStoreActions";
+import AppStore from "$stores/AppStore";
 import {
     Box,
     Button,
     Dialog,
     DialogActions,
     DialogContent,
+    type DialogProps,
     DialogTitle,
     TextField,
-    type DialogProps,
-} from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
-import { useState, useEffect, useCallback } from 'react';
-
-import { copySchedule } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
+} from "@mui/material";
+import { usePostHog } from "posthog-js/react";
+import { useCallback, useEffect, useState } from "react";
 
 interface CopyScheduleDialogProps extends DialogProps {
     index: number;
@@ -30,12 +29,12 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
     }, []);
 
     const handleCancel = useCallback(() => {
-        onClose?.({}, 'escapeKeyDown');
+        onClose?.({}, "escapeKeyDown");
     }, [onClose]);
 
     const handleCopy = useCallback(() => {
         copySchedule(index, name, undefined, postHog);
-        onClose?.({}, 'escapeKeyDown');
+        onClose?.({}, "escapeKeyDown");
     }, [index, name, onClose, postHog]);
 
     const handleScheduleNamesChange = useCallback(() => {
@@ -44,9 +43,9 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
 
     useEffect(() => {
         handleScheduleNamesChange();
-        AppStore.on('scheduleNamesChange', handleScheduleNamesChange);
+        AppStore.on("scheduleNamesChange", handleScheduleNamesChange);
         return () => {
-            AppStore.off('scheduleNamesChange', handleScheduleNamesChange);
+            AppStore.off("scheduleNamesChange", handleScheduleNamesChange);
         };
     }, [handleScheduleNamesChange]);
 
@@ -62,7 +61,12 @@ function CopyScheduleDialog(props: CopyScheduleDialogProps) {
                 <Button onClick={handleCancel} color="inherit">
                     Cancel
                 </Button>
-                <Button onClick={handleCopy} variant="contained" color="primary" disabled={name?.trim() === ''}>
+                <Button
+                    onClick={handleCopy}
+                    variant="contained"
+                    color="primary"
+                    disabled={name?.trim() === ""}
+                >
                     Make a Copy
                 </Button>
             </DialogActions>

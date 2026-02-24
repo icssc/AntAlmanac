@@ -1,4 +1,4 @@
-import { ShortCourseSchedule } from '@packages/antalmanac-types';
+import { ShortCourseSchedule } from "@packages/antalmanac-types";
 
 /**
  *
@@ -6,10 +6,13 @@ import { ShortCourseSchedule } from '@packages/antalmanac-types';
  * @param nameCounts A map of schedule names to the number of times they've been used
  * @returns A schedule name with `(NUM)` appended to it if it's a duplicate
  */
-function makeNonDuplicateScheduleName(scheduleName: string, nameCounts: Map<string, number>): string {
+function makeNonDuplicateScheduleName(
+    scheduleName: string,
+    nameCounts: Map<string, number>,
+): string {
     const count = nameCounts.get(scheduleName) ?? 0;
     nameCounts.set(scheduleName, count + 1);
-    return scheduleName + (count > 0 ? ` (${count})` : '');
+    return scheduleName + (count > 0 ? ` (${count})` : "");
 }
 
 /**
@@ -18,7 +21,9 @@ function makeNonDuplicateScheduleName(scheduleName: string, nameCounts: Map<stri
  *
  * Example: ['Winter 2022', 'Winter 2022', 'Spring 2022'] -> ['Winter 2022', 'Winter 2022 (1)', 'Spring 2022']
  */
-export function mangleDuplicateScheduleNames(schedules: ShortCourseSchedule[]): ShortCourseSchedule[] {
+export function mangleDuplicateScheduleNames(
+    schedules: ShortCourseSchedule[],
+): ShortCourseSchedule[] {
     const scheduleNameCounts = new Map<string, number>();
 
     return schedules.map((schedule) => ({

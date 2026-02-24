@@ -1,9 +1,9 @@
-import { changeCurrentSchedule } from '$actions/AppStoreActions';
+import { changeCurrentSchedule } from "$actions/AppStoreActions";
 import {
     getLocalStorageTempSaveData,
     removeLocalStorageTempSaveData,
     setLocalStorageTempSaveData,
-} from '$lib/localStorage';
+} from "$lib/localStorage";
 
 /**
  * Any values stored in temporarily saved data should eventually be permanently saved.

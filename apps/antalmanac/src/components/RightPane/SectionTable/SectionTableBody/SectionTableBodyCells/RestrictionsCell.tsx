@@ -1,9 +1,8 @@
-import { Box, Popover, Tooltip, Typography } from '@mui/material';
-import { Fragment, useCallback, useMemo, useState } from 'react';
-
-import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import restrictionsMapping from '$components/RightPane/SectionTable/static/restrictionsMapping.json';
-import { useIsMobile } from '$hooks/useIsMobile';
+import { TableBodyCellContainer } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer";
+import restrictionsMapping from "$components/RightPane/SectionTable/static/restrictionsMapping.json";
+import { useIsMobile } from "$hooks/useIsMobile";
+import { Box, Popover, Tooltip, Typography } from "@mui/material";
+import { Fragment, useCallback, useMemo, useState } from "react";
 
 interface RestrictionsCellProps {
     restrictions: string;
@@ -15,8 +14,8 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
 
     const parsedRestrictions = useMemo(
         () =>
-            restrictions.split(' ').map((code, index) => {
-                if (code !== 'and' && code !== 'or') {
+            restrictions.split(" ").map((code, index) => {
+                if (code !== "and" && code !== "or") {
                     return (
                         <Fragment key={index}>
                             {restrictionsMapping[code as keyof typeof restrictionsMapping]}
@@ -26,7 +25,7 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                 }
                 return null;
             }),
-        [restrictions]
+        [restrictions],
     );
 
     const handleClose = useCallback(() => {
@@ -38,7 +37,7 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
     const restrictionContent = (
         <Box
             sx={{
-                display: 'block',
+                display: "block",
                 padding: 1,
             }}
         >
@@ -49,8 +48,8 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{
-                    color: 'primary.main',
-                    display: 'block',
+                    color: "primary.main",
+                    display: "block",
                     marginTop: 1,
                 }}
             >
@@ -71,10 +70,10 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                                 setAnchorEl((cur) => (cur ? null : e.currentTarget));
                             }}
                             sx={{
-                                background: 'none',
-                                color: 'primary.main',
+                                background: "none",
+                                color: "primary.main",
                                 border: 0,
-                                textDecoration: 'underline',
+                                textDecoration: "underline",
                             }}
                         >
                             {restrictions}
@@ -84,7 +83,7 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                             open={Boolean(anchorEl)}
                             onClose={handleClose}
                             anchorEl={anchorEl}
-                            anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                            anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
                         >
                             {restrictionContent}
                         </Popover>

@@ -1,9 +1,8 @@
-import { PureComponent } from 'react';
-
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
-import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
-import { WebSOC } from '$lib/websoc';
+import RightPaneStore from "$components/RightPane/RightPaneStore";
+import { SectionTableProps } from "$components/RightPane/SectionTable/SectionTable.types";
+import SectionTableLazyWrapper from "$components/RightPane/SectionTable/SectionTableLazyWrapper";
+import { WebSOC } from "$lib/websoc";
+import { PureComponent } from "react";
 
 /**
  * If we remove this class, when you search a department+GE combo, only the lectures show up, not the discussions.
@@ -21,7 +20,7 @@ class GeDataFetchProvider extends PureComponent<SectionTableProps> {
         const params = {
             department: this.props.courseDetails.deptCode,
             term: formData.term,
-            ge: 'ANY',
+            ge: "ANY",
             courseNumber: this.props.courseDetails.courseNumber,
             courseTitle: this.props.courseDetails.courseTitle,
             instructorName: formData.instructor,
@@ -32,8 +31,8 @@ class GeDataFetchProvider extends PureComponent<SectionTableProps> {
             building: formData.building,
             room: formData.room,
             division: formData.division,
-            excludeRestrictionCodes: formData.excludeRestrictionCodes.split('').join(','),
-            days: formData.days.split(/(?=[A-Z])/).join(','),
+            excludeRestrictionCodes: formData.excludeRestrictionCodes.split("").join(","),
+            days: formData.days.split(/(?=[A-Z])/).join(","),
         };
 
         const jsonResp = await WebSOC.query(params);

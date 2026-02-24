@@ -1,7 +1,6 @@
-import { TextField, TextFieldProps } from '@mui/material';
-import { useId } from 'react';
-
-import { LabeledInput } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledInput';
+import { LabeledInput } from "$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledInput";
+import { TextField, TextFieldProps } from "@mui/material";
+import { useId } from "react";
 
 interface LabeledTextFieldProps {
     id?: string;
@@ -10,7 +9,12 @@ interface LabeledTextFieldProps {
     isAligned?: boolean;
 }
 
-export const LabeledTextField = ({ id, label, textFieldProps, isAligned }: LabeledTextFieldProps) => {
+export const LabeledTextField = ({
+    id,
+    label,
+    textFieldProps,
+    isAligned,
+}: LabeledTextFieldProps) => {
     const generatedId = useId();
     const textFieldId = id ?? generatedId;
 

@@ -1,4 +1,4 @@
-import { WebsocSection, WebsocCourse, WebsocSectionType } from '@packages/anteater-api-types';
+import { WebsocCourse, WebsocSection, WebsocSectionType } from "@packages/anteater-api-types";
 
 type AASectionExtendedProperties = {
     color: string;
@@ -11,4 +11,4 @@ type AACourseExtendedProperties = {
     sectionTypes: WebsocSectionType[];
 };
 
-export type AACourse = Omit<WebsocCourse, 'sections'> & AACourseExtendedProperties;
+export type AACourse = Omit<WebsocCourse, "sections"> & AACourseExtendedProperties;

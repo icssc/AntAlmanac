@@ -1,29 +1,29 @@
-import { pgTable, text, pgEnum, primaryKey } from 'drizzle-orm/pg-core';
+import { pgEnum, pgTable, primaryKey, text } from "drizzle-orm/pg-core";
 
-import { users } from './user';
+import { users } from "./user";
 
-const accountTypes = ['GOOGLE', 'GUEST', 'OIDC'] as const;
+const accountTypes = ["GOOGLE", "GUEST", "OIDC"] as const;
 
-export const accountTypeEnum = pgEnum('account_type', accountTypes);
+export const accountTypeEnum = pgEnum("account_type", accountTypes);
 
 export type AccountType = (typeof accountTypes)[number];
 
 // Each user can have multiple accounts, each account is associated with a provider.
 // A user without an account is a username-only user.
 export const accounts = pgTable(
-    'accounts',
+    "accounts",
     {
-        userId: text('user_id')
-            .references(() => users.id, { onDelete: 'cascade' })
+        userId: text("user_id")
+            .references(() => users.id, { onDelete: "cascade" })
             .notNull(),
 
-        accountType: accountTypeEnum('account_type')
+        accountType: accountTypeEnum("account_type")
             .notNull()
-            .$default(() => 'GUEST'),
+            .$default(() => "GUEST"),
 
-        providerAccountId: text('provider_account_id').notNull(),
+        providerAccountId: text("provider_account_id").notNull(),
     },
-    (table) => [primaryKey({ columns: [table.userId, table.accountType] })]
+    (table) => [primaryKey({ columns: [table.userId, table.accountType] })],
 );
 
 export type Account = typeof accounts.$inferSelect;

@@ -1,4 +1,20 @@
-import { EventNote, Route, UnfoldMore } from '@mui/icons-material';
+import { openSnackbar } from "$actions/AppStoreActions";
+import { AlertDialog } from "$components/AlertDialog";
+import { Import } from "$components/Header/Import";
+import { Logo } from "$components/Header/Logo";
+import { Save } from "$components/Header/Save";
+import { Signin } from "$components/Header/Signin";
+import { Signout } from "$components/Header/Signout";
+import {
+    getLocalStorageDataCache,
+    getLocalStorageImportedUser,
+    removeLocalStorageDataCache,
+    removeLocalStorageImportedUser,
+} from "$lib/localStorage";
+import { BLUE } from "$src/globals";
+import { useIsMobile } from "$src/hooks/useIsMobile";
+import { useSessionStore } from "$stores/SessionStore";
+import { EventNote, Route, UnfoldMore } from "@mui/icons-material";
 import {
     AppBar,
     Box,
@@ -11,36 +27,19 @@ import {
     Popover,
     Stack,
     Typography,
-} from '@mui/material';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-
-import { openSnackbar } from '$actions/AppStoreActions';
-import { AlertDialog } from '$components/AlertDialog';
-import { Import } from '$components/Header/Import';
-import { Logo } from '$components/Header/Logo';
-import { Save } from '$components/Header/Save';
-import { Signin } from '$components/Header/Signin';
-import { Signout } from '$components/Header/Signout';
-import {
-    getLocalStorageDataCache,
-    getLocalStorageImportedUser,
-    removeLocalStorageDataCache,
-    removeLocalStorageImportedUser,
-} from '$lib/localStorage';
-import { BLUE } from '$src/globals';
-import { useIsMobile } from '$src/hooks/useIsMobile';
-import { useSessionStore } from '$stores/SessionStore';
+} from "@mui/material";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-    const importedUser = getLocalStorageImportedUser() ?? '';
+    const importedUser = getLocalStorageImportedUser() ?? "";
     const { session, sessionIsValid } = useSessionStore();
     const isMobile = useIsMobile();
 
-    const platform = window.location.pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
+    const platform = window.location.pathname.split("/")[1] === "planner" ? "Planner" : "Scheduler";
 
     const clearStorage = () => {
         removeLocalStorageImportedUser();
@@ -62,12 +61,12 @@ export function Header() {
     };
 
     useEffect(() => {
-        const dataCache = getLocalStorageDataCache() ?? '';
+        const dataCache = getLocalStorageDataCache() ?? "";
 
-        if (importedUser !== '' && session) {
+        if (importedUser !== "" && session) {
             setOpenSuccessfulSaved(true);
-        } else if (dataCache !== '' && session) {
-            openSnackbar('success', `Unsaved changes have been saved to your account!`);
+        } else if (dataCache !== "" && session) {
+            openSnackbar("success", `Unsaved changes have been saved to your account!`);
             clearStorage();
         }
     }, [importedUser, session]);
@@ -76,10 +75,10 @@ export function Header() {
         <Box
             sx={{
                 backgroundColor: BLUE,
-                paddingTop: 'env(safe-area-inset-top)',
-                fontSize: '10.5px',
-                '@media (min-width: 800px)': {
-                    fontSize: '12.25px',
+                paddingTop: "env(safe-area-inset-top)",
+                fontSize: "10.5px",
+                "@media (min-width: 800px)": {
+                    fontSize: "12.25px",
                 },
             }}
         >
@@ -89,16 +88,16 @@ export function Header() {
                 sx={{
                     height: 52,
                     px: 1,
-                    boxShadow: 'none',
+                    boxShadow: "none",
                     backgroundColor: BLUE,
                 }}
             >
                 <Box
                     sx={{
-                        display: 'flex',
-                        height: '100%',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
+                        display: "flex",
+                        height: "100%",
+                        justifyContent: "space-between",
+                        alignItems: "center",
                     }}
                 >
                     <Stack direction="row" alignItems="center" gap={1}>
@@ -108,12 +107,12 @@ export function Header() {
                                     onClick={(event) => setAnchorEl(event.currentTarget)}
                                     endIcon={<UnfoldMore />}
                                     sx={{
-                                        minWidth: 'auto',
+                                        minWidth: "auto",
                                         p: 0.5,
-                                        color: 'white',
-                                        '& .MuiTouchRipple-child': {
+                                        color: "white",
+                                        "& .MuiTouchRipple-child": {
                                             borderRadius: 0.5,
-                                            bgcolor: 'white',
+                                            bgcolor: "white",
                                         },
                                     }}
                                 >
@@ -124,12 +123,15 @@ export function Header() {
                                     open={Boolean(anchorEl)}
                                     anchorEl={anchorEl}
                                     onClose={() => setAnchorEl(null)}
-                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                                    transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                                    anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                                    transformOrigin={{ vertical: "top", horizontal: "left" }}
                                 >
                                     <MenuList
                                         subheader={
-                                            <ListSubheader component="div" sx={{ lineHeight: '30px' }}>
+                                            <ListSubheader
+                                                component="div"
+                                                sx={{ lineHeight: "30px" }}
+                                            >
                                                 Switch Apps
                                             </ListSubheader>
                                         }
@@ -138,9 +140,13 @@ export function Header() {
                                         <MenuItem
                                             component={Link}
                                             href="/"
-                                            selected={platform === 'Scheduler'}
+                                            selected={platform === "Scheduler"}
                                             onClick={() => setAnchorEl(null)}
-                                            sx={{ minHeight: 'fit-content', textDecoration: 'none', color: 'inherit' }}
+                                            sx={{
+                                                minHeight: "fit-content",
+                                                textDecoration: "none",
+                                                color: "inherit",
+                                            }}
                                         >
                                             <ListItemIcon>
                                                 <EventNote />
@@ -152,9 +158,13 @@ export function Header() {
                                         <MenuItem
                                             component={Link}
                                             href="/planner"
-                                            selected={platform === 'Planner'}
+                                            selected={platform === "Planner"}
                                             onClick={() => setAnchorEl(null)}
-                                            sx={{ minHeight: 'fit-content', textDecoration: 'none', color: 'inherit' }}
+                                            sx={{
+                                                minHeight: "fit-content",
+                                                textDecoration: "none",
+                                                color: "inherit",
+                                            }}
                                         >
                                             <ListItemIcon>
                                                 <Route />
@@ -174,13 +184,13 @@ export function Header() {
                                         variant="contained"
                                         startIcon={<EventNote />}
                                         sx={{
-                                            boxShadow: 'none',
-                                            bgcolor: 'white',
+                                            boxShadow: "none",
+                                            bgcolor: "white",
                                             color: BLUE,
                                             fontWeight: 500,
                                             fontSize: 14,
                                             py: 0.4,
-                                            '&:hover': { bgcolor: 'grey.100' },
+                                            "&:hover": { bgcolor: "grey.100" },
                                         }}
                                     >
                                         Scheduler
@@ -190,12 +200,12 @@ export function Header() {
                                         href="/planner"
                                         startIcon={<Route />}
                                         sx={{
-                                            boxShadow: 'none',
-                                            color: 'white',
+                                            boxShadow: "none",
+                                            color: "white",
                                             fontWeight: 500,
                                             fontSize: 14,
                                             py: 0.4,
-                                            textDecoration: 'none',
+                                            textDecoration: "none",
                                         }}
                                     >
                                         Planner
@@ -208,7 +218,11 @@ export function Header() {
                     <Stack direction="row" alignItems="center">
                         <Import key="studylist" />
                         <Save />
-                        {sessionIsValid ? <Signout onLogoutComplete={handleLogoutComplete} /> : <Signin />}
+                        {sessionIsValid ? (
+                            <Signout onLogoutComplete={handleLogoutComplete} />
+                        ) : (
+                            <Signin />
+                        )}
                     </Stack>
 
                     <AlertDialog
@@ -217,7 +231,8 @@ export function Header() {
                         severity="success"
                         onClose={handleCloseSuccessfulSaved}
                     >
-                        NOTE: All changes made to your schedules will be saved to your Google account
+                        NOTE: All changes made to your schedules will be saved to your Google
+                        account
                     </AlertDialog>
                     <AlertDialog
                         open={openSignoutDialog}

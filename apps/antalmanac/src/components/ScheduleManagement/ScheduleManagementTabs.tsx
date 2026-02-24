@@ -1,8 +1,7 @@
-import { Event, FormatListBulleted, MyLocation, Search } from '@mui/icons-material';
-import { Paper, Tabs } from '@mui/material';
-
-import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleManagementTab';
-import { useTabStore } from '$stores/TabStore';
+import { ScheduleManagementTab } from "$components/ScheduleManagement/ScheduleManagementTab";
+import { useTabStore } from "$stores/TabStore";
+import { Event, FormatListBulleted, MyLocation, Search } from "@mui/icons-material";
+import { Paper, Tabs } from "@mui/material";
 
 /**
  * Information about the tab navigation buttons.
@@ -38,27 +37,27 @@ export type ScheduleManagementTabInfo = {
 
 const scheduleManagementTabs: Array<ScheduleManagementTabInfo> = [
     {
-        label: 'Calendar',
+        label: "Calendar",
         icon: <Event />,
         mobile: true,
-        href: '',
+        href: "",
     },
     {
-        label: 'Search',
-        href: '/',
+        label: "Search",
+        href: "/",
         icon: <Search />,
     },
     {
-        label: 'Added',
-        href: '/added',
+        label: "Added",
+        href: "/added",
         icon: <FormatListBulleted />,
-        id: 'added-courses-tab',
+        id: "added-courses-tab",
     },
     {
-        label: 'Map',
-        href: '/map',
+        label: "Map",
+        href: "/map",
         icon: <MyLocation />,
-        id: 'map-tab',
+        id: "map-tab",
     },
 ];
 
@@ -71,9 +70,9 @@ export function ScheduleManagementTabs() {
             variant="outlined"
             square
             sx={{
-                borderRadius: '4px 4px 0 0',
-                paddingBottom: 'env(safe-area-inset-bottom)',
-                borderWidth: '1px 0px 1px 0px',
+                borderRadius: "4px 4px 0 0",
+                paddingBottom: "env(safe-area-inset-bottom)",
+                borderWidth: "1px 0px 1px 0px",
             }}
         >
             <Tabs value={activeTab} indicatorColor="primary" variant="fullWidth" centered>

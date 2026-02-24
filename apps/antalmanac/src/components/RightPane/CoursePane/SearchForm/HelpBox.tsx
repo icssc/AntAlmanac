@@ -1,41 +1,40 @@
-import { Close } from '@mui/icons-material';
+import { setLocalStorageHelpBoxDismissalTime } from "$lib/localStorage";
+import { useHelpMenuStore } from "$stores/HelpMenuStore";
+import { Close } from "@mui/icons-material";
 import {
-    Paper,
-    ImageList,
-    ImageListItem,
-    Typography,
-    Link,
-    List,
-    ListItemText,
-    ListItem,
     Box,
     IconButton,
-} from '@mui/material';
-import Image from 'next/image';
-import { useCallback } from 'react';
-import { useShallow } from 'zustand/react/shallow';
-
-import { setLocalStorageHelpBoxDismissalTime } from '$lib/localStorage';
-import { useHelpMenuStore } from '$stores/HelpMenuStore';
+    ImageList,
+    ImageListItem,
+    Link,
+    List,
+    ListItem,
+    ListItemText,
+    Paper,
+    Typography,
+} from "@mui/material";
+import Image from "next/image";
+import { useCallback } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 const images = [
     {
-        src: '/helpbox1.png',
+        src: "/helpbox1.png",
         alt: 'UCI General Catalogue with "Explore Undergraduate Programs" button highlighted',
     },
     {
-        src: '/helpbox2.png',
-        alt: 'Undergraduate Majors and Minors page with catalogue highlighted',
+        src: "/helpbox2.png",
+        alt: "Undergraduate Majors and Minors page with catalogue highlighted",
     },
     {
-        src: '/helpbox3.png',
+        src: "/helpbox3.png",
         alt: 'Electrical Engineering page with "REQUIREMENTS" and "SAMPLE PROGRAM" tabs highlighted',
     },
 ];
 
 export function HelpBox() {
     const [showHelpBox, setShowHelpBox] = useHelpMenuStore(
-        useShallow((store) => [store.showHelpBox, store.setShowHelpBox])
+        useShallow((store) => [store.showHelpBox, store.setShowHelpBox]),
     );
 
     const dismissHelpBox = useCallback(() => {
@@ -52,8 +51,8 @@ export function HelpBox() {
     }
 
     return (
-        <Paper variant="outlined" sx={{ padding: 2, marginRight: '5px' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Paper variant="outlined" sx={{ padding: 2, marginRight: "5px" }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <Typography variant="h5" fontWeight="bold">
                     Need help planning your schedule?
                 </Typography>
@@ -62,10 +61,10 @@ export function HelpBox() {
                 </IconButton>
             </Box>
 
-            <List component="ol" sx={{ listStyle: 'decimal', pl: 2, pb: 0 }}>
-                <ListItem sx={{ display: 'list-item', p: 0 }}>
+            <List component="ol" sx={{ listStyle: "decimal", pl: 2, pb: 0 }}>
+                <ListItem sx={{ display: "list-item", p: 0 }}>
                     <ListItemText>
-                        Browse undergraduate majors on the{' '}
+                        Browse undergraduate majors on the{" "}
                         <Link
                             href="https://catalogue.uci.edu/undergraduatedegrees/"
                             target="_blank"
@@ -77,14 +76,14 @@ export function HelpBox() {
                     </ListItemText>
                 </ListItem>
 
-                <ListItem sx={{ display: 'list-item', p: 0 }}>
+                <ListItem sx={{ display: "list-item", p: 0 }}>
                     <ListItemText>Select your major.</ListItemText>
                 </ListItem>
 
-                <ListItem sx={{ display: 'list-item', p: 0 }}>
+                <ListItem sx={{ display: "list-item", p: 0 }}>
                     <ListItemText>
-                        View the &quot;REQUIREMENTS&quot; and &quot;SAMPLE PROGRAM&quot; tabs to see what classes you
-                        should take.
+                        View the &quot;REQUIREMENTS&quot; and &quot;SAMPLE PROGRAM&quot; tabs to see
+                        what classes you should take.
                     </ListItemText>
                 </ListItem>
             </List>
@@ -96,7 +95,7 @@ export function HelpBox() {
                             alt={image.alt}
                             width={500}
                             height={300}
-                            style={{ width: '100%', height: 'auto' }}
+                            style={{ width: "100%", height: "auto" }}
                         />
                     </ImageListItem>
                 ))}

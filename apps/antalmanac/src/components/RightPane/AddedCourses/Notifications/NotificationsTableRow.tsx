@@ -1,13 +1,12 @@
-import { TableRow, TableCell } from '@mui/material';
-import { memo } from 'react';
-
-import { DeptCourseNumberCell } from '$components/RightPane/AddedCourses/Notifications/DeptCourseNumberCell';
-import { NotificationTableDeleteCell } from '$components/RightPane/AddedCourses/Notifications/NotificationTableDeleteCell';
-import { NotificationTableRowCheckbox } from '$components/RightPane/AddedCourses/Notifications/NotificationTableRowCheckbox';
-import { CourseCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/CourseCodeCell';
-import { DetailsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell';
-import { InstructorsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/InstructorsCell';
-import { NotifyOn, useNotificationStore } from '$stores/NotificationStore';
+import { DeptCourseNumberCell } from "$components/RightPane/AddedCourses/Notifications/DeptCourseNumberCell";
+import { NotificationTableDeleteCell } from "$components/RightPane/AddedCourses/Notifications/NotificationTableDeleteCell";
+import { NotificationTableRowCheckbox } from "$components/RightPane/AddedCourses/Notifications/NotificationTableRowCheckbox";
+import { CourseCodeCell } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/CourseCodeCell";
+import { DetailsCell } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell";
+import { InstructorsCell } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/InstructorsCell";
+import { NotifyOn, useNotificationStore } from "$stores/NotificationStore";
+import { TableCell, TableRow } from "@mui/material";
+import { memo } from "react";
 
 interface NotificationTableRowProps {
     notificationKey: string;
@@ -34,25 +33,31 @@ export const NotificationTableRow = memo(({ notificationKey }: NotificationTable
     } = notification;
 
     return (
-        <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+        <TableRow sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
             <NotificationTableDeleteCell notificationKey={notificationKey} />
-            <CourseCodeCell sectionCode={sectionCode} sx={{ width: 'unset', padding: '6px 16px' }} />
+            <CourseCodeCell
+                sectionCode={sectionCode}
+                sx={{ width: "unset", padding: "6px 16px" }}
+            />
             <DeptCourseNumberCell
                 deptCode={deptCode}
                 courseNumber={courseNumber}
                 courseTitle={courseTitle}
-                sx={{ width: 'unset', padding: '6px 16px' }}
+                sx={{ width: "unset", padding: "6px 16px" }}
             />
             <DetailsCell
                 sectionType={sectionType}
                 sectionNum={sectionNum}
                 units={units}
-                sx={{ width: 'unset', padding: '6px 16px' }}
+                sx={{ width: "unset", padding: "6px 16px" }}
             />
             {instructors && instructors.length > 0 ? (
-                <InstructorsCell instructors={instructors} sx={{ width: 'unset', padding: '6px 16px' }} />
+                <InstructorsCell
+                    instructors={instructors}
+                    sx={{ width: "unset", padding: "6px 16px" }}
+                />
             ) : (
-                <TableCell sx={{ width: 'unset', padding: '6px 16px' }}>-</TableCell>
+                <TableCell sx={{ width: "unset", padding: "6px 16px" }}>-</TableCell>
             )}
 
             {Object.keys(notification.notifyOn).map((statusKey) => (
@@ -74,4 +79,4 @@ export const NotificationTableRow = memo(({ notificationKey }: NotificationTable
     );
 });
 
-NotificationTableRow.displayName = 'NotificationTableRow';
+NotificationTableRow.displayName = "NotificationTableRow";

@@ -1,22 +1,21 @@
-import { Delete, Search } from '@mui/icons-material';
-import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
-import { CustomEventId, WebsocSectionFinalExam } from '@packages/antalmanac-types';
-import { usePostHog } from 'posthog-js/react';
-import { useEffect, useRef } from 'react';
-import { Event } from 'react-big-calendar';
-
-import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
-import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import ColorPicker from '$components/ColorPicker';
-import { MapLink } from '$components/buttons/MapLink';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { clickToCopy } from '$lib/helpers';
-import buildingCatalogue from '$lib/locations/buildingCatalogue';
-import locationIds from '$lib/locations/locations';
-import { useQuickSearch } from '$src/hooks/useQuickSearch';
-import AppStore from '$stores/AppStore';
-import { useTimeFormatStore } from '$stores/SettingsStore';
-import { formatTimes } from '$stores/calendarizeHelpers';
+import { deleteCourse, deleteCustomEvent } from "$actions/AppStoreActions";
+import { MapLink } from "$components/buttons/MapLink";
+import { CustomEventDialog } from "$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog";
+import ColorPicker from "$components/ColorPicker";
+import analyticsEnum, { logAnalytics } from "$lib/analytics/analytics";
+import { clickToCopy } from "$lib/helpers";
+import buildingCatalogue from "$lib/locations/buildingCatalogue";
+import locationIds from "$lib/locations/locations";
+import { useQuickSearch } from "$src/hooks/useQuickSearch";
+import AppStore from "$stores/AppStore";
+import { formatTimes } from "$stores/calendarizeHelpers";
+import { useTimeFormatStore } from "$stores/SettingsStore";
+import { Delete, Search } from "@mui/icons-material";
+import { Box, Button, Chip, IconButton, Paper, Tooltip } from "@mui/material";
+import { CustomEventId, WebsocSectionFinalExam } from "@packages/antalmanac-types";
+import { usePostHog } from "posthog-js/react";
+import { useEffect, useRef } from "react";
+import { Event } from "react-big-calendar";
 
 interface CommonCalendarEvent extends Event {
     color: string;
@@ -43,8 +42,10 @@ export interface Location {
 }
 
 export type FinalExam =
-    | (Omit<Extract<WebsocSectionFinalExam, { examStatus: 'SCHEDULED_FINAL' }>, 'bldg'> & { locations: Location[] })
-    | Extract<WebsocSectionFinalExam, { examStatus: 'NO_FINAL' | 'TBA_FINAL' }>;
+    | (Omit<Extract<WebsocSectionFinalExam, { examStatus: "SCHEDULED_FINAL" }>, "bldg"> & {
+          locations: Location[];
+      })
+    | Extract<WebsocSectionFinalExam, { examStatus: "NO_FINAL" | "TBA_FINAL" }>;
 
 export interface CourseEvent extends CommonCalendarEvent {
     locations: Location[];
@@ -78,7 +79,7 @@ export interface SkeletonEvent extends CommonCalendarEvent {
 export type CalendarEvent = CourseEvent | CustomEvent | SkeletonEvent;
 
 export const isSkeletonEvent = (event: CalendarEvent): event is SkeletonEvent => {
-    return 'isSkeletonEvent' in event && event.isSkeletonEvent;
+    return "isSkeletonEvent" in event && event.isSkeletonEvent;
 };
 
 interface CourseCalendarEventProps {
@@ -87,9 +88,13 @@ interface CourseCalendarEventProps {
     closePopover: () => void;
 }
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover }: CourseCalendarEventProps) => {
+export const CourseCalendarEvent = ({
+    selectedEvent,
+    scheduleNames,
+    closePopover,
+}: CourseCalendarEventProps) => {
     const paperRef = useRef<HTMLDivElement>(null);
     const quickSearch = useQuickSearch();
     const { isMilitaryTime } = useTimeFormatStore();
@@ -98,34 +103,47 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
+            if (event.key === "Escape") {
                 closePopover();
             }
         };
 
-        document.addEventListener('keydown', handleKeyDown);
+        document.addEventListener("keydown", handleKeyDown);
 
         return () => {
-            document.removeEventListener('keydown', handleKeyDown);
+            document.removeEventListener("keydown", handleKeyDown);
         };
     }, [closePopover]);
 
     if (!selectedEvent.isCustomEvent) {
-        const { term, instructors, sectionCode, title, finalExam, locations, sectionType, deptValue, courseNumber } =
-            selectedEvent;
+        const {
+            term,
+            instructors,
+            sectionCode,
+            title,
+            finalExam,
+            locations,
+            sectionType,
+            deptValue,
+            courseNumber,
+        } = selectedEvent;
 
-        let finalExamString = '';
+        let finalExamString = "";
 
-        if (finalExam.examStatus == 'NO_FINAL') {
-            finalExamString = 'No Final';
-        } else if (finalExam.examStatus == 'TBA_FINAL') {
-            finalExamString = 'Final TBA';
+        if (finalExam.examStatus == "NO_FINAL") {
+            finalExamString = "No Final";
+        } else if (finalExam.examStatus == "TBA_FINAL") {
+            finalExamString = "Final TBA";
         } else {
-            if (finalExam.examStatus === 'SCHEDULED_FINAL') {
-                const timeString = formatTimes(finalExam.startTime, finalExam.endTime, isMilitaryTime);
+            if (finalExam.examStatus === "SCHEDULED_FINAL") {
+                const timeString = formatTimes(
+                    finalExam.startTime,
+                    finalExam.endTime,
+                    isMilitaryTime,
+                );
                 const locationString = `at ${finalExam.locations
                     .map((location) => `${location.building} ${location.room}`)
-                    .join(', ')}`;
+                    .join(", ")}`;
                 const finalExamMonth = MONTHS[finalExam.month];
 
                 finalExamString = `${finalExam.dayOfWeek} ${finalExamMonth} ${finalExam.day} ${timeString} ${locationString}`;
@@ -137,25 +155,27 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
         };
 
         return (
-            <Paper sx={{ padding: '0.5rem', minWidth: '15rem' }} ref={paperRef}>
+            <Paper sx={{ padding: "0.5rem", minWidth: "15rem" }} ref={paperRef}>
                 <Box
                     sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '0.25rem',
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: "0.25rem",
                     }}
                 >
                     <Tooltip title="Quick Search">
                         <Button size="small" onClick={handleQuickSearch}>
                             <Search fontSize="small" style={{ marginRight: 5 }} />
-                            <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{`${title} ${sectionType}`}</span>
+                            <span
+                                style={{ fontSize: "0.9rem", fontWeight: 500 }}
+                            >{`${title} ${sectionType}`}</span>
                         </Button>
                     </Tooltip>
                     <Tooltip title="Delete">
                         <IconButton
                             size="small"
-                            style={{ textDecoration: 'underline' }}
+                            style={{ textDecoration: "underline" }}
                             onClick={() => {
                                 closePopover();
                                 deleteCourse(sectionCode, term, AppStore.getCurrentScheduleIndex());
@@ -169,18 +189,26 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         </IconButton>
                     </Tooltip>
                 </Box>
-                <table style={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                <table
+                    style={{
+                        border: "none",
+                        width: "100%",
+                        borderCollapse: "collapse",
+                        fontSize: "0.9rem",
+                    }}
+                >
                     <tbody>
                         <tr>
-                            <td style={{ verticalAlign: 'top' }}>Section code</td>
+                            <td style={{ verticalAlign: "top" }}>Section code</td>
                             <Tooltip title="Click to copy section code" placement="right">
-                                <td style={{ textAlign: 'right' }}>
+                                <td style={{ textAlign: "right" }}>
                                     <Chip
                                         onClick={(event) => {
                                             clickToCopy(event, sectionCode);
                                             logAnalytics(postHog, {
                                                 category: analyticsEnum.calendar,
-                                                action: analyticsEnum.calendar.actions.COPY_COURSE_CODE,
+                                                action: analyticsEnum.calendar.actions
+                                                    .COPY_COURSE_CODE,
                                             });
                                         }}
                                         label={sectionCode}
@@ -190,20 +218,26 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                             </Tooltip>
                         </tr>
                         <tr>
-                            <td style={{ verticalAlign: 'top' }}>Term</td>
-                            <td style={{ textAlign: 'right' }}>{term}</td>
+                            <td style={{ verticalAlign: "top" }}>Term</td>
+                            <td style={{ textAlign: "right" }}>{term}</td>
                         </tr>
                         <tr>
-                            <td style={{ verticalAlign: 'top' }}>Instructors</td>
-                            <td style={{ whiteSpace: 'pre', textAlign: 'right' }}>{instructors.join('\n')}</td>
+                            <td style={{ verticalAlign: "top" }}>Instructors</td>
+                            <td style={{ whiteSpace: "pre", textAlign: "right" }}>
+                                {instructors.join("\n")}
+                            </td>
                         </tr>
                         <tr>
-                            <td style={{ verticalAlign: 'top' }}>Location{locations.length > 1 && 's'}</td>
-                            <td style={{ whiteSpace: 'pre', textAlign: 'right' }}>
+                            <td style={{ verticalAlign: "top" }}>
+                                Location{locations.length > 1 && "s"}
+                            </td>
+                            <td style={{ whiteSpace: "pre", textAlign: "right" }}>
                                 {locations.map((location) => (
-                                    <div key={`${sectionCode} @ ${location.building} ${location.room}`}>
+                                    <div
+                                        key={`${sectionCode} @ ${location.building} ${location.room}`}
+                                    >
                                         <MapLink
-                                            buildingId={locationIds[location.building] ?? '0'}
+                                            buildingId={locationIds[location.building] ?? "0"}
                                             room={`${location.building} ${location.room}`}
                                         />
                                     </div>
@@ -212,11 +246,11 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         </tr>
                         <tr>
                             <td>Final</td>
-                            <td style={{ textAlign: 'right' }}>{finalExamString}</td>
+                            <td style={{ textAlign: "right" }}>{finalExamString}</td>
                         </tr>
                         <tr>
                             <td>Color</td>
-                            <td style={{ textAlign: 'right' }}>
+                            <td style={{ textAlign: "right" }}>
                                 <ColorPicker
                                     color={selectedEvent.color}
                                     isCustomEvent={selectedEvent.isCustomEvent}
@@ -233,15 +267,25 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
     } else {
         const { title, customEventID, building } = selectedEvent;
         return (
-            <Paper sx={{ padding: '0.5rem' }} ref={paperRef}>
-                <Box sx={{ fontSize: '0.9rem', fontWeight: 500 }}>{title}</Box>
+            <Paper sx={{ padding: "0.5rem" }} ref={paperRef}>
+                <Box sx={{ fontSize: "0.9rem", fontWeight: 500 }}>{title}</Box>
                 {building && (
-                    <Box sx={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                    <Box
+                        sx={{
+                            border: "none",
+                            width: "100%",
+                            borderCollapse: "collapse",
+                            fontSize: "0.9rem",
+                        }}
+                    >
                         Location:&nbsp;
-                        <MapLink buildingId={+building} room={buildingCatalogue[+building]?.name ?? ''} />
+                        <MapLink
+                            buildingId={+building}
+                            room={buildingCatalogue[+building]?.name ?? ""}
+                        />
                     </Box>
                 )}
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
                     <ColorPicker
                         color={selectedEvent.color}
                         isCustomEvent={true}
@@ -258,7 +302,9 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         <IconButton
                             onClick={() => {
                                 closePopover();
-                                deleteCustomEvent(customEventID, [AppStore.getCurrentScheduleIndex()]);
+                                deleteCustomEvent(customEventID, [
+                                    AppStore.getCurrentScheduleIndex(),
+                                ]);
                                 logAnalytics(postHog, {
                                     category: analyticsEnum.calendar,
                                     action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,

@@ -1,5 +1,5 @@
-import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
-import { terms } from '$generated/termData';
+import type { CourseEvent, CustomEvent } from "$components/Calendar/CourseCalendarEvent";
+import { terms } from "$generated/termData";
 
 /**
  * Quarterly Academic Calendar {@link https://www.reg.uci.edu/calendars/quarterly/2023-2024/quarterly23-24.html}
@@ -62,4 +62,10 @@ function getFinalsStartDateForTerm(term: string) {
     return new Date(termThatMatches.finalsStartDate);
 }
 
-export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStartDate, getFinalsStartDateForTerm };
+export {
+    defaultTerm,
+    getDefaultTerm,
+    termData,
+    getDefaultFinalsStartDate,
+    getFinalsStartDateForTerm,
+};

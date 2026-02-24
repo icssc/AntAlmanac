@@ -1,7 +1,10 @@
-import { create } from 'zustand';
-
-import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId, setLocalStorageSessionId, removeLocalStorageSessionId } from '$lib/localStorage';
+import trpc from "$lib/api/trpc";
+import {
+    getLocalStorageSessionId,
+    removeLocalStorageSessionId,
+    setLocalStorageSessionId,
+} from "$lib/localStorage";
+import { create } from "zustand";
 
 interface SessionState {
     session: string | null;
@@ -33,14 +36,16 @@ export const useSessionStore = create<SessionState>((set) => {
 
                 set({ isGoogleUser, email: users.email ?? null });
             } catch (error) {
-                console.error('Failed to fetch user data:', error);
+                console.error("Failed to fetch user data:", error);
                 set({ isGoogleUser: false, email: null });
             }
         },
         sessionIsValid: false,
         updateSession: async (session) => {
             if (session) {
-                const sessionIsValid: boolean = await trpc.auth.validateSession.query({ token: session });
+                const sessionIsValid: boolean = await trpc.auth.validateSession.query({
+                    token: session,
+                });
                 if (sessionIsValid) {
                     setLocalStorageSessionId(session);
                     set({ session: session, sessionIsValid: true });

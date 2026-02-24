@@ -21,7 +21,7 @@
 
 /* creates the left notch of the branch for each prereq-clump*/
 .prereq-clump::before {
-    content: '';
+    content: "";
     position: absolute;
     background: var(--grey-light-theme);
     top: 50%;
@@ -51,7 +51,7 @@
 
 /* creates the notch to the left of the "needs" key word*/
 .dependency-needs::before {
-    content: '';
+    content: "";
     position: absolute;
     background: var(--grey-light-theme);
     top: 50%;
@@ -62,7 +62,7 @@
 
 /* creates the notch to the right of the "needs" key word*/
 .dependency-needs::after {
-    content: '';
+    content: "";
     position: absolute;
     background: var(--grey-light-theme);
     top: 50%;
@@ -92,7 +92,7 @@
     width: 1px;
     height: 50%;
     right: -1rem;
-    content: '';
+    content: "";
     background: var(--grey-light-theme);
     position: absolute;
     bottom: 0;
@@ -104,7 +104,7 @@
     width: 1px;
     height: 50%;
     right: -1rem;
-    content: '';
+    content: "";
     background: var(--grey-light-theme);
     position: absolute;
     top: 0;
@@ -115,7 +115,7 @@
     width: 1px;
     height: 100%;
     right: -1rem;
-    content: '';
+    content: "";
     background: var(--grey-light-theme);
     position: absolute;
     top: 0;
@@ -123,7 +123,7 @@
 
 /* creates the horizontal branch that connects the each dependency node*/
 .dependency-node::before {
-    content: '';
+    content: "";
     position: absolute;
     background: var(--grey-light-theme);
     top: 50%;
@@ -149,7 +149,7 @@
     width: 1px;
     height: 50%;
     left: -1rem;
-    content: '';
+    content: "";
     background: var(--grey-light-theme);
     position: absolute;
     bottom: 0;
@@ -162,7 +162,7 @@
     width: 1px;
     height: 50%;
     left: -1rem;
-    content: '';
+    content: "";
     background: var(--grey-light-theme);
     position: absolute;
     top: 0;
@@ -173,7 +173,7 @@
     width: 1px;
     height: 100%;
     left: -1rem;
-    content: '';
+    content: "";
     background: var(--grey-light-theme);
     position: absolute;
     top: 0;
@@ -181,7 +181,7 @@
 
 /* creates the horizontal branch that connects the each prerequisite node*/
 .prerequisite-node::before {
-    content: '';
+    content: "";
     position: absolute;
     background: var(--grey-light-theme);
     top: 50%;

@@ -1,20 +1,19 @@
+import type { CourseEvent, CustomEvent, Location } from "$components/Calendar/CourseCalendarEvent";
+import { getFinalsStartDateForTerm } from "$lib/termData";
+import { getReferencesOccurring, notNull } from "$lib/utils";
 import type {
-    ScheduleCourse,
-    RepeatingCustomEvent,
     HourMinute,
+    RepeatingCustomEvent,
+    ScheduleCourse,
     WebsocSectionFinalExam,
-} from '@packages/antalmanac-types';
+} from "@packages/antalmanac-types";
 
-import type { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
-import { getFinalsStartDateForTerm } from '$lib/termData';
-import { notNull, getReferencesOccurring } from '$lib/utils';
+export const COURSE_WEEK_DAYS = ["Su", "M", "Tu", "W", "Th", "F", "Sa"];
 
-export const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
-
-export const FINALS_WEEK_DAYS = ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+export const FINALS_WEEK_DAYS = ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"];
 
 export function getLocation(location: string): Location {
-    const [building = '', room = ''] = location.split(' ');
+    const [building = "", room = ""] = location.split(" ");
     return { building, room };
 }
 
@@ -46,9 +45,9 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): 
 
                 // Intermediate formatting to subtract `bldg` attribute in favor of `locations`
                 const { bldg: _, ...finalExam } =
-                    course.section.finalExam.examStatus === 'SCHEDULED_FINAL'
+                    course.section.finalExam.examStatus === "SCHEDULED_FINAL"
                         ? course.section.finalExam
-                        : { bldg: '', examStatus: course.section.finalExam.examStatus };
+                        : { bldg: "", examStatus: course.section.finalExam.examStatus };
 
                 return dayIndicesOccurring.map((dayIndex) => {
                     return {
@@ -73,7 +72,7 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): 
                         finalExam: {
                             ...finalExam,
                             locations:
-                                course.section.finalExam.examStatus === 'SCHEDULED_FINAL'
+                                course.section.finalExam.examStatus === "SCHEDULED_FINAL"
                                     ? course.section.finalExam.bldg.map(getLocation)
                                     : [],
                         },
@@ -86,13 +85,13 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): 
 
 export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
     return currentCourses
-        .filter((course) => course.section.finalExam.examStatus === 'SCHEDULED_FINAL')
+        .filter((course) => course.section.finalExam.examStatus === "SCHEDULED_FINAL")
         .flatMap((course) => {
             // This assertion is only necessary because the filter above is not actually a type guard for the finalExam object.
             // I guess because it's an attribute of another attribute? TypeScript pls
             const finalExamObject = course.section.finalExam as Extract<
                 WebsocSectionFinalExam,
-                { examStatus: 'SCHEDULED_FINAL' }
+                { examStatus: "SCHEDULED_FINAL" }
             >;
             const { bldg, ...finalExam } = finalExamObject;
 
@@ -120,8 +119,8 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
             const locationsWithNoDays = bldg
                 ? bldg.map(getLocation)
                 : !course.section.meetings[0].timeIsTBA
-                ? course.section.meetings[0].bldg.map(getLocation)
-                : [];
+                  ? course.section.meetings[0].bldg.map(getLocation)
+                  : [];
 
             /**
              * Fallback to January 2018 if no finals start date is available.
@@ -154,7 +153,7 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
                     sectionCode: course.section.sectionCode,
                     deptValue: course.deptCode,
                     courseNumber: course.courseNumber,
-                    sectionType: 'Fin',
+                    sectionType: "Fin",
                     start: startDate,
                     end: endDate,
                     finalExam: {
@@ -167,9 +166,13 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
         });
 }
 
-export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[] = []): CustomEvent[] {
+export function calendarizeCustomEvents(
+    currentCustomEvents: RepeatingCustomEvent[] = [],
+): CustomEvent[] {
     return currentCustomEvents.flatMap((customEvent) => {
-        const dayIndicesOccurring = customEvent.days.map((day, index) => (day ? index : undefined)).filter(notNull);
+        const dayIndicesOccurring = customEvent.days
+            .map((day, index) => (day ? index : undefined))
+            .filter(notNull);
         /**
          * Only include the day strings that the custom event occurs.
          *
@@ -184,21 +187,21 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
 
             return {
                 customEventID: customEvent.customEventID,
-                color: customEvent.color ?? '#000000',
+                color: customEvent.color ?? "#000000",
                 start: new Date(2018, 0, dayIndex, startHour, startMin),
                 isCustomEvent: true,
                 end: new Date(2018, 0, dayIndex, endHour, endMin),
                 title: customEvent.title,
-                building: customEvent.building ?? '',
+                building: customEvent.building ?? "",
                 days,
             };
         });
     });
 }
 
-export const SHORT_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
+export const SHORT_DAYS = ["Su", "M", "Tu", "W", "Th", "F", "Sa"];
 
-export const SHORT_DAY_REGEX = new RegExp(`(${SHORT_DAYS.join('|')})`, 'g');
+export const SHORT_DAY_REGEX = new RegExp(`(${SHORT_DAYS.join("|")})`, "g");
 
 /**
  * Parses a day string into an array of numbers.
@@ -252,8 +255,8 @@ export function normalizeTime(options: NormalizeTimeOptions): NormalizedWebSOCTi
     }
 
     // Times are normalized to ##:## (10:00, 09:00 etc)
-    const startHour = `${options.startTime.hour}`.padStart(2, '0');
-    const endHour = `${options.endTime.hour}`.padStart(2, '0');
+    const startHour = `${options.startTime.hour}`.padStart(2, "0");
+    const endHour = `${options.endTime.hour}`.padStart(2, "0");
 
     const startTime = `${startHour}:${options.startTime.minute}`;
     const endTime = `${endHour}:${options.endTime.minute}`;
@@ -261,19 +264,23 @@ export function normalizeTime(options: NormalizeTimeOptions): NormalizedWebSOCTi
     return { startTime, endTime };
 }
 
-export function formatTimes(startTime: HourMinute, endTime: HourMinute, timeFormat: boolean): string | undefined {
+export function formatTimes(
+    startTime: HourMinute,
+    endTime: HourMinute,
+    timeFormat: boolean,
+): string | undefined {
     if (!startTime || !endTime) {
         return;
     }
 
-    const formattedStartMinute = startTime.minute.toString().padStart(2, '0');
-    const formattedEndMinute = endTime.minute.toString().padStart(2, '0');
+    const formattedStartMinute = startTime.minute.toString().padStart(2, "0");
+    const formattedEndMinute = endTime.minute.toString().padStart(2, "0");
 
     if (timeFormat) {
         return `${startTime.hour}:${formattedStartMinute} - ${endTime.hour}:${formattedEndMinute}`;
     }
 
-    const timeSuffix = endTime.hour >= 12 ? 'PM' : 'AM';
+    const timeSuffix = endTime.hour >= 12 ? "PM" : "AM";
 
     const formattedStartHour = `${startTime.hour > 12 ? startTime.hour - 12 : startTime.hour}`;
     const formattedEndHour = `${endTime.hour > 12 ? endTime.hour - 12 : endTime.hour}`;

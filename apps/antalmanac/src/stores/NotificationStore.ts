@@ -1,10 +1,9 @@
-import { debounce } from '@mui/material';
-import { AASection, Course, CourseInfo } from '@packages/antalmanac-types';
-import { create } from 'zustand';
-
-import { Notifications } from '$lib/notifications';
-import { WebSOC } from '$lib/websoc';
-import { useSessionStore } from '$stores/SessionStore';
+import { Notifications } from "$lib/notifications";
+import { WebSOC } from "$lib/websoc";
+import { useSessionStore } from "$stores/SessionStore";
+import { debounce } from "@mui/material";
+import { AASection, Course, CourseInfo } from "@packages/antalmanac-types";
+import { create } from "zustand";
 
 export type NotifyOn = {
     notifyOnOpen: boolean;
@@ -15,11 +14,11 @@ export type NotifyOn = {
 
 export type Notification = {
     term: string;
-    sectionCode: AASection['sectionCode'];
+    sectionCode: AASection["sectionCode"];
     units: number;
     sectionNum: string;
-    courseTitle: Course['title'];
-    sectionType: AASection['sectionType'];
+    courseTitle: Course["title"];
+    sectionType: AASection["sectionType"];
     notifyOn: NotifyOn;
     lastUpdated: string;
     lastCodes: string;
@@ -37,7 +36,9 @@ interface RawNotification {
 export interface NotificationStore {
     initialized: boolean;
     notifications: Partial<Record<string, Notification>>;
-    setNotifications: (notification: Omit<Notification, 'notifyOn'> & { status: keyof NotifyOn }) => void;
+    setNotifications: (
+        notification: Omit<Notification, "notifyOn"> & { status: keyof NotifyOn },
+    ) => void;
     deleteNotification: (notificationKey: string) => void;
     loadNotifications: () => Promise<void>;
 }
@@ -75,7 +76,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
             courseNumber,
             instructors,
         }) => {
-            const key = sectionCode + ' ' + term;
+            const key = sectionCode + " " + term;
 
             set((state) => {
                 const notifications = state.notifications;
@@ -168,7 +169,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
 
                 for (const notification of existingNotifications) {
                     const { year, quarter, sectionCode } = notification;
-                    const term = year + ' ' + quarter;
+                    const term = year + " " + quarter;
 
                     if (term in courseDict) {
                         courseDict[term].add(sectionCode.toString());
@@ -179,7 +180,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
 
                 const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
                 const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
-                    const sectionCodes = Array.from(courseSet).join(',');
+                    const sectionCodes = Array.from(courseSet).join(",");
                     const courseInfo = await WebSOC.getCourseInfo({ term, sectionCodes });
                     courseInfoDict.set(term, courseInfo);
                 });
@@ -191,13 +192,13 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                 for (const [term, courseInfo] of courseInfoDict.entries()) {
                     for (const sectionCode in courseInfo) {
                         const course = courseInfo[sectionCode];
-                        const key = sectionCode + ' ' + term;
+                        const key = sectionCode + " " + term;
 
                         const existingNotification = existingNotifications.find(
                             (notification: RawNotification) =>
                                 notification.sectionCode === sectionCode &&
-                                notification.year === term.split(' ')[0] &&
-                                notification.quarter === term.split(' ')[1]
+                                notification.year === term.split(" ")[0] &&
+                                notification.quarter === term.split(" ")[1],
                         );
 
                         if (existingNotification) {
@@ -210,12 +211,16 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                                 sectionNum: course.section.sectionNum,
                                 notifyOn: {
                                     notifyOnOpen: existingNotification.notifyOnOpen ?? false,
-                                    notifyOnWaitlist: existingNotification.notifyOnWaitlist ?? false,
+                                    notifyOnWaitlist:
+                                        existingNotification.notifyOnWaitlist ?? false,
                                     notifyOnFull: existingNotification.notifyOnFull ?? false,
-                                    notifyOnRestriction: existingNotification.notifyOnRestriction ?? false,
+                                    notifyOnRestriction:
+                                        existingNotification.notifyOnRestriction ?? false,
                                 },
-                                lastUpdated: existingNotification.lastUpdatedStatus ?? course.section.status,
-                                lastCodes: existingNotification.lastCodes ?? course.section.restrictions,
+                                lastUpdated:
+                                    existingNotification.lastUpdatedStatus ?? course.section.status,
+                                lastCodes:
+                                    existingNotification.lastCodes ?? course.section.restrictions,
                                 deptCode: course.courseDetails.deptCode,
                                 courseNumber: course.courseDetails.courseNumber,
                                 instructors: course.section.instructors,
@@ -226,7 +231,7 @@ export const useNotificationStore = create<NotificationStore>((set) => {
 
                 set({ notifications, initialized: true });
             } catch (error) {
-                console.error('Failed to load notifications:', error);
+                console.error("Failed to load notifications:", error);
                 set({ initialized: true });
             }
         },

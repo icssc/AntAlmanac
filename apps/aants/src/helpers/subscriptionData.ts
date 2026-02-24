@@ -1,11 +1,11 @@
-import type { WebsocAPIResponse, WebsocSection } from '@packages/anteater-api-types';
-import { and, eq, or } from 'drizzle-orm';
+import type { WebsocAPIResponse, WebsocSection } from "@packages/anteater-api-types";
+import { and, eq, or } from "drizzle-orm";
 
-import { db } from '../../../../packages/db/src/index';
-import { users } from '../../../../packages/db/src/schema/auth/user';
-import { subscriptions } from '../../../../packages/db/src/schema/subscription';
+import { db } from "../../../../packages/db/src/index";
+import { users } from "../../../../packages/db/src/schema/auth/user";
+import { subscriptions } from "../../../../packages/db/src/schema/subscription";
 
-const ANTEATER_API_BASE_URL = 'https://anteaterapi.com/v2/rest/websoc';
+const ANTEATER_API_BASE_URL = "https://anteaterapi.com/v2/rest/websoc";
 
 interface AnteaterAPIResponse {
     ok: boolean;
@@ -18,7 +18,7 @@ interface TermGrouping {
 }
 
 interface ClassStatus {
-    lastUpdatedStatus: WebsocSection['status'] | null;
+    lastUpdatedStatus: WebsocSection["status"] | null;
     lastCodes: string | null;
 }
 
@@ -38,26 +38,26 @@ export interface User {
 async function getUpdatedClasses(
     quarter: string,
     year: string,
-    sections: string[]
+    sections: string[],
 ): Promise<WebsocAPIResponse | undefined> {
     try {
         const params = new URLSearchParams({
             year,
             quarter,
-            sectionCodes: sections.join(','),
+            sectionCodes: sections.join(","),
         });
 
         const response = await fetch(`${ANTEATER_API_BASE_URL}?${params.toString()}`);
         const json: AnteaterAPIResponse = await response.json();
 
         if (!json.ok) {
-            console.error('AnteaterAPI error:', json.message);
+            console.error("AnteaterAPI error:", json.message);
             return undefined;
         }
 
         return json.data;
     } catch (error) {
-        console.error('Error getting class information:', error);
+        console.error("Error getting class information:", error);
     }
 }
 
@@ -91,7 +91,7 @@ async function getSubscriptionSectionCodes(): Promise<TermGrouping | undefined> 
 
         return groupedByTerm;
     } catch (error) {
-        console.error('Error getting subscriptions:', error);
+        console.error("Error getting subscriptions:", error);
     }
 }
 
@@ -107,8 +107,8 @@ async function updateSubscriptionStatus(
     year: string,
     quarter: string,
     sectionCode: string,
-    lastUpdatedStatus: WebsocSection['status'],
-    lastCodes: string
+    lastUpdatedStatus: WebsocSection["status"],
+    lastCodes: string,
 ): Promise<void> {
     try {
         await db
@@ -118,11 +118,11 @@ async function updateSubscriptionStatus(
                 and(
                     eq(subscriptions.year, year),
                     eq(subscriptions.quarter, quarter),
-                    eq(subscriptions.sectionCode, sectionCode)
-                )
+                    eq(subscriptions.sectionCode, sectionCode),
+                ),
             );
     } catch (error) {
-        console.error('Error updating subscription:', error);
+        console.error("Error updating subscription:", error);
     }
 }
 
@@ -137,7 +137,7 @@ async function updateSubscriptionStatus(
 async function getLastUpdatedStatus(
     year: string,
     quarter: string,
-    sectionCode: string
+    sectionCode: string,
 ): Promise<ClassStatus | undefined> {
     try {
         const result = await db
@@ -150,14 +150,14 @@ async function getLastUpdatedStatus(
                 and(
                     eq(subscriptions.year, year),
                     eq(subscriptions.quarter, quarter),
-                    eq(subscriptions.sectionCode, sectionCode)
-                )
+                    eq(subscriptions.sectionCode, sectionCode),
+                ),
             )
             .limit(1);
 
         return result?.[0] as ClassStatus;
     } catch (error) {
-        console.error('Error getting last updated status:', error);
+        console.error("Error getting last updated status:", error);
     }
 }
 
@@ -177,12 +177,12 @@ async function getUsers(
     quarter: string,
     year: string,
     sectionCode: string,
-    status: WebsocSection['status'],
+    status: WebsocSection["status"],
     statusChanged: boolean,
-    codesChanged: boolean
+    codesChanged: boolean,
 ): Promise<User[] | undefined> {
     try {
-        const statusColumnMap: Record<WebsocSection['status'], any> = {
+        const statusColumnMap: Record<WebsocSection["status"], any> = {
             OPEN: subscriptions.notifyOnOpen,
             Waitl: subscriptions.notifyOnWaitlist,
             FULL: subscriptions.notifyOnFull,
@@ -202,7 +202,10 @@ async function getUsers(
         let notificationCondition;
         if (statusChanged === true && codesChanged === true) {
             if (statusColumn) {
-                notificationCondition = or(eq(statusColumn, true), eq(subscriptions.notifyOnRestriction, true));
+                notificationCondition = or(
+                    eq(statusColumn, true),
+                    eq(subscriptions.notifyOnRestriction, true),
+                );
             } else {
                 notificationCondition = eq(subscriptions.notifyOnRestriction, true);
             }
@@ -217,7 +220,9 @@ async function getUsers(
             notificationCondition = eq(subscriptions.notifyOnRestriction, true);
         }
 
-        const allConditions = notificationCondition ? [...baseConditions, notificationCondition] : baseConditions;
+        const allConditions = notificationCondition
+            ? [...baseConditions, notificationCondition]
+            : baseConditions;
 
         const result = await db
             .select({ userName: users.name, email: users.email, userId: users.id })
@@ -227,8 +232,14 @@ async function getUsers(
 
         return result;
     } catch (error) {
-        console.error('Error getting users:', error);
+        console.error("Error getting users:", error);
     }
 }
 
-export { getUpdatedClasses, getSubscriptionSectionCodes, updateSubscriptionStatus, getLastUpdatedStatus, getUsers };
+export {
+    getUpdatedClasses,
+    getSubscriptionSectionCodes,
+    updateSubscriptionStatus,
+    getLastUpdatedStatus,
+    getUsers,
+};

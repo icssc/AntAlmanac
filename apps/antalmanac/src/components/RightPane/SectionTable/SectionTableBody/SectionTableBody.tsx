@@ -1,11 +1,10 @@
-import { TableBody } from '@mui/material';
-import { AACourse, AASection } from '@packages/antalmanac-types';
-import { useCallback, useEffect, useState } from 'react';
-
-import { SectionTableBodyRow } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRow';
-import { AnalyticsCategory } from '$lib/analytics/analytics';
-import AppStore from '$stores/AppStore';
-import { normalizeTime, parseDaysString } from '$stores/calendarizeHelpers';
+import { SectionTableBodyRow } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRow";
+import { AnalyticsCategory } from "$lib/analytics/analytics";
+import AppStore from "$stores/AppStore";
+import { normalizeTime, parseDaysString } from "$stores/calendarizeHelpers";
+import { TableBody } from "@mui/material";
+import { AACourse, AASection } from "@packages/antalmanac-types";
+import { useCallback, useEffect, useState } from "react";
 
 interface SectionTableBodyProps {
     courseDetails: AACourse;
@@ -24,7 +23,9 @@ export function SectionTableBody({
     analyticsCategory,
     formattedTime,
 }: SectionTableBodyProps) {
-    const [calendarEvents, setCalendarEvents] = useState(() => AppStore.getCourseEventsInCalendar());
+    const [calendarEvents, setCalendarEvents] = useState(() =>
+        AppStore.getCourseEventsInCalendar(),
+    );
 
     /**
      * Additional information about the current section being rendered.
@@ -32,7 +33,9 @@ export function SectionTableBody({
      */
     const parseSectionDetails = useCallback((section: AASection) => {
         return {
-            daysOccurring: parseDaysString(section.meetings[0].timeIsTBA ? null : section.meetings[0].days),
+            daysOccurring: parseDaysString(
+                section.meetings[0].timeIsTBA ? null : section.meetings[0].days,
+            ),
             ...normalizeTime(section.meetings[0]),
         };
     }, []);
@@ -65,7 +68,7 @@ export function SectionTableBody({
                 return !(happensBefore || happensAfter); // Overlaps if neither before nor after
             });
         },
-        [calendarEvents, parseSectionDetails]
+        [calendarEvents, parseSectionDetails],
     );
 
     const updateCalendarEvents = useCallback(() => {
@@ -73,12 +76,12 @@ export function SectionTableBody({
     }, [setCalendarEvents]);
 
     useEffect(() => {
-        AppStore.on('addedCoursesChange', updateCalendarEvents);
-        AppStore.on('currentScheduleIndexChange', updateCalendarEvents);
+        AppStore.on("addedCoursesChange", updateCalendarEvents);
+        AppStore.on("currentScheduleIndexChange", updateCalendarEvents);
 
         return () => {
-            AppStore.removeListener('addedCoursesChange', updateCalendarEvents);
-            AppStore.removeListener('currentScheduleIndexChange', updateCalendarEvents);
+            AppStore.removeListener("addedCoursesChange", updateCalendarEvents);
+            AppStore.removeListener("currentScheduleIndexChange", updateCalendarEvents);
         };
     }, [updateCalendarEvents]);
 

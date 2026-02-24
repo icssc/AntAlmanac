@@ -1,16 +1,15 @@
-import { AccountCircle } from '@mui/icons-material';
-import { Box, Divider, Stack, Typography } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import { User } from '@packages/antalmanac-types';
-import Image from 'next/image';
-
-import { About } from '$components/Header/About';
-import { ExperimentalMenu } from '$components/Header/Settings/ExperimentalMenu';
-import { ThemeSelector } from '$components/Header/Settings/ThemeSelector';
-import { TimeSelector } from '$components/Header/Settings/TimeSelector';
+import { About } from "$components/Header/About";
+import { ExperimentalMenu } from "$components/Header/Settings/ExperimentalMenu";
+import { ThemeSelector } from "$components/Header/Settings/ThemeSelector";
+import { TimeSelector } from "$components/Header/Settings/TimeSelector";
+import { AccountCircle } from "@mui/icons-material";
+import { Box, Divider, Stack, Typography } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import { User } from "@packages/antalmanac-types";
+import Image from "next/image";
 
 interface UserProfileSectionProps {
-    user: Pick<User, 'name' | 'avatar' | 'email'> | null;
+    user: Pick<User, "name" | "avatar" | "email"> | null;
 }
 
 function UserProfileSection({ user }: UserProfileSectionProps) {
@@ -21,14 +20,14 @@ function UserProfileSection({ user }: UserProfileSectionProps) {
     }
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             {user.avatar ? (
                 <Image
                     src={user.avatar}
-                    alt={user.name ?? 'User'}
+                    alt={user.name ?? "User"}
                     width={50}
                     height={50}
-                    style={{ borderRadius: '50%', objectFit: 'cover' }}
+                    style={{ borderRadius: "50%", objectFit: "cover" }}
                 />
             ) : (
                 <AccountCircle sx={{ width: 50, height: 50 }} />
@@ -36,11 +35,11 @@ function UserProfileSection({ user }: UserProfileSectionProps) {
             <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Typography
                     style={{
-                        fontSize: '18px',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        fontWeight: 'bold',
-                        paddingBottom: '8px',
+                        fontSize: "18px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        fontWeight: "bold",
+                        paddingBottom: "8px",
                         margin: 0,
                         lineHeight: 1,
                     }}
@@ -49,11 +48,11 @@ function UserProfileSection({ user }: UserProfileSectionProps) {
                 </Typography>
                 <Typography
                     style={{
-                        fontSize: '14px',
-                        color: theme.palette.mode === 'dark' ? '#96969b' : '#606166',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        paddingBottom: '4px',
+                        fontSize: "14px",
+                        color: theme.palette.mode === "dark" ? "#96969b" : "#606166",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        paddingBottom: "4px",
                         margin: 0,
                         lineHeight: 1,
                         fontWeight: 600,
@@ -67,12 +66,12 @@ function UserProfileSection({ user }: UserProfileSectionProps) {
 }
 
 interface SettingsMenuProps {
-    user: Pick<User, 'name' | 'avatar' | 'email'> | null;
+    user: Pick<User, "name" | "avatar" | "email"> | null;
 }
 
 export function SettingsMenu({ user }: SettingsMenuProps) {
     return (
-        <Stack sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Stack sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <UserProfileSection user={user} />
 
             <ThemeSelector />
@@ -84,7 +83,7 @@ export function SettingsMenu({ user }: SettingsMenuProps) {
                 </Divider>
 
                 <ExperimentalMenu />
-                <Divider style={{ marginTop: '10px', marginBottom: '12px' }} />
+                <Divider style={{ marginTop: "10px", marginBottom: "12px" }} />
                 <About />
             </Stack>
         </Stack>

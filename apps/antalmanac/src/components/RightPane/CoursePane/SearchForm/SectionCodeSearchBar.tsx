@@ -1,11 +1,10 @@
-import { ChangeEvent, PureComponent } from 'react';
-
-import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { LabeledTextField } from "$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField";
+import RightPaneStore from "$components/RightPane/RightPaneStore";
+import { ChangeEvent, PureComponent } from "react";
 
 class SectionCodeSearchBar extends PureComponent {
     updateSectionCodeAndGetFormData() {
-        RightPaneStore.updateFormValue('sectionCode', RightPaneStore.getUrlSectionCodeValue());
+        RightPaneStore.updateFormValue("sectionCode", RightPaneStore.getUrlSectionCodeValue());
         return RightPaneStore.getFormData().sectionCode;
     }
 
@@ -21,25 +20,25 @@ class SectionCodeSearchBar extends PureComponent {
 
     handleChange = (event: ChangeEvent<{ value: string }>) => {
         this.setState({ sectionCode: event.target.value });
-        RightPaneStore.updateFormValue('sectionCode', event.target.value);
-        const stateObj = { url: 'url' };
+        RightPaneStore.updateFormValue("sectionCode", event.target.value);
+        const stateObj = { url: "url" };
         const url = new URL(window.location.href);
         const urlParam = new URLSearchParams(url.search);
-        urlParam.delete('sectionCode');
+        urlParam.delete("sectionCode");
         if (event.target.value) {
-            urlParam.append('sectionCode', event.target.value);
+            urlParam.append("sectionCode", event.target.value);
         }
         const param = urlParam.toString();
-        const new_url = `${param.trim() ? '?' : ''}${param}`;
-        history.replaceState(stateObj, 'url', '/' + new_url);
+        const new_url = `${param.trim() ? "?" : ""}${param}`;
+        history.replaceState(stateObj, "url", "/" + new_url);
     };
 
     componentDidMount() {
-        RightPaneStore.on('formReset', this.resetField);
+        RightPaneStore.on("formReset", this.resetField);
     }
 
     componentWillUnmount() {
-        RightPaneStore.removeListener('formReset', this.resetField);
+        RightPaneStore.removeListener("formReset", this.resetField);
     }
 
     resetField = () => {
@@ -53,8 +52,8 @@ class SectionCodeSearchBar extends PureComponent {
                 textFieldProps={{
                     value: this.state.sectionCode,
                     onChange: this.handleChange,
-                    type: 'search',
-                    placeholder: 'ex. 14200, 29000-29100',
+                    type: "search",
+                    placeholder: "ex. 14200, 29000-29100",
                     fullWidth: true,
                 }}
                 isAligned={true}

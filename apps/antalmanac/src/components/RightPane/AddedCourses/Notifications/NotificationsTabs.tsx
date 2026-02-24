@@ -1,16 +1,15 @@
-import { NotificationAddOutlined } from '@mui/icons-material';
-import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Box, Tab, Paper, CircularProgress, Typography } from '@mui/material';
-import { useMemo, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
-
-import { NotificationsTable } from '$components/RightPane/AddedCourses/Notifications/NotificationsTable';
-import { useNotificationStore } from '$stores/NotificationStore';
+import { NotificationsTable } from "$components/RightPane/AddedCourses/Notifications/NotificationsTable";
+import { useNotificationStore } from "$stores/NotificationStore";
+import { NotificationAddOutlined } from "@mui/icons-material";
+import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { Box, CircularProgress, Paper, Tab, Typography } from "@mui/material";
+import { useMemo, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 function groupNotificationsByTerm(notifications: Record<string, unknown>) {
     return Object.keys(notifications).reduce<Record<string, string[]>>((groups, key) => {
-        const parts = key.split(' ');
-        const term = parts.slice(-2).join(' ');
+        const parts = key.split(" ");
+        const term = parts.slice(-2).join(" ");
         if (!groups[term]) {
             groups[term] = [];
         }
@@ -33,7 +32,7 @@ export function NotificationsTabs() {
 
     if (!initialized) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", py: 4 }}>
                 <CircularProgress />
             </Box>
         );
@@ -42,26 +41,32 @@ export function NotificationsTabs() {
     if (sortedTerms.length === 0) {
         return (
             <Box
-                sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', py: 4 }}
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    py: 4,
+                }}
             >
-                <Typography variant="body1" color="text.secondary" sx={{ textAlign: 'center' }}>
+                <Typography variant="body1" color="text.secondary" sx={{ textAlign: "center" }}>
                     You don&apos;t have any notifications enabled.
                 </Typography>
                 <Box
                     sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                         gap: 0.5,
                         mt: 1,
-                        flexWrap: 'wrap',
+                        flexWrap: "wrap",
                     }}
                 >
-                    <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center" }}>
                         Enable notifications for courses using the
                     </Typography>
-                    <NotificationAddOutlined fontSize="small" sx={{ color: 'text.secondary' }} />
-                    <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                    <NotificationAddOutlined fontSize="small" sx={{ color: "text.secondary" }} />
+                    <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center" }}>
                         icon to get notified about status changes.
                     </Typography>
                 </Box>
@@ -74,10 +79,15 @@ export function NotificationsTabs() {
     }
 
     return (
-        <Box sx={{ width: '100%' }}>
+        <Box sx={{ width: "100%" }}>
             <TabContext value={activeTab}>
                 <Paper elevation={0} variant="outlined" square>
-                    <TabList onChange={handleTabChange} indicatorColor="primary" variant="fullWidth" centered>
+                    <TabList
+                        onChange={handleTabChange}
+                        indicatorColor="primary"
+                        variant="fullWidth"
+                        centered
+                    >
                         {sortedTerms.map((term) => (
                             <Tab label={term} key={term} value={term} />
                         ))}

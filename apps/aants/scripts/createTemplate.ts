@@ -4,14 +4,15 @@
  *  NOTE: You have to delete the template from SES using "aws sesv2 delete-email-template --template-name CourseNotification --region us-east-2"
  */
 
-import { CreateEmailTemplateCommand, SESv2Client } from '@aws-sdk/client-sesv2';
+import { CreateEmailTemplateCommand, SESv2Client } from "@aws-sdk/client-sesv2";
 
-const client = new SESv2Client({ region: 'us-east-2' });
+const client = new SESv2Client({ region: "us-east-2" });
 
 const input = {
-    TemplateName: 'CourseNotification',
+    TemplateName: "CourseNotification",
     TemplateContent: {
-        Subject: '{{stagingPrefix}}{{deptCode}} {{courseNumber}} ({{courseType}}) had some enrollment changes!',
+        Subject:
+            "{{stagingPrefix}}{{deptCode}} {{courseNumber}} ({{courseType}}) had some enrollment changes!",
         Text: `Hi {{userName}}!
         Based on your notification subscriptions on AntAlmanac, the AntAlmanac team would like to notify you that the following class has had some enrollment changes as of {{time}}. 
 
@@ -75,9 +76,9 @@ const command = new CreateEmailTemplateCommand(input);
 async function createTemplate() {
     try {
         const response = await client.send(command);
-        console.log('Template created successfully:', response);
+        console.log("Template created successfully:", response);
     } catch (error) {
-        console.error('Error creating template:', error);
+        console.error("Error creating template:", error);
     }
 }
 

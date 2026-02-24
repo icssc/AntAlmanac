@@ -1,6 +1,5 @@
-import Image from 'next/image';
-
-import { useIsMobile } from '$hooks/useIsMobile';
+import { useIsMobile } from "$hooks/useIsMobile";
+import Image from "next/image";
 
 type Logo = {
     name: string;
@@ -15,10 +14,10 @@ type Logo = {
 };
 
 const defaultLogo: Logo = {
-    name: 'Default',
-    logo: '/assets/mobile-logo-cropped.svg',
-    mobileLogo: '/assets/mobile-logo-cropped.svg',
-    desktopLogo: '/assets/logo.svg',
+    name: "Default",
+    logo: "/assets/mobile-logo-cropped.svg",
+    mobileLogo: "/assets/mobile-logo-cropped.svg",
+    desktopLogo: "/assets/logo.svg",
     startDay: 0,
     startMonthIndex: 0,
     endDay: 31,
@@ -27,37 +26,37 @@ const defaultLogo: Logo = {
 
 const logos: Logo[] = [
     {
-        name: 'Christmas',
-        logo: '/assets/christmas-logo.png',
-        mobileLogo: '/assets/christmas-mobile-logo.png',
-        desktopLogo: '/assets/christmas-logo.png',
+        name: "Christmas",
+        logo: "/assets/christmas-logo.png",
+        mobileLogo: "/assets/christmas-mobile-logo.png",
+        desktopLogo: "/assets/christmas-logo.png",
         startDay: 1,
         startMonthIndex: 11,
         endDay: 31,
         endMonthIndex: 11,
-        attribution: 'Thanks Aejin for designing this seasonal logo!',
+        attribution: "Thanks Aejin for designing this seasonal logo!",
     },
     {
-        name: 'Thanksgiving',
-        logo: '/assets/thanksgiving-mobile-logo.png',
-        mobileLogo: '/assets/thanksgiving-mobile-logo.png',
-        desktopLogo: '/assets/thanksgiving-logo.png',
+        name: "Thanksgiving",
+        logo: "/assets/thanksgiving-mobile-logo.png",
+        mobileLogo: "/assets/thanksgiving-mobile-logo.png",
+        desktopLogo: "/assets/thanksgiving-logo.png",
         startDay: 1,
         startMonthIndex: 10,
         endDay: 30,
         endMonthIndex: 10,
-        attribution: 'Thanks Aejin for designing this seasonal logo!',
+        attribution: "Thanks Aejin for designing this seasonal logo!",
     },
     {
-        name: 'Halloween',
-        logo: '/assets/halloween-mobile-logo.png',
-        mobileLogo: '/assets/halloween-mobile-logo.png',
-        desktopLogo: '/assets/halloween-logo.png',
+        name: "Halloween",
+        logo: "/assets/halloween-mobile-logo.png",
+        mobileLogo: "/assets/halloween-mobile-logo.png",
+        desktopLogo: "/assets/halloween-logo.png",
         startDay: 1,
         startMonthIndex: 9,
         endDay: 31,
         endMonthIndex: 9,
-        attribution: 'Thanks Aejin for designing this seasonal logo!',
+        attribution: "Thanks Aejin for designing this seasonal logo!",
     },
     defaultLogo,
 ];

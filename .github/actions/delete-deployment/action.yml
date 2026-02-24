@@ -11,5 +11,5 @@ inputs:
         description: Name of the deployment.
         required: true
 runs:
-    using: 'node20'
-    main: 'src/index.js'
+    using: "node20"
+    main: "src/index.js"

@@ -1,7 +1,6 @@
-import { Autocomplete, TextField, type TextFieldProps } from '@mui/material';
-import { useCallback, useMemo } from 'react';
-
-import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
+import buildingCatalogue, { Building } from "$lib/locations/buildingCatalogue";
+import { Autocomplete, TextField, type TextFieldProps } from "@mui/material";
+import { useCallback, useMemo } from "react";
 
 export interface ExtendedBuilding extends Building {
     id: string;
@@ -14,24 +13,24 @@ export interface ExtendedBuilding extends Building {
 const buildings: ExtendedBuilding[] = Object.entries(buildingCatalogue)
     .filter(
         ([_, building], index, array) =>
-            array.findIndex(([_, otherBuilding]) => otherBuilding.name === building.name) === index
+            array.findIndex(([_, otherBuilding]) => otherBuilding.name === building.name) === index,
     )
     .map(([id, building]) => ({ id, ...building }));
 
 export type BuildingSelectProps = {
     value?: string;
     onChange?: (building?: ExtendedBuilding | null) => unknown;
-    variant?: TextFieldProps['variant'];
+    variant?: TextFieldProps["variant"];
 };
 
 export function BuildingSelect(props: BuildingSelectProps) {
-    const { onChange, variant = 'standard' } = props;
+    const { onChange, variant = "standard" } = props;
 
     const handleChange = useCallback(
         async (_event: React.SyntheticEvent, value: ExtendedBuilding | null) => {
             await onChange?.(value);
         },
-        [onChange]
+        [onChange],
     );
 
     const value = useMemo(() => {
@@ -52,7 +51,7 @@ export function BuildingSelect(props: BuildingSelectProps) {
             options={buildings}
             value={value}
             isOptionEqualToValue={(option, value) => option.id === value?.id}
-            getOptionLabel={(option) => option.name ?? ''}
+            getOptionLabel={(option) => option.name ?? ""}
             onChange={handleChange}
             renderInput={(params) => (
                 <TextField
