@@ -10,7 +10,7 @@ interface SessionState {
     isGoogleUser: boolean;
     email: string | null;
     sessionIsValid: boolean;
-    updateSession: (session: string | null) => Promise<void>;
+    updateSession: (session: string | null) => Promise<boolean>;
     clearSession: () => Promise<void>;
 
     googleId: string | null;
@@ -68,8 +68,10 @@ export const useSessionStore = create<SessionState>((set) => {
                         set({ isGoogleUser: false, email: null, googleId: null });
                     }
                 }
+                return sessionIsValid;
             } else {
                 set({ session: null, sessionIsValid: false });
+                return false;
             }
         },
         clearSession: async () => {
