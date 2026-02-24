@@ -13,7 +13,7 @@
         "start": "next start",
         "dev": "next dev ",
         "fetch-term-data": "tsx scripts/fetch-term-data.ts",
-        "get-data": "tsx scripts/fetch-term-data.ts && tsx scripts/get-search-data.ts",
+        "get-data": "echo ''",
         "copy-terms-to-dist": "tsx scripts/copy-terms-to-dist.ts",
         "zip-dist": "tsx scripts/zip-dist.ts",
         "prebuild": "pnpm get-data",
