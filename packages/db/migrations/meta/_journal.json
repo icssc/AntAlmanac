@@ -50,6 +50,20 @@
             "when": 1763425968486,
             "tag": "0006_cuddly_hulk",
             "breakpoints": true
+        },
+        {
+            "idx": 7,
+            "version": "7",
+            "when": 1767148182052,
+            "tag": "0007_productive_landau",
+            "breakpoints": true
+        },
+        {
+            "idx": 8,
+            "version": "7",
+            "when": 1771441270972,
+            "tag": "0008_skinny_ser_duncan",
+            "breakpoints": true
         }
     ]
 }

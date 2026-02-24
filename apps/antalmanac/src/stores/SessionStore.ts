@@ -5,6 +5,8 @@ import { getLocalStorageSessionId, removeLocalStorageSessionId, setLocalStorageS
 
 interface SessionState {
     session: string | null;
+    isGoogleUser: boolean;
+    email: string | null;
     sessionIsValid: boolean;
     updateSession: (session: string | null) => Promise<void>;
     clearSession: () => Promise<void>;
@@ -14,13 +16,30 @@ export const useSessionStore = create<SessionState>((set) => {
     const localSessionId = getLocalStorageSessionId();
     return {
         session: localSessionId,
+        isGoogleUser: false,
+        email: null,
         sessionIsValid: false,
         updateSession: async (session) => {
             if (session) {
-                const sessionIsValid: boolean = await trpc.auth.validateSession.query({ token: session });
+                const sessionIsValid: boolean = await trpc.auth.validateSession.query({
+                    token: session,
+                });
                 if (sessionIsValid) {
                     setLocalStorageSessionId(session);
                     set({ session: session, sessionIsValid: true });
+
+                    try {
+                        const { users } = await trpc.userData.getUserAndAccountBySessionToken.query({
+                            token: session,
+                        });
+                        set({
+                            isGoogleUser: Boolean(users.email),
+                            email: users.email ?? null,
+                        });
+                    } catch (error) {
+                        console.error('Failed to fetch user data:', error);
+                        set({ isGoogleUser: false, email: null });
+                    }
                 }
             } else {
                 set({ session: null, sessionIsValid: false });
@@ -31,7 +50,12 @@ export const useSessionStore = create<SessionState>((set) => {
             if (currentSession) {
                 await trpc.auth.invalidateSession.mutate({ token: currentSession });
                 removeLocalStorageSessionId();
-                set({ session: null, sessionIsValid: false });
+                set({
+                    session: null,
+                    sessionIsValid: false,
+                    isGoogleUser: false,
+                    email: null,
+                });
                 window.location.reload();
             }
         },

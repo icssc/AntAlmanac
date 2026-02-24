@@ -1,4 +1,11 @@
-import type { WebsocAPIResponse, CourseInfo, WebsocCourse, WebsocSectionType } from '@packages/antalmanac-types';
+import type {
+    WebsocAPIResponse,
+    CourseInfo,
+    WebsocCourse,
+    WebsocSectionType,
+    WebsocAPIDepartmentsResponse,
+} from '@packages/antalmanac-types';
+import { TRPCError } from '@trpc/server';
 
 function sanitizeSearchParams(params: Record<string, string>) {
     if ('term' in params) {
@@ -29,6 +36,11 @@ function sanitizeSearchParams(params: Record<string, string>) {
     return params;
 }
 
+/**
+ * Comparison for two courses based on their course number.
+ * If the numeric part of their course number is the same,
+ * returns the lexicographic ordering of their course number.
+ */
 function compareCourses(a: WebsocCourse, b: WebsocCourse) {
     const aNum = Number.parseInt(a.courseNumber.replaceAll(/\D/g, ''), 10);
     const bNum = Number.parseInt(b.courseNumber.replaceAll(/\D/g, ''), 10);
@@ -64,6 +76,26 @@ export async function queryWebSoc(input: Record<string, string>): Promise<Websoc
     const data = await response.json();
     console.log('queryWebSoc', data);
     return sortWebsocResponse(data.data as WebsocAPIResponse);
+}
+
+export async function queryWebSocDepartments(): Promise<WebsocAPIDepartmentsResponse> {
+    const DEPARTMENT_YEAR_RANGE = 10;
+    const minYear = new Date().getFullYear() - DEPARTMENT_YEAR_RANGE;
+    const url = `https://anteaterapi.com/v2/rest/websoc/departments?since=${minYear}`;
+
+    const response = await fetch(url, {
+        headers: {
+            ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
+        },
+    });
+    const data = await response.json();
+    if (!data || !data.data) {
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Departments API returned no data',
+        });
+    }
+    return data.data as WebsocAPIDepartmentsResponse;
 }
 
 export function combineWebsocResponses(responses: WebsocAPIResponse[]) {

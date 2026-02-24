@@ -1,7 +1,7 @@
 import type { WebsocAPIResponse } from '@packages/antalmanac-types';
 import { z } from 'zod';
 
-import { combineWebsocResponses, getCourseInfo, queryWebSoc } from '../lib/websoc-service';
+import { combineWebsocResponses, getCourseInfo, queryWebSoc, queryWebSocDepartments } from '../lib/websoc-service';
 import { procedure, router } from '../trpc';
 
 const websocRouter = router({
@@ -18,5 +18,8 @@ const websocRouter = router({
             return combineWebsocResponses(responses);
         }),
     getCourseInfo: procedure.input(z.record(z.string(), z.string())).query(({ input }) => getCourseInfo(input)),
+    getDepartments: procedure.query(async () => {
+        return await queryWebSocDepartments();
+    }),
 });
 export default websocRouter;

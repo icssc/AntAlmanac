@@ -265,6 +265,7 @@ export function Import() {
                 <Button
                     onClick={handleOpen}
                     color="inherit"
+                    sx={{ fontSize: 'inherit' }}
                     startIcon={<ContentPasteGo />}
                     disabled={skeletonMode}
                     id="import-button"
