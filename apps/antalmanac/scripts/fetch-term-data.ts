@@ -8,7 +8,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { CalendarTerm } from '@packages/antalmanac-types';
+import type { CalendarTerm } from '@packages/antalmanac-types';
 
 const PUBLIC_ANTEATER_API_KEY = 'INSqn9qP1pXlEwihpQa_GtrJhGOxQyjE5zcAKYLptLg.pk.prj9hlf3sf7q638jkq61u282';
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -80,11 +80,13 @@ async function main() {
     const calendarTerms = await fetchCalendarTerms();
     console.log(`Fetched ${calendarTerms?.length} calendar terms.`);
 
-    calendarTerms.sort((a, b) => {
-        const dateA = new Date(a.instructionStart).getTime();
-        const dateB = new Date(b.instructionStart).getTime();
-        return dateB - dateA;
-    });
+    calendarTerms
+        .sort((a, b) => {
+            const dateA = new Date(a.instructionStart).getTime();
+            const dateB = new Date(b.instructionStart).getTime();
+            return dateB - dateA;
+        })
+        .filter((term) => Number(term.year) >= 2024);
 
     const termEntries = calendarTerms.map(serializeTerm).join(',\n');
     const fileContent = `import type { Term } from '$lib/termData';
