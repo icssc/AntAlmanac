@@ -81,7 +81,7 @@ async function main() {
     console.log(`Fetched ${calendarTerms?.length} calendar terms.`);
 
     const sortedTerms = calendarTerms
-        .filter((term) => Number(term.year) >= 2024)
+        .filter((term) => Number(term.year) >= 2026)
         .sort((a, b) => {
             const dateA = new Date(a.instructionStart).getTime();
             const dateB = new Date(b.instructionStart).getTime();
