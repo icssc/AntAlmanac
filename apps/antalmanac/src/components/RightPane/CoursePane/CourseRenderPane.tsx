@@ -263,7 +263,6 @@ const ErrorMessage = () => {
 };
 
 export default function CourseRenderPane(props: { id?: number }) {
-    const { manualSearchEnabled } = useCoursePaneStore();
     const filterTakenCourses = useSessionStore((s) => s.filterTakenCourses);
     const userTakenCourses = useSessionStore((s) => s.userTakenCourses);
     const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
