@@ -1,15 +1,15 @@
-import { mkdir, writeFile, stat } from 'node:fs/promises';
+import { mkdir, stat, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
+import type { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 
 import { queryGraphQL, queryHTTPS } from '../src/backend/lib/helpers';
 import {
     parseSectionCodes,
     parseSectionCodesREST,
-    SectionCodesGraphQLResponse,
-    SectionCodesRESTResponse,
+    type SectionCodesGraphQLResponse,
+    type SectionCodesRESTResponse,
     termData,
 } from '../src/backend/lib/term-section-codes';
 
@@ -19,7 +19,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const MAX_COURSES = 10_000;
 const VALID_CACHE_TIME_DAYS = 14;
-const DELAY_MS = 500; // avoid rate limits from AAPI
+const DELAY_MS = 1000; // avoid rate limits from AAPI
 
 const ALIASES: Record<string, string | undefined> = {
     COMPSCI: 'CS',
