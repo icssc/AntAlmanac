@@ -4,7 +4,7 @@
  *  NOTE: You have to delete the template from SES using "aws sesv2 delete-email-template --template-name CourseNotification --region us-east-2"
  */
 
-import { SESv2Client, CreateEmailTemplateCommand } from '@aws-sdk/client-sesv2';
+import { CreateEmailTemplateCommand, SESv2Client } from '@aws-sdk/client-sesv2';
 
 const client = new SESv2Client({ region: 'us-east-2' });
 
@@ -54,6 +54,10 @@ const input = {
 
         <p><a href="https://antalmanac.com/unsubscribe/{{userId}}?sectionCode={{sectionCode}}&quarter={{quarter}}&year={{year}}&unsubscribeAll=true">
             Click here to unsubscribe from ALL courses
+        </a></p>
+
+        <p><a href="https://antalmanac.com/feedback">
+            Click here to give feedback or report a bug
         </a></p>
 
         <p>Best,<br>
