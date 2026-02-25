@@ -3,7 +3,7 @@ import { Box, IconButton, Tooltip } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 
 import { addCourse, openSnackbar } from '$actions/AppStoreActions';
-import { ActionProps } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/ActionCell';
+import { ActionCellProps } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/ActionCell';
 import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -18,7 +18,7 @@ export function ScheduleAddCell({
     term,
     scheduleNames: _scheduleNames,
     scheduleConflict,
-}: ActionProps) {
+}: ActionCellProps) {
     const isMobile = useIsMobile();
     const flexDirection = isMobile ? 'column' : undefined;
     const postHog = usePostHog();

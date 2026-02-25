@@ -9,7 +9,7 @@ import { type NotifyOn } from '$stores/NotificationStore';
 /**
  * Props received by components that perform actions on a specified section.
  */
-export interface ActionProps {
+export interface ActionCellProps {
     /**
      * The section to perform actions on.
      */
@@ -48,7 +48,7 @@ export interface ActionProps {
 /**
  * Given a section and schedule information, provides appropriate set of actions.
  */
-export const ActionCell = memo(({ ...props }: ActionProps) => {
+export const ActionCell = memo(({ ...props }: ActionCellProps) => {
     return (
         <TableBodyCellContainer sx={{ width: '8%' }}>
             {props.addedCourse ? (
