@@ -46,7 +46,6 @@ export const Save = () => {
             });
             setSaving(true);
             await saveSchedule(accounts.providerAccountId, true, users);
-            await new Promise((res) => setTimeout(res, 5000));
             setSaving(false);
         }
     };
