@@ -19,6 +19,7 @@ env:
     OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
     GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
     NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY }}
+    PLANNER_CLIENT_API_KEY: ${{ secrets.PLANNER_CLIENT_API_KEY }}
 
 jobs:
     deploy-production:
