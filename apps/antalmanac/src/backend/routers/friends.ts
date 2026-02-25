@@ -131,6 +131,34 @@ const friendsRouter = router({
     }),
 
     /**
+     * Check if two users are friends (ACCEPTED friendship in either direction).
+     */
+    areFriends: procedure
+        .input(z.object({ viewerId: z.string(), targetUserId: z.string() }))
+        .query(async ({ input }) => {
+            const [row] = await db
+                .select({ id: friendships.requesterId })
+                .from(friendships)
+                .where(
+                    and(
+                        eq(friendships.status, 'ACCEPTED'),
+                        or(
+                            and(
+                                eq(friendships.requesterId, input.viewerId),
+                                eq(friendships.addresseeId, input.targetUserId)
+                            ),
+                            and(
+                                eq(friendships.requesterId, input.targetUserId),
+                                eq(friendships.addresseeId, input.viewerId)
+                            )
+                        )
+                    )
+                )
+                .limit(1);
+            return Boolean(row);
+        }),
+
+    /**
      * Get pending friend requests for a user (requests they have received).
      */
     getPendingRequests: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {

@@ -32,6 +32,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
     const friendName = (location.state as { friendName?: string } | null)?.friendName ?? 'Friend';
 
     const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
+    const session = useSessionStore((state) => state.session);
     const setOpenLoadingSchedule = scheduleComponentsToggleStore((state) => state.setOpenLoadingSchedule);
     const postHog = usePostHog();
 
@@ -99,6 +100,30 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
         const loadContent = async () => {
             if (friendUserId) {
                 hasAttemptedLoadRef.current = true;
+                try {
+                    beginLoadingSchedule();
+                    if (!session) {
+                        setError("You're not allowed to see this schedule.");
+                        setOpenLoadingSchedule(false);
+                        return;
+                    }
+                    const { users: currentUser } = await trpc.userData.getUserAndAccountBySessionToken.query({
+                        token: session,
+                    });
+                    const allowed = await trpc.friends.areFriends.query({
+                        viewerId: currentUser.id,
+                        targetUserId: friendUserId,
+                    });
+                    if (!allowed) {
+                        setError("You're not allowed to see this schedule.");
+                        setOpenLoadingSchedule(false);
+                        return;
+                    }
+                } catch {
+                    setError("You're not allowed to see this schedule.");
+                    setOpenLoadingSchedule(false);
+                    return;
+                }
                 await loadFriendSchedules(friendUserId);
                 return;
             }
