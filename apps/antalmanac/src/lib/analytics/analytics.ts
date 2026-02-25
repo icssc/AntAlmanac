@@ -1,4 +1,6 @@
 import { PostHog } from 'posthog-js/react';
+
+import { NotifyOn } from '$stores/NotificationStore';
 /**
  * This is an enum that stores all the
  * possible category names and associated actions
@@ -15,6 +17,7 @@ export interface AnalyticsEnum {
     classSearch: AnalyticsCategory;
     addedClasses: AnalyticsCategory;
     map: AnalyticsCategory;
+    aants: AnalyticsCategory;
 }
 
 const analyticsEnum: AnalyticsEnum = {
@@ -100,9 +103,29 @@ const analyticsEnum: AnalyticsEnum = {
             CLICK_PIN: 'Click on Pin',
         },
     },
+    aants: {
+        title: 'AANTS',
+        actions: {
+            OPEN_MANAGE_NOTIFICATIONS: 'Open Manage Notifications Dialog',
+            CLOSE_MANAGE_NOTIFICATIONS: 'Close Manage Notifications Dialog',
+            OPEN_SECTION_NOTIFICATIONS: 'Open Section Notifications Dropdown',
+            TOGGLE_NOTIFY_OPEN: 'Toggle Notify on Open',
+            TOGGLE_NOTIFY_WAITLIST: 'Toggle Notify on Waitlist',
+            TOGGLE_NOTIFY_FULL: 'Toggle Notify on Full',
+            TOGGLE_NOTIFY_RESTRICTION: 'Toggle Notify on Restriction Changes',
+            DELETE_NOTIFICATION: 'Delete Notification',
+        },
+    },
 };
 
 export default analyticsEnum;
+
+export const AANTS_ANALYTICS_ACTIONS: Record<keyof NotifyOn, string> = {
+    notifyOnOpen: analyticsEnum.aants.actions.TOGGLE_NOTIFY_OPEN,
+    notifyOnWaitlist: analyticsEnum.aants.actions.TOGGLE_NOTIFY_WAITLIST,
+    notifyOnFull: analyticsEnum.aants.actions.TOGGLE_NOTIFY_FULL,
+    notifyOnRestriction: analyticsEnum.aants.actions.TOGGLE_NOTIFY_RESTRICTION,
+};
 
 // There is no explicit type for what PostHog accepts as a property value
 // A list of accepted types: https://posthog.com/docs/data/events#event-properties
