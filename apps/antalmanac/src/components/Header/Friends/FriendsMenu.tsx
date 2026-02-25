@@ -295,6 +295,12 @@ export function FriendsMenu({
                             placeholder="Enter email address"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    if (email.trim()) void handleAddFriend();
+                                }
+                            }}
                             fullWidth
                             sx={{
                                 '& .MuiOutlinedInput-root': {
