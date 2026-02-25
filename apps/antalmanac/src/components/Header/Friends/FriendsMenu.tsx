@@ -129,11 +129,13 @@ export function FriendsMenu({
             await loadFriendsData();
         } catch (error) {
             console.error('Error sending friend request:', error);
-            if (error instanceof Error) {
-                openSnackbar('error', error.message);
-            } else {
-                openSnackbar('error', 'Failed to send friend request.');
-            }
+            const message =
+                error instanceof Error && error.message.includes('Invalid email')
+                    ? 'Invalid email.'
+                    : error instanceof Error
+                      ? error.message
+                      : 'Failed to send friend request.';
+            openSnackbar('error', message);
         }
     };
 
