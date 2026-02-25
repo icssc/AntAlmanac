@@ -38,8 +38,7 @@ export function ScheduleAddCell({
             });
         }
 
-        const newCourse = addCourse(section, courseDetails, term, scheduleIndex);
-        section.color = newCourse.section.color;
+        addCourse(section, courseDetails, term, scheduleIndex);
     };
 
     return (
