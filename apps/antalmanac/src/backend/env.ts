@@ -57,4 +57,5 @@ export const backendEnvSchema = z
     .merge(oidcOAuthEnvSchema)
     .merge(rdsEnvSchema)
     .merge(mapboxEnvSchema)
-    .merge(aapiEnvSchema);
+    .merge(aapiEnvSchema)
+    .merge(plannerEnvSchema);
