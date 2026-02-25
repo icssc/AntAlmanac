@@ -2,14 +2,14 @@ import { access, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
+import type { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 
 import { queryGraphQL, queryHTTPS } from '../src/backend/lib/helpers';
 import {
     parseSectionCodes,
     parseSectionCodesREST,
-    SectionCodesGraphQLResponse,
-    SectionCodesRESTResponse,
+    type SectionCodesGraphQLResponse,
+    type SectionCodesRESTResponse,
     termData,
 } from '../src/backend/lib/term-section-codes';
 
