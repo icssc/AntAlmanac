@@ -6,6 +6,7 @@ import {
     IconButton,
     Menu,
     MenuItem,
+    Skeleton,
     Stack,
     Tab,
     Tabs,
@@ -17,35 +18,92 @@ import {
     DialogContentText,
     DialogActions,
 } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { openSnackbar } from '$actions/AppStoreActions';
 import trpc from '$lib/api/trpc';
-import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
-interface FriendRequest {
+export interface FriendRequest {
     id: string;
     name?: string;
     email: string;
 }
 
-interface Friend {
+export interface Friend {
     id: string;
     name?: string;
     email: string;
 }
 
-export function FriendsMenu() {
+function FriendsListSkeleton() {
+    return (
+        <Box>
+            <Box sx={{ mb: 2 }}>
+                <Skeleton variant="text" width={100} height={24} sx={{ mb: 1 }} />
+                <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 1 }}>
+                    <Skeleton variant="rounded" height={40} sx={{ flex: 1 }} />
+                    <Skeleton variant="circular" width={40} height={40} />
+                </Stack>
+            </Box>
+            <Divider sx={{ my: 2 }} />
+            <Tabs value="friends" variant="fullWidth" sx={{ mb: 1 }}>
+                <Tab label="Requests" value="requests" disabled />
+                <Tab label="Friends" value="friends" disabled />
+                <Tab label="Blocked" value="blocked" disabled />
+            </Tabs>
+            <Box sx={{ mt: 1 }}>
+                {[1, 2, 3].map((i) => (
+                    <Box
+                        key={i}
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            p: 1.5,
+                            mb: 1,
+                            borderRadius: 2,
+                            border: '1px solid',
+                            borderColor: 'divider',
+                        }}
+                    >
+                        <Stack direction="row" alignItems="center" flex={1} spacing={1}>
+                            <Box sx={{ minWidth: 0, flex: 1 }}>
+                                <Skeleton variant="text" width="70%" height={20} />
+                                <Skeleton variant="text" width="50%" height={16} sx={{ mt: 0.5 }} />
+                            </Box>
+                        </Stack>
+                        <Stack direction="row" spacing={0.5} alignItems="center">
+                            <Skeleton variant="rounded" width={100} height={32} />
+                            <Skeleton variant="circular" width={32} height={32} sx={{ ml: 0.5 }} />
+                        </Stack>
+                    </Box>
+                ))}
+            </Box>
+        </Box>
+    );
+}
+
+export interface FriendsMenuProps {
+    currentUserId: string | null;
+    friendRequests: FriendRequest[];
+    friends: Friend[];
+    blockedFriends: Friend[];
+    isLoading: boolean;
+    onRefresh: () => Promise<void>;
+}
+
+export function FriendsMenu({
+    currentUserId,
+    friendRequests,
+    friends,
+    blockedFriends,
+    isLoading,
+    onRefresh: loadFriendsData,
+}: FriendsMenuProps) {
     const isDark = useThemeStore((store) => store.isDark);
-    const session = useSessionStore((store) => store.session);
-    const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
-
-    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-    const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
-    const [friends, setFriends] = useState<Friend[]>([]);
-    const [blockedFriends, setBlockedFriends] = useState<Friend[]>([]);
+    const hasPendingRequests = friendRequests.length > 0;
     const [activeTab, setActiveTab] = useState<'requests' | 'friends' | 'blocked'>('friends');
     const [email, setEmail] = useState('');
     const [blockMenuAnchor, setBlockMenuAnchor] = useState<{ element: HTMLElement; requestId: string } | null>(null);
@@ -53,62 +111,6 @@ export function FriendsMenu() {
     const [userToBlock, setUserToBlock] = useState<string | null>(null);
     const [friendMenuAnchor, setFriendMenuAnchor] = useState<{ element: HTMLElement; friendId: string } | null>(null);
     const navigate = useNavigate();
-
-    const loadFriendsData = useCallback(async () => {
-        if (!sessionIsValid || !session) {
-            setCurrentUserId(null);
-            setFriendRequests([]);
-            setFriends([]);
-            setBlockedFriends([]);
-            return;
-        }
-
-        try {
-            const { users } = await trpc.userData.getUserAndAccountBySessionToken.query({
-                token: session,
-            });
-
-            const userId = users.id;
-            setCurrentUserId(userId);
-
-            const [friendsResult, pendingResult, blockedResult] = await Promise.all([
-                trpc.friends.getFriends.query({ userId }),
-                trpc.friends.getPendingRequests.query({ userId }),
-                trpc.friends.getBlockedUsers.query({ userId }),
-            ]);
-
-            setFriends(
-                friendsResult.map((friend) => ({
-                    id: friend.id,
-                    name: friend.name ?? undefined,
-                    email: friend.email ?? '',
-                }))
-            );
-
-            setFriendRequests(
-                pendingResult.map((request) => ({
-                    id: request.id,
-                    name: request.name ?? undefined,
-                    email: request.email ?? '',
-                }))
-            );
-
-            setBlockedFriends(
-                (blockedResult as { id: string; name: string | null; email: string | null }[]).map((user) => ({
-                    id: user.id,
-                    name: user.name ?? undefined,
-                    email: user.email ?? '',
-                }))
-            );
-        } catch (error) {
-            console.error('Failed to load friends data:', error);
-            openSnackbar('error', 'Failed to load friends data.');
-        }
-    }, [session, sessionIsValid]);
-
-    useEffect(() => {
-        void loadFriendsData();
-    }, [loadFriendsData]);
 
     const handleAddFriend = async () => {
         if (!currentUserId) {
@@ -267,6 +269,10 @@ export function FriendsMenu() {
         }
     };
 
+    if (isLoading) {
+        return <FriendsListSkeleton />;
+    }
+
     return (
         <>
             <Box>
@@ -327,7 +333,20 @@ export function FriendsMenu() {
                     indicatorColor="primary"
                     sx={{ mb: 1 }}
                 >
-                    <Tab label="Requests" value="requests" />
+                    <Tab
+                        label={
+                            hasPendingRequests ? (
+                                <Box>
+                                    <Typography component="span" sx={{ fontSize: '0.875rem', fontWeight: 500 }}>
+                                        Requests {friendRequests.length > 0 && `(${friendRequests.length})`}
+                                    </Typography>
+                                </Box>
+                            ) : (
+                                'Requests'
+                            )
+                        }
+                        value="requests"
+                    />
                     <Tab label="Friends" value="friends" />
                     <Tab label="Blocked" value="blocked" />
                 </Tabs>

@@ -1,24 +1,115 @@
 import { People } from '@mui/icons-material';
 import { Button, Popover } from '@mui/material';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { FriendsMenu } from './FriendsMenu';
+import { FriendsMenu, type Friend, type FriendRequest } from './FriendsMenu';
 
-// import AppStore from '$stores/AppStore';
+import { openSnackbar } from '$actions/AppStoreActions';
+import { SignInDialog } from '$components/dialogs/SignInDialog';
+import trpc from '$lib/api/trpc';
+import { useSessionStore } from '$stores/SessionStore';
+import { useThemeStore } from '$stores/SettingsStore';
 
 export function FriendsButton() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    // const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const [openSignInDialog, setOpenSignInDialog] = useState(false);
+    const open = Boolean(anchorEl);
+
+    const session = useSessionStore((store) => store.session);
+    const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
+    const isDark = useThemeStore((store) => store.isDark);
+
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
+    const [friends, setFriends] = useState<Friend[]>([]);
+    const [blockedFriends, setBlockedFriends] = useState<Friend[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const loadFriendsData = useCallback(async () => {
+        if (!sessionIsValid || !session) {
+            setCurrentUserId(null);
+            setFriendRequests([]);
+            setFriends([]);
+            setBlockedFriends([]);
+            setIsLoading(false);
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const { users } = await trpc.userData.getUserAndAccountBySessionToken.query({
+                token: session,
+            });
+
+            const userId = users.id;
+            setCurrentUserId(userId);
+
+            const [friendsResult, pendingResult, blockedResult] = await Promise.all([
+                trpc.friends.getFriends.query({ userId }),
+                trpc.friends.getPendingRequests.query({ userId }),
+                trpc.friends.getBlockedUsers.query({ userId }),
+            ]);
+
+            setFriends(
+                friendsResult.map((friend) => ({
+                    id: friend.id,
+                    name: friend.name ?? undefined,
+                    email: friend.email ?? '',
+                }))
+            );
+
+            setFriendRequests(
+                pendingResult.map((request) => ({
+                    id: request.id,
+                    name: request.name ?? undefined,
+                    email: request.email ?? '',
+                }))
+            );
+
+            setBlockedFriends(
+                (blockedResult as { id: string; name: string | null; email: string | null }[]).map((user) => ({
+                    id: user.id,
+                    name: user.name ?? undefined,
+                    email: user.email ?? '',
+                }))
+            );
+        } catch (error) {
+            console.error('Failed to load friends data:', error);
+            openSnackbar('error', 'Failed to load friends data.');
+        } finally {
+            setIsLoading(false);
+        }
+    }, [session, sessionIsValid]);
+
+    useEffect(() => {
+        if (!sessionIsValid || !session) {
+            setCurrentUserId(null);
+            setFriendRequests([]);
+            setFriends([]);
+            setBlockedFriends([]);
+            setIsLoading(false);
+        }
+    }, [sessionIsValid, session]);
+
+    useEffect(() => {
+        if (open && sessionIsValid && session && currentUserId === null) {
+            void loadFriendsData();
+        }
+    }, [open, sessionIsValid, session, currentUserId, loadFriendsData]);
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
+        if (sessionIsValid && session) {
+            setAnchorEl(event.currentTarget);
+        } else {
+            setOpenSignInDialog(true);
+        }
     };
 
     const handleClose = () => {
         setAnchorEl(null);
     };
 
-    const open = Boolean(anchorEl);
+    const showLoadingSkeleton = Boolean(open && sessionIsValid && session && isLoading);
 
     return (
         <>
@@ -27,7 +118,6 @@ export function FriendsButton() {
                 startIcon={<People />}
                 color="inherit"
                 onClick={handleClick}
-                // disabled={skeletonMode}
                 sx={{ fontSize: 'inherit' }}
             >
                 Friends
@@ -61,8 +151,22 @@ export function FriendsButton() {
                     },
                 }}
             >
-                <FriendsMenu />
+                <FriendsMenu
+                    currentUserId={currentUserId}
+                    friendRequests={friendRequests}
+                    friends={friends}
+                    blockedFriends={blockedFriends}
+                    isLoading={showLoadingSkeleton}
+                    onRefresh={loadFriendsData}
+                />
             </Popover>
+
+            <SignInDialog
+                feature="Friends"
+                isDark={isDark}
+                open={openSignInDialog}
+                onClose={() => setOpenSignInDialog(false)}
+            />
         </>
     );
 }
