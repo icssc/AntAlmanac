@@ -105,17 +105,16 @@ export const Signin = () => {
 
             const sessionToken = getLocalStorageSessionId() ?? '';
 
-            const validSession = await trpc.auth.validateSession.query({
-                token: sessionToken,
-            });
-
-            if (!validSession) {
-                setOpenalert(true);
-                setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
-            } else if (sessionToken && (await loadScheduleWithSessionToken(postHog))) {
-                analyticsIdentifyUser(postHog, userID);
-                updateSession(sessionToken);
-            } else if (sessionToken === '' && userID && userID !== '') {
+            if (sessionToken) {
+                const validSession = await updateSession(sessionToken);
+                if (!validSession) {
+                    setOpenalert(true);
+                    setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
+                } else {
+                    await loadScheduleWithSessionToken(postHog);
+                    analyticsIdentifyUser(postHog, userID);
+                }
+            } else if (userID && userID !== '') {
                 await validateImportedUser(userID);
                 await loadSchedule(userID, rememberMe, 'GUEST', postHog);
             }
