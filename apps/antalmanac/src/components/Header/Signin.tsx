@@ -1,5 +1,4 @@
 import { AccountCircle, Google } from '@mui/icons-material';
-import { LoadingButton } from '@mui/lab';
 import {
     Divider,
     Stack,
@@ -192,7 +191,7 @@ export const Signin = () => {
             <Dialog open={isOpen} onClose={() => handleClose(true)}>
                 <DialogContent>
                     <Stack spacing={1}>
-                        <LoadingButton
+                        <Button
                             onClick={handleLogin}
                             color="primary"
                             variant="contained"
@@ -201,7 +200,7 @@ export const Signin = () => {
                             fullWidth
                         >
                             Sign in with Google
-                        </LoadingButton>
+                        </Button>
                         <Divider>or</Divider>
                         <DialogContentText>Enter your unique user ID here to sign in your schedule.</DialogContentText>
 
@@ -289,7 +288,7 @@ export const Signin = () => {
                 severity={alertMessage.severity}
             >
                 <DialogContentText>To load your schedule sign in with your Google account</DialogContentText>
-                <LoadingButton
+                <Button
                     color="primary"
                     variant="contained"
                     startIcon={<Google />}
@@ -298,7 +297,7 @@ export const Signin = () => {
                     size="large"
                 >
                     Sign in with Google
-                </LoadingButton>
+                </Button>
             </AlertDialog>
         </div>
     );
