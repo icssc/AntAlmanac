@@ -1,8 +1,8 @@
-import { mkdir, writeFile, stat } from 'node:fs/promises';
+import { access, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
+import type { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 
 import { queryGraphQL } from '../src/backend/lib/helpers';
 import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';
@@ -12,7 +12,6 @@ import 'dotenv/config';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const MAX_COURSES = 10_000;
-const VALID_CACHE_TIME_DAYS = 14;
 const DELAY_MS = 500; // avoid rate limits from AAPI
 
 const ALIASES: Record<string, string | undefined> = {
@@ -25,21 +24,6 @@ const ALIASES: Record<string, string | undefined> = {
 async function main() {
     const apiKey = process.env.ANTEATER_API_KEY;
     if (!apiKey) throw new Error('ANTEATER_API_KEY is required');
-
-    try {
-        const cacheFolderStatistics = await stat(join(__dirname, '../src/generated/searchData.ts'));
-
-        const lastModifiedDate = cacheFolderStatistics.mtime;
-        const currentDate = new Date();
-        const validCacheMs = VALID_CACHE_TIME_DAYS * 24 * 60 * 60 * 1000;
-
-        if (process.env.STAGE == 'local' && currentDate.getTime() - lastModifiedDate.getTime() < validCacheMs) {
-            console.log('Using existing search cache, last updated ' + lastModifiedDate.toLocaleString() + '.');
-            return;
-        }
-    } catch {
-        console.log('Cache is empty or unreachable, rebuilding from scratch...');
-    }
 
     console.log('Generating cache for fuzzy search.');
     console.log('Fetching courses from Anteater API...');
@@ -89,11 +73,27 @@ async function main() {
     )};
     `
     );
+
+    const currentTerm = termData[0];
     let count = 0;
     const termPromises = termData.map(async (term, index) => {
         try {
             const [year, quarter] = term.shortName.split(' ');
             const parsedTerm = `${quarter}_${year}`;
+            const fileName = join(__dirname, `../src/generated/terms/${parsedTerm}.json`);
+
+            try {
+                await access(fileName);
+
+                if (currentTerm.longName != term.longName) {
+                    console.log(`Skipping ${term.shortName}, cache already exists.`);
+                    return 0;
+                } else {
+                    console.log(`Updating data for current term (${term.shortName})...`);
+                }
+            } catch {
+                console.log(`${term.shortName} doesn't exist in cache, rebuilding.`);
+            }
 
             // TODO (@kevin): remove delay once AAPI resolves OOM issues
             await new Promise((resolve) => setTimeout(resolve, DELAY_MS * index));
@@ -113,7 +113,6 @@ async function main() {
                 } from Anteater API.`
             );
 
-            const fileName = join(__dirname, `../src/generated/terms/${parsedTerm}.json`);
             await writeFile(fileName, JSON.stringify(parsedSectionData, null, 2));
             return Object.keys(parsedSectionData).length;
         } catch (error) {

@@ -16,6 +16,7 @@ import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover'
 import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { skeletonBlueprintVariations } from '$components/Calendar/skeletonBlueprintVariations';
+import { useIsMobile } from '$hooks/useIsMobile';
 import {
     getLocalStorageSkeletonBlueprint,
     removeLocalStorageSkeletonBlueprint,
@@ -76,6 +77,8 @@ export const ScheduleCalendar = memo(() => {
 
     const { openLoadingSchedule: loadingSchedule } = scheduleComponentsToggleStore();
     const hasHadEventsRef = useRef(false);
+
+    const isMobile = useIsMobile();
 
     const onlyCourseEvents = useMemo(
         () => eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[],
@@ -256,8 +259,8 @@ export const ScheduleCalendar = memo(() => {
     const finalsDate = hoveredCalendarizedFinal
         ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
         : onlyCourseEvents.length > 0
-        ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
-        : getDefaultFinalsStartDate();
+          ? getFinalsStartDateForTerm(onlyCourseEvents[0].term)
+          : getDefaultFinalsStartDate();
 
     const finalsStartsOnSaturday = showFinalsSchedule && finalsDate.getDay() === 6;
 
@@ -279,7 +282,7 @@ export const ScheduleCalendar = memo(() => {
     const shouldShowWeekView = showFinalsSchedule ? hasWeekendFinals : hasWeekendCourse;
     const calendarView = shouldShowWeekView ? Views.WEEK : Views.WORK_WEEK;
 
-    const finalsDateFormat = 'ddd MM/DD';
+    const finalsDateFormat = isMobile ? 'M/DD' : 'ddd M/DD';
     const date = showFinalsSchedule ? finalsDate : new Date(2018, 0, 1);
 
     const formats = useMemo(

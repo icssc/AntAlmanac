@@ -1,5 +1,5 @@
 import { debounce } from '@mui/material';
-import { AASection, Course, CourseInfo } from '@packages/antalmanac-types';
+import type { AASection, Course, CourseInfo } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
 import { Notifications } from '$lib/notifications';
@@ -180,7 +180,10 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                 const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
                 const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
                     const sectionCodes = Array.from(courseSet).join(',');
-                    const courseInfo = await WebSOC.getCourseInfo({ term, sectionCodes });
+                    const courseInfo = await WebSOC.getCourseInfo({
+                        term,
+                        sectionCodes,
+                    });
                     courseInfoDict.set(term, courseInfo);
                 });
 
@@ -232,6 +235,3 @@ export const useNotificationStore = create<NotificationStore>((set) => {
         },
     };
 });
-
-// Initial load of notifications
-useNotificationStore.getState().loadNotifications();
