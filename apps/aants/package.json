@@ -17,7 +17,7 @@
         "@trpc/server": "^10.30.0",
         "aws-sdk": "^2.1550.0",
         "dotenv": "^16.4.5",
-        "drizzle-orm": "^0.36.3",
+        "drizzle-orm": "^0.45.1",
         "pg": "^8.13.1",
         "postgres": "^3.4.4",
         "superjson": "^1.12.3",
