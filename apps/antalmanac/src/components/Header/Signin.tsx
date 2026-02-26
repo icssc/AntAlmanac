@@ -1,4 +1,4 @@
-import { AccountCircle, Google } from '@mui/icons-material';
+import { AccountCircle, Google, ExpandMore } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
     Divider,
@@ -16,6 +16,8 @@ import {
     ListItemIcon,
     ListItemText,
     MenuItem,
+    Collapse,
+    Box,
 } from '@mui/material';
 import { useEffect, useState, useCallback } from 'react';
 
@@ -54,6 +56,7 @@ export const Signin = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [userID, setUserID] = useState('');
     const [rememberMe] = useState(true);
+    const [showLegacyLogin, setShowLegacyLogin] = useState(false);
 
     const handleOpen = useCallback(() => {
         setIsOpen(true);
@@ -127,6 +130,8 @@ export const Signin = () => {
 
     const enterEvent = useCallback(
         (event: KeyboardEvent) => {
+            if (!showLegacyLogin) return;
+
             const charCode = event.which ? event.which : event.keyCode;
 
             if (charCode === 13 || charCode === 10) {
@@ -138,7 +143,7 @@ export const Signin = () => {
                 return false;
             }
         },
-        [loadScheduleAndSetLoading, userID, rememberMe]
+        [showLegacyLogin, loadScheduleAndSetLoading, userID, rememberMe]
     );
 
     const handleClose = useCallback(
@@ -202,34 +207,64 @@ export const Signin = () => {
                         >
                             Sign in with Google
                         </LoadingButton>
-                        <Divider>or</Divider>
-                        <DialogContentText>Enter your unique user ID here to sign in your schedule.</DialogContentText>
 
-                        <Alert severity="info" variant={isDark ? 'outlined' : 'standard'}>
-                            <AlertTitle>
-                                Note: Existing schedules saved to a unique user ID can no longer be updated.
-                            </AlertTitle>
-                            Please sign up with your Google account to save your schedules.
-                        </Alert>
+                        <Box
+                            onClick={() => setShowLegacyLogin(!showLegacyLogin)}
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                cursor: 'pointer',
+                                py: 1,
+                                '&:hover': {
+                                    opacity: 0.7,
+                                },
+                            }}
+                        >
+                            <Divider sx={{ flexGrow: 1 }}>Have schedules saved to an old user ID?</Divider>
+                            <ExpandMore
+                                sx={{
+                                    transform: showLegacyLogin ? 'rotate(180deg)' : 'rotate(0deg)',
+                                    transition: 'transform 0.2s',
+                                    ml: 1,
+                                }}
+                            />
+                        </Box>
 
-                        <TextField
-                            margin="dense"
-                            label="Unique User ID"
-                            type="text"
-                            fullWidth
-                            placeholder="Enter here"
-                            value={userID}
-                            onChange={(event) => setUserID(event.target.value)}
-                        />
+                        <Collapse in={showLegacyLogin}>
+                            <Stack spacing={1}>
+                                <DialogContentText>
+                                    Enter your unique user ID here to sign in your schedule.
+                                </DialogContentText>
+
+                                <Alert severity="info" variant={isDark ? 'outlined' : 'standard'}>
+                                    <AlertTitle>
+                                        Note: Existing schedules saved to a unique user ID can no longer be updated.
+                                    </AlertTitle>
+                                    Please sign up with your Google account to save your schedules.
+                                </Alert>
+
+                                <TextField
+                                    margin="dense"
+                                    label="Unique User ID"
+                                    type="text"
+                                    fullWidth
+                                    placeholder="Enter here"
+                                    value={userID}
+                                    onChange={(event) => setUserID(event.target.value)}
+                                />
+                            </Stack>
+                        </Collapse>
                     </Stack>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => handleClose(true)} color={isDark ? 'secondary' : 'primary'}>
                         Cancel
                     </Button>
-                    <Button onClick={() => handleClose(false)} color={isDark ? 'secondary' : 'primary'}>
-                        Sign in
-                    </Button>
+                    {showLegacyLogin && (
+                        <Button onClick={() => handleClose(false)} color={isDark ? 'secondary' : 'primary'}>
+                            Sign in
+                        </Button>
+                    )}
                 </DialogActions>
             </Dialog>
 
