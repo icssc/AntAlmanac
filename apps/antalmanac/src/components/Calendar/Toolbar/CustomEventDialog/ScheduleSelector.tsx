@@ -1,7 +1,5 @@
 import { FormControl, InputLabel, MenuItem, Select, type SelectChangeEvent } from '@mui/material';
 
-import { useSecondaryColor } from '$hooks/useSecondaryColor';
-
 interface ScheduleSelectorProps {
     scheduleIndices: number[];
     onSelectScheduleIndices: (scheduleIndices: number[]) => void;
@@ -9,7 +7,6 @@ interface ScheduleSelectorProps {
 }
 
 export function ScheduleSelector({ scheduleIndices, onSelectScheduleIndices, scheduleNames }: ScheduleSelectorProps) {
-    const secondaryColor = useSecondaryColor();
     const handleChange = (event: SelectChangeEvent<typeof scheduleIndices>) => {
         const value = event.target.value;
 
@@ -22,7 +19,7 @@ export function ScheduleSelector({ scheduleIndices, onSelectScheduleIndices, sch
 
     return (
         <FormControl style={{ maxWidth: 400 }} fullWidth>
-            <InputLabel variant="outlined" color={secondaryColor ? 'secondary' : 'primary'}>
+            <InputLabel variant="outlined" color={'secondary'}>
                 Select schedules
             </InputLabel>
             <Select
@@ -31,7 +28,7 @@ export function ScheduleSelector({ scheduleIndices, onSelectScheduleIndices, sch
                 multiple
                 value={scheduleIndices}
                 onChange={handleChange}
-                color={secondaryColor ? 'secondary' : 'primary'}
+                color={'secondary'}
             >
                 {scheduleNames.map((name: string, index: number) => {
                     return (

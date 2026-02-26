@@ -61,7 +61,7 @@ export function ThemeSelector() {
                                 fontWeight: 'bold',
                                 fontSize: '1.1rem',
                                 backgroundColor: isSelected ? accentColor : segment.background,
-                                color: isSelected ? '#fff' : accentColor,
+                                color: isSelected ? theme.palette.secondary.contrastText : accentColor,
                                 borderRight: index < 2 ? `1px solid ${segment.border}` : 'none',
                                 borderTopLeftRadius: tab.value === 'light' ? 4 : 0,
                                 borderBottomLeftRadius: tab.value === 'light' ? 4 : 0,
