@@ -29,7 +29,7 @@ export function TimeSelector() {
         fontWeight: 'bold',
         fontSize: '1.1rem',
         backgroundColor: selected ? accentColor : inactiveBackgroundColor,
-        color: selected ? '#fff' : accentColor,
+        color: selected ? theme.palette.secondary.contrastText : accentColor,
         ...(position === 'left' ? { borderRight: `1px solid ${borderColor}` } : null),
         ...(position === 'left' ? { borderTopLeftRadius: 4, borderBottomLeftRadius: 4 } : null),
         ...(position === 'right' ? { borderTopRightRadius: 4, borderBottomRightRadius: 4 } : null),

@@ -40,7 +40,7 @@ const darkTheme: PaletteOptions = {
     primary: { main: BLUE }, // #305db7
     secondary: { main: LIGHT_BLUE },
     settingsSegment: {
-        border: '#8886',
+        border: '#888888',
         background: '#333333',
         hoverBackground: '#424649',
     },
