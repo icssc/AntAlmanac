@@ -89,11 +89,11 @@ export const NotificationsMenu = memo(
             setSignInOpen(false);
         }, []);
 
-        const tooltipText = !isGoogleUser
-            ? 'Sign in to access notifications'
-            : isTermCurrent
-              ? null
-              : "Notifications are only available for the current enrollment period's courses";
+        const tooltipText = !isTermCurrent
+            ? "Notifications are only available for the current enrollment period's courses"
+            : !isGoogleUser
+              ? 'Sign in to access notifications'
+              : null;
 
         return (
             <>
