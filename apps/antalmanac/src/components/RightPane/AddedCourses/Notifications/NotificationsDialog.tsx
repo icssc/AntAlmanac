@@ -11,14 +11,13 @@ import {
     Box,
     useTheme,
 } from '@mui/material';
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
 import { NotificationsTabs } from '$components/RightPane/AddedCourses/Notifications/NotificationsTabs';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { LIGHT_BLUE } from '$src/globals';
-import { useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
