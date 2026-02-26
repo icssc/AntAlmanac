@@ -101,7 +101,6 @@ const searchRouter = router({
             const matchedGEs = u.search(toMutable(geCategoryKeys), query)[0]?.map((i) => geCategoryKeys[i]) ?? [];
             if (matchedGEs.length) return Object.fromEntries(matchedGEs.map(toGESearchResult));
 
-            // Only return instructors teaching this term
             const termInstructorList = Array.from(termInstructorSet).map((name) => ({
                 id: name,
                 name,
