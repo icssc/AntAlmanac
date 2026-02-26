@@ -3,6 +3,7 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
 
+import { CalendarMonth } from '@mui/icons-material';
 import { Box, Backdrop, useTheme } from '@mui/material';
 import moment from 'moment';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -16,6 +17,7 @@ import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover'
 import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { skeletonBlueprintVariations } from '$components/Calendar/skeletonBlueprintVariations';
+import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import {
     getLocalStorageSkeletonBlueprint,
@@ -27,6 +29,7 @@ import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import { useTabStore } from '$stores/TabStore';
 
 /*
 //  * Always start week on Saturday for finals potentially on weekends.
@@ -354,8 +357,35 @@ export const ScheduleCalendar = memo(() => {
                 showFinalsSchedule={showFinalsSchedule}
                 scheduleNames={scheduleNames}
             />
-            <Box id="screenshot" height="0" flexGrow={1}>
+            <Box id="screenshot" height="0" flexGrow={1} position="relative">
                 <CalendarEventPopover />
+
+                {!loadingSchedule && !showFinalsSchedule && eventsInCalendar.length === 0 && (
+                    <Box
+                        data-html2canvas-ignore
+                        position="absolute"
+                        top={0}
+                        left={0}
+                        right={0}
+                        bottom={0}
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        zIndex={1}
+                        sx={{
+                            backgroundColor: (theme) =>
+                                theme.palette.mode === 'dark' ? 'rgba(18, 18, 18, 0.75)' : 'rgba(255, 255, 255, 0.7)',
+                        }}
+                    >
+                        <EmptyState
+                            Icon={CalendarMonth}
+                            title="Your schedule is empty"
+                            description="Search for courses to start building your schedule."
+                            ctaLabel="Search for Courses"
+                            onCtaClick={() => useTabStore.getState().setActiveTab('search')}
+                        />
+                    </Box>
+                )}
 
                 <Calendar<CalendarEvent, object>
                     key={`${culture}-${calendarView}`}
