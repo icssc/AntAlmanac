@@ -16,6 +16,7 @@ import {
     Stack,
     TextField,
     Tooltip,
+    useTheme,
 } from '@mui/material';
 import { CourseInfo } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
@@ -44,7 +45,7 @@ import {
 } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
-import { BLUE } from '$src/globals';
+import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -70,6 +71,7 @@ export function Import() {
     const { sessionIsValid } = useSessionStore();
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
 
+    const theme = useTheme();
     const { isDark } = useThemeStore();
 
     const postHog = usePostHog();
@@ -275,7 +277,7 @@ export function Import() {
             </Tooltip>
             <Dialog open={openImportDialog} onClose={handleClose}>
                 <DialogTitle>Import Schedule</DialogTitle>
-                <DialogContent>
+                <DialogContent sx={theme.palette.mode === 'dark' ? { '& a': { color: LIGHT_BLUE } } : undefined}>
                     <FormControl>
                         <RadioGroup
                             name="changeImportSource"
