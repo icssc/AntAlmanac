@@ -1,4 +1,4 @@
-import { AccountCircle, Google } from '@mui/icons-material';
+import { AccountCircle, EventNote, Google } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
     Divider,
@@ -18,11 +18,12 @@ import {
     MenuItem,
 } from '@mui/material';
 import { useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 
 import { loadSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
-import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
+import { ThemeSelector } from '$components/Header/Settings/ThemeSelector';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -261,9 +262,30 @@ export const Signin = () => {
                     },
                 }}
             >
-                <SettingsMenu user={null} />
+                <ThemeSelector />
 
-                <Divider style={{ marginTop: '10px', marginBottom: '12px' }} />
+                <Divider style={{ marginTop: '20px', marginBottom: '12px' }} />
+
+                <MenuItem
+                    component={Link}
+                    to="/"
+                    onClick={() => setSettingsAnchorEl(null)}
+                    sx={{ px: 1, py: 1.25, borderRadius: 1, mt: 0.5 }}
+                >
+                    <ListItemIcon>
+                        <EventNote />
+                    </ListItemIcon>
+                    <ListItemText
+                        primary="Go to Scheduler"
+                        primaryTypographyProps={{
+                            sx: {
+                                fontSize: '1rem',
+                                fontWeight: 600,
+                                textTransform: 'uppercase',
+                            },
+                        }}
+                    />
+                </MenuItem>
 
                 <MenuItem onClick={handleOpen} sx={{ px: 1, py: 1.25, borderRadius: 1 }}>
                     <ListItemIcon>
