@@ -218,7 +218,7 @@ export const Signin = () => {
                                 },
                             }}
                         >
-                            <Divider sx={{ flexGrow: 1 }}>Have a schedule saved to a user ID?</Divider>
+                            <Divider sx={{ flexGrow: 1 }}>Have schedules saved to an old user ID?</Divider>
                             <ExpandMore
                                 sx={{
                                     transform: showLegacyLogin ? 'rotate(180deg)' : 'rotate(0deg)',
