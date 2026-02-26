@@ -31,26 +31,14 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
     const theme = useTheme();
     const [open, setOpen] = useState(false);
     const [signInOpen, setSignInOpen] = useState<boolean>(false);
-    const loadNotifications = useNotificationStore(useShallow((store) => store.loadNotifications));
     const isDark = useThemeStore((store) => store.isDark);
 
-    const { session, isGoogleUser, fetchUserData } = useSessionStore(
+    const { session, isGoogleUser } = useSessionStore(
         useShallow((state) => ({
             session: state.session,
             isGoogleUser: state.isGoogleUser,
-            fetchUserData: state.fetchUserData,
         }))
     );
-
-    useEffect(() => {
-        if (isGoogleUser) {
-            loadNotifications();
-        }
-    }, [isGoogleUser, loadNotifications]);
-
-    useEffect(() => {
-        fetchUserData(session);
-    }, [session, fetchUserData]);
 
     const handleOpen = useCallback(() => {
         if (isGoogleUser) {
