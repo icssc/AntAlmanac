@@ -130,6 +130,8 @@ export const Signin = () => {
 
     const enterEvent = useCallback(
         (event: KeyboardEvent) => {
+            if (!showLegacyLogin) return;
+
             const charCode = event.which ? event.which : event.keyCode;
 
             if (charCode === 13 || charCode === 10) {
@@ -141,7 +143,7 @@ export const Signin = () => {
                 return false;
             }
         },
-        [loadScheduleAndSetLoading, userID, rememberMe]
+        [showLegacyLogin, loadScheduleAndSetLoading, userID, rememberMe]
     );
 
     const handleClose = useCallback(
