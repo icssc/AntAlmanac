@@ -99,7 +99,7 @@ export const NotificationsMenu = memo(
             <>
                 <Tooltip title={tooltipText}>
                     <span>
-                        <IconButton onClick={handleNotificationClick} disabled={isGoogleUser && !isTermCurrent}>
+                        <IconButton onClick={handleNotificationClick} disabled={!isTermCurrent}>
                             {isGoogleUser ? (
                                 hasNotifications ? (
                                     <EditNotifications fontSize="small" />
