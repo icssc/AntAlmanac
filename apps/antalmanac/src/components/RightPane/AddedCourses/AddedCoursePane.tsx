@@ -1,9 +1,11 @@
+import { ClassOutlined } from '@mui/icons-material';
 import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography, useTheme } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { updateScheduleNote } from '$actions/AppStoreActions';
+import { EmptyState } from '$components/EmptyState';
 import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEventDetailView';
 import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
 import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
@@ -15,6 +17,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import { LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
+import { useTabStore } from '$stores/TabStore';
 
 /**
  * All the interactive buttons have the same styles.
@@ -349,11 +352,14 @@ function AddedSectionsGrid() {
         return scheduleNames[scheduleIndex];
     }, [scheduleNames, scheduleIndex]);
 
-    // "No Courses Added Yet!" notification
     const NoCoursesBox = (
-        <Box style={{ paddingTop: '12px', paddingBottom: '12px' }}>
-            <Typography align="left">No Courses Added Yet!</Typography>
-        </Box>
+        <EmptyState
+            Icon={ClassOutlined}
+            title="No courses added yet"
+            description="Search for courses and add them to your schedule."
+            ctaLabel="Search for Courses"
+            onCtaClick={() => useTabStore.getState().setActiveTab('search')}
+        />
     );
 
     return (
