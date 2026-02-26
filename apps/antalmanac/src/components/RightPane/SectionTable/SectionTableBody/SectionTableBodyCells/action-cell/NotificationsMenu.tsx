@@ -112,11 +112,15 @@ export const NotificationsMenu = memo(
             <>
                 <Tooltip title={tooltipText}>
                     <span>
-                        <IconButton onClick={handleNotificationClick} disabled={!isTermCurrent || !isGoogleUser}>
-                            {hasNotifications ? (
-                                <EditNotifications fontSize="small" />
+                        <IconButton onClick={handleNotificationClick} disabled={isGoogleUser && !isTermCurrent}>
+                            {isGoogleUser ? (
+                                hasNotifications ? (
+                                    <EditNotifications fontSize="small" />
+                                ) : (
+                                    <NotificationAddOutlined fontSize="small" />
+                                )
                             ) : (
-                                <NotificationAddOutlined fontSize="small" />
+                                <NotificationAddOutlined fontSize="small" sx={{ opacity: 0.5 }} />
                             )}
                         </IconButton>
                     </span>
