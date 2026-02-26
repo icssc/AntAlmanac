@@ -6,7 +6,6 @@ import { forwardRef, type Ref } from 'react';
 import { Marker as ReactLeafletMarker, Popup } from 'react-leaflet';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { BLUE } from '$src/globals';
 
 const GOOGLE_MAPS_URL = 'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=';
 const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId=463&image=';
@@ -147,8 +146,6 @@ const LocationMarker = forwardRef(
                                     width: '100%',
                                     borderRadius: '0.75rem',
                                     color: '#fff',
-                                    backgroundColor: BLUE,
-                                    '&:hover': { backgroundColor: '#003A75' },
                                 }}
                             >
                                 <Typography
