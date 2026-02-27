@@ -653,10 +653,11 @@ export class RDS {
     }
 
     /**
-     * Retrieves notifications associated with a specified user
+     * Retrieves notifications associated with a specified user and environment.
      *
      * @param db - The database or transaction object to use for the operation.
      * @param userId - The ID of the user for whom we're retrieving notifications.
+     * @param environment - The deployment environment to filter by (e.g. "production", "staging-1337").
      * @returns A promise that resolves to the notifications associated with a userId, or an empty array if not found.
      */
     static async retrieveNotifications(db: DatabaseOrTransaction, userId: string, environment: string) {
@@ -720,11 +721,12 @@ export class RDS {
     }
 
     /**
-     * Updates lastUpdatedStatus and lastCodes of ALL notifications with a shared sectionCode, year, and quarter
+     * Updates lastUpdatedStatus and lastCodes of ALL notifications with a shared sectionCode, year, quarter, and environment.
      *
      * @param db - The database or transaction object to use for the operation.
      * @param notification - The notification object type we are updating.
-     * @returns A promise that updates ALL notifications with a shared sectionCode, year, and quarter.
+     * @param environment - The deployment environment to filter by (e.g. "production", "staging-1337").
+     * @returns A promise that updates ALL notifications with a shared sectionCode, year, quarter, and environment.
      */
     static async updateAllNotifications(db: DatabaseOrTransaction, notification: Notification, environment: string) {
         return db.transaction((tx) =>
@@ -746,11 +748,12 @@ export class RDS {
     }
 
     /**
-     * Deletes a notification for a specified user
+     * Deletes a notification for a specified user and environment.
      *
      * @param db - The database or transaction object to use for the operation.
      * @param notification - The notification object type we are deleting.
      * @param userId - The ID of the user for whom we're deleting a notification.
+     * @param environment - The deployment environment to filter by (e.g. "production", "staging-1337").
      * @returns A promise that deletes a user's notification.
      */
     static async deleteNotification(
@@ -775,10 +778,11 @@ export class RDS {
     }
 
     /**
-     * Deletes ALL notifications for a specified user
+     * Deletes ALL notifications for a specified user and environment.
      *
      * @param db - The database or transaction object to use for the operation.
      * @param userId - The ID of the user for whom we're deleting all notifications.
+     * @param environment - The deployment environment to filter by (e.g. "production", "staging-1337").
      * @returns A promise that deletes all of a user's notifications.
      */
     static async deleteAllNotifications(db: DatabaseOrTransaction, userId: string, environment: string) {
