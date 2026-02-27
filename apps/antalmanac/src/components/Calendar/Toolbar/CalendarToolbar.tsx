@@ -59,6 +59,7 @@ export interface CalendarPaneToolbarProps {
     currentScheduleIndex: number;
     showFinalsSchedule: boolean;
     toggleDisplayFinalsSchedule: () => void;
+    onScreenshot?: () => void;
 }
 
 /**
@@ -276,7 +277,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                 }}
             >
                 <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
-                    <ScreenshotButton />
+                    <ScreenshotButton onScreenshot={props.onScreenshot}/>
 
                     <DownloadButton />
 
