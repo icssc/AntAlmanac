@@ -87,6 +87,28 @@ export function HelpMenu() {
 
             <SpeedDial
                 ariaLabel="Help Menu"
+                sx={{
+                    '& .MuiSpeedDialAction-fab': {
+                        backgroundColor: isDark ? '#383838' : undefined,
+                        transition: 'background-color 0.15s ease',
+                    },
+                    '& .MuiSpeedDialAction-staticTooltip': {
+                        backgroundColor: 'transparent',
+                    },
+                    '& .MuiSpeedDialAction-staticTooltipLabel': {
+                        backgroundColor: isDark ? '#383838' : undefined,
+                        transition: 'background-color 0.15s ease',
+                    },
+                    '& .MuiSpeedDialAction-root:hover .MuiSpeedDialAction-fab': {
+                        backgroundColor: isDark ? '#555555' : undefined,
+                    },
+                    '& .MuiSpeedDialAction-root:hover .MuiSpeedDialAction-staticTooltipLabel': {
+                        backgroundColor: isDark ? '#555555' : undefined,
+                    },
+                    '& .MuiSpeedDialAction-staticTooltipClosed': {
+                        display: 'none',
+                    },
+                }}
                 icon={
                     <Tooltip title="Help Menu" placement="left">
                         <Box
