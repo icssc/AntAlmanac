@@ -12,6 +12,7 @@ import {
     Stack,
     Typography,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -39,6 +40,8 @@ export function Header() {
     const importedUser = getLocalStorageImportedUser() ?? '';
     const { session, sessionIsValid } = useSessionStore();
     const isMobile = useIsMobile();
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
 
     const platform = window.location.pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
 
@@ -126,14 +129,37 @@ export function Header() {
                                     onClose={() => setAnchorEl(null)}
                                     anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                                     transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                                    slotProps={{
+                                        paper: {
+                                            sx: {
+                                                bgcolor: isDark ? '#383838' : 'background.paper',
+                                                color: isDark ? 'white' : 'text.primary',
+                                                borderRadius: 2,
+                                                border: '1px solid',
+                                                borderColor: 'divider',
+                                            },
+                                        },
+                                    }}
                                 >
                                     <MenuList
                                         subheader={
-                                            <ListSubheader component="div" sx={{ lineHeight: '30px' }}>
+                                            <ListSubheader
+                                                component="div"
+                                                sx={{
+                                                    lineHeight: '30px',
+                                                    ...(isDark && {
+                                                        bgcolor: '#383838',
+                                                        color: 'inherit',
+                                                    }),
+                                                }}
+                                            >
                                                 Switch Apps
                                             </ListSubheader>
                                         }
-                                        sx={{ width: 200 }}
+                                        sx={{
+                                            width: 200,
+                                            ...(isDark && { bgcolor: '#383838' }),
+                                        }}
                                     >
                                         <MenuItem
                                             component={Link}

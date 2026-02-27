@@ -7,6 +7,7 @@ import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
+import { useThemeStore } from '$stores/SettingsStore';
 
 interface SignoutProps {
     onLogoutComplete?: () => void;
@@ -16,6 +17,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<Pick<User, 'name' | 'avatar' | 'email'> | null>(null);
     const { session, sessionIsValid, clearSession } = useSessionStore();
+    const isDark = useThemeStore((store) => store.isDark);
 
     const open = Boolean(anchorEl);
     const handleClick = (event: MouseEvent<HTMLElement>) => {
@@ -96,6 +98,8 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
                             borderRadius: 2,
                             border: '1px solid',
                             borderColor: 'background.default',
+                            bgcolor: isDark ? '#383838' : 'background.paper',
+                            color: isDark ? 'white' : 'text.primary',
                         },
                     },
                 }}
