@@ -27,6 +27,7 @@ import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
+import { useNotificationStore } from '$stores/NotificationStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -181,6 +182,8 @@ export const Signin = () => {
 
             if (savedUserID != null || sessionID !== null) {
                 void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
+            } else {
+                useNotificationStore.getState().loadNotifications();
             }
         }
     }, [loadScheduleAndSetLoadingAuth]);
