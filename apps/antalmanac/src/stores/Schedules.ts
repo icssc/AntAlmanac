@@ -7,7 +7,7 @@ import type {
     RepeatingCustomEvent,
     CourseInfo,
     CustomEventId,
-    CourseDetails,
+    WebsocSectionType,
 } from '@packages/antalmanac-types';
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
@@ -595,41 +595,52 @@ export class Schedules {
             // Fetch complete sectionTypes for each unique course
             // When getCourseInfo is called with specific sectionCodes, WebSOC only returns those sections,
             // so sectionTypes is incomplete. We need to fetch all sections of each course to get complete sectionTypes.
-            const completeSectionTypesDict = new Map<string, CourseDetails['sectionTypes']>();
-            const uniqueCourses = new Set<string>();
+            const completeSectionTypesMap = new Map<string, Map<string, Map<string, WebsocSectionType[]>>>();
 
-            // Extract unique (term, deptCode, courseNumber) combinations
-            // Use '|' as separator since term contains spaces and courseNumber may contain letters
+            // Extract unique (term, deptCode, courseNumber) combinations using nested Maps
             for (const [term, courseInfoMap] of courseInfoDict) {
                 for (const [, courseInfo] of Object.entries(courseInfoMap)) {
-                    const key = `${term}|${courseInfo.courseDetails.deptCode}|${courseInfo.courseDetails.courseNumber}`;
-                    uniqueCourses.add(key);
+                    const { deptCode, courseNumber } = courseInfo.courseDetails;
+                    if (!completeSectionTypesMap.has(term)) {
+                        completeSectionTypesMap.set(term, new Map());
+                    }
+                    const deptMap = completeSectionTypesMap.get(term)!;
+                    if (!deptMap.has(deptCode)) {
+                        deptMap.set(deptCode, new Map());
+                    }
+                    const courseMap = deptMap.get(deptCode)!;
+                    if (!courseMap.has(courseNumber)) {
+                        courseMap.set(courseNumber, []);
+                    }
                 }
             }
 
             // Fetch sectionTypes for each unique (term, deptCode, courseNumber) individually
-            const fullCourseRequests = Array.from(uniqueCourses).map(async (courseKey) => {
-                const [term, deptCode, courseNumber] = courseKey.split('|') as [string, string, string];
-                try {
-                    const fullData = await WebSOC.query({ term, deptCode, courseNumber });
-
-                    const sectionTypesSet = new Set<CourseDetails['sectionTypes'][number]>();
-                    for (const school of fullData.schools) {
-                        for (const dept of school.departments) {
-                            if (dept.deptCode !== deptCode) continue;
-                            for (const course of dept.courses) {
-                                if (course.courseNumber !== courseNumber) continue;
-                                course.sections.forEach((section) => {
-                                    sectionTypesSet.add(section.sectionType);
-                                });
-                            }
-                        }
+            const fullCourseRequests: Promise<void>[] = [];
+            for (const [term, deptMap] of completeSectionTypesMap) {
+                for (const [deptCode, courseMap] of deptMap) {
+                    for (const [courseNumber] of courseMap) {
+                        fullCourseRequests.push(
+                            WebSOC.query({ term, deptCode, courseNumber }).then((fullData) => {
+                                const sectionTypesSet = new Set<WebsocSectionType>();
+                                for (const school of fullData.schools) {
+                                    for (const dept of school.departments) {
+                                        for (const course of dept.courses) {
+                                            course.sections.forEach((section) => {
+                                                sectionTypesSet.add(section.sectionType);
+                                            });
+                                        }
+                                    }
+                                }
+                                completeSectionTypesMap
+                                    .get(term)
+                                    ?.get(deptCode)
+                                    ?.set(courseNumber, Array.from(sectionTypesSet));
+                            })
+                        );
                     }
-                    completeSectionTypesDict.set(courseKey, Array.from(sectionTypesSet));
-                } catch (e) {
-                    console.error(`Failed to fetch course data for ${courseKey}:`, e);
                 }
-            });
+            }
 
             await Promise.all(fullCourseRequests);
 
@@ -649,8 +660,11 @@ export class Schedules {
                         }
 
                         // Use complete sectionTypes if available
-                        const courseKey = `${shortCourse.term}|${courseInfo.courseDetails.deptCode}|${courseInfo.courseDetails.courseNumber}`;
-                        const completeSectionTypes = completeSectionTypesDict.get(courseKey);
+                        const { deptCode, courseNumber } = courseInfo.courseDetails;
+                        const completeSectionTypes = completeSectionTypesMap
+                            .get(shortCourse.term)
+                            ?.get(deptCode)
+                            ?.get(courseNumber);
 
                         const courseDetails = { ...courseInfo.courseDetails };
                         if (completeSectionTypes) {
