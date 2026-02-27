@@ -28,6 +28,7 @@ import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import { useIsSharedSchedulePage } from '$hooks/useIsSharedSchedulePage';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
+import { useNotificationStore } from '$stores/NotificationStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -194,7 +195,9 @@ export const Signin = () => {
             const sessionID = getLocalStorageSessionId();
 
             if (savedUserID != null || sessionID !== null) {
-                void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true, isSharedSchedulePage);
+                void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
+            } else {
+                useNotificationStore.getState().loadNotifications();
             }
         }
     }, [loadScheduleAndSetLoadingAuth, isSharedSchedulePage]);
