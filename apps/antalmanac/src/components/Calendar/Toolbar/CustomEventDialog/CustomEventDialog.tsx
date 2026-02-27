@@ -20,7 +20,6 @@ import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
-import { useThemeStore } from '$stores/SettingsStore';
 
 interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;
@@ -148,8 +147,6 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
         };
     }, []);
 
-    const isDark = useThemeStore.getState().isDark;
-
     return (
         <>
             {props.customEvent ? (
@@ -222,7 +219,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                 </DialogContent>
 
                 <DialogActions>
-                    <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>
+                    <Button onClick={handleClose} color="inherit">
                         Cancel
                     </Button>
                     <Button onClick={handleSubmit} variant="contained" color="primary" disabled={disabled}>
