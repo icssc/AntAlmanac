@@ -40,7 +40,7 @@ export const AboutButton = () => {
                         <Link target="_blank" href="https://discord.gg/GzF76D7UhY">
                             Discord
                         </Link>{' '}
-                        or checkout the{' '}
+                        or check out the{' '}
                         <Link target="_blank" href="https://github.com/icssc/AntAlmanac">
                             code on GitHub
                         </Link>

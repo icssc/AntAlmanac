@@ -60,17 +60,16 @@ export const useSessionStore = create<SessionState>((set) => {
                             email: users.email ?? null,
                             googleId,
                         });                      
-                        if (isGoogleUser) {
-                            useNotificationStore.getState().loadNotifications();
-                        }
-                    } catch (e) {
-                        console.error('Failed to fetch user data:', e);
+                    } catch (error) {
+                        console.error('Failed to fetch user data:', error);
                         set({ isGoogleUser: false, email: null, googleId: null });
                     }
                 }
+                useNotificationStore.getState().loadNotifications();
                 return sessionIsValid;
             } else {
                 set({ session: null, sessionIsValid: false });
+                useNotificationStore.getState().loadNotifications();
                 return false;
             }
         },
