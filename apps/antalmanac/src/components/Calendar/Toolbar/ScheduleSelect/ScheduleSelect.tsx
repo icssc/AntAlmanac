@@ -56,7 +56,7 @@ export function SelectSchedulePopover() {
     const isReadonlyView = useIsReadonlyView();
     const { openScheduleSelect, setOpenScheduleSelect } = scheduleComponentsToggleStore();
 
-    const [anchorElement, setAnchorElement] = useState(null);
+    const [anchorElement, setAnchorElement] = useState<HTMLButtonElement | null>(null);
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const [scheduleMapping, setScheduleMapping] = useState(getScheduleItems());
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
@@ -64,7 +64,7 @@ export function SelectSchedulePopover() {
         getScheduleItems(AppStore.getSkeletonScheduleNames())
     );
 
-    const anchorElementRef = useRef(null);
+    const anchorElementRef = useRef<HTMLButtonElement | null>(null);
 
     const postHog = usePostHog();
 
