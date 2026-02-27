@@ -219,16 +219,17 @@ export const Signin = () => {
                             type="text"
                             fullWidth
                             placeholder="Enter here"
+                            color="secondary"
                             value={userID}
                             onChange={(event) => setUserID(event.target.value)}
                         />
                     </Stack>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => handleClose(true)} color={isDark ? 'secondary' : 'primary'}>
+                    <Button onClick={() => handleClose(true)} color="inherit">
                         Cancel
                     </Button>
-                    <Button onClick={() => handleClose(false)} color={isDark ? 'secondary' : 'primary'}>
+                    <Button onClick={() => handleClose(false)} color="inherit">
                         Sign in
                     </Button>
                 </DialogActions>
