@@ -30,6 +30,20 @@ import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleS
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
+const getSettingsPopoverPaperSx = (isDark: boolean) => ({
+    width: {
+        xs: 300,
+        sm: 300,
+        md: 330,
+    },
+    p: '16px 20px',
+    borderRadius: 2,
+    border: '1px solid',
+    borderColor: 'background.default',
+    bgcolor: isDark ? '#383838' : 'background.paper',
+    color: isDark ? 'white' : 'text.primary',
+});
+
 const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = {
     SESSION_EXPIRED: {
         title: 'Your session has expired. Please sign in again.',
@@ -190,7 +204,15 @@ export const Signin = () => {
                 loading={loadingSchedule}
             />
 
-            <Dialog open={isOpen} onClose={() => handleClose(true)}>
+            <Dialog
+                open={isOpen}
+                onClose={() => handleClose(true)}
+                PaperProps={{
+                    sx: {
+                        bgcolor: isDark ? '#383838' : 'background.paper',
+                    },
+                }}
+            >
                 <DialogContent>
                     <Stack spacing={1}>
                         <LoadingButton
@@ -219,16 +241,17 @@ export const Signin = () => {
                             type="text"
                             fullWidth
                             placeholder="Enter here"
+                            color="secondary"
                             value={userID}
                             onChange={(event) => setUserID(event.target.value)}
                         />
                     </Stack>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => handleClose(true)} color={isDark ? 'secondary' : 'primary'}>
+                    <Button onClick={() => handleClose(true)} color="inherit">
                         Cancel
                     </Button>
-                    <Button onClick={() => handleClose(false)} color={isDark ? 'secondary' : 'primary'}>
+                    <Button onClick={() => handleClose(false)} color="inherit">
                         Sign in
                     </Button>
                 </DialogActions>
@@ -248,17 +271,7 @@ export const Signin = () => {
                 }}
                 slotProps={{
                     paper: {
-                        sx: {
-                            width: {
-                                xs: 300,
-                                sm: 300,
-                                md: 330,
-                            },
-                            p: '16px 20px',
-                            borderRadius: 2,
-                            border: '1px solid',
-                            borderColor: 'background.default',
-                        },
+                        sx: getSettingsPopoverPaperSx(isDark),
                     },
                 }}
             >

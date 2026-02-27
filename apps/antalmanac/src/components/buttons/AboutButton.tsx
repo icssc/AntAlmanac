@@ -5,11 +5,9 @@ import { useCallback, useState } from 'react';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { DONATION_LINK } from '$src/globals';
-import { useThemeStore } from '$stores/SettingsStore';
 
 export const AboutButton = () => {
     const [open, setOpen] = useState(false);
-    const { isDark } = useThemeStore();
     const postHog = usePostHog();
 
     const handleOpen = useCallback(() => {
@@ -71,7 +69,7 @@ export const AboutButton = () => {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>
+                    <Button onClick={handleClose} color="inherit">
                         Close
                     </Button>
                 </DialogActions>

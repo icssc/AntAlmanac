@@ -93,7 +93,7 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
                     <NotificationsTabs />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} variant="text" sx={{ color: 'white' }}>
+                    <Button onClick={handleClose} color="inherit">
                         Close
                     </Button>
                 </DialogActions>
