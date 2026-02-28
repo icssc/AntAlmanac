@@ -1,4 +1,10 @@
-import { type User } from '@packages/antalmanac-types';
+import {
+    CourseInfo,
+    ScheduleCourse,
+    ScheduleSaveState,
+    RepeatingCustomEvent,
+    type User,
+} from '@packages/antalmanac-types';
 import { db } from '@packages/db/src';
 import { TRPCError } from '@trpc/server';
 import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState, OAuth2Tokens } from 'arctic';
@@ -11,6 +17,7 @@ import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { oauth } from '$src/backend/lib/auth/oauth';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
 import { RDS } from '$src/backend/lib/rds';
+import { getCourseInfo } from '$src/backend/lib/websoc-service';
 
 const { OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
 const NODE_ENV = process.env.NODE_ENV;
@@ -36,6 +43,86 @@ const saveGoogleSchema = type({
     code: 'string',
     state: 'string',
 });
+
+/**
+ * Hydrates schedule courses with full course information from WebSOC.
+ * Transforms ShortCourse[] to ScheduleCourse[] by fetching course details.
+ */
+async function hydrateScheduleCourses(schedules: ScheduleSaveState['schedules']): Promise<
+    Array<{
+        scheduleName: string;
+        courses: ScheduleCourse[];
+        customEvents: RepeatingCustomEvent[];
+        scheduleNote: string;
+    }>
+> {
+    // Build dictionary of all unique courses grouped by term
+    const courseDict: { [term: string]: Set<string> } = {};
+    for (const schedule of schedules) {
+        for (const course of schedule.courses) {
+            if (!('sectionCode' in course)) continue; // already hydrated
+            if (course.term in courseDict) {
+                courseDict[course.term].add(course.sectionCode);
+            } else {
+                courseDict[course.term] = new Set([course.sectionCode]);
+            }
+        }
+    }
+
+    // Fetch course info from WebSOC for each term
+    const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
+
+    const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
+        const sectionCodes = Array.from(courseSet).join(',');
+        try {
+            const courseInfo = await getCourseInfo({ term, sectionCodes });
+            courseInfoDict.set(term, courseInfo);
+        } catch (e) {
+            console.error(`Failed to fetch course info for term ${term}:`, e);
+            courseInfoDict.set(term, {});
+        }
+    });
+
+    await Promise.all(websocRequests);
+
+    // Hydrate each schedule with full course data
+    return schedules.map((schedule) => {
+        const hydratedCourses: ScheduleCourse[] = schedule.courses
+            .map((course) => {
+                if ('section' in course) return course; // already hydrated
+                const shortCourse = course;
+                const courseInfoMap = courseInfoDict.get(shortCourse.term);
+                if (!courseInfoMap) {
+                    return null;
+                }
+
+                const courseInfo = courseInfoMap[shortCourse.sectionCode.padStart(5, '0')];
+                if (!courseInfo) {
+                    console.warn(
+                        `Course ${shortCourse.sectionCode} not found in WebSOC for term ${shortCourse.term}, using unhydrated data`
+                    );
+                    return shortCourse as unknown as ScheduleCourse;
+                }
+
+                return {
+                    ...courseInfo.courseDetails,
+                    term: shortCourse.term,
+                    section: {
+                        ...courseInfo.section,
+                        color: shortCourse.color,
+                    },
+                } as ScheduleCourse;
+            })
+            .filter((course): course is ScheduleCourse => course !== null);
+
+        return {
+            scheduleName: schedule.scheduleName,
+            courses: hydratedCourses,
+            customEvents: schedule.customEvents,
+            scheduleNote: schedule.scheduleNote,
+        };
+    });
+}
 
 const userDataRouter = router({
     /**
@@ -78,9 +165,64 @@ const userDataRouter = router({
             });
         }
     }),
+    /**
+     * Retrieves user data by user ID with hydrated schedules.
+     * @param input - An object containing the user ID.
+     * @returns The user data with course information hydrated from WebSOC.
+     */
+    getUserDataHydrated: procedure.input(userInputSchema.assert).query(async ({ input }) => {
+        if ('userId' in input) {
+            const userData = await RDS.getUserDataByUid(db, input.userId);
+
+            if (!userData?.userData?.schedules) {
+                return userData;
+            }
+
+            try {
+                const hydratedSchedules = await hydrateScheduleCourses(userData.userData.schedules);
+
+                const result = {
+                    ...userData,
+                    userData: {
+                        schedules: hydratedSchedules,
+                        scheduleIndex: userData.userData.scheduleIndex,
+                    },
+                };
+                return result;
+            } catch (e) {
+                console.error('Hydration failed, returning unhydrated schedules:', e);
+                return userData;
+            }
+        } else {
+            throw new TRPCError({
+                code: 'BAD_REQUEST',
+                message: 'Invalid input: userId is required',
+            });
+        }
+    }),
     getUserDataWithSession: procedure.input(z.object({ refreshToken: z.string() })).query(async ({ input }) => {
         if ('refreshToken' in input) {
-            return await RDS.fetchUserDataWithSession(db, input.refreshToken);
+            const userData = await RDS.fetchUserDataWithSession(db, input.refreshToken);
+
+            if (!userData?.userData?.schedules) {
+                return userData;
+            }
+
+            try {
+                const hydratedSchedules = await hydrateScheduleCourses(userData.userData.schedules);
+
+                const result = {
+                    ...userData,
+                    userData: {
+                        schedules: hydratedSchedules,
+                        scheduleIndex: userData.userData.scheduleIndex,
+                    },
+                };
+                return result;
+            } catch (e) {
+                console.error('Hydration failed, returning unhydrated schedules:', e);
+                return userData;
+            }
         } else {
             throw new TRPCError({
                 code: 'BAD_REQUEST',
