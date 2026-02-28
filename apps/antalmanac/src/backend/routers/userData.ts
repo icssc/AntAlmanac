@@ -79,7 +79,7 @@ async function hydrateScheduleCourses(schedules: ScheduleSaveState['schedules'])
             courseInfoDict.set(term, courseInfo);
         } catch (e) {
             console.error(`Failed to fetch course info for term ${term}:`, e);
-            throw new Error(`WebSOC unavailable`);
+            courseInfoDict.set(term, {});
         }
     });
 
@@ -175,20 +175,15 @@ const userDataRouter = router({
                 return userData;
             }
 
-            try {
-                const hydratedSchedules = await hydrateScheduleCourses(userData.userData.schedules);
+            const hydratedSchedules = await hydrateScheduleCourses(userData.userData.schedules);
 
-                return {
-                    ...userData,
-                    userData: {
-                        schedules: hydratedSchedules,
-                        scheduleIndex: userData.userData.scheduleIndex,
-                    },
-                };
-            } catch (e) {
-                console.error('Hydration failed, returning unhydrated schedules:', e);
-                return userData;
-            }
+            return {
+                ...userData,
+                userData: {
+                    schedules: hydratedSchedules,
+                    scheduleIndex: userData.userData.scheduleIndex,
+                },
+            };
         } else {
             throw new TRPCError({
                 code: 'BAD_REQUEST',
@@ -204,21 +199,16 @@ const userDataRouter = router({
                 return userData;
             }
 
-            try {
-                const hydratedSchedules = await hydrateScheduleCourses(userData.userData.schedules);
+            const hydratedSchedules = await hydrateScheduleCourses(userData.userData.schedules);
 
-                const result = {
-                    ...userData,
-                    userData: {
-                        schedules: hydratedSchedules,
-                        scheduleIndex: userData.userData.scheduleIndex,
-                    },
-                };
-                return result;
-            } catch (e) {
-                console.error('Hydration failed, returning unhydrated schedules:', e);
-                return userData;
-            }
+            const result = {
+                ...userData,
+                userData: {
+                    schedules: hydratedSchedules,
+                    scheduleIndex: userData.userData.scheduleIndex,
+                },
+            };
+            return result;
         } else {
             throw new TRPCError({
                 code: 'BAD_REQUEST',
