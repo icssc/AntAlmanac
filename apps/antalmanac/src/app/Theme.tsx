@@ -6,7 +6,7 @@ import { Roboto } from 'next/font/google';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useMemo } from 'react';
 
-import { BLUE, LIGHT_BLUE } from '$src/globals';
+import { BLUE, DARK_PAPER_BG, LIGHT_BLUE } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 
 const roboto = Roboto({
@@ -26,6 +26,7 @@ const lightTheme: PaletteOptions = {
     background: {
         default: '#f5f6fc',
         paper: '#fff',
+        elevated: '#fff',
     },
     text: {
         primary: '#212529',
@@ -34,6 +35,12 @@ const lightTheme: PaletteOptions = {
     error: {
         main: '#ce0000',
     },
+};
+
+const darkPaperOverride = {
+    background: DARK_PAPER_BG,
+    backgroundColor: DARK_PAPER_BG,
+    color: '#fff',
 };
 
 const darkTheme: PaletteOptions = {
@@ -47,6 +54,7 @@ const darkTheme: PaletteOptions = {
     background: {
         default: '#1E1E1E',
         paper: '#1E1E1E',
+        elevated: DARK_PAPER_BG,
     },
     text: {
         primary: '#fff',
@@ -65,6 +73,10 @@ declare module '@mui/material/styles' {
     interface BreakpointOverrides {
         xxs: true;
         default: true;
+    }
+
+    interface TypeBackground {
+        elevated?: string;
     }
 
     interface Palette {
@@ -152,11 +164,7 @@ export default function AppThemeProvider(props: Props) {
                         styleOverrides: {
                             paper: {
                                 backgroundImage: 'none',
-                                ...(appTheme === 'dark' && {
-                                    background: '#383838',
-                                    backgroundColor: '#383838',
-                                    color: '#fff',
-                                }),
+                                ...(appTheme === 'dark' && darkPaperOverride),
                             },
                         },
                     },
@@ -176,22 +184,14 @@ export default function AppThemeProvider(props: Props) {
                         styleOverrides: {
                             paper: {
                                 backgroundImage: 'none',
-                                ...(appTheme === 'dark' && {
-                                    background: '#383838',
-                                    backgroundColor: '#383838',
-                                    color: '#fff',
-                                }),
+                                ...(appTheme === 'dark' && darkPaperOverride),
                             },
                         },
                     },
                     MuiMenu: {
                         styleOverrides: {
                             paper: {
-                                ...(appTheme === 'dark' && {
-                                    background: '#383838',
-                                    backgroundColor: '#383838',
-                                    color: '#fff',
-                                }),
+                                ...(appTheme === 'dark' && darkPaperOverride),
                             },
                         },
                     },

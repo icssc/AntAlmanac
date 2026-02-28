@@ -5,6 +5,7 @@ import { useEffect, useState, useCallback, type MouseEvent } from 'react';
 
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
+import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -88,19 +89,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
                 }}
                 slotProps={{
                     paper: {
-                        sx: {
-                            width: {
-                                xs: 300,
-                                sm: 300,
-                                md: 330,
-                            },
-                            p: '16px 20px',
-                            borderRadius: 2,
-                            border: '1px solid',
-                            borderColor: 'background.default',
-                            bgcolor: isDark ? '#383838' : 'background.paper',
-                            color: isDark ? 'white' : 'text.primary',
-                        },
+                        sx: getSettingsPopoverPaperSx(isDark),
                     },
                 }}
             >

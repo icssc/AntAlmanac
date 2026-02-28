@@ -26,26 +26,13 @@ import { loadSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/
 import { AlertDialog } from '$components/AlertDialog';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
+import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
-
-const getSettingsPopoverPaperSx = (isDark: boolean) => ({
-    width: {
-        xs: 300,
-        sm: 300,
-        md: 330,
-    },
-    p: '16px 20px',
-    borderRadius: 2,
-    border: '1px solid',
-    borderColor: 'background.default',
-    bgcolor: isDark ? '#383838' : 'background.paper',
-    color: isDark ? 'white' : 'text.primary',
-});
 
 const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = {
     SESSION_EXPIRED: {

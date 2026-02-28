@@ -28,7 +28,6 @@ export function SignInDialog(props: SignInDialogProps) {
                     width: 'fit-content',
                     height: 'fit-content',
                     borderRadius: '0.5rem',
-                    ...(isDark && { bgcolor: '#383838', color: 'text.primary' }),
                 },
             }}
             sx={{ padding: '1rem' }}
