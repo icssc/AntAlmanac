@@ -3,8 +3,9 @@ import { EventEmitter } from 'events';
 import type {
     ScheduleCourse,
     ScheduleSaveState,
+    ShortCourse,
+    ShortScheduleSaveState,
     RepeatingCustomEvent,
-    HydratedScheduleSaveState,
     CustomEventId,
 } from '@packages/antalmanac-types';
 import { SnackbarOrigin, VariantType } from 'notistack';
@@ -376,16 +377,14 @@ class AppStore extends EventEmitter {
     }
 
     private isHydratedSaveState(
-        savedSchedule: HydratedScheduleSaveState | ScheduleSaveState
-    ): savedSchedule is HydratedScheduleSaveState {
-        return savedSchedule.schedules.some((schedule) =>
-            schedule.courses.some((course) => 'section' in course)
-        );
+        savedSchedule: ScheduleSaveState
+    ): savedSchedule is ScheduleSaveState & { schedules: Array<{ courses: ScheduleCourse[] }> } {
+        return savedSchedule.schedules.some((schedule) => schedule.courses.some((course) => 'section' in course));
     }
 
-    private toShortSaveState(savedSchedule: HydratedScheduleSaveState | ScheduleSaveState): ScheduleSaveState {
+    private toShortSaveState(savedSchedule: ScheduleSaveState): ShortScheduleSaveState {
         if (!this.isHydratedSaveState(savedSchedule)) {
-            return savedSchedule;
+            return savedSchedule as ShortScheduleSaveState;
         }
 
         return {
@@ -394,16 +393,20 @@ class AppStore extends EventEmitter {
                 scheduleName: schedule.scheduleName,
                 customEvents: schedule.customEvents,
                 scheduleNote: schedule.scheduleNote,
-                courses: schedule.courses.map((course) => ({
-                    sectionCode: course.section.sectionCode,
-                    term: course.term,
-                    color: course.section.color,
-                })),
+                courses: schedule.courses.map((course: ShortCourse | ScheduleCourse) =>
+                    'section' in course
+                        ? {
+                              sectionCode: course.section.sectionCode,
+                              term: course.term,
+                              color: course.section.color,
+                          }
+                        : course
+                ),
             })),
         };
     }
 
-    private async loadScheduleFromSaveState(savedSchedule: HydratedScheduleSaveState | ScheduleSaveState) {
+    private async loadScheduleFromSaveState(savedSchedule: ScheduleSaveState) {
         try {
             await this.schedule.fromScheduleSaveState(savedSchedule);
             return true;
@@ -412,7 +415,7 @@ class AppStore extends EventEmitter {
         }
     }
 
-    async loadSchedule(savedSchedule: HydratedScheduleSaveState | ScheduleSaveState) {
+    async loadSchedule(savedSchedule: ScheduleSaveState) {
         const shortSaveState = this.toShortSaveState(savedSchedule);
         const hasDataChanged =
             JSON.stringify(this.schedule.getScheduleAsSaveState()) === JSON.stringify(shortSaveState);
@@ -453,7 +456,8 @@ class AppStore extends EventEmitter {
     }
 
     loadSkeletonSchedule(savedSchedule: ScheduleSaveState) {
-        this.schedule.setSkeletonSchedules(savedSchedule.schedules);
+        const shortSaveState = this.toShortSaveState(savedSchedule);
+        this.schedule.setSkeletonSchedules(shortSaveState.schedules);
         this.skeletonMode = true;
 
         this.emit('addedCoursesChange');

@@ -7,7 +7,6 @@ import type {
     ShortCourseSchedule,
     RepeatingCustomEvent,
     CourseInfo,
-    HydratedScheduleSaveState,
     CustomEventId,
 } from '@packages/antalmanac-types';
 
@@ -566,7 +565,7 @@ export class Schedules {
     /**
      * Overwrites the current schedule with the input save state.
      */
-    async fromScheduleSaveState(saveState: HydratedScheduleSaveState | ScheduleSaveState) {
+    async fromScheduleSaveState(saveState: ScheduleSaveState) {
         this.addUndoState();
 
         try {
@@ -644,7 +643,7 @@ export class Schedules {
                         }
                     }
                 } else {
-                    courses.push(...(schedule.courses as ScheduleCourse[]));
+                    courses.push(...(schedule.courses as unknown as ScheduleCourse[]));
                 }
 
                 this.schedules.push({

@@ -3,7 +3,6 @@ import type {
     CustomEventId,
     RepeatingCustomEvent,
     ScheduleCourse,
-    HydratedScheduleSaveState,
     ScheduleSaveState,
     ShortCourseSchedule,
     User,
@@ -81,7 +80,7 @@ export const openSnackbar = (
     AppStore.openSnackbar(variant, message, duration, position, style);
 };
 
-export function isEmptySchedule(schedules: ShortCourseSchedule[] | HydratedScheduleSaveState['schedules']) {
+export function isEmptySchedule(schedules: ShortCourseSchedule[] | ScheduleSaveState['schedules']) {
     for (const schedule of schedules) {
         if (schedule.courses.length > 0) {
             return false;
@@ -98,33 +97,6 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[] | HydratedSched
 
     return true;
 }
-
-const isHydratedSaveState = (
-    saveState: HydratedScheduleSaveState | ScheduleSaveState
-): saveState is HydratedScheduleSaveState =>
-    saveState.schedules.some((schedule) => schedule.courses.some((course) => 'section' in course));
-
-const toShortScheduleSaveState = (
-    saveState: HydratedScheduleSaveState | ScheduleSaveState
-): ScheduleSaveState => {
-    if (!isHydratedSaveState(saveState)) {
-        return saveState;
-    }
-
-    return {
-        scheduleIndex: saveState.scheduleIndex,
-        schedules: saveState.schedules.map((schedule) => ({
-            scheduleName: schedule.scheduleName,
-            customEvents: schedule.customEvents,
-            scheduleNote: schedule.scheduleNote,
-            courses: schedule.courses.map((course) => ({
-                sectionCode: course.section.sectionCode,
-                term: course.term,
-                color: course.section.color,
-            })),
-        })),
-    };
-};
 
 export const saveSchedule = async (
     providerId: string,
@@ -227,12 +199,12 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
 }
 
 export const mergeShortCourseSchedules = (
-    currentSchedules: ShortCourseSchedule[],
-    incomingSchedule: ShortCourseSchedule[],
+    currentSchedules: ScheduleSaveState['schedules'],
+    incomingSchedule: ScheduleSaveState['schedules'],
     importMessage = ''
 ) => {
-    const existingScheduleNames = new Set(currentSchedules.map((s: ShortCourseSchedule) => s.scheduleName));
-    const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
+    const existingScheduleNames = new Set(currentSchedules.map((s) => s.scheduleName));
+    const cacheSchedule = incomingSchedule.map((schedule) => {
         let scheduleName = schedule.scheduleName;
         if (existingScheduleNames.has(schedule.scheduleName)) {
             scheduleName = scheduleName + '(1)';
@@ -356,7 +328,7 @@ export const loadSchedule = async (
                     if (await AppStore.loadSchedule(scheduleSaveState)) {
                         openSnackbar('success', `Schedule loaded.`);
                     } else {
-                        AppStore.loadSkeletonSchedule(toShortScheduleSaveState(scheduleSaveState));
+                        AppStore.loadSkeletonSchedule(scheduleSaveState);
                         error = true;
                     }
                 }
@@ -408,7 +380,7 @@ export const loadScheduleWithSessionToken = async () => {
             openSnackbar('success', `Schedule loaded.`);
             return true;
         } else {
-            AppStore.loadSkeletonSchedule(toShortScheduleSaveState(scheduleSaveState));
+            AppStore.loadSkeletonSchedule(scheduleSaveState);
             openSnackbar(
                 'error',
                 `Network error loading course information". 	              

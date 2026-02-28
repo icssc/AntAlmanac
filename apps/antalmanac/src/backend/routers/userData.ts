@@ -1,7 +1,7 @@
 import {
     CourseInfo,
     ScheduleCourse,
-    ShortCourseSchedule,
+    ScheduleSaveState,
     RepeatingCustomEvent,
     type User,
 } from '@packages/antalmanac-types';
@@ -48,7 +48,7 @@ const saveGoogleSchema = type({
  * Hydrates schedule courses with full course information from WebSOC.
  * Transforms ShortCourse[] to ScheduleCourse[] by fetching course details.
  */
-async function hydrateScheduleCourses(schedules: ShortCourseSchedule[]): Promise<
+async function hydrateScheduleCourses(schedules: ScheduleSaveState['schedules']): Promise<
     Array<{
         scheduleName: string;
         courses: ScheduleCourse[];
@@ -60,6 +60,7 @@ async function hydrateScheduleCourses(schedules: ShortCourseSchedule[]): Promise
     const courseDict: { [term: string]: Set<string> } = {};
     for (const schedule of schedules) {
         for (const course of schedule.courses) {
+            if (!('sectionCode' in course)) continue; // already hydrated
             if (course.term in courseDict) {
                 courseDict[course.term].add(course.sectionCode);
             } else {
@@ -87,7 +88,9 @@ async function hydrateScheduleCourses(schedules: ShortCourseSchedule[]): Promise
     // Hydrate each schedule with full course data
     return schedules.map((schedule) => {
         const hydratedCourses: ScheduleCourse[] = schedule.courses
-            .map((shortCourse) => {
+            .map((course) => {
+                if ('section' in course) return course; // already hydrated
+                const shortCourse = course;
                 const courseInfoMap = courseInfoDict.get(shortCourse.term);
                 if (!courseInfoMap) {
                     return null;

@@ -1,4 +1,11 @@
-import { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent, Notification } from '@packages/antalmanac-types';
+import {
+    ShortCourse,
+    ShortCourseSchedule,
+    ScheduleSaveState,
+    User,
+    RepeatingCustomEvent,
+    Notification,
+} from '@packages/antalmanac-types';
 import { db } from '@packages/db/src/index';
 import * as schema from '@packages/db/src/schema';
 import {
@@ -281,17 +288,36 @@ export class RDS {
         });
     }
 
+    /** Deletes and recreates all of the user's schedules and contents. Converts hydrated courses to short for persistence. */
+    private static schedulesToShort(scheduleArray: ScheduleSaveState['schedules']): ShortCourseSchedule[] {
+        return scheduleArray.map((schedule) => ({
+            scheduleName: schedule.scheduleName,
+            customEvents: schedule.customEvents,
+            scheduleNote: schedule.scheduleNote,
+            courses: schedule.courses.map((course) =>
+                'section' in course
+                    ? {
+                          sectionCode: course.section.sectionCode,
+                          term: course.term,
+                          color: course.section.color,
+                      }
+                    : course
+            ),
+        }));
+    }
+
     /** Deletes and recreates all of the user's schedules and contents */
     private static async upsertSchedulesAndContents(
         tx: Transaction,
         userId: string,
-        scheduleArray: ShortCourseSchedule[]
+        scheduleArray: ScheduleSaveState['schedules']
     ): Promise<string[]> {
+        const shortSchedules = this.schedulesToShort(scheduleArray);
         // Drop all schedules, which will cascade to courses and custom events
         await tx.delete(schedules).where(eq(schedules.userId, userId));
 
         return Promise.all(
-            scheduleArray.map((schedule, index) => this.upsertScheduleAndContents(tx, userId, schedule, index))
+            shortSchedules.map((schedule, index) => this.upsertScheduleAndContents(tx, userId, schedule, index))
         );
     }
 

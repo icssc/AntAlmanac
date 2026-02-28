@@ -1,4 +1,4 @@
-import { ShortCourseSchedule } from '@packages/antalmanac-types';
+import type { ScheduleSaveState } from '@packages/antalmanac-types';
 
 /**
  *
@@ -18,7 +18,9 @@ function makeNonDuplicateScheduleName(scheduleName: string, nameCounts: Map<stri
  *
  * Example: ['Winter 2022', 'Winter 2022', 'Spring 2022'] -> ['Winter 2022', 'Winter 2022 (1)', 'Spring 2022']
  */
-export function mangleDuplicateScheduleNames(schedules: ShortCourseSchedule[]): ShortCourseSchedule[] {
+export function mangleDuplicateScheduleNames(
+    schedules: ScheduleSaveState['schedules']
+): ScheduleSaveState['schedules'] {
     const scheduleNameCounts = new Map<string, number>();
 
     return schedules.map((schedule) => ({

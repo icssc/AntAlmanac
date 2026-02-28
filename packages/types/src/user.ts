@@ -1,4 +1,4 @@
-import { ScheduleSaveStateSchema } from './schedule';
+import { ScheduleSaveState, ScheduleSaveStateSchema } from './schedule';
 import { type } from 'arktype';
 
 /**
@@ -46,4 +46,4 @@ export const UserSchema = type({
     'imported?': 'boolean',
 });
 
-export type User = typeof UserSchema.infer;
+export type User = Omit<typeof UserSchema.infer, 'userData'> & { userData: ScheduleSaveState };
