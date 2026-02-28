@@ -372,7 +372,7 @@ export const loadScheduleWithSessionToken = async () => {
             return false;
         }
         const scheduleSaveState = userDataResponse.userData ?? userDataResponse;
-        if (isEmptySchedule(scheduleSaveState.schedules)) {
+        if (!scheduleSaveState?.schedules || isEmptySchedule(scheduleSaveState.schedules)) {
             return true;
         }
 

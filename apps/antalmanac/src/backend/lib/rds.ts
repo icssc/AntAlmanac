@@ -288,7 +288,6 @@ export class RDS {
         });
     }
 
-    /** Deletes and recreates all of the user's schedules and contents. Converts hydrated courses to short for persistence. */
     private static schedulesToShort(scheduleArray: ScheduleSaveState['schedules']): ShortCourseSchedule[] {
         return scheduleArray.map((schedule) => ({
             scheduleName: schedule.scheduleName,

@@ -417,8 +417,8 @@ class AppStore extends EventEmitter {
 
     async loadSchedule(savedSchedule: ScheduleSaveState) {
         const shortSaveState = this.toShortSaveState(savedSchedule);
-        const hasDataChanged =
-            JSON.stringify(this.schedule.getScheduleAsSaveState()) === JSON.stringify(shortSaveState);
+        const currentShortState = this.toShortSaveState(this.schedule.getScheduleAsSaveState());
+        const hasDataChanged = JSON.stringify(currentShortState) !== JSON.stringify(shortSaveState);
         const loadSuccess = await this.loadScheduleFromSaveState(savedSchedule);
         if (!loadSuccess) {
             return false;
