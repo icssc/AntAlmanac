@@ -175,15 +175,21 @@ const userDataRouter = router({
                 return userData;
             }
 
-            const hydratedSchedules = await hydrateScheduleCourses(userData.userData.schedules);
+            try {
+                const hydratedSchedules = await hydrateScheduleCourses(userData.userData.schedules);
 
-            return {
-                ...userData,
-                userData: {
-                    schedules: hydratedSchedules,
-                    scheduleIndex: userData.userData.scheduleIndex,
-                },
-            };
+                const result = {
+                    ...userData,
+                    userData: {
+                        schedules: hydratedSchedules,
+                        scheduleIndex: userData.userData.scheduleIndex,
+                    },
+                };
+                return result;
+            } catch (e) {
+                console.error('Hydration failed, returning unhydrated schedules:', e);
+                return userData;
+            }
         } else {
             throw new TRPCError({
                 code: 'BAD_REQUEST',
@@ -199,16 +205,21 @@ const userDataRouter = router({
                 return userData;
             }
 
-            const hydratedSchedules = await hydrateScheduleCourses(userData.userData.schedules);
+            try {
+                const hydratedSchedules = await hydrateScheduleCourses(userData.userData.schedules);
 
-            const result = {
-                ...userData,
-                userData: {
-                    schedules: hydratedSchedules,
-                    scheduleIndex: userData.userData.scheduleIndex,
-                },
-            };
-            return result;
+                const result = {
+                    ...userData,
+                    userData: {
+                        schedules: hydratedSchedules,
+                        scheduleIndex: userData.userData.scheduleIndex,
+                    },
+                };
+                return result;
+            } catch (e) {
+                console.error('Hydration failed, returning unhydrated schedules:', e);
+                return userData;
+            }
         } else {
             throw new TRPCError({
                 code: 'BAD_REQUEST',
