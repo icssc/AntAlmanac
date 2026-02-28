@@ -9,7 +9,7 @@ import { useThemeStore } from '$stores/SettingsStore';
 const THEME_OPTIONS = [
     { value: 'light', label: 'Light', icon: <LightMode fontSize="medium" /> },
     { value: 'system', label: 'System', icon: <SettingsBrightness fontSize="medium" /> },
-    { value: 'dark', label: 'Dark', icon: <DarkMode fontSize="small" /> },
+    { value: 'dark', label: 'Dark', icon: <DarkMode fontSize="medium" /> },
 ];
 
 export function ThemeSelector() {
@@ -36,8 +36,8 @@ export function ThemeSelector() {
             <Box
                 sx={{
                     display: 'flex',
-                    border: `1px solid ${segment.border}`,
-                    borderRadius: '4px',
+                    border: `1px solid ${theme.palette.divider}`,
+                    borderRadius: 1,
                 }}
             >
                 {THEME_OPTIONS.map((tab, index) => {
@@ -60,15 +60,15 @@ export function ThemeSelector() {
                                 cursor: 'pointer',
                                 fontWeight: 'bold',
                                 fontSize: '1.1rem',
-                                backgroundColor: isSelected ? accentColor : segment.background,
-                                color: isSelected ? theme.palette.secondary.contrastText : accentColor,
-                                borderRight: index < 2 ? `1px solid ${segment.border}` : 'none',
-                                borderTopLeftRadius: tab.value === 'light' ? 4 : 0,
-                                borderBottomLeftRadius: tab.value === 'light' ? 4 : 0,
-                                borderTopRightRadius: tab.value === 'dark' ? 4 : 0,
-                                borderBottomRightRadius: tab.value === 'dark' ? 4 : 0,
+                                backgroundColor: isSelected ? theme.palette.primary.main : segment.background,
+                                color: isSelected ? theme.palette.primary.contrastText : accentColor,
+                                borderRight: index < 2 ? `1px solid ${theme.palette.divider}` : 'none',
+                                borderTopLeftRadius: tab.value === 'light' ? 2 : 0,
+                                borderBottomLeftRadius: tab.value === 'light' ? 2 : 0,
+                                borderTopRightRadius: tab.value === 'dark' ? 2 : 0,
+                                borderBottomRightRadius: tab.value === 'dark' ? 2 : 0,
                                 '&:hover': {
-                                    backgroundColor: isSelected ? accentColor : segment.hoverBackground,
+                                    backgroundColor: isSelected ? theme.palette.primary.main : segment.hoverBackground,
                                 },
                             }}
                         >

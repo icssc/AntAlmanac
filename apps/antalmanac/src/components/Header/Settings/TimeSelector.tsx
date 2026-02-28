@@ -10,8 +10,7 @@ export function TimeSelector() {
 
     const [isMilitaryTime, setTimeFormat] = useTimeFormatStore((store) => [store.isMilitaryTime, store.setTimeFormat]);
 
-    const borderColor = segment.border;
-    const inactiveBackgroundColor = segment.background;
+    const borderColor = theme.palette.divider;
     const inactiveHoverBackgroundColor = segment.hoverBackground;
 
     const handleTimeFormatChange = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -28,13 +27,13 @@ export function TimeSelector() {
         cursor: 'pointer',
         fontWeight: 'bold',
         fontSize: '1.1rem',
-        backgroundColor: selected ? accentColor : inactiveBackgroundColor,
-        color: selected ? theme.palette.secondary.contrastText : accentColor,
+        backgroundColor: selected ? theme.palette.primary.main : segment.background,
+        color: selected ? theme.palette.primary.contrastText : accentColor,
         ...(position === 'left' ? { borderRight: `1px solid ${borderColor}` } : null),
         ...(position === 'left' ? { borderTopLeftRadius: 4, borderBottomLeftRadius: 4 } : null),
         ...(position === 'right' ? { borderTopRightRadius: 4, borderBottomRightRadius: 4 } : null),
         '&:hover': {
-            backgroundColor: selected ? accentColor : inactiveHoverBackgroundColor,
+            backgroundColor: selected ? theme.palette.primary.main : inactiveHoverBackgroundColor,
         },
     });
 
