@@ -129,37 +129,17 @@ export function Header() {
                                     onClose={() => setAnchorEl(null)}
                                     anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
                                     transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                                    slotProps={{
-                                        paper: {
-                                            sx: {
-                                                bgcolor: isDark ? '#383838' : 'background.paper',
-                                                color: isDark ? 'white' : 'text.primary',
-                                                borderRadius: 2,
-                                                border: '1px solid',
-                                                borderColor: 'divider',
-                                            },
-                                        },
-                                    }}
                                 >
                                     <MenuList
                                         subheader={
                                             <ListSubheader
                                                 component="div"
-                                                sx={{
-                                                    lineHeight: '30px',
-                                                    ...(isDark && {
-                                                        bgcolor: '#383838',
-                                                        color: 'inherit',
-                                                    }),
-                                                }}
+                                                sx={{ lineHeight: '30px', ...(isDark && { bgcolor: '#383838' }) }}
                                             >
                                                 Switch Apps
                                             </ListSubheader>
                                         }
-                                        sx={{
-                                            width: 200,
-                                            ...(isDark && { bgcolor: '#383838' }),
-                                        }}
+                                        sx={{ width: 200, ...(isDark && { bgcolor: '#383838' }) }}
                                     >
                                         <MenuItem
                                             component={Link}
