@@ -36,3 +36,39 @@ export const safeUnreachableCase = <T>(v: never, retVal?: T): T | undefined => {
     console.error(`Reached a (safe) unreachable case: ${castedV}`);
     return retVal;
 };
+
+/**
+ * Converts a WebSOC section type code to a readable name.
+ * @param sectionType - The section type code (e.g., 'Dis', 'Lab', 'Lec')
+ * @returns The readable name of the section type (e.g., 'Discussion', 'Lab', 'Lecture')
+ */
+export function sectionTypeToName(sectionType: string): string {
+    switch (sectionType) {
+        case 'Dis':
+            return 'Discussion';
+        case 'Lab':
+            return 'Lab';
+        case 'Lec':
+            return 'Lecture';
+        case 'Sem':
+            return 'Seminar';
+        case 'Res':
+            return 'Research';
+        case 'Qiz':
+            return 'Quiz';
+        case 'Tap':
+            return 'Tutorial Assistance Program';
+        case 'Col':
+            return 'Colloquium';
+        case 'Act':
+            return 'Activity';
+        case 'Stu':
+            return 'Studio';
+        case 'Tut':
+            return 'Tutorial';
+        case 'Fld':
+            return 'Fieldwork';
+        default:
+            return sectionType;
+    }
+}

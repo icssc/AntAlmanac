@@ -7,6 +7,7 @@ import type {
     RepeatingCustomEvent,
     CourseInfo,
     CustomEventId,
+    WebsocSectionType,
 } from '@packages/antalmanac-types';
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
@@ -591,6 +592,58 @@ export class Schedules {
 
             await Promise.all(websocRequests);
 
+            // Fetch complete sectionTypes for each unique course
+            // When getCourseInfo is called with specific sectionCodes, WebSOC only returns those sections,
+            // so sectionTypes is incomplete. We need to fetch all sections of each course to get complete sectionTypes.
+            const completeSectionTypesMap = new Map<string, Map<string, Map<string, WebsocSectionType[]>>>();
+
+            // Extract unique (term, deptCode, courseNumber) combinations using nested Maps
+            for (const [term, courseInfoMap] of courseInfoDict) {
+                for (const [, courseInfo] of Object.entries(courseInfoMap)) {
+                    const { deptCode, courseNumber } = courseInfo.courseDetails;
+                    if (!completeSectionTypesMap.has(term)) {
+                        completeSectionTypesMap.set(term, new Map());
+                    }
+                    const deptMap = completeSectionTypesMap.get(term)!;
+                    if (!deptMap.has(deptCode)) {
+                        deptMap.set(deptCode, new Map());
+                    }
+                    const courseMap = deptMap.get(deptCode)!;
+                    if (!courseMap.has(courseNumber)) {
+                        courseMap.set(courseNumber, []);
+                    }
+                }
+            }
+
+            // Fetch sectionTypes for each unique (term, deptCode, courseNumber) individually
+            const fullCourseRequests: Promise<void>[] = [];
+            for (const [term, deptMap] of completeSectionTypesMap) {
+                for (const [deptCode, courseMap] of deptMap) {
+                    for (const [courseNumber] of courseMap) {
+                        fullCourseRequests.push(
+                            WebSOC.query({ term, deptCode, courseNumber }).then((fullData) => {
+                                const sectionTypesSet = new Set<WebsocSectionType>();
+                                for (const school of fullData.schools) {
+                                    for (const dept of school.departments) {
+                                        for (const course of dept.courses) {
+                                            course.sections.forEach((section) => {
+                                                sectionTypesSet.add(section.sectionType);
+                                            });
+                                        }
+                                    }
+                                }
+                                completeSectionTypesMap
+                                    .get(term)
+                                    ?.get(deptCode)
+                                    ?.set(courseNumber, Array.from(sectionTypesSet));
+                            })
+                        );
+                    }
+                }
+            }
+
+            await Promise.all(fullCourseRequests);
+
             this.schedules.length = 0;
             this.currentScheduleIndex = saveState.scheduleIndex;
 
@@ -605,9 +658,22 @@ export class Schedules {
                             // Class doesn't exist/was cancelled
                             continue;
                         }
+
+                        // Use complete sectionTypes if available
+                        const { deptCode, courseNumber } = courseInfo.courseDetails;
+                        const completeSectionTypes = completeSectionTypesMap
+                            .get(shortCourse.term)
+                            ?.get(deptCode)
+                            ?.get(courseNumber);
+
+                        const courseDetails = { ...courseInfo.courseDetails };
+                        if (completeSectionTypes) {
+                            courseDetails.sectionTypes = completeSectionTypes;
+                        }
+
                         courses.push({
                             ...shortCourse,
-                            ...courseInfo.courseDetails,
+                            ...courseDetails,
                             section: {
                                 ...courseInfo.section,
                                 color: shortCourse.color,
