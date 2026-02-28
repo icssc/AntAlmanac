@@ -104,7 +104,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
                     },
                 }}
             >
-                <SettingsMenu user={user} />
+                <SettingsMenu user={user} onClose={() => setAnchorEl(null)} />
 
                 <Divider style={{ marginTop: '10px', marginBottom: '12px' }} />
 
