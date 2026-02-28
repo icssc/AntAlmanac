@@ -15,6 +15,11 @@ export type ScheduleCourse = {
 };
 
 export type Schedule = {
+    /**
+     * Optional unique identifier for the schedule.
+     * Present when schedules are loaded from the backend.
+     */
+    id: string | undefined;
     scheduleName: string;
     courses: ScheduleCourse[];
     customEvents: RepeatingCustomEvent[];
@@ -30,6 +35,11 @@ export type ShortCourse = typeof ShortCourseSchema.infer;
 
 export const ShortCourseScheduleSchema = type([
     {
+        /**
+         * Optional unique identifier for the schedule.
+         * Present when schedules are loaded from the backend.
+         */
+        id: 'string | undefined',
         scheduleName: 'string',
         courses: arrayOf(ShortCourseSchema),
         customEvents: arrayOf(RepeatingCustomEventSchema),

@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import actionTypesStore from '$actions/ActionTypesStore';
 import { saveSchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import trpc from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -19,6 +20,8 @@ export const Save = () => {
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const { openAutoSaveWarning, setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
+
+    const isReadonlyView = useIsReadonlyView();
 
     const handleClickSignIn = () => {
         setOpenSignInDialog(!openSignInDialog);
@@ -62,6 +65,9 @@ export const Save = () => {
             actionTypesStore.off('autoSaveEnd', handleAutoSaveEnd);
         };
     }, []);
+
+    const disabled = skeletonMode || saving || isReadonlyView;
+
     return (
         <Stack direction="row">
             <LoadingButton
@@ -71,7 +77,7 @@ export const Save = () => {
                 loadingPosition="start"
                 onClick={validSession ? saveScheduleData : handleClickSignIn}
                 sx={{ fontSize: 'inherit' }}
-                disabled={skeletonMode || saving}
+                disabled={disabled}
                 loading={saving}
             >
                 Save

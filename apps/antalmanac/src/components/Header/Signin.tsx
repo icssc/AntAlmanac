@@ -25,6 +25,7 @@ import { loadSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/
 import { AlertDialog } from '$components/AlertDialog';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
+import { useIsSharedSchedulePage } from '$hooks/useIsSharedSchedulePage';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
 import { useNotificationStore } from '$stores/NotificationStore';
@@ -47,6 +48,7 @@ export const Signin = () => {
     const isDark = useThemeStore((store) => store.isDark);
     const { updateSession } = useSessionStore();
     const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = scheduleComponentsToggleStore();
+    const isSharedSchedulePage = useIsSharedSchedulePage();
 
     const [openAlert, setOpenalert] = useState(false);
     const [settingsAnchorEl, setSettingsAnchorEl] = useState<null | HTMLElement>(null);
@@ -101,7 +103,7 @@ export const Signin = () => {
     );
 
     const loadScheduleAndSetLoadingAuth = useCallback(
-        async (userID: string, rememberMe: boolean) => {
+        async (userID: string, rememberMe: boolean, skipScheduleLoad = false) => {
             setOpenLoadingSchedule(true);
 
             const sessionToken = getLocalStorageSessionId() ?? '';
@@ -111,12 +113,14 @@ export const Signin = () => {
                 if (!validSession) {
                     setOpenalert(true);
                     setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
-                } else {
+                } else if (!skipScheduleLoad) {
                     await loadScheduleWithSessionToken();
                 }
             } else if (userID && userID !== '') {
                 await validateImportedUser(userID);
-                await loadSchedule(userID, rememberMe, 'GUEST');
+                if (!skipScheduleLoad) {
+                    await loadSchedule(userID, rememberMe, 'GUEST');
+                }
             }
 
             setOpenLoadingSchedule(false);
@@ -181,12 +185,12 @@ export const Signin = () => {
             const sessionID = getLocalStorageSessionId();
 
             if (savedUserID != null || sessionID !== null) {
-                void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
+                void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true, isSharedSchedulePage);
             } else {
                 useNotificationStore.getState().loadNotifications();
             }
         }
-    }, [loadScheduleAndSetLoadingAuth]);
+    }, [loadScheduleAndSetLoadingAuth, isSharedSchedulePage]);
 
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>

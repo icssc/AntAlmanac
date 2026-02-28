@@ -7,6 +7,7 @@ import { useShallow } from 'zustand/react/shallow';
 
 import { deleteCourse } from '$actions/AppStoreActions';
 import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useNotificationStore } from '$stores/NotificationStore';
@@ -29,6 +30,7 @@ export const DeleteAndNotifications = memo(({ ...props }: DeleteAndNotifications
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const flexDirection = isMobile ? 'column' : undefined;
     const postHog = usePostHog();
+    const isReadonlyView = useIsReadonlyView();
 
     const handleClick = useCallback(() => {
         deleteCourse(props.section.sectionCode, props.term, AppStore.getCurrentScheduleIndex());
@@ -48,7 +50,7 @@ export const DeleteAndNotifications = memo(({ ...props }: DeleteAndNotifications
                 alignItems: 'center',
             }}
         >
-            <IconButton onClick={handleClick}>
+            <IconButton onClick={handleClick} disabled={isReadonlyView}>
                 <Delete fontSize="small" />
             </IconButton>
 
