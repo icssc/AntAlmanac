@@ -27,6 +27,7 @@ export function NotificationsTabs() {
     const sortedTerms = useMemo(() => Object.keys(groups).sort(), [groups]);
 
     const [activeTab, setActiveTab] = useState(sortedTerms.at(0));
+    const displayTab = activeTab ?? sortedTerms.at(0);
     const handleTabChange = (_: React.SyntheticEvent, newValue: string) => {
         setActiveTab(newValue);
     };
@@ -69,13 +70,13 @@ export function NotificationsTabs() {
         );
     }
 
-    if (!activeTab) {
+    if (!displayTab) {
         return null;
     }
 
     return (
         <Box sx={{ width: '100%' }}>
-            <TabContext value={activeTab}>
+            <TabContext value={displayTab}>
                 <Paper elevation={0} variant="outlined" square>
                     <TabList onChange={handleTabChange} indicatorColor="primary" variant="fullWidth" centered>
                         {sortedTerms.map((term) => (

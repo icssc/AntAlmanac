@@ -68,9 +68,10 @@ function UserProfileSection({ user }: UserProfileSectionProps) {
 
 interface SettingsMenuProps {
     user: Pick<User, 'name' | 'avatar' | 'email'> | null;
+    onClose?: () => void;
 }
 
-export function SettingsMenu({ user }: SettingsMenuProps) {
+export function SettingsMenu({ user, onClose }: SettingsMenuProps) {
     return (
         <Stack sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <UserProfileSection user={user} />
@@ -85,7 +86,7 @@ export function SettingsMenu({ user }: SettingsMenuProps) {
 
                 <ExperimentalMenu />
                 <Divider style={{ marginTop: '10px', marginBottom: '12px' }} />
-                <About />
+                <About onMenuClose={onClose} />
             </Stack>
         </Stack>
     );

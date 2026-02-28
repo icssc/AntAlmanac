@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { DEPARTMENT_MAP } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/constants';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { useDepartments } from '$hooks/useDepartments';
 import { getLocalStorageRecentlySearched, setLocalStorageRecentlySearched } from '$lib/localStorage';
 
-const options = Object.keys(DEPARTMENT_MAP);
+const DEFAULT_DEPARTMENTS: Record<string, string> = {
+    ALL: 'ALL: Include All Departments',
+};
 
 const parseLocalStorageRecentlySearched = (): string[] => {
     try {
@@ -27,6 +29,12 @@ const parseLocalStorageRecentlySearched = (): string[] => {
 };
 
 export function DepartmentSearchBar() {
+    const { departments } = useDepartments();
+
+    const departmentsWithAll = departments ? { ...DEFAULT_DEPARTMENTS, ...departments } : DEFAULT_DEPARTMENTS;
+
+    const options = Object.keys(departmentsWithAll);
+
     const [value, setValue] = useState(() => RightPaneStore.getFormData().deptValue);
     const [recentSearches, setRecentSearches] = useState<typeof options>(() => parseLocalStorageRecentlySearched());
 
@@ -64,7 +72,7 @@ export function DepartmentSearchBar() {
                   )
                 : setRecentSearches((prev) => [newValue, ...prev].slice(0, 5));
         },
-        [recentSearches]
+        [recentSearches, options]
     );
 
     useEffect(() => {
@@ -84,10 +92,10 @@ export function DepartmentSearchBar() {
             label="Department"
             autocompleteProps={{
                 value,
-                options: Array.from(new Set<string>([...recentSearches, ...options])),
+                options: Array.from(new Set([...recentSearches, ...options])),
                 autoHighlight: true,
                 openOnFocus: true,
-                getOptionLabel: (option) => DEPARTMENT_MAP[option.toUpperCase() as keyof typeof DEPARTMENT_MAP],
+                getOptionLabel: (option) => departmentsWithAll[option.toUpperCase()] ?? option,
                 onChange: handleChange,
                 includeInputInList: true,
                 noOptionsText: 'No departments match the search',
