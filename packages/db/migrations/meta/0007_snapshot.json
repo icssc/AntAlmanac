@@ -1,5 +1,5 @@
 {
-  "id": "805bce5d-65f1-41b7-8070-19b91087227e",
+  "id": "34ec1c0a-30eb-4203-ad75-323cf3065d61",
   "prevId": "989f0557-31bc-441f-bd90-97e1edaa126c",
   "version": "7",
   "dialect": "postgresql",
@@ -34,12 +34,8 @@
           "name": "accounts_user_id_users_id_fk",
           "tableFrom": "accounts",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -47,10 +43,7 @@
       "compositePrimaryKeys": {
         "accounts_user_id_account_type_pk": {
           "name": "accounts_user_id_account_type_pk",
-          "columns": [
-            "user_id",
-            "account_type"
-          ]
+          "columns": ["user_id", "account_type"]
         }
       },
       "uniqueConstraints": {},
@@ -93,12 +86,8 @@
           "name": "sessions_user_id_users_id_fk",
           "tableFrom": "sessions",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -170,12 +159,8 @@
           "name": "users_current_schedule_id_schedules_id_fk",
           "tableFrom": "users",
           "tableTo": "schedules",
-          "columnsFrom": [
-            "current_schedule_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["current_schedule_id"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -233,12 +218,8 @@
           "name": "schedules_user_id_users_id_fk",
           "tableFrom": "schedules",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -248,18 +229,12 @@
         "schedules_user_id_name_unique": {
           "name": "schedules_user_id_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "user_id",
-            "name"
-          ]
+          "columns": ["user_id", "name"]
         },
         "schedules_user_id_index_unique": {
           "name": "schedules_user_id_index_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "user_id",
-            "index"
-          ]
+          "columns": ["user_id", "index"]
         }
       },
       "policies": {},
@@ -308,12 +283,8 @@
           "name": "coursesInSchedule_scheduleId_schedules_id_fk",
           "tableFrom": "coursesInSchedule",
           "tableTo": "schedules",
-          "columnsFrom": [
-            "scheduleId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["scheduleId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -321,11 +292,7 @@
       "compositePrimaryKeys": {
         "coursesInSchedule_scheduleId_sectionCode_term_pk": {
           "name": "coursesInSchedule_scheduleId_sectionCode_term_pk",
-          "columns": [
-            "scheduleId",
-            "sectionCode",
-            "term"
-          ]
+          "columns": ["scheduleId", "sectionCode", "term"]
         }
       },
       "uniqueConstraints": {},
@@ -391,6 +358,12 @@
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
+        },
+        "term": {
+          "name": "term",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
@@ -399,12 +372,8 @@
           "name": "customEvents_scheduleId_schedules_id_fk",
           "tableFrom": "customEvents",
           "tableTo": "schedules",
-          "columnsFrom": [
-            "scheduleId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["scheduleId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -491,12 +460,8 @@
           "name": "subscriptions_userId_users_id_fk",
           "tableFrom": "subscriptions",
           "tableTo": "users",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["userId"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -504,12 +469,7 @@
       "compositePrimaryKeys": {
         "subscriptions_userId_sectionCode_year_quarter_pk": {
           "name": "subscriptions_userId_sectionCode_year_quarter_pk",
-          "columns": [
-            "userId",
-            "sectionCode",
-            "year",
-            "quarter"
-          ]
+          "columns": ["userId", "sectionCode", "year", "quarter"]
         }
       },
       "uniqueConstraints": {},
@@ -522,11 +482,7 @@
     "public.account_type": {
       "name": "account_type",
       "schema": "public",
-      "values": [
-        "GOOGLE",
-        "GUEST",
-        "OIDC"
-      ]
+      "values": ["GOOGLE", "GUEST", "OIDC"]
     }
   },
   "schemas": {},

@@ -345,6 +345,7 @@ export class RDS {
             days: event.days.map((day) => (day ? '1' : '0')).join(''),
             color: event.color,
             building: event.building,
+            term: event.term,
             lastUpdated: new Date(),
         }));
 
@@ -468,6 +469,7 @@ export class RDS {
                     start: customEvent.start,
                     end: customEvent.end,
                     days: customEvent.days.split('').map((day) => day === '1'),
+                    term: customEvent.term,
                     color: customEvent.color ?? undefined,
                     building: customEvent.building ?? undefined,
                 });

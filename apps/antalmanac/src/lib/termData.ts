@@ -62,4 +62,29 @@ function getFinalsStartDateForTerm(term: string) {
     return new Date(termThatMatches.finalsStartDate);
 }
 
-export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStartDate, getFinalsStartDateForTerm };
+/**
+ * Get the latest term from a list of terms
+ *
+ * If no terms are provided, returns the default term.
+ * If an array of terms is provided, returns the term with the latest start dates. For example,
+ * if the events given have terms 2023 Winter, 2024 Spring and 2023 Summer, the function returns
+ * the 2024 Spring term.
+ */
+function getLatestTerm(termNames: string[] = []): Term {
+    const filteredTerms = termNames
+        .map((term) => termData.find((existingTerm) => existingTerm.shortName === term))
+        .filter((maybeTerm) => maybeTerm !== undefined);
+
+    if (filteredTerms.length === 0) {
+        return getDefaultTerm();
+    }
+
+    return filteredTerms.reduce((latestTerm, currTerm) => {
+        if (!latestTerm || currTerm.startDate.getTime() > latestTerm.startDate.getTime()) {
+            return currTerm;
+        }
+        return latestTerm;
+    });
+}
+
+export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStartDate, getFinalsStartDateForTerm, getLatestTerm };

@@ -1,5 +1,17 @@
 import { Delete, Search } from '@mui/icons-material';
-import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
+import {
+    Chip,
+    IconButton,
+    Paper,
+    Tooltip,
+    Button,
+    Box,
+    Table,
+    TableBody,
+    TableRow,
+    TableCell,
+    tableCellClasses,
+} from '@mui/material';
 import { CustomEventId, WebsocSectionFinalExam } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useRef } from 'react';
@@ -23,6 +35,7 @@ interface CommonCalendarEvent extends Event {
     start: Date;
     end: Date;
     title: string;
+    term: string;
 }
 
 export interface Location {
@@ -57,7 +70,6 @@ export interface CourseEvent extends CommonCalendarEvent {
     sectionType: string;
     deptValue: string;
     courseNumber: string;
-    term: string;
 }
 
 /**
@@ -169,12 +181,25 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         </IconButton>
                     </Tooltip>
                 </Box>
-                <table style={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-                    <tbody>
-                        <tr>
-                            <td style={{ verticalAlign: 'top' }}>Section code</td>
+                <Table
+                    sx={{
+                        [`& .${tableCellClasses.root}`]: {
+                            p: 0,
+                            pb: 0.5,
+                            verticalAlign: 'top',
+                            borderBottom: 'none',
+                        },
+                        border: 'none',
+                        width: '100%',
+                        borderCollapse: 'collapse',
+                        fontSize: '0.9rem',
+                    }}
+                >
+                    <TableBody>
+                        <TableRow>
+                            <TableCell>Section code</TableCell>
                             <Tooltip title="Click to copy section code" placement="right">
-                                <td style={{ textAlign: 'right' }}>
+                                <TableCell sx={{ textAlign: 'right' }}>
                                     <Chip
                                         onClick={(event) => {
                                             clickToCopy(event, sectionCode);
@@ -186,20 +211,20 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                                         label={sectionCode}
                                         size="small"
                                     />
-                                </td>
+                                </TableCell>
                             </Tooltip>
-                        </tr>
-                        <tr>
-                            <td style={{ verticalAlign: 'top' }}>Term</td>
-                            <td style={{ textAlign: 'right' }}>{term}</td>
-                        </tr>
-                        <tr>
-                            <td style={{ verticalAlign: 'top' }}>Instructors</td>
-                            <td style={{ whiteSpace: 'pre', textAlign: 'right' }}>{instructors.join('\n')}</td>
-                        </tr>
-                        <tr>
-                            <td style={{ verticalAlign: 'top' }}>Location{locations.length > 1 && 's'}</td>
-                            <td style={{ whiteSpace: 'pre', textAlign: 'right' }}>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Term</TableCell>
+                            <TableCell sx={{ textAlign: 'right' }}>{term}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Instructors</TableCell>
+                            <TableCell sx={{ textAlign: 'right' }}>{instructors.join('\n')}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Location{locations.length > 1 && 's'}</TableCell>
+                            <TableCell sx={{ textAlign: 'right' }}>
                                 {locations.map((location) => (
                                     <div key={`${sectionCode} @ ${location.building} ${location.room}`}>
                                         <MapLink
@@ -208,15 +233,15 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                                         />
                                     </div>
                                 ))}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Final</td>
-                            <td style={{ textAlign: 'right' }}>{finalExamString}</td>
-                        </tr>
-                        <tr>
-                            <td>Color</td>
-                            <td style={{ textAlign: 'right' }}>
+                            </TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell>Final</TableCell>
+                            <TableCell sx={{ textAlign: 'right' }}>{finalExamString}</TableCell>
+                        </TableRow>
+                        <TableRow>
+                            <TableCell style={{ paddingBottom: 0 }}>Color</TableCell>
+                            <TableCell style={{ textAlign: 'right', paddingBottom: 0 }}>
                                 <ColorPicker
                                     color={selectedEvent.color}
                                     isCustomEvent={selectedEvent.isCustomEvent}
@@ -224,23 +249,46 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                                     term={selectedEvent.term}
                                     analyticsCategory={analyticsEnum.calendar}
                                 />
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
             </Paper>
         );
     } else {
-        const { title, customEventID, building } = selectedEvent;
+        const { term, title, customEventID, building } = selectedEvent;
         return (
             <Paper sx={{ padding: '0.5rem' }} ref={paperRef}>
                 <Box sx={{ fontSize: '0.9rem', fontWeight: 500 }}>{title}</Box>
-                {building && (
-                    <Box sx={{ border: 'none', width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-                        Location:&nbsp;
-                        <MapLink buildingId={+building} room={buildingCatalogue[+building]?.name ?? ''} />
-                    </Box>
-                )}
+                <Table
+                    sx={{
+                        [`& .${tableCellClasses.root}`]: {
+                            p: 0,
+                            pb: 0.5,
+                            verticalAlign: 'top',
+                            borderBottom: 'none',
+                        },
+                        border: 'none',
+                        width: '100%',
+                        borderCollapse: 'collapse',
+                        fontSize: '0.9rem',
+                    }}
+                >
+                    <TableBody>
+                        <TableRow>
+                            <TableCell style={{ paddingTop: '0.2rem', paddingRight: '2rem' }}>Term</TableCell>
+                            <TableCell sx={{ textAlign: 'right' }}>{term}</TableCell>
+                        </TableRow>
+                        {building && (
+                            <TableRow>
+                                <TableCell style={{ paddingRight: '2rem' }}>Location</TableCell>
+                                <TableCell sx={{ textAlign: 'right' }}>
+                                    <MapLink buildingId={+building} room={buildingCatalogue[+building]?.name ?? ''} />
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <ColorPicker
                         color={selectedEvent.color}
