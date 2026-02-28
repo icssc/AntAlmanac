@@ -2,13 +2,15 @@ import { create } from 'zustand';
 
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, removeLocalStorageSessionId, setLocalStorageSessionId } from '$lib/localStorage';
+import { useNotificationStore } from '$stores/NotificationStore';
 
 interface SessionState {
     session: string | null;
+    userId: string | null;
     isGoogleUser: boolean;
     email: string | null;
     sessionIsValid: boolean;
-    updateSession: (session: string | null) => Promise<void>;
+    updateSession: (session: string | null) => Promise<boolean>;
     clearSession: () => Promise<void>;
 }
 
@@ -16,6 +18,7 @@ export const useSessionStore = create<SessionState>((set) => {
     const localSessionId = getLocalStorageSessionId();
     return {
         session: localSessionId,
+        userId: null,
         isGoogleUser: false,
         email: null,
         sessionIsValid: false,
@@ -32,8 +35,10 @@ export const useSessionStore = create<SessionState>((set) => {
                         const { users } = await trpc.userData.getUserAndAccountBySessionToken.query({
                             token: session,
                         });
+                        const isGoogleUser = Boolean(users.email);
                         set({
-                            isGoogleUser: Boolean(users.email),
+                            userId: users.id,
+                            isGoogleUser,
                             email: users.email ?? null,
                         });
                     } catch (error) {
@@ -41,8 +46,12 @@ export const useSessionStore = create<SessionState>((set) => {
                         set({ isGoogleUser: false, email: null });
                     }
                 }
+                useNotificationStore.getState().loadNotifications();
+                return sessionIsValid;
             } else {
                 set({ session: null, sessionIsValid: false });
+                useNotificationStore.getState().loadNotifications();
+                return false;
             }
         },
         clearSession: async () => {
@@ -52,6 +61,7 @@ export const useSessionStore = create<SessionState>((set) => {
                 removeLocalStorageSessionId();
                 set({
                     session: null,
+                    userId: null,
                     sessionIsValid: false,
                     isGoogleUser: false,
                     email: null,

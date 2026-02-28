@@ -1,7 +1,7 @@
 import { Check, EditNotifications, NotificationAddOutlined } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import type { AASection, Course } from '@packages/antalmanac-types';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
@@ -28,7 +28,6 @@ interface NotificationsMenuProps {
 export const NotificationsMenu = memo(
     ({ section, term, courseTitle, deptCode, courseNumber }: NotificationsMenuProps) => {
         const notificationKey = section.sectionCode + ' ' + term;
-        const loadNotifications = useNotificationStore(useShallow((store) => store.loadNotifications));
         const [notification, setNotifications] = useNotificationStore(
             useShallow((store) => [store.notifications[notificationKey], store.setNotifications])
         );
@@ -43,12 +42,6 @@ export const NotificationsMenu = memo(
                 isGoogleUser: state.isGoogleUser,
             }))
         );
-
-        useEffect(() => {
-            if (isGoogleUser) {
-                loadNotifications();
-            }
-        }, [isGoogleUser, loadNotifications]);
 
         const notifyOn = notification?.notifyOn;
         const hasNotifications = notifyOn && Object.values(notifyOn).some((n) => n);

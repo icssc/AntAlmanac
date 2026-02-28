@@ -66,7 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     dangerouslySetInnerHTML={{
                         __html: `
                     console.log(
-                        '%cInterested in improving AntAlmanac?\n - Checkout the project on GitHub: https://github.com/icssc/antalmanac\n - Join our Discord: https://discord.gg/GzF76D7UhY\n - Leave feedback: https://antalmanac.com/feedback',
+                        '%cInterested in improving AntAlmanac?\n - Check out the project on GitHub: https://github.com/icssc/antalmanac\n - Join our Discord: https://discord.gg/GzF76D7UhY\n - Leave feedback: https://antalmanac.com/feedback',
                         'color: #305db7; font-size: 15px'
                     );
                 `,
