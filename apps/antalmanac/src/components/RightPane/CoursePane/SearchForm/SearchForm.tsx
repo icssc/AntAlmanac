@@ -70,11 +70,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                     </Box>
 
                     {!manualSearchEnabled ? (
-                        <FuzzySearch
-                            toggleSearch={toggleSearch}
-                            toggleShowManualSearch={toggleManualSearch}
-                            postHog={postHog}
-                        />
+                        <FuzzySearch toggleSearch={toggleSearch} postHog={postHog} />
                     ) : (
                         <ManualSearch
                             onSubmit={() => {
