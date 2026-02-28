@@ -98,7 +98,10 @@ async function hydrateScheduleCourses(schedules: ScheduleSaveState['schedules'])
 
                 const courseInfo = courseInfoMap[shortCourse.sectionCode.padStart(5, '0')];
                 if (!courseInfo) {
-                    return null;
+                    console.warn(
+                        `Course ${shortCourse.sectionCode} not found in WebSOC for term ${shortCourse.term}, using unhydrated data`
+                    );
+                    return shortCourse as unknown as ScheduleCourse;
                 }
 
                 return {
