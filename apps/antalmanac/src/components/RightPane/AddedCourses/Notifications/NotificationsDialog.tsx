@@ -71,7 +71,19 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
                 </IconButton>
             </Tooltip>
 
-            <Dialog open={open} onClose={handleClose} fullWidth>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                fullWidth
+                PaperProps={{
+                    sx: {
+                        ...(theme.palette.mode === 'dark' && {
+                            bgcolor: '#383838',
+                            color: 'text.primary',
+                        }),
+                    },
+                }}
+            >
                 <DialogTitle>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         Manage Notifications
@@ -82,10 +94,16 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
                     sx={
                         theme.palette.mode === 'dark'
                             ? {
-                                  '& a': { color: LIGHT_BLUE },
+                                  '& a, & a:hover, & a:visited': { color: LIGHT_BLUE },
+                                  '& .MuiTab-root': { color: 'text.secondary' },
                                   '& .MuiTab-root.Mui-selected': { color: LIGHT_BLUE },
                                   '& .MuiTabs-indicator': { backgroundColor: LIGHT_BLUE },
                                   '& .MuiCheckbox-root.Mui-checked': { color: LIGHT_BLUE },
+                                  '& .MuiChip-label': { color: 'text.primary' },
+                                  '& .MuiTablePagination-actions .MuiIconButton-root': {
+                                      color: 'text.primary',
+                                  },
+                                  '& .MuiTablePagination-selectIcon': { color: 'text.primary' },
                               }
                             : undefined
                     }

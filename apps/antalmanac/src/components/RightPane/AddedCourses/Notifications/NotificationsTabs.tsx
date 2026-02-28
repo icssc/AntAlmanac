@@ -1,6 +1,6 @@
 import { NotificationAddOutlined } from '@mui/icons-material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { Box, Tab, Paper, CircularProgress, Typography } from '@mui/material';
+import { Box, Tab, Paper, CircularProgress, Typography, useTheme } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -20,6 +20,7 @@ function groupNotificationsByTerm(notifications: Record<string, unknown>) {
 }
 
 export function NotificationsTabs() {
+    const theme = useTheme();
     const initialized = useNotificationStore(useShallow((store) => store.initialized));
     const notifications = useNotificationStore(useShallow((store) => store.notifications));
 
@@ -77,7 +78,12 @@ export function NotificationsTabs() {
     return (
         <Box sx={{ width: '100%' }}>
             <TabContext value={displayTab}>
-                <Paper elevation={0} variant="outlined" square>
+                <Paper
+                    elevation={0}
+                    variant="outlined"
+                    square
+                    sx={theme.palette.mode === 'dark' ? { bgcolor: '#383838', borderColor: 'divider' } : undefined}
+                >
                     <TabList onChange={handleTabChange} indicatorColor="primary" variant="fullWidth" centered>
                         {sortedTerms.map((term) => (
                             <Tab label={term} key={term} value={term} />

@@ -152,6 +152,11 @@ export default function AppThemeProvider(props: Props) {
                         styleOverrides: {
                             paper: {
                                 backgroundImage: 'none',
+                                ...(appTheme === 'dark' && {
+                                    background: '#383838',
+                                    backgroundColor: '#383838',
+                                    color: '#fff',
+                                }),
                             },
                         },
                     },
@@ -171,6 +176,22 @@ export default function AppThemeProvider(props: Props) {
                         styleOverrides: {
                             paper: {
                                 backgroundImage: 'none',
+                                ...(appTheme === 'dark' && {
+                                    background: '#383838',
+                                    backgroundColor: '#383838',
+                                    color: '#fff',
+                                }),
+                            },
+                        },
+                    },
+                    MuiMenu: {
+                        styleOverrides: {
+                            paper: {
+                                ...(appTheme === 'dark' && {
+                                    background: '#383838',
+                                    backgroundColor: '#383838',
+                                    color: '#fff',
+                                }),
                             },
                         },
                     },

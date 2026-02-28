@@ -83,6 +83,16 @@ export const CourseInfoButton = ({
                         vertical: 'bottom',
                         horizontal: 'left',
                     }}
+                    slotProps={{
+                        paper: {
+                            sx: {
+                                ...(theme.palette.mode === 'dark' && {
+                                    bgcolor: 'background.elevated',
+                                    color: 'text.primary',
+                                }),
+                            },
+                        },
+                    }}
                 >
                     <Paper>{popupContent}</Paper>
                 </Popover>

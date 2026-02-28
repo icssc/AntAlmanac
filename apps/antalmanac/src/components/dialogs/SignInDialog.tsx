@@ -23,14 +23,15 @@ export function SignInDialog(props: SignInDialogProps) {
             onClose={handleClose}
             maxWidth={'xl'}
             fullScreen={true}
-            sx={{
-                '& .MuiDialog-paper': {
+            PaperProps={{
+                sx: {
                     width: 'fit-content',
                     height: 'fit-content',
                     borderRadius: '0.5rem',
+                    ...(isDark && { bgcolor: '#383838', color: 'text.primary' }),
                 },
-                padding: '1rem',
             }}
+            sx={{ padding: '1rem' }}
         >
             <DialogTitle>{props.feature === 'Notification' ? 'Sign in to Use Notifications' : 'Save'}</DialogTitle>
             <DialogContent>

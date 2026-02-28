@@ -273,7 +273,15 @@ export function Import() {
                     Import
                 </Button>
             </Tooltip>
-            <Dialog open={openImportDialog} onClose={handleClose}>
+            <Dialog
+                open={openImportDialog}
+                onClose={handleClose}
+                PaperProps={{
+                    sx: {
+                        ...(theme.palette.mode === 'dark' && { bgcolor: 'background.elevated', color: 'text.primary' }),
+                    },
+                }}
+            >
                 <DialogTitle>Import Schedule</DialogTitle>
                 <DialogContent sx={theme.palette.mode === 'dark' ? { '& a': { color: LIGHT_BLUE } } : undefined}>
                     <FormControl>
