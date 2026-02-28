@@ -1,12 +1,22 @@
 import { Info } from '@mui/icons-material';
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Link } from '@mui/material';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Link,
+    useTheme,
+} from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { DONATION_LINK } from '$src/globals';
+import { DONATION_LINK, LIGHT_BLUE } from '$src/globals';
 
 export const AboutButton = () => {
+    const theme = useTheme();
     const [open, setOpen] = useState(false);
     const postHog = usePostHog();
 
@@ -29,7 +39,13 @@ export const AboutButton = () => {
             </Button>
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>About</DialogTitle>
-                <DialogContent>
+                <DialogContent
+                    sx={
+                        theme.palette.mode === 'dark'
+                            ? { '& a, & a:hover, & a:visited': { color: LIGHT_BLUE } }
+                            : undefined
+                    }
+                >
                     <DialogContentText>
                         AntAlmanac is a schedule planning tool for UCI students.
                         <br />
