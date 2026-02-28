@@ -10,6 +10,7 @@ export interface AnalyticsCategory {
 
 export interface AnalyticsEnum {
     calendar: AnalyticsCategory;
+    auth: AnalyticsCategory;
     nav: AnalyticsCategory;
     classSearch: AnalyticsCategory;
     addedClasses: AnalyticsCategory;
@@ -35,16 +36,32 @@ const analyticsEnum: AnalyticsEnum = {
             DOWNLOAD: 'Download Schedule',
         },
     },
+    auth: {
+        title: 'Auth',
+        actions: {
+            SIGN_IN: 'Sign In',
+            SIGN_IN_FAIL: 'Sign In Failure',
+            SIGN_OUT: 'Sign Out',
+            SIGN_OUT_FAIL: 'Sign Out Failure',
+            LOAD_SCHEDULE: 'Load Schedule',
+            LOAD_SCHEDULE_FAIL: 'Load Schedule Failure',
+            LOAD_SCHEDULE_LEGACY: 'Load Schedule Legacy',
+            LOAD_SCHEDULE_LEGACY_FAIL: 'Load Schedule Legacy Failure',
+            SAVE_SCHEDULE: 'Save Schedule',
+            SAVE_SCHEDULE_FAIL: 'Save Schedule Failure',
+        },
+    },
     nav: {
         title: 'Navbar',
         actions: {
             CLICK_NOTIFICATIONS: 'Click Notifications',
             CLICK_ABOUT: 'Click About Page',
-            CHANGE_THEME: 'Change Theme', // Label is the theme changed to
-            IMPORT_STUDY_LIST: 'Import Study List', // Value is the percentage of courses successfully imported (decimal value)
-            LOAD_SCHEDULE: 'Load Schedule', // Value is 1 if the user checked "remember me", 0 otherwise
-            SAVE_SCHEDULE: 'Save Schedule', // Value is 1 if the user checked "remember me", 0 otherwise
-            CLICK_NEWS: 'Click News',
+            CLICK_SAVE: 'Click Save Button',
+            CLICK_LOAD: 'Click Load Button',
+            CHANGE_THEME: 'Change Theme',
+            IMPORT_STUDY_LIST: 'Import Study List',
+            IMPORT_ZOTCOURSE: 'Import Zotcourse Schedule',
+            IMPORT_LEGACY: 'Import From Legacy Username',
         },
     },
     classSearch: {
@@ -52,7 +69,7 @@ const analyticsEnum: AnalyticsEnum = {
         actions: {
             MANUAL_SEARCH: 'Manual Search',
             FUZZY_SEARCH: 'Fuzzy Search',
-            ADD_COURSE: 'Add Course', //Label is department, value is 1 if lower div, else 0
+            ADD_COURSE: 'Add Course',
             CLICK_INFO: 'Click "Info"',
             CLICK_PREREQUISITES: 'Click "Prerequisites"',
             CLICK_GRADES: 'Click "Grades"',
@@ -87,22 +104,36 @@ const analyticsEnum: AnalyticsEnum = {
 
 export default analyticsEnum;
 
+// There is no explicit type for what PostHog accepts as a property value
+// A list of accepted types: https://posthog.com/docs/data/events#event-properties
+export type PostHogPropertyValue = string | number | boolean | Date | PostHogPropertyValue[];
+
 interface AnalyticsProps {
     category: AnalyticsCategory;
     action: string;
-    label?: string;
-    value?: number;
+    error?: string;
+    customProps?: Record<string, PostHogPropertyValue>;
 }
 
 /**
  * Logs event to PostHog instance
  */
-export function logAnalytics(postHog: PostHog | undefined, { category, action, label, value }: AnalyticsProps) {
-    postHog?.capture(action, {
+export function logAnalytics(postHog: PostHog | undefined, { category, action, error, customProps }: AnalyticsProps) {
+    if (!postHog) return;
+    postHog.capture(action, {
         category: category.title,
-        label,
-        value,
+        error,
+        ...customProps,
     });
+}
+
+export function analyticsIdentifyUser(postHog: PostHog | undefined, userId?: string) {
+    if (!postHog || !userId) return;
+
+    const currentId = postHog.get_distinct_id();
+    if (currentId !== userId) {
+        postHog.identify(userId);
+    }
 }
 
 /**

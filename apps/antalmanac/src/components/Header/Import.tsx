@@ -95,7 +95,7 @@ export function Import() {
                     for (const event of zotcourseImport.customEvents) {
                         addCustomEvent(event, [currentSchedule]);
                     }
-                    uploadSectionCodes(sectionCodes, term, currentSchedule);
+                    uploadSectionCodes(sectionCodes, term, currentSchedule, ImportSource.ZOT_COURSE_IMPORT);
                 } catch (e) {
                     if (e instanceof QueryZotcourseError) {
                         openSnackbar('error', e.message);
@@ -111,10 +111,10 @@ export function Import() {
                 sectionCodes = studyListText.match(/\d{5}/g);
 
                 if (!sectionCodes || sectionCodes.length === 0) break;
-                uploadSectionCodes(sectionCodes, term, currentSchedule);
+                uploadSectionCodes(sectionCodes, term, currentSchedule, ImportSource.STUDY_LIST_IMPORT);
                 break;
             case ImportSource.AA_USERNAME_IMPORT: {
-                const importStatus = await importScheduleWithUsername(aaUsername);
+                const importStatus = await importScheduleWithUsername(aaUsername, postHog);
                 if (importStatus.error) {
                     setAlertDialog(true);
                     setAlertDialogSeverity('error');
@@ -140,7 +140,7 @@ export function Import() {
             openSnackbar(
                 'error',
                 `Cannot import an empty ${
-                    importSource === ImportSource.ZOT_COURSE_IMPORT ? 'Zotcourse' : 'Study List'
+                    importSource === ImportSource.ZOT_COURSE_IMPORT ? 'Zotcourse Schedule' : 'Study List'
                 }.`
             );
             handleClose();
@@ -156,12 +156,17 @@ export function Import() {
     };
 
     const handleImportAnyways = () => {
-        importValidatedSchedule(aaUsername);
+        importValidatedSchedule(aaUsername, postHog);
         setOpenImportDialog(false);
         setAlertDialog(false);
     };
 
-    const uploadSectionCodes = async (sectionCodes: string[], term: string, currentSchedule: number) => {
+    const uploadSectionCodes = async (
+        sectionCodes: string[],
+        term: string,
+        currentSchedule: number,
+        importSource: ImportSource.STUDY_LIST_IMPORT | ImportSource.ZOT_COURSE_IMPORT
+    ) => {
         try {
             const term = RightPaneStore.getFormData().term;
 
@@ -176,8 +181,13 @@ export function Import() {
 
             logAnalytics(postHog, {
                 category: analyticsEnum.nav,
-                action: analyticsEnum.nav.actions.IMPORT_STUDY_LIST,
-                value: sectionsAdded / (sectionCodes.length || 1),
+                action:
+                    importSource === ImportSource.STUDY_LIST_IMPORT
+                        ? analyticsEnum.nav.actions.IMPORT_STUDY_LIST
+                        : analyticsEnum.nav.actions.IMPORT_ZOTCOURSE,
+                customProps: {
+                    percentImported: sectionsAdded / (sectionCodes.length || 1),
+                },
             });
 
             if (sectionsAdded === sectionCodes.length) {
@@ -191,11 +201,18 @@ export function Import() {
             } else {
                 openSnackbar(
                     'error',
-                    'Failed to import any classes! Please make sure that you pasted the correct Study List.'
+                    `Failed to import any classes! Please make sure that you pasted the correct ${
+                        importSource === ImportSource.STUDY_LIST_IMPORT ? 'Study List' : 'Zotcourse Schedule'
+                    }.`
                 );
             }
         } catch (e) {
-            openSnackbar('error', 'An error occurred while trying to import the Study List.');
+            openSnackbar(
+                'error',
+                `An error occurred while trying to import the ${
+                    importSource === ImportSource.STUDY_LIST_IMPORT ? 'Study List' : 'Zotcourse Schedule'
+                }.`
+            );
             console.error(e);
         }
     };
