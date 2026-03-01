@@ -16,7 +16,7 @@ import {
     Session,
     subscriptions,
 } from '@packages/db/src/schema';
-import { and, eq, ExtractTablesWithRelations, gt } from 'drizzle-orm';
+import { and, eq, ExtractTablesWithRelations, gt, notInArray } from 'drizzle-orm';
 import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
@@ -206,34 +206,72 @@ export class RDS {
      *
      * @returns The ID of the new/existing schedule
      */
+    /**
+     * Updates an existing schedule (reusing id for persistent share links) or inserts a new one.
+     * When the client sends an existing schedule id that belongs to this user, we update that row
+     * and replace its courses/events so the share link keeps showing the latest data.
+     */
     private static async upsertScheduleAndContents(
         tx: Transaction,
         userId: string,
         schedule: ShortCourseSchedule,
         index: number
-    ) {
-        // Add schedule
-        const dbSchedule = {
-            userId,
-            name: schedule.scheduleName,
-            notes: schedule.scheduleNote,
-            index,
-            lastUpdated: new Date(),
-        };
+    ): Promise<string> {
+        const existingId = schedule.id && schedule.id.trim() !== '' ? schedule.id : null;
+        const lastUpdated = new Date();
 
-        const scheduleResult = await tx.insert(schedules).values(dbSchedule).returning({ id: schedules.id });
+        if (existingId) {
+            const existing = await tx
+                .select({ id: schedules.id })
+                .from(schedules)
+                .where(and(eq(schedules.id, existingId), eq(schedules.userId, userId)))
+                .limit(1)
+                .then((res) => res[0]);
+
+            if (existing) {
+                await tx
+                    .update(schedules)
+                    .set({
+                        name: schedule.scheduleName,
+                        notes: schedule.scheduleNote,
+                        index,
+                        lastUpdated,
+                    })
+                    .where(eq(schedules.id, existingId));
+
+                await Promise.all([
+                    this.upsertCourses(tx, existingId, schedule.courses).catch((error) => {
+                        throw new Error(`Failed to update courses for ${schedule.scheduleName}: ${error}`);
+                    }),
+                    this.upsertCustomEvents(tx, existingId, schedule.customEvents).catch((error) => {
+                        throw new Error(`Failed to update custom events for ${schedule.scheduleName}: ${error}`);
+                    }),
+                ]);
+                return existingId;
+            }
+        }
+
+        // New schedule or id not owned by this user: insert
+        const scheduleResult = await tx
+            .insert(schedules)
+            .values({
+                userId,
+                name: schedule.scheduleName,
+                notes: schedule.scheduleNote,
+                index,
+                lastUpdated,
+            })
+            .returning({ id: schedules.id });
 
         const scheduleId = scheduleResult[0].id;
         if (scheduleId === undefined) {
             throw new Error(`Failed to insert schedule for ${userId}`);
         }
 
-        // Add courses and custom events
         await Promise.all([
             this.upsertCourses(tx, scheduleId, schedule.courses).catch((error) => {
                 throw new Error(`Failed to insert courses for ${schedule.scheduleName}: ${error}`);
             }),
-
             this.upsertCustomEvents(tx, scheduleId, schedule.customEvents).catch((error) => {
                 throw new Error(`Failed to insert custom events for ${schedule.scheduleName}: ${error}`);
             }),
@@ -284,18 +322,27 @@ export class RDS {
         });
     }
 
-    /** Deletes and recreates all of the user's schedules and contents */
+    /**
+     * Syncs user's schedules: reuses existing schedule IDs when provided (so share links stay valid),
+     * updates content for those, inserts new rows for new schedules, and deletes schedules no longer in the list.
+     */
     private static async upsertSchedulesAndContents(
         tx: Transaction,
         userId: string,
         scheduleArray: ShortCourseSchedule[]
     ): Promise<string[]> {
-        // Drop all schedules, which will cascade to courses and custom events
-        await tx.delete(schedules).where(eq(schedules.userId, userId));
-
-        return Promise.all(
+        const scheduleIds = await Promise.all(
             scheduleArray.map((schedule, index) => this.upsertScheduleAndContents(tx, userId, schedule, index))
         );
+
+        // Remove schedules that belong to this user but are no longer in the saved list
+        if (scheduleIds.length > 0) {
+            await tx.delete(schedules).where(and(eq(schedules.userId, userId), notInArray(schedules.id, scheduleIds)));
+        } else {
+            await tx.delete(schedules).where(eq(schedules.userId, userId));
+        }
+
+        return scheduleIds;
     }
 
     /**
@@ -336,6 +383,8 @@ export class RDS {
         scheduleId: string,
         repeatingCustomEvents: RepeatingCustomEvent[]
     ) {
+        await tx.delete(customEvents).where(eq(customEvents.scheduleId, scheduleId));
+
         if (repeatingCustomEvents.length === 0) {
             return;
         }
