@@ -263,8 +263,6 @@ const ErrorMessage = () => {
 };
 
 export default function CourseRenderPane(props: { id?: number }) {
-    const filterTakenCourses = useSessionStore((s) => s.filterTakenCourses);
-    const userTakenCourses = useSessionStore((s) => s.userTakenCourses);
     const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -334,7 +332,7 @@ export default function CourseRenderPane(props: { id?: number }) {
         if (websocResp == null) return [];
         const flattened = flattenSOCObject(websocResp);
         return getFilteredCourses(flattened);
-    }, [filterTakenCourses, userTakenCourses, websocResp]);
+    }, [websocResp]);
 
     useEffect(() => {
         loadCourses();
