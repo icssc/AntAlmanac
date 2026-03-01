@@ -5,7 +5,7 @@ import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useMatch, useNavigate, useParams } from 'react-router-dom';
 
-import { importSharedScheduleById, openSnackbar } from '$actions/AppStoreActions';
+import { changeCurrentSchedule, importSharedScheduleById, openSnackbar } from '$actions/AppStoreActions';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
@@ -65,15 +65,13 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                 }
 
                 const schedules = userData.userData.schedules;
-                const scheduleIndex = Math.min(
-                    Math.max(0, userData.userData.scheduleIndex ?? 0),
-                    Math.max(0, schedules.length - 1)
-                );
+                const scheduleIndex = 0;
                 const loadSuccess = await AppStore.loadSchedule({ schedules, scheduleIndex });
 
                 if (!loadSuccess) {
                     throw new Error('Failed to load friend schedules');
                 }
+                changeCurrentSchedule(scheduleIndex);
                 setScheduleName(null);
                 setError(null);
             } catch (err) {
