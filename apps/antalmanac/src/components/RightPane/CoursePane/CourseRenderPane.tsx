@@ -80,10 +80,11 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
 };
 
 function getFilteredCourses(
-    allCourses: (WebsocSchool | WebsocDepartment | AACourse)[]
+    allCourses: (WebsocSchool | WebsocDepartment | AACourse)[],
+    filterTakenCourses: boolean,
+    userTakenCourses: Set<string>
 ): (WebsocSchool | WebsocDepartment | AACourse)[] {
     const { manualSearchEnabled } = useCoursePaneStore.getState();
-    const { filterTakenCourses, userTakenCourses } = useSessionStore.getState();
     if (manualSearchEnabled && filterTakenCourses && userTakenCourses.size > 0) {
         return allCourses.filter((item) => {
             if ('sections' in item && 'deptCode' in item && 'courseNumber' in item) {
@@ -263,6 +264,8 @@ const ErrorMessage = () => {
 };
 
 export default function CourseRenderPane(props: { id?: number }) {
+    const filterTakenCourses = useSessionStore((s) => s.filterTakenCourses);
+    const userTakenCourses = useSessionStore((s) => s.userTakenCourses);
     const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -331,8 +334,8 @@ export default function CourseRenderPane(props: { id?: number }) {
     const courseData = useMemo(() => {
         if (websocResp == null) return [];
         const flattened = flattenSOCObject(websocResp);
-        return getFilteredCourses(flattened);
-    }, [websocResp]);
+        return getFilteredCourses(flattened, filterTakenCourses, userTakenCourses);
+    }, [filterTakenCourses, userTakenCourses, websocResp]);
 
     useEffect(() => {
         loadCourses();
