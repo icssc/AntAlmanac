@@ -6,6 +6,7 @@ import { useShallow } from 'zustand/react/shallow';
 
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
+import { canTermEnrollmentChange, Term } from '$lib/termData';
 import { type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -19,7 +20,7 @@ const MENU_ITEMS: { status: keyof NotifyOn; label: string }[] = [
 
 interface NotificationsMenuProps {
     section: AASection;
-    term: string;
+    term: Term['shortName'];
     courseTitle: Course['title'];
     deptCode?: string;
     courseNumber?: string;
@@ -43,6 +44,7 @@ export const NotificationsMenu = memo(
             }))
         );
 
+        const isTermCurrent = canTermEnrollmentChange(term);
         const notifyOn = notification?.notifyOn;
         const hasNotifications = notifyOn && Object.values(notifyOn).some((n) => n);
 
@@ -87,21 +89,29 @@ export const NotificationsMenu = memo(
             setSignInOpen(false);
         }, []);
 
+        const tooltipText = !isTermCurrent
+            ? "Notifications are only available for the current enrollment period's courses"
+            : !isGoogleUser
+              ? 'Sign in to access notifications'
+              : null;
+
         return (
             <>
-                <IconButton onClick={handleNotificationClick}>
-                    {isGoogleUser ? (
-                        hasNotifications ? (
-                            <EditNotifications fontSize="small" />
-                        ) : (
-                            <NotificationAddOutlined fontSize="small" />
-                        )
-                    ) : (
-                        <Tooltip title="Sign in to access notifications">
-                            <NotificationAddOutlined fontSize="small" sx={{ opacity: 0.5 }} />
-                        </Tooltip>
-                    )}
-                </IconButton>
+                <Tooltip title={tooltipText}>
+                    <span>
+                        <IconButton onClick={handleNotificationClick} disabled={!isTermCurrent}>
+                            {isGoogleUser ? (
+                                hasNotifications ? (
+                                    <EditNotifications fontSize="small" />
+                                ) : (
+                                    <NotificationAddOutlined fontSize="small" />
+                                )
+                            ) : (
+                                <NotificationAddOutlined fontSize="small" sx={{ opacity: 0.5 }} />
+                            )}
+                        </IconButton>
+                    </span>
+                </Tooltip>
 
                 <Menu
                     anchorEl={anchorEl}

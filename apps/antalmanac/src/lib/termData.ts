@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { terms } from '$generated/termData';
 
@@ -25,6 +27,9 @@ const termData = terms.filter((term) => {
 
 // The index of the default term in termData, as per WebSOC
 const defaultTerm = termData.findIndex((term) => !term.isSummerTerm);
+
+/** Short names of terms whose courses' enrollment can change */
+const openEnrollmentTerms = getOpenEnrollmentTerms();
 
 /**
  * Get the default term.
@@ -60,6 +65,54 @@ function getFinalsStartDateForTerm(term: string) {
     }
 
     return new Date(termThatMatches.finalsStartDate);
+}
+
+/**
+ * Enrollment can change until the drop deadline, i.e. when enrollment closes.
+ * For full terms (10-week quarters), enrollment closes on the Friday of Week 2.
+ * For short terms (5-week summer terms), enrollment closes on the Friday of Week 1.
+ *
+ * See {@link https://www.reg.uci.edu/enrollment/adc/adcpolicy.html} for full terms and
+ * {@link https://summer.uci.edu/faq} for shorter summer terms.
+ *
+ * @returns `true` if enrollment is open for the given term, `false` if not.
+ */
+export function canTermEnrollmentChange(termShortName: Term['shortName']) {
+    return openEnrollmentTerms.has(termShortName);
+}
+
+function getOpenEnrollmentTerms() {
+    const openEnrollmentTerms: Set<Term['shortName']> = new Set();
+
+    for (const term of termData) {
+        if (new Date().getFullYear() - term.startDate.getFullYear() > 1) {
+            break;
+        }
+        if (isTermEnrollmentOpen(term)) {
+            openEnrollmentTerms.add(term.shortName);
+        }
+    }
+
+    return openEnrollmentTerms;
+}
+
+/**
+ * See {@link canTermEnrollmentChange} docs.
+ */
+function isTermEnrollmentOpen(term: Term): boolean {
+    const instructionStartDate = moment(term.startDate);
+    const isTermShort = moment(term.finalsStartDate).diff(instructionStartDate, 'week') < 9;
+    const hasWeekZero = term.startDate.getDay() !== 1;
+
+    let weeksUntilDropDeadline = 1;
+    if (isTermShort) {
+        weeksUntilDropDeadline = 0;
+    }
+    if (hasWeekZero) {
+        weeksUntilDropDeadline++;
+    }
+
+    return moment() <= instructionStartDate.add(weeksUntilDropDeadline, 'week').day(5);
 }
 
 export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStartDate, getFinalsStartDateForTerm };
