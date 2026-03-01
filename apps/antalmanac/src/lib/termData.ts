@@ -52,6 +52,14 @@ function getDefaultFinalsStartDate() {
     return new Date(termData[defaultTerm].finalsStartDate);
 }
 
+function getCurrentTerm(): { year: number; quarter: string } {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    const quarter = month <= 3 ? 'Winter' : month <= 6 ? 'Spring' : month <= 9 ? 'Summer' : 'Fall';
+    return { year, quarter };
+}
+
 function getFinalsStartDateForTerm(term: string) {
     const termThatMatches = termData.find((t) => t.shortName === term);
     if (termThatMatches === undefined) {
@@ -62,4 +70,4 @@ function getFinalsStartDateForTerm(term: string) {
     return new Date(termThatMatches.finalsStartDate);
 }
 
-export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStartDate, getFinalsStartDateForTerm };
+export { defaultTerm, getCurrentTerm, getDefaultFinalsStartDate, getDefaultTerm, termData, getFinalsStartDateForTerm };

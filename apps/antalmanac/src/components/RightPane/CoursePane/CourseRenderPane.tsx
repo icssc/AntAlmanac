@@ -10,7 +10,7 @@ import {
     GE,
 } from '@packages/antalmanac-types';
 import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
 import { openSnackbar } from '$actions/AppStoreActions';
@@ -29,7 +29,9 @@ import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDism
 import { WebSOC } from '$lib/websoc';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useHoveredStore } from '$stores/HoveredStore';
+import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 function getColors() {
@@ -76,6 +78,25 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
         return accumulator;
     }, []);
 };
+
+function getFilteredCourses(
+    allCourses: (WebsocSchool | WebsocDepartment | AACourse)[],
+    filterTakenCourses: boolean,
+    userTakenCourses: Set<string>
+): (WebsocSchool | WebsocDepartment | AACourse)[] {
+    const { manualSearchEnabled } = useCoursePaneStore.getState();
+    if (manualSearchEnabled && filterTakenCourses && userTakenCourses.size > 0) {
+        return allCourses.filter((item) => {
+            if ('sections' in item && 'deptCode' in item && 'courseNumber' in item) {
+                const courseKey = `${item.deptCode}${item.courseNumber}`.replace(/\s+/g, '');
+                return !userTakenCourses.has(courseKey);
+            }
+            return true;
+        });
+    }
+    return allCourses;
+}
+
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
     const isMobile = useIsMobile();
@@ -243,8 +264,9 @@ const ErrorMessage = () => {
 };
 
 export default function CourseRenderPane(props: { id?: number }) {
+    const filterTakenCourses = useSessionStore((s) => s.filterTakenCourses);
+    const userTakenCourses = useSessionStore((s) => s.userTakenCourses);
     const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
-    const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
@@ -296,7 +318,6 @@ export default function CourseRenderPane(props: { id?: number }) {
 
             setError(false);
             setWebsocResp(websocJsonResp);
-            setCourseData(flattenSOCObject(websocJsonResp));
         } catch (error) {
             console.error(error);
             setError(true);
@@ -310,20 +331,11 @@ export default function CourseRenderPane(props: { id?: number }) {
         setScheduleNames(AppStore.getScheduleNames());
     };
 
-    useEffect(() => {
-        const changeColors = () => {
-            if (websocResp == null) {
-                return;
-            }
-            setCourseData(flattenSOCObject(websocResp));
-        };
-
-        AppStore.on('currentScheduleIndexChange', changeColors);
-
-        return () => {
-            AppStore.off('currentScheduleIndexChange', changeColors);
-        };
-    }, [websocResp]);
+    const courseData = useMemo(() => {
+        if (websocResp == null) return [];
+        const flattened = flattenSOCObject(websocResp);
+        return getFilteredCourses(flattened, filterTakenCourses, userTakenCourses);
+    }, [filterTakenCourses, userTakenCourses, websocResp]);
 
     useEffect(() => {
         loadCourses();
