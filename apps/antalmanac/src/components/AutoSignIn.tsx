@@ -22,14 +22,19 @@ export function AutoSignIn() {
         const checkAndSignIn = async () => {
             if (!hasSsoCookie()) return;
 
-            const localSessionId = getLocalStorageSessionId();
-            if (localSessionId) {
-                const isValid = await trpc.auth.validateSession.query({ token: localSessionId });
-                if (isValid) return;
+            // If the user already has a local session token, trust it and skip.
+            // This prevents a redirect loop: after AuthPage creates a session and
+            // redirects here, we must not immediately start another auth flow.
+            if (getLocalStorageSessionId()) {
+                return;
             }
 
-            const authUrl = await trpc.userData.getGoogleAuthUrl.query({ prompt: 'none' });
-            window.location.href = authUrl.toString();
+            try {
+                const authUrl = await trpc.userData.getGoogleAuthUrl.query({ prompt: 'none' });
+                window.location.href = authUrl.toString();
+            } catch {
+                // Silent SSO failed (e.g. backend unavailable). Don't retry.
+            }
         };
 
         checkAndSignIn();

@@ -126,7 +126,8 @@ export function AuthPage() {
             window.location.href = '/';
         } catch (error) {
             console.error('Error during authentication', error);
-            isAuthenticatingRef.current = false;
+            clearSsoCookie();
+            window.location.href = '/';
         }
     }, [searchParams]);
 
