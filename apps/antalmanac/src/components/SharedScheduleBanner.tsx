@@ -32,7 +32,8 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
     const friendName = (location.state as { friendName?: string } | null)?.friendName ?? 'Friend';
 
     const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
-    const session = useSessionStore((state) => state.session);
+    useSessionStore((state) => state.session);
+    const updateSession = useSessionStore((state) => state.updateSession);
     const setOpenLoadingSchedule = scheduleComponentsToggleStore((state) => state.setOpenLoadingSchedule);
     const postHog = usePostHog();
 
@@ -96,17 +97,24 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
         }
 
         const loadContent = async () => {
+            // Validate stored session so direct visits (e.g. pasted URL) recognize the user as logged in
+            const currentSession = useSessionStore.getState().session;
+            if (currentSession) {
+                await updateSession(currentSession);
+            }
+
             if (friendUserId) {
                 hasAttemptedLoadRef.current = true;
                 try {
                     beginLoadingSchedule();
-                    if (!session) {
+                    const sessionAfterValidation = useSessionStore.getState().session;
+                    if (!sessionAfterValidation) {
                         setError("You're not allowed to see this schedule.");
                         setOpenLoadingSchedule(false);
                         return;
                     }
                     const { users: currentUser } = await trpc.userData.getUserAndAccountBySessionToken.query({
-                        token: session,
+                        token: sessionAfterValidation,
                     });
                     const allowed = await trpc.friends.areFriends.query({
                         viewerId: currentUser.id,
@@ -194,6 +202,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
         beginLoadingSchedule,
         loadFriendSchedules,
         postHog,
+        updateSession,
     ]);
 
     const handleLoadSchedule = useCallback(async (sessionToken: string | null) => {
