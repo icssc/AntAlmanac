@@ -1,12 +1,12 @@
 import { Close, Save as SaveIcon } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Stack, Snackbar, Alert, Link, IconButton, Tooltip } from '@mui/material';
+import { Stack, Snackbar, Alert, Link, IconButton } from '@mui/material';
 import { useState, useEffect } from 'react';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { saveSchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import { useIsSharedSchedulePage } from '$hooks/useIsSharedSchedulePage';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import trpc from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -16,11 +16,12 @@ import { useThemeStore } from '$stores/SettingsStore';
 export const Save = () => {
     const isDark = useThemeStore((store) => store.isDark);
     const { session, sessionIsValid: validSession } = useSessionStore();
-    const isSharedSchedulePage = useIsSharedSchedulePage();
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const { openAutoSaveWarning, setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
+
+    const isReadonlyView = useIsReadonlyView();
 
     const handleClickSignIn = () => {
         setOpenSignInDialog(!openSignInDialog);
@@ -64,31 +65,23 @@ export const Save = () => {
             actionTypesStore.off('autoSaveEnd', handleAutoSaveEnd);
         };
     }, []);
-    const saveDisabled = skeletonMode || saving || isSharedSchedulePage;
-    const saveButton = (
-        <LoadingButton
-            id="save-button"
-            color="inherit"
-            startIcon={<SaveIcon />}
-            loadingPosition="start"
-            onClick={validSession ? saveScheduleData : handleClickSignIn}
-            sx={{ fontSize: 'inherit' }}
-            disabled={saveDisabled}
-            loading={saving}
-        >
-            Save
-        </LoadingButton>
-    );
+
+    const disabled = skeletonMode || saving || isReadonlyView;
 
     return (
         <Stack direction="row">
-            {isSharedSchedulePage ? (
-                <Tooltip title="You're viewing a shared schedule. Use Add to My Schedules to copy it to your account.">
-                    <span>{saveButton}</span>
-                </Tooltip>
-            ) : (
-                saveButton
-            )}
+            <LoadingButton
+                id="save-button"
+                color="inherit"
+                startIcon={<SaveIcon />}
+                loadingPosition="start"
+                onClick={validSession ? saveScheduleData : handleClickSignIn}
+                sx={{ fontSize: 'inherit' }}
+                disabled={disabled}
+                loading={saving}
+            >
+                Save
+            </LoadingButton>
 
             <Snackbar open={openAutoSaveWarning} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
                 <Alert
