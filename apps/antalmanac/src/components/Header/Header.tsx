@@ -40,7 +40,8 @@ export function Header() {
     const { session, sessionIsValid } = useSessionStore();
     const isMobile = useIsMobile();
 
-    const platform = window.location.pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
+    const platform =
+        typeof window !== 'undefined' && window.location.pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
 
     const clearStorage = () => {
         removeLocalStorageImportedUser();

@@ -4,10 +4,12 @@ import { create } from 'zustand';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import {
     getLocalStorageAutoSave,
+    getLocalStorageJsonImportExport,
     getLocalStoragePreviewMode,
     getLocalStorageShow24HourTime,
     getLocalStorageTheme,
     setLocalStorageAutoSave,
+    setLocalStorageJsonImportExport,
     setLocalStoragePreviewMode,
     setLocalStorageShow24HourTime,
     setLocalStorageTheme,
@@ -113,6 +115,25 @@ export const useAutoSaveStore = create<AutoSaveStore>((set) => {
                 setLocalStorageAutoSave(autoSave.toString());
             }
             set({ autoSave });
+        },
+    };
+});
+
+export interface JsonImportExportStore {
+    jsonImportExport: boolean;
+    setJsonImportExport: (jsonImportExport: boolean) => void;
+}
+
+export const useJsonImportExportStore = create<JsonImportExportStore>((set) => {
+    const jsonImportExport = typeof Storage !== 'undefined' && getLocalStorageJsonImportExport() == 'true';
+
+    return {
+        jsonImportExport,
+        setJsonImportExport: (jsonImportExport) => {
+            if (typeof Storage !== 'undefined') {
+                setLocalStorageJsonImportExport(jsonImportExport.toString());
+            }
+            set({ jsonImportExport });
         },
     };
 });
