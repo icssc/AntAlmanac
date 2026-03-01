@@ -6,7 +6,7 @@ import { Roboto } from 'next/font/google';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useMemo } from 'react';
 
-import { BLUE, DODGER_BLUE } from '$src/globals';
+import { BLUE, DARK_PAPER_BG, LIGHT_BLUE } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 
 const roboto = Roboto({
@@ -16,28 +16,52 @@ const roboto = Roboto({
 });
 
 const lightTheme: PaletteOptions = {
-    primary: {
-        main: '#5191d6',
-    },
-    secondary: {
-        main: '#ffffff',
+    primary: { main: BLUE }, // #305db7
+    secondary: { main: BLUE },
+    settingsSegment: {
+        border: '#d3d4d5',
+        background: '#f8f9fa',
+        hoverBackground: '#d3d4d5',
     },
     background: {
-        default: '#fafafa',
+        default: '#f5f6fc',
         paper: '#fff',
+        elevated: '#fff',
+    },
+    text: {
+        primary: '#212529',
+        secondary: '#606166',
+    },
+    error: {
+        main: '#ce0000',
     },
 };
 
+const darkPaperOverride = {
+    background: DARK_PAPER_BG,
+    backgroundColor: DARK_PAPER_BG,
+    color: '#fff',
+};
+
 const darkTheme: PaletteOptions = {
-    primary: {
-        main: DODGER_BLUE,
-    },
-    secondary: {
-        main: '#ffffff',
+    primary: { main: BLUE }, // #305db7
+    secondary: { main: LIGHT_BLUE },
+    settingsSegment: {
+        border: '#888888',
+        background: '#333333',
+        hoverBackground: '#424649',
     },
     background: {
-        default: '#303030',
-        paper: '#424242',
+        default: '#1E1E1E',
+        paper: '#1E1E1E',
+        elevated: DARK_PAPER_BG,
+    },
+    text: {
+        primary: '#fff',
+        secondary: '#99999f',
+    },
+    error: {
+        main: '#ff3333',
     },
 };
 
@@ -49,6 +73,26 @@ declare module '@mui/material/styles' {
     interface BreakpointOverrides {
         xxs: true;
         default: true;
+    }
+
+    interface TypeBackground {
+        elevated?: string;
+    }
+
+    interface Palette {
+        settingsSegment: {
+            border: string;
+            background: string;
+            hoverBackground: string;
+        };
+    }
+
+    interface PaletteOptions {
+        settingsSegment?: {
+            border: string;
+            background: string;
+            hoverBackground: string;
+        };
     }
 }
 
@@ -100,6 +144,7 @@ export default function AppThemeProvider(props: Props) {
                                 ...(ownerState.variant === 'contained' &&
                                     ownerState.color === 'secondary' && {
                                         backgroundColor: '#E0E0E0',
+                                        color: '#212529',
                                         ':hover': {
                                             backgroundColor: '#D5D5D5',
                                         },
@@ -110,7 +155,7 @@ export default function AppThemeProvider(props: Props) {
                     MuiCssBaseline: {
                         styleOverrides: {
                             a: {
-                                color: appTheme === 'dark' ? DODGER_BLUE : BLUE,
+                                color: appTheme === 'dark' ? LIGHT_BLUE : BLUE,
                             },
                         },
                     },
@@ -119,6 +164,7 @@ export default function AppThemeProvider(props: Props) {
                         styleOverrides: {
                             paper: {
                                 backgroundImage: 'none',
+                                ...(appTheme === 'dark' && darkPaperOverride),
                             },
                         },
                     },
@@ -138,6 +184,14 @@ export default function AppThemeProvider(props: Props) {
                         styleOverrides: {
                             paper: {
                                 backgroundImage: 'none',
+                                ...(appTheme === 'dark' && darkPaperOverride),
+                            },
+                        },
+                    },
+                    MuiMenu: {
+                        styleOverrides: {
+                            paper: {
+                                ...(appTheme === 'dark' && darkPaperOverride),
                             },
                         },
                     },

@@ -5,9 +5,11 @@ import { useCallback, useEffect } from 'react';
 import { AdvancedSearchTextFields } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/AdvancedSearchTextFields';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { useThemeStore } from '$stores/SettingsStore';
 
 export function AdvancedSearch() {
     const { advancedSearchEnabled, toggleAdvancedSearch } = useCoursePaneStore();
+    const isDark = useThemeStore((store) => store.isDark);
 
     const handleExpand = () => {
         toggleAdvancedSearch();
@@ -38,7 +40,15 @@ export function AdvancedSearch() {
 
     return (
         <>
-            <Button onClick={handleExpand} sx={{ textTransform: 'none', display: 'flex', justifyContent: 'start' }}>
+            <Button
+                onClick={handleExpand}
+                color={isDark ? 'secondary' : 'primary'}
+                sx={{
+                    textTransform: 'none',
+                    display: 'flex',
+                    justifyContent: 'start',
+                }}
+            >
                 <Typography noWrap>Advanced Search Options</Typography>
                 {advancedSearchEnabled ? <ExpandLess /> : <ExpandMore />}
             </Button>

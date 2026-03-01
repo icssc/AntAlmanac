@@ -64,7 +64,7 @@ export function ExperimentalMenu() {
                         <Help />
                     </Tooltip>
                 </Box>
-                <Switch color={'primary'} value={previewMode} checked={previewMode} onChange={handlePreviewChange} />
+                <Switch checked={previewMode} onChange={handlePreviewChange} color="primary" />
             </Box>
 
             <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
@@ -83,7 +83,7 @@ export function ExperimentalMenu() {
                         <Help />
                     </Tooltip>
                 </Box>
-                <Switch color={'primary'} value={autoSave} checked={autoSave} onChange={handleAutoSaveChange} />
+                <Switch checked={autoSave} onChange={handleAutoSaveChange} color="primary" />
             </Box>
         </Stack>
     );

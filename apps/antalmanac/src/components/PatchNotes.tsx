@@ -119,7 +119,7 @@ function PatchNotes() {
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={handleClose} color="primary" data-testid={closeButtonTestId}>
+                <Button onClick={handleClose} color="inherit" data-testid={closeButtonTestId}>
                     Close
                 </Button>
             </DialogActions>

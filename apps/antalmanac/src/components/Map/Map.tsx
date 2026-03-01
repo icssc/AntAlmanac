@@ -164,7 +164,6 @@ export default function CourseMap() {
     const [markers, setMarkers] = useState(getCoursesPerBuilding());
     const [customEventMarkers, setCustomEventMarkers] = useState(getCustomEventPerBuilding());
     const [calendarEvents, setCalendarEvents] = useState(AppStore.getEventsInCalendar());
-
     const postHog = usePostHog();
 
     useEffect(() => {
@@ -332,7 +331,14 @@ export default function CourseMap() {
             >
                 {/* Menu floats above the map. */}
                 <Paper sx={{ position: 'relative', mx: 'auto', my: 2, width: '70%', zIndex: 400 }}>
-                    <Tabs value={selectedDayIndex} onChange={handleChange} variant="fullWidth" sx={{ minHeight: 0 }}>
+                    <Tabs
+                        value={selectedDayIndex}
+                        onChange={handleChange}
+                        variant="fullWidth"
+                        sx={{ minHeight: 0 }}
+                        textColor="secondary"
+                        indicatorColor="secondary"
+                    >
                         {days.map((day) => (
                             <Tab key={day} label={day} sx={{ padding: 1, minHeight: 'auto', minWidth: '10%' }} />
                         ))}

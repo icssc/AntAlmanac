@@ -16,6 +16,7 @@ import {
     Stack,
     TextField,
     Tooltip,
+    useTheme,
 } from '@mui/material';
 import { CourseInfo } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
@@ -44,11 +45,10 @@ import {
 } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
-import { BLUE } from '$src/globals';
+import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
 
 enum ImportSource {
     ZOT_COURSE_IMPORT = 'zotcourse',
@@ -70,7 +70,7 @@ export function Import() {
     const { sessionIsValid } = useSessionStore();
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
 
-    const { isDark } = useThemeStore();
+    const theme = useTheme();
 
     const postHog = usePostHog();
 
@@ -275,7 +275,7 @@ export function Import() {
             </Tooltip>
             <Dialog open={openImportDialog} onClose={handleClose}>
                 <DialogTitle>Import Schedule</DialogTitle>
-                <DialogContent>
+                <DialogContent sx={theme.palette.mode === 'dark' ? { '& a': { color: LIGHT_BLUE } } : undefined}>
                     <FormControl>
                         <RadioGroup
                             name="changeImportSource"
@@ -285,18 +285,18 @@ export function Import() {
                         >
                             <FormControlLabel
                                 value={ImportSource.STUDY_LIST_IMPORT}
-                                control={<Radio color="primary" />}
+                                control={<Radio color="secondary" />}
                                 label="From Study List"
                             />
                             <FormControlLabel
                                 value={ImportSource.ZOT_COURSE_IMPORT}
-                                control={<Radio color="primary" />}
+                                control={<Radio color="secondary" />}
                                 label="From Zotcourse"
                             />
                             <Tooltip title="Import from your unique user ID" placement="right">
                                 <FormControlLabel
                                     value={ImportSource.AA_USERNAME_IMPORT}
-                                    control={<Radio color="primary" />}
+                                    control={<Radio color="secondary" />}
                                     label="From AntAlmanac unique user ID"
                                     disabled={!sessionIsValid}
                                 />
@@ -321,6 +321,7 @@ export function Import() {
                                 margin="dense"
                                 type="text"
                                 placeholder="Paste here"
+                                color="secondary"
                                 value={studyListText}
                                 onChange={handleStudyListTextChange}
                             />
@@ -339,6 +340,7 @@ export function Import() {
                                 margin="dense"
                                 type="text"
                                 placeholder="Paste here"
+                                color="secondary"
                                 value={zotcourseScheduleName}
                                 onChange={handleZotcourseScheduleNameChange}
                             />
@@ -362,6 +364,7 @@ export function Import() {
                                 margin="dense"
                                 type="text"
                                 placeholder="Paste here"
+                                color="secondary"
                                 value={aaUsername}
                                 onChange={handleAAUsernameChange}
                             />
@@ -377,10 +380,10 @@ export function Import() {
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>
+                    <Button onClick={handleClose} color="inherit">
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} color={isDark ? 'secondary' : 'primary'}>
+                    <Button onClick={handleSubmit} color="inherit">
                         Import
                     </Button>
                 </DialogActions>

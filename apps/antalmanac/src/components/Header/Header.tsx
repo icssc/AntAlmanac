@@ -12,6 +12,7 @@ import {
     Stack,
     Typography,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -28,7 +29,7 @@ import {
     removeLocalStorageDataCache,
     removeLocalStorageImportedUser,
 } from '$lib/localStorage';
-import { BLUE } from '$src/globals';
+import { BLUE, DARK_PAPER_BG } from '$src/globals';
 import { useIsMobile } from '$src/hooks/useIsMobile';
 import { useSessionStore } from '$stores/SessionStore';
 
@@ -39,6 +40,8 @@ export function Header() {
     const importedUser = getLocalStorageImportedUser() ?? '';
     const { session, sessionIsValid } = useSessionStore();
     const isMobile = useIsMobile();
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
 
     const platform = window.location.pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
 
@@ -129,11 +132,14 @@ export function Header() {
                                 >
                                     <MenuList
                                         subheader={
-                                            <ListSubheader component="div" sx={{ lineHeight: '30px' }}>
+                                            <ListSubheader
+                                                component="div"
+                                                sx={{ lineHeight: '30px', ...(isDark && { bgcolor: DARK_PAPER_BG }) }}
+                                            >
                                                 Switch Apps
                                             </ListSubheader>
                                         }
-                                        sx={{ width: 200 }}
+                                        sx={{ width: 200, ...(isDark && { bgcolor: DARK_PAPER_BG }) }}
                                     >
                                         <MenuItem
                                             component={Link}
