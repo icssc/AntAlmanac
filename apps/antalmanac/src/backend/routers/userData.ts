@@ -116,39 +116,48 @@ const userDataRouter = router({
      * Retrieves Google authentication URL for login/sign up.
      * Retrieves Google auth url to login/sign up
      */
-    getGoogleAuthUrl: procedure.query(async ({ ctx }) => {
-        const state = generateState();
-        const codeVerifier = generateCodeVerifier();
+    getGoogleAuthUrl: procedure
+        .input(z.object({ prompt: z.enum(['none', 'consent']).optional() }).optional())
+        .query(async ({ input, ctx }) => {
+            const state = generateState();
+            const codeVerifier = generateCodeVerifier();
 
-        const url = oauth.createAuthorizationURLWithPKCE(
-            'https://auth.icssc.club/authorize',
-            state,
-            CodeChallengeMethod.S256,
-            codeVerifier,
-            [
-                'openid',
-                'profile',
-                'email',
-                // 'https://www.googleapis.com/auth/calendar.readonly'
-            ]
-        );
+            const url = oauth.createAuthorizationURLWithPKCE(
+                'https://auth.icssc.club/authorize',
+                state,
+                CodeChallengeMethod.S256,
+                codeVerifier,
+                [
+                    'openid',
+                    'profile',
+                    'email',
+                    // 'https://www.googleapis.com/auth/calendar.readonly'
+                ]
+            );
 
-        const isProduction = NODE_ENV === 'production';
-        const cookieOptions = `Path=/; HttpOnly; ${
-            isProduction ? 'Secure; SameSite=None' : 'SameSite=Lax'
-        }; Max-Age=600`;
+            if (input?.prompt) {
+                url.searchParams.set('prompt', input.prompt);
+            }
 
-        // Set cookies via response headers (Next.js cookies() doesn't work in TRPC)
-        ctx.resHeaders?.append('Set-Cookie', `oauth_state=${state}; ${cookieOptions}`);
-        ctx.resHeaders?.append('Set-Cookie', `oauth_code_verifier=${codeVerifier}; ${cookieOptions}`);
+            const isProduction = NODE_ENV === 'production';
+            const cookieOptions = `Path=/; HttpOnly; ${
+                isProduction ? 'Secure; SameSite=None' : 'SameSite=Lax'
+            }; Max-Age=600`;
 
-        const referer = ctx.req.headers.get('referer');
-        if (referer) {
-            ctx.resHeaders?.append('Set-Cookie', `auth_redirect_url=${encodeURIComponent(referer)}; ${cookieOptions}`);
-        }
+            // Set cookies via response headers (Next.js cookies() doesn't work in TRPC)
+            ctx.resHeaders?.append('Set-Cookie', `oauth_state=${state}; ${cookieOptions}`);
+            ctx.resHeaders?.append('Set-Cookie', `oauth_code_verifier=${codeVerifier}; ${cookieOptions}`);
 
-        return url;
-    }),
+            const referer = ctx.req.headers.get('referer');
+            if (referer) {
+                ctx.resHeaders?.append(
+                    'Set-Cookie',
+                    `auth_redirect_url=${encodeURIComponent(referer)}; ${cookieOptions}`
+                );
+            }
+
+            return url;
+        }),
     /**
      * Logs in or signs up a user and creates user's session
      */
