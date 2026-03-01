@@ -1,6 +1,6 @@
 import { Alert, Box, Dialog, DialogContent, AlertColor, DialogActions, Button } from '@mui/material';
 
-import { LIGHT_BLUE } from '$src/globals';
+import { DARK_PAPER_BG, LIGHT_BLUE } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface AlertDialogProps {
@@ -19,7 +19,7 @@ export const AlertDialog = ({ open, title, children, severity = 'info', onClose 
             onClose={onClose}
             PaperProps={{
                 sx: {
-                    ...(isDark && { bgcolor: '#383838', color: 'text.primary' }),
+                    ...(isDark && { bgcolor: DARK_PAPER_BG, color: 'text.primary' }),
                 },
             }}
         >

@@ -82,7 +82,7 @@ export function NotificationsTabs() {
                     elevation={0}
                     variant="outlined"
                     square
-                    sx={theme.palette.mode === 'dark' ? { bgcolor: '#383838', borderColor: 'divider' } : undefined}
+                    sx={{ bgcolor: theme.palette.background.elevated, borderColor: 'divider' }}
                 >
                     <TabList onChange={handleTabChange} indicatorColor="primary" variant="fullWidth" centered>
                         {sortedTerms.map((term) => (

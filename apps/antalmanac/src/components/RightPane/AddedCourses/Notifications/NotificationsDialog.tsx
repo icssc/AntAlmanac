@@ -17,7 +17,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
 import { NotificationsTabs } from '$components/RightPane/AddedCourses/Notifications/NotificationsTabs';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import { LIGHT_BLUE } from '$src/globals';
+import { DARK_PAPER_BG, LIGHT_BLUE } from '$src/globals';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
@@ -78,7 +78,7 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
                 PaperProps={{
                     sx: {
                         ...(theme.palette.mode === 'dark' && {
-                            bgcolor: '#383838',
+                            bgcolor: DARK_PAPER_BG,
                             color: 'text.primary',
                         }),
                     },

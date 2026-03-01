@@ -29,7 +29,7 @@ import {
     removeLocalStorageDataCache,
     removeLocalStorageImportedUser,
 } from '$lib/localStorage';
-import { BLUE } from '$src/globals';
+import { BLUE, DARK_PAPER_BG } from '$src/globals';
 import { useIsMobile } from '$src/hooks/useIsMobile';
 import { useSessionStore } from '$stores/SessionStore';
 
@@ -134,12 +134,12 @@ export function Header() {
                                         subheader={
                                             <ListSubheader
                                                 component="div"
-                                                sx={{ lineHeight: '30px', ...(isDark && { bgcolor: '#383838' }) }}
+                                                sx={{ lineHeight: '30px', ...(isDark && { bgcolor: DARK_PAPER_BG }) }}
                                             >
                                                 Switch Apps
                                             </ListSubheader>
                                         }
-                                        sx={{ width: 200, ...(isDark && { bgcolor: '#383838' }) }}
+                                        sx={{ width: 200, ...(isDark && { bgcolor: DARK_PAPER_BG }) }}
                                     >
                                         <MenuItem
                                             component={Link}
