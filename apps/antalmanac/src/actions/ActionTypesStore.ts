@@ -170,7 +170,6 @@ class ActionTypesStore extends EventEmitter {
 
     async loadScheduleFromUnsavedActions() {
         if (AppStore.getSkeletonMode()) {
-            removeLocalStorageUnsavedActions();
             return;
         }
 

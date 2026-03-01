@@ -50,7 +50,7 @@ const friendsRouter = router({
                 });
             }
 
-            if (existing?.status === 'PENDING') {
+            if (existing?.status === 'BLOCKED' || existing?.status === 'PENDING') {
                 const theyRequestedYou =
                     existing.requesterId === addressee.id && existing.addresseeId === input.requesterId;
                 throw new TRPCError({
@@ -85,6 +85,41 @@ const friendsRouter = router({
                 });
             }
 
+            const [existing] = await db
+                .select()
+                .from(friendships)
+                .where(
+                    or(
+                        and(
+                            eq(friendships.requesterId, input.requesterId),
+                            eq(friendships.addresseeId, input.addresseeId)
+                        ),
+                        and(
+                            eq(friendships.requesterId, input.addresseeId),
+                            eq(friendships.addresseeId, input.requesterId)
+                        )
+                    )
+                )
+                .limit(1);
+
+            if (existing?.status === 'ACCEPTED') {
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: 'You are already friends with this user.',
+                });
+            }
+
+            if (existing?.status === 'BLOCKED' || existing?.status === 'PENDING') {
+                const theyRequestedYou =
+                    existing.requesterId === input.addresseeId && existing.addresseeId === input.requesterId;
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: theyRequestedYou
+                        ? 'This user has already sent you a friend request. Check your Requests tab to accept.'
+                        : 'A friend request is already pending with this user.',
+                });
+            }
+
             return await db
                 .insert(friendships)
                 .values({
@@ -106,7 +141,11 @@ const friendsRouter = router({
                 .update(friendships)
                 .set({ status: 'ACCEPTED', updatedAt: new Date() })
                 .where(
-                    and(eq(friendships.requesterId, input.requesterId), eq(friendships.addresseeId, input.addresseeId))
+                    and(
+                        eq(friendships.requesterId, input.requesterId),
+                        eq(friendships.addresseeId, input.addresseeId),
+                        eq(friendships.status, 'PENDING')
+                    )
                 )
                 .returning();
         }),
@@ -189,6 +228,15 @@ const friendsRouter = router({
      * Block a user.
      */
     blockUser: procedure.input(z.object({ userId: z.string(), blockId: z.string() })).mutation(async ({ input }) => {
+        await db
+            .delete(friendships)
+            .where(
+                or(
+                    and(eq(friendships.requesterId, input.userId), eq(friendships.addresseeId, input.blockId)),
+                    and(eq(friendships.requesterId, input.blockId), eq(friendships.addresseeId, input.userId))
+                )
+            );
+
         return await db
             .insert(friendships)
             .values({
@@ -197,10 +245,7 @@ const friendsRouter = router({
                 status: 'BLOCKED',
                 updatedAt: new Date(),
             })
-            .onConflictDoUpdate({
-                target: [friendships.requesterId, friendships.addresseeId],
-                set: { status: 'BLOCKED', updatedAt: new Date() },
-            });
+            .returning();
     }),
 
     /**

@@ -29,10 +29,12 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
 
     const friendUserId = friendMatch?.params?.userId;
     const scheduleId = !friendMatch ? params.scheduleId : undefined;
-    const friendName = (location.state as { friendName?: string } | null)?.friendName ?? 'Friend';
+    const friendNameFromState = (location.state as { friendName?: string } | null)?.friendName;
+    const [fetchedFriendName, setFetchedFriendName] = useState<string | null>(null);
+    const friendName = friendNameFromState ?? fetchedFriendName ?? 'Friend';
 
     const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
-    useSessionStore((state) => state.session);
+    const session = useSessionStore((state) => state.session);
     const updateSession = useSessionStore((state) => state.updateSession);
     const setOpenLoadingSchedule = scheduleComponentsToggleStore((state) => state.setOpenLoadingSchedule);
     const postHog = usePostHog();
@@ -90,6 +92,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
         if (currentLoadKeyRef.current !== loadKey) {
             hasAttemptedLoadRef.current = false;
             currentLoadKeyRef.current = loadKey;
+            setFetchedFriendName(null);
         }
 
         if (hasAttemptedLoadRef.current) {
@@ -124,6 +127,10 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                         setError("You're not allowed to see this schedule.");
                         setOpenLoadingSchedule(false);
                         return;
+                    }
+                    if (!friendNameFromState) {
+                        const friendUser = await trpc.userData.getUserByUid.query({ userId: friendUserId });
+                        setFetchedFriendName(friendUser?.name ?? friendUser?.email ?? 'Friend');
                     }
                 } catch {
                     setError("You're not allowed to see this schedule.");
@@ -197,6 +204,8 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
     }, [
         friendUserId,
         scheduleId,
+        friendNameFromState,
+        session,
         setOpenLoadingSchedule,
         setError,
         beginLoadingSchedule,
@@ -312,7 +321,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
         try {
             beginLoadingSchedule();
 
-            loadSessionSchedule();
+            await loadSessionSchedule();
         } catch (err) {
             console.error('Error loading user data:', err);
         }

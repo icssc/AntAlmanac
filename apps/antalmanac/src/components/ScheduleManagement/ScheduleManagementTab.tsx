@@ -14,7 +14,7 @@ interface ScheduleManagementTabProps {
 export const ScheduleManagementTab = ({ tab, value }: ScheduleManagementTabProps) => {
     const { setActiveTabValue } = useTabStore();
     const isReadonlyView = useIsReadonlyView();
-    const isSearchTab = value === 1;
+    const isSearchTab = tab.label === 'Search';
     const isMobile = useIsMobile();
 
     const handleClick = (e: React.MouseEvent) => {

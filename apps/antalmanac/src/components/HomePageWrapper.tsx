@@ -11,6 +11,8 @@ import PatchNotes from '$components/PatchNotes';
 
 interface Props {
     children: ReactNode;
+    /** When true, the header is hidden (e.g. shared schedule error state). */
+    hideHeader?: boolean;
 }
 
 /**
@@ -19,14 +21,14 @@ interface Props {
  * @param chilren The body of the page, usually the desktop/home components
  * plus whatever a page might want to add on to that.
  */
-function HomePageWrapper({ children }: Props) {
+function HomePageWrapper({ children, hideHeader }: Props) {
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <PatchNotes />
             <InstallPWABanner />
 
             <Stack component="main" height="calc(100svh + env(safe-area-inset-top))">
-                <Header />
+                {!hideHeader && <Header />}
                 {children}
             </Stack>
 

@@ -336,7 +336,7 @@ export const importSharedScheduleById = async (scheduleId: string) => {
         } catch (err) {
             openSnackbar(
                 'error',
-                '`Failed to load schedules. If this continues to happen, please submit a feedback form.`'
+                'Failed to load schedules. If this continues to happen, please submit a feedback form.'
             );
         }
     } else {
@@ -413,7 +413,7 @@ export const loadSchedule = async (
                 }
                 openSnackbar(
                     'error',
-                    '`Failed to load schedules. If this continues to happen, please submit a feedback form.`'
+                    'Failed to load schedules. If this continues to happen, please submit a feedback form.'
                 );
             }
         }

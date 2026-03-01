@@ -37,13 +37,15 @@ export const friendships = pgTable(
         /**
          * When the status was last updated.
          */
-        updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+        updatedAt: timestamp('updated_at', { withTimezone: true })
+            .defaultNow()
+            .notNull()
+            .$onUpdateFn(() => new Date()),
     },
     (table) => [
         primaryKey({
             columns: [table.requesterId, table.addresseeId],
         }),
-        index('requester_idx').on(table.requesterId),
         index('addressee_idx').on(table.addresseeId),
     ]
 );

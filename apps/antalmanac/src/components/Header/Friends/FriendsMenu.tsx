@@ -18,12 +18,31 @@ import {
     DialogContentText,
     DialogActions,
 } from '@mui/material';
+import type { SxProps, Theme } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { openSnackbar } from '$actions/AppStoreActions';
 import trpc from '$lib/api/trpc';
 import { useThemeStore } from '$stores/SettingsStore';
+
+const friendCardSx: SxProps<Theme> = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    p: 1.5,
+    mb: 1,
+    borderRadius: 2,
+    bgcolor: 'background.paper',
+    border: '1px solid',
+    borderColor: 'divider',
+    boxShadow: 'none',
+    '&:hover': {
+        bgcolor: 'action.hover',
+        borderColor: 'text.secondary',
+    },
+    transition: 'all 0.2s ease',
+};
 
 export interface FriendRequest {
     id: string;
@@ -367,26 +386,7 @@ export function FriendsMenu({
                             </Typography>
                         ) : (
                             friendRequests.map((request) => (
-                                <Box
-                                    key={request.id}
-                                    sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                        p: 1.5,
-                                        mb: 1,
-                                        borderRadius: 2,
-                                        bgcolor: 'background.paper',
-                                        border: '1px solid',
-                                        borderColor: 'divider',
-                                        boxShadow: 'none',
-                                        '&:hover': {
-                                            bgcolor: 'action.hover',
-                                            borderColor: 'text.secondary',
-                                        },
-                                        transition: 'all 0.2s ease',
-                                    }}
-                                >
+                                <Box key={request.id} sx={friendCardSx}>
                                     <Stack direction="row" alignItems="center" flex={1} overflow="hidden">
                                         <Box sx={{ minWidth: 0, ml: 0.5 }}>
                                             <Typography variant="body2" fontWeight={600} noWrap>
@@ -472,26 +472,7 @@ export function FriendsMenu({
                             </Typography>
                         ) : (
                             friends.map((friend) => (
-                                <Box
-                                    key={friend.id}
-                                    sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                        p: 1.5,
-                                        mb: 1,
-                                        borderRadius: 2,
-                                        bgcolor: 'background.paper',
-                                        border: '1px solid',
-                                        borderColor: 'divider',
-                                        boxShadow: 'none',
-                                        '&:hover': {
-                                            bgcolor: 'action.hover',
-                                            borderColor: 'text.secondary',
-                                        },
-                                        transition: 'all 0.2s ease',
-                                    }}
-                                >
+                                <Box key={friend.id} sx={friendCardSx}>
                                     <Stack direction="row" alignItems="center" flex={1} overflow="hidden">
                                         <Box sx={{ minWidth: 0, ml: 0.5 }}>
                                             <Typography variant="body2" fontWeight={600} noWrap>
@@ -553,26 +534,7 @@ export function FriendsMenu({
                             </Typography>
                         ) : (
                             blockedFriends.map((user) => (
-                                <Box
-                                    key={user.id}
-                                    sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                        p: 1.5,
-                                        mb: 1,
-                                        borderRadius: 2,
-                                        bgcolor: 'background.paper',
-                                        border: '1px solid',
-                                        borderColor: 'divider',
-                                        boxShadow: 'none',
-                                        '&:hover': {
-                                            bgcolor: 'action.hover',
-                                            borderColor: 'text.secondary',
-                                        },
-                                        transition: 'all 0.2s ease',
-                                    }}
-                                >
+                                <Box key={user.id} sx={friendCardSx}>
                                     <Stack direction="row" alignItems="center" flex={1} overflow="hidden">
                                         <Box sx={{ minWidth: 0, ml: 0.5 }}>
                                             <Typography variant="body2" fontWeight={600} noWrap>

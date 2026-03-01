@@ -27,11 +27,6 @@ export function FriendsButton() {
 
     const loadFriendsData = useCallback(async () => {
         if (!sessionIsValid || !session) {
-            setCurrentUserId(null);
-            setFriendRequests([]);
-            setFriends([]);
-            setBlockedFriends([]);
-            setIsLoading(false);
             return;
         }
 

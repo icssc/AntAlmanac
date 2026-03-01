@@ -200,13 +200,6 @@ export class RDS {
     }
 
     /**
-     * Creates a new schedule if one with its name doesn't already exist
-     * and replaces its courses and custom events with the ones provided.
-     *
-     *
-     * @returns The ID of the new/existing schedule
-     */
-    /**
      * Updates an existing schedule (reusing id for persistent share links) or inserts a new one.
      * When the client sends an existing schedule id that belongs to this user, we update that row
      * and replace its courses/events so the share link keeps showing the latest data.

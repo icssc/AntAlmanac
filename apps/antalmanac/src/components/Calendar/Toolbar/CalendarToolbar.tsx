@@ -209,9 +209,11 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                         <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
 
                         <Tooltip title="More options">
-                            <IconButton onClick={handleMenuOpen}>
-                                <MoreVertIcon fontSize="small" />
-                            </IconButton>
+                            <span>
+                                <IconButton onClick={handleMenuOpen} disabled={disableActionButtons}>
+                                    <MoreVertIcon fontSize="small" />
+                                </IconButton>
+                            </span>
                         </Tooltip>
 
                         <Menu

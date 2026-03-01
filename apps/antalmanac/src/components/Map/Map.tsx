@@ -227,18 +227,23 @@ export default function CourseMap() {
     const onBuildingChange = useCallback(
         (building?: ExtendedBuilding | null) => {
             if (isReadonlyView) {
-                const newSearchParams = new URLSearchParams(searchParams);
-                if (building?.id) {
-                    newSearchParams.set('location', String(building.id));
-                } else {
-                    newSearchParams.delete('location');
-                }
-                setSearchParams(newSearchParams, { replace: true });
+                setSearchParams(
+                    (prev) => {
+                        const next = new URLSearchParams(prev);
+                        if (building?.id) {
+                            next.set('location', String(building.id));
+                        } else {
+                            next.delete('location');
+                        }
+                        return next;
+                    },
+                    { replace: true }
+                );
             } else {
                 navigate(`/map?location=${building?.id}`);
             }
         },
-        [navigate, isReadonlyView, searchParams, setSearchParams]
+        [navigate, isReadonlyView, setSearchParams]
     );
 
     const days = useMemo(() => {

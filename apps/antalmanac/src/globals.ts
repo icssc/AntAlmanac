@@ -9,4 +9,4 @@ export const GITHUB_LINK = 'https://github.com/icssc/AntAlmanac';
 export const PLANNER_LINK = '/planner';
 
 export const SHARED_SCHEDULE_PREFIX = '(shared)-';
-export const IMPORTED_SCHEDULE_PREFIX = '(import)-';
+export const IMPORTED_SCHEDULE_PREFIX = '(imported)-';

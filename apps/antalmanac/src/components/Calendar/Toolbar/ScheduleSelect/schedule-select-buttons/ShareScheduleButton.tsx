@@ -1,7 +1,7 @@
 import { Check, Link } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
@@ -14,6 +14,7 @@ interface ShareScheduleButtonProps {
 
 export function ShareScheduleButton({ index, disabled }: ShareScheduleButtonProps) {
     const [copied, setCopied] = useState(false);
+    const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
     const postHog = usePostHog();
 
@@ -39,15 +40,27 @@ export function ShareScheduleButton({ index, disabled }: ShareScheduleButtonProp
                 label: scheduleName,
             });
 
+            if (copiedTimeoutRef.current) {
+                clearTimeout(copiedTimeoutRef.current);
+            }
             setCopied(true);
             AppStore.openSnackbar('success', `Link copied to clipboard!`, undefined, undefined, {
                 whiteSpace: 'pre-line',
             });
-            setTimeout(() => setCopied(false), 2000);
+            copiedTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
         } catch (err) {
             AppStore.openSnackbar('error', 'Failed to copy link');
         }
     }, [index, postHog]);
+
+    useEffect(
+        () => () => {
+            if (copiedTimeoutRef.current) {
+                clearTimeout(copiedTimeoutRef.current);
+            }
+        },
+        []
+    );
 
     const isDisabled = disabled || !sessionIsValid;
     const tooltipTitle = !sessionIsValid
