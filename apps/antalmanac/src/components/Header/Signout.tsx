@@ -1,11 +1,14 @@
 import LogoutIcon from '@mui/icons-material/Logout';
 import { ListItemIcon, ListItemText, MenuItem, Popover, Divider } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
 import { useEffect, useState, useCallback, type MouseEvent } from 'react';
 
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
+import { getErrorMessage } from '$lib/utils';
 import { useSessionStore } from '$stores/SessionStore';
 
 interface SignoutProps {
@@ -16,6 +19,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<Pick<User, 'name' | 'avatar' | 'email'> | null>(null);
     const { session, sessionIsValid, clearSession } = useSessionStore();
+    const postHog = usePostHog();
 
     const open = Boolean(anchorEl);
     const handleClick = (event: MouseEvent<HTMLElement>) => {
@@ -42,11 +46,23 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
             if (logoutUrl) {
                 window.location.href = logoutUrl;
             }
+
+            logAnalytics(postHog, {
+                category: analyticsEnum.auth,
+                action: analyticsEnum.auth.actions.SIGN_OUT,
+            });
         } catch (error) {
             console.error('Error during logout', error);
             // Even on error, clear session and show dialog
             await clearSession();
             onLogoutComplete?.();
+            logAnalytics(postHog, {
+                category: analyticsEnum.auth,
+                action: analyticsEnum.auth.actions.SIGN_OUT_FAIL,
+                error: getErrorMessage(error),
+            });
+        } finally {
+            postHog?.reset();
         }
     };
 
