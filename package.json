@@ -14,23 +14,19 @@
         "db:migrate": "pnpm --filter db db:migrate",
         "db:studio": "pnpm --filter db db:studio",
         "test": "vitest",
-        "deploy": "sst deploy --stage production"
+        "deploy": "sst deploy --stage production",
+        "format": "oxfmt",
+        "lint": "oxlint --deny-warnings"
     },
     "devDependencies": {
-        "@types/eslint": "^8.56.5",
         "@types/node": "^20.11.6",
-        "@typescript-eslint/eslint-plugin": "^5.62.0",
-        "@typescript-eslint/parser": "^5.62.0",
         "cross-env": "^7.0.3",
         "dotenv": "^16.0.3",
-        "eslint": "^8.36.0",
-        "eslint-config-prettier": "^8.7.0",
-        "eslint-import-resolver-typescript": "^3.6.1",
-        "eslint-plugin-import": "^2.27.5",
         "husky": "^8.0.3",
         "jsdom": "^22.1.0",
         "lint-staged": "^13.1.1",
-        "prettier": "^3.1.0",
+        "oxfmt": "^0.34.0",
+        "oxlint": "^1.49.0",
         "sst": "3.17.25",
         "tsx": "^4.19.2",
         "vitest": "^0.34.4"

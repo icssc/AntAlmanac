@@ -64,13 +64,15 @@ export function DepartmentSearchBar() {
 
             if (newValue === 'ALL') return;
 
-            recentSearches.includes(newValue)
-                ? setRecentSearches((prev) =>
-                      prev.sort((a, b) => {
-                          return a === newValue ? -1 : b === newValue ? 1 : 0;
-                      })
-                  )
-                : setRecentSearches((prev) => [newValue, ...prev].slice(0, 5));
+            if (recentSearches.includes(newValue)) {
+                setRecentSearches((prev) =>
+                    prev.sort((a, b) => {
+                        return a === newValue ? -1 : b === newValue ? 1 : 0;
+                    })
+                );
+            } else {
+                setRecentSearches((prev) => [newValue, ...prev].slice(0, 5));
+            }
         },
         [recentSearches, options]
     );

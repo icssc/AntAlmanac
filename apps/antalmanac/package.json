@@ -18,10 +18,7 @@
         "zip-dist": "tsx scripts/zip-dist.ts",
         "build": "next build",
         "predeploy": "npm run build",
-        "deploy": "gh-pages -d build",
-        "format": "prettier --write src",
-        "lint": "eslint src --max-warnings=0",
-        "typecheck": "tsc --noEmit"
+        "deploy": "gh-pages -d build"
     },
     "dependencies": {
         "@dnd-kit/core": "^6.3.1",
@@ -84,7 +81,6 @@
         "@packages/db": "workspace:^",
         "@testing-library/react": "^14.0.0",
         "@types/archiver": "^6.0.3",
-        "@types/eslint": "^8.56.5",
         "@types/file-saver": "^2.0.5",
         "@types/leaflet": "^1.9.14",
         "@types/leaflet-routing-machine": "^3.2.4",
@@ -101,13 +97,6 @@
         "@types/ua-parser-js": "^0.7.39",
         "@vitejs/plugin-react": "^4.0.4",
         "aws-sdk": "^2.1550.0",
-        "eslint": "^8.36.0",
-        "eslint-config-prettier": "^8.7.0",
-        "eslint-plugin-import": "^2.27.5",
-        "eslint-plugin-jsx-a11y": "^6.7.1",
-        "eslint-plugin-react": "^7.32.2",
-        "eslint-plugin-react-hooks": "^4.6.0",
-        "prettier": "^2.8.4",
         "typescript": "5.6.3",
         "vite": "^4.4.9",
         "vite-plugin-svgr": "^2.4.0"
