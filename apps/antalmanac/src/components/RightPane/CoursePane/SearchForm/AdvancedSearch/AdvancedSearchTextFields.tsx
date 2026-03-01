@@ -50,7 +50,7 @@ function getRoadmapMenuItems({ isLoggedIn, roadmaps }: RoadmapMenuItemsProps) {
     return [
         <MenuItem key="all" value="">
             {' '}
-            Include all courses{' '}
+            Include all courses
         </MenuItem>,
         ...roadmaps.map((roadmap) => (
             <MenuItem key={roadmap.id} value={roadmap.id.toString()}>

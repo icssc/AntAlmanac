@@ -10,19 +10,20 @@ const QUARTER_ORDER: Record<string, number> = { Winter: 0, Spring: 1, Summer: 2,
 
 function roadmapQuarterToYearAndQuarter(startYear: number, quarterName: string): { year: number; quarter: string } {
     const q = quarterName.trim().toLowerCase();
-    const isFall = q === 'fall';
-    const year = isFall ? startYear : startYear + 1;
-    const quarter =
-        q === 'fall'
-            ? 'Fall'
-            : q === 'winter'
-              ? 'Winter'
-              : q === 'spring'
-                ? 'Spring'
-                : /summer/.test(q)
-                  ? 'Summer'
-                  : 'Fall';
-    return { year, quarter };
+
+    const quarterMap: Record<string, { year: number; quarter: string }> = {
+        fall: { year: startYear, quarter: 'Fall' },
+        winter: { year: startYear + 1, quarter: 'Winter' },
+        spring: { year: startYear + 1, quarter: 'Spring' },
+        summer: { year: startYear + 1, quarter: 'Summer' },
+    };
+
+    const result = quarterMap[q];
+    if (!result) {
+        throw new Error(`Unrecognized quarter: "${quarterName}"`);
+    }
+
+    return result;
 }
 
 function isQuarterBefore(a: { year: number; quarter: string }, b: { year: number; quarter: string }): boolean {
