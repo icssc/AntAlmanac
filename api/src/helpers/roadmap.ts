@@ -110,7 +110,7 @@ export async function setQuarterCourses(tx: TransactionType, quarters: PlannerQu
       courseId,
       index,
     }));
-    await tx.insert(plannerCourse).values(rows);
+    await tx.insert(plannerCourse).values(rows).onConflictDoNothing();
   });
   await Promise.all(updates);
 }
@@ -155,23 +155,29 @@ export async function createPlanners(
 
 export async function createYears(tx: TransactionType, years: PlannerYearSaveInfo[]) {
   if (!years.length) return;
-  await tx.insert(plannerYear).values(
-    years.map((year) => ({
-      plannerId: year.plannerId,
-      startYear: year.data.startYear,
-      name: year.data.name,
-    })),
-  );
+  await tx
+    .insert(plannerYear)
+    .values(
+      years.map((year) => ({
+        plannerId: year.plannerId,
+        startYear: year.data.startYear,
+        name: year.data.name,
+      })),
+    )
+    .onConflictDoNothing();
 }
 
 export async function createQuarters(tx: TransactionType, quarters: PlannerQuarterSaveInfo[]) {
   if (!quarters.length) return;
-  await tx.insert(plannerQuarter).values(
-    quarters.map((quarter) => ({
-      plannerId: quarter.plannerId,
-      startYear: quarter.startYear,
-      quarterName: quarter.data.name,
-    })),
-  );
+  await tx
+    .insert(plannerQuarter)
+    .values(
+      quarters.map((quarter) => ({
+        plannerId: quarter.plannerId,
+        startYear: quarter.startYear,
+        quarterName: quarter.data.name,
+      })),
+    )
+    .onConflictDoNothing();
   await setQuarterCourses(tx, quarters, true);
 }
