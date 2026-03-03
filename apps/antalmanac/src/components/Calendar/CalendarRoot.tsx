@@ -3,7 +3,8 @@
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
 
-import { Box, Backdrop, useTheme } from '@mui/material';
+import { CalendarMonthOutlined } from '@mui/icons-material';
+import { Box, Backdrop, Paper, useTheme } from '@mui/material';
 import moment from 'moment';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
@@ -16,6 +17,7 @@ import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover'
 import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { skeletonBlueprintVariations } from '$components/Calendar/skeletonBlueprintVariations';
+import { EmptyState } from '$components/EmptyState/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import {
     getLocalStorageSkeletonBlueprint,
@@ -27,6 +29,7 @@ import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import { useTabStore } from '$stores/TabStore';
 
 /*
 //  * Always start week on Saturday for finals potentially on weekends.
@@ -76,6 +79,7 @@ export const ScheduleCalendar = memo(() => {
     const isDark = useThemeStore(useShallow((store) => store.isDark));
 
     const { openLoadingSchedule: loadingSchedule } = scheduleComponentsToggleStore();
+    const setActiveTab = useTabStore((s) => s.setActiveTab);
     const hasHadEventsRef = useRef(false);
 
     const isMobile = useIsMobile();
@@ -354,8 +358,47 @@ export const ScheduleCalendar = memo(() => {
                 showFinalsSchedule={showFinalsSchedule}
                 scheduleNames={scheduleNames}
             />
-            <Box id="screenshot" height="0" flexGrow={1}>
+            <Box id="screenshot" height="0" flexGrow={1} position="relative">
                 <CalendarEventPopover />
+
+                {!loadingSchedule && events.length === 0 && (
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            inset: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 1,
+                            backgroundColor: (t) =>
+                                t.palette.mode === 'dark' ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.85)',
+                        }}
+                    >
+                        <Paper
+                            elevation={1}
+                            sx={{
+                                mx: 2,
+                                overflow: 'hidden',
+                                backgroundColor: 'background.paper',
+                                color: 'text.primary',
+                            }}
+                        >
+                            <EmptyState
+                                icon={<CalendarMonthOutlined />}
+                                title="No events this week"
+                                description="Add courses to your schedule to see them here, or switch to Finals to view your finals schedule."
+                                primaryAction={{
+                                    label: 'Search courses',
+                                    onClick: () => setActiveTab('search'),
+                                }}
+                                secondaryAction={{
+                                    label: 'View added courses',
+                                    onClick: () => setActiveTab('added'),
+                                }}
+                            />
+                        </Paper>
+                    </Box>
+                )}
 
                 <Calendar<CalendarEvent, object>
                     key={`${culture}-${calendarView}`}

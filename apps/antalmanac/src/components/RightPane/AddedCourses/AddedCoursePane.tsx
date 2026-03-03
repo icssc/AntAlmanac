@@ -1,9 +1,11 @@
+import { MenuBookOutlined } from '@mui/icons-material';
 import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { updateScheduleNote } from '$actions/AppStoreActions';
+import { EmptyState } from '$components/EmptyState/EmptyState';
 import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEventDetailView';
 import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
 import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
@@ -14,6 +16,8 @@ import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useTabStore } from '$stores/TabStore';
 
 /**
  * All the interactive buttons have the same styles.
@@ -339,11 +343,24 @@ function AddedSectionsGrid() {
         return scheduleNames[scheduleIndex];
     }, [scheduleNames, scheduleIndex]);
 
-    // "No Courses Added Yet!" notification
+    const setActiveTab = useTabStore((s) => s.setActiveTab);
+    const setOpenImportDialog = scheduleComponentsToggleStore((s) => s.setOpenImportDialog);
+
     const NoCoursesBox = (
-        <Box style={{ paddingTop: '12px', paddingBottom: '12px' }}>
-            <Typography align="left">No Courses Added Yet!</Typography>
-        </Box>
+        <EmptyState
+            icon={<MenuBookOutlined />}
+            title="No Courses Added Yet"
+            description="Search for courses and add sections to build your schedule. You can also import from your study list."
+            primaryAction={{
+                label: 'Search courses',
+                onClick: () => setActiveTab('search'),
+            }}
+            secondaryAction={{
+                label: 'Import schedule',
+                onClick: () => setOpenImportDialog(true),
+            }}
+            sx={{ py: 3, width: '100%' }}
+        />
     );
 
     return (
