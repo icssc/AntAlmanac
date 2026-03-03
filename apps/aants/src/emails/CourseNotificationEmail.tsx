@@ -6,12 +6,12 @@ import {
     Heading,
     Hr,
     Html,
+    Img,
     Link,
     Preview,
     Section,
     Text,
 } from '@react-email/components';
-import * as React from 'react';
 
 export interface CourseNotificationEmailProps {
     /** Unique ID per email to prevent Gmail from collapsing duplicate messages */
@@ -59,76 +59,100 @@ export function CourseNotificationEmail({
                 {deptCode} {courseNumber} ({courseType}) had enrollment changes
             </Preview>
             <Body style={main}>
-                <Container style={container}>
-                    <Heading style={h1}>Hi {userName}!</Heading>
-                    <Text style={text}>
-                        Based on your notification subscriptions on AntAlmanac, the AntAlmanac team would like to notify
-                        you that the following class has had some enrollment changes as of <strong>{time}</strong>.
-                    </Text>
-
-                    <Section style={notificationBox}>
-                        <Text style={notificationLabel}>The changes are:</Text>
-                        <div dangerouslySetInnerHTML={{ __html: notification }} style={courseDetails} />
+                <Container style={outerContainer}>
+                    <Section style={banner}>
+                        <Link href="https://antalmanac.com" style={bannerLink}>
+                            <Img
+                                src="https://antalmanac.com/favicon-96x96.png"
+                                alt="AntAlmanac"
+                                width={28}
+                                height={28}
+                                style={bannerLogo}
+                            />
+                            <Text style={bannerText}>AntAlmanac</Text>
+                        </Link>
                     </Section>
-
-                    <Section style={courseDetailsBox}>
-                        <Text style={courseDetailsLabel}>Course details</Text>
-                        <Text style={courseDetails}>
-                            <strong>
-                                {deptCode} {courseNumber}
-                            </strong>{' '}
-                            – {courseTitle}
-                            <br />
-                            Type: {courseType}
-                            <br />
-                            Instructor: {instructor}
-                            <br />
-                            Time: {days} {hours}
-                            <br />
-                            Section: {sectionCode}
+                    <Section style={contentSection}>
+                        <Heading style={h1}>Hi {userName}!</Heading>
+                        <Text style={text}>
+                            Based on your notification subscriptions on AntAlmanac, the AntAlmanac team would like to
+                            notify you that the following class has had some enrollment changes as of{' '}
+                            <strong>{time}</strong>.
                         </Text>
-                    </Section>
 
-                    <Section style={buttonContainer}>
-                        <Button
-                            style={button}
-                            href="https://www.reg.uci.edu/registrar/soc/webreg.html?page=startUp&call="
+                        <Section style={notificationBox}>
+                            <Text style={notificationLabel}>The changes are:</Text>
+                            <div dangerouslySetInnerHTML={{ __html: notification }} style={courseDetails} />
+                        </Section>
+
+                        <Section style={courseDetailsBox}>
+                            <Text style={courseDetailsLabel}>Course details</Text>
+                            <Text style={courseDetails}>
+                                Course Name:{' '}
+                                <strong>
+                                    {' '}
+                                    {deptCode} {courseNumber} - {courseTitle}{' '}
+                                </strong>
+                                <br />
+                                Type: <strong>{courseType}</strong>
+                                <br />
+                                Instructor: <strong>{instructor}</strong>
+                                <br />
+                                Time:{' '}
+                                <strong>
+                                    {days} {hours}
+                                </strong>
+                                <br />
+                                Section: <strong>{sectionCode}</strong>
+                            </Text>
+                        </Section>
+
+                        <Section style={buttonContainer}>
+                            <Button
+                                style={button}
+                                href="https://www.reg.uci.edu/registrar/soc/webreg.html?page=startUp&call="
+                            >
+                                Go to WebReg to enroll
+                            </Button>
+                        </Section>
+
+                        <Hr style={hr} />
+
+                        <Text style={footerText}>
+                            <Link href="https://antalmanac.com" style={link}>
+                                Go to AntAlmanac
+                            </Link>
+                            {' · '}
+                            <Link href="https://antalmanac.com/feedback" style={link}>
+                                Give feedback or report a bug
+                            </Link>
+                        </Text>
+                        <Text style={footerText}>
+                            <Link href={unsubscribeUrl} style={link}>
+                                Unsubscribe from this course
+                            </Link>
+                            {' · '}
+                            <Link href={unsubscribeAllUrl} style={link}>
+                                Unsubscribe from all courses
+                            </Link>
+                        </Text>
+
+                        <Text style={signature}>
+                            Best,
+                            <br />
+                            The AntAlmanac Team
+                        </Text>
+                        <div
+                            style={{
+                                display: 'none',
+                                maxHeight: 0,
+                                overflow: 'hidden',
+                                visibility: 'hidden',
+                            }}
                         >
-                            Go to WebReg to enroll
-                        </Button>
+                            ID: {messageId}
+                        </div>
                     </Section>
-
-                    <Hr style={hr} />
-
-                    <Text style={footerText}>
-                        <Link href={unsubscribeUrl} style={link}>
-                            Unsubscribe from this course
-                        </Link>
-                        {' · '}
-                        <Link href={unsubscribeAllUrl} style={link}>
-                            Unsubscribe from all courses
-                        </Link>
-                        {' · '}
-                        <Link href="https://antalmanac.com/feedback" style={link}>
-                            Give feedback
-                        </Link>
-                    </Text>
-
-                    <Text style={signature}>
-                        Best,
-                        <br />
-                        The AntAlmanac Team
-                    </Text>
-                    <div
-                        style={{
-                            display: 'none',
-                            maxHeight: 0,
-                            overflow: 'hidden',
-                            visibility: 'hidden',
-                        }}
-                    >
-                        ID: {messageId}
-                    </div>
                 </Container>
             </Body>
         </Html>
@@ -140,24 +164,55 @@ const main = {
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif',
 };
 
-const container = {
-    backgroundColor: '#ffffff',
+const outerContainer = {
+    width: '100%',
+    maxWidth: '520px',
     margin: '0 auto',
+};
+
+const bannerLink = {
+    textDecoration: 'none',
+    color: '#ffffff',
+};
+
+const banner = {
+    backgroundColor: '#305db7',
+    padding: '10px 20px',
+    textAlign: 'center' as const,
+    borderRadius: '8px 8px 0 0',
+};
+
+const bannerLogo = {
+    display: 'inline-block',
+    verticalAlign: 'middle',
+    marginRight: '8px',
+};
+
+const bannerText = {
+    color: '#ffffff',
+    fontSize: '18px',
+    fontWeight: '600',
+    margin: '0',
+    display: 'inline-block',
+    verticalAlign: 'middle',
+};
+
+const contentSection = {
+    backgroundColor: '#ffffff',
     padding: '40px 20px',
     marginBottom: '64px',
-    borderRadius: '8px',
-    maxWidth: '520px',
+    borderRadius: '0 0 8px 8px',
 };
 
 const h1 = {
-    color: '#1a1a2e',
+    color: '#000000',
     fontSize: '24px',
     fontWeight: '600',
     margin: '0 0 20px',
 };
 
 const text = {
-    color: '#525f7f',
+    color: '#000000',
     fontSize: '16px',
     lineHeight: '24px',
     margin: '0 0 20px',
@@ -172,7 +227,7 @@ const notificationBox = {
 };
 
 const notificationLabel = {
-    color: '#1a1a2e',
+    color: '#000000',
     fontSize: '14px',
     fontWeight: '600',
     margin: '0 0 8px',
@@ -186,14 +241,14 @@ const courseDetailsBox = {
 };
 
 const courseDetailsLabel = {
-    color: '#1a1a2e',
+    color: '#000000',
     fontSize: '14px',
     fontWeight: '600',
     margin: '0 0 8px',
 };
 
 const courseDetails = {
-    color: '#525f7f',
+    color: '#000000',
     fontSize: '14px',
     lineHeight: '22px',
     margin: '0',
@@ -221,10 +276,11 @@ const hr = {
 };
 
 const footerText = {
-    color: '#8898aa',
+    color: '#000000',
     fontSize: '13px',
     lineHeight: '20px',
     margin: '0 0 16px',
+    textAlign: 'center' as const,
 };
 
 const link = {
@@ -233,10 +289,11 @@ const link = {
 };
 
 const signature = {
-    color: '#525f7f',
+    color: '#000000',
     fontSize: '14px',
     lineHeight: '22px',
     margin: '0',
+    textAlign: 'left' as const,
 };
 
 /** Default export with sample data for React Email dev preview */
