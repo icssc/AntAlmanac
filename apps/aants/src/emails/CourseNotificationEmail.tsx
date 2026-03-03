@@ -228,7 +228,7 @@ const notificationBox = {
 
 const notificationLabel = {
     color: '#000000',
-    fontSize: '14px',
+    fontSize: '16px',
     fontWeight: '600',
     margin: '0 0 8px',
 };
@@ -242,7 +242,7 @@ const courseDetailsBox = {
 
 const courseDetailsLabel = {
     color: '#000000',
-    fontSize: '14px',
+    fontSize: '16px',
     fontWeight: '600',
     margin: '0 0 8px',
 };

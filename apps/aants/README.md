@@ -30,4 +30,5 @@ AANTS uses two Lambda functions, wired in `sst.config.ts`:
 # Email Template
 - Email templates are built with [React Email](https://react.email/) in `src/emails/CourseNotificationEmail.tsx`.
 - Emails are rendered at queue time when notifications are dispatched, then sent as raw HTML via SES (no SES template needed).
+- Run `pnpm run preview:email` to preview email template in browser
 
