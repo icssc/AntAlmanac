@@ -25,9 +25,9 @@ AANTS uses two Lambda functions, wired in `sst.config.ts`:
 
 ## SQS Email Queue
 - The email queue URL is provided via the `QUEUE_URL` environment variable (see `src/env.ts` and `.env.example`).
-- One SQS message = one email request (template name, destination, template data). The Email Processor parses each message and calls SES to send the email.
+- One SQS message = one email request (pre-rendered HTML and plain text from React Email). The Email Processor parses each message and sends via SES.
 
 # Email Template
-- The email template for AANTS can be found under `scripts/createTemplate.ts`.
-- It can be altered by changing the `TemplateContent` and running `pnpm run template` (assuming you have access to AntAlmanac's AWS account) 
+- Email templates are built with [React Email](https://react.email/) in `src/emails/CourseNotificationEmail.tsx`.
+- Emails are rendered at queue time when notifications are dispatched, then sent as raw HTML via SES (no SES template needed).
 
