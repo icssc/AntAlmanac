@@ -1,4 +1,4 @@
-import { ClassOutlined } from '@mui/icons-material';
+import { MenuBook } from '@mui/icons-material';
 import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
@@ -16,6 +16,7 @@ import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useTabStore } from '$stores/TabStore';
 
 /**
@@ -354,11 +355,17 @@ function AddedSectionsGrid() {
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
                 {courses.length === 0 && (
                     <EmptyState
-                        Icon={ClassOutlined}
-                        title="No courses added yet"
-                        description="Search for courses and add them to your schedule."
-                        ctaLabel="Search for Courses"
-                        onCtaClick={() => useTabStore.getState().setActiveTab('search')}
+                        Icon={MenuBook}
+                        title="No Courses Added Yet"
+                        description="Search for courses and add sections to build your schedule. You can also import from your study list."
+                        primaryAction={{
+                            label: 'Search Courses',
+                            onClick: () => useTabStore.getState().setActiveTab('search'),
+                        }}
+                        secondaryAction={{
+                            label: 'Import Schedule',
+                            onClick: () => scheduleComponentsToggleStore.getState().setOpenImportDialog(true),
+                        }}
                     />
                 )}
                 <Box display="flex" flexDirection="column" gap={1}>

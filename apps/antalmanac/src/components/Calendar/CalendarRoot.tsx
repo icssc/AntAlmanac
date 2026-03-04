@@ -386,8 +386,10 @@ export const ScheduleCalendar = memo(() => {
                             Icon={CalendarMonth}
                             title="Your schedule is empty"
                             description="Search for courses to start building your schedule."
-                            ctaLabel="Search for Courses"
-                            onCtaClick={() => useTabStore.getState().setActiveTab('search')}
+                            primaryAction={{
+                                label: 'Search for Courses',
+                                onClick: () => useTabStore.getState().setActiveTab('search'),
+                            }}
                         />
                     </Box>
                 )}
