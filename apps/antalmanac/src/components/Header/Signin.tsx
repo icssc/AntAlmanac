@@ -1,4 +1,4 @@
-import { AccountCircle, EventNote, Google, ExpandMore } from '@mui/icons-material';
+import { AccountCircle, Google, ExpandMore } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
     Divider,
@@ -20,7 +20,6 @@ import {
     Box,
 } from '@mui/material';
 import { useEffect, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
 
 import { loadSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
@@ -303,27 +302,6 @@ export const Signin = () => {
                 <SettingsMenu user={null} onClose={() => setSettingsAnchorEl(null)} />
 
                 <Divider style={{ marginTop: '20px', marginBottom: '12px' }} />
-
-                <MenuItem
-                    component={Link}
-                    to="/"
-                    onClick={() => setSettingsAnchorEl(null)}
-                    sx={{ px: 1, py: 1.25, borderRadius: 1, mt: 0.5 }}
-                >
-                    <ListItemIcon>
-                        <EventNote />
-                    </ListItemIcon>
-                    <ListItemText
-                        primary="Go to Scheduler"
-                        primaryTypographyProps={{
-                            sx: {
-                                fontSize: '1rem',
-                                fontWeight: 600,
-                                textTransform: 'uppercase',
-                            },
-                        }}
-                    />
-                </MenuItem>
 
                 <MenuItem onClick={handleOpen} sx={{ px: 1, py: 1.25, borderRadius: 1 }}>
                     <ListItemIcon>
