@@ -37,25 +37,11 @@ const SAMPLE_PROPS = {
 
 const PORT = 3457;
 
-function wrapInHtml(html: string) {
-    return `<!DOCTYPE html>
-            <html>
-            <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>AANTS Email Preview</title>
-            </head>
-            <body style="margin: 0; padding: 20px; background: #f6f9fc;">
-            ${html}
-            </body>
-            </html>`;
-}
-
 const server = createServer(async (req, res) => {
     if (req.url === '/' || req.url === '/preview.html') {
         const html = await render(<CourseNotificationEmail {...SAMPLE_PROPS} />);
         res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(wrapInHtml(html));
+        res.end(html);
     } else {
         res.writeHead(404);
         res.end('Not found');

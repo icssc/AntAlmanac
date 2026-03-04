@@ -71,8 +71,23 @@ export function CourseNotificationEmail({
     quarter,
     year,
 }: CourseNotificationEmailProps) {
-    const unsubscribeUrl = `https://antalmanac.com/unsubscribe/${userId}?sectionCode=${sectionCode}&quarter=${quarter}&year=${year}&deptCode=${deptCode}&courseNumber=${courseNumber}&instructor=${encodeURIComponent(instructor)}`;
-    const unsubscribeAllUrl = `https://antalmanac.com/unsubscribe/${userId}?sectionCode=${sectionCode}&quarter=${quarter}&year=${year}&unsubscribeAll=true`;
+    const unsubscribeParams = new URLSearchParams({
+        sectionCode,
+        quarter,
+        year,
+        deptCode,
+        courseNumber,
+        instructor,
+    });
+    const unsubscribeUrl = `https://antalmanac.com/unsubscribe/${userId}?${unsubscribeParams.toString()}`;
+
+    const unsubscribeAllParams = new URLSearchParams({
+        sectionCode,
+        quarter,
+        year,
+        unsubscribeAll: 'true',
+    });
+    const unsubscribeAllUrl = `https://antalmanac.com/unsubscribe/${userId}?${unsubscribeAllParams.toString()}`;
 
     return (
         <Html lang="en">
