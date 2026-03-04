@@ -18,6 +18,13 @@ export type WebsocAPIResult = WebsocAPISuccess | WebsocAPIError;
 export type WebsocAPIDepartmentsResponse =
     paths['/v2/rest/websoc/departments']['get']['responses'][200]['content']['application/json']['data'];
 
+type WebsocDepartmentsAPISuccess = {
+    ok: true;
+    data: WebsocAPIDepartmentsResponse;
+};
+
+export type WebsocDepartmentsAPIResult = WebsocDepartmentsAPISuccess | WebsocAPIError;
+
 export type WebsocSchool = WebsocAPIResponse['schools'][number];
 
 export type WebsocDepartment = WebsocSchool['departments'][number];

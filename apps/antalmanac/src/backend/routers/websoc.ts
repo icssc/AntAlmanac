@@ -1,10 +1,10 @@
 import type {
     WebsocAPIResponse,
     WebsocAPIResult,
+    WebsocDepartmentsAPIResult,
     CourseInfo,
     WebsocCourse,
     WebsocSectionType,
-    WebsocAPIDepartmentsResponse,
 } from '@packages/antalmanac-types';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
@@ -70,10 +70,7 @@ function sortWebsocResponse(response: WebsocAPIResponse) {
     return response;
 }
 
-const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
-    const url = `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`;
-    console.log('queryWebSoc', url);
-
+async function fetchAnteaterAPI(url: string): Promise<Response> {
     let response: Response;
     try {
         response = await fetch(url, {
@@ -94,6 +91,14 @@ const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
             message: `Anteater API returned an error: ${response.status} ${response.statusText}`,
         });
     }
+    return response;
+}
+
+const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
+    const url = `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`;
+    console.log('queryWebSoc', url);
+
+    const response = await fetchAnteaterAPI(url);
 
     let data: WebsocAPIResult;
     try {
@@ -119,35 +124,25 @@ const queryWebSocDepartments = async () => {
     const minYear = new Date().getFullYear() - DEPARTMENT_YEAR_RANGE;
     const url = `https://anteaterapi.com/v2/rest/websoc/departments?since=${minYear}`;
 
-    let response: Response;
+    const response = await fetchAnteaterAPI(url);
+
+    let data: WebsocDepartmentsAPIResult;
     try {
-        response = await fetch(url, {
-            headers: {
-                ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
-            },
-        });
+        data = await response.json();
     } catch (err) {
         throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
-            message: `Failed to reach the Anteater API: ${err}`,
+            message: `Failed to parse Anteater API response: ${err}`,
         });
     }
 
-    if (!response.ok) {
-        throw new TRPCError({
-            code: response.status === 401 ? 'UNAUTHORIZED' : 'INTERNAL_SERVER_ERROR',
-            message: `Anteater API returned an error: ${response.status} ${response.statusText}`,
-        });
-    }
-
-    const data = await response.json();
-    if (!data || !data.data) {
+    if (!data?.ok || !data?.data) {
         throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Departments API returned no data',
         });
     }
-    return data.data as WebsocAPIDepartmentsResponse;
+    return data.data;
 };
 
 function combineWebsocResponses(responses: WebsocAPIResponse[]) {
