@@ -3,16 +3,15 @@
 import type { SvgIconComponent } from '@mui/icons-material';
 import { Box, Button, type SxProps, type Theme, Typography } from '@mui/material';
 
-interface EmptyStateProps {
+type EmptyStateProps = {
     Icon: SvgIconComponent;
     title: string;
     description: string;
-    ctaLabel?: string;
-    onCtaClick?: () => void;
+    className?: string;
     sx?: SxProps<Theme>;
-}
+} & ({ ctaLabel: string; onCtaClick: () => void } | { ctaLabel?: never; onCtaClick?: never });
 
-export function EmptyState({ Icon, title, description, ctaLabel, onCtaClick, sx }: EmptyStateProps) {
+export function EmptyState({ Icon, title, description, ctaLabel, onCtaClick, className, sx }: EmptyStateProps) {
     return (
         <Box
             display="flex"
@@ -22,6 +21,7 @@ export function EmptyState({ Icon, title, description, ctaLabel, onCtaClick, sx 
             gap={1.5}
             textAlign="center"
             p={4}
+            className={className}
             sx={sx}
         >
             <Icon sx={{ fontSize: 48, color: 'text.secondary' }} aria-hidden="true" />
@@ -31,7 +31,7 @@ export function EmptyState({ Icon, title, description, ctaLabel, onCtaClick, sx 
             <Typography variant="body2" color="text.secondary" maxWidth={360}>
                 {description}
             </Typography>
-            {ctaLabel && onCtaClick && (
+            {ctaLabel && (
                 <Button variant="contained" onClick={onCtaClick} sx={{ mt: 1 }}>
                     {ctaLabel}
                 </Button>
