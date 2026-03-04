@@ -44,13 +44,12 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
             onLogoutComplete?.();
 
             if (logoutUrl) {
+                logAnalytics(postHog, {
+                    category: analyticsEnum.auth,
+                    action: analyticsEnum.auth.actions.SIGN_OUT,
+                });
                 window.location.href = logoutUrl;
             }
-
-            logAnalytics(postHog, {
-                category: analyticsEnum.auth,
-                action: analyticsEnum.auth.actions.SIGN_OUT,
-            });
         } catch (error) {
             console.error('Error during logout', error);
             // Even on error, clear session and show dialog

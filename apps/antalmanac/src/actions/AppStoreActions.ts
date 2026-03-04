@@ -461,13 +461,13 @@ export const loginUser = async (postHog?: PostHog) => {
     try {
         const authUrl = await trpc.userData.getGoogleAuthUrl.query();
         if (authUrl) {
+            logAnalytics(postHog, {
+                category: analyticsEnum.auth,
+                action: analyticsEnum.auth.actions.SIGN_IN,
+            });
             cacheSchedule();
             window.location.href = authUrl.toString();
         }
-        logAnalytics(postHog, {
-            category: analyticsEnum.auth,
-            action: analyticsEnum.auth.actions.SIGN_IN,
-        });
     } catch (error) {
         logAnalytics(postHog, {
             category: analyticsEnum.auth,
