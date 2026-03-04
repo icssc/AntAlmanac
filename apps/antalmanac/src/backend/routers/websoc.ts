@@ -93,6 +93,7 @@ const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
             message: `Anteater API returned an error: ${response.status} ${response.statusText}`,
         });
     }
+
     const data = await response.json();
     console.log('queryWebSoc', data);
 
@@ -122,6 +123,14 @@ const queryWebSocDepartments = async () => {
             message: `Failed to reach the Anteater API: ${err}`,
         });
     }
+
+    if (!response.ok) {
+        throw new TRPCError({
+            code: response.status === 401 ? 'UNAUTHORIZED' : 'INTERNAL_SERVER_ERROR',
+            message: `Anteater API returned an error: ${response.status} ${response.statusText}`,
+        });
+    }
+
     const data = await response.json();
     if (!data || !data.data) {
         throw new TRPCError({
