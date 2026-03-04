@@ -1,8 +1,5 @@
 /*
- * Fallback preview script: Renders the React Email template and serves it locally.
- * Use this if `pnpm run preview:email` (react-email dev) has issues.
- *
- * Usage: pnpm run preview:email:fallback
+ * Run pnpm run preview:email to view AANTS email template in browswer
  */
 
 import { createServer } from 'http';
