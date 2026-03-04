@@ -109,11 +109,19 @@ const queryWebSocDepartments = async () => {
     const minYear = new Date().getFullYear() - DEPARTMENT_YEAR_RANGE;
     const url = `https://anteaterapi.com/v2/rest/websoc/departments?since=${minYear}`;
 
-    const response = await fetch(url, {
-        headers: {
-            ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
-        },
-    });
+    let response: Response;
+    try {
+        response = await fetch(url, {
+            headers: {
+                ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
+            },
+        });
+    } catch (err) {
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Failed to reach the Anteater API: ${err}`,
+        });
+    }
     const data = await response.json();
     if (!data || !data.data) {
         throw new TRPCError({
