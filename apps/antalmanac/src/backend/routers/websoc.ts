@@ -70,7 +70,7 @@ function sortWebsocResponse(response: WebsocAPIResponse) {
 }
 
 const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
-    const url = `https://dillydallylink.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`;
+    const url = `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`;
     console.log('queryWebSoc', url);
 
     let response: Response;
