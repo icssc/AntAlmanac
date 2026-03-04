@@ -95,7 +95,15 @@ const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
         });
     }
 
-    const data: WebsocAPIResult = await response.json();
+    let data: WebsocAPIResult;
+    try {
+        data = await response.json();
+    } catch (err) {
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Failed to parse Anteater API response: ${err}`,
+        });
+    }
     console.log('queryWebSoc', data);
 
     if (!data?.ok || !data?.data) {
