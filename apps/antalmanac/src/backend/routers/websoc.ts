@@ -70,16 +70,38 @@ function sortWebsocResponse(response: WebsocAPIResponse) {
 }
 
 const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
-    const url = `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`;
+    const url = `https://dillydallylink.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`;
     console.log('queryWebSoc', url);
 
-    const response = await fetch(url, {
-        headers: {
-            ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
-        },
-    });
+    let response: Response;
+    try {
+        response = await fetch(url, {
+            headers: {
+                ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
+            },
+        });
+    } catch (err) {
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Failed to reach the Anteater API: ${err}`,
+        });
+    }
+
+    if (!response.ok) {
+        throw new TRPCError({
+            code: response.status === 401 ? 'UNAUTHORIZED' : 'INTERNAL_SERVER_ERROR',
+            message: `Anteater API returned an error: ${response.status} ${response.statusText}`,
+        });
+    }
     const data = await response.json();
     console.log('queryWebSoc', data);
+
+    if (!data?.ok || !data?.data) {
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Anteater API returned an unexpected response shape',
+        });
+    }
     return sortWebsocResponse(data.data as WebsocAPIResponse);
 };
 
