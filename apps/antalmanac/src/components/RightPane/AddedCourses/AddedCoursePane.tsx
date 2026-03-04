@@ -342,16 +342,6 @@ function AddedSectionsGrid() {
         return scheduleNames[scheduleIndex];
     }, [scheduleNames, scheduleIndex]);
 
-    const NoCoursesBox = (
-        <EmptyState
-            Icon={ClassOutlined}
-            title="No courses added yet"
-            description="Search for courses and add them to your schedule."
-            ctaLabel="Search for Courses"
-            onCtaClick={() => useTabStore.getState().setActiveTab('search')}
-        />
-    );
-
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Box sx={{ display: 'flex', width: 'fit-content', position: 'absolute', zIndex: 2 }}>
@@ -362,7 +352,15 @@ function AddedSectionsGrid() {
             </Box>
             <Box sx={{ marginTop: 7 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
-                {courses.length < 1 ? NoCoursesBox : null}
+                {courses.length === 0 && (
+                    <EmptyState
+                        Icon={ClassOutlined}
+                        title="No courses added yet"
+                        description="Search for courses and add them to your schedule."
+                        ctaLabel="Search for Courses"
+                        onCtaClick={() => useTabStore.getState().setActiveTab('search')}
+                    />
+                )}
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
                         const missingSections = getMissingSections(course);
