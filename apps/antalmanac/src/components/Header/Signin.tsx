@@ -28,6 +28,7 @@ import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
+import { DARK_PAPER_BG } from '$src/globals';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -203,7 +204,7 @@ export const Signin = () => {
                 onClose={() => handleClose(true)}
                 PaperProps={{
                     sx: {
-                        bgcolor: isDark ? '#383838' : 'background.paper',
+                        bgcolor: isDark ? DARK_PAPER_BG : 'background.paper',
                     },
                 }}
             >
