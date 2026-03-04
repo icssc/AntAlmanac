@@ -43,11 +43,12 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
             await clearSession();
             onLogoutComplete?.();
 
+            logAnalytics(postHog, {
+                category: analyticsEnum.auth,
+                action: analyticsEnum.auth.actions.SIGN_OUT,
+            });
+
             if (logoutUrl) {
-                logAnalytics(postHog, {
-                    category: analyticsEnum.auth,
-                    action: analyticsEnum.auth.actions.SIGN_OUT,
-                });
                 window.location.href = logoutUrl;
             }
         } catch (error) {

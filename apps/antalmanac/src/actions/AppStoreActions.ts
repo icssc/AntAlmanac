@@ -414,6 +414,7 @@ export const loadScheduleWithSessionToken = async (postHog?: PostHog) => {
         }
 
         if (scheduleSaveState === undefined) {
+            analyticsErrorMessage = 'Schedule data not found';
             openSnackbar('error', `Couldn't find schedules for this account`);
         } else if (await AppStore.loadSchedule(scheduleSaveState)) {
             analyticsIdentifyUser(postHog, userId);
