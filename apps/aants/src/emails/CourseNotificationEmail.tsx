@@ -123,7 +123,7 @@ export function CourseNotificationEmail({
                         </Section>
 
                         <Section style={courseDetailsBox}>
-                            <Text style={courseDetailsLabel}>Course details</Text>
+                            <Text style={courseDetailsLabel}>Course Details</Text>
                             <Text style={courseDetails}>
                                 Course Name:{' '}
                                 <strong>
