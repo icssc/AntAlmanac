@@ -91,7 +91,11 @@ export function CourseNotificationEmail({
 
     return (
         <Html lang="en">
-            <Head />
+            <Head>
+                <meta name="color-scheme" content="light" />
+                <meta name="supported-color-schemes" content="light" />
+                <style>{`:root { color-scheme: light; }`}</style>
+            </Head>
             <Preview>
                 {deptCode} {courseNumber} ({courseType}) had enrollment changes
             </Preview>
