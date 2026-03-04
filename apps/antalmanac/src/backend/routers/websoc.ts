@@ -1,5 +1,6 @@
 import type {
     WebsocAPIResponse,
+    WebsocAPIResult,
     CourseInfo,
     WebsocCourse,
     WebsocSectionType,
@@ -94,7 +95,7 @@ const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
         });
     }
 
-    const data = await response.json();
+    const data: WebsocAPIResult = await response.json();
     console.log('queryWebSoc', data);
 
     if (!data?.ok || !data?.data) {
@@ -103,7 +104,7 @@ const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
             message: 'Anteater API returned an unexpected response shape',
         });
     }
-    return sortWebsocResponse(data.data as WebsocAPIResponse);
+    return sortWebsocResponse(data.data);
 };
 
 const queryWebSocDepartments = async () => {
