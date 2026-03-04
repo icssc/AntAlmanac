@@ -144,9 +144,9 @@ interface AnalyticsProps {
 export function logAnalytics(postHog: PostHog | undefined, { category, action, error, customProps }: AnalyticsProps) {
     if (!postHog) return;
     postHog.capture(action, {
+        ...customProps,
         category: category.title,
         error,
-        ...customProps,
     });
 }
 

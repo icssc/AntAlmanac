@@ -24,10 +24,12 @@ export const Save = () => {
     const postHog = usePostHog();
 
     const handleClickSignIn = () => {
-        logAnalytics(postHog, {
-            category: analyticsEnum.nav,
-            action: analyticsEnum.nav.actions.CLICK_SAVE,
-        });
+        if (!openSignInDialog) {
+            logAnalytics(postHog, {
+                category: analyticsEnum.nav,
+                action: analyticsEnum.nav.actions.CLICK_SAVE,
+            });
+        }
         setOpenSignInDialog(!openSignInDialog);
     };
 

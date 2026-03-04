@@ -84,7 +84,6 @@ export function Import() {
 
     const handleSubmit = async () => {
         const currentSchedule = AppStore.getCurrentScheduleIndex();
-        const term = RightPaneStore.getFormData().term;
         let sectionCodes: string[] | null = null;
 
         switch (importSource) {
@@ -95,7 +94,7 @@ export function Import() {
                     for (const event of zotcourseImport.customEvents) {
                         addCustomEvent(event, [currentSchedule]);
                     }
-                    uploadSectionCodes(sectionCodes, term, currentSchedule, ImportSource.ZOT_COURSE_IMPORT);
+                    uploadSectionCodes(sectionCodes, currentSchedule, ImportSource.ZOT_COURSE_IMPORT);
                 } catch (e) {
                     if (e instanceof QueryZotcourseError) {
                         openSnackbar('error', e.message);
@@ -111,7 +110,7 @@ export function Import() {
                 sectionCodes = studyListText.match(/\d{5}/g);
 
                 if (!sectionCodes || sectionCodes.length === 0) break;
-                uploadSectionCodes(sectionCodes, term, currentSchedule, ImportSource.STUDY_LIST_IMPORT);
+                uploadSectionCodes(sectionCodes, currentSchedule, ImportSource.STUDY_LIST_IMPORT);
                 break;
             case ImportSource.AA_USERNAME_IMPORT: {
                 const importStatus = await importScheduleWithUsername(aaUsername, postHog);
@@ -163,7 +162,6 @@ export function Import() {
 
     const uploadSectionCodes = async (
         sectionCodes: string[],
-        term: string,
         currentSchedule: number,
         importSource: ImportSource.STUDY_LIST_IMPORT | ImportSource.ZOT_COURSE_IMPORT
     ) => {

@@ -24,7 +24,6 @@ import { loadSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/
 import { AlertDialog } from '$components/AlertDialog';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import { analyticsIdentifyUser } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -112,7 +111,6 @@ export const Signin = () => {
                     setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
                 } else {
                     await loadScheduleWithSessionToken(postHog);
-                    analyticsIdentifyUser(postHog, userID);
                 }
             } else if (userID && userID !== '') {
                 await validateImportedUser(userID);
