@@ -255,6 +255,11 @@ export const ScheduleCalendar = memo(() => {
         return Math.abs(bgBrightness - textBrightness) > minBrightnessDiff;
     };
 
+    const showEmptyState = useMemo(
+        () => !loadingSchedule && !showFinalsSchedule && eventsInCalendar.length === 0 && !hoveredCalendarizedCourses,
+        [loadingSchedule, showFinalsSchedule, eventsInCalendar.length, hoveredCalendarizedCourses]
+    );
+
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
     const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
     const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
@@ -360,37 +365,32 @@ export const ScheduleCalendar = memo(() => {
             <Box id="screenshot" height="0" flexGrow={1} position="relative">
                 <CalendarEventPopover />
 
-                {!loadingSchedule &&
-                    !showFinalsSchedule &&
-                    eventsInCalendar.length === 0 &&
-                    !hoveredCalendarizedCourses && (
-                        <Box
-                            data-html2canvas-ignore
-                            position="absolute"
-                            top={0}
-                            left={0}
-                            right={0}
-                            bottom={0}
-                            display="flex"
-                            alignItems="center"
-                            justifyContent="center"
-                            zIndex={1}
-                            sx={{
-                                backgroundColor: (theme) =>
-                                    theme.palette.mode === 'dark'
-                                        ? 'rgba(18, 18, 18, 0.75)'
-                                        : 'rgba(255, 255, 255, 0.7)',
-                            }}
-                        >
-                            <EmptyState
-                                Icon={CalendarMonth}
-                                title="Your schedule is empty"
-                                description="Search for courses to start building your schedule."
-                                ctaLabel="Search for Courses"
-                                onCtaClick={() => useTabStore.getState().setActiveTab('search')}
-                            />
-                        </Box>
-                    )}
+                {showEmptyState && (
+                    <Box
+                        data-html2canvas-ignore
+                        position="absolute"
+                        top={0}
+                        left={0}
+                        right={0}
+                        bottom={0}
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        zIndex={1}
+                        sx={{
+                            backgroundColor: (theme) =>
+                                theme.palette.mode === 'dark' ? 'rgba(18, 18, 18, 0.75)' : 'rgba(255, 255, 255, 0.7)',
+                        }}
+                    >
+                        <EmptyState
+                            Icon={CalendarMonth}
+                            title="Your schedule is empty"
+                            description="Search for courses to start building your schedule."
+                            ctaLabel="Search for Courses"
+                            onCtaClick={() => useTabStore.getState().setActiveTab('search')}
+                        />
+                    </Box>
+                )}
 
                 <Calendar<CalendarEvent, object>
                     key={`${culture}-${calendarView}`}
