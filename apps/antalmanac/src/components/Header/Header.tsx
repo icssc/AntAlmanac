@@ -23,6 +23,7 @@ import { Logo } from '$components/Header/Logo';
 import { Save } from '$components/Header/Save';
 import { Signin } from '$components/Header/Signin';
 import { Signout } from '$components/Header/Signout';
+import { SETTINGS_POPOVER_BG } from '$components/Header/headerStyles';
 import {
     getLocalStorageDataCache,
     getLocalStorageImportedUser,
@@ -32,9 +33,6 @@ import {
 import { BLUE } from '$src/globals';
 import { useIsMobile } from '$src/hooks/useIsMobile';
 import { useSessionStore } from '$stores/SessionStore';
-
-/** Lighter gray for Switch Apps dropdown (matches settings popover). */
-const SWITCH_APPS_BG = '#383838';
 
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
@@ -137,12 +135,15 @@ export function Header() {
                                         subheader={
                                             <ListSubheader
                                                 component="div"
-                                                sx={{ lineHeight: '30px', ...(isDark && { bgcolor: SWITCH_APPS_BG }) }}
+                                                sx={{
+                                                    lineHeight: '30px',
+                                                    ...(isDark && { bgcolor: SETTINGS_POPOVER_BG }),
+                                                }}
                                             >
                                                 Switch Apps
                                             </ListSubheader>
                                         }
-                                        sx={{ width: 200, ...(isDark && { bgcolor: SWITCH_APPS_BG }) }}
+                                        sx={{ width: 200, ...(isDark && { bgcolor: SETTINGS_POPOVER_BG }) }}
                                     >
                                         <MenuItem
                                             component={Link}
@@ -154,9 +155,9 @@ export function Header() {
                                                 textDecoration: 'none',
                                                 color: 'inherit',
                                                 ...(isDark && {
-                                                    '&.Mui-selected': { bgcolor: SWITCH_APPS_BG },
-                                                    '&.Mui-selected:hover': { bgcolor: SWITCH_APPS_BG },
-                                                    '&:hover': { bgcolor: SWITCH_APPS_BG },
+                                                    '&.Mui-selected': { bgcolor: SETTINGS_POPOVER_BG },
+                                                    '&.Mui-selected:hover': { bgcolor: SETTINGS_POPOVER_BG },
+                                                    '&:hover': { bgcolor: SETTINGS_POPOVER_BG },
                                                 }),
                                             }}
                                         >
@@ -177,9 +178,9 @@ export function Header() {
                                                 textDecoration: 'none',
                                                 color: 'inherit',
                                                 ...(isDark && {
-                                                    '&.Mui-selected': { bgcolor: SWITCH_APPS_BG },
-                                                    '&.Mui-selected:hover': { bgcolor: SWITCH_APPS_BG },
-                                                    '&:hover': { bgcolor: SWITCH_APPS_BG },
+                                                    '&.Mui-selected': { bgcolor: SETTINGS_POPOVER_BG },
+                                                    '&.Mui-selected:hover': { bgcolor: SETTINGS_POPOVER_BG },
+                                                    '&:hover': { bgcolor: SETTINGS_POPOVER_BG },
                                                 }),
                                             }}
                                         >

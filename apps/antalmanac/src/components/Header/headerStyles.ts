@@ -1,6 +1,6 @@
 import type { SxProps, Theme } from '@mui/material';
 
-const SETTINGS_POPOVER_BG = '#383838';
+export const SETTINGS_POPOVER_BG = '#383838';
 
 /**
  * Shared paper sx for the settings/profile popover used in Signin and Signout.
