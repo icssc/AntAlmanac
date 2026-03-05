@@ -10,6 +10,7 @@ import { getTotalUnitsFromTransfers } from '../../../helpers/transferCredits';
 import { useTransferredCredits } from '../../../hooks/transferCredits';
 import Footer from '../../../shared-components/Footer';
 import QuarterInfo from '../QuarterInfo/QuarterInfo';
+import Disclaimer from '../Disclaimer/Disclaimer';
 
 const Planner: FC = () => {
   const currentPlanData = useAppSelector(selectYearPlans);
@@ -53,6 +54,7 @@ const Planner: FC = () => {
       <div className="app-footer">
         <Footer />
         <QuarterInfo />
+        <Disclaimer />
       </div>
     </div>
   );
