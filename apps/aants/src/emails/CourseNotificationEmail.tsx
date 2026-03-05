@@ -14,12 +14,7 @@ import {
 } from '@react-email/components';
 
 import { CourseDetailsBox } from '../components/CourseDetailsBox';
-import { WhatChangedBox } from '../components/WhatChangedBox';
-
-export interface StatusChange {
-    from: string;
-    to: string;
-}
+import { StatusChange, WhatChangedBox } from '../components/WhatChangedBox';
 
 export interface CourseNotificationEmailProps {
     messageId: string;

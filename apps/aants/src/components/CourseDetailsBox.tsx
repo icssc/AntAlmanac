@@ -50,8 +50,7 @@ export function CourseDetailsBox({
             >
                 Course Name:{' '}
                 <strong>
-                    {' '}
-                    {deptCode} {courseNumber} - {courseTitle}{' '}
+                    {deptCode} {courseNumber} - {courseTitle}
                 </strong>
                 <br />
                 Type: <strong>{courseType}</strong>
