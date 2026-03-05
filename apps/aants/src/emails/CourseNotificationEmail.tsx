@@ -164,7 +164,7 @@ export function CourseNotificationEmail({
 
                         {(statusChange || restrictionCodesChange) && (
                             <Section style={notificationBox}>
-                                <Text style={sectionLabel}>What changed</Text>
+                                <Text style={sectionLabel}>What Changed</Text>
                                 <table style={changeTable}>
                                     <tbody>
                                         {statusChange && (
