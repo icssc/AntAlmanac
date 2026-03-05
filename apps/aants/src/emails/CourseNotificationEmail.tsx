@@ -144,30 +144,32 @@ export function CourseNotificationEmail({
                             <Section style={notificationBox}>
                                 <Text style={sectionLabel}>What changed</Text>
                                 <table style={changeTable}>
-                                    {statusChange && (
-                                        <tr>
-                                            <td style={changeRowLabel}>Enrollment Status:</td>
-                                            <td style={changeRowCell}>
-                                                <span style={getStatusPillStyle(statusChange.from)}>
-                                                    {statusChange.from}
-                                                </span>
-                                                <span style={changeArrow}>→</span>
-                                                <span style={getStatusPillStyle(statusChange.to)}>
-                                                    {statusChange.to}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    )}
-                                    {restrictionCodesChange && (
-                                        <tr>
-                                            <td style={changeRowLabel}>Restriction Codes:</td>
-                                            <td style={changeRowCell}>
-                                                <span style={restrictionPill}>{restrictionCodesChange.from}</span>
-                                                <span style={changeArrow}>→</span>
-                                                <span style={restrictionPill}>{restrictionCodesChange.to}</span>
-                                            </td>
-                                        </tr>
-                                    )}
+                                    <tbody>
+                                        {statusChange && (
+                                            <tr>
+                                                <td style={changeRowLabel}>Enrollment Status:</td>
+                                                <td style={changeRowCell}>
+                                                    <span style={getStatusPillStyle(statusChange.from)}>
+                                                        {statusChange.from}
+                                                    </span>
+                                                    <span style={changeArrow}>→</span>
+                                                    <span style={getStatusPillStyle(statusChange.to)}>
+                                                        {statusChange.to}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        )}
+                                        {restrictionCodesChange && (
+                                            <tr>
+                                                <td style={changeRowLabel}>Restriction Codes:</td>
+                                                <td style={changeRowCell}>
+                                                    <span style={restrictionPill}>{restrictionCodesChange.from}</span>
+                                                    <span style={changeArrow}>→</span>
+                                                    <span style={restrictionPill}>{restrictionCodesChange.to}</span>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
                                 </table>
                             </Section>
                         )}
