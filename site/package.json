@@ -13,7 +13,7 @@
     "@nivo/pie": "^0.88.0",
     "@reduxjs/toolkit": "^2.4.0",
     "@trpc/client": "^10.45.2",
-    "next": "^15.5.9",
+    "next": "^16.1.1",
     "node-html-parser": "^6.1.13",
     "posthog-js": "^1.236.2",
     "react": "^18.3.1",
@@ -34,6 +34,7 @@
     "start": "next start",
     "dev": "next dev",
     "build": "next build",
+    "typegen": "next typegen",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives && tsc --noEmit",
     "test": "jest"
   },

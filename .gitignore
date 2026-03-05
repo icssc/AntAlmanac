@@ -31,5 +31,8 @@ site/build/
 .next
 tsconfig.tsbuildinfo
 
+# Next.js
+site/next-env.d.ts
+
 # Jest
 site/coverage

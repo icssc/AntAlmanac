@@ -27,5 +27,8 @@ jobs:
         env:
           HUSKY: 0
 
+      - name: Install Dependencies
+        run: pnpm --filter=site typegen
+
       - name: Lint
         run: pnpm lint

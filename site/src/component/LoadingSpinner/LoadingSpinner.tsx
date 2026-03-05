@@ -1,5 +1,8 @@
+'use client';
+import dynamic from 'next/dynamic';
 import './LoadingSpinner.scss';
-import { CircularProgress } from '@mui/material';
+
+const CircularProgress = dynamic(() => import('@mui/material/CircularProgress'), { ssr: false });
 
 const LoadingSpinner = ({ className = '' }: { className?: string }) => {
   return (
