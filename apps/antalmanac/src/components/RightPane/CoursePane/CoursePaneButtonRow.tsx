@@ -15,6 +15,7 @@ import {
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useMemo, useState } from 'react';
 
+import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 
@@ -86,7 +87,7 @@ export function ColumnToggleDropdown() {
                 setSelectedColumns(e.target.value);
             }
         },
-        [setSelectedColumns]
+        [setSelectedColumns, postHog]
     );
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -178,6 +179,7 @@ export function CoursePaneButtonRow(props: CoursePaneButtonRowProps) {
             </Tooltip>
 
             <ColumnToggleDropdown />
+            <NotificationsDialog buttonSx={buttonSx} />
         </Box>
     );
 }

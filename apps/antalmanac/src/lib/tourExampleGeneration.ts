@@ -202,6 +202,7 @@ export function sampleClassFactory({
     finalExam,
 }: sampleClassOptions): ScheduleCourse {
     return {
+        sectionTypes: ['Lec'],
         courseComment: courseComment,
         courseNumber: courseNumber == '-1' ? randint(100, 199).toString() : courseNumber,
         courseTitle: courseTitle,
@@ -211,6 +212,7 @@ export function sampleClassFactory({
         section: {
             color: '#FF0000',
             instructors: instructors,
+            isCancelled: false,
             maxCapacity: '500',
             meetings: meetings ?? sampleMeetingsFactory({}),
             finalExam: finalExam ?? sampleFinalExamFactory({}),

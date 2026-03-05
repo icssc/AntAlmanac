@@ -24,6 +24,16 @@ class GeDataFetchProvider extends PureComponent<SectionTableProps> {
             ge: 'ANY',
             courseNumber: this.props.courseDetails.courseNumber,
             courseTitle: this.props.courseDetails.courseTitle,
+            instructorName: formData.instructor,
+            units: formData.units,
+            endTime: formData.endTime,
+            startTime: formData.startTime,
+            fullCourses: formData.coursesFull,
+            building: formData.building,
+            room: formData.room,
+            division: formData.division,
+            excludeRestrictionCodes: formData.excludeRestrictionCodes.split('').join(','),
+            days: formData.days.split(/(?=[A-Z])/).join(','),
         };
 
         const jsonResp = await WebSOC.query(params);

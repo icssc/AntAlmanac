@@ -1,17 +1,16 @@
 {
-  "name": "@packages/antalmanac-types",
-  "version": "0.0.1",
-  "description": "Internal types for AntAlmanac",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
-  "type": "module",
-  "scripts": {
-  },
-  "dependencies": {
-    "arktype": "1.0.14-alpha",
-    "@packages/anteater-api-types": "workspace:*"
-  },
-  "devDependencies": {
-    "typescript": "5.6.3"
-  }
+    "name": "@packages/antalmanac-types",
+    "version": "0.0.1",
+    "description": "Internal types for AntAlmanac",
+    "main": "./src/index.ts",
+    "types": "./src/index.ts",
+    "type": "module",
+    "scripts": {},
+    "dependencies": {
+        "arktype": "1.0.14-alpha",
+        "@packages/anteater-api-types": "workspace:*"
+    },
+    "devDependencies": {
+        "typescript": "5.6.3"
+    }
 }

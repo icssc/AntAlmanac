@@ -1,10 +1,12 @@
-import { GlobalStyles, Stack, useMediaQuery, useTheme } from '@mui/material';
+import { GlobalStyles, Stack } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
-import { getLocalStorageUserId } from '$lib/localStorage';
+import { useIsMobile } from '$hooks/useIsMobile';
+import { getLocalStorageSessionId } from '$lib/localStorage';
+import AppStore from '$stores/AppStore';
 import { paramsAreInURL } from '$stores/CoursePaneStore';
 import { useTabStore } from '$stores/TabStore';
 
@@ -15,8 +17,7 @@ import { useTabStore } from '$stores/TabStore';
 export function ScheduleManagement() {
     const { activeTab, setActiveTab } = useTabStore();
     const { tab } = useParams();
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMobile = useIsMobile();
 
     // Tab index mapped to the last known scrollTop.
     const [positions, setPositions] = useState<Record<number, number>>({});
@@ -49,15 +50,31 @@ export function ScheduleManagement() {
             return;
         }
 
-        const userId = getLocalStorageUserId();
+        const sessionId = getLocalStorageSessionId();
+        const urlHasManualSearchParams = paramsAreInURL();
+        const hasLocalScheduleData = () =>
+            AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;
 
-        if (userId === null || paramsAreInURL()) {
+        if (urlHasManualSearchParams) {
             setActiveTab('search');
-        } else if (isMobile) {
-            setActiveTab('calendar');
-        } else {
-            setActiveTab('added');
+            return;
         }
+
+        if (!isMobile) {
+            if (sessionId === null) {
+                setActiveTab('search');
+            } else {
+                setActiveTab('added');
+            }
+            return;
+        }
+
+        if (sessionId !== null || hasLocalScheduleData()) {
+            setActiveTab('calendar');
+            return;
+        }
+
+        setActiveTab('search');
         // NB: We disable exhaustive deps here as `tab` is a dependency, but we only want this effect to run on mount
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isMobile, setActiveTab]);

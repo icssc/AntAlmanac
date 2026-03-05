@@ -3,18 +3,20 @@ import 'leaflet.locatecontrol/dist/L.Control.Locate.min.css';
 import './Map.css';
 
 import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
+import { CustomEventId } from '@packages/antalmanac-types';
 import { Marker, type Map, type LatLngTuple } from 'leaflet';
+import dynamic from 'next/dynamic';
 import { usePostHog } from 'posthog-js/react';
 import { Fragment, useEffect, useRef, useCallback, useState, createRef, useMemo } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import 'leaflet-routing-machine';
 
 import LocationMarker from './Marker';
-import ClassRoutes from './Routes';
-import UserLocator from './UserLocator';
+
+const Routes = dynamic(() => import('./Routes'), { ssr: false });
 
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { UserLocator } from '$components/Map/UserLocator';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { TILES_URL } from '$lib/api/endpoints';
@@ -29,6 +31,12 @@ const ATTRIBUTION_MARKUP =
 const WORK_WEEK = ['All', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 const FULL_WEEK = ['All', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const weekendIndices = [0, 6];
+const CAMPUS_CENTER: LatLngTuple = [33.6459, -117.842717];
+const CAMPUS_BOUND_DELTA = 0.018;
+const CAMPUS_BOUNDS: [LatLngTuple, LatLngTuple] = [
+    [CAMPUS_CENTER[0] - CAMPUS_BOUND_DELTA, CAMPUS_CENTER[1] - CAMPUS_BOUND_DELTA],
+    [CAMPUS_CENTER[0] + CAMPUS_BOUND_DELTA, CAMPUS_CENTER[1] + CAMPUS_BOUND_DELTA],
+];
 
 interface MarkerContent {
     key: string;
@@ -107,7 +115,7 @@ export function getCustomEventPerBuilding() {
         start: Date;
         end: Date;
         days: string[];
-        customEventID: number;
+        customEventID: CustomEventId;
         color?: string | undefined;
         building?: string | undefined;
     }
@@ -181,7 +189,7 @@ export default function CourseMap() {
             AppStore.removeListener('currentScheduleIndexChange', updateAllMarkers);
             AppStore.removeListener('colorChange', updateAllMarkers);
         };
-    }, []);
+    }, [postHog]);
 
     useEffect(() => {
         const updateCalendarEvents = () => {
@@ -314,7 +322,14 @@ export default function CourseMap() {
             sx={{ width: '100%', display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100%' }}
             id="map-pane"
         >
-            <MapContainer ref={map} center={[33.6459, -117.842717]} zoom={16} style={{ height: '100%' }}>
+            <MapContainer
+                ref={map}
+                center={CAMPUS_CENTER}
+                zoom={16}
+                style={{ height: '100%' }}
+                maxBounds={CAMPUS_BOUNDS}
+                maxBoundsViscosity={1}
+            >
                 {/* Menu floats above the map. */}
                 <Paper sx={{ position: 'relative', mx: 'auto', my: 2, width: '70%', zIndex: 400 }}>
                     <Tabs value={selectedDayIndex} onChange={handleChange} variant="fullWidth" sx={{ minHeight: 0 }}>
@@ -345,7 +360,7 @@ export default function CourseMap() {
                          * Previous renders of the routes will be left behind if the keys aren't unique.
                          */
                         const key = Math.random().toString(36).substring(7);
-                        return <ClassRoutes key={key} latLngTuples={latLngTuples} color={color} />;
+                        return <Routes key={key} latLngTuples={latLngTuples} color={color} />;
                     })}
 
                 {/* Draw a marker for each class that occurs today. */}

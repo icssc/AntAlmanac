@@ -3,12 +3,12 @@ import { AACourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { ColumnToggleDropdown } from '../CoursePane/CoursePaneButtonRow';
-import SectionTableLazyWrapper from '../SectionTable/SectionTableLazyWrapper';
-
-import CustomEventDetailView from './CustomEventDetailView';
-
 import { updateScheduleNote } from '$actions/AppStoreActions';
+import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEventDetailView';
+import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
+import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
+import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
+import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -30,7 +30,7 @@ const buttonSx: SxProps = {
     pointerEvents: 'auto',
 };
 
-interface CourseWithTerm extends AACourse {
+export interface CourseWithTerm extends AACourse {
     term: string;
 }
 
@@ -49,10 +49,13 @@ function getCourses() {
                 needleCourse.courseTitle === course.courseTitle
         );
 
+        const sectionUpdatedAt = course.section?.updatedAt ?? null;
+
         if (formattedCourse) {
             formattedCourse.sections.push({
                 ...course.section,
             });
+            formattedCourse.updatedAt = sectionUpdatedAt;
         } else {
             formattedCourse = {
                 term: course.term,
@@ -61,12 +64,13 @@ function getCourses() {
                 prerequisiteLink: course.prerequisiteLink,
                 courseNumber: course.courseNumber,
                 courseTitle: course.courseTitle,
+                sectionTypes: course.sectionTypes,
                 sections: [
                     {
                         ...course.section,
                     },
                 ],
-                updatedAt: null,
+                updatedAt: sectionUpdatedAt ?? null,
             };
             formattedCourses.push(formattedCourse);
         }
@@ -124,7 +128,7 @@ function CustomEventsBox() {
             <Box display="flex" flexDirection="column" gap={1}>
                 {customEvents.map((customEvent) => {
                     return (
-                        <Box key={customEvent.title}>
+                        <Box key={customEvent.customEventID}>
                             <CustomEventDetailView
                                 customEvent={customEvent}
                                 scheduleNames={AppStore.getScheduleNames()}
@@ -348,12 +352,15 @@ function AddedSectionsGrid() {
                 <CopyScheduleButton index={scheduleIndex} buttonSx={buttonSx} />
                 <ClearScheduleButton buttonSx={buttonSx} analyticsCategory={analyticsEnum.addedClasses} />
                 <ColumnToggleDropdown />
+                <NotificationsDialog buttonSx={buttonSx} />
             </Box>
             <Box sx={{ marginTop: 7 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
                 {courses.length < 1 ? NoCoursesBox : null}
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
+                        const missingSections = getMissingSections(course);
+
                         return (
                             <Box key={course.deptCode + course.courseNumber + course.courseTitle}>
                                 <SectionTableLazyWrapper
@@ -362,6 +369,7 @@ function AddedSectionsGrid() {
                                     allowHighlight={false}
                                     analyticsCategory={analyticsEnum.addedClasses}
                                     scheduleNames={scheduleNames}
+                                    missingSections={missingSections}
                                 />
                             </Box>
                         );
@@ -385,8 +393,6 @@ export function AddedCoursePane() {
             setSkeletonMode(AppStore.getSkeletonMode());
         };
 
-        console.log('Opened added ourse');
-
         logAnalytics(postHog, {
             category: analyticsEnum.addedClasses,
             action: analyticsEnum.addedClasses.actions.OPEN,
@@ -397,7 +403,7 @@ export function AddedCoursePane() {
         return () => {
             AppStore.off('skeletonModeChange', handleSkeletonModeChange);
         };
-    }, []);
+    }, [postHog]);
 
     return <Box>{skeletonMode ? <SkeletonSchedule /> : <AddedSectionsGrid />}</Box>;
 }

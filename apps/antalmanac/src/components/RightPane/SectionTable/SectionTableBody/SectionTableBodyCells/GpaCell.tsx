@@ -1,10 +1,10 @@
-import { Button, Popover, useMediaQuery } from '@mui/material';
+import { Button, Popover } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { Grades } from '$lib/grades';
-import { MOBILE_BREAKPOINT } from '$src/globals';
 import { usePrimaryColor } from '$src/hooks/usePrimaryColor';
 
 async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
@@ -31,7 +31,7 @@ interface GpaCellProps {
 }
 
 export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) => {
-    const isMobile = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}`);
+    const isMobile = useIsMobile();
 
     const [gpa, setGpa] = useState('');
     const [instructor, setInstructor] = useState('');
@@ -83,7 +83,7 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
                     deptCode={deptCode}
                     courseNumber={courseNumber}
                     instructor={instructor}
-                    isMobileScreen={isMobile}
+                    isMobile={isMobile}
                 />
             </Popover>
         </TableBodyCellContainer>
