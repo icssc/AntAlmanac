@@ -27,15 +27,6 @@ export const bannerLogo = {
     marginRight: '8px',
 };
 
-export const bannerText = {
-    color: '#ffffff',
-    fontSize: '18px',
-    fontWeight: '600',
-    margin: '0',
-    display: 'inline-block',
-    verticalAlign: 'middle',
-};
-
 export const contentSection = {
     backgroundColor: '#ffffff',
     padding: '40px 20px',
@@ -57,33 +48,100 @@ export const text = {
     margin: '0 0 20px',
 };
 
-export const notificationBox = {
+export const boxBase = {
     backgroundColor: '#f8fafc',
     borderRadius: '6px',
     padding: '16px',
     margin: '0 0 24px',
+};
+
+export const notificationBox = {
+    ...boxBase,
     borderLeft: '4px solid #0066cc',
 };
 
-export const notificationLabel = {
+export const sectionLabel = {
     color: '#000000',
     fontSize: '16px',
     fontWeight: '600',
     margin: '0 0 8px',
 };
 
-export const courseDetailsBox = {
-    backgroundColor: '#f8fafc',
-    borderRadius: '6px',
-    padding: '16px',
-    margin: '0 0 24px',
+export const changeTable = {
+    width: '100%' as const,
+    borderCollapse: 'collapse' as const,
 };
 
-export const courseDetailsLabel = {
-    color: '#000000',
-    fontSize: '16px',
-    fontWeight: '600',
-    margin: '0 0 8px',
+export const changeRowCell = {
+    padding: '4px 0',
+    fontSize: '14px',
+};
+
+export const changeRowLabel = {
+    ...changeRowCell,
+    color: '#64748b',
+};
+
+const pillBase = {
+    padding: '4px 10px',
+    display: 'inline-block' as const,
+    fontWeight: '600' as const,
+};
+
+const statusPillShape = { borderRadius: '9999px' as const };
+const changePillShape = { borderRadius: '6px' as const };
+
+export const statusPillWaitlisted = {
+    ...pillBase,
+    ...statusPillShape,
+    backgroundColor: '#dbeafe',
+    color: '#1e40af',
+};
+
+export const statusPillOpen = {
+    ...pillBase,
+    ...statusPillShape,
+    backgroundColor: '#dcfce7',
+    color: '#166534',
+};
+
+export const statusPillFull = {
+    ...pillBase,
+    ...statusPillShape,
+    backgroundColor: '#fecaca',
+    color: '#991b1b',
+};
+
+export const statusPillDefault = {
+    ...pillBase,
+    ...statusPillShape,
+    backgroundColor: '#f1f5f9',
+    color: '#475569',
+};
+
+export const changePillFrom = {
+    ...pillBase,
+    ...changePillShape,
+    backgroundColor: '#f1f5f9',
+    color: '#475569',
+};
+
+export const changePillTo = {
+    ...pillBase,
+    ...changePillShape,
+    backgroundColor: '#ede9fe',
+    color: '#6b21a8',
+};
+
+export const changeArrow = {
+    margin: '0 6px',
+};
+
+export const hiddenMessageId = {
+    display: 'none' as const,
+    maxHeight: 0,
+    overflow: 'hidden' as const,
+    visibility: 'hidden' as const,
 };
 
 export const courseDetails = {

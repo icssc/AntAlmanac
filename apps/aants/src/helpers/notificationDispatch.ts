@@ -97,27 +97,22 @@ async function sendNotification(
     } = courseDetails;
 
     try {
-        const parts = [];
+        const status = currentStatus === 'Waitl' ? 'WAITLISTED' : currentStatus;
+        const formerStatusLabel = formerStatus === 'Waitl' ? 'WAITLISTED' : formerStatus;
 
-        if (statusChanged) {
-            const status = currentStatus === 'Waitl' ? 'WAITLISTED' : currentStatus;
-            const former = formerStatus === 'Waitl' ? 'WAITLISTED' : formerStatus;
-            parts.push(
-                formerStatus !== null
-                    ? `Status: <strong>${former}</strong> → <strong>${status}</strong>`
-                    : `Status: <strong>${status}</strong>`
-            );
-        }
+        const statusChange = statusChanged
+            ? {
+                  from: formerStatus !== null ? (formerStatusLabel ?? '—') : '—',
+                  to: status,
+              }
+            : null;
 
-        if (codesChanged) {
-            parts.push(
-                formerRestrictionCodes !== null && formerRestrictionCodes !== ''
-                    ? `Restriction Codes: <strong>${formerRestrictionCodes}</strong> → <strong>${restrictionCodes}</strong>`
-                    : `Restriction Codes: <strong>${restrictionCodes}</strong>`
-            );
-        }
-
-        const notification = parts.map((p) => `• ${p}`).join('<br>');
+        const restrictionCodesChange = codesChanged
+            ? {
+                  from: formerRestrictionCodes !== null && formerRestrictionCodes !== '' ? formerRestrictionCodes : '—',
+                  to: restrictionCodes,
+              }
+            : null;
 
         const time = getFormattedTime();
 
@@ -141,7 +136,8 @@ async function sendNotification(
                         messageId,
                         userName: user.userName,
                         time,
-                        notification,
+                        statusChange,
+                        restrictionCodesChange,
                         deptCode,
                         courseNumber,
                         courseTitle,

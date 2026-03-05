@@ -19,27 +19,53 @@ import {
     bannerLogo,
     button,
     buttonContainer,
+    changeArrow,
+    changePillFrom,
+    changePillTo,
+    changeRowCell,
+    changeRowLabel,
+    boxBase,
+    changeTable,
     contentSection,
     courseDetails,
-    courseDetailsBox,
-    courseDetailsLabel,
+    sectionLabel,
     footerText,
     h1,
+    hiddenMessageId,
     hr,
     link,
     main,
     notificationBox,
-    notificationLabel,
     outerContainer,
     signature,
+    statusPillDefault,
+    statusPillFull,
+    statusPillOpen,
+    statusPillWaitlisted,
     text,
 } from './CourseNotificationEmail.styles';
+
+const STATUS_PILL_STYLES: Record<string, object> = {
+    WAITLISTED: statusPillWaitlisted,
+    OPEN: statusPillOpen,
+    FULL: statusPillFull,
+};
+
+function getStatusPillStyle(status: string) {
+    return STATUS_PILL_STYLES[status] ?? statusPillDefault;
+}
+
+export interface StatusChange {
+    from: string;
+    to: string;
+}
 
 export interface CourseNotificationEmailProps {
     messageId: string;
     userName: string;
     time: string;
-    notification: string;
+    statusChange?: StatusChange | null;
+    restrictionCodesChange?: { from: string; to: string } | null;
     deptCode: string;
     courseNumber: string;
     courseTitle: string;
@@ -57,7 +83,8 @@ export function CourseNotificationEmail({
     messageId,
     userName,
     time,
-    notification,
+    statusChange,
+    restrictionCodesChange,
     deptCode,
     courseNumber,
     courseTitle,
@@ -114,13 +141,40 @@ export function CourseNotificationEmail({
                             enrollment changes as of <strong>{time}</strong>.
                         </Text>
 
-                        <Section style={notificationBox}>
-                            <Text style={notificationLabel}>The changes are:</Text>
-                            <div dangerouslySetInnerHTML={{ __html: notification }} style={courseDetails} />
-                        </Section>
+                        {(statusChange || restrictionCodesChange) && (
+                            <Section style={notificationBox}>
+                                <Text style={sectionLabel}>What changed</Text>
+                                <table style={changeTable}>
+                                    {statusChange && (
+                                        <tr>
+                                            <td style={changeRowLabel}>Enrollment Status:</td>
+                                            <td style={changeRowCell}>
+                                                <span style={getStatusPillStyle(statusChange.from)}>
+                                                    {statusChange.from}
+                                                </span>
+                                                <span style={changeArrow}>→</span>
+                                                <span style={getStatusPillStyle(statusChange.to)}>
+                                                    {statusChange.to}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    )}
+                                    {restrictionCodesChange && (
+                                        <tr>
+                                            <td style={changeRowLabel}>Restriction Codes:</td>
+                                            <td style={changeRowCell}>
+                                                <span style={changePillFrom}>{restrictionCodesChange.from}</span>
+                                                <span style={changeArrow}>→</span>
+                                                <span style={changePillTo}>{restrictionCodesChange.to}</span>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </table>
+                            </Section>
+                        )}
 
-                        <Section style={courseDetailsBox}>
-                            <Text style={courseDetailsLabel}>Course Details</Text>
+                        <Section style={boxBase}>
+                            <Text style={sectionLabel}>Course Details</Text>
                             <Text style={courseDetails}>
                                 Course Name:{' '}
                                 <strong>
@@ -176,16 +230,7 @@ export function CourseNotificationEmail({
                             <br />
                             The AntAlmanac Team
                         </Text>
-                        <div
-                            style={{
-                                display: 'none',
-                                maxHeight: 0,
-                                overflow: 'hidden',
-                                visibility: 'hidden',
-                            }}
-                        >
-                            ID: {messageId}
-                        </div>
+                        <div style={hiddenMessageId}>ID: {messageId}</div>
                     </Section>
                 </Container>
             </Body>
