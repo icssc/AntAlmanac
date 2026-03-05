@@ -102,7 +102,7 @@ async function sendNotification(
             const former = formerStatus === 'Waitl' ? 'WAITLISTED' : formerStatus;
             parts.push(
                 formerStatus !== null
-                    ? `The class was <strong>${former}</strong> and is now <strong>${status}</strong>`
+                    ? `The class is now <strong>${status}</strong> (formerly <strong>${former}</strong>)`
                     : `The class is now <strong>${status}</strong>`
             );
         }
