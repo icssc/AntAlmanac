@@ -157,6 +157,16 @@ export function SelectSchedulePopover() {
                 anchorEl={anchorElementRef.current}
                 onClose={handleClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                slotProps={{
+                    paper: {
+                        sx: {
+                            ...(theme.palette.mode === 'dark' && {
+                                bgcolor: 'background.elevated',
+                                color: 'text.primary',
+                            }),
+                        },
+                    },
+                }}
             >
                 <Box padding={1}>
                     <SortableList

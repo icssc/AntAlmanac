@@ -50,7 +50,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                     <ToggleButtonGroup
                         fullWidth
                         size="medium"
-                        color="primary"
+                        color="secondary"
                         value={manualSearchEnabled ? 'manual' : 'quick'}
                         exclusive
                         aria-label="Search selection"

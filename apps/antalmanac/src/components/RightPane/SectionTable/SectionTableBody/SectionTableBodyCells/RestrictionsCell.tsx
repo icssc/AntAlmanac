@@ -4,6 +4,8 @@ import { Fragment, useCallback, useMemo, useState } from 'react';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import restrictionsMapping from '$components/RightPane/SectionTable/static/restrictionsMapping.json';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { BLUE, LIGHT_BLUE } from '$src/globals';
+import { useThemeStore } from '$stores/SettingsStore';
 
 interface RestrictionsCellProps {
     restrictions: string;
@@ -11,6 +13,7 @@ interface RestrictionsCellProps {
 
 export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
     const isMobile = useIsMobile();
+    const isDark = useThemeStore((store) => store.isDark);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
     const parsedRestrictions = useMemo(
@@ -49,7 +52,6 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={{
-                    color: 'primary.main',
                     display: 'block',
                     marginTop: 1,
                 }}
@@ -72,9 +74,9 @@ export const RestrictionsCell = ({ restrictions }: RestrictionsCellProps) => {
                             }}
                             sx={{
                                 background: 'none',
-                                color: 'primary.main',
                                 border: 0,
                                 textDecoration: 'underline',
+                                color: isDark ? LIGHT_BLUE : BLUE,
                             }}
                         >
                             {restrictions}

@@ -25,8 +25,10 @@ import { loadSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/
 import { AlertDialog } from '$components/AlertDialog';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
+import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
+import { DARK_PAPER_BG } from '$src/globals';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -197,7 +199,15 @@ export const Signin = () => {
                 loading={loadingSchedule}
             />
 
-            <Dialog open={isOpen} onClose={() => handleClose(true)}>
+            <Dialog
+                open={isOpen}
+                onClose={() => handleClose(true)}
+                PaperProps={{
+                    sx: {
+                        bgcolor: isDark ? DARK_PAPER_BG : 'background.paper',
+                    },
+                }}
+            >
                 <DialogContent>
                     <Stack spacing={1}>
                         <LoadingButton
@@ -252,6 +262,7 @@ export const Signin = () => {
                                     type="text"
                                     fullWidth
                                     placeholder="Enter here"
+                                    color="secondary"
                                     value={userID}
                                     onChange={(event) => setUserID(event.target.value)}
                                 />
@@ -260,11 +271,11 @@ export const Signin = () => {
                     </Stack>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => handleClose(true)} color={isDark ? 'secondary' : 'primary'}>
+                    <Button onClick={() => handleClose(true)} color="inherit">
                         Cancel
                     </Button>
                     {showLegacyLogin && (
-                        <Button onClick={() => handleClose(false)} color={isDark ? 'secondary' : 'primary'}>
+                        <Button onClick={() => handleClose(false)} color="inherit">
                             Sign in
                         </Button>
                     )}
@@ -285,23 +296,13 @@ export const Signin = () => {
                 }}
                 slotProps={{
                     paper: {
-                        sx: {
-                            width: {
-                                xs: 300,
-                                sm: 300,
-                                md: 330,
-                            },
-                            p: '16px 20px',
-                            borderRadius: 2,
-                            border: '1px solid',
-                            borderColor: 'background.default',
-                        },
+                        sx: getSettingsPopoverPaperSx(isDark),
                     },
                 }}
             >
                 <SettingsMenu user={null} onClose={() => setSettingsAnchorEl(null)} />
 
-                <Divider style={{ marginTop: '10px', marginBottom: '12px' }} />
+                <Divider style={{ marginTop: '20px', marginBottom: '12px' }} />
 
                 <MenuItem onClick={handleOpen} sx={{ px: 1, py: 1.25, borderRadius: 1 }}>
                     <ListItemIcon>

@@ -15,6 +15,7 @@ import { SectionCodeCell } from '$components/RightPane/SectionTable/SectionTable
 import { StatusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/StatusCell';
 import { SyllabusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SyllabusCell';
 import { AnalyticsCategory } from '$lib/analytics/analytics';
+import { DARK_PAPER_BG } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
@@ -103,7 +104,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             /* allowHighlight is always false on CourseRenderPane and always true on AddedCoursePane */
             const computedAddedCourseStyle = allowHighlight
                 ? isDark
-                    ? { backgroundColor: '#b0b04f' }
+                    ? { backgroundColor: '#b0b04fa0' }
                     : { backgroundColor: '#fcfc97' }
                 : {};
 
@@ -111,17 +112,21 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         }
 
         if (scheduleConflict) {
-            const computedScheduleConflictStyle = scheduleConflict
-                ? isDark
-                    ? { backgroundColor: '#121212', opacity: '0.6' }
-                    : { backgroundColor: '#a0a0a0', opacity: '1' }
-                : {};
-
-            return computedScheduleConflictStyle;
+            return {
+                backgroundColor:
+                    theme.palette.mode === 'dark' ? DARK_PAPER_BG : theme.palette.action.disabledBackground,
+            };
         }
 
         return {};
-    }, [allowHighlight, isDark, scheduleConflict, addedCourse]);
+    }, [
+        addedCourse,
+        allowHighlight,
+        isDark,
+        scheduleConflict,
+        theme.palette.action.disabledBackground,
+        theme.palette.mode,
+    ]);
 
     return (
         <TableRow

@@ -1,14 +1,15 @@
 import { Notifications } from '@mui/icons-material';
 import {
-    Box,
-    Button,
     Dialog,
-    DialogActions,
     DialogContent,
     DialogTitle,
+    DialogActions,
+    Button,
     IconButton,
-    type SxProps,
+    SxProps,
     Tooltip,
+    Box,
+    useTheme,
 } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -16,6 +17,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
 import { NotificationsTabs } from '$components/RightPane/AddedCourses/Notifications/NotificationsTabs';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
+import { DARK_PAPER_BG, LIGHT_BLUE } from '$src/globals';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
@@ -25,6 +27,7 @@ interface NotificationsDialogProps {
 }
 
 export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogProps) {
+    const theme = useTheme();
     const [open, setOpen] = useState(false);
     const [signInOpen, setSignInOpen] = useState<boolean>(false);
     const isDark = useThemeStore((store) => store.isDark);
@@ -68,18 +71,47 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
                 </IconButton>
             </Tooltip>
 
-            <Dialog open={open} onClose={handleClose} fullWidth>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                fullWidth
+                PaperProps={{
+                    sx: {
+                        ...(theme.palette.mode === 'dark' && {
+                            bgcolor: DARK_PAPER_BG,
+                            color: 'text.primary',
+                        }),
+                    },
+                }}
+            >
                 <DialogTitle>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         Manage Notifications
                         <NotificationEmailTooltip sessionToken={session} />
                     </Box>
                 </DialogTitle>
-                <DialogContent>
+                <DialogContent
+                    sx={
+                        theme.palette.mode === 'dark'
+                            ? {
+                                  '& a, & a:hover, & a:visited': { color: LIGHT_BLUE },
+                                  '& .MuiTab-root': { color: 'text.secondary' },
+                                  '& .MuiTab-root.Mui-selected': { color: LIGHT_BLUE },
+                                  '& .MuiTabs-indicator': { backgroundColor: LIGHT_BLUE },
+                                  '& .MuiCheckbox-root.Mui-checked': { color: LIGHT_BLUE },
+                                  '& .MuiChip-label': { color: 'text.primary' },
+                                  '& .MuiTablePagination-actions .MuiIconButton-root': {
+                                      color: 'text.primary',
+                                  },
+                                  '& .MuiTablePagination-selectIcon': { color: 'text.primary' },
+                              }
+                            : undefined
+                    }
+                >
                     <NotificationsTabs />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} variant="text" sx={{ color: 'white' }}>
+                    <Button onClick={handleClose} color="inherit">
                         Close
                     </Button>
                 </DialogActions>

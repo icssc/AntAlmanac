@@ -12,6 +12,7 @@ import {
     Stack,
     Typography,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -32,6 +33,9 @@ import { BLUE } from '$src/globals';
 import { useIsMobile } from '$src/hooks/useIsMobile';
 import { useSessionStore } from '$stores/SessionStore';
 
+/** Lighter gray for Switch Apps dropdown (matches settings popover). */
+const SWITCH_APPS_BG = '#383838';
+
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
@@ -39,6 +43,8 @@ export function Header() {
     const importedUser = getLocalStorageImportedUser() ?? '';
     const { session, sessionIsValid } = useSessionStore();
     const isMobile = useIsMobile();
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
 
     const platform = window.location.pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
 
@@ -129,18 +135,30 @@ export function Header() {
                                 >
                                     <MenuList
                                         subheader={
-                                            <ListSubheader component="div" sx={{ lineHeight: '30px' }}>
+                                            <ListSubheader
+                                                component="div"
+                                                sx={{ lineHeight: '30px', ...(isDark && { bgcolor: SWITCH_APPS_BG }) }}
+                                            >
                                                 Switch Apps
                                             </ListSubheader>
                                         }
-                                        sx={{ width: 200 }}
+                                        sx={{ width: 200, ...(isDark && { bgcolor: SWITCH_APPS_BG }) }}
                                     >
                                         <MenuItem
                                             component={Link}
                                             href="/"
                                             selected={platform === 'Scheduler'}
                                             onClick={() => setAnchorEl(null)}
-                                            sx={{ minHeight: 'fit-content', textDecoration: 'none', color: 'inherit' }}
+                                            sx={{
+                                                minHeight: 'fit-content',
+                                                textDecoration: 'none',
+                                                color: 'inherit',
+                                                ...(isDark && {
+                                                    '&.Mui-selected': { bgcolor: SWITCH_APPS_BG },
+                                                    '&.Mui-selected:hover': { bgcolor: SWITCH_APPS_BG },
+                                                    '&:hover': { bgcolor: SWITCH_APPS_BG },
+                                                }),
+                                            }}
                                         >
                                             <ListItemIcon>
                                                 <EventNote />
@@ -154,7 +172,16 @@ export function Header() {
                                             href="/planner"
                                             selected={platform === 'Planner'}
                                             onClick={() => setAnchorEl(null)}
-                                            sx={{ minHeight: 'fit-content', textDecoration: 'none', color: 'inherit' }}
+                                            sx={{
+                                                minHeight: 'fit-content',
+                                                textDecoration: 'none',
+                                                color: 'inherit',
+                                                ...(isDark && {
+                                                    '&.Mui-selected': { bgcolor: SWITCH_APPS_BG },
+                                                    '&.Mui-selected:hover': { bgcolor: SWITCH_APPS_BG },
+                                                    '&:hover': { bgcolor: SWITCH_APPS_BG },
+                                                }),
+                                            }}
                                         >
                                             <ListItemIcon>
                                                 <Route />
