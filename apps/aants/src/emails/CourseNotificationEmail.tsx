@@ -20,8 +20,7 @@ import {
     button,
     buttonContainer,
     changeArrow,
-    changePillFrom,
-    changePillTo,
+    restrictionPill,
     changeRowCell,
     changeRowLabel,
     boxBase,
@@ -163,9 +162,9 @@ export function CourseNotificationEmail({
                                         <tr>
                                             <td style={changeRowLabel}>Restriction Codes:</td>
                                             <td style={changeRowCell}>
-                                                <span style={changePillFrom}>{restrictionCodesChange.from}</span>
+                                                <span style={restrictionPill}>{restrictionCodesChange.from}</span>
                                                 <span style={changeArrow}>→</span>
-                                                <span style={changePillTo}>{restrictionCodesChange.to}</span>
+                                                <span style={restrictionPill}>{restrictionCodesChange.to}</span>
                                             </td>
                                         </tr>
                                     )}

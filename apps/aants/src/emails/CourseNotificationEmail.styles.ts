@@ -79,7 +79,6 @@ export const changeRowCell = {
 
 export const changeRowLabel = {
     ...changeRowCell,
-    color: '#64748b',
 };
 
 const pillBase = {
@@ -119,18 +118,10 @@ export const statusPillDefault = {
     color: '#475569',
 };
 
-export const changePillFrom = {
+export const restrictionPill = {
     ...pillBase,
     ...changePillShape,
     backgroundColor: '#f1f5f9',
-    color: '#475569',
-};
-
-export const changePillTo = {
-    ...pillBase,
-    ...changePillShape,
-    backgroundColor: '#ede9fe',
-    color: '#6b21a8',
 };
 
 export const changeArrow = {
