@@ -1,6 +1,6 @@
 import type { SxProps, Theme } from '@mui/material';
 
-import { DARK_PAPER_BG } from '$src/globals';
+const SETTINGS_POPOVER_BG = '#383838';
 
 /**
  * Shared paper sx for the settings/profile popover used in Signin and Signout.
@@ -17,7 +17,7 @@ export function getSettingsPopoverPaperSx(isDark: boolean): SxProps<Theme> {
         borderRadius: 2,
         border: '1px solid',
         borderColor: 'background.default',
-        bgcolor: isDark ? DARK_PAPER_BG : 'background.paper',
+        bgcolor: isDark ? SETTINGS_POPOVER_BG : 'background.paper',
         color: isDark ? 'white' : 'text.primary',
     };
 }

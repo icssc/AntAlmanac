@@ -180,6 +180,16 @@ export default function AppThemeProvider(props: Props) {
                             variant: 'standard',
                         },
                     },
+                    MuiPaper: {
+                        styleOverrides: {
+                            root: {
+                                ...(appTheme === 'dark' && {
+                                    backgroundImage: 'none',
+                                    ...darkPaperOverride,
+                                }),
+                            },
+                        },
+                    },
                     MuiPopover: {
                         styleOverrides: {
                             paper: {
@@ -191,6 +201,7 @@ export default function AppThemeProvider(props: Props) {
                     MuiMenu: {
                         styleOverrides: {
                             paper: {
+                                backgroundImage: 'none',
                                 ...(appTheme === 'dark' && darkPaperOverride),
                             },
                         },
