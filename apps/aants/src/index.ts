@@ -88,6 +88,7 @@ async function processSection(
         days: meeting && !meeting.timeIsTBA ? meeting.days : 'TBA',
         hours: meeting ? formatMeetingTime(meeting) : 'TBA',
         currentStatus: status,
+        formerStatus: previousStatus,
         restrictionCodes: restrictions,
         deptCode: course.deptCode,
         courseNumber: course.courseNumber,

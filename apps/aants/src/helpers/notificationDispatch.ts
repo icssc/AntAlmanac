@@ -13,6 +13,7 @@ export interface CourseDetails {
     days: string;
     hours: string;
     currentStatus: WebsocSection['status'];
+    formerStatus: WebsocSection['status'] | null;
     restrictionCodes: string;
     deptCode: string;
     courseNumber: string;
@@ -83,6 +84,7 @@ async function sendNotification(
         days,
         hours,
         currentStatus,
+        formerStatus,
         restrictionCodes,
         deptCode,
         courseNumber,
@@ -97,7 +99,12 @@ async function sendNotification(
 
         if (statusChanged) {
             const status = currentStatus === 'Waitl' ? 'WAITLISTED' : currentStatus;
-            parts.push(`The class is now <strong>${status}</strong>`);
+            const former = formerStatus === 'Waitl' ? 'WAITLISTED' : formerStatus;
+            parts.push(
+                formerStatus !== null
+                    ? `The class was <strong>${former}</strong> and is now <strong>${status}</strong>`
+                    : `The class is now <strong>${status}</strong>`
+            );
         }
 
         if (codesChanged) {

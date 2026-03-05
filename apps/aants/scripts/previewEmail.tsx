@@ -21,7 +21,7 @@ const SAMPLE_PROPS = {
         ' on ' +
         new Date().toLocaleDateString('en-US', { timeZone: 'America/Los_Angeles' }),
     notification:
-        '- The class is now <strong>WAITLISTED</strong><br>- The class now has restriction codes <strong>E</strong>',
+        '- The class was <strong>OPEN</strong> and is now <strong>WAITLISTED</strong><br>- The class now has restriction codes <strong>E</strong>',
     deptCode: 'ICS',
     courseNumber: '31',
     courseTitle: 'Introduction to Programming',
