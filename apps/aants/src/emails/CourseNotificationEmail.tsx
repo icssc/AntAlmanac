@@ -91,11 +91,7 @@ export function CourseNotificationEmail({
 
     return (
         <Html lang="en">
-            <Head>
-                <meta name="color-scheme" content="light" />
-                <meta name="supported-color-schemes" content="light" />
-                <style>{`:root { color-scheme: light; }`}</style>
-            </Head>
+            <Head />
             <Preview>
                 {deptCode} {courseNumber} ({courseType}) had enrollment changes
             </Preview>
@@ -104,7 +100,7 @@ export function CourseNotificationEmail({
                     <Section style={banner}>
                         <Link href="https://antalmanac.com" style={bannerLink}>
                             <Img
-                                src="https://antalmanac.com/favicon-96x96.png"
+                                src="https://antalmanac.com/assets/mobile-logo-cropped.svg"
                                 alt="AntAlmanac"
                                 width={28}
                                 height={28}
@@ -116,9 +112,8 @@ export function CourseNotificationEmail({
                     <Section style={contentSection}>
                         <Heading style={h1}>Hi {userName}!</Heading>
                         <Text style={text}>
-                            Based on your notification subscriptions on AntAlmanac, the AntAlmanac team would like to
-                            notify you that the following class has had some enrollment changes as of{' '}
-                            <strong>{time}</strong>.
+                            The AntAlmanac team would like to notify you that the following class has had some
+                            enrollment changes as of <strong>{time}</strong>.
                         </Text>
 
                         <Section style={notificationBox}>
