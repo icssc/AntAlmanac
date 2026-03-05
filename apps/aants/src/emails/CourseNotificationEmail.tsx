@@ -17,7 +17,6 @@ import {
     banner,
     bannerLink,
     bannerLogo,
-    bannerText,
     button,
     buttonContainer,
     contentSection,
@@ -100,13 +99,12 @@ export function CourseNotificationEmail({
                     <Section style={banner}>
                         <Link href="https://antalmanac.com" style={bannerLink}>
                             <Img
-                                src="https://antalmanac.com/assets/mobile-logo-cropped.svg"
+                                src="https://antalmanac.com/assets/logo.png"
                                 alt="AntAlmanac"
-                                width={28}
+                                width={180}
                                 height={28}
                                 style={bannerLogo}
                             />
-                            <Text style={bannerText}>AntAlmanac</Text>
                         </Link>
                     </Section>
                     <Section style={contentSection}>
