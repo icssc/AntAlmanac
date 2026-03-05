@@ -110,7 +110,7 @@ async function sendNotification(
         const restrictionCodesChange = codesChanged
             ? {
                   from: formerRestrictionCodes !== null && formerRestrictionCodes !== '' ? formerRestrictionCodes : '—',
-                  to: restrictionCodes,
+                  to: restrictionCodes !== null && restrictionCodes !== '' ? restrictionCodes : '—',
               }
             : null;
 

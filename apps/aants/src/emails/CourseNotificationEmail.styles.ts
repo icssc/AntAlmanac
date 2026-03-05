@@ -79,6 +79,7 @@ export const changeRowCell = {
 
 export const changeRowLabel = {
     ...changeRowCell,
+    color: '#000000',
 };
 
 const pillBase = {
@@ -122,6 +123,7 @@ export const restrictionPill = {
     ...pillBase,
     ...changePillShape,
     backgroundColor: '#f1f5f9',
+    color: '#000000',
 };
 
 export const changeArrow = {
