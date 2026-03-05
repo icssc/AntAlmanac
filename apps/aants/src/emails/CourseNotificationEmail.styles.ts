@@ -177,11 +177,3 @@ export const link = {
     color: '#0066cc',
     textDecoration: 'underline',
 };
-
-export const signature = {
-    color: '#000000',
-    fontSize: '14px',
-    lineHeight: '22px',
-    margin: '0',
-    textAlign: 'left' as const,
-};

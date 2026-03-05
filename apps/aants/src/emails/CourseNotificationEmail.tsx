@@ -36,7 +36,6 @@ import {
     main,
     notificationBox,
     outerContainer,
-    signature,
     statusPillDefault,
     statusPillFull,
     statusPillOpen,
@@ -246,12 +245,6 @@ export function CourseNotificationEmail({
                             <Link href={unsubscribeAllUrl} style={link}>
                                 Unsubscribe from all courses
                             </Link>
-                        </Text>
-
-                        <Text style={signature}>
-                            Best,
-                            <br />
-                            The AntAlmanac Team
                         </Text>
                         <div style={hiddenMessageId}>ID: {messageId}</div>
                     </Section>
