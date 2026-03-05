@@ -54,6 +54,19 @@ function getStatusPillStyle(status: string) {
     return STATUS_PILL_STYLES[status] ?? statusPillDefault;
 }
 
+/** Abbreviates WAITLISTED to WAITL on mobile to prevent wrapping */
+function StatusPillText({ status }: { status: string }) {
+    if (status === 'WAITLISTED') {
+        return (
+            <>
+                <span className="status-desktop">{status}</span>
+                <span className="status-mobile">WAITL</span>
+            </>
+        );
+    }
+    return <>{status}</>;
+}
+
 export interface StatusChange {
     from: string;
     to: string;
@@ -116,7 +129,16 @@ export function CourseNotificationEmail({
 
     return (
         <Html lang="en">
-            <Head />
+            <Head>
+                <style>{`
+                    .status-desktop { display: inline; }
+                    .status-mobile { display: none; }
+                    @media screen and (max-width: 480px) {
+                        .status-desktop { display: none !important; }
+                        .status-mobile { display: inline !important; }
+                    }
+                `}</style>
+            </Head>
             <Preview>
                 {deptCode} {courseNumber} ({courseType}) had enrollment changes
             </Preview>
@@ -150,11 +172,11 @@ export function CourseNotificationEmail({
                                                 <td style={changeRowLabel}>Enrollment Status:</td>
                                                 <td style={changeRowCell}>
                                                     <span style={getStatusPillStyle(statusChange.from)}>
-                                                        {statusChange.from}
+                                                        <StatusPillText status={statusChange.from} />
                                                     </span>
                                                     <span style={changeArrow}>→</span>
                                                     <span style={getStatusPillStyle(statusChange.to)}>
-                                                        {statusChange.to}
+                                                        <StatusPillText status={statusChange.to} />
                                                     </span>
                                                 </td>
                                             </tr>
