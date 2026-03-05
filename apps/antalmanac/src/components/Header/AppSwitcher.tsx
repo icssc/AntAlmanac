@@ -47,7 +47,7 @@ export function AppSwitcher({ isMobile }: AppSwitcherProps) {
         setPlannerLoading(true);
     };
 
-    const plannerIcon = plannerLoading ? <CircularProgress size={16} color="inherit" /> : <Route />;
+    const plannerIcon = plannerLoading ? <CircularProgress size={20} sx={{ margin: 0 }} color="inherit" /> : <Route />;
 
     if (isMobile) {
         return (
