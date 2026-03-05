@@ -15,6 +15,7 @@ export interface CourseDetails {
     currentStatus: WebsocSection['status'];
     formerStatus: WebsocSection['status'] | null;
     restrictionCodes: string;
+    formerRestrictionCodes: string | null;
     deptCode: string;
     courseNumber: string;
     courseTitle: string;
@@ -86,6 +87,7 @@ async function sendNotification(
         currentStatus,
         formerStatus,
         restrictionCodes,
+        formerRestrictionCodes,
         deptCode,
         courseNumber,
         courseTitle,
@@ -102,16 +104,20 @@ async function sendNotification(
             const former = formerStatus === 'Waitl' ? 'WAITLISTED' : formerStatus;
             parts.push(
                 formerStatus !== null
-                    ? `The class is now <strong>${status}</strong> (formerly <strong>${former}</strong>)`
-                    : `The class is now <strong>${status}</strong>`
+                    ? `Status: <strong>${former}</strong> → <strong>${status}</strong>`
+                    : `Status: <strong>${status}</strong>`
             );
         }
 
         if (codesChanged) {
-            parts.push(`The class now has restriction codes <strong>${restrictionCodes}</strong>`);
+            parts.push(
+                formerRestrictionCodes !== null && formerRestrictionCodes !== ''
+                    ? `Restriction Codes: <strong>${formerRestrictionCodes}</strong> → <strong>${restrictionCodes}</strong>`
+                    : `Restriction Codes: <strong>${restrictionCodes}</strong>`
+            );
         }
 
-        const notification = parts.map((p) => `- ${p}`).join('<br>');
+        const notification = parts.map((p) => `• ${p}`).join('<br>');
 
         const time = getFormattedTime();
 

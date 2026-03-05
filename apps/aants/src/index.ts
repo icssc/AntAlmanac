@@ -90,6 +90,7 @@ async function processSection(
         currentStatus: status,
         formerStatus: previousStatus,
         restrictionCodes: restrictions,
+        formerRestrictionCodes: previousRestrictions || null,
         deptCode: course.deptCode,
         courseNumber: course.courseNumber,
         courseTitle: course.courseTitle,
