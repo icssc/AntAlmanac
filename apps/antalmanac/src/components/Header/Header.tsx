@@ -28,7 +28,7 @@ import {
     removeLocalStorageDataCache,
     removeLocalStorageImportedUser,
 } from '$lib/localStorage';
-import { BLUE } from '$src/globals';
+import { BLUE, PLANNER_LINK } from '$src/globals';
 import { useIsMobile } from '$src/hooks/useIsMobile';
 import { useSessionStore } from '$stores/SessionStore';
 
@@ -150,10 +150,11 @@ export function Header() {
                                             </Typography>
                                         </MenuItem>
                                         <MenuItem
-                                            component={Link}
-                                            href="/planner"
                                             selected={platform === 'Planner'}
-                                            onClick={() => setAnchorEl(null)}
+                                            onClick={() => {
+                                                setAnchorEl(null);
+                                                window.location.href = PLANNER_LINK;
+                                            }}
                                             sx={{ minHeight: 'fit-content', textDecoration: 'none', color: 'inherit' }}
                                         >
                                             <ListItemIcon>
@@ -186,9 +187,10 @@ export function Header() {
                                         Scheduler
                                     </Button>
                                     <Button
-                                        component={Link}
-                                        href="/planner"
                                         startIcon={<Route />}
+                                        onClick={() => {
+                                            window.location.href = PLANNER_LINK;
+                                        }}
                                         sx={{
                                             boxShadow: 'none',
                                             color: 'white',
