@@ -13,58 +13,7 @@ import {
     Text,
 } from '@react-email/components';
 
-import {
-    banner,
-    bannerLink,
-    bannerLogo,
-    button,
-    buttonContainer,
-    changeArrow,
-    restrictionPill,
-    changeRowCell,
-    changeRowLabel,
-    boxBase,
-    changeTable,
-    contentSection,
-    courseDetails,
-    sectionLabel,
-    footerText,
-    h1,
-    hiddenMessageId,
-    hr,
-    link,
-    main,
-    notificationBox,
-    outerContainer,
-    statusPillDefault,
-    statusPillFull,
-    statusPillOpen,
-    statusPillWaitlisted,
-    text,
-} from './CourseNotificationEmail.styles';
-
-const STATUS_PILL_STYLES: Record<string, object> = {
-    WAITLISTED: statusPillWaitlisted,
-    OPEN: statusPillOpen,
-    FULL: statusPillFull,
-};
-
-function getStatusPillStyle(status: string) {
-    return STATUS_PILL_STYLES[status] ?? statusPillDefault;
-}
-
-/** Abbreviates WAITLISTED to WAITL on mobile to prevent wrapping */
-function StatusPillText({ status }: { status: string }) {
-    if (status === 'WAITLISTED') {
-        return (
-            <>
-                <span className="status-desktop">{status}</span>
-                <span className="status-mobile">WAITL</span>
-            </>
-        );
-    }
-    return <>{status}</>;
-}
+import { StatusPill } from '../components/StatusPill';
 
 export interface StatusChange {
     from: string;
@@ -141,52 +90,143 @@ export function CourseNotificationEmail({
             <Preview>
                 {deptCode} {courseNumber} ({courseType}) had enrollment changes
             </Preview>
-            <Body style={main}>
-                <Container style={outerContainer}>
-                    <Section style={banner}>
-                        <Link href="https://antalmanac.com" style={bannerLink}>
+            <Body
+                style={{
+                    backgroundColor: '#f6f9fc',
+                    fontFamily:
+                        '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif',
+                }}
+            >
+                <Container style={{ width: '100%', maxWidth: '520px', margin: '0 auto' }}>
+                    <Section
+                        style={{
+                            backgroundColor: '#305db7',
+                            padding: '10px 20px',
+                            textAlign: 'center' as const,
+                            borderRadius: '8px 8px 0 0',
+                        }}
+                    >
+                        <Link href="https://antalmanac.com" style={{ textDecoration: 'none', color: '#ffffff' }}>
                             <Img
                                 src="https://antalmanac.com/assets/logo.png"
                                 alt="AntAlmanac"
                                 width={180}
                                 height={28}
-                                style={bannerLogo}
+                                style={{
+                                    display: 'inline-block',
+                                    verticalAlign: 'middle',
+                                    marginRight: '8px',
+                                }}
                             />
                         </Link>
                     </Section>
-                    <Section style={contentSection}>
-                        <Heading style={h1}>Hi {userName}!</Heading>
-                        <Text style={text}>
+                    <Section
+                        style={{
+                            backgroundColor: '#ffffff',
+                            padding: '40px 20px',
+                            marginBottom: '64px',
+                            borderRadius: '0 0 8px 8px',
+                        }}
+                    >
+                        <Heading
+                            style={{
+                                color: '#000000',
+                                fontSize: '24px',
+                                fontWeight: '600',
+                                margin: '0 0 20px',
+                            }}
+                        >
+                            Hi {userName}!
+                        </Heading>
+                        <Text
+                            style={{
+                                color: '#000000',
+                                fontSize: '16px',
+                                lineHeight: '24px',
+                                margin: '0 0 20px',
+                            }}
+                        >
                             The AntAlmanac team would like to notify you that the following class has had some
                             enrollment changes as of <strong>{time}</strong>.
                         </Text>
 
                         {(statusChange || restrictionCodesChange) && (
-                            <Section style={notificationBox}>
-                                <Text style={sectionLabel}>What Changed</Text>
-                                <table style={changeTable}>
+                            <Section
+                                style={{
+                                    backgroundColor: '#f8fafc',
+                                    borderRadius: '6px',
+                                    padding: '16px',
+                                    margin: '0 0 24px',
+                                    borderLeft: '4px solid #0066cc',
+                                }}
+                            >
+                                <Text
+                                    style={{
+                                        color: '#000000',
+                                        fontSize: '16px',
+                                        fontWeight: '600',
+                                        margin: '0 0 8px',
+                                    }}
+                                >
+                                    What Changed
+                                </Text>
+                                <table style={{ width: '100%' as const, borderCollapse: 'collapse' as const }}>
                                     <tbody>
                                         {statusChange && (
                                             <tr>
-                                                <td style={changeRowLabel}>Enrollment Status:</td>
-                                                <td style={changeRowCell}>
-                                                    <span style={getStatusPillStyle(statusChange.from)}>
-                                                        <StatusPillText status={statusChange.from} />
-                                                    </span>
-                                                    <span style={changeArrow}>→</span>
-                                                    <span style={getStatusPillStyle(statusChange.to)}>
-                                                        <StatusPillText status={statusChange.to} />
-                                                    </span>
+                                                <td
+                                                    style={{
+                                                        padding: '4px 0',
+                                                        fontSize: '14px',
+                                                        color: '#000000',
+                                                    }}
+                                                >
+                                                    Enrollment Status:
+                                                </td>
+                                                <td style={{ padding: '4px 0', fontSize: '14px' }}>
+                                                    <StatusPill status={statusChange.from} />
+                                                    <span style={{ margin: '0 6px' }}>→</span>
+                                                    <StatusPill status={statusChange.to} />
                                                 </td>
                                             </tr>
                                         )}
                                         {restrictionCodesChange && (
                                             <tr>
-                                                <td style={changeRowLabel}>Restriction Codes:</td>
-                                                <td style={changeRowCell}>
-                                                    <span style={restrictionPill}>{restrictionCodesChange.from}</span>
-                                                    <span style={changeArrow}>→</span>
-                                                    <span style={restrictionPill}>{restrictionCodesChange.to}</span>
+                                                <td
+                                                    style={{
+                                                        padding: '4px 0',
+                                                        fontSize: '14px',
+                                                        color: '#000000',
+                                                    }}
+                                                >
+                                                    Restriction Codes:
+                                                </td>
+                                                <td style={{ padding: '4px 0', fontSize: '14px' }}>
+                                                    <span
+                                                        style={{
+                                                            padding: '4px 10px',
+                                                            display: 'inline-block' as const,
+                                                            fontWeight: '600' as const,
+                                                            borderRadius: '6px' as const,
+                                                            backgroundColor: '#f1f5f9',
+                                                            color: '#000000',
+                                                        }}
+                                                    >
+                                                        {restrictionCodesChange.from}
+                                                    </span>
+                                                    <span style={{ margin: '0 6px' }}>→</span>
+                                                    <span
+                                                        style={{
+                                                            padding: '4px 10px',
+                                                            display: 'inline-block' as const,
+                                                            fontWeight: '600' as const,
+                                                            borderRadius: '6px' as const,
+                                                            backgroundColor: '#f1f5f9',
+                                                            color: '#000000',
+                                                        }}
+                                                    >
+                                                        {restrictionCodesChange.to}
+                                                    </span>
                                                 </td>
                                             </tr>
                                         )}
@@ -195,9 +235,32 @@ export function CourseNotificationEmail({
                             </Section>
                         )}
 
-                        <Section style={boxBase}>
-                            <Text style={sectionLabel}>Course Details</Text>
-                            <Text style={courseDetails}>
+                        <Section
+                            style={{
+                                backgroundColor: '#f8fafc',
+                                borderRadius: '6px',
+                                padding: '16px',
+                                margin: '0 0 24px',
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    color: '#000000',
+                                    fontSize: '16px',
+                                    fontWeight: '600',
+                                    margin: '0 0 8px',
+                                }}
+                            >
+                                Course Details
+                            </Text>
+                            <Text
+                                style={{
+                                    color: '#000000',
+                                    fontSize: '14px',
+                                    lineHeight: '22px',
+                                    margin: '0',
+                                }}
+                            >
                                 Course Name:{' '}
                                 <strong>
                                     {' '}
@@ -217,36 +280,77 @@ export function CourseNotificationEmail({
                             </Text>
                         </Section>
 
-                        <Section style={buttonContainer}>
+                        <Section style={{ margin: '0 0 24px' }}>
                             <Button
-                                style={button}
+                                style={{
+                                    backgroundColor: '#0066cc',
+                                    borderRadius: '6px',
+                                    color: '#fff',
+                                    fontSize: '16px',
+                                    fontWeight: '600',
+                                    textDecoration: 'none',
+                                    textAlign: 'center' as const,
+                                    display: 'block',
+                                    padding: '12px 24px',
+                                }}
                                 href="https://www.reg.uci.edu/registrar/soc/webreg.html?page=startUp&call="
                             >
                                 Go to WebReg to enroll
                             </Button>
                         </Section>
 
-                        <Hr style={hr} />
+                        <Hr style={{ borderColor: '#e6ebf1', margin: '24px 0' }} />
 
-                        <Text style={footerText}>
-                            <Link href="https://antalmanac.com" style={link}>
+                        <Text
+                            style={{
+                                color: '#000000',
+                                fontSize: '13px',
+                                lineHeight: '20px',
+                                margin: '0 0 16px',
+                                textAlign: 'center' as const,
+                            }}
+                        >
+                            <Link
+                                href="https://antalmanac.com"
+                                style={{ color: '#0066cc', textDecoration: 'underline' }}
+                            >
                                 Go to AntAlmanac
                             </Link>
                             {' · '}
-                            <Link href="https://antalmanac.com/feedback" style={link}>
+                            <Link
+                                href="https://antalmanac.com/feedback"
+                                style={{ color: '#0066cc', textDecoration: 'underline' }}
+                            >
                                 Give feedback or report a bug
                             </Link>
                         </Text>
-                        <Text style={footerText}>
-                            <Link href={unsubscribeUrl} style={link}>
+                        <Text
+                            style={{
+                                color: '#000000',
+                                fontSize: '13px',
+                                lineHeight: '20px',
+                                margin: '0 0 16px',
+                                textAlign: 'center' as const,
+                            }}
+                        >
+                            <Link href={unsubscribeUrl} style={{ color: '#0066cc', textDecoration: 'underline' }}>
                                 Unsubscribe from this course
                             </Link>
                             {' · '}
-                            <Link href={unsubscribeAllUrl} style={link}>
+                            <Link href={unsubscribeAllUrl} style={{ color: '#0066cc', textDecoration: 'underline' }}>
                                 Unsubscribe from all courses
                             </Link>
                         </Text>
-                        <div style={hiddenMessageId}>ID: {messageId}</div>
+                        <div
+                            style={{
+                                display: 'none' as const,
+                                maxHeight: 0,
+                                overflow: 'hidden' as const,
+                                visibility: 'hidden' as const,
+                            }}
+                        >
+                            ID: {messageId}
+                        </div>
                     </Section>
                 </Container>
             </Body>
