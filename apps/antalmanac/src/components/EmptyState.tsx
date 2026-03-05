@@ -43,9 +43,11 @@ export function EmptyState({
             <Typography variant="h6" color="text.primary">
                 {title}
             </Typography>
-            <Typography variant="body2" color="text.secondary" maxWidth={360}>
-                {description}
-            </Typography>
+            {description && (
+                <Typography variant="body2" color="text.secondary" maxWidth={360}>
+                    {description}
+                </Typography>
+            )}
             {(primaryAction || secondaryAction) && (
                 <Box display="flex" flexWrap="wrap" gap={1} mt={1} justifyContent="center">
                     {primaryAction && (
