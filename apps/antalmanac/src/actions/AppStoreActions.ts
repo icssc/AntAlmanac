@@ -3,6 +3,7 @@ import type {
     CustomEventId,
     RepeatingCustomEvent,
     ScheduleCourse,
+    ScheduleSaveState,
     ShortCourseSchedule,
     User,
     WebsocSection,
@@ -79,7 +80,7 @@ export const openSnackbar = (
     AppStore.openSnackbar(variant, message, duration, position, style);
 };
 
-export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
+export function isEmptySchedule(schedules: ShortCourseSchedule[] | ScheduleSaveState['schedules']) {
     for (const schedule of schedules) {
         if (schedule.courses.length > 0) {
             return false;
@@ -198,12 +199,12 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
 }
 
 export const mergeShortCourseSchedules = (
-    currentSchedules: ShortCourseSchedule[],
-    incomingSchedule: ShortCourseSchedule[],
+    currentSchedules: ScheduleSaveState['schedules'],
+    incomingSchedule: ScheduleSaveState['schedules'],
     importMessage = ''
 ) => {
-    const existingScheduleNames = new Set(currentSchedules.map((s: ShortCourseSchedule) => s.scheduleName));
-    const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
+    const existingScheduleNames = new Set(currentSchedules.map((s) => s.scheduleName));
+    const cacheSchedule = incomingSchedule.map((schedule) => {
         let scheduleName = schedule.scheduleName;
         if (existingScheduleNames.has(schedule.scheduleName)) {
             scheduleName = scheduleName + '(1)';
@@ -239,8 +240,10 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
     const { users, accounts } = userAndAccount;
 
     const incomingData: User | null = await trpc.userData.getUserData.query({ userId: incomingUser.id });
-    const scheduleSaveState =
-        incomingData !== null && 'userData' in incomingData ? incomingData.userData : incomingData;
+    if (!incomingData) {
+        throw new Error(`Oops! Schedule "${username}" doesn't seem to exist.`);
+    }
+    const scheduleSaveState = 'userData' in incomingData ? incomingData.userData : incomingData;
 
     const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
 
@@ -312,8 +315,12 @@ export const loadSchedule = async (
                     providerId,
                 });
 
-                const userDataResponse = await trpc.userData.getUserData.query({ userId: account.userId });
-                const scheduleSaveState = userDataResponse?.userData;
+                const userDataResponse = await trpc.userData.getUserDataHydrated.query({ userId: account.userId });
+                if (!userDataResponse) {
+                    openSnackbar('error', `Couldn't find schedules for this account`);
+                    return;
+                }
+                const scheduleSaveState = userDataResponse.userData ?? userDataResponse;
 
                 let error = false;
 
@@ -324,8 +331,6 @@ export const loadSchedule = async (
                         AppStore.loadSkeletonSchedule(scheduleSaveState);
                         error = true;
                     }
-                } else {
-                    error = true;
                 }
 
                 if (error) {
@@ -362,14 +367,16 @@ export const loadScheduleWithSessionToken = async () => {
         const userDataResponse = await trpc.userData.getUserDataWithSession.query({
             refreshToken: useSessionStore.getState().session ?? '',
         });
-        const scheduleSaveState = userDataResponse?.userData;
-        if (scheduleSaveState !== undefined && isEmptySchedule(scheduleSaveState.schedules)) {
+        if (!userDataResponse) {
+            openSnackbar('error', `Couldn't find schedules for this account`);
+            return false;
+        }
+        const scheduleSaveState = userDataResponse.userData ?? userDataResponse;
+        if (!scheduleSaveState?.schedules || isEmptySchedule(scheduleSaveState.schedules)) {
             return true;
         }
 
-        if (scheduleSaveState === undefined) {
-            openSnackbar('error', `Couldn't find schedules for this account`);
-        } else if (await AppStore.loadSchedule(scheduleSaveState)) {
+        if (await AppStore.loadSchedule(scheduleSaveState)) {
             openSnackbar('success', `Schedule loaded.`);
             return true;
         } else {

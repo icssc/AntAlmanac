@@ -3,6 +3,7 @@ import type {
     ScheduleCourse,
     ScheduleSaveState,
     ScheduleUndoState,
+    ShortCourse,
     ShortCourseSchedule,
     RepeatingCustomEvent,
     CourseInfo,
@@ -568,67 +569,87 @@ export class Schedules {
         this.addUndoState();
 
         try {
-            // Get a dictionary of all unique courses
-            const courseDict: { [key: string]: Set<string> } = {};
-            for (const schedule of saveState.schedules) {
-                for (const course of schedule.courses) {
-                    if (course.term in courseDict) {
-                        courseDict[course.term].add(course.sectionCode);
-                    } else {
-                        courseDict[course.term] = new Set([course.sectionCode]);
-                    }
-                }
-            }
+            const isShortCourse = (course: ScheduleCourse | ShortCourse): course is ShortCourse =>
+                'sectionCode' in course;
 
-            // Get the course info for each course
+            const hasShortCourses = saveState.schedules.some((schedule) =>
+                schedule.courses.some((course) => isShortCourse(course))
+            );
+
             const courseInfoDict = new Map<string, { [sectionCode: string]: CourseInfo }>();
 
-            const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
-                const sectionCodes = Array.from(courseSet).join(',');
-                const courseInfo = await WebSOC.getCourseInfo({ term, sectionCodes });
-                courseInfoDict.set(term, courseInfo);
-            });
+            if (hasShortCourses) {
+                // Get a dictionary of all unique courses
+                const courseDict: { [key: string]: Set<string> } = {};
+                for (const schedule of saveState.schedules) {
+                    for (const course of schedule.courses) {
+                        if (!isShortCourse(course)) {
+                            continue;
+                        }
+                        if (course.term in courseDict) {
+                            courseDict[course.term].add(course.sectionCode);
+                        } else {
+                            courseDict[course.term] = new Set([course.sectionCode]);
+                        }
+                    }
+                }
 
-            await Promise.all(websocRequests);
+                // Get the course info for each course
+                const websocRequests = Object.entries(courseDict).map(async ([term, courseSet]) => {
+                    const sectionCodes = Array.from(courseSet).join(',');
+                    const courseInfo = await WebSOC.getCourseInfo({ term, sectionCodes });
+                    courseInfoDict.set(term, courseInfo);
+                });
+
+                await Promise.all(websocRequests);
+            }
 
             this.schedules.length = 0;
             this.currentScheduleIndex = saveState.scheduleIndex;
 
             // Map course info to courses and transform shortened schedule to normal schedule
-            for (const shortCourseSchedule of saveState.schedules) {
+            for (const schedule of saveState.schedules) {
                 const courses: ScheduleCourse[] = [];
-                for (const shortCourse of shortCourseSchedule.courses) {
-                    const courseInfoMap = courseInfoDict.get(shortCourse.term);
-                    if (courseInfoMap !== undefined) {
-                        const courseInfo = courseInfoMap[shortCourse.sectionCode.padStart(5, '0')];
-                        if (courseInfo === undefined) {
-                            // Class doesn't exist/was cancelled
-                            continue;
-                        }
-                        courses.push({
-                            ...shortCourse,
-                            ...courseInfo.courseDetails,
-                            section: {
-                                ...courseInfo.section,
-                                color: shortCourse.color,
-                            },
-                        });
-                    }
-                }
-
                 const scheduleNoteId = Math.random();
-                if ('scheduleNote' in shortCourseSchedule) {
-                    this.scheduleNoteMap[scheduleNoteId] = shortCourseSchedule.scheduleNote;
+                if ('scheduleNote' in schedule) {
+                    this.scheduleNoteMap[scheduleNoteId] = schedule.scheduleNote;
                 } else {
                     // If this is a schedule that was saved before schedule notes were implemented,
                     // just give each schedule an empty schedule note
                     this.scheduleNoteMap[scheduleNoteId] = '';
                 }
 
+                if (hasShortCourses) {
+                    for (const course of schedule.courses) {
+                        if (!isShortCourse(course)) {
+                            courses.push(course);
+                            continue;
+                        }
+
+                        const courseInfoMap = courseInfoDict.get(course.term);
+                        if (courseInfoMap !== undefined) {
+                            const courseInfo = courseInfoMap[course.sectionCode.padStart(5, '0')];
+                            if (courseInfo === undefined) {
+                                continue;
+                            }
+                            courses.push({
+                                ...courseInfo.courseDetails,
+                                term: course.term,
+                                section: {
+                                    ...courseInfo.section,
+                                    color: course.color,
+                                },
+                            });
+                        }
+                    }
+                } else {
+                    courses.push(...(schedule.courses as unknown as ScheduleCourse[]));
+                }
+
                 this.schedules.push({
-                    scheduleName: shortCourseSchedule.scheduleName,
+                    scheduleName: schedule.scheduleName,
                     courses: courses,
-                    customEvents: shortCourseSchedule.customEvents,
+                    customEvents: schedule.customEvents,
                     scheduleNoteId: scheduleNoteId,
                 });
             }
