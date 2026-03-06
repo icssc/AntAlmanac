@@ -10,6 +10,7 @@ import { DeleteAndNotifications } from '$components/RightPane/SectionTable/Secti
 import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { Term } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { type NotifyOn } from '$stores/NotificationStore';
 
@@ -25,7 +26,7 @@ interface ActionProps {
     /**
      * The term that the section occurs in.
      */
-    term: string;
+    term: Term['shortName'];
 
     /**
      * Additional details about the course that the section occurs in.

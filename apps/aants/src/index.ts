@@ -1,27 +1,66 @@
-import { WebsocResponse, WebsocSection, WebsocCourse, WebsocSchool, WebsocDepartment } from '@icssc/libwebsoc-next';
+import type {
+    HourMinute,
+    WebsocAPIResponse,
+    WebsocCourse,
+    WebsocSection,
+    WebsocSectionMeeting,
+} from '@packages/anteater-api-types';
 
-import { batchCourseCodes, sendNotification, CourseDetails } from './helpers/notificationDispatch';
+import type { CourseDetails } from './helpers/notificationDispatch';
+import { batchCourseCodes, sendNotification } from './helpers/notificationDispatch';
 import {
-    getUpdatedClasses,
-    getSubscriptionSectionCodes,
-    updateSubscriptionStatus,
+    filterUsersToNotify,
     getLastUpdatedStatus,
-    getUsers,
+    getSubscriptionSectionCodes,
+    getSubscriptionsForSections,
+    getUpdatedClasses,
+    type SubscriptionWithUser,
+    updateSubscriptionStatus,
 } from './helpers/subscriptionData';
+
+/**
+ * Formats meeting time into a readable string like "3:30PM-4:50PM".
+ */
+function formatMeetingTime(meeting: WebsocSectionMeeting): string {
+    if (meeting.timeIsTBA) {
+        return 'TBA';
+    }
+
+    const formatTime = (time: HourMinute) => {
+        const hour = time.hour % 12 || 12;
+        const minute = time.minute.toString().padStart(2, '0');
+        const period = time.hour >= 12 ? 'PM' : 'AM';
+        return `${hour}:${minute}${period}`;
+    };
+
+    return `${formatTime(meeting.startTime)}-${formatTime(meeting.endTime)}`;
+}
+
+interface FlattenedSection {
+    section: WebsocSection;
+    course: WebsocCourse;
+}
+
+interface PreviousState {
+    lastUpdatedStatus: WebsocSection['status'] | null;
+    lastCodes: string | null;
+}
 
 /**
  * Processes a section of a course and sends notifications to users if and only if the status and/or restriction codes have changed.
  * Also updates the subscription status in the database to the most current status and restriction codes.
- * @param section - The section of the course to process.
- * @param course - The course containing the section.
- * @param quarter - The academic quarter of the course.
- * @param year - The academic year of the course.
  */
-async function processSection(section: WebsocSection, course: WebsocCourse, quarter: string, year: string) {
+async function processSection(
+    section: WebsocSection,
+    course: WebsocCourse,
+    quarter: string,
+    year: string,
+    previousState: PreviousState | undefined,
+    sectionSubscriptions: SubscriptionWithUser[]
+) {
     const { sectionCode, instructors, meetings, status, restrictions, sectionType } = section;
     const instructor = instructors.join(', ');
 
-    const previousState = await getLastUpdatedStatus(year, quarter, sectionCode);
     const previousStatus = previousState?.lastUpdatedStatus || null;
     const previousRestrictions = previousState?.lastCodes || '';
 
@@ -40,13 +79,14 @@ async function processSection(section: WebsocSection, course: WebsocCourse, quar
         `  Changes: status=${statusChanged ? `${previousStatus}→${status}` : 'none'}, codes=${codesChanged ? `${previousRestrictions}→${restrictions}` : 'none'}`
     );
 
-    const users = await getUsers(quarter, year, sectionCode, status, statusChanged, codesChanged);
+    const users = filterUsersToNotify(sectionSubscriptions, status, statusChanged, codesChanged);
 
+    const meeting = meetings[0];
     const courseDetails: CourseDetails = {
         sectionCode: sectionCode,
         instructor,
-        days: meetings[0].days,
-        hours: meetings[0].time,
+        days: meeting && !meeting.timeIsTBA ? meeting.days : 'TBA',
+        hours: meeting ? formatMeetingTime(meeting) : 'TBA',
         currentStatus: status,
         restrictionCodes: restrictions,
         deptCode: course.deptCode,
@@ -68,79 +108,43 @@ async function processSection(section: WebsocSection, course: WebsocCourse, quar
 }
 
 /**
- * Processes a course and sends notifications to users if the status and/or restriction codes have changed.
- * @param course - The course to process.
- * @param quarter - The academic quarter of the course.
- * @param year - The academic year of the course.
- */
-async function processCourse(course: WebsocCourse, quarter: string, year: string) {
-    await Promise.all(course.sections.map((section) => processSection(section, course, quarter, year)));
-}
-
-/**
- * Processes a department and sends notifications to users if the status and/or restriction codes have changed.
- * @param department - The department to process.
- * @param quarter - The academic quarter of the department.
- * @param year - The academic year of the department.
- */
-async function processDepartment(department: WebsocDepartment, quarter: string, year: string) {
-    await Promise.all(department.courses.map((course) => processCourse(course, quarter, year)));
-}
-
-/**
- * Processes a school and sends notifications to users if the status and/or restriction codes have changed.
- * @param school - The school to process.
- * @param quarter - The academic quarter of the school.
- * @param year - The academic year of the school.
- */
-async function processSchool(school: WebsocSchool, quarter: string, year: string) {
-    await Promise.all(school.departments.map((department) => processDepartment(department, quarter, year)));
-}
-
-/**
  * Processes a batch of section codes and sends notifications to users if the status and/or restriction codes have changed.
- * If there are missing codes, retry them individually to work around WebSoc's ignoring requests for section codes from the same course.
- * @param batch - The batch of section codes to process.
- * @param quarter - The academic quarter of the batch.
- * @param year - The academic year of the batch.
  */
 async function processBatch(batch: string[], quarter: string, year: string) {
     console.log(`[BATCH] Processing ${batch.length} section codes for ${quarter} ${year}`);
-    const response: WebsocResponse = (await getUpdatedClasses(quarter, year, batch)) || { schools: [] };
+    const response: WebsocAPIResponse = (await getUpdatedClasses(quarter, year, batch)) || { schools: [] };
 
-    const processedSectionCodes = new Set<string>();
-    if (response?.schools) {
-        for (const school of response.schools) {
-            for (const department of school.departments) {
-                for (const course of department.courses) {
-                    for (const section of course.sections) {
-                        processedSectionCodes.add(section.sectionCode);
-                    }
+    const flatSections: FlattenedSection[] = [];
+    for (const school of response.schools || []) {
+        for (const department of school.departments) {
+            for (const course of department.courses) {
+                for (const section of course.sections) {
+                    flatSections.push({ section, course });
                 }
             }
         }
     }
 
+    const processedSectionCodes = new Set(flatSections.map((s) => s.section.sectionCode));
     const notProcessed = batch.filter((code) => !processedSectionCodes.has(code));
-
     if (notProcessed.length > 0) {
-        console.log(
-            `[BATCH] ${notProcessed.length} section codes not found in initial response, retrying individually`
-        );
+        console.log(`[BATCH] ${notProcessed.length} section codes not found in response`);
     }
 
-    await Promise.all(response.schools.map((school) => processSchool(school, quarter, year)));
+    console.log(`[BATCH] Processing ${flatSections.length} sections from response`);
 
-    if (notProcessed.length > 0) {
-        await Promise.all(
-            notProcessed.map(async (missingCode) => {
-                console.log(`[RETRY] Retrying section code: ${missingCode}`);
-                const retryResponse: WebsocResponse = (await getUpdatedClasses(quarter, year, [missingCode])) || {
-                    schools: [],
-                };
-                await Promise.all(retryResponse.schools.map((school) => processSchool(school, quarter, year)));
-            })
-        );
+    const sectionCodes = flatSections.map((s) => s.section.sectionCode);
+
+    // Batch fetch: get all previous statuses and all subscriptions in 2 queries
+    const [previousStatuses, allSubscriptions] = await Promise.all([
+        getLastUpdatedStatus(year, quarter, sectionCodes),
+        getSubscriptionsForSections(year, quarter, sectionCodes),
+    ]);
+
+    for (const { section, course } of flatSections) {
+        const previousState = previousStatuses.get(section.sectionCode);
+        const sectionSubscriptions = allSubscriptions.get(section.sectionCode) || [];
+        await processSection(section, course, quarter, year, previousState, sectionSubscriptions);
     }
 }
 

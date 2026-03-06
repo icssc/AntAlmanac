@@ -669,9 +669,16 @@ export class RDS {
      * @param db - The database or transaction object to use for the operation.
      * @param userId - The ID of the user for whom we're upserting a notification.
      * @param notification - The notification object to upsert.
+     * @param environment - "production" on production; staging instance + number on staging (e.g. "staging-1337").
      * @returns A promise that upserts the notification associated with a userId.
      */
-    static async upsertNotification(db: DatabaseOrTransaction, userId: string, notification: Notification) {
+    static async upsertNotification(
+        db: DatabaseOrTransaction,
+        userId: string,
+        notification: Notification,
+        environmentValue?: string | null
+    ) {
+        const environment = environmentValue ?? '';
         return db.transaction((tx) =>
             tx
                 .insert(subscriptions)
@@ -686,13 +693,14 @@ export class RDS {
                     notifyOnRestriction: notification.notifyOn.notifyOnRestriction,
                     lastUpdatedStatus: notification.lastUpdatedStatus,
                     lastCodes: notification.lastCodes,
+                    environment: environment,
                 })
                 .onConflictDoUpdate({
                     target: [
                         subscriptions.userId,
+                        subscriptions.sectionCode,
                         subscriptions.year,
                         subscriptions.quarter,
-                        subscriptions.sectionCode,
                     ],
                     set: {
                         notifyOnOpen: notification.notifyOn.notifyOnOpen,
@@ -701,6 +709,7 @@ export class RDS {
                         notifyOnRestriction: notification.notifyOn.notifyOnRestriction,
                         lastUpdatedStatus: notification.lastUpdatedStatus,
                         lastCodes: notification.lastCodes,
+                        environment: environment,
                     },
                 })
         );
