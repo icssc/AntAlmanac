@@ -38,17 +38,14 @@ export function LogoAndSwitcher() {
       {isMobile ? (
         <>
           <Button
+            variant="text"
+            color="inherit"
             onClick={(event) => setAnchorEl(event.currentTarget)}
             endIcon={<UnfoldMore />}
             sx={{
               paddingRight: 1,
               p: 1,
               minWidth: 'auto',
-              color: 'white',
-              '& .MuiTouchRipple-child': {
-                borderRadius: 0.5,
-                bgcolor: 'white',
-              },
             }}
           >
             <Logo />
