@@ -1,8 +1,10 @@
+import { usePostHog } from 'posthog-js/react';
 import { useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { isEmptySchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
 import { LoadingScreen } from '$components/LoadingScreen';
+import { analyticsIdentifyUser } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import {
     getLocalStorageDataCache,
@@ -21,6 +23,7 @@ import AppStore from '$stores/AppStore';
 export function AuthPage() {
     const [searchParams] = useSearchParams();
     const isAuthenticatingRef = useRef(false);
+    const postHog = usePostHog();
 
     const handleSearchParamsChange = useCallback(async () => {
         // Prevent race condition: only allow one authentication attempt at a time
@@ -42,6 +45,8 @@ export function AuthPage() {
                 code: code,
                 state: state,
             });
+
+            analyticsIdentifyUser(postHog, userId);
 
             const fromLoading = getLocalStorageFromLoading() ?? '';
             const savedUserId = getLocalStorageUserId() ?? '';
@@ -119,7 +124,7 @@ export function AuthPage() {
             console.error('Error during authentication', error);
             isAuthenticatingRef.current = false;
         }
-    }, [searchParams]);
+    }, [searchParams, postHog]);
 
     useEffect(() => {
         handleSearchParamsChange();
