@@ -1,4 +1,4 @@
-src/generated/
+src/generated/*
 !src/generated/deployed_terms.json
 .next
 .open-next
