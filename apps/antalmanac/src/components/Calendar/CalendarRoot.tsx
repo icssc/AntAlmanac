@@ -27,6 +27,7 @@ import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import TbaCalenderCard from '$components/Calendar/TbaCalendarCard';
 
 /*
 //  * Always start week on Saturday for finals potentially on weekends.
@@ -66,6 +67,7 @@ export const ScheduleCalendar = memo(() => {
     const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
+    const [screenshotTrigger, setScreenshotTrigger] = useState(0);
 
     const theme = useTheme();
     const { isMilitaryTime } = useTimeFormatStore();
@@ -353,8 +355,10 @@ export const ScheduleCalendar = memo(() => {
                 toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
                 showFinalsSchedule={showFinalsSchedule}
                 scheduleNames={scheduleNames}
+                onScreenshot={() => setScreenshotTrigger((v) => v + 1)}
             />
             <Box id="screenshot" height="0" flexGrow={1}>
+                <TbaCalenderCard screenshotTrigger={screenshotTrigger} />
                 <CalendarEventPopover />
 
                 <Calendar<CalendarEvent, object>
