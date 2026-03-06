@@ -2,6 +2,7 @@ import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import 'dotenv/config';
 import { WebsocSchool, WebsocTerm } from '@packages/antalmanac-types';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
