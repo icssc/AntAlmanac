@@ -32,6 +32,7 @@ import {
 import { AlertDialog } from '$components/AlertDialog';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
@@ -71,6 +72,8 @@ export function Import() {
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
 
     const { isDark } = useThemeStore();
+
+    const isReadonlyView = useIsReadonlyView();
 
     const postHog = usePostHog();
 
@@ -267,7 +270,7 @@ export function Import() {
                     color="inherit"
                     sx={{ fontSize: 'inherit' }}
                     startIcon={<ContentPasteGo />}
-                    disabled={skeletonMode}
+                    disabled={skeletonMode || isReadonlyView}
                     id="import-button"
                 >
                     Import

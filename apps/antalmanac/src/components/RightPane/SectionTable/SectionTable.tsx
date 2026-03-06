@@ -1,6 +1,7 @@
 import { Assessment, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
 import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
@@ -73,6 +74,8 @@ function SectionTable(props: SectionTableProps) {
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
+    const location = useLocation();
+    const sharedSchedulePage = location.pathname.startsWith('/share/');
     const isMobile = useIsMobile();
 
     const courseId = useMemo(() => {
@@ -118,7 +121,9 @@ function SectionTable(props: SectionTableProps) {
                     analyticsCategory={analyticsCategory}
                 />
 
-                {activeTab !== 2 ? null : <CourseInfoSearchButton courseDetails={courseDetails} term={term} />}
+                {activeTab !== 2 || sharedSchedulePage ? null : (
+                    <CourseInfoSearchButton courseDetails={courseDetails} term={term} />
+                )}
 
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}

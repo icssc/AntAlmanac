@@ -8,6 +8,7 @@ import { deleteCustomEvent } from '$actions/AppStoreActions';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import ColorPicker from '$components/ColorPicker';
 import { MapLink } from '$components/buttons/MapLink';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum from '$lib/analytics/analytics';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import AppStore from '$stores/AppStore';
@@ -21,6 +22,7 @@ interface CustomEventDetailViewProps {
 const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
     const { customEvent } = props;
     const { isMilitaryTime } = useTimeFormatStore();
+    const isReadonlyView = useIsReadonlyView();
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
@@ -74,36 +76,27 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
 
             {!skeletonMode && (
                 <CardActions disableSpacing={true} style={{ padding: 0 }}>
-                    <Box
-                        sx={{
-                            cursor: 'pointer',
-                            '& > div': {
-                                margin: '0px 8px 0px 4px',
-                                height: '20px',
-                                width: '20px',
-                                borderRadius: '50%',
-                            },
-                        }}
-                    >
-                        <ColorPicker
-                            color={customEvent.color as string}
-                            isCustomEvent={true}
-                            customEventID={customEvent.customEventID}
-                            analyticsCategory={analyticsEnum.addedClasses}
-                        />
-                    </Box>
+                    <ColorPicker
+                        color={customEvent.color as string}
+                        isCustomEvent={true}
+                        customEventID={customEvent.customEventID}
+                        analyticsCategory={analyticsEnum.addedClasses}
+                    />
 
                     <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
 
                     <Tooltip title="Delete">
-                        <IconButton
-                            onClick={() => {
-                                deleteCustomEvent(customEvent.customEventID, [AppStore.getCurrentScheduleIndex()]);
-                            }}
-                            size="large"
-                        >
-                            <Delete fontSize="small" />
-                        </IconButton>
+                        <span>
+                            <IconButton
+                                onClick={() => {
+                                    deleteCustomEvent(customEvent.customEventID, [AppStore.getCurrentScheduleIndex()]);
+                                }}
+                                size="large"
+                                disabled={isReadonlyView}
+                            >
+                                <Delete fontSize="small" />
+                            </IconButton>
+                        </span>
                     </Tooltip>
                 </CardActions>
             )}

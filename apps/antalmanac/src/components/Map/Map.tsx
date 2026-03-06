@@ -18,6 +18,7 @@ const Routes = dynamic(() => import('./Routes'), { ssr: false });
 import type { CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { UserLocator } from '$components/Map/UserLocator';
 import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { TILES_URL } from '$lib/api/endpoints';
 import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
@@ -159,7 +160,8 @@ export default function CourseMap() {
     const navigate = useNavigate();
     const map = useRef<Map | null>(null);
     const markerRef = createRef<Marker>();
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const isReadonlyView = useIsReadonlyView();
     const [selectedDayIndex, setSelectedDay] = useState(0);
     const [markers, setMarkers] = useState(getCoursesPerBuilding());
     const [customEventMarkers, setCustomEventMarkers] = useState(getCustomEventPerBuilding());
@@ -230,9 +232,19 @@ export default function CourseMap() {
 
     const onBuildingChange = useCallback(
         (building?: ExtendedBuilding | null) => {
-            navigate(`/map?location=${building?.id}`);
+            if (isReadonlyView) {
+                const newSearchParams = new URLSearchParams(searchParams);
+                if (building?.id) {
+                    newSearchParams.set('location', String(building.id));
+                } else {
+                    newSearchParams.delete('location');
+                }
+                setSearchParams(newSearchParams, { replace: true });
+            } else {
+                navigate(`/map?location=${building?.id}`);
+            }
         },
-        [navigate]
+        [navigate, isReadonlyView, searchParams, setSearchParams]
     );
 
     const days = useMemo(() => {

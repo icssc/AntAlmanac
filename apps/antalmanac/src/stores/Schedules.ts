@@ -11,9 +11,9 @@ import type {
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 
-import { getDefaultTerm } from '$lib/termData';
+import { getNextScheduleName } from '$lib/utils';
 import { WebSOC } from '$lib/websoc';
-import { getColorForNewSection } from '$stores/scheduleHelpers';
+import { createEmptySchedule, getColorForNewSection } from '$stores/scheduleHelpers';
 
 /**
  * Manages state of schedules. Only one instance is really needed for the app.
@@ -39,14 +39,7 @@ export class Schedules {
     constructor() {
         const scheduleNoteId = Math.random();
 
-        this.schedules = [
-            {
-                scheduleName: `${getDefaultTerm().shortName.replaceAll(' ', '-')}`,
-                courses: [],
-                customEvents: [],
-                scheduleNoteId: scheduleNoteId,
-            },
-        ];
+        this.schedules = [createEmptySchedule(scheduleNoteId)];
         this.currentScheduleIndex = 0;
         this.previousStates = [];
         this.futureStates = [];
@@ -57,17 +50,14 @@ export class Schedules {
     getNextScheduleName(scheduleIndex: number, newScheduleName: string) {
         const scheduleNames = this.getScheduleNames();
         scheduleNames.splice(scheduleIndex, 1);
-        let nextScheduleName = newScheduleName;
-        let counter = 1;
-
-        while (scheduleNames.includes(nextScheduleName)) {
-            nextScheduleName = `${newScheduleName}(${counter++})`;
-        }
-        return nextScheduleName;
+        return getNextScheduleName(newScheduleName, new Set(scheduleNames));
     }
 
-    getDefaultScheduleName() {
-        return getDefaultTerm().shortName.replaceAll(' ', '-');
+    /**
+     * Get the backend schedule ID for a schedule, if available.
+     */
+    getScheduleId(scheduleIndex: number) {
+        return this.schedules[scheduleIndex]?.id;
     }
 
     getCurrentScheduleIndex() {
@@ -116,6 +106,7 @@ export class Schedules {
             courses: [],
             customEvents: [],
             scheduleNoteId: scheduleNoteId,
+            id: undefined,
         });
         // Setting schedule index manually otherwise 2 undo states are added
         this.currentScheduleIndex = this.getNumberOfSchedules() - 1;
@@ -546,6 +537,7 @@ export class Schedules {
     getScheduleAsSaveState(): ScheduleSaveState {
         const shortSchedules: ShortCourseSchedule[] = this.schedules.map((schedule) => {
             return {
+                id: schedule.id,
                 scheduleName: schedule.scheduleName,
                 customEvents: schedule.customEvents,
                 courses: schedule.courses.map((course) => {
@@ -626,6 +618,7 @@ export class Schedules {
                 }
 
                 this.schedules.push({
+                    id: shortCourseSchedule.id,
                     scheduleName: shortCourseSchedule.scheduleName,
                     courses: courses,
                     customEvents: shortCourseSchedule.customEvents,
@@ -655,11 +648,25 @@ export class Schedules {
     }
 
     getCurrentSkeletonSchedule(): ShortCourseSchedule {
-        return this.skeletonSchedules[this.currentScheduleIndex];
+        const schedule = this.skeletonSchedules[this.currentScheduleIndex];
+        if (!schedule) {
+            return {
+                id: undefined,
+                scheduleName: '',
+                courses: [],
+                customEvents: [],
+                scheduleNote: '',
+            };
+        }
+        return schedule;
     }
 
     getSkeletonScheduleNames(): string[] {
         return this.skeletonSchedules.map((schedule) => schedule.scheduleName);
+    }
+
+    getSchedules(): Schedule[] {
+        return this.schedules;
     }
 
     setSkeletonSchedules(skeletonSchedules: ShortCourseSchedule[]) {
