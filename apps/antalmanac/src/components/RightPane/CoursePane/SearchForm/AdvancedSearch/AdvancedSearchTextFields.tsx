@@ -1,7 +1,9 @@
-import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText } from '@mui/material';
+import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText, Tooltip, Typography } from '@mui/material';
+import type { Roadmap } from '@packages/antalmanac-types';
 import { format, parse } from 'date-fns';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 
+import { openSnackbar } from '$actions/AppStoreActions';
 import {
     EXCLUDE_RESTRICTION_CODES_OPTIONS,
     DAYS_OPTIONS,
@@ -11,13 +13,52 @@ import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/La
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
 import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { SignInDialog } from '$components/dialogs/SignInDialog';
+import { usePlannerRoadmaps } from '$hooks/usePlanner';
 import { safeUnreachableCase } from '$lib/utils';
+import { useSessionStore } from '$stores/SessionStore';
+import { useThemeStore } from '$stores/SettingsStore';
 
 type InputEvent =
     | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     | SelectChangeEvent<string | string[]>
     | Date
     | null;
+
+type RoadmapMenuItemsProps = {
+    isLoggedIn: boolean;
+    roadmaps: Roadmap[];
+};
+
+function getRoadmapMenuItems({ isLoggedIn, roadmaps }: RoadmapMenuItemsProps) {
+    if (!isLoggedIn) {
+        return [
+            <MenuItem key="signin" value="">
+                Sign In to filter
+            </MenuItem>,
+        ];
+    }
+
+    if (roadmaps.length === 0) {
+        return [
+            <MenuItem key="create" value="" onClick={() => window.open('https://antalmanac.com/planner', '_blank')}>
+                Create a roadmap!
+            </MenuItem>,
+        ];
+    }
+
+    return [
+        <MenuItem key="all" value="">
+            {' '}
+            Include all courses
+        </MenuItem>,
+        ...roadmaps.map((roadmap) => (
+            <MenuItem key={roadmap.id} value={roadmap.id.toString()}>
+                {roadmap.name}
+            </MenuItem>
+        )),
+    ];
+}
 
 export function AdvancedSearchTextFields() {
     const [instructor, setInstructor] = useState(() => RightPaneStore.getFormData().instructor);
@@ -32,6 +73,13 @@ export function AdvancedSearchTextFields() {
         () => RightPaneStore.getFormData().excludeRestrictionCodes
     );
     const [days, setDays] = useState(() => RightPaneStore.getFormData().days);
+    const [excludeRoadmapCourses, setExcludeRoadmapCourses] = useState(
+        () => RightPaneStore.getFormData().excludeRoadmapCourses
+    );
+    const { roadmaps } = usePlannerRoadmaps();
+    const isLoggedIn = useSessionStore((s) => s.googleId !== null);
+    const [signInOpen, setSignInOpen] = useState(false);
+    const isDark = useThemeStore((store) => store.isDark);
 
     const resetField = useCallback(() => {
         const formData = RightPaneStore.getFormData();
@@ -43,6 +91,7 @@ export function AdvancedSearchTextFields() {
         setBuilding(formData.building);
         setRoom(formData.room);
         setDivision(formData.division);
+        setExcludeRoadmapCourses(formData.excludeRoadmapCourses);
         setExcludeRestrictionCodes(formData.excludeRestrictionCodes);
         setDays(formData.days);
     }, []);
@@ -131,6 +180,9 @@ export function AdvancedSearchTextFields() {
             case 'division':
                 setDivision(stringValue);
                 break;
+            case 'excludeRoadmapCourses':
+                setExcludeRoadmapCourses(stringValue);
+                break;
             case 'excludeRestrictionCodes':
                 setExcludeRestrictionCodes(stringValue);
                 break;
@@ -149,235 +201,291 @@ export function AdvancedSearchTextFields() {
         updateValue(name, stringValue);
     };
 
+    const handleSignInClose = useCallback(() => {
+        setSignInOpen(false);
+    }, []);
+
+    useEffect(() => {
+        if (!excludeRoadmapCourses) return;
+        if (!roadmaps || roadmaps.length === 0) return;
+
+        const exists = roadmaps.some((r) => r.id.toString() === excludeRoadmapCourses);
+
+        if (!exists) {
+            openSnackbar('warning', 'Invalid roadmap selection. All courses shown.');
+            setExcludeRoadmapCourses('');
+            RightPaneStore.updateFormValue('excludeRoadmapCourses', '');
+
+            const url = new URL(window.location.href);
+            const params = new URLSearchParams(url.search);
+            params.delete('excludeRoadmapCourses');
+            const newUrl = params.toString() ? `${url.pathname}?${params.toString()}` : url.pathname;
+            history.replaceState({}, '', newUrl);
+        }
+    }, [roadmaps, excludeRoadmapCourses]);
+
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 2,
-                marginBottom: '1rem',
-            }}
-        >
+        <>
             <Box
                 sx={{
                     display: 'flex',
                     flexWrap: 'wrap',
                     gap: 2,
-                    width: '100%',
+                    marginBottom: '1rem',
                 }}
             >
-                <LabeledTextField
-                    label="Instructor"
-                    textFieldProps={{
-                        type: 'search',
-                        value: instructor,
-                        onChange: changeHandlerFactory('instructor'),
-                        placeholder: 'Last name only',
-                        fullWidth: true,
-                    }}
-                />
-
-                <LabeledTextField
-                    label="Units"
-                    textFieldProps={{
-                        value: units,
-                        onChange: changeHandlerFactory('units'),
-                        type: 'search',
-                        placeholder: 'ex. 3, 4, or VAR',
-                        fullWidth: true,
-                    }}
-                />
-
-                <LabeledSelect
-                    label="Class Full Option"
-                    selectProps={{
-                        value: coursesFull,
-                        onChange: changeHandlerFactory('coursesFull'),
-                        sx: {
-                            width: '100%',
-                        },
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 2,
+                        width: '100%',
                     }}
                 >
-                    <MenuItem value={'ANY'}>Include all classes</MenuItem>
-                    <MenuItem value={'SkipFullWaitlist'}>Include full courses if space on waitlist</MenuItem>
-                    <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
-                    <MenuItem value={'FullOnly'}>Show only full or waitlisted courses</MenuItem>
-                    <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
-                </LabeledSelect>
-            </Box>
+                    <LabeledTextField
+                        label="Instructor"
+                        textFieldProps={{
+                            type: 'search',
+                            value: instructor,
+                            onChange: changeHandlerFactory('instructor'),
+                            placeholder: 'Last name only',
+                            fullWidth: true,
+                        }}
+                    />
 
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: 2,
-                    width: '100%',
-                }}
-            >
-                <LabeledSelect
-                    label="Course Level"
-                    selectProps={{
-                        value: division,
-                        onChange: changeHandlerFactory('division'),
-                        displayEmpty: true,
-                        MenuProps: {
-                            anchorOrigin: {
-                                vertical: 'bottom',
-                                horizontal: 'left',
+                    <LabeledTextField
+                        label="Units"
+                        textFieldProps={{
+                            value: units,
+                            onChange: changeHandlerFactory('units'),
+                            type: 'search',
+                            placeholder: 'ex. 3, 4, or VAR',
+                            fullWidth: true,
+                        }}
+                    />
+
+                    <LabeledSelect
+                        label="Class Full Option"
+                        selectProps={{
+                            value: coursesFull,
+                            onChange: changeHandlerFactory('coursesFull'),
+                            sx: {
+                                width: '100%',
                             },
-                            transformOrigin: {
-                                vertical: 'top',
-                                horizontal: 'left',
+                        }}
+                    >
+                        <MenuItem value={'ANY'}>Include all classes</MenuItem>
+                        <MenuItem value={'SkipFullWaitlist'}>Include full courses if space on waitlist</MenuItem>
+                        <MenuItem value={'SkipFull'}>Skip full courses</MenuItem>
+                        <MenuItem value={'FullOnly'}>Show only full or waitlisted courses</MenuItem>
+                        <MenuItem value={'Overenrolled'}>Show only over-enrolled courses</MenuItem>
+                    </LabeledSelect>
+                </Box>
+
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 2,
+                        width: '100%',
+                    }}
+                >
+                    <LabeledSelect
+                        label="Course Level"
+                        selectProps={{
+                            value: division,
+                            onChange: changeHandlerFactory('division'),
+                            displayEmpty: true,
+                            MenuProps: {
+                                anchorOrigin: {
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                },
+                                transformOrigin: {
+                                    vertical: 'top',
+                                    horizontal: 'left',
+                                },
                             },
-                        },
-                        sx: {
-                            width: '100%',
-                        },
+                            sx: {
+                                width: '100%',
+                            },
+                        }}
+                    >
+                        <MenuItem value={''}>Any Division</MenuItem>
+                        <MenuItem value={'LowerDiv'}>Lower Division</MenuItem>
+                        <MenuItem value={'UpperDiv'}>Upper Division</MenuItem>
+                        <MenuItem value={'Graduate'}>Graduate/Professional</MenuItem>
+                    </LabeledSelect>
+
+                    <LabeledTimePicker
+                        label="Starts After"
+                        timePickerProps={{
+                            value: startTime ? parse(startTime, 'HH:mm', new Date()) : null,
+                            onChange: changeHandlerFactory('startTime'),
+                            timeSteps: { minutes: 10 },
+                        }}
+                        textFieldProps={{
+                            fullWidth: true,
+                            sx: {
+                                minWidth: 120,
+                            },
+                        }}
+                    />
+
+                    <LabeledTimePicker
+                        label="Ends Before"
+                        timePickerProps={{
+                            value: endTime ? parse(endTime, 'HH:mm', new Date()) : null,
+                            onChange: changeHandlerFactory('endTime'),
+                            timeSteps: { minutes: 10 },
+                        }}
+                        textFieldProps={{
+                            fullWidth: true,
+                            sx: {
+                                minWidth: 120,
+                            },
+                        }}
+                    />
+                </Box>
+
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 2,
+                        width: '100%',
                     }}
                 >
-                    <MenuItem value={''}>Any Division</MenuItem>
-                    <MenuItem value={'LowerDiv'}>Lower Division</MenuItem>
-                    <MenuItem value={'UpperDiv'}>Upper Division</MenuItem>
-                    <MenuItem value={'Graduate'}>Graduate/Professional</MenuItem>
-                </LabeledSelect>
+                    <LabeledSelect
+                        label="Online Only"
+                        selectProps={{
+                            value: building === 'ON' ? 'true' : 'false',
+                            onChange: changeHandlerFactory('online'),
+                            sx: {
+                                width: '100%',
+                            },
+                        }}
+                    >
+                        <MenuItem value="false">False</MenuItem>
+                        <MenuItem value="true">True</MenuItem>
+                    </LabeledSelect>
 
-                <LabeledTimePicker
-                    label="Starts After"
-                    timePickerProps={{
-                        value: startTime ? parse(startTime, 'HH:mm', new Date()) : null,
-                        onChange: changeHandlerFactory('startTime'),
-                        timeSteps: { minutes: 10 },
-                    }}
-                    textFieldProps={{
-                        fullWidth: true,
-                        sx: {
-                            minWidth: 120,
-                        },
-                    }}
-                />
+                    <LabeledTextField
+                        label="Building"
+                        textFieldProps={{
+                            id: 'building',
+                            type: 'search',
+                            value: building,
+                            onChange: changeHandlerFactory('building'),
+                            fullWidth: true,
+                        }}
+                    />
 
-                <LabeledTimePicker
-                    label="Ends Before"
-                    timePickerProps={{
-                        value: endTime ? parse(endTime, 'HH:mm', new Date()) : null,
-                        onChange: changeHandlerFactory('endTime'),
-                        timeSteps: { minutes: 10 },
+                    <LabeledTextField
+                        label="Room"
+                        textFieldProps={{
+                            id: 'room',
+                            type: 'search',
+                            value: room,
+                            onChange: changeHandlerFactory('room'),
+                            fullWidth: true,
+                        }}
+                    />
+                </Box>
+
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: 2,
+                        width: '100%',
                     }}
-                    textFieldProps={{
-                        fullWidth: true,
-                        sx: {
-                            minWidth: 120,
-                        },
-                    }}
-                />
+                >
+                    <LabeledSelect
+                        label={
+                            <Tooltip
+                                title={
+                                    <Typography sx={{ fontSize: '0.8rem' }}>
+                                        Data from AntAlmanac.com/planner
+                                    </Typography>
+                                }
+                            >
+                                <Box>Exclude Taken Courses</Box>
+                            </Tooltip>
+                        }
+                        selectProps={{
+                            value: excludeRoadmapCourses,
+                            onChange: changeHandlerFactory('excludeRoadmapCourses'),
+                            displayEmpty: true,
+                            sx: {
+                                width: '100%',
+                            },
+                            onOpen: () => {
+                                if (!isLoggedIn) {
+                                    setSignInOpen(true);
+                                }
+                            },
+                            open: !isLoggedIn ? false : undefined,
+                        }}
+                    >
+                        {getRoadmapMenuItems({ isLoggedIn, roadmaps })}
+                    </LabeledSelect>
+
+                    <LabeledSelect
+                        label="Exclude Restrictions"
+                        selectProps={{
+                            multiple: true,
+                            value: excludeRestrictionCodes.split(''),
+                            onChange: changeHandlerFactory('excludeRestrictionCodes'),
+                            renderValue: (selected) => (selected as string[]).join(', '),
+                            sx: {
+                                width: '100%',
+                            },
+                        }}
+                    >
+                        {EXCLUDE_RESTRICTION_CODES_OPTIONS.map((option) => (
+                            <MenuItem key={option.value} value={option.value} sx={{ paddingY: 0.25 }}>
+                                <Checkbox
+                                    checked={excludeRestrictionCodes.includes(option.value)}
+                                    inputProps={{ 'aria-labelledby': `option-label-${option.value}` }}
+                                />
+                                <ListItemText id={`option-label-${option.value}`} primary={option.label} />
+                            </MenuItem>
+                        ))}
+                    </LabeledSelect>
+
+                    <LabeledSelect
+                        label="Days"
+                        selectProps={{
+                            multiple: true,
+                            value: days ? days.split(/(?=[A-Z])/) : [],
+                            onChange: changeHandlerFactory('days'),
+                            renderValue: (selected) =>
+                                (selected as string[])
+                                    .sort((a, b) => {
+                                        const orderA = DAYS_OPTIONS.findIndex((day) => day.value === a);
+                                        const orderB = DAYS_OPTIONS.findIndex((day) => day.value === b);
+                                        return orderA - orderB;
+                                    })
+                                    .join(', '),
+                            sx: {
+                                width: '100%',
+                            },
+                        }}
+                    >
+                        {DAYS_OPTIONS.map((option) => (
+                            <MenuItem key={option.value} value={option.value} sx={{ paddingY: 0.25 }}>
+                                <Checkbox
+                                    checked={days.includes(option.value)}
+                                    inputProps={{ 'aria-labelledby': `option-label-${option.value}` }}
+                                />
+                                <ListItemText id={`option-label-${option.value}`} primary={option.label} />
+                            </MenuItem>
+                        ))}
+                    </LabeledSelect>
+                </Box>
             </Box>
-
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: 2,
-                    width: '100%',
-                }}
-            >
-                <LabeledSelect
-                    label="Online Only"
-                    selectProps={{
-                        value: building === 'ON' ? 'true' : 'false',
-                        onChange: changeHandlerFactory('online'),
-                        sx: {
-                            width: '100%',
-                        },
-                    }}
-                >
-                    <MenuItem value="false">False</MenuItem>
-                    <MenuItem value="true">True</MenuItem>
-                </LabeledSelect>
-
-                <LabeledTextField
-                    label="Building"
-                    textFieldProps={{
-                        id: 'building',
-                        type: 'search',
-                        value: building,
-                        onChange: changeHandlerFactory('building'),
-                        fullWidth: true,
-                    }}
-                />
-
-                <LabeledTextField
-                    label="Room"
-                    textFieldProps={{
-                        id: 'room',
-                        type: 'search',
-                        value: room,
-                        onChange: changeHandlerFactory('room'),
-                        fullWidth: true,
-                    }}
-                />
-            </Box>
-
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: 2,
-                    width: '100%',
-                }}
-            >
-                <LabeledSelect
-                    label="Exclude Restrictions"
-                    selectProps={{
-                        multiple: true,
-                        value: excludeRestrictionCodes.split(''),
-                        onChange: changeHandlerFactory('excludeRestrictionCodes'),
-                        renderValue: (selected) => (selected as string[]).join(', '),
-                        sx: {
-                            width: '100%',
-                        },
-                    }}
-                >
-                    {EXCLUDE_RESTRICTION_CODES_OPTIONS.map((option) => (
-                        <MenuItem key={option.value} value={option.value} sx={{ paddingY: 0.25 }}>
-                            <Checkbox
-                                checked={excludeRestrictionCodes.includes(option.value)}
-                                inputProps={{ 'aria-labelledby': `option-label-${option.value}` }}
-                            />
-                            <ListItemText id={`option-label-${option.value}`} primary={option.label} />
-                        </MenuItem>
-                    ))}
-                </LabeledSelect>
-
-                <LabeledSelect
-                    label="Days"
-                    selectProps={{
-                        multiple: true,
-                        value: days ? days.split(/(?=[A-Z])/) : [],
-                        onChange: changeHandlerFactory('days'),
-                        renderValue: (selected) =>
-                            (selected as string[])
-                                .sort((a, b) => {
-                                    const orderA = DAYS_OPTIONS.findIndex((day) => day.value === a);
-                                    const orderB = DAYS_OPTIONS.findIndex((day) => day.value === b);
-                                    return orderA - orderB;
-                                })
-                                .join(', '),
-                        sx: {
-                            width: '100%',
-                        },
-                    }}
-                >
-                    {DAYS_OPTIONS.map((option) => (
-                        <MenuItem key={option.value} value={option.value} sx={{ paddingY: 0.25 }}>
-                            <Checkbox
-                                checked={days.includes(option.value)}
-                                inputProps={{ 'aria-labelledby': `option-label-${option.value}` }}
-                            />
-                            <ListItemText id={`option-label-${option.value}`} primary={option.label} />
-                        </MenuItem>
-                    ))}
-                </LabeledSelect>
-            </Box>
-        </Box>
+            <SignInDialog open={signInOpen} onClose={handleSignInClose} isDark={isDark} feature="Planner" />
+        </>
     );
 }
