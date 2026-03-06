@@ -19,6 +19,7 @@ import {
     Collapse,
     Box,
 } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useEffect, useState, useCallback } from 'react';
 
 import { loadSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
@@ -54,6 +55,7 @@ export const Signin = () => {
         ALERT_MESSAGES.SCHEDULE_IMPORTED
     );
 
+    const postHog = usePostHog();
     const [isOpen, setIsOpen] = useState(false);
     const [userID, setUserID] = useState('');
     const [rememberMe] = useState(true);
@@ -93,11 +95,11 @@ export const Signin = () => {
     const loadScheduleAndSetLoading = useCallback(
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
-            await loadSchedule(userID, rememberMe, 'GUEST');
+            await loadSchedule(userID, rememberMe, 'GUEST', postHog);
             await validateImportedUser(userID);
             setOpenLoadingSchedule(false);
         },
-        [setOpenLoadingSchedule, validateImportedUser]
+        [setOpenLoadingSchedule, validateImportedUser, postHog]
     );
 
     const loadScheduleAndSetLoadingAuth = useCallback(
@@ -112,20 +114,20 @@ export const Signin = () => {
                     setOpenalert(true);
                     setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
                 } else {
-                    await loadScheduleWithSessionToken();
+                    await loadScheduleWithSessionToken(postHog);
                 }
             } else if (userID && userID !== '') {
                 await validateImportedUser(userID);
-                await loadSchedule(userID, rememberMe, 'GUEST');
+                await loadSchedule(userID, rememberMe, 'GUEST', postHog);
             }
 
             setOpenLoadingSchedule(false);
         },
-        [setOpenLoadingSchedule, updateSession, validateImportedUser]
+        [setOpenLoadingSchedule, updateSession, validateImportedUser, postHog]
     );
 
     const handleLogin = () => {
-        loginUser();
+        loginUser(postHog);
         setLocalStorageFromLoading('true');
     };
 
