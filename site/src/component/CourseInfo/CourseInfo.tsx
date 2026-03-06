@@ -65,7 +65,7 @@ export const IncompletePrerequisiteText: FC<{ requiredCourses?: string[] }> = ({
         Prerequisite{pluralize(requiredCourses.length)} Not Met: {requiredCourses.join(', ')}
       </div>
       <div className="warning-hint-italics">
-        Already completed? Click "Transfer Credits" at the top of the roadmap viewer to add{' '}
+        Already completed? Click the "Credits" tab in the sidebar to add{' '}
         {pluralize(requiredCourses.length, 'these prerequisites', 'this prerequisite')}.
       </div>
     </div>
