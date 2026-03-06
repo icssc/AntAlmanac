@@ -11,8 +11,6 @@ const TERMS_URL = 'https://anteaterapi.com/v2/rest/websoc/terms';
 const WEBSOC_URL = 'https://anteaterapi.com/v2/rest/websoc';
 const OUTPUT_PATH = resolve(__dirname, '../src/generated/deployed_terms.json');
 
-const SECTION_COUNT_CHANGE_THRESHOLD = 50;
-
 interface DeployedTermsData {
     latestTerm: string;
     sectionCount: number;
@@ -20,7 +18,7 @@ interface DeployedTermsData {
     reason?: string;
 }
 
-async function getSectionCount(term: WebsocTerm, headers: Record<string, string>): Promise<number> {
+async function getCourseCount(term: WebsocTerm, headers: Record<string, string>) {
     const [year, quarter] = term.shortName.split(' ');
     console.log(`Checking section count for ${year} ${quarter} from ${WEBSOC_URL}...`);
 
@@ -65,7 +63,7 @@ async function updateTerms() {
         }
 
         const latestTerm = data[0].longName;
-        const currentCount = await getSectionCount(data[0], headers);
+        const currentCount = await getCourseCount(data[0], headers);
 
         console.log(`Latest term from API: ${latestTerm}`);
         console.log(`Total sections from API: ${currentCount}`);
@@ -87,7 +85,7 @@ async function updateTerms() {
         }
 
         const termChanged = latestTerm !== deployedData.latestTerm;
-        const countChanged = Math.abs(currentCount - deployedData.sectionCount) > SECTION_COUNT_CHANGE_THRESHOLD;
+        const countChanged = currentCount !== deployedData.sectionCount;
 
         if (termChanged || countChanged) {
             console.log('Update needed! Updating file...');
