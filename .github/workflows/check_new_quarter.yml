@@ -54,7 +54,7 @@ jobs:
 
                   git add apps/antalmanac/src/generated/deployed_terms.json
 
-                  git commit -m "ci: detected new quarter or course count update" \
+                  git commit -m "ci: detected new quarter or section count update" \
                              -m "Auto-updated by workflow on $(date -u +%Y-%m-%d)"
 
                   git pull --rebase origin ${{ github.ref_name }}
