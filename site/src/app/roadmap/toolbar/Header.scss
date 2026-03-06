@@ -37,8 +37,13 @@
   }
 
   .planner-actions {
+    display: flex;
+    gap: 16px;
+
     .MuiButtonGroup-root {
       gap: 10px;
+      display: flex;
+      align-items: center;
     }
 
     padding-right: 2px;
@@ -54,6 +59,9 @@
       height: fit-content;
       border-radius: 4px;
       padding: 4px 8px 4px 10px;
+      border: none;
+      box-shadow: none;
+      min-width: auto;
 
       &[disabled] {
         color: var(--mui-palette-text-secondary);

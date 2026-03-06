@@ -100,10 +100,15 @@ export const roadmapSlice = createSlice({
       state.currentRevisionIndex++;
     },
     undoRoadmapRevision: (state) => {
+      if (state.currentRevisionIndex <= 0) return;
       restoreRevision(state.plans, state.revisions, state.currentRevisionIndex, state.currentRevisionIndex - 1);
       state.currentRevisionIndex--;
+      if (state.currentPlanIndex > state.plans.length - 1) {
+        state.currentPlanIndex = state.plans.length - 1;
+      }
     },
     redoRoadmapRevision: (state) => {
+      if (state.currentRevisionIndex >= state.revisions.length - 1) return;
       restoreRevision(state.plans, state.revisions, state.currentRevisionIndex, state.currentRevisionIndex + 1);
       state.currentRevisionIndex++;
     },
