@@ -34,13 +34,13 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
-            - name: Run Update Script
+            - name: Update deployed terms
               run: pnpm --filter antalmanac update-terms
 
             - name: Check for changes
               id: git-check
               run: |
-                  if git diff --exit-code apps/antalmanac/src/generated/deployed_terms.json; then
+                  if [ -z "$(git status --porcelain apps/antalmanac/src/generated/deployed_terms.json)" ]; then
                       echo "changes=false" >> $GITHUB_OUTPUT
                   else
                       echo "changes=true" >> $GITHUB_OUTPUT
