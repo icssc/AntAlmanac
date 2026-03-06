@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, removeLocalStorageSessionId, setLocalStorageSessionId } from '$lib/localStorage';
+import { clearSsoCookie } from '$lib/ssoCookie';
 import { useNotificationStore } from '$stores/NotificationStore';
 
 interface SessionState {
@@ -59,6 +60,7 @@ export const useSessionStore = create<SessionState>((set) => {
             if (currentSession) {
                 await trpc.auth.invalidateSession.mutate({ token: currentSession });
                 removeLocalStorageSessionId();
+                clearSsoCookie();
                 set({
                     session: null,
                     userId: null,
