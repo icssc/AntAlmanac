@@ -16,6 +16,7 @@ import type { MouseEventHandler } from 'react';
 import { Logo } from '$components/Header/Logo';
 import { BLUE, PLANNER_LINK } from '$src/globals';
 import appStore from '$stores/AppStore';
+
 type AppSwitcherProps = {
     isMobile: boolean;
 };
