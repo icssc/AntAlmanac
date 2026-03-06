@@ -18,7 +18,7 @@ interface DeployedTermsData {
     reason?: string;
 }
 
-async function getCourseCount(term: WebsocTerm, headers: Record<string, string>) {
+async function getSectionCount(term: WebsocTerm, headers: Record<string, string>) {
     const [year, quarter] = term.shortName.split(' ');
     console.log(`Checking section count for ${year} ${quarter} from ${WEBSOC_URL}...`);
 
@@ -63,7 +63,7 @@ async function updateTerms() {
         }
 
         const latestTerm = data[0].longName;
-        const currentCount = await getCourseCount(data[0], headers);
+        const currentCount = await getSectionCount(data[0], headers);
 
         console.log(`Latest term from API: ${latestTerm}`);
         console.log(`Total sections from API: ${currentCount}`);
@@ -89,7 +89,7 @@ async function updateTerms() {
 
         if (termChanged || countChanged) {
             console.log('Update needed! Updating file...');
-            const reasons = [termChanged && 'New term detected', countChanged && 'Section count changed significantly']
+            const reasons = [termChanged && 'New term detected', countChanged && 'Section count changed']
                 .filter(Boolean)
                 .join('; ');
 
