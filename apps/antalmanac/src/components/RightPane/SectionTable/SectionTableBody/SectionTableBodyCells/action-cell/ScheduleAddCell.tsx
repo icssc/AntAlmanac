@@ -7,12 +7,13 @@ import { addCourse, openSnackbar } from '$actions/AppStoreActions';
 import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { Term } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 
 interface Props {
     section: AASection;
     courseDetails: CourseDetails;
-    term: string;
+    term: Term['shortName'];
     scheduleConflict: boolean;
 }
 
