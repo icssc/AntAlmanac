@@ -1,5 +1,7 @@
-import { WebsocSection } from '@icssc/libwebsoc-next';
+import { WebsocSection } from '@packages/anteater-api-types';
+import { render, toPlainText } from '@react-email/render';
 
+import { CourseNotificationEmail } from '../emails/CourseNotificationEmail';
 import { aantsEnvSchema } from '../env';
 
 import { queueEmail } from './emailQueue';
@@ -11,7 +13,9 @@ export interface CourseDetails {
     days: string;
     hours: string;
     currentStatus: WebsocSection['status'];
+    formerStatus: WebsocSection['status'] | null;
     restrictionCodes: string;
+    formerRestrictionCodes: string | null;
     deptCode: string;
     courseNumber: string;
     courseTitle: string;
@@ -81,7 +85,9 @@ async function sendNotification(
         days,
         hours,
         currentStatus,
+        formerStatus,
         restrictionCodes,
+        formerRestrictionCodes,
         deptCode,
         courseNumber,
         courseTitle,
@@ -91,18 +97,22 @@ async function sendNotification(
     } = courseDetails;
 
     try {
-        const parts = [];
+        const status = currentStatus === 'Waitl' ? 'WAITLISTED' : currentStatus;
+        const formerStatusLabel = formerStatus === 'Waitl' ? 'WAITLISTED' : formerStatus;
 
-        if (statusChanged) {
-            const status = currentStatus === 'Waitl' ? 'WAITLISTED' : currentStatus;
-            parts.push(`The class is now <strong>${status}</strong>`);
-        }
+        const statusChange = statusChanged
+            ? {
+                  from: formerStatus !== null ? (formerStatusLabel ?? '—') : '—',
+                  to: status,
+              }
+            : null;
 
-        if (codesChanged) {
-            parts.push(`The class now has restriction codes <strong>${restrictionCodes}</strong>`);
-        }
-
-        const notification = parts.map((p) => `- ${p}`).join('<br>');
+        const restrictionCodesChange = codesChanged
+            ? {
+                  from: formerRestrictionCodes !== null && formerRestrictionCodes !== '' ? formerRestrictionCodes : '—',
+                  to: restrictionCodes !== null && restrictionCodes !== '' ? restrictionCodes : '—',
+              }
+            : null;
 
         const time = getFormattedTime();
 
@@ -110,36 +120,57 @@ async function sendNotification(
         const isStaging = env.NODE_ENV !== 'production';
         const stagingPrefix = isStaging ? '[SQS] [STAGING] ' : '';
 
-        const usersWithEmail = users.filter((user): user is User & { email: string } => user.email !== null);
+        const usersWithEmail = users.filter(
+            (user): user is User & { email: string; userId: string; userName: string } =>
+                user.email !== null && user.userId !== null && user.userName !== null
+        );
 
-        // Send each email as a separate SQS message
+        const subject = `${stagingPrefix}${deptCode} ${courseNumber} (${courseType}) had some enrollment changes!`;
+
+        // Send each email as a separate SQS message (render React Email per user for personalization)
         await Promise.all(
-            usersWithEmail.map((user) =>
-                queueEmail({
+            usersWithEmail.map(async (user) => {
+                const messageId = crypto.randomUUID();
+                const html = await render(
+                    CourseNotificationEmail({
+                        messageId,
+                        userName: user.userName,
+                        time,
+                        statusChange,
+                        restrictionCodesChange,
+                        deptCode,
+                        courseNumber,
+                        courseTitle,
+                        courseType,
+                        instructor,
+                        days,
+                        hours,
+                        sectionCode,
+                        userId: user.userId,
+                        quarter,
+                        year,
+                    })
+                );
+                const text = toPlainText(html);
+
+                return queueEmail({
                     FromEmailAddress: 'no-reply@icssc.club',
-                    TemplateName: 'CourseNotification',
                     Destination: {
                         ToAddresses: [user.email],
                     },
-                    TemplateData: JSON.stringify({
-                        notification: notification,
-                        deptCode: deptCode,
-                        courseNumber: courseNumber,
-                        courseTitle: courseTitle,
-                        courseType: courseType,
-                        instructor: instructor,
-                        days: days,
-                        hours: hours,
-                        time: time,
-                        sectionCode: sectionCode,
-                        userId: user.userId,
-                        userName: user.userName,
-                        quarter: quarter,
-                        year: year,
-                        stagingPrefix: stagingPrefix,
-                    }),
-                })
-            )
+                    Content: {
+                        Subject: subject,
+                        Html: html,
+                        Text: text,
+                    },
+                    LogContext: {
+                        deptCode,
+                        courseNumber,
+                        sectionCode,
+                        courseTitle,
+                    },
+                });
+            })
         );
 
         return { queued: usersWithEmail.length };
