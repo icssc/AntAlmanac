@@ -11,9 +11,11 @@ import {
     Typography,
 } from '@mui/material';
 import { useState } from 'react';
+import type { MouseEventHandler } from 'react';
 
 import { Logo } from '$components/Header/Logo';
-import { BLUE } from '$src/globals';
+import { BLUE, PLANNER_LINK } from '$src/globals';
+import appStore from '$stores/AppStore';
 
 type AppSwitcherProps = {
     isMobile: boolean;
@@ -25,12 +27,28 @@ export function AppSwitcher({ isMobile }: AppSwitcherProps) {
 
     const platform = window.location.pathname.split('/')[1] === 'planner' ? 'Planner' : 'Scheduler';
 
-    const handlePlannerClick = () => {
+    const handlePlannerClick: MouseEventHandler<HTMLElement> = (event) => {
         if (plannerLoading) return;
+
+        if (appStore.hasUnsavedChanges()) {
+            const shouldLeave = window.confirm(
+                'You have unsaved changes. Are you sure you want to leave without saving?'
+            );
+
+            if (!shouldLeave) {
+                event.preventDefault();
+                event.stopPropagation();
+                return;
+            }
+
+            // user chose to leave, suppress beforeunload warning
+            appStore.unsavedChanges = false;
+        }
+
         setPlannerLoading(true);
     };
 
-    const plannerIcon = plannerLoading ? <CircularProgress size={16} color="inherit" /> : <Route />;
+    const plannerIcon = plannerLoading ? <CircularProgress size={20} color="inherit" /> : <Route />;
 
     if (isMobile) {
         return (
@@ -82,11 +100,13 @@ export function AppSwitcher({ isMobile }: AppSwitcherProps) {
                         </MenuItem>
                         <MenuItem
                             component="a"
-                            href="/planner"
+                            href={PLANNER_LINK}
                             selected={platform === 'Planner'}
-                            onClick={() => {
-                                handlePlannerClick();
-                                setAnchorEl(null);
+                            onClick={(event) => {
+                                handlePlannerClick(event);
+                                if (!event.defaultPrevented) {
+                                    setAnchorEl(null);
+                                }
                             }}
                             disabled={plannerLoading}
                             sx={{ minHeight: 'fit-content', textDecoration: 'none', color: 'inherit' }}
@@ -123,7 +143,7 @@ export function AppSwitcher({ isMobile }: AppSwitcherProps) {
                 </Button>
                 <Button
                     component="a"
-                    href="/planner"
+                    href={PLANNER_LINK}
                     startIcon={plannerIcon}
                     onClick={handlePlannerClick}
                     disabled={plannerLoading}
