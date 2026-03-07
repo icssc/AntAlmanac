@@ -291,7 +291,7 @@ function SkeletonSchedule() {
 }
 
 function AddedSectionsGrid() {
-    const [courses, setCourses] = useState(getCourses());
+    const [courses, setCourses] = useState(getCourses);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
 
