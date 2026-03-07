@@ -80,6 +80,11 @@ export function SelectSchedulePopover() {
         setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
     }, []);
 
+    const handleSortableListChange = (schedules: ScheduleItem[], activeIndex: number, overIndex: number) => {
+        setScheduleMapping(schedules);
+        AppStore.reorderSchedule(activeIndex, overIndex);
+    };
+
     useEffect(() => {
         AppStore.on('addedCoursesChange', handleScheduleIndexChange);
         AppStore.on('customEventsChange', handleScheduleIndexChange);
@@ -161,7 +166,7 @@ export function SelectSchedulePopover() {
                 <Box padding={1}>
                     <SortableList
                         items={scheduleMappingToUse}
-                        onChange={setScheduleMapping}
+                        onChange={handleSortableListChange}
                         renderItem={(item) => {
                             const index = scheduleMappingToUse.indexOf(item);
                             return (
