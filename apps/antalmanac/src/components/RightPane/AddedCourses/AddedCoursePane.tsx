@@ -11,6 +11,7 @@ import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePan
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
+import { SortableList } from '$components/drag-and-drop/SortableList';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
@@ -32,6 +33,7 @@ const buttonSx: SxProps = {
 
 export interface CourseWithTerm extends AACourse {
     term: string;
+    id: string;
 }
 
 const NOTE_MAX_LEN = 5000;
@@ -71,6 +73,7 @@ function getCourses() {
                     },
                 ],
                 updatedAt: sectionUpdatedAt ?? null,
+                id: course.deptCode + course.courseNumber + course.courseTitle,
             };
             formattedCourses.push(formattedCourse);
         }
@@ -295,6 +298,10 @@ function AddedSectionsGrid() {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
 
+    const handleCourseOrderChange = (courses: CourseWithTerm[]) => {
+        setCourses(courses);
+    };
+
     useEffect(() => {
         const handleCoursesChange = () => {
             setCourses(getCourses());
@@ -357,12 +364,16 @@ function AddedSectionsGrid() {
             <Box sx={{ marginTop: 7 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
                 {courses.length < 1 ? NoCoursesBox : null}
-                <Box display="flex" flexDirection="column" gap={1}>
-                    {courses.map((course) => {
+                <SortableList
+                    disableHorizontalScroll
+                    items={courses}
+                    onChange={handleCourseOrderChange}
+                    sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}
+                    renderItem={(course: CourseWithTerm) => {
                         const missingSections = getMissingSections(course);
 
                         return (
-                            <Box key={course.deptCode + course.courseNumber + course.courseTitle}>
+                            <SortableList.Item id={course.id}>
                                 <SectionTableLazyWrapper
                                     courseDetails={course}
                                     term={course.term}
@@ -370,11 +381,12 @@ function AddedSectionsGrid() {
                                     analyticsCategory={analyticsEnum.addedClasses}
                                     scheduleNames={scheduleNames}
                                     missingSections={missingSections}
+                                    sortable
                                 />
-                            </Box>
+                            </SortableList.Item>
                         );
-                    })}
-                </Box>
+                    }}
+                />
             </Box>
 
             <CustomEventsBox />
