@@ -10,31 +10,11 @@ import { type NotifyOn } from '$stores/NotificationStore';
  * Props received by components that perform actions on a specified section.
  */
 export interface ActionCellProps {
-    /**
-     * The section to perform actions on.
-     */
     section: AASection;
-
-    /**
-     * The term that the section occurs in.
-     */
     term: string;
-
-    /**
-     * Additional details about the course that the section occurs in.
-     */
     courseDetails: CourseDetails;
-
-    /**
-     * Whether the section has a schedule conflict with another event in the calendar.
-     */
     scheduleConflict: boolean;
-
-    /**
-     * Whether the section has been added.
-     */
     addedCourse: boolean;
-
     notifyOn: NotifyOn | undefined;
     lastUpdated: string;
     lastCodes: string;
