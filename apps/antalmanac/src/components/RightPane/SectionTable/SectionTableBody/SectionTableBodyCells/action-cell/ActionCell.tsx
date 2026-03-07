@@ -26,11 +26,6 @@ export interface ActionCellProps {
     courseDetails: CourseDetails;
 
     /**
-     * The names of the schedules that the section can be added to.
-     */
-    scheduleNames: string[];
-
-    /**
      * Whether the section has a schedule conflict with another event in the calendar.
      */
     scheduleConflict: boolean;

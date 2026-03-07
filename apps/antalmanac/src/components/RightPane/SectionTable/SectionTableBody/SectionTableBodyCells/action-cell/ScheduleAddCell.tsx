@@ -12,13 +12,7 @@ import AppStore from '$stores/AppStore';
 /**
  * Sections that have not been added to a schedule can be added to a schedule.
  */
-export function ScheduleAddCell({
-    section,
-    courseDetails,
-    term,
-    scheduleNames: _scheduleNames,
-    scheduleConflict,
-}: ActionCellProps) {
+export function ScheduleAddCell({ section, courseDetails, term, scheduleConflict }: ActionCellProps) {
     const isMobile = useIsMobile();
     const flexDirection = isMobile ? 'column' : undefined;
     const postHog = usePostHog();
