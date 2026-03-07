@@ -4,6 +4,7 @@ import { memo } from 'react';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { DeleteAndNotifications } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/DeleteAndNotifications';
 import { ScheduleAddCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/ScheduleAddCell';
+import { Term } from '$lib/termData';
 import { type NotifyOn } from '$stores/NotificationStore';
 
 /**
@@ -11,7 +12,7 @@ import { type NotifyOn } from '$stores/NotificationStore';
  */
 interface Props {
     section: AASection;
-    term: string;
+    term: Term['shortName'];
     courseDetails: CourseDetails;
     scheduleConflict: boolean;
     addedCourse: boolean;
