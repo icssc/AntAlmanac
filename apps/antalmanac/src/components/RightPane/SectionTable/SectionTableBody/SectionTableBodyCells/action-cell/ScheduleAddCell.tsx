@@ -1,18 +1,25 @@
 import { Add } from '@mui/icons-material';
 import { Box, IconButton, Tooltip } from '@mui/material';
+import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 
 import { addCourse, openSnackbar } from '$actions/AppStoreActions';
-import { ActionCellProps } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/ActionCell';
 import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 
+interface Props {
+    section: AASection;
+    courseDetails: CourseDetails;
+    term: string;
+    scheduleConflict: boolean;
+}
+
 /**
  * Sections that have not been added to a schedule can be added to a schedule.
  */
-export function ScheduleAddCell({ section, courseDetails, term, scheduleConflict }: ActionCellProps) {
+export function ScheduleAddCell({ section, courseDetails, term, scheduleConflict }: Props) {
     const isMobile = useIsMobile();
     const flexDirection = isMobile ? 'column' : undefined;
     const postHog = usePostHog();
