@@ -3,8 +3,27 @@ import { paths } from './generated/anteater-api-types';
 export type WebsocAPIResponse =
     paths['/v2/rest/websoc']['get']['responses'][200]['content']['application/json']['data'];
 
+type WebsocAPISuccess = {
+    ok: true;
+    data: WebsocAPIResponse;
+};
+
+type WebsocAPIError = {
+    ok: false;
+    message: string;
+};
+
+export type WebsocAPIResult = WebsocAPISuccess | WebsocAPIError;
+
 export type WebsocAPIDepartmentsResponse =
     paths['/v2/rest/websoc/departments']['get']['responses'][200]['content']['application/json']['data'];
+
+type WebsocDepartmentsAPISuccess = {
+    ok: true;
+    data: WebsocAPIDepartmentsResponse;
+};
+
+export type WebsocDepartmentsAPIResult = WebsocDepartmentsAPISuccess | WebsocAPIError;
 
 export type WebsocSchool = WebsocAPIResponse['schools'][number];
 
