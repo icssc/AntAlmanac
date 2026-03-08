@@ -6,6 +6,7 @@ import Image from 'next/image';
 
 import { About } from '$components/Header/About';
 import { ExperimentalMenu } from '$components/Header/Settings/ExperimentalMenu';
+import { SectionColorSelector } from '$components/Header/Settings/SectionColorSelector';
 import { ThemeSelector } from '$components/Header/Settings/ThemeSelector';
 import { TimeSelector } from '$components/Header/Settings/TimeSelector';
 
@@ -77,6 +78,7 @@ export function SettingsMenu({ user, onClose }: SettingsMenuProps) {
             <UserProfileSection user={user} />
 
             <ThemeSelector />
+            <SectionColorSelector />
             <TimeSelector />
 
             <Stack>

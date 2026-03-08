@@ -71,7 +71,7 @@ describe('calendarize-helpers', () => {
     const calendarizedCourses: CourseEvent[] = [
         {
             locations: [],
-            color: 'placeholderColor',
+            color: '#2196f3',
             term: '2024 Winter',
             title: 'placeholderDeptCode placeholderCourseNumber',
             courseTitle: 'placeholderCourseTitle',
@@ -102,7 +102,7 @@ describe('calendarize-helpers', () => {
         },
         {
             locations: [],
-            color: 'placeholderColor',
+            color: '#2196f3',
             term: '2024 Winter',
             title: 'placeholderDeptCode placeholderCourseNumber',
             courseTitle: 'placeholderCourseTitle',
@@ -133,7 +133,7 @@ describe('calendarize-helpers', () => {
         },
         {
             locations: [],
-            color: 'placeholderColor',
+            color: '#2196f3',
             term: '2024 Winter',
             title: 'placeholderDeptCode placeholderCourseNumber',
             courseTitle: 'placeholderCourseTitle',
@@ -167,7 +167,7 @@ describe('calendarize-helpers', () => {
     const calendarizedCourseFinals: CourseEvent[] = [
         {
             locations: [],
-            color: 'placeholderColor',
+            color: '#2196f3',
             term: '2024 Winter',
             title: 'placeholderDeptCode placeholderCourseNumber',
             courseNumber: 'placeholderCourseNumber',
@@ -253,7 +253,7 @@ describe('calendarize-helpers', () => {
     ];
 
     test('calendarizeCourseEvents', () => {
-        const result = calendarizeCourseEvents(courses);
+        const result = calendarizeCourseEvents(courses, 'legacy');
         expect(result).toStrictEqual(calendarizedCourses);
     });
 
