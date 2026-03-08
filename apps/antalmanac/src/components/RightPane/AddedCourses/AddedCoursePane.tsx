@@ -300,16 +300,20 @@ function AddedSectionsGrid() {
         setCourses(updatedCourses);
 
         const movedCourse = updatedCourses[overIndex];
-        const nextCourse = overIndex + 1 !== updatedCourses.length ? updatedCourses[overIndex + 1] : null;
+        const nextConsecutiveCourse = overIndex + 1 !== updatedCourses.length ? updatedCourses[overIndex + 1] : null;
 
         const currentCourses = AppStore.getCurrentSchedule().courses;
 
-        // Only the first course needs to be moved since that's how `getCourses` determines order
-        const fromIndex = currentCourses.findIndex((course) => getCourseId(course) === getCourseId(movedCourse));
-        const toIndex =
-            nextCourse !== null
-                ? currentCourses.findIndex((course) => getCourseId(course) === getCourseId(nextCourse))
-                : updatedCourses.length;
+        // Only the course's first section needs to be moved since that's how `getCourses` determines order
+        const movedCourseId = getCourseId(movedCourse);
+        const fromIndex = currentCourses.findIndex((course) => getCourseId(course) === movedCourseId);
+        let toIndex;
+        if (nextConsecutiveCourse !== null) {
+            const nextCourseId = getCourseId(nextConsecutiveCourse);
+            toIndex = currentCourses.findIndex((course) => getCourseId(course) === nextCourseId);
+        } else {
+            toIndex = updatedCourses.length;
+        }
 
         AppStore.reorderAddedCourses(AppStore.getCurrentScheduleIndex(), fromIndex, toIndex);
     };
