@@ -24,6 +24,7 @@ export function DragHandle({ disabled = false }: DragHandleProps) {
                 justifyContent: 'center',
                 cursor: disabled ? 'auto' : 'pointer',
                 borderRadius: 1,
+                touchAction: 'none',
                 '&:hover': {
                     backgroundColor: disabled ? 'transparent' : 'rgba(0, 0, 0, 0.1)',
                 },
