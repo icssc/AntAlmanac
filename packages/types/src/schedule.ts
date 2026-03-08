@@ -19,7 +19,7 @@ export type Schedule = {
     courses: ScheduleCourse[];
     customEvents: RepeatingCustomEvent[];
     scheduleNoteId: number;
-    scheduleId?: string;
+    scheduleId: string;
 };
 
 export const ShortCourseSchema = type({

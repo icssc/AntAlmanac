@@ -41,6 +41,7 @@ export class Schedules {
 
         this.schedules = [
             {
+                scheduleId: '',
                 scheduleName: `${getDefaultTerm().shortName.replaceAll(' ', '-')}`,
                 courses: [],
                 customEvents: [],
@@ -112,6 +113,7 @@ export class Schedules {
         this.addUndoState();
         const scheduleNoteId = Math.random();
         this.schedules.push({
+            scheduleId: '',
             scheduleName: this.getNextScheduleName(this.getNumberOfSchedules(), newScheduleName),
             courses: [],
             customEvents: [],
@@ -546,7 +548,7 @@ export class Schedules {
     getScheduleAsSaveState(): ScheduleSaveState {
         const shortSchedules: ShortCourseSchedule[] = this.schedules.map((schedule) => {
             return {
-                ...(schedule.scheduleId ? { id: schedule.scheduleId } : {}),
+                id: schedule.scheduleId,
                 scheduleName: schedule.scheduleName,
                 customEvents: schedule.customEvents,
                 courses: schedule.courses.map((course) => {
@@ -643,7 +645,7 @@ export class Schedules {
                     courses: courses,
                     customEvents: shortCourseSchedule.customEvents,
                     scheduleNoteId: scheduleNoteId,
-                    scheduleId: shortCourseSchedule.id,
+                    scheduleId: shortCourseSchedule.id ?? '',
                 });
             }
         } catch (e) {
