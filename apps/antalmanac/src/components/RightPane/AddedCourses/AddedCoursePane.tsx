@@ -15,6 +15,7 @@ import { SortableList } from '$components/drag-and-drop/SortableList';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
+import { getCourseId } from '$stores/scheduleHelpers';
 
 /**
  * All the interactive buttons have the same styles.
@@ -45,10 +46,7 @@ function getCourses() {
 
     for (const course of currentCourses) {
         let formattedCourse = formattedCourses.find(
-            (needleCourse) =>
-                needleCourse.courseNumber === course.courseNumber &&
-                needleCourse.deptCode === course.deptCode &&
-                needleCourse.courseTitle === course.courseTitle
+            (needleCourse) => getCourseId(needleCourse) === getCourseId(course)
         );
 
         const sectionUpdatedAt = course.section?.updatedAt ?? null;
@@ -73,7 +71,7 @@ function getCourses() {
                     },
                 ],
                 updatedAt: sectionUpdatedAt ?? null,
-                id: course.deptCode + course.courseNumber + course.courseTitle,
+                id: getCourseId(course),
             };
             formattedCourses.push(formattedCourse);
         }

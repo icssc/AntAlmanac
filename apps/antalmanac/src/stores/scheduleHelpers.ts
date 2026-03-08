@@ -115,3 +115,10 @@ export function getColorForNewSection(newSection: ScheduleCourse, sectionsInSche
         defaultColors[(defaultColors.indexOf(lastDefaultColor) + 1) % defaultColors.length]
     );
 }
+
+/**
+ * Combines department code, course number, and course title to create an ID unique to a course.
+ */
+export function getCourseId(course: Pick<ScheduleCourse, 'deptCode' | 'courseNumber' | 'courseTitle'>) {
+    return course.deptCode + course.courseNumber + course.courseTitle;
+}
