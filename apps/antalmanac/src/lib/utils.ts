@@ -36,3 +36,12 @@ export const safeUnreachableCase = <T>(v: never, retVal?: T): T | undefined => {
     console.error(`Reached a (safe) unreachable case: ${castedV}`);
     return retVal;
 };
+
+/**
+ * Moves an array item from one position to another, in place.
+ * For an immutable alternative, see `arrayMove` from `dnd-kit`.
+ */
+export function moveArrayElement(array: unknown[], fromIndex: number, toIndex: number) {
+    const [elementToMove] = array.splice(fromIndex, 1);
+    array.splice(toIndex, 0, elementToMove);
+}

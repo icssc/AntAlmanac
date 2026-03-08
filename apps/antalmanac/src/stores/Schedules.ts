@@ -173,8 +173,7 @@ export class Schedules {
      */
     reorderSchedule(from: number, to: number) {
         this.addUndoState();
-        const [removed] = this.schedules.splice(from, 1);
-        this.schedules.splice(to, 0, removed);
+        moveArrayElement(this.schedules, from, to);
         if (this.currentScheduleIndex === from) {
             this.currentScheduleIndex = to;
         } else if (this.currentScheduleIndex > from && this.currentScheduleIndex <= to) {
