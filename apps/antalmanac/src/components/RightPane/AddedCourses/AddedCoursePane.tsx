@@ -314,6 +314,9 @@ function AddedSectionsGrid() {
         } else {
             toIndex = updatedCourses.length;
         }
+        if (fromIndex < toIndex) {
+            toIndex--;
+        }
 
         AppStore.reorderAddedCourses(AppStore.getCurrentScheduleIndex(), fromIndex, toIndex);
     };
