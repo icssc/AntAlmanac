@@ -200,56 +200,16 @@ export class RDS {
     }
 
     /**
-     * Creates a new schedule if one with its name doesn't already exist
-     * and replaces its courses and custom events with the ones provided.
-     *
-     *
-     * @returns The ID of the new/existing schedule
-     */
-    private static async upsertScheduleAndContents(
-        tx: Transaction,
-        userId: string,
-        schedule: ShortCourseSchedule,
-        index: number
-    ) {
-        // Add schedule
-        const dbSchedule = {
-            userId,
-            name: schedule.scheduleName,
-            notes: schedule.scheduleNote,
-            index,
-            lastUpdated: new Date(),
-        };
-
-        const scheduleResult = await tx.insert(schedules).values(dbSchedule).returning({ id: schedules.id });
-
-        const scheduleId = scheduleResult[0].id;
-        if (scheduleId === undefined) {
-            throw new Error(`Failed to insert schedule for ${userId}`);
-        }
-
-        // Add courses and custom events
-        await Promise.all([
-            this.upsertCourses(tx, scheduleId, schedule.courses).catch((error) => {
-                throw new Error(`Failed to insert courses for ${schedule.scheduleName}: ${error}`);
-            }),
-
-            this.upsertCustomEvents(tx, scheduleId, schedule.customEvents).catch((error) => {
-                throw new Error(`Failed to insert custom events for ${schedule.scheduleName}: ${error}`);
-            }),
-        ]);
-
-        return scheduleId;
-    }
-
-    /**
      * Does the same thing as `insertGuestUserData`, but also updates the user's schedules and courses if they exist.
      *
      * @param db The Drizzle client or transaction object
      * @param userData The object of data containing the user's schedules and courses
      * @returns The user's ID
      */
-    static async upsertUserData(db: DatabaseOrTransaction, userData: User): Promise<string> {
+    static async upsertUserData(
+        db: DatabaseOrTransaction,
+        userData: User
+    ): Promise<{ userId: string; scheduleIds: string[] }> {
         return db.transaction(async (tx) => {
             const account = await this.registerUserAccount(
                 db,
@@ -277,22 +237,99 @@ export class RDS {
                 await tx.update(users).set({ currentScheduleId: currentScheduleId }).where(eq(users.id, userId));
             }
 
-            return userId;
+            return { userId, scheduleIds };
         });
     }
 
-    /** Deletes and recreates all of the user's schedules and contents */
+    /**
+     * Updates an existing schedule in-place or inserts a new one,
+     * then syncs its courses and custom events.
+     *
+     * @returns The schedule's DB ID
+     */
+    private static async upsertScheduleAndContents(
+        tx: Transaction,
+        userId: string,
+        schedule: ShortCourseSchedule,
+        index: number,
+        existingIds: Set<string>
+    ): Promise<string> {
+        let scheduleId: string;
+
+        if (schedule.id && existingIds.has(schedule.id)) {
+            await tx
+                .update(schedules)
+                .set({
+                    name: schedule.scheduleName,
+                    notes: schedule.scheduleNote,
+                    index,
+                    lastUpdated: new Date(),
+                })
+                .where(eq(schedules.id, schedule.id));
+            scheduleId = schedule.id;
+        } else {
+            const result = await tx
+                .insert(schedules)
+                .values({
+                    userId,
+                    name: schedule.scheduleName,
+                    notes: schedule.scheduleNote,
+                    index,
+                    lastUpdated: new Date(),
+                })
+                .returning({ id: schedules.id });
+            scheduleId = result[0].id;
+            if (!scheduleId) {
+                throw new Error(`Failed to insert schedule for ${userId}`);
+            }
+        }
+
+        await Promise.all([
+            this.upsertCourses(tx, scheduleId, schedule.courses).catch((error) => {
+                throw new Error(`Failed to upsert courses for ${schedule.scheduleName}: ${error}`);
+            }),
+            this.upsertCustomEvents(tx, scheduleId, schedule.customEvents).catch((error) => {
+                throw new Error(`Failed to upsert custom events for ${schedule.scheduleName}: ${error}`);
+            }),
+        ]);
+
+        return scheduleId;
+    }
+
+    /**
+     * Syncs a user's schedules to match the provided array:
+     * upserts each schedule and its contents, and deletes any schedules
+     * no longer present. Uniqueness of names and indices is enforced by
+     * deferred DB constraints that are checked at transaction commit.
+     * Rolls back on any constraint violation or DB error.
+     *
+     * @returns The DB IDs of the upserted schedules, in input order
+     */
     private static async upsertSchedulesAndContents(
         tx: Transaction,
         userId: string,
         scheduleArray: ShortCourseSchedule[]
     ): Promise<string[]> {
-        // Drop all schedules, which will cascade to courses and custom events
-        await tx.delete(schedules).where(eq(schedules.userId, userId));
+        const existingSchedules = await tx
+            .select({ id: schedules.id })
+            .from(schedules)
+            .where(eq(schedules.userId, userId));
+        const existingIds = new Set(existingSchedules.map((s) => s.id));
 
-        return Promise.all(
-            scheduleArray.map((schedule, index) => this.upsertScheduleAndContents(tx, userId, schedule, index))
+        const scheduleIds = await Promise.all(
+            scheduleArray.map((schedule, index) =>
+                this.upsertScheduleAndContents(tx, userId, schedule, index, existingIds)
+            )
         );
+
+        const incomingIds = new Set(scheduleIds);
+        for (const existingId of existingIds) {
+            if (!incomingIds.has(existingId)) {
+                await tx.delete(schedules).where(eq(schedules.id, existingId));
+            }
+        }
+
+        return scheduleIds;
     }
 
     /**
@@ -333,6 +370,8 @@ export class RDS {
         scheduleId: string,
         repeatingCustomEvents: RepeatingCustomEvent[]
     ) {
+        await tx.delete(customEvents).where(eq(customEvents.scheduleId, scheduleId));
+
         if (repeatingCustomEvents.length === 0) {
             return;
         }

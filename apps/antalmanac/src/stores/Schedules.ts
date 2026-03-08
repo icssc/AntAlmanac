@@ -546,6 +546,7 @@ export class Schedules {
     getScheduleAsSaveState(): ScheduleSaveState {
         const shortSchedules: ShortCourseSchedule[] = this.schedules.map((schedule) => {
             return {
+                ...(schedule.scheduleId ? { id: schedule.scheduleId } : {}),
                 scheduleName: schedule.scheduleName,
                 customEvents: schedule.customEvents,
                 courses: schedule.courses.map((course) => {
@@ -559,6 +560,18 @@ export class Schedules {
             };
         });
         return { schedules: shortSchedules, scheduleIndex: this.currentScheduleIndex };
+    }
+
+    /**
+     * Updates the persistent DB schedule IDs in the store after a successful save.
+     * This ensures subsequent saves can update in-place rather than re-inserting.
+     */
+    updateScheduleIds(ids: string[]) {
+        ids.forEach((id, index) => {
+            if (this.schedules[index]) {
+                this.schedules[index].scheduleId = id;
+            }
+        });
     }
 
     /**
@@ -630,6 +643,7 @@ export class Schedules {
                     courses: courses,
                     customEvents: shortCourseSchedule.customEvents,
                     scheduleNoteId: scheduleNoteId,
+                    scheduleId: shortCourseSchedule.id,
                 });
             }
         } catch (e) {
