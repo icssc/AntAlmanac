@@ -12,6 +12,7 @@ import type {
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 
 import { getDefaultTerm } from '$lib/termData';
+import { moveArrayElement } from '$lib/utils';
 import { WebSOC } from '$lib/websoc';
 import { getColorForNewSection } from '$stores/scheduleHelpers';
 
@@ -72,6 +73,10 @@ export class Schedules {
 
     getCurrentScheduleIndex() {
         return this.currentScheduleIndex;
+    }
+
+    getCurrentSchedule() {
+        return this.schedules[this.currentScheduleIndex];
     }
 
     getNumberOfSchedules() {
@@ -173,8 +178,7 @@ export class Schedules {
      */
     reorderSchedule(from: number, to: number) {
         this.addUndoState();
-        const [removed] = this.schedules.splice(from, 1);
-        this.schedules.splice(to, 0, removed);
+        moveArrayElement(this.schedules, from, to);
         if (this.currentScheduleIndex === from) {
             this.currentScheduleIndex = to;
         } else if (this.currentScheduleIndex > from && this.currentScheduleIndex <= to) {
@@ -183,6 +187,13 @@ export class Schedules {
             this.currentScheduleIndex += 1;
         }
     }
+
+    reorderAddedCourses(scheduleIndex: number, from: number, to: number) {
+        this.addUndoState();
+        const schedule = this.schedules[scheduleIndex];
+        moveArrayElement(schedule.courses, from, to);
+    }
+
     getCurrentCourses() {
         return this.schedules[this.currentScheduleIndex]?.courses || [];
     }
