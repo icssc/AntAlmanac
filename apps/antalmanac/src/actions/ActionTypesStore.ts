@@ -90,6 +90,13 @@ export interface ReorderScheduleAction {
     to: number;
 }
 
+export interface ReorderAddedCoursesAction {
+    type: 'reorderAddedCourses';
+    scheduleIndex: number;
+    from: number;
+    to: number;
+}
+
 export interface ChangeCourseColorAction {
     type: 'changeCourseColor';
     sectionCode: string;
@@ -110,6 +117,7 @@ export type ActionType =
     | DeleteScheduleAction
     | CopyScheduleAction
     | ReorderScheduleAction
+    | ReorderAddedCoursesAction
     | ChangeCourseColorAction
     | UndoRedoAction;
 
@@ -216,6 +224,9 @@ class ActionTypesStore extends EventEmitter {
                     break;
                 case 'reorderSchedule':
                     AppStore.schedule.reorderSchedule(action.from, action.to);
+                    break;
+                case 'reorderAddedCourses':
+                    AppStore.schedule.reorderAddedCourses(action.scheduleIndex, action.from, action.to);
                     break;
                 case 'undoRedoAction':
                     break;

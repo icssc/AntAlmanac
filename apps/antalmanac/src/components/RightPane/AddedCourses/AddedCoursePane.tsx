@@ -296,8 +296,22 @@ function AddedSectionsGrid() {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
 
-    const handleCourseOrderChange = (courses: CourseWithTerm[]) => {
-        setCourses(courses);
+    const handleCourseOrderChange = (updatedCourses: CourseWithTerm[], _activeIndex: number, overIndex: number) => {
+        setCourses(updatedCourses);
+
+        const movedCourse = updatedCourses[overIndex];
+        const nextCourse = overIndex + 1 !== updatedCourses.length ? updatedCourses[overIndex + 1] : null;
+
+        const currentCourses = AppStore.getCurrentSchedule().courses;
+
+        // Only the first course needs to be moved since that's how `getCourses` determines order
+        const fromIndex = currentCourses.findIndex((course) => getCourseId(course) === getCourseId(movedCourse));
+        const toIndex =
+            nextCourse !== null
+                ? currentCourses.findIndex((course) => getCourseId(course) === getCourseId(nextCourse))
+                : updatedCourses.length;
+
+        AppStore.reorderAddedCourses(AppStore.getCurrentScheduleIndex(), fromIndex, toIndex);
     };
 
     useEffect(() => {

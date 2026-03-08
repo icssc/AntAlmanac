@@ -24,6 +24,7 @@ import type {
     ChangeCourseColorAction,
     UndoRedoAction,
     AddScheduleAction,
+    ReorderAddedCoursesAction,
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
 import { Schedules } from '$stores/Schedules';
@@ -90,6 +91,10 @@ class AppStore extends EventEmitter {
 
     getCurrentScheduleIndex() {
         return this.schedule.getCurrentScheduleIndex();
+    }
+
+    getCurrentSchedule() {
+        return this.schedule.getCurrentSchedule();
     }
 
     getScheduleNames() {
@@ -372,6 +377,18 @@ class AppStore extends EventEmitter {
         this.emit('currentScheduleIndexChange');
         this.emit('scheduleNamesChange', { triggeredBy: 'reorder' });
         this.emit('reorderSchedule');
+    }
+
+    reorderAddedCourses(scheduleIndex: number, from: number, to: number) {
+        this.schedule.reorderAddedCourses(scheduleIndex, from, to);
+        this.unsavedChanges = true;
+        const action: ReorderAddedCoursesAction = {
+            type: 'reorderAddedCourses',
+            scheduleIndex: scheduleIndex,
+            from: from,
+            to: to,
+        };
+        actionTypesStore.autoSaveSchedule(action);
     }
 
     private async loadScheduleFromSaveState(savedSchedule: ScheduleSaveState) {
