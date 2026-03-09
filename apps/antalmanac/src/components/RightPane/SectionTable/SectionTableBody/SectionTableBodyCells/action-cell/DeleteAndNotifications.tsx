@@ -6,6 +6,7 @@ import { memo, useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { deleteCourse } from '$actions/AppStoreActions';
+import ColorPicker from '$components/ColorPicker';
 import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { Term } from '$lib/termData';
@@ -28,7 +29,6 @@ export const DeleteAndNotifications = memo(({ ...props }: DeleteAndNotifications
     const initialized = useNotificationStore(useShallow((state) => state.initialized));
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-    const flexDirection = isMobile ? 'column' : undefined;
     const postHog = usePostHog();
 
     const handleClick = useCallback(() => {
@@ -44,22 +44,40 @@ export const DeleteAndNotifications = memo(({ ...props }: DeleteAndNotifications
         <Box
             sx={{
                 display: 'flex',
-                flexDirection: flexDirection,
-                justifyContent: 'center',
                 alignItems: 'center',
+                justifyContent: 'center',
+                '& .MuiIconButton-root': {
+                    padding: 0.5,
+                },
             }}
         >
             <IconButton onClick={handleClick}>
                 <Delete fontSize="small" />
             </IconButton>
 
-            {initialized ? (
-                <NotificationsMenu {...props} />
-            ) : (
-                <IconButton disabled>
-                    <CircularProgress size={15} />
-                </IconButton>
-            )}
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: isMobile ? 'column' : 'row',
+                    alignItems: 'center',
+                }}
+            >
+                {initialized ? (
+                    <NotificationsMenu {...props} />
+                ) : (
+                    <IconButton disabled>
+                        <CircularProgress size={15} />
+                    </IconButton>
+                )}
+
+                <ColorPicker
+                    color={props.section.color}
+                    isCustomEvent={false}
+                    sectionCode={props.section.sectionCode}
+                    term={props.term}
+                    analyticsCategory={analyticsEnum.addedClasses}
+                />
+            </Box>
         </Box>
     );
 });
