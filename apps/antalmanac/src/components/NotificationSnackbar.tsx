@@ -7,6 +7,8 @@ import { useSnackbarStore } from '$stores/SnackbarStore';
 export const NotificationSnackbar = () => {
     const { open, snackbarClosed, message, severity, durationSeconds, position, style } = useSnackbarStore();
 
+    const snackbarKey = open ? Date.now() : null;
+
     const handleClose = (_event?: React.SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
         if (reason === 'clickaway') {
             return;
@@ -17,6 +19,7 @@ export const NotificationSnackbar = () => {
 
     return (
         <Snackbar
+            key={snackbarKey}
             open={open}
             autoHideDuration={durationSeconds * 1000}
             anchorOrigin={position}
