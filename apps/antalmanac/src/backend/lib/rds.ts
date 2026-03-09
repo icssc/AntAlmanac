@@ -242,8 +242,11 @@ export class RDS {
     }
 
     /**
-     * Updates an existing schedule in-place or inserts a new one,
-     * then syncs its courses and custom events.
+     * Upserts a schedule and syncs its courses and custom events.
+     *
+     * If `schedule.id` is provided (a known DB ID), the row is updated in-place
+     * via `onConflictDoUpdate`. Otherwise, no ID is specified and the DB generates
+     * one via the column default.
      *
      * @returns The schedule's DB ID
      */
@@ -251,38 +254,30 @@ export class RDS {
         tx: Transaction,
         userId: string,
         schedule: ShortCourseSchedule,
-        index: number,
-        existingIds: Set<string>
+        index: number
     ): Promise<string> {
-        let scheduleId: string;
+        const result = await tx
+            .insert(schedules)
+            .values({
+                id: schedule.id,
+                userId,
+                name: schedule.scheduleName,
+                notes: schedule.scheduleNote,
+                index,
+                lastUpdated: new Date(),
+            })
+            .onConflictDoUpdate({
+                target: schedules.id,
+                set: {
+                    name: schedule.scheduleName,
+                    notes: schedule.scheduleNote,
+                    index,
+                    lastUpdated: new Date(),
+                },
+            })
+            .returning({ id: schedules.id });
 
-        if (schedule.id && existingIds.has(schedule.id)) {
-            await tx
-                .update(schedules)
-                .set({
-                    name: schedule.scheduleName,
-                    notes: schedule.scheduleNote,
-                    index,
-                    lastUpdated: new Date(),
-                })
-                .where(eq(schedules.id, schedule.id));
-            scheduleId = schedule.id;
-        } else {
-            const result = await tx
-                .insert(schedules)
-                .values({
-                    userId,
-                    name: schedule.scheduleName,
-                    notes: schedule.scheduleNote,
-                    index,
-                    lastUpdated: new Date(),
-                })
-                .returning({ id: schedules.id });
-            scheduleId = result[0].id;
-            if (!scheduleId) {
-                throw new Error(`Failed to insert schedule for ${userId}`);
-            }
-        }
+        const scheduleId = result[0].id;
 
         await Promise.all([
             this.upsertCourses(tx, scheduleId, schedule.courses).catch((error) => {
@@ -317,9 +312,7 @@ export class RDS {
         const existingIds = new Set(existingSchedules.map((s) => s.id));
 
         const scheduleIds = await Promise.all(
-            scheduleArray.map((schedule, index) =>
-                this.upsertScheduleAndContents(tx, userId, schedule, index, existingIds)
-            )
+            scheduleArray.map((schedule, index) => this.upsertScheduleAndContents(tx, userId, schedule, index))
         );
 
         const incomingIds = new Set(scheduleIds);
