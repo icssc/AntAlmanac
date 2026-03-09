@@ -1,147 +1,197 @@
-import { Collapse, IconButton, Alert, AlertTitle, Box, Typography, useTheme } from '@mui/material';
 import { ExpandMore, InfoOutlined } from '@mui/icons-material';
+import { Collapse, IconButton, Alert, AlertTitle, Box, Typography, useTheme, Fade } from '@mui/material';
 import { useEffect, useState } from 'react';
+
 import AppStore from '$stores/AppStore';
-import { useIsMobile } from '$hooks/useIsMobile';
 
 interface TbaSection {
-  deptCode: string;
-  courseNumber: string;
-  sectionCode: string;
+    deptCode: string;
+    courseNumber: string;
+    sectionCode: string;
 }
 
 interface TbaCalendarCardProps {
-  screenshotTrigger?: number;
+    screenshotTrigger?: number;
+}
+
+function TbaCircleButton({ onClick }: { onClick: () => void }) {
+    const theme = useTheme();
+
+    return (
+        <Box
+            sx={{
+                position: 'absolute',
+                bottom: 16,
+                left: 'auto',
+                right: 16,
+                zIndex: 1,
+            }}
+        >
+            <Box
+                onClick={onClick}
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 48,
+                    height: 48,
+                    borderRadius: '50%',
+                    bgcolor: theme.palette.background.paper,
+                    color: theme.palette.text.primary,
+                    border: `1px solid ${theme.palette.info.light}`,
+                    boxShadow: 2,
+                    cursor: 'pointer',
+                }}
+            >
+                <Typography variant="button" sx={{ fontWeight: 600, letterSpacing: 1 }}>
+                    TBA
+                </Typography>
+            </Box>
+        </Box>
+    );
+}
+
+function TbaExpandedCard({
+    tbaSections,
+    collapsed,
+    onToggle,
+}: {
+    tbaSections: TbaSection[];
+    collapsed: boolean;
+    onToggle: () => void;
+}) {
+    const theme = useTheme();
+
+    return (
+        <Box
+            sx={{
+                position: 'absolute',
+                bottom: 16,
+                left: 'auto',
+                right: 16,
+                zIndex: 1,
+                width: { s: '30%', md: '25%' },
+            }}
+        >
+            <Alert
+                icon={<InfoOutlined fontSize="small" />}
+                severity="info"
+                variant="outlined"
+                sx={{
+                    bgcolor: theme.palette.background.paper,
+                    width: '100%',
+                    alignItems: collapsed ? 'center' : 'flex-start',
+                    py: 1,
+                    px: 1,
+                    '& .MuiAlert-icon': {
+                        margin: 0,
+                    },
+                    '& .MuiAlert-message': {
+                        padding: 0.5,
+                        width: '100%',
+                    },
+
+                    '& .MuiAlert-action': {
+                        padding: 0,
+                        margin: 0,
+                        alignSelf: 'flex-start',
+                    },
+                }}
+                action={
+                    <IconButton size="small" onClick={onToggle} sx={{ paddingLeft: 0 }}>
+                        <ExpandMore
+                            fontSize="small"
+                            sx={{ transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}
+                        />
+                    </IconButton>
+                }
+            >
+                <AlertTitle sx={{ fontSize: '0.9rem', my: 'auto' }}>TBA sections added:</AlertTitle>
+
+                <Collapse in={!collapsed} timeout="auto" unmountOnExit>
+                    <Box sx={{ gap: 0.5 }}>
+                        {tbaSections.map((section, idx) => (
+                            <Typography key={`${section.deptCode}-${section.sectionCode}-${idx}`} variant="body2">
+                                {section.deptCode} {section.courseNumber} — {section.sectionCode}
+                            </Typography>
+                        ))}
+                    </Box>
+                </Collapse>
+            </Alert>
+        </Box>
+    );
 }
 
 export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardProps) {
-  const isMobile = useIsMobile();
-  const [tbaSections, setTbaSections] = useState<TbaSection[]>([]);
-  const [collapsed, setCollapsed] = useState(false);
-  const visible = tbaSections.length > 0;
+    const [tbaSections, setTbaSections] = useState<TbaSection[]>([]);
+    const [collapsed, setCollapsed] = useState(true);
+    const visible = tbaSections.length > 0;
 
-  const scheduleIndex = AppStore.getCurrentScheduleIndex();
-  const theme = useTheme();
+    const scheduleIndex = AppStore.getCurrentScheduleIndex();
 
-  useEffect(() => {
-    const updateTbaSections = () => {
-      if (scheduleIndex == null) {
-        setTbaSections([]);
-        return;
-      }
+    useEffect(() => {
+        const updateTbaSections = () => {
+            if (scheduleIndex == null) {
+                setTbaSections([]);
+                return;
+            }
 
-      const courses = AppStore.schedule.getCurrentCourses();
-      const sectionsWithTBA: TbaSection[] = [];
+            const courses = AppStore.schedule.getCurrentCourses();
+            const sectionsWithTBA: TbaSection[] = [];
 
-      for (const course of courses) {
-        const section = course.section;
-        if (!section) continue;
-        const meetings = section.meetings ?? [];
-        if (meetings.some((m) => m.timeIsTBA)) {
-          sectionsWithTBA.push({
-            deptCode: course.deptCode,
-            courseNumber: course.courseNumber,
-            sectionCode: section.sectionCode,
-          });
+            for (const course of courses) {
+                const section = course.section;
+                if (!section) continue;
+                const meetings = section.meetings ?? [];
+                if (meetings.some((m) => m.timeIsTBA)) {
+                    sectionsWithTBA.push({
+                        deptCode: course.deptCode,
+                        courseNumber: course.courseNumber,
+                        sectionCode: section.sectionCode,
+                    });
+                }
+            }
+
+            setTbaSections(sectionsWithTBA);
+        };
+
+        AppStore.on('addedCoursesChange', updateTbaSections);
+        AppStore.on('removedCoursesChange', updateTbaSections);
+        AppStore.on('clearSchedule', updateTbaSections);
+        AppStore.on('currentScheduleIndexChange', updateTbaSections);
+
+        updateTbaSections();
+
+        return () => {
+            AppStore.off('addedCoursesChange', updateTbaSections);
+            AppStore.off('removedCoursesChange', updateTbaSections);
+            AppStore.off('clearSchedule', updateTbaSections);
+            AppStore.off('currentScheduleIndexChange', updateTbaSections);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (screenshotTrigger != null) {
+            setCollapsed(false);
         }
-      }
+    }, [screenshotTrigger]);
 
-      setTbaSections(sectionsWithTBA);
+    const handleToggleCollapse = () => {
+        setCollapsed((prev) => !prev);
     };
 
-    AppStore.on('addedCoursesChange', updateTbaSections);
-    AppStore.on('removedCoursesChange', updateTbaSections);
-    AppStore.on('clearSchedule', updateTbaSections);
-    AppStore.on('currentScheduleIndexChange', updateTbaSections);
-
-    updateTbaSections();
-
-    return () => {
-      AppStore.off('addedCoursesChange', updateTbaSections);
-      AppStore.off('removedCoursesChange', updateTbaSections);
-      AppStore.off('clearSchedule', updateTbaSections);
-      AppStore.off('currentScheduleIndexChange', updateTbaSections);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (screenshotTrigger != null) {
-      setCollapsed(false);
+    if (!visible) {
+        return null;
     }
-  }, [screenshotTrigger]);
 
-  useEffect(() => {
-    if (tbaSections.length > 0) {
-      setCollapsed(false);
-    }
-  }, [tbaSections.length]);
-
-  const handleToggleCollapse = () => {
-    setCollapsed((prev) => !prev);
-  };
-
-  if (!visible || isMobile) {
-    return null;
-  }
-
-  return (
-    <Box
-      sx={{
-        position: 'absolute',
-        bottom: 16,
-        left: 'auto',
-        right: 16,
-        zIndex: 1,
-        width: { s: '30%', md: '25%' },
-      }}
-    >
-      <Alert
-        icon={<InfoOutlined fontSize="small" />}
-        severity="info"
-        variant="outlined"
-        sx={{
-          bgcolor: theme.palette.background.paper,
-          width: '100%',
-          alignItems: collapsed ? 'center' : 'flex-start',
-          py: 1,
-          px: 1,
-          '& .MuiAlert-icon': {
-            margin: 0,
-          },
-          '& .MuiAlert-message': {
-            padding: 0.5,
-            width: '100%',
-          },
-
-          '& .MuiAlert-action': {
-            padding: 0,
-            margin: 0,
-            alignSelf: 'flex-start',
-          },
-        }}
-        action={
-          <IconButton size="small" onClick={handleToggleCollapse} sx={{paddingLeft: 0 }}>
-            <ExpandMore
-              fontSize="small"
-              sx={{ transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}
-            />
-          </IconButton>
-        }
-      >
-        <AlertTitle sx={{ fontSize: '0.9rem', my: 'auto' }}>
-          TBA sections added:
-        </AlertTitle>
-
-        <Collapse in={!collapsed} timeout="auto" unmountOnExit>
-          <Box sx={{ gap: 0.5}}>
-            {tbaSections.map((section, idx) => (
-              <Typography key={`${section.deptCode}-${section.sectionCode}-${idx}`} variant="body2">
-                {section.deptCode} {section.courseNumber} — {section.sectionCode}
-              </Typography>
-            ))}
-          </Box>
-        </Collapse>
-      </Alert>
-    </Box>
-  );
+    return (
+        <>
+            {collapsed && <TbaCircleButton onClick={handleToggleCollapse} />}
+            <Fade in={!collapsed} timeout={250} mountOnEnter unmountOnExit>
+                <Box>
+                    <TbaExpandedCard tbaSections={tbaSections} collapsed={collapsed} onToggle={handleToggleCollapse} />
+                </Box>
+            </Fade>
+        </>
+    );
 }
