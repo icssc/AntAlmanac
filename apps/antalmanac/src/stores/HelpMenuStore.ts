@@ -15,7 +15,7 @@ const HELP_BOX_ACTIVE_MONTH_INDICES = [false, true, true, false, true, true, tru
  *
  * @example '20230819'
  */
-export const LATEST_PATCH_NOTES_UPDATE = '20250121';
+export const LATEST_PATCH_NOTES_UPDATE = '20260130';
 
 export interface HelpMenuStoreProps {
     showHelpBox: boolean;

@@ -8,7 +8,7 @@ import { exportCalendar } from '$lib/download';
 const exportCalendarEvent = (postHog?: PostHog) => {
     return () => {
         logAnalytics(postHog, {
-            category: 'Calendar Pane',
+            category: analyticsEnum.calendar,
             action: analyticsEnum.calendar.actions.DOWNLOAD,
         });
         exportCalendar();

@@ -1,5 +1,5 @@
 import { Close } from '@mui/icons-material';
-import { Alert, Box, IconButton, Link, useMediaQuery, useTheme } from '@mui/material';
+import { Alert, Box, IconButton, Link, useTheme } from '@mui/material';
 import {
     AACourse,
     AASection,
@@ -22,6 +22,7 @@ import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
+import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
@@ -33,10 +34,13 @@ import { useThemeStore } from '$stores/SettingsStore';
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
-    const courseColors = currentCourses.reduce((accumulator, { section }) => {
-        accumulator[section.sectionCode] = section.color;
-        return accumulator;
-    }, {} as Record<string, string>);
+    const courseColors = currentCourses.reduce(
+        (accumulator, { section }) => {
+            accumulator[section.sectionCode] = section.color;
+            return accumulator;
+        },
+        {} as Record<string, string>
+    );
 
     return courseColors;
 }
@@ -74,8 +78,8 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
 };
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
+    const isMobile = useIsMobile();
     const theme = useTheme();
-    const isMobileScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
     const recruitmentDismissalTime = getLocalStorageRecruitmentDismissalTime();
@@ -97,7 +101,7 @@ const RecruitmentBanner = () => {
             sx={(theme) => ({
                 position: 'fixed',
                 bottom: 5,
-                right: isMobileScreen ? 5 : 75,
+                right: isMobile ? 5 : 75,
                 zIndex: theme.zIndex.snackbar,
             })}
         >
@@ -202,7 +206,11 @@ const ErrorMessage = () => {
             }}
         >
             {courseId ? (
-                <Link href={`https://peterportal.org/course/${courseId}`} target="_blank" sx={{ width: '100%' }}>
+                <Link
+                    href={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
+                    target="_blank"
+                    sx={{ width: '100%' }}
+                >
                     <Alert
                         variant="filled"
                         severity="info"
@@ -219,7 +227,7 @@ const ErrorMessage = () => {
                             <span style={{ textDecoration: 'underline' }}>
                                 {deptValue} {courseNumber}
                             </span>{' '}
-                            on PeterPortal!
+                            on AntAlmanac Planner!
                         </span>
                     </Alert>
                 </Link>

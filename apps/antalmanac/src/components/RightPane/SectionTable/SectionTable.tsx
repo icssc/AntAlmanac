@@ -1,5 +1,5 @@
-import { Assessment, ShowChart as ShowChartIcon } from '@mui/icons-material';
-import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow, useMediaQuery } from '@mui/material';
+import { Assessment, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
+import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useMemo } from 'react';
 
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
@@ -10,9 +10,10 @@ import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/Enrol
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
+import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
-import { MOBILE_BREAKPOINT } from '$src/globals';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
@@ -68,14 +69,27 @@ const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
 function SectionTable(props: SectionTableProps) {
     const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory, missingSections = [] } = props;
+    const { isMilitaryTime } = useTimeFormatStore();
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
-    const isMobileScreen = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT})`);
+    const isMobile = useIsMobile();
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
     }, [courseDetails.deptCode, courseDetails.courseNumber]);
+
+    const formattedTime = useMemo(() => {
+        if (!courseDetails.updatedAt) return null;
+        const date = new Date(courseDetails.updatedAt);
+        if (isNaN(date.getTime())) return null;
+        const timeString = date.toLocaleTimeString(undefined, {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: !isMilitaryTime,
+        });
+        return timeString.replace(/^0(\d)/, '$1');
+    }, [courseDetails.updatedAt, isMilitaryTime]);
 
     /**
      * Limit table width to force side scrolling.
@@ -85,11 +99,6 @@ function SectionTable(props: SectionTableProps) {
         const numActiveColumns = activeColumns.length;
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
     }, [activeColumns]);
-
-    /**
-     * Store the size for the custom PeterPortal icon.
-     */
-    const customIconSize = 18;
 
     return (
         <>
@@ -114,16 +123,9 @@ function SectionTable(props: SectionTableProps) {
                 <CourseInfoButton
                     analyticsCategory={analyticsCategory}
                     analyticsAction={analyticsEnum.classSearch.actions.CLICK_REVIEWS}
-                    text="PeterPortal"
-                    icon={
-                        <img
-                            src={'assets/peterportal-logo.png'}
-                            alt="PeterPortal Icon"
-                            width={customIconSize}
-                            height={customIconSize}
-                        />
-                    }
-                    redirectLink={`https://peterportal.org/course/${courseId}`}
+                    text="Planner"
+                    icon={<Route />}
+                    redirectLink={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
                 />
 
                 <CourseInfoButton
@@ -135,7 +137,7 @@ function SectionTable(props: SectionTableProps) {
                         <GradesPopup
                             deptCode={courseDetails.deptCode}
                             courseNumber={courseDetails.courseNumber}
-                            isMobileScreen={isMobileScreen}
+                            isMobile={isMobile}
                         />
                     }
                 />
@@ -187,7 +189,7 @@ function SectionTable(props: SectionTableProps) {
                             <TableCell
                                 sx={{
                                     padding: 0,
-                                    width: isMobileScreen ? '6%' : '8%',
+                                    width: isMobile ? '6%' : '8%',
                                 }}
                             />
                             {tableHeaderColumnEntries
@@ -212,6 +214,7 @@ function SectionTable(props: SectionTableProps) {
                         allowHighlight={allowHighlight}
                         scheduleNames={scheduleNames}
                         analyticsCategory={analyticsCategory}
+                        formattedTime={formattedTime}
                     />
                 </Table>
             </TableContainer>

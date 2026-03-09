@@ -1,6 +1,5 @@
 import { Close, Save as SaveIcon } from '@mui/icons-material';
-import { LoadingButton } from '@mui/lab';
-import { Stack, Snackbar, Alert, Link, IconButton } from '@mui/material';
+import { Stack, Snackbar, Alert, Link, IconButton, Button } from '@mui/material';
 import { useState, useEffect } from 'react';
 
 import actionTypesStore from '$actions/ActionTypesStore';
@@ -64,17 +63,18 @@ export const Save = () => {
     }, []);
     return (
         <Stack direction="row">
-            <LoadingButton
+            <Button
                 id="save-button"
                 color="inherit"
                 startIcon={<SaveIcon />}
                 loadingPosition="start"
                 onClick={validSession ? saveScheduleData : handleClickSignIn}
+                sx={{ fontSize: 'inherit' }}
                 disabled={skeletonMode || saving}
                 loading={saving}
             >
                 Save
-            </LoadingButton>
+            </Button>
 
             <Snackbar open={openAutoSaveWarning} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
                 <Alert
@@ -119,7 +119,7 @@ export const Save = () => {
                 </Alert>
             </Snackbar>
 
-            <SignInDialog isDark={isDark} open={openSignInDialog} onClose={handleClickSignIn} action="Save" />
+            <SignInDialog isDark={isDark} open={openSignInDialog} onClose={handleClickSignIn} feature="Save" />
         </Stack>
     );
 };

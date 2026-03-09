@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import { RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
+import { CustomEventId, RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
 
 import { autoSaveSchedule } from '$actions/AppStoreActions';
 import trpc from '$lib/api/trpc';
@@ -42,7 +42,7 @@ export interface AddCustomEventAction {
 
 export interface DeleteCustomEventAction {
     type: 'deleteCustomEvent';
-    customEventId: number;
+    customEventId: CustomEventId;
     scheduleIndices: number[];
 }
 
@@ -54,7 +54,7 @@ export interface EditCustomEventAction {
 
 export interface ChangeCustomEventColorAction {
     type: 'changeCustomEventColor';
-    customEventId: number;
+    customEventId: CustomEventId;
     newColor: string;
 }
 
@@ -144,7 +144,7 @@ class ActionTypesStore extends EventEmitter {
 
             if (accounts.providerAccountId) {
                 this.emit('autoSaveStart');
-                await autoSaveSchedule(accounts.providerAccountId, users);
+                await autoSaveSchedule(accounts.providerAccountId, { userInfo: users });
                 AppStore.unsavedChanges = false;
                 this.emit('autoSaveEnd');
             }

@@ -3,25 +3,27 @@ import { useEffect, useState } from 'react';
 
 import { openSnackbar } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
+import { AppSwitcher } from '$components/Header/AppSwitcher';
 import { Import } from '$components/Header/Import';
-import { Logo } from '$components/Header/Logo';
 import { Save } from '$components/Header/Save';
-import AppDrawer from '$components/Header/SettingsMenu';
 import { Signin } from '$components/Header/Signin';
 import { Signout } from '$components/Header/Signout';
 import {
     getLocalStorageDataCache,
-    removeLocalStorageImportedUser,
-    removeLocalStorageDataCache,
     getLocalStorageImportedUser,
+    removeLocalStorageDataCache,
+    removeLocalStorageImportedUser,
 } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
+import { useIsMobile } from '$src/hooks/useIsMobile';
 import { useSessionStore } from '$stores/SessionStore';
 
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
+    const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
     const importedUser = getLocalStorageImportedUser() ?? '';
     const { session, sessionIsValid } = useSessionStore();
+    const isMobile = useIsMobile();
 
     const clearStorage = () => {
         removeLocalStorageImportedUser();
@@ -31,6 +33,15 @@ export function Header() {
     const handleCloseSuccessfulSaved = () => {
         setOpenSuccessfulSaved(false);
         clearStorage();
+    };
+
+    const handleLogoutComplete = () => {
+        setOpenSignoutDialog(true);
+    };
+
+    const handleCloseSignoutDialog = () => {
+        setOpenSignoutDialog(false);
+        window.location.reload();
     };
 
     useEffect(() => {
@@ -43,43 +54,64 @@ export function Header() {
             clearStorage();
         }
     }, [importedUser, session]);
+
     return (
-        <AppBar
-            position="static"
-            color="primary"
+        <Box
             sx={{
-                height: 52,
-                padding: 1,
-                boxShadow: 'none',
                 backgroundColor: BLUE,
+                paddingTop: 'env(safe-area-inset-top)',
+                fontSize: '10.5px',
+                '@media (min-width: 800px)': {
+                    fontSize: '12.25px',
+                },
             }}
         >
-            <Box
+            <AppBar
+                position="static"
+                color="primary"
                 sx={{
-                    display: 'flex',
-                    height: '100%',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    height: 52,
+                    px: 1,
+                    boxShadow: 'none',
+                    backgroundColor: BLUE,
                 }}
             >
-                <Logo />
-
-                <Stack direction="row" sx={{ alignItems: 'center' }}>
-                    <Import key="studylist" />
-                    <Save />
-                    {sessionIsValid ? <Signout /> : <Signin />}
-                    <AppDrawer key="settings" />
-                </Stack>
-
-                <AlertDialog
-                    open={openSuccessfulSaved}
-                    title={`Schedule from "${importedUser}" has been saved to your account!`}
-                    severity="success"
-                    onClose={handleCloseSuccessfulSaved}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        height: '100%',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
                 >
-                    NOTE: All changes made to your schedules will be saved to your Google account
-                </AlertDialog>
-            </Box>
-        </AppBar>
+                    <Stack direction="row" alignItems="center" gap={1}>
+                        <AppSwitcher isMobile={isMobile} />
+                    </Stack>
+
+                    <Stack direction="row" alignItems="center">
+                        <Import key="studylist" />
+                        <Save />
+                        {sessionIsValid ? <Signout onLogoutComplete={handleLogoutComplete} /> : <Signin />}
+                    </Stack>
+
+                    <AlertDialog
+                        open={openSuccessfulSaved}
+                        title={`Schedule from "${importedUser}" has been saved to your account!`}
+                        severity="success"
+                        onClose={handleCloseSuccessfulSaved}
+                    >
+                        NOTE: All changes made to your schedules will be saved to your Google account
+                    </AlertDialog>
+                    <AlertDialog
+                        open={openSignoutDialog}
+                        title="Signed out successfully"
+                        severity="info"
+                        onClose={handleCloseSignoutDialog}
+                    >
+                        You have successfully signed out. Close to continue browsing AntAlmanac.
+                    </AlertDialog>
+                </Box>
+            </AppBar>
+        </Box>
     );
 }

@@ -52,7 +52,7 @@ export function HelpBox() {
     }
 
     return (
-        <Paper variant="outlined" sx={{ padding: 2, marginBottom: '10px', marginRight: '5px' }}>
+        <Paper variant="outlined" sx={{ padding: 2, marginRight: '5px' }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="h5" fontWeight="bold">
                     Need help planning your schedule?
