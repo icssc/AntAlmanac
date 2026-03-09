@@ -2,7 +2,6 @@ import './App.css';
 
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { TourProvider } from '@reactour/tour';
-import { SnackbarProvider } from 'notistack';
 import { useEffect } from 'react';
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
@@ -132,9 +131,7 @@ export default function App() {
                                 }),
                             }}
                         >
-                            <SnackbarProvider classes={{ containerRoot: 'notification-snackbar-container' }}>
-                                <RouterProvider router={ROUTER} />
-                            </SnackbarProvider>
+                            <RouterProvider router={ROUTER} />
                         </TourProvider>
                     </AppQueryProvider>
                 </AppPostHogProvider>
