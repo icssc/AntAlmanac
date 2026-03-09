@@ -10,7 +10,7 @@ import {
     GE,
 } from '@packages/antalmanac-types';
 import Image from 'next/image';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
 import { openSnackbar } from '$actions/AppStoreActions';
@@ -80,11 +80,10 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
 };
 
 function getFilteredCourses(
-    allCourses: (WebsocSchool | WebsocDepartment | AACourse)[],
-    filterTakenCourses: boolean,
-    userTakenCourses: Set<string>
+    allCourses: (WebsocSchool | WebsocDepartment | AACourse)[]
 ): (WebsocSchool | WebsocDepartment | AACourse)[] {
     const { manualSearchEnabled } = useCoursePaneStore.getState();
+    const { filterTakenCourses, userTakenCourses } = useSessionStore.getState();
     if (manualSearchEnabled && filterTakenCourses && userTakenCourses.size > 0) {
         return allCourses.filter((item) => {
             if ('sections' in item && 'deptCode' in item && 'courseNumber' in item) {
@@ -264,9 +263,8 @@ const ErrorMessage = () => {
 };
 
 export default function CourseRenderPane(props: { id?: number }) {
-    const filterTakenCourses = useSessionStore((s) => s.filterTakenCourses);
-    const userTakenCourses = useSessionStore((s) => s.userTakenCourses);
     const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
+    const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
@@ -318,6 +316,8 @@ export default function CourseRenderPane(props: { id?: number }) {
 
             setError(false);
             setWebsocResp(websocJsonResp);
+            const allCourses = flattenSOCObject(websocJsonResp);
+            setCourseData(getFilteredCourses(allCourses));
         } catch (error) {
             console.error(error);
             setError(true);
@@ -331,11 +331,27 @@ export default function CourseRenderPane(props: { id?: number }) {
         setScheduleNames(AppStore.getScheduleNames());
     };
 
-    const courseData = useMemo(() => {
-        if (websocResp == null) return [];
+    useEffect(() => {
+        const changeColors = () => {
+            if (websocResp == null) {
+                return;
+            }
+            const flattened = flattenSOCObject(websocResp);
+            setCourseData(getFilteredCourses(flattened));
+        };
+
+        AppStore.on('currentScheduleIndexChange', changeColors);
+
+        return () => {
+            AppStore.off('currentScheduleIndexChange', changeColors);
+        };
+    }, [websocResp]);
+
+    useEffect(() => {
+        if (websocResp == null) return;
         const flattened = flattenSOCObject(websocResp);
-        return getFilteredCourses(flattened, filterTakenCourses, userTakenCourses);
-    }, [filterTakenCourses, userTakenCourses, websocResp]);
+        setCourseData(getFilteredCourses(flattened));
+    }, [websocResp]);
 
     useEffect(() => {
         loadCourses();
