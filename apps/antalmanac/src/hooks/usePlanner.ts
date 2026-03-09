@@ -6,7 +6,12 @@ import trpc from '$lib/api/trpc';
 import { getCurrentTerm } from '$lib/termData';
 import { useSessionStore } from '$stores/SessionStore';
 
-const QUARTER_ORDER: Record<string, number> = { Winter: 0, Spring: 1, Summer: 2, Fall: 3 };
+const QUARTER_ORDER: Record<string, number> = {
+    Winter: 0,
+    Spring: 1,
+    Summer: 2,
+    Fall: 3,
+};
 
 function roadmapQuarterToYearAndQuarter(startYear: number, quarterName: string): { year: number; quarter: string } {
     const q = quarterName.trim().toLowerCase();
@@ -17,21 +22,13 @@ function roadmapQuarterToYearAndQuarter(startYear: number, quarterName: string):
         fall: 'Fall',
         winter: 'Winter',
         spring: 'Spring',
+        summer1: 'Summer',
+        summer2: 'Summer',
+        summer10wk: 'Summer',
     };
 
-    const quarter = quarterMap[q] ?? (/summer/.test(q) ? 'Summer' : 'Fall');
-
+    const quarter = quarterMap[q];
     return { year, quarter };
-}
-
-function isQuarterBefore(a: { year: number; quarter: string }, b: { year: number; quarter: string }): boolean {
-    if (a.year < b.year) return true;
-    if (a.year > b.year) return false;
-    return (QUARTER_ORDER[a.quarter] ?? -1) < (QUARTER_ORDER[b.quarter] ?? -1);
-}
-
-function isQuarterBeforeOrEqual(a: { year: number; quarter: string }, b: { year: number; quarter: string }): boolean {
-    return a.year === b.year && a.quarter === b.quarter ? true : isQuarterBefore(a, b);
 }
 
 function getTakenRoadmapCourses(roadmap: Roadmap): string[] {
@@ -40,7 +37,10 @@ function getTakenRoadmapCourses(roadmap: Roadmap): string[] {
     for (const year of roadmap.content ?? []) {
         for (const q of year.quarters ?? []) {
             const quarter = roadmapQuarterToYearAndQuarter(year.startYear, q.name);
-            if (isQuarterBeforeOrEqual(quarter, current)) {
+            if (
+                quarter.year < current.year ||
+                (quarter.year === current.year && QUARTER_ORDER[quarter.quarter] < QUARTER_ORDER[current.quarter])
+            ) {
                 q.courses.forEach((c) => courses.add(c));
             }
         }
