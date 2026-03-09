@@ -13,7 +13,7 @@ import { UserData } from '@peterportal/types';
 import { useLoadCompletedMarkers } from '../../hooks/courseRequirements';
 import { useLoadTransferredCredits } from '../../hooks/transferCredits';
 import PlannerLoader from '../../app/roadmap/planner/PlannerLoader';
-// import { AutoSignIn } from '../AutoSignIn/AutoSignIn';
+import { AutoSignIn } from '../AutoSignIn/AutoSignIn';
 
 const UserDataLoader: FC = () => {
   useLoadSavedCourses();
@@ -50,7 +50,7 @@ const AppProvider: FC<AppProviderProps> = ({ children, user }) => {
   const baseContent = (
     <>
       <UserDataLoader />
-      {/* <AutoSignIn /> */}
+      <AutoSignIn />
       <AppThemeProvider>
         <PlannerLoader />
         {children}

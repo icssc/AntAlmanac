@@ -3,8 +3,17 @@ import { CodeChallengeMethod, generateCodeVerifier, generateState } from 'arctic
 import { db } from '../db';
 import { user } from '../db/schema';
 import { createOIDCClient } from '../config/oidc';
+import { SESSION_LENGTH } from '../config/constants';
 
 const router = express.Router();
+
+function clearSharedCookie(req: Request, res: Response) {
+  const isLocalhost = req.hostname === 'localhost';
+  res.clearCookie('icssc_logged_in', {
+    path: '/',
+    ...(isLocalhost ? {} : { domain: 'antalmanac.com' }),
+  });
+}
 
 interface OIDCUserInfo {
   sub: string;
@@ -56,6 +65,17 @@ async function successLogin(userInfo: OIDCUserInfo, req: Request, res: Response)
   if (allowedUsers.includes(userData[0].email)) {
     req.session.isAdmin = true;
   }
+
+  // Set shared SSO cookie for cross-app sign-in
+  const isLocalhost = req.hostname === 'localhost';
+  res.cookie('icssc_logged_in', '1', {
+    path: '/',
+    ...(isLocalhost ? {} : { domain: 'antalmanac.com' }),
+    maxAge: SESSION_LENGTH,
+    sameSite: 'lax',
+    secure: !isLocalhost,
+  });
+
   // redirect browser to the page they came from
   const returnTo = req.session.returnTo ?? '/';
   delete req.session.returnTo;
@@ -83,6 +103,11 @@ router.get('/google', async function (req, res) {
       ['openid', 'profile', 'email'],
     );
 
+    // Support prompt=none for silent SSO
+    if (req.query.prompt === 'none') {
+      authUrl.searchParams.set('prompt', 'none');
+    }
+
     res.redirect(authUrl.toString());
   } catch (error) {
     console.error('Error initiating authentication:', error);
@@ -94,7 +119,14 @@ router.get('/google', async function (req, res) {
  * Callback for OIDC authentication
  */
 router.get('/google/callback', async function (req, res) {
-  const returnTo = req.session.returnTo ?? '/';
+  const returnTo = req.session.returnTo ?? '/planner';
+
+  // Handle error=login_required from silent SSO attempt
+  if (req.query.error === 'login_required') {
+    clearSharedCookie(req, res);
+    res.redirect(returnTo);
+    return;
+  }
 
   try {
     const code = req.query.code as string;
@@ -155,6 +187,8 @@ router.get('/logout', function (req, res) {
     if (err) console.error(err);
     // clear the user cookie
     res.clearCookie('user');
+
+    clearSharedCookie(req, res);
 
     // Redirect to OIDC logout endpoint
     const logoutUrl = new URL(`${process.env.OIDC_ISSUER_URL}/logout`);
