@@ -56,7 +56,8 @@ export async function fetchUserPlannerRoadmaps(userId: string): Promise<Roadmap[
 }
 
 export function flattenRoadmapCourses(roadmap: Roadmap): string[] {
-    const courses = new Set<string>();
+    const courses: Set<string> = new Set();
+
     for (const year of roadmap.content ?? []) {
         for (const q of year.quarters ?? []) {
             q.courses.forEach((c) => courses.add(c));

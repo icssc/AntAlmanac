@@ -3,52 +3,8 @@ import { useEffect, useState } from 'react';
 
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import trpc from '$lib/api/trpc';
-import { getCurrentTerm } from '$lib/termData';
+import { flattenRoadmapCourses } from '$src/backend/lib/planner';
 import { useSessionStore } from '$stores/SessionStore';
-
-const QUARTER_ORDER: Record<string, number> = { Winter: 0, Spring: 1, Summer: 2, Fall: 3 };
-
-function roadmapQuarterToYearAndQuarter(startYear: number, quarterName: string): { year: number; quarter: string } {
-    const q = quarterName.trim().toLowerCase();
-
-    const quarterMap: Record<string, { year: number; quarter: string }> = {
-        fall: { year: startYear, quarter: 'Fall' },
-        winter: { year: startYear + 1, quarter: 'Winter' },
-        spring: { year: startYear + 1, quarter: 'Spring' },
-        summer: { year: startYear + 1, quarter: 'Summer' },
-    };
-
-    const result = quarterMap[q];
-    if (!result) {
-        throw new Error(`Unrecognized quarter: "${quarterName}"`);
-    }
-
-    return result;
-}
-
-function isQuarterBefore(a: { year: number; quarter: string }, b: { year: number; quarter: string }): boolean {
-    if (a.year < b.year) return true;
-    if (a.year > b.year) return false;
-    return (QUARTER_ORDER[a.quarter] ?? -1) < (QUARTER_ORDER[b.quarter] ?? -1);
-}
-
-function isQuarterBeforeOrEqual(a: { year: number; quarter: string }, b: { year: number; quarter: string }): boolean {
-    return a.year === b.year && a.quarter === b.quarter ? true : isQuarterBefore(a, b);
-}
-
-function getTakenRoadmapCourses(roadmap: Roadmap): string[] {
-    const current = getCurrentTerm();
-    const courses = new Set<string>();
-    for (const year of roadmap.content ?? []) {
-        for (const q of year.quarters ?? []) {
-            const quarter = roadmapQuarterToYearAndQuarter(year.startYear, q.name);
-            if (isQuarterBeforeOrEqual(quarter, current)) {
-                q.courses.forEach((c) => courses.add(c));
-            }
-        }
-    }
-    return Array.from(courses);
-}
 
 export function usePlannerRoadmaps() {
     const googleId = useSessionStore((s) => s.googleId);
@@ -109,7 +65,7 @@ export function usePlannerRoadmaps() {
             }
 
             try {
-                const flatCourses = getTakenRoadmapCourses(roadmap);
+                const flatCourses = flattenRoadmapCourses(roadmap);
                 const courseSet = new Set<string>(flatCourses);
                 setUserTakenCourses(courseSet);
                 setFilterTakenCourses(true);
