@@ -45,7 +45,6 @@ const columnLabels: Record<SectionTableColumn, string> = {
     sectionEnrollment: 'Enrollment',
     restrictions: 'Restrictions',
     status: 'Status',
-    syllabus: 'Syllabus',
 };
 
 /**

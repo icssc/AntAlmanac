@@ -13,7 +13,6 @@ import { LocationsCell } from '$components/RightPane/SectionTable/SectionTableBo
 import { RestrictionsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/RestrictionsCell';
 import { SectionCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SectionCodeCell';
 import { StatusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/StatusCell';
-import { SyllabusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SyllabusCell';
 import { AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
@@ -44,7 +43,6 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     sectionEnrollment: EnrollmentCell,
     restrictions: RestrictionsCell,
     status: StatusCell,
-    syllabus: SyllabusCell,
 };
 
 export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
