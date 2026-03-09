@@ -92,6 +92,7 @@ export const useSessionStore = create<SessionState>((set) => {
                     googleId: null,
                     filterTakenCourses: false,
                     userTakenCourses: new Set(),
+                    plannerRoadmaps: [],
                 });
                 window.location.reload();
             }
