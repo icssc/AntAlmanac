@@ -6,7 +6,7 @@ import { hasSsoCookie } from '$lib/ssoCookie';
 
 /**
  * Automatically signs in users who authenticated via another app on antalmanac.com
- * (e.g. PeterPortal at /planner).
+ * (e.g. Planner at /planner).
  *
  * Uses a shared first-party cookie (`icssc_logged_in`) as a hint, then performs
  * a redirect-based silent auth through auth.icssc.club with prompt=none.
@@ -16,15 +16,23 @@ export function AutoSignIn() {
     const hasChecked = useRef(false);
 
     useEffect(() => {
-        if (hasChecked.current) return;
+        if (hasChecked.current) {
+            return;
+        }
         hasChecked.current = true;
 
         const checkAndSignIn = async () => {
-            if (!hasSsoCookie()) return;
+            // Don't interfere when AuthPage is already handling an OAuth callback.
+            // Calling getGoogleAuthUrl here would overwrite the oauth_state /
+            // oauth_code_verifier cookies that AuthPage needs to finish the exchange.
+            if (window.location.pathname === '/auth') {
+                return;
+            }
 
-            // If the user already has a local session token, trust it and skip.
-            // This prevents a redirect loop: after AuthPage creates a session and
-            // redirects here, we must not immediately start another auth flow.
+            if (!hasSsoCookie()) {
+                return;
+            }
+
             if (getLocalStorageSessionId()) {
                 return;
             }
