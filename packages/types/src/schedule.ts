@@ -31,11 +31,11 @@ export type ShortCourse = typeof ShortCourseSchema.infer;
 
 export const ShortCourseScheduleSchema = type([
     {
-        'id?': 'string',
         scheduleName: 'string',
         courses: arrayOf(ShortCourseSchema),
         customEvents: arrayOf(RepeatingCustomEventSchema),
         'scheduleNote?': 'string',
+        'id?': 'string',
     },
     '|>',
     (s) => ({ scheduleNote: '', ...s }),

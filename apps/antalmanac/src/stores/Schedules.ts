@@ -8,6 +8,8 @@ import type {
     CourseInfo,
     CustomEventId,
 } from '@packages/antalmanac-types';
+import { createId } from '@paralleldrive/cuid2';
+
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 
@@ -41,11 +43,11 @@ export class Schedules {
 
         this.schedules = [
             {
-                scheduleId: '',
                 scheduleName: `${getDefaultTerm().shortName.replaceAll(' ', '-')}`,
                 courses: [],
                 customEvents: [],
                 scheduleNoteId: scheduleNoteId,
+                scheduleId: createId(),
             },
         ];
         this.currentScheduleIndex = 0;
@@ -113,11 +115,11 @@ export class Schedules {
         this.addUndoState();
         const scheduleNoteId = Math.random();
         this.schedules.push({
-            scheduleId: '',
             scheduleName: this.getNextScheduleName(this.getNumberOfSchedules(), newScheduleName),
             courses: [],
             customEvents: [],
             scheduleNoteId: scheduleNoteId,
+            scheduleId: createId(),
         });
         // Setting schedule index manually otherwise 2 undo states are added
         this.currentScheduleIndex = this.getNumberOfSchedules() - 1;
@@ -645,7 +647,7 @@ export class Schedules {
                     courses: courses,
                     customEvents: shortCourseSchedule.customEvents,
                     scheduleNoteId: scheduleNoteId,
-                    scheduleId: shortCourseSchedule.id ?? '',
+                    scheduleId: shortCourseSchedule.id ?? createId(),
                 });
             }
         } catch (e) {

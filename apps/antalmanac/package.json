@@ -39,6 +39,7 @@
         "@mui/system": "^7.3.7",
         "@mui/x-date-pickers": "^8.3.1",
         "@packages/antalmanac-types": "workspace:^",
+        "@paralleldrive/cuid2": "^2.2.2",
         "@reactour/tour": "^3.6.1",
         "@tanstack/react-query": "^4.24.4",
         "@trpc/client": "^10.30.0",
