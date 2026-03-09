@@ -1,3 +1,4 @@
+import type { Roadmap } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
 import trpc from '$lib/api/trpc';
@@ -17,9 +18,12 @@ interface SessionState {
     filterTakenCourses: boolean;
     userTakenCourses: Set<string>;
 
+    plannerRoadmaps: Roadmap[];
+
     setGoogleId: (id: string) => void;
     setFilterTakenCourses: (value: boolean) => void;
     setUserTakenCourses: (courses: Set<string>) => void;
+    setPlannerRoadmaps: (roadmaps: Roadmap[]) => void;
 }
 
 export const useSessionStore = create<SessionState>((set) => {
@@ -33,6 +37,7 @@ export const useSessionStore = create<SessionState>((set) => {
         googleId: null,
         filterTakenCourses: false,
         userTakenCourses: new Set(),
+        plannerRoadmaps: [],
         updateSession: async (session) => {
             if (session) {
                 const sessionIsValid: boolean = await trpc.auth.validateSession.query({
@@ -59,7 +64,7 @@ export const useSessionStore = create<SessionState>((set) => {
                             isGoogleUser,
                             email: users.email ?? null,
                             googleId,
-                        });                      
+                        });
                     } catch (error) {
                         console.error('Failed to fetch user data:', error);
                         set({ isGoogleUser: false, email: null, googleId: null });
@@ -94,5 +99,6 @@ export const useSessionStore = create<SessionState>((set) => {
         setGoogleId: (id) => set({ googleId: id }),
         setFilterTakenCourses: (value) => set({ filterTakenCourses: value }),
         setUserTakenCourses: (courses) => set({ userTakenCourses: courses }),
+        setPlannerRoadmaps: (roadmaps) => set({ plannerRoadmaps: roadmaps }),
     };
 });

@@ -14,7 +14,6 @@ import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/L
 import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import { usePlannerRoadmaps } from '$hooks/usePlanner';
 import { safeUnreachableCase } from '$lib/utils';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -76,7 +75,7 @@ export function AdvancedSearchTextFields() {
     const [excludeRoadmapCourses, setExcludeRoadmapCourses] = useState(
         () => RightPaneStore.getFormData().excludeRoadmapCourses
     );
-    const { roadmaps } = usePlannerRoadmaps();
+    const roadmaps = useSessionStore((s) => s.plannerRoadmaps);
     const isLoggedIn = useSessionStore((s) => s.googleId !== null);
     const [signInOpen, setSignInOpen] = useState(false);
     const isDark = useThemeStore((store) => store.isDark);

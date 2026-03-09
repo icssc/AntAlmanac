@@ -52,8 +52,8 @@ export function usePlannerRoadmaps() {
     const googleId = useSessionStore((s) => s.googleId);
     const setUserTakenCourses = useSessionStore((s) => s.setUserTakenCourses);
     const setFilterTakenCourses = useSessionStore((s) => s.setFilterTakenCourses);
-
-    const [roadmaps, setRoadmaps] = useState<Roadmap[]>([]);
+    const roadmaps = useSessionStore((s) => s.plannerRoadmaps);
+    const setPlannerRoadmaps = useSessionStore((s) => s.setPlannerRoadmaps);
     const [selectedRoadmapId, setSelectedRoadmapId] = useState(
         () => RightPaneStore.getFormData().excludeRoadmapCourses
     );
@@ -73,14 +73,14 @@ export function usePlannerRoadmaps() {
         let active = true;
         async function loadRoadmaps() {
             if (!googleId) {
-                setRoadmaps([]);
+                setPlannerRoadmaps([]);
                 return;
             }
             try {
                 const data = await trpc.roadmap.fetchUserPlannerRoadmaps.query({
                     userId: googleId,
                 });
-                if (active) setRoadmaps(data ?? []);
+                if (active) setPlannerRoadmaps(data ?? []);
             } catch (e) {
                 console.error('Failed to fetch Planner roadmaps:', e);
             }
@@ -89,7 +89,7 @@ export function usePlannerRoadmaps() {
         return () => {
             active = false;
         };
-    }, [googleId]);
+    }, [googleId, setPlannerRoadmaps]);
 
     useEffect(() => {
         function flattenCourses() {
