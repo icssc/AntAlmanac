@@ -4,12 +4,12 @@ import { create } from 'zustand';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import {
     getLocalStorageAutoSave,
-    getLocalStorageJsonImportExport,
+    getLocalStorageDevMode,
     getLocalStoragePreviewMode,
     getLocalStorageShow24HourTime,
     getLocalStorageTheme,
     setLocalStorageAutoSave,
-    setLocalStorageJsonImportExport,
+    setLocalStorageDevMode,
     setLocalStoragePreviewMode,
     setLocalStorageShow24HourTime,
     setLocalStorageTheme,
@@ -119,21 +119,21 @@ export const useAutoSaveStore = create<AutoSaveStore>((set) => {
     };
 });
 
-export interface JsonImportExportStore {
-    jsonImportExport: boolean;
-    setJsonImportExport: (jsonImportExport: boolean) => void;
+export interface DevModeStore {
+    devMode: boolean;
+    setDevMode: (devMode: boolean) => void;
 }
 
-export const useJsonImportExportStore = create<JsonImportExportStore>((set) => {
-    const jsonImportExport = typeof Storage !== 'undefined' && getLocalStorageJsonImportExport() == 'true';
+export const useDevModeStore = create<DevModeStore>((set) => {
+    const stored = typeof Storage !== 'undefined' ? getLocalStorageDevMode() : null;
+    const isLocalDev = process.env.NODE_ENV === 'development';
+    const devMode = stored === null ? isLocalDev : stored === 'true';
 
     return {
-        jsonImportExport,
-        setJsonImportExport: (jsonImportExport) => {
-            if (typeof Storage !== 'undefined') {
-                setLocalStorageJsonImportExport(jsonImportExport.toString());
-            }
-            set({ jsonImportExport });
+        devMode,
+        setDevMode: (devMode: boolean) => {
+            setLocalStorageDevMode(devMode.toString());
+            set({ devMode });
         },
     };
 });

@@ -54,7 +54,7 @@ import { BLUE, DODGER_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore, useJsonImportExportStore } from '$stores/SettingsStore';
+import { useThemeStore, useDevModeStore } from '$stores/SettingsStore';
 
 enum ImportSource {
     ZOT_COURSE_IMPORT = 'zotcourse',
@@ -79,7 +79,7 @@ export function Import() {
 
     const { sessionIsValid } = useSessionStore();
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
-    const jsonImportExport = useJsonImportExportStore((store) => store.jsonImportExport);
+    const devMode = useDevModeStore((store) => store.devMode);
 
     const { isDark } = useThemeStore();
 
@@ -314,7 +314,9 @@ export function Import() {
             if (!course.sectionCode || typeof course.sectionCode !== 'string') {
                 return {
                     valid: false,
-                    error: `Schedule ${scheduleIndex + 1}, Course ${courseIndex + 1} is missing required field: sectionCode`,
+                    error: `Schedule ${scheduleIndex + 1}, Course ${
+                        courseIndex + 1
+                    } is missing required field: sectionCode`,
                 };
             }
             if (!course.term || typeof course.term !== 'string') {
@@ -343,43 +345,57 @@ export function Import() {
             if (!customEvent.customEventId && customEvent.customEventID === undefined) {
                 return {
                     valid: false,
-                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${eventIndex + 1} is missing required field: customEventId or customEventID`,
+                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${
+                        eventIndex + 1
+                    } is missing required field: customEventId or customEventID`,
                 };
             }
             if (!customEvent.title || typeof customEvent.title !== 'string') {
                 return {
                     valid: false,
-                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${eventIndex + 1} is missing required field: title`,
+                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${
+                        eventIndex + 1
+                    } is missing required field: title`,
                 };
             }
             if (!customEvent.start || typeof customEvent.start !== 'string') {
                 return {
                     valid: false,
-                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${eventIndex + 1} is missing required field: start`,
+                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${
+                        eventIndex + 1
+                    } is missing required field: start`,
                 };
             }
             if (!customEvent.end || typeof customEvent.end !== 'string') {
                 return {
                     valid: false,
-                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${eventIndex + 1} is missing required field: end`,
+                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${
+                        eventIndex + 1
+                    } is missing required field: end`,
                 };
             }
             if (!customEvent.days || !Array.isArray(customEvent.days)) {
                 return {
                     valid: false,
-                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${eventIndex + 1} is missing required field: days (must be an array)`,
+                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${
+                        eventIndex + 1
+                    } is missing required field: days (must be an array)`,
                 };
             }
             if (!customEvent.color || typeof customEvent.color !== 'string') {
                 return {
                     valid: false,
-                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${eventIndex + 1} is missing required field: color`,
+                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${
+                        eventIndex + 1
+                    } is missing required field: color`,
                 };
             }
             if (!('building' in customEvent)) {
                 return {
                     valid: false,
-                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${eventIndex + 1} is missing required field: building`,
+                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${
+                        eventIndex + 1
+                    } is missing required field: building`,
                 };
             }
             return { valid: true };
@@ -643,10 +659,10 @@ export function Import() {
     }, [handleFirstTimeSignin, sessionIsValid]);
 
     useEffect(() => {
-        if (!jsonImportExport && importSource === ImportSource.JSON_IMPORT) {
+        if (!devMode && importSource === ImportSource.JSON_IMPORT) {
             setImportSource(ImportSource.STUDY_LIST_IMPORT);
         }
-    }, [jsonImportExport, importSource]);
+    }, [devMode, importSource]);
 
     // Load schedules when export tab is opened
     useEffect(() => {
@@ -659,9 +675,7 @@ export function Import() {
 
     return (
         <>
-            <Tooltip
-                title={jsonImportExport ? 'Import or export schedule data' : 'Import a schedule from your Study List'}
-            >
+            <Tooltip title={devMode ? 'Import or export schedule data' : 'Import a schedule from your Study List'}>
                 <Button
                     onClick={handleOpen}
                     color="inherit"
@@ -670,11 +684,11 @@ export function Import() {
                     disabled={skeletonMode}
                     id="import-button"
                 >
-                    {jsonImportExport ? 'Import/Export' : 'Import'}
+                    {devMode ? 'Import/Export' : 'Import'}
                 </Button>
             </Tooltip>
             <Dialog open={openImportDialog} onClose={handleClose} maxWidth="sm" fullWidth>
-                {jsonImportExport && (
+                {devMode && (
                     <Tabs
                         value={dialogTab}
                         onChange={(_, newValue) => setDialogTab(newValue)}
@@ -812,7 +826,7 @@ export function Import() {
                                             disabled={!sessionIsValid}
                                         />
                                     </Tooltip>
-                                    {jsonImportExport && (
+                                    {devMode && (
                                         <Tooltip title="Import from your schedule data" placement="right">
                                             <FormControlLabel
                                                 value={ImportSource.JSON_IMPORT}
@@ -1113,7 +1127,9 @@ export function Import() {
                                     const url = URL.createObjectURL(blob);
                                     const link = document.createElement('a');
                                     link.href = url;
-                                    link.download = `antalmanac-schedules-${new Date().toISOString().split('T')[0]}.json`;
+                                    link.download = `antalmanac-schedules-${
+                                        new Date().toISOString().split('T')[0]
+                                    }.json`;
                                     document.body.appendChild(link);
                                     link.click();
                                     document.body.removeChild(link);

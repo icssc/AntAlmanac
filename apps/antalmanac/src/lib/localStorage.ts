@@ -11,7 +11,7 @@ enum LocalStorageKeys {
     show24HourTime = 'show24HourTime',
     previewMode = 'previewMode',
     autoSave = 'autoSave',
-    jsonImportExport = 'jsonImportExport',
+    devMode = 'devMode',
     unsavedActions = 'unsavedActions',
     helpBoxDismissalTime = 'helpBoxDismissalTime',
     columnToggles = 'columnToggles',
@@ -229,13 +229,17 @@ export function removeLocalStorageAutoSave() {
     window.localStorage.removeItem(LSK.autoSave);
 }
 
-// Helper functions for jsonImportExport
-export function setLocalStorageJsonImportExport(value: string) {
-    window.localStorage.setItem(LSK.jsonImportExport, value);
+// Helper functions for devMode
+export function setLocalStorageDevMode(value: string) {
+    localStorage.setItem(LocalStorageKeys.devMode, value);
 }
 
-export function getLocalStorageJsonImportExport() {
-    return window.localStorage.getItem(LSK.jsonImportExport);
+export function getLocalStorageDevMode() {
+    return localStorage.getItem(LocalStorageKeys.devMode);
+}
+
+export function removeLocalStorageDevMode() {
+    localStorage.removeItem(LocalStorageKeys.devMode);
 }
 
 // Helper functions for autoSave

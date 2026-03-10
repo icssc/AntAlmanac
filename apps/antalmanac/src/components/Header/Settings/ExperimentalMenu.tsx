@@ -8,17 +8,14 @@ import { getLocalStorageUserId } from '$lib/localStorage';
 import appStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { usePreviewStore, useAutoSaveStore, useJsonImportExportStore } from '$stores/SettingsStore';
+import { usePreviewStore, useAutoSaveStore, useDevModeStore } from '$stores/SettingsStore';
 
 export function ExperimentalMenu() {
     const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
     const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
     const { sessionIsValid, session } = useSessionStore();
     const { setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
-    const [jsonImportExport, setJsonImportExport] = useJsonImportExportStore((store) => [
-        store.jsonImportExport,
-        store.setJsonImportExport,
-    ]);
+    const [devMode, setDevMode] = useDevModeStore((store) => [store.devMode, store.setDevMode]);
 
     const postHog = usePostHog();
 
@@ -92,17 +89,17 @@ export function ExperimentalMenu() {
             <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
                 <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
-                        JSON Import/Export
+                        Dev Mode
                     </Typography>
-                    <Tooltip title={<Typography>Enable JSON file import and export functionality</Typography>}>
+                    <Tooltip title={<Typography>Enable developer features</Typography>}>
                         <Help />
                     </Tooltip>
                 </Box>
                 <Switch
                     color={'primary'}
-                    value={jsonImportExport}
-                    checked={jsonImportExport}
-                    onChange={(event) => setJsonImportExport(event.target.checked)}
+                    value={devMode}
+                    checked={devMode}
+                    onChange={(event) => setDevMode(event.target.checked)}
                 />
             </Box>
         </Stack>
