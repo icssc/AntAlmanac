@@ -254,12 +254,18 @@ export class RDS {
         tx: Transaction,
         userId: string,
         schedule: ShortCourseSchedule,
-        index: number
+        index: number,
+        existingIds: Set<string>
     ): Promise<string> {
+        // Only allow the incoming ID to trigger an update if it actually belongs
+        // to this user. An unrecognized or foreign ID must not be used in the
+        // conflict target — clear it so the DB generates a fresh UUID instead.
+        const safeId = schedule.id && existingIds.has(schedule.id) ? schedule.id : undefined;
+
         const result = await tx
             .insert(schedules)
             .values({
-                id: schedule.id,
+                id: safeId,
                 userId,
                 name: schedule.scheduleName,
                 notes: schedule.scheduleNote,
@@ -312,7 +318,9 @@ export class RDS {
         const existingIds = new Set(existingSchedules.map((s) => s.id));
 
         const scheduleIds = await Promise.all(
-            scheduleArray.map((schedule, index) => this.upsertScheduleAndContents(tx, userId, schedule, index))
+            scheduleArray.map((schedule, index) =>
+                this.upsertScheduleAndContents(tx, userId, schedule, index, existingIds)
+            )
         );
 
         const incomingIds = new Set(scheduleIds);
