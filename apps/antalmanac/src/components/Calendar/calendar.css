@@ -31,7 +31,8 @@
     border: 0;
 }
 
-.rbc-time-slot {
+.rbc-time-slot,
+.rbc-time-header-gutter {
     min-width: 42px;
 }
 

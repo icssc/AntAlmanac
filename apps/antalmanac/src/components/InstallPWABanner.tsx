@@ -2,7 +2,7 @@ import { Close } from '@mui/icons-material';
 import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
 import { Alert, Box, Button, IconButton, Slide } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { shallow } from 'zustand/shallow';
+import { useShallow } from 'zustand/react/shallow';
 
 import { getLocalStoragePWADismissalTime, setLocalStoragePWADismissalTime } from '$lib/localStorage';
 import { BeforeInstallPromptEvent, usePWAStore } from '$stores/PWAStore';
@@ -10,8 +10,7 @@ import { useThemeStore } from '$stores/SettingsStore';
 
 function InstallPWABanner() {
     const [setInstallPrompt, setCanInstall, canInstall, installPrompt] = usePWAStore(
-        (state) => [state.setInstallPrompt, state.setCanInstall, state.canInstall, state.installPrompt],
-        shallow
+        useShallow((state) => [state.setInstallPrompt, state.setCanInstall, state.canInstall, state.installPrompt])
     );
 
     const [bannerVisibility, setBannerVisibility] = useState(false);

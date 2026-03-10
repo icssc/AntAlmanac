@@ -7,7 +7,7 @@ interface LabeledAutocompleteProps<
     T,
     Multiple extends boolean = false,
     DisableClearable extends boolean = false,
-    FreeSolo extends boolean = false,
+    FreeSolo extends boolean = false
 > {
     label: string;
     autocompleteProps: Omit<AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>, 'renderInput'>;

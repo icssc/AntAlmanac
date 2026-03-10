@@ -2,7 +2,7 @@ import { TableRow, useTheme } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
-import { ActionCell } from './SectionTableBodyCells/ActionCell';
+import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
 
 import { DayAndTimeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DayAndTimeCell';
 import { DetailsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell';
@@ -28,6 +28,7 @@ interface SectionTableBodyRowProps {
     scheduleNames: string[];
     scheduleConflict: boolean;
     analyticsCategory: AnalyticsCategory;
+    formattedTime: string | null;
 }
 
 // These components have too varied of types, any is fine here
@@ -47,7 +48,16 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
 };
 
 export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
-    const { section, courseDetails, term, allowHighlight, scheduleNames, scheduleConflict, analyticsCategory } = props;
+    const {
+        section,
+        courseDetails,
+        term,
+        allowHighlight,
+        scheduleNames,
+        scheduleConflict,
+        analyticsCategory,
+        formattedTime,
+    } = props;
 
     const theme = useTheme();
     const isDark = useThemeStore((store) => store.isDark);
@@ -146,6 +156,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
                             courseName={`${courseDetails.deptCode} ${courseDetails.courseNumber}`}
                             {...courseDetails}
                             analyticsCategory={analyticsCategory}
+                            formattedTime={formattedTime}
                         />
                     );
                 })}

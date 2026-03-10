@@ -15,6 +15,10 @@ export interface SectionCodesGraphQLResponse {
     };
 }
 
+export interface SectionCodesResponse {
+    schools: WebsocSchool[];
+}
+
 export function parseSectionCodes(response: SectionCodesGraphQLResponse): Record<string, SectionSearchResult> {
     const results: Record<string, SectionSearchResult> = {};
     response.data.websoc.schools.forEach((school: WebsocSchool) => {

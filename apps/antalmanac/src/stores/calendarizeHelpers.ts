@@ -120,8 +120,8 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
             const locationsWithNoDays = bldg
                 ? bldg.map(getLocation)
                 : !course.section.meetings[0].timeIsTBA
-                  ? course.section.meetings[0].bldg.map(getLocation)
-                  : [];
+                ? course.section.meetings[0].bldg.map(getLocation)
+                : [];
 
             /**
              * Fallback to January 2018 if no finals start date is available.

@@ -1,5 +1,6 @@
 import {
     Backdrop,
+    Box,
     type BackdropProps,
     Button,
     Dialog,
@@ -7,6 +8,7 @@ import {
     DialogContent,
     DialogTitle,
     Typography,
+    Stack,
 } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -44,19 +46,76 @@ function PatchNotes() {
             data-testid={dialogTestId}
             slots={{ backdrop: PatchNotesBackdrop }}
         >
-            <DialogTitle>{'You can now create 4-year plans from AntAlmanac!'}</DialogTitle>
+            <DialogTitle>{'Patch Notes Febuary 6, 2026'}</DialogTitle>
 
             <DialogContent>
-                <Typography sx={{ mb: 2 }}>
-                    AntAlmanac and PeterPortal are now unified into one ultimate course planning app. Learn more in our{' '}
-                    <Link href="https://docs.icssc.club/docs/about/antalmanac/merge" target="_blank">
-                        blog post
-                    </Link>
-                    !
-                </Typography>
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <Image src="/assets/merge-switcher.png" alt="4-year plan" width={350} height={50} />
-                </div>
+                <Stack spacing={2} alignItems="start">
+                    <Typography variant="h6">You can now create 4-year plans from AntAlmanac!</Typography>
+
+                    <Typography>
+                        AntAlmanac and PeterPortal are now unified into one ultimate course planning app. Learn more in
+                        our{' '}
+                        <Link href="https://docs.icssc.club/docs/about/antalmanac/merge" target="_blank">
+                            blog post
+                        </Link>
+                        !
+                    </Typography>
+
+                    <Stack
+                        direction="row"
+                        alignSelf="center"
+                        sx={{
+                            width: '100%',
+                            maxWidth: 350,
+                            display: 'flex',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Image
+                            src="/assets/merge-switcher.png"
+                            alt="4-year plan"
+                            width={350}
+                            height={50}
+                            style={{
+                                width: '100%',
+                                height: 'auto',
+                                maxWidth: '350px',
+                                borderRadius: 8,
+                            }}
+                        />
+                    </Stack>
+
+                    <Typography variant="h6">AntAlmanac Notification Tracking System (AANTS)!</Typography>
+
+                    <Typography>
+                        AANTS allows you to receive notifications when classes OPEN, CLOSE, WAITLIST, or have their
+                        restriction codes changed.
+                    </Typography>
+
+                    <Stack direction="row" alignSelf="center">
+                        <Box
+                            sx={{
+                                width: '100%',
+                                maxWidth: 425,
+                                display: 'flex',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Image
+                                src="/assets/aants-preview.png"
+                                alt="AANTS example"
+                                width={425}
+                                height={185}
+                                style={{
+                                    width: '100%',
+                                    height: 'auto',
+                                    maxWidth: '425px',
+                                    borderRadius: 8,
+                                }}
+                            />
+                        </Box>
+                    </Stack>
+                </Stack>
             </DialogContent>
 
             <DialogActions>

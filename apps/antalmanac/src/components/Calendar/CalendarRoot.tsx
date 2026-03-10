@@ -8,7 +8,6 @@ import moment from 'moment';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
 import { useShallow } from 'zustand/react/shallow';
-import { shallow } from 'zustand/shallow';
 
 import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
 import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
@@ -16,6 +15,7 @@ import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover'
 import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { skeletonBlueprintVariations } from '$components/Calendar/skeletonBlueprintVariations';
+import { useIsMobile } from '$hooks/useIsMobile';
 import {
     getLocalStorageSkeletonBlueprint,
     removeLocalStorageSkeletonBlueprint,
@@ -69,13 +69,14 @@ export const ScheduleCalendar = memo(() => {
     const theme = useTheme();
     const { isMilitaryTime } = useTimeFormatStore();
     const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
-        (state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal],
-        shallow
+        useShallow((state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal])
     );
     const isDark = useThemeStore(useShallow((store) => store.isDark));
 
     const { openLoadingSchedule: loadingSchedule } = scheduleComponentsToggleStore();
     const hasHadEventsRef = useRef(false);
+
+    const isMobile = useIsMobile();
 
     const onlyCourseEvents = useMemo(
         () => eventsInCalendar.filter((e) => !e.isCustomEvent) as CourseEvent[],
@@ -279,7 +280,7 @@ export const ScheduleCalendar = memo(() => {
     const shouldShowWeekView = showFinalsSchedule ? hasWeekendFinals : hasWeekendCourse;
     const calendarView = shouldShowWeekView ? Views.WEEK : Views.WORK_WEEK;
 
-    const finalsDateFormat = 'ddd MM/DD';
+    const finalsDateFormat = isMobile ? 'M/DD' : 'ddd M/DD';
     const date = showFinalsSchedule ? finalsDate : new Date(2018, 0, 1);
 
     const formats = useMemo(
