@@ -277,7 +277,6 @@ export class Schedules {
         } else {
             courses.push(sectionToAdd);
         }
-        console.log(courses);
 
         return sectionToAdd;
     }
