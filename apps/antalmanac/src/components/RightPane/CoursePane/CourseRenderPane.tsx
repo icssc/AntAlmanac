@@ -348,12 +348,6 @@ export default function CourseRenderPane(props: { id?: number }) {
     }, [websocResp]);
 
     useEffect(() => {
-        if (websocResp == null) return;
-        const flattened = flattenSOCObject(websocResp);
-        setCourseData(getFilteredCourses(flattened));
-    }, [websocResp]);
-
-    useEffect(() => {
         loadCourses();
         AppStore.on('scheduleNamesChange', updateScheduleNames);
 
