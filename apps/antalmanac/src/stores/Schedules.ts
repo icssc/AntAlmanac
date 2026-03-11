@@ -13,7 +13,7 @@ import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } f
 
 import { getDefaultTerm } from '$lib/termData';
 import { WebSOC } from '$lib/websoc';
-import { getColorForNewSection, getCourseId } from '$stores/scheduleHelpers';
+import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
 
 /**
  * Manages state of schedules. Only one instance is really needed for the app.
@@ -624,6 +624,9 @@ export class Schedules {
                     }
                 }
 
+                /** See {@link groupCourseSections} */
+                const groupedCourses = groupCourseSections(courses);
+
                 const scheduleNoteId = Math.random();
                 if ('scheduleNote' in shortCourseSchedule) {
                     this.scheduleNoteMap[scheduleNoteId] = shortCourseSchedule.scheduleNote;
@@ -635,7 +638,7 @@ export class Schedules {
 
                 this.schedules.push({
                     scheduleName: shortCourseSchedule.scheduleName,
-                    courses: courses,
+                    courses: groupedCourses,
                     customEvents: shortCourseSchedule.customEvents,
                     scheduleNoteId: scheduleNoteId,
                 });
