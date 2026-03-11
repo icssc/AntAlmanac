@@ -111,7 +111,7 @@ const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
     }
     console.log('queryWebSoc', data);
 
-    if (!data?.ok || !data?.data) {
+    if (!data.ok || !data.data) {
         throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Anteater API returned an unexpected response shape',
