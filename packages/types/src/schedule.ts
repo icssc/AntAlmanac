@@ -44,7 +44,17 @@ export const ScheduleSaveStateSchema = type({
     schedules: arrayOf(ShortCourseScheduleSchema),
     scheduleIndex: 'number',
 });
-export type ScheduleSaveState = typeof ScheduleSaveStateSchema.infer;
+export type ShortScheduleSaveState = typeof ScheduleSaveStateSchema.infer;
+
+export type ScheduleSaveState = {
+    schedules: Array<{
+        scheduleName: string;
+        courses: (ShortCourse | ScheduleCourse)[];
+        customEvents: RepeatingCustomEvent[];
+        scheduleNote: string;
+    }>;
+    scheduleIndex: number;
+};
 
 export type ScheduleUndoState = {
     schedules: Schedule[];
