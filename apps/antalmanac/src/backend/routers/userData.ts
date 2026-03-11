@@ -35,7 +35,6 @@ const saveInputSchema = z.object({
 const saveGoogleSchema = type({
     code: 'string',
     state: 'string',
-    'storedState?': 'string',
     'codeVerifier?': 'string',
 });
 
@@ -177,7 +176,7 @@ const userDataRouter = router({
                     })
             );
 
-            const storedState = input.storedState ?? cookies['oauth_state'] ?? null;
+            const storedState = cookies['oauth_state'] ?? null;
             const codeVerifier = input.codeVerifier ?? cookies['oauth_code_verifier'] ?? null;
             const redirectUrl = decodeURIComponent(cookies['auth_redirect_url'] ?? '/');
 
@@ -190,11 +189,10 @@ const userDataRouter = router({
             ctx.resHeaders?.append('Set-Cookie', `oauth_code_verifier=; ${deleteCookieOptions}`);
             ctx.resHeaders?.append('Set-Cookie', `auth_redirect_url=; ${deleteCookieOptions}`);
 
-            if (!input.code || !input.state || !storedState || !codeVerifier) {
+            if (!input.code || !input.state || !codeVerifier) {
                 console.error('[OAuth Callback] Missing parameters:', {
                     hasCode: !!input.code,
                     hasState: !!input.state,
-                    hasStoredState: !!storedState,
                     hasCodeVerifier: !!codeVerifier,
                 });
                 throw new TRPCError({
@@ -203,7 +201,11 @@ const userDataRouter = router({
                 });
             }
 
-            if (input.state !== storedState) {
+            // When cookies are available (web browsers), verify state to prevent CSRF.
+            // When cookies are unavailable (iOS WKWebView), PKCE alone provides
+            // equivalent protection: the token endpoint rejects the exchange if
+            // the codeVerifier doesn't match the original code_challenge.
+            if (storedState && input.state !== storedState) {
                 console.error('[OAuth Callback] State mismatch:', {
                     received: input.state,
                     stored: storedState,

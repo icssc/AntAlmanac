@@ -46,15 +46,12 @@ export function AuthPage() {
 
             isAuthenticatingRef.current = true;
 
-            const storedState = localStorage.getItem('oauth_state') ?? undefined;
             const codeVerifier = localStorage.getItem('oauth_code_verifier') ?? undefined;
-            localStorage.removeItem('oauth_state');
             localStorage.removeItem('oauth_code_verifier');
 
             const { sessionToken, userId, providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
                 code: code,
                 state: state,
-                storedState,
                 codeVerifier,
             });
 

@@ -39,7 +39,6 @@ export function AutoSignIn() {
 
             try {
                 const result = await trpc.userData.getGoogleAuthUrl.query({ prompt: 'none' });
-                localStorage.setItem('oauth_state', result.state);
                 localStorage.setItem('oauth_code_verifier', result.codeVerifier);
                 window.location.href = result.url;
             } catch {
