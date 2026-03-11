@@ -1,9 +1,17 @@
-import { request, Term, Quarter, WebsocSection, WebsocResponse } from '@icssc/libwebsoc-next';
-import { eq, and, or } from 'drizzle-orm';
+import type { WebsocAPIResponse, WebsocSection } from '@packages/anteater-api-types';
+import { and, eq, inArray } from 'drizzle-orm';
 
 import { db } from '../../../../packages/db/src/index';
-import { users } from '../../../../packages/db/src/schema/auth/user';
-import { subscriptions } from '../../../../packages/db/src/schema/subscription';
+import { type User as DbUser, users } from '../../../../packages/db/src/schema/auth/user';
+import { type Subscription, subscriptions } from '../../../../packages/db/src/schema/subscription';
+
+const ANTEATER_API_BASE_URL = 'https://anteaterapi.com/v2/rest/websoc';
+
+interface AnteaterAPIResponse {
+    ok: boolean;
+    data?: WebsocAPIResponse;
+    message?: string;
+}
 
 interface TermGrouping {
     [term: string]: string[];
@@ -21,7 +29,7 @@ export interface User {
 }
 
 /**
- * Fetches updated class information for specific section codes within a given term from WebSoc.
+ * Fetches updated class information for specific section codes within a given term from AnteaterAPI.
  * @param quarter - The academic quarter (e.g., "Fall", "Winter", "Spring", "Summer1", "Summer10wk", "Summer2").
  * @param year - The academic year (e.g., "2023").
  * @param sections - An array of section codes to fetch.
@@ -31,14 +39,23 @@ async function getUpdatedClasses(
     quarter: string,
     year: string,
     sections: string[]
-): Promise<WebsocResponse | undefined> {
+): Promise<WebsocAPIResponse | undefined> {
     try {
-        const term: Term = {
-            year: year,
-            quarter: quarter as Quarter,
-        };
-        const response = await request(term, { sectionCodes: sections.join(',') });
-        return response;
+        const params = new URLSearchParams({
+            year,
+            quarter,
+            sectionCodes: sections.join(','),
+        });
+
+        const response = await fetch(`${ANTEATER_API_BASE_URL}?${params.toString()}`);
+        const json: AnteaterAPIResponse = await response.json();
+
+        if (!json.ok) {
+            console.error('AnteaterAPI error:', json.message);
+            return undefined;
+        }
+
+        return json.data;
     } catch (error) {
         console.error('Error getting class information:', error);
     }
@@ -50,16 +67,18 @@ async function getUpdatedClasses(
  */
 async function getSubscriptionSectionCodes(): Promise<TermGrouping | undefined> {
     try {
+        const stage = process.env.STAGE!;
         const result = await db
             .selectDistinct({
                 sectionCode: subscriptions.sectionCode,
                 quarter: subscriptions.quarter,
                 year: subscriptions.year,
             })
-            .from(subscriptions);
+            .from(subscriptions)
+            .where(eq(subscriptions.environment, stage));
 
         // group together by year and quarter
-        const groupedByTerm = result.reduce((acc: TermGrouping, { quarter, year, sectionCode }) => {
+        const groupedByTerm = result.reduce<TermGrouping>((acc, { quarter, year, sectionCode }) => {
             if (quarter && year) {
                 const term = `${quarter}-${year}`;
                 if (!acc[term]) {
@@ -92,6 +111,7 @@ async function updateSubscriptionStatus(
     lastCodes: string
 ): Promise<void> {
     try {
+        const stage = process.env.STAGE!;
         await db
             .update(subscriptions)
             .set({ lastUpdatedStatus: lastUpdatedStatus, lastCodes: lastCodes })
@@ -99,7 +119,8 @@ async function updateSubscriptionStatus(
                 and(
                     eq(subscriptions.year, year),
                     eq(subscriptions.quarter, quarter),
-                    eq(subscriptions.sectionCode, sectionCode)
+                    eq(subscriptions.sectionCode, sectionCode),
+                    eq(subscriptions.environment, stage)
                 )
             );
     } catch (error) {
@@ -108,21 +129,28 @@ async function updateSubscriptionStatus(
 }
 
 /**
- * Fetches the last updated status and restriction codes for a specific class section from the database.
- * This function makes the assumption that all class subscriptions always have the same status and restriction codes.
- * @param year - The academic year of the subscription.
- * @param quarter - The academic quarter of the subscription.
- * @param sectionCode - The section code of the class.
- * @returns A promise that resolves to the last updated status and restriction codes of a class section, or undefined if an error occurs.
+ * Fetches the last updated status and restriction codes for multiple class sections from the database.
+ * @param year - The academic year of the subscriptions.
+ * @param quarter - The academic quarter of the subscriptions.
+ * @param sectionCodes - Array of section codes to fetch.
+ * @returns A map of sectionCode -> ClassStatus.
  */
 async function getLastUpdatedStatus(
     year: string,
     quarter: string,
-    sectionCode: string
-): Promise<ClassStatus | undefined> {
+    sectionCodes: string[]
+): Promise<Map<string, ClassStatus>> {
+    const result = new Map<string, ClassStatus>();
+
+    if (sectionCodes.length === 0) {
+        return result;
+    }
+
     try {
-        const result = await db
-            .select({
+        const stage = process.env.STAGE!;
+        const rows = await db
+            .selectDistinct({
+                sectionCode: subscriptions.sectionCode,
                 lastUpdatedStatus: subscriptions.lastUpdatedStatus,
                 lastCodes: subscriptions.lastCodes,
             })
@@ -131,83 +159,120 @@ async function getLastUpdatedStatus(
                 and(
                     eq(subscriptions.year, year),
                     eq(subscriptions.quarter, quarter),
-                    eq(subscriptions.sectionCode, sectionCode)
+                    eq(subscriptions.environment, stage),
+                    inArray(subscriptions.sectionCode, sectionCodes)
                 )
-            )
-            .limit(1);
+            );
 
-        return result?.[0] as ClassStatus;
+        for (const row of rows) {
+            result.set(row.sectionCode, {
+                lastUpdatedStatus: row.lastUpdatedStatus as WebsocSection['status'] | null,
+                lastCodes: row.lastCodes,
+            });
+        }
     } catch (error) {
         console.error('Error getting last updated status:', error);
     }
+
+    return result;
+}
+
+export type SubscriptionWithUser = Pick<
+    Subscription,
+    'sectionCode' | 'notifyOnOpen' | 'notifyOnWaitlist' | 'notifyOnFull' | 'notifyOnRestriction'
+> & {
+    userId: DbUser['id'];
+    userName: DbUser['name'];
+    email: DbUser['email'];
+};
+
+/**
+ * Fetches all subscriptions with user info for the given section codes.
+ * @returns Map of sectionCode -> array of subscriptions with user info and notification preferences.
+ */
+async function getSubscriptionsForSections(
+    year: string,
+    quarter: string,
+    sectionCodes: string[]
+): Promise<Map<string, SubscriptionWithUser[]>> {
+    const result = new Map<string, SubscriptionWithUser[]>();
+    if (sectionCodes.length === 0) return result;
+
+    try {
+        const stage = process.env.STAGE!;
+        const rows = await db
+            .select({
+                sectionCode: subscriptions.sectionCode,
+                userId: users.id,
+                userName: users.name,
+                email: users.email,
+                notifyOnOpen: subscriptions.notifyOnOpen,
+                notifyOnWaitlist: subscriptions.notifyOnWaitlist,
+                notifyOnFull: subscriptions.notifyOnFull,
+                notifyOnRestriction: subscriptions.notifyOnRestriction,
+            })
+            .from(subscriptions)
+            .innerJoin(users, eq(subscriptions.userId, users.id))
+            .where(
+                and(
+                    eq(subscriptions.year, year),
+                    eq(subscriptions.quarter, quarter),
+                    eq(subscriptions.environment, stage),
+                    inArray(subscriptions.sectionCode, sectionCodes)
+                )
+            );
+
+        for (const row of rows) {
+            const existing = result.get(row.sectionCode) || [];
+            existing.push(row);
+            result.set(row.sectionCode, existing);
+        }
+    } catch (error) {
+        console.error('Error getting subscriptions for sections:', error);
+    }
+
+    return result;
 }
 
 /**
- * Fetches all users who are subscribed to a specific class section and have enabled notifications
- * for the current type of status change (status and/or restriction codes changes)
- * @param quarter - The academic quarter of the subscription.
- * @param year - The academic year of the subscription.
- * @param sectionCode - The section code of the class.
- * @param status - The status of the class.
- * @param statusChanged - True if the class status has changed.
- * @param codesChanged - True if the class restriction codes have changed.
- * @returns A promise that resolves to an array of user information, or undefined if an error occurs.
+ * Filters subscriptions to find users who should be notified based on status and notification preferences.
  */
-
-async function getUsers(
-    quarter: string,
-    year: string,
-    sectionCode: string,
+function filterUsersToNotify(
+    subscriptionsForSection: SubscriptionWithUser[],
     status: WebsocSection['status'],
     statusChanged: boolean,
     codesChanged: boolean
-): Promise<User[] | undefined> {
-    try {
-        const statusColumnMap: Record<WebsocSection['status'], any> = {
-            OPEN: subscriptions.notifyOnOpen,
-            Waitl: subscriptions.notifyOnWaitlist,
-            FULL: subscriptions.notifyOnFull,
-            NewOnly: null,
-        };
-
-        const statusColumn = statusColumnMap[status];
-
-        const baseConditions = [
-            eq(subscriptions.year, year),
-            eq(subscriptions.quarter, quarter),
-            eq(subscriptions.sectionCode, sectionCode),
-        ];
-
-        let notificationCondition;
-        if (statusChanged === true && codesChanged === true) {
-            if (statusColumn) {
-                notificationCondition = or(eq(statusColumn, true), eq(subscriptions.notifyOnRestriction, true));
-            } else {
-                notificationCondition = eq(subscriptions.notifyOnRestriction, true);
+): User[] {
+    return subscriptionsForSection
+        .filter((sub) => {
+            if (statusChanged && codesChanged) {
+                const statusMatch =
+                    (status === 'OPEN' && sub.notifyOnOpen) ||
+                    (status === 'Waitl' && sub.notifyOnWaitlist) ||
+                    (status === 'FULL' && sub.notifyOnFull);
+                return statusMatch || sub.notifyOnRestriction;
+            } else if (statusChanged) {
+                if (status === 'OPEN') return sub.notifyOnOpen;
+                if (status === 'Waitl') return sub.notifyOnWaitlist;
+                if (status === 'FULL') return sub.notifyOnFull;
+                return false;
+            } else if (codesChanged) {
+                return sub.notifyOnRestriction;
             }
-        } else if (statusChanged === true) {
-            if (statusColumn) {
-                notificationCondition = eq(statusColumn, true);
-            } else {
-                // TODO (@IsaacNguyen): Handle NewOnly status if that's something we want to support
-                return [];
-            }
-        } else if (codesChanged === true) {
-            notificationCondition = eq(subscriptions.notifyOnRestriction, true);
-        }
-
-        const allConditions = notificationCondition ? [...baseConditions, notificationCondition] : baseConditions;
-
-        const result = await db
-            .select({ userName: users.name, email: users.email, userId: users.id })
-            .from(subscriptions)
-            .innerJoin(users, eq(subscriptions.userId, users.id))
-            .where(and(...allConditions));
-
-        return result;
-    } catch (error) {
-        console.error('Error getting users:', error);
-    }
+            return false;
+        })
+        .map((sub) => ({
+            userId: sub.userId,
+            userName: sub.userName,
+            email: sub.email,
+        }));
 }
 
-export { getUpdatedClasses, getSubscriptionSectionCodes, updateSubscriptionStatus, getLastUpdatedStatus, getUsers };
+export {
+    getUpdatedClasses,
+    getSubscriptionSectionCodes,
+    updateSubscriptionStatus,
+    getLastUpdatedStatus,
+    getSubscriptionsForSections,
+    filterUsersToNotify,
+};

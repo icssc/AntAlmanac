@@ -1,20 +1,24 @@
 import { PlayLesson } from '@mui/icons-material';
+import { Button } from '@mui/material';
 import { useTour } from '@reactour/tour';
 import { useCallback, useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-import { HelpMenuAction } from '$components/HelpMenu/HelpMenu';
 import { stepsFactory, tourShouldRun } from '$lib/TutorialHelpers';
 import { removeSampleClasses } from '$lib/tourExampleGeneration';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
-export function TutorialAction(): HelpMenuAction {
+interface TutorialButtonProps {
+    onMenuClose?: () => void;
+}
+
+export const TutorialButton = ({ onMenuClose }: TutorialButtonProps) => {
     const { setCurrentStep, setIsOpen, setSteps, isOpen } = useTour();
     const [displaySearch, disableManualSearch] = useCoursePaneStore(
         useShallow((state) => [state.displaySearch, state.disableManualSearch])
     );
 
-    const handleClick = useCallback(() => {
+    const startTutorial = useCallback(() => {
         displaySearch();
         disableManualSearch();
         setCurrentStep(0);
@@ -23,7 +27,6 @@ export function TutorialAction(): HelpMenuAction {
 
     useEffect(() => setIsOpen(tourShouldRun), [setIsOpen]);
 
-    // Remove sample classes when the tour is closed.
     useEffect(() => {
         return () => {
             removeSampleClasses();
@@ -38,5 +41,14 @@ export function TutorialAction(): HelpMenuAction {
         setSteps(stepsFactory(setCurrentStep));
     }, [setCurrentStep, setSteps]);
 
-    return { icon: <PlayLesson />, name: 'Start Tutorial', disableOnMobile: true, onClick: handleClick };
-}
+    const handleClick = useCallback(() => {
+        onMenuClose?.();
+        startTutorial();
+    }, [startTutorial, onMenuClose]);
+
+    return (
+        <Button onClick={handleClick} color="inherit" startIcon={<PlayLesson />} size="large" variant="text">
+            Tutorial
+        </Button>
+    );
+};

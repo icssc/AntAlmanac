@@ -10,9 +10,11 @@
     "dependencies": {
         "@paralleldrive/cuid2": "^2.2.2",
         "drizzle-orm": "^0.45.1",
+        "pg": "^8.13.1",
         "postgres": "^3.4.5"
     },
     "devDependencies": {
+        "@types/pg": "^8.11.10",
         "@typescript-eslint/eslint-plugin": "^5.52.0",
         "@typescript-eslint/parser": "^5.52.0",
         "dotenv": "^16.4.5",

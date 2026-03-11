@@ -81,6 +81,7 @@ export function Logo() {
             height={32}
             width={isMobile ? 48 : 78}
             title={currentLogo?.attribution}
+            loading="eager"
             alt="logo"
         />
     );
