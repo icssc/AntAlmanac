@@ -87,7 +87,7 @@ async function fetchAnteaterAPI(url: string): Promise<Response> {
 
     if (!response.ok) {
         throw new TRPCError({
-            code: response.status === 401 ? 'UNAUTHORIZED' : 'INTERNAL_SERVER_ERROR',
+            code: 'INTERNAL_SERVER_ERROR',
             message: `Anteater API returned an error: ${response.status} ${response.statusText}`,
         });
     }
