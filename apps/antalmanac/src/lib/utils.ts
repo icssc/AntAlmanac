@@ -40,8 +40,21 @@ export const safeUnreachableCase = <T>(v: never, retVal?: T): T | undefined => {
 /**
  * Moves an array item from one position to another, in place.
  * For an immutable alternative, see `arrayMove` from `dnd-kit`.
+ *
+ * @param elementMoveCount The number of elements to move. Defaults to 1.
+ * @param isShiftAccountedFor Does `toIndex` already account for elements' shifting after initial removal
+ * when moving elements toward the back of the array?
+ * For example, `dnd-kit`'s `activeIndex` and `overIndex` do account for this shift.
  */
-export function moveArrayElement(array: unknown[], fromIndex: number, toIndex: number) {
-    const [elementToMove] = array.splice(fromIndex, 1);
-    array.splice(toIndex, 0, elementToMove);
+export function moveArrayElements(
+    array: unknown[],
+    fromIndex: number,
+    toIndex: number,
+    { elementMoveCount = 1, isShiftAccountedFor = false } = {}
+) {
+    const elementsToMove = array.splice(fromIndex, elementMoveCount);
+    if (fromIndex < toIndex && !isShiftAccountedFor) {
+        toIndex -= elementMoveCount;
+    }
+    array.splice(toIndex, 0, ...elementsToMove);
 }
