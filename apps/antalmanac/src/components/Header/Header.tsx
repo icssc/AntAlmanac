@@ -1,4 +1,5 @@
-import { AppBar, Box, Stack } from '@mui/material';
+import { Keyboard } from '@mui/icons-material';
+import { AppBar, Box, IconButton, Stack, Tooltip } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import { openSnackbar } from '$actions/AppStoreActions';
@@ -8,6 +9,8 @@ import { Import } from '$components/Header/Import';
 import { Save } from '$components/Header/Save';
 import { Signin } from '$components/Header/Signin';
 import { Signout } from '$components/Header/Signout';
+import { KeyboardShortcutsModal } from '$components/KeyboardShortcutsModal/KeyboardShortcutsModal';
+import { isMacPlatform } from '$lib/keyboardShortcuts';
 import {
     getLocalStorageDataCache,
     getLocalStorageImportedUser,
@@ -16,6 +19,7 @@ import {
 } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
 import { useIsMobile } from '$src/hooks/useIsMobile';
+import { useKeyboardShortcutsModal } from '$src/hooks/useKeyboardShortcutsModal';
 import { useSessionStore } from '$stores/SessionStore';
 
 export function Header() {
@@ -24,6 +28,7 @@ export function Header() {
     const importedUser = getLocalStorageImportedUser() ?? '';
     const { session, sessionIsValid } = useSessionStore();
     const isMobile = useIsMobile();
+    const { open: shortcutsOpen, openModal: openShortcuts, closeModal: closeShortcuts } = useKeyboardShortcutsModal();
 
     const clearStorage = () => {
         removeLocalStorageImportedUser();
@@ -88,7 +93,18 @@ export function Header() {
                         <AppSwitcher isMobile={isMobile} />
                     </Stack>
 
-                    <Stack direction="row" alignItems="center">
+                    <Stack direction="row" alignItems="center" gap={0.5}>
+                        <Tooltip title={`Keyboard shortcuts (${isMacPlatform() ? '⌘' : 'Ctrl'}+/)`} enterTouchDelay={0}>
+                            <IconButton
+                                color="inherit"
+                                size="small"
+                                aria-label="Keyboard shortcuts"
+                                onClick={openShortcuts}
+                                sx={{ color: 'rgba(255,255,255,0.9)' }}
+                            >
+                                <Keyboard fontSize="small" />
+                            </IconButton>
+                        </Tooltip>
                         <Import key="studylist" />
                         <Save />
                         {sessionIsValid ? <Signout onLogoutComplete={handleLogoutComplete} /> : <Signin />}
@@ -102,6 +118,7 @@ export function Header() {
                     >
                         NOTE: All changes made to your schedules will be saved to your Google account
                     </AlertDialog>
+                    <KeyboardShortcutsModal open={shortcutsOpen} onClose={closeShortcuts} />
                     <AlertDialog
                         open={openSignoutDialog}
                         title="Signed out successfully"
