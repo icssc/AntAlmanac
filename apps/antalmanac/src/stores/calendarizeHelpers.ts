@@ -5,6 +5,9 @@ import type {
     WebsocSectionFinalExam,
 } from '@packages/antalmanac-types';
 
+import { SectionColorSetting } from './SettingsStore';
+import { getColorForNewSection } from './scheduleHelpers';
+
 import type { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { getFinalsStartDateForTerm } from '$lib/termData';
 import { notNull, getReferencesOccurring } from '$lib/utils';
@@ -18,8 +21,18 @@ export function getLocation(location: string): Location {
     return { building, room };
 }
 
-export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): CourseEvent[] => {
-    return currentCourses.flatMap((course) => {
+export const calendarizeCourseEvents = (
+    currentCourses: ScheduleCourse[] = [],
+    sectionColor?: SectionColorSetting
+): CourseEvent[] => {
+    const themedCourses: ScheduleCourse[] = [];
+
+    for (const course of currentCourses) {
+        course.section.color = getColorForNewSection(course, themedCourses, sectionColor);
+        themedCourses.push(course);
+    }
+
+    return themedCourses.flatMap((course) => {
         return course.section.meetings
             .filter((meeting) => !meeting.timeIsTBA)
             .flatMap((meeting) => {
