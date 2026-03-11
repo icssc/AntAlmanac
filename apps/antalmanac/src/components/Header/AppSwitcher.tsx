@@ -15,7 +15,11 @@ import { useState } from 'react';
 import type { MouseEventHandler } from 'react';
 
 import { Logo } from '$components/Header/Logo';
-import { SETTINGS_POPOVER_BG } from '$components/Header/headerStyles';
+import {
+    SETTINGS_POPOVER_BG,
+    SETTINGS_POPOVER_MENU_HOVER_BG,
+    SETTINGS_POPOVER_MENU_SELECTED_BG,
+} from '$components/Header/headerStyles';
 import { BLUE, PLANNER_LINK } from '$src/globals';
 import appStore from '$stores/AppStore';
 
@@ -23,10 +27,11 @@ type AppSwitcherProps = {
     isMobile: boolean;
 };
 
+/** Selected/hover use lighter shades than SETTINGS_POPOVER_BG so feedback is visible */
 const darkMenuSx = {
-    '&.Mui-selected': { bgcolor: SETTINGS_POPOVER_BG },
-    '&.Mui-selected:hover': { bgcolor: SETTINGS_POPOVER_BG },
-    '&:hover': { bgcolor: SETTINGS_POPOVER_BG },
+    '&.Mui-selected': { bgcolor: SETTINGS_POPOVER_MENU_SELECTED_BG },
+    '&.Mui-selected:hover': { bgcolor: SETTINGS_POPOVER_MENU_HOVER_BG },
+    '&:hover': { bgcolor: SETTINGS_POPOVER_MENU_HOVER_BG },
 } as const;
 
 export function AppSwitcher({ isMobile }: AppSwitcherProps) {
