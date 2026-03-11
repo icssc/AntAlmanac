@@ -44,6 +44,17 @@ const BROWSER_ROUTER = createBrowserRouter([
                 errorElement: <ErrorPage />,
             },
             {
+                path: '/planner',
+                loader: () => {
+                    if (window.location.hostname !== 'antalmanac.com') {
+                        window.location.replace('https://antalmanac.com/planner');
+                    }
+                    return null;
+                },
+                element: <Home />,
+                errorElement: <ErrorPage />,
+            },
+            {
                 path: '/unsubscribe/:userId',
                 element: <Unsubscribe />,
                 errorElement: <ErrorPage />,
