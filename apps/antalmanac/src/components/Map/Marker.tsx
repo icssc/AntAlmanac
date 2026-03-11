@@ -138,19 +138,16 @@ const LocationMarker = forwardRef(
                             <Button
                                 variant="contained"
                                 color="primary"
-                                startIcon={<DirectionsWalkIcon sx={{ color: '#fff' }} />}
+                                startIcon={<DirectionsWalkIcon />}
                                 href={`${GOOGLE_MAPS_URL}${lat},${lng}`}
                                 target="_blank"
                                 sx={{
                                     alignSelf: 'center',
                                     width: '100%',
                                     borderRadius: '0.75rem',
-                                    color: '#fff',
                                 }}
                             >
-                                <Typography
-                                    sx={{ color: '#fff', fontSize: '1.25rem', letterSpacing: 1.25, fontWeight: 500 }}
-                                >
+                                <Typography sx={{ fontSize: '1.25rem', letterSpacing: 1.25, fontWeight: 500 }}>
                                     Directions
                                 </Typography>
                             </Button>

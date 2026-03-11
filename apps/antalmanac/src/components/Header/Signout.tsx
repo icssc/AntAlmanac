@@ -95,7 +95,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
             >
                 <SettingsMenu user={user} onClose={() => setAnchorEl(null)} />
 
-                <Divider style={{ marginTop: '10px', marginBottom: '12px' }} />
+                <Divider style={{ marginTop: '20px', marginBottom: '12px' }} />
 
                 <MenuItem onClick={handleLogout} sx={{ px: 1, py: 1.25, borderRadius: 1 }}>
                     <ListItemIcon>
