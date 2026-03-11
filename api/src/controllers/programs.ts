@@ -18,7 +18,7 @@ import { eq } from 'drizzle-orm';
 
 type ProgramType = MajorProgram | MinorProgram | MajorSpecialization;
 const programTypeNames = ['major', 'minor', 'specialization'] as const;
-const ugradRequirementTypeNames = ['UC', 'GE', 'CHC4'] as const;
+const ugradRequirementTypeNames = ['UC', 'GE', 'CHC4', 'CHC2'] as const;
 
 const getAPIProgramData = async <T extends ProgramType>(programType: string): Promise<T[]> => {
   const response = await fetch(`${process.env.PUBLIC_API_URL}programs/${programType}`, {

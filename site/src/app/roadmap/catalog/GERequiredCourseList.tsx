@@ -9,7 +9,7 @@ import { normalizeTitleLabels } from '../../../helpers/substitutions';
 import { Select, MenuItem, Divider } from '@mui/material';
 import { ProgramRequirement } from '@peterportal/types';
 
-type UgradRequirementId = 'GE' | 'CHC4' | 'UC';
+type UgradRequirementId = 'GE' | 'CHC4' | 'UC' | 'CHC2';
 
 async function fetchUgradRequirements(id: UgradRequirementId) {
   const fetchedRequirements = await trpc.programs.getRequiredCoursesUgrad.query({ id });
@@ -30,8 +30,7 @@ const CHCRequirements: FC = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (selection === '' || selection === 'CHC2') {
-      // CHC2 not yet supported by API
+    if (selection === '') {
       setRequirements([]);
       setLoading(false);
       return;
@@ -77,8 +76,8 @@ const CHCRequirements: FC = () => {
         <MenuItem key="CHC4" value="CHC4">
           4-Year CHC Student
         </MenuItem>
-        <MenuItem key="CHC2" value="CHC2" disabled>
-          2-Year CHC Student (Not yet supported)
+        <MenuItem key="CHC2" value="CHC2">
+          2-Year CHC Student
         </MenuItem>
       </Select>
       {loading && <LoadingSpinner />}
