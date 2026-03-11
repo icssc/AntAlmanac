@@ -46,9 +46,6 @@ export const DeleteAndNotifications = memo(({ ...props }: DeleteAndNotifications
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                '& .MuiIconButton-root': {
-                    padding: 0.5,
-                },
             }}
         >
             <IconButton onClick={handleClick}>
