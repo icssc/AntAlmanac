@@ -38,8 +38,10 @@ export function AutoSignIn() {
             }
 
             try {
-                const authUrl = await trpc.userData.getGoogleAuthUrl.query({ prompt: 'none' });
-                window.location.href = authUrl.toString();
+                const result = await trpc.userData.getGoogleAuthUrl.query({ prompt: 'none' });
+                localStorage.setItem('oauth_state', result.state);
+                localStorage.setItem('oauth_code_verifier', result.codeVerifier);
+                window.location.href = result.url;
             } catch {
                 // Silent SSO failed (e.g. backend unavailable). Don't retry.
             }

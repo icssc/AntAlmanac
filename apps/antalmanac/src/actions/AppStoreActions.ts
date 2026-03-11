@@ -397,10 +397,12 @@ const cacheSchedule = () => {
 
 export const loginUser = async () => {
     try {
-        const authUrl = await trpc.userData.getGoogleAuthUrl.query();
-        if (authUrl) {
+        const result = await trpc.userData.getGoogleAuthUrl.query();
+        if (result) {
             cacheSchedule();
-            window.location.href = authUrl.toString();
+            localStorage.setItem('oauth_state', result.state);
+            localStorage.setItem('oauth_code_verifier', result.codeVerifier);
+            window.location.href = result.url;
         }
     } catch (error) {
         console.error('Error during login initiation', error);

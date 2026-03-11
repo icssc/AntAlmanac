@@ -35,6 +35,8 @@ const saveInputSchema = z.object({
 const saveGoogleSchema = type({
     code: 'string',
     state: 'string',
+    'storedState?': 'string',
+    'codeVerifier?': 'string',
 });
 
 const userDataRouter = router({
@@ -156,7 +158,7 @@ const userDataRouter = router({
                 );
             }
 
-            return url;
+            return { url: url.toString(), state, codeVerifier };
         }),
     /**
      * Logs in or signs up a user and creates user's session
@@ -175,8 +177,8 @@ const userDataRouter = router({
                     })
             );
 
-            const storedState = cookies['oauth_state'] ?? null;
-            const codeVerifier = cookies['oauth_code_verifier'] ?? null;
+            const storedState = input.storedState ?? cookies['oauth_state'] ?? null;
+            const codeVerifier = input.codeVerifier ?? cookies['oauth_code_verifier'] ?? null;
             const redirectUrl = decodeURIComponent(cookies['auth_redirect_url'] ?? '/');
 
             // Delete cookies via response headers
