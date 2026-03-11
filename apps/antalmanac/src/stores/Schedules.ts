@@ -13,7 +13,7 @@ import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } f
 
 import { getDefaultTerm } from '$lib/termData';
 import { WebSOC } from '$lib/websoc';
-import { getColorForNewSection } from '$stores/scheduleHelpers';
+import { getColorForNewSection, getCourseId } from '$stores/scheduleHelpers';
 
 /**
  * Manages state of schedules. Only one instance is really needed for the app.
@@ -269,7 +269,15 @@ export class Schedules {
             },
         };
 
-        this.schedules[scheduleIndex].courses.push(sectionToAdd);
+        const courses = this.schedules[scheduleIndex].courses;
+        const sectionCourseId = getCourseId(sectionToAdd);
+        const courseLastSectionIndex = courses.findLastIndex((course) => getCourseId(course) === sectionCourseId);
+        if (courseLastSectionIndex !== -1) {
+            courses.splice(courseLastSectionIndex + 1, 0, sectionToAdd);
+        } else {
+            courses.push(sectionToAdd);
+        }
+        console.log(courses);
 
         return sectionToAdd;
     }
