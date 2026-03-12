@@ -3,6 +3,7 @@ import type { Active, UniqueIdentifier } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableContext, arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { List, SxProps } from '@mui/material';
+import { mergeSx } from '@mui/x-date-pickers/internals';
 import type { ReactNode } from 'react';
 import { Fragment, useMemo, useState } from 'react';
 
@@ -60,7 +61,7 @@ export function SortableList<T extends BaseItem>({
             }}
         >
             <SortableContext items={items}>
-                <List sx={{ ...{ padding: 0 }, ...sx }}>
+                <List sx={mergeSx({ padding: 0 }, sx)}>
                     {items.map((item) => (
                         <Fragment key={item.id}>{renderItem(item)}</Fragment>
                     ))}
