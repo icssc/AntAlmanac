@@ -1,14 +1,12 @@
 import { MouseEvent } from 'react';
 
-import { openSnackbar } from '$actions/AppStoreActions';
+import { openSnackbar } from '$stores/SnackbarStore';
 
 export const warnMultipleTerms = (terms: Set<string>) => {
     openSnackbar(
         'warning',
         `Course added from different term.\nSchedule now contains courses from ${[...terms].sort().join(', ')}.`,
-        undefined,
-        undefined,
-        { whiteSpace: 'pre-line' }
+        { style: { whiteSpace: 'pre-line' } }
     );
 };
 
