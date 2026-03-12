@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, removeLocalStorageSessionId, setLocalStorageSessionId } from '$lib/localStorage';
+import { clearSsoCookie } from '$lib/ssoCookie';
 import { useNotificationStore } from '$stores/NotificationStore';
 
 interface SessionState {
@@ -41,18 +42,16 @@ export const useSessionStore = create<SessionState>((set) => {
                             isGoogleUser,
                             email: users.email ?? null,
                         });
-
-                        if (isGoogleUser) {
-                            useNotificationStore.getState().loadNotifications();
-                        }
                     } catch (error) {
                         console.error('Failed to fetch user data:', error);
                         set({ isGoogleUser: false, email: null });
                     }
                 }
+                useNotificationStore.getState().loadNotifications();
                 return sessionIsValid;
             } else {
                 set({ session: null, sessionIsValid: false });
+                useNotificationStore.getState().loadNotifications();
                 return false;
             }
         },
@@ -61,6 +60,7 @@ export const useSessionStore = create<SessionState>((set) => {
             if (currentSession) {
                 await trpc.auth.invalidateSession.mutate({ token: currentSession });
                 removeLocalStorageSessionId();
+                clearSsoCookie();
                 set({
                     session: null,
                     userId: null,
