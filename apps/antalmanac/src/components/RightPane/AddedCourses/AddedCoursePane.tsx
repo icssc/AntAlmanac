@@ -45,9 +45,8 @@ function getCourses() {
     const formattedCourses: CourseWithTerm[] = [];
 
     for (const course of currentCourses) {
-        let formattedCourse = formattedCourses.find(
-            (needleCourse) => getCourseId(needleCourse) === getCourseId(course)
-        );
+        const courseId = getCourseId(course);
+        let formattedCourse = formattedCourses.find((needleCourse) => getCourseId(needleCourse) === courseId);
 
         const sectionUpdatedAt = course.section?.updatedAt ?? null;
 
