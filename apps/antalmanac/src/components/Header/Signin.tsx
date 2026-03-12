@@ -27,7 +27,6 @@ import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
-import { DARK_PAPER_BG } from '$src/globals';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -198,15 +197,7 @@ export const Signin = () => {
                 loading={loadingSchedule}
             />
 
-            <Dialog
-                open={isOpen}
-                onClose={() => handleClose(true)}
-                PaperProps={{
-                    sx: {
-                        bgcolor: isDark ? DARK_PAPER_BG : 'background.paper',
-                    },
-                }}
-            >
+            <Dialog open={isOpen} onClose={() => handleClose(true)}>
                 <DialogContent>
                     <Stack spacing={1}>
                         <Button

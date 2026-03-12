@@ -53,7 +53,7 @@ const darkTheme: PaletteOptions = {
     },
     background: {
         default: '#1E1E1E',
-        paper: '#1E1E1E',
+        paper: DARK_PAPER_BG,
         elevated: DARK_PAPER_BG,
     },
     text: {
@@ -182,12 +182,14 @@ export default function AppThemeProvider(props: Props) {
                     },
                     MuiPaper: {
                         styleOverrides: {
-                            root: {
-                                ...(appTheme === 'dark' && {
+                            root: ({ theme }) => ({
+                                ...(theme.palette.mode === 'dark' && {
                                     backgroundImage: 'none',
-                                    ...darkPaperOverride,
+                                    background: theme.palette.background.paper,
+                                    backgroundColor: theme.palette.background.paper,
+                                    color: theme.palette.text.primary,
                                 }),
-                            },
+                            }),
                         },
                     },
                     MuiPopover: {

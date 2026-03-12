@@ -168,10 +168,10 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                                 padding: '3px',
                                 ...(showFinalsSchedule &&
                                     theme.palette.mode === 'dark' && {
-                                        backgroundColor: 'primary.main',
+                                        backgroundColor: theme.palette.primary.main,
                                         color: '#fff',
                                         '&:hover': {
-                                            backgroundColor: 'primary.dark',
+                                            backgroundColor: theme.palette.primary.dark,
                                         },
                                     }),
                             }}
