@@ -4,6 +4,7 @@ import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { updateScheduleNote } from '$actions/AppStoreActions';
+import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
 import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEventDetailView';
 import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
 import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
@@ -11,6 +12,7 @@ import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePan
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
+import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import AppStore from '$stores/AppStore';
@@ -295,6 +297,8 @@ function AddedSectionsGrid() {
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
 
+    const isMobile = useIsMobile();
+
     useEffect(() => {
         const handleCoursesChange = () => {
             setCourses(getCourses());
@@ -356,6 +360,7 @@ function AddedSectionsGrid() {
             </Box>
             <Box sx={{ marginTop: 7 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
+                {isMobile && <SelectSchedulePopover />}
                 {courses.length < 1 ? NoCoursesBox : null}
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
