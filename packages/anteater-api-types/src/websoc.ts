@@ -3,8 +3,13 @@ import { paths } from './generated/anteater-api-types';
 export type WebsocAPIResponse =
     paths['/v2/rest/websoc']['get']['responses'][200]['content']['application/json']['data'];
 
+export type WebsocAPIResult = paths['/v2/rest/websoc']['get']['responses'][200]['content']['application/json'];
+
 export type WebsocAPIDepartmentsResponse =
     paths['/v2/rest/websoc/departments']['get']['responses'][200]['content']['application/json']['data'];
+
+export type WebsocDepartmentsAPIResult =
+    paths['/v2/rest/websoc/departments']['get']['responses'][200]['content']['application/json'];
 
 export type WebsocSchool = WebsocAPIResponse['schools'][number];
 
