@@ -1,3 +1,4 @@
+import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
@@ -375,6 +376,7 @@ function AddedSectionsGrid() {
                     items={courses}
                     onChange={handleCourseOrderChange}
                     sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}
+                    sortingStrategy={verticalListSortingStrategy}
                     renderItem={(course: CourseWithTerm) => {
                         const missingSections = getMissingSections(course);
 

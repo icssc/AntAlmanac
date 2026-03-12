@@ -1,7 +1,7 @@
 import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { Active, UniqueIdentifier } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import { SortableContext, arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { SortableContext, SortingStrategy, arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { List, SxProps } from '@mui/material';
 import { mergeSx } from '@mui/x-date-pickers/internals';
 import type { ReactNode } from 'react';
@@ -21,6 +21,7 @@ interface Props<T extends BaseItem> {
     renderItem(item: T): ReactNode;
     sx?: SxProps;
     disableHorizontalScroll?: boolean;
+    sortingStrategy?: SortingStrategy;
 }
 
 // ref: https://codesandbox.io/p/sandbox/dnd-kit-sortable-starter-template-22x1ix
@@ -30,6 +31,7 @@ export function SortableList<T extends BaseItem>({
     renderItem,
     sx,
     disableHorizontalScroll = true,
+    sortingStrategy,
 }: Props<T>) {
     const [active, setActive] = useState<Active | null>(null);
     const activeItem = useMemo(() => items.find((item) => item.id === active?.id), [active, items]);
@@ -60,7 +62,7 @@ export function SortableList<T extends BaseItem>({
                 setActive(null);
             }}
         >
-            <SortableContext items={items}>
+            <SortableContext items={items} strategy={sortingStrategy}>
                 <List sx={mergeSx({ padding: 0 }, sx)}>
                     {items.map((item) => (
                         <Fragment key={item.id}>{renderItem(item)}</Fragment>
