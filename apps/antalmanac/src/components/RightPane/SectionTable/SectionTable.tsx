@@ -10,6 +10,7 @@ import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/Enrol
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
+import { SortableList } from '$components/drag-and-drop/SortableList';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
@@ -67,8 +68,15 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
 };
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
-function SectionTable(props: SectionTableProps) {
-    const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory, missingSections = [] } = props;
+function SectionTable({
+    courseDetails,
+    term,
+    allowHighlight,
+    scheduleNames,
+    analyticsCategory,
+    missingSections = [],
+    sortable = false,
+}: SectionTableProps) {
     const { isMilitaryTime } = useTimeFormatStore();
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
@@ -101,7 +109,7 @@ function SectionTable(props: SectionTableProps) {
     }, [activeColumns]);
 
     return (
-        <>
+        <Box>
             <Box
                 sx={{
                     display: 'flex',
@@ -154,6 +162,8 @@ function SectionTable(props: SectionTableProps) {
                         />
                     }
                 />
+
+                {sortable ? <SortableList.DragHandle /> : null}
             </Box>
 
             {missingSections?.length > 0 && (
@@ -218,7 +228,7 @@ function SectionTable(props: SectionTableProps) {
                     />
                 </Table>
             </TableContainer>
-        </>
+        </Box>
     );
 }
 

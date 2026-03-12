@@ -4,11 +4,11 @@ import { PostHog, usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { changeCurrentSchedule } from '$actions/AppStoreActions';
-import { SortableList } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableList';
 import { AddScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton';
 import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/DeleteScheduleButton';
 import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
 import { CopyScheduleButton } from '$components/buttons/Copy';
+import { SortableList } from '$components/drag-and-drop/SortableList';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -79,6 +79,11 @@ export function SelectSchedulePopover() {
     const handleScheduleIndexChange = useCallback(() => {
         setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
     }, []);
+
+    const handleSortableListChange = (schedules: ScheduleItem[], activeIndex: number, overIndex: number) => {
+        setScheduleMapping(schedules);
+        AppStore.reorderSchedule(activeIndex, overIndex);
+    };
 
     useEffect(() => {
         AppStore.on('addedCoursesChange', handleScheduleIndexChange);
@@ -161,7 +166,7 @@ export function SelectSchedulePopover() {
                 <Box padding={1}>
                     <SortableList
                         items={scheduleMappingToUse}
-                        onChange={setScheduleMapping}
+                        onChange={handleSortableListChange}
                         renderItem={(item) => {
                             const index = scheduleMappingToUse.indexOf(item);
                             return (
