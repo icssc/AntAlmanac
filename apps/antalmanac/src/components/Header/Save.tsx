@@ -1,10 +1,12 @@
 import { Close, Save as SaveIcon } from '@mui/icons-material';
 import { Stack, Snackbar, Alert, Link, IconButton, Button } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useState, useEffect } from 'react';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import { saveSchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -18,8 +20,15 @@ export const Save = () => {
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const { openAutoSaveWarning, setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
+    const postHog = usePostHog();
 
     const handleClickSignIn = () => {
+        if (!openSignInDialog) {
+            logAnalytics(postHog, {
+                category: analyticsEnum.nav,
+                action: analyticsEnum.nav.actions.CLICK_SAVE,
+            });
+        }
         setOpenSignInDialog(!openSignInDialog);
     };
 
@@ -45,7 +54,7 @@ export const Save = () => {
                 token: session,
             });
             setSaving(true);
-            await saveSchedule(accounts.providerAccountId, true, users);
+            await saveSchedule(accounts.providerAccountId, true, users, postHog);
             setSaving(false);
         }
     };
