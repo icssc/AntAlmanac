@@ -4,7 +4,7 @@ import { CustomInputBox } from '$components/RightPane/CoursePane/SearchForm/Labe
 import { CustomInputLabel } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/CustomInputLabel';
 
 interface LabeledInputProps {
-    label: string;
+    label: React.ReactNode;
     children: React.ReactNode;
     id: string;
     isAligned?: boolean;
