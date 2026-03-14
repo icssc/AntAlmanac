@@ -199,6 +199,15 @@ const PlannerLoader: FC = () => {
     setShowSyncModal(false);
   };
 
+  const [accountLoading, setAccountLoading] = useState(false);
+
+  const syncAccount = async () => {
+    setAccountLoading(true);
+    if (!initialAccountRoadmap || !initialLocalRoadmap) return;
+    await saveRoadmap(isLoggedIn, initialAccountRoadmap?.planners ?? null, initialAccountRoadmap?.planners ?? null);
+    setShowSyncModal(false);
+  };
+
   return (
     <Dialog
       open={showSyncModal}
@@ -216,14 +225,19 @@ const PlannerLoader: FC = () => {
       <DialogActions>
         <Button
           loading={overrideLoading}
-          disabled={overrideLoading}
+          disabled={overrideLoading || accountLoading}
           color="inherit"
           variant="text"
           onClick={overrideAccountRoadmap}
         >
           This Device
         </Button>
-        <Button disabled={overrideLoading} variant="contained" onClick={() => setShowSyncModal(false)}>
+        <Button
+          loading={accountLoading}
+          disabled={overrideLoading || accountLoading}
+          variant="contained"
+          onClick={syncAccount}
+        >
           My Account
         </Button>
       </DialogActions>
