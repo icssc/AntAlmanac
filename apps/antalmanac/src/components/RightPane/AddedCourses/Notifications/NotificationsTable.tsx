@@ -37,7 +37,12 @@ export const NotificationsTable = memo(({ keys }: NotificationsTableProps) => {
 
     return (
         <>
-            <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
+            <TableContainer
+                component={Paper}
+                sx={{
+                    maxHeight: 400,
+                }}
+            >
                 <Table stickyHeader sx={{ minWidth: 650 }} size="small">
                     <TableHead>
                         <TableRow>
