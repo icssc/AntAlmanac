@@ -41,6 +41,7 @@ const SavedCourseList = () => {
       requirementType: 'Course',
       label: deptString,
       courseCount: courses.length + 1,
+      requirementId: '',
       courses,
     };
     return requirement;

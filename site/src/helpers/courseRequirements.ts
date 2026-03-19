@@ -100,6 +100,7 @@ export function collapseSingletonRequirements(requirements: ProgramRequirement[]
         requirementType: 'Course',
         label: builtGroup.label,
         courseCount: builtGroup.requirementCount,
+        requirementId: builtGroup.requirementId,
         courses: (builtGroup.requirements as ProgramRequirement<'Course'>[]).map((c) => c.courses[0]),
       };
       computedRequirements.push(courseReqs);
@@ -120,6 +121,7 @@ export function collapseSingletonRequirements(requirements: ProgramRequirement[]
       requirementCount: 0,
       label: COMPLETE_ALL_TEXT,
       requirements: [],
+      requirementId: r.requirementId,
     };
     builtGroup.requirements.push(r);
     builtGroup.requirementCount++;
@@ -179,7 +181,11 @@ export function coerceEmptyRequirement(requirement: ProgramRequirement): Program
   if (requirement.requirementType === 'Course' && !requirement.courses.length) {
     // Some course requirements don't provide a list of courses from the API. For these cases,
     // treat them as a Marker so the user can manually mark as complete.
-    return { requirementType: 'Marker', label: requirement.label };
+    return {
+      requirementType: 'Marker',
+      label: requirement.label,
+      requirementId: requirement.requirementId,
+    };
   } else {
     return requirement;
   }
