@@ -1,10 +1,27 @@
 import { db } from '@packages/db/src';
-import { friendships, users } from '@packages/db/src/schema';
+import { accounts, friendships, users } from '@packages/db/src/schema';
 import { TRPCError } from '@trpc/server';
 import { and, eq, or } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
+
+/**
+ * Resolves a provider ID (e.g. 'abc123' or 'google_abc123') to an internal userId.
+ * Mirrors the same logic used in saveUserData.
+ */
+async function resolveProviderIdToUserId(providerId: string): Promise<string> {
+    const oidcProviderId = providerId.startsWith('google_') ? providerId : 'google_' + providerId;
+    const [account] = await db
+        .select({ userId: accounts.userId })
+        .from(accounts)
+        .where(eq(accounts.providerAccountId, oidcProviderId))
+        .limit(1);
+    if (!account) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'No account found for that provider ID.' });
+    }
+    return account.userId;
+}
 
 /**
  * Router for handling friend-related operations.
@@ -16,6 +33,8 @@ const friendsRouter = router({
     sendFriendRequestByEmail: procedure
         .input(z.object({ requesterId: z.string(), email: z.string().email() }))
         .mutation(async ({ input }) => {
+            const requesterId = await resolveProviderIdToUserId(input.requesterId);
+
             const [addressee] = await db.select().from(users).where(eq(users.email, input.email)).limit(1);
 
             if (!addressee) {
@@ -25,7 +44,7 @@ const friendsRouter = router({
                 });
             }
 
-            if (addressee.id === input.requesterId) {
+            if (addressee.id === requesterId) {
                 throw new TRPCError({
                     code: 'BAD_REQUEST',
                     message: 'You cannot friend yourself.',
@@ -37,8 +56,8 @@ const friendsRouter = router({
                 .from(friendships)
                 .where(
                     or(
-                        and(eq(friendships.requesterId, input.requesterId), eq(friendships.addresseeId, addressee.id)),
-                        and(eq(friendships.requesterId, addressee.id), eq(friendships.addresseeId, input.requesterId))
+                        and(eq(friendships.requesterId, requesterId), eq(friendships.addresseeId, addressee.id)),
+                        and(eq(friendships.requesterId, addressee.id), eq(friendships.addresseeId, requesterId))
                     )
                 )
                 .limit(1);
@@ -51,8 +70,7 @@ const friendsRouter = router({
             }
 
             if (existing?.status === 'BLOCKED' || existing?.status === 'PENDING') {
-                const theyRequestedYou =
-                    existing.requesterId === addressee.id && existing.addresseeId === input.requesterId;
+                const theyRequestedYou = existing.requesterId === addressee.id && existing.addresseeId === requesterId;
                 throw new TRPCError({
                     code: 'BAD_REQUEST',
                     message: theyRequestedYou
@@ -64,7 +82,7 @@ const friendsRouter = router({
             return await db
                 .insert(friendships)
                 .values({
-                    requesterId: input.requesterId,
+                    requesterId: requesterId,
                     addresseeId: addressee.id,
                     status: 'PENDING',
                 })
@@ -78,7 +96,9 @@ const friendsRouter = router({
     sendFriendRequest: procedure
         .input(z.object({ requesterId: z.string(), addresseeId: z.string() }))
         .mutation(async ({ input }) => {
-            if (input.requesterId === input.addresseeId) {
+            const requesterId = await resolveProviderIdToUserId(input.requesterId);
+
+            if (requesterId === input.addresseeId) {
                 throw new TRPCError({
                     code: 'BAD_REQUEST',
                     message: 'You cannot friend yourself.',
@@ -90,14 +110,8 @@ const friendsRouter = router({
                 .from(friendships)
                 .where(
                     or(
-                        and(
-                            eq(friendships.requesterId, input.requesterId),
-                            eq(friendships.addresseeId, input.addresseeId)
-                        ),
-                        and(
-                            eq(friendships.requesterId, input.addresseeId),
-                            eq(friendships.addresseeId, input.requesterId)
-                        )
+                        and(eq(friendships.requesterId, requesterId), eq(friendships.addresseeId, input.addresseeId)),
+                        and(eq(friendships.requesterId, input.addresseeId), eq(friendships.addresseeId, requesterId))
                     )
                 )
                 .limit(1);
@@ -111,7 +125,7 @@ const friendsRouter = router({
 
             if (existing?.status === 'BLOCKED' || existing?.status === 'PENDING') {
                 const theyRequestedYou =
-                    existing.requesterId === input.addresseeId && existing.addresseeId === input.requesterId;
+                    existing.requesterId === input.addresseeId && existing.addresseeId === requesterId;
                 throw new TRPCError({
                     code: 'BAD_REQUEST',
                     message: theyRequestedYou
@@ -123,7 +137,7 @@ const friendsRouter = router({
             return await db
                 .insert(friendships)
                 .values({
-                    requesterId: input.requesterId,
+                    requesterId: requesterId,
                     addresseeId: input.addresseeId,
                     status: 'PENDING',
                 })
@@ -137,13 +151,15 @@ const friendsRouter = router({
     acceptFriendRequest: procedure
         .input(z.object({ requesterId: z.string(), addresseeId: z.string() }))
         .mutation(async ({ input }) => {
+            const addresseeId = await resolveProviderIdToUserId(input.addresseeId);
+
             return await db
                 .update(friendships)
                 .set({ status: 'ACCEPTED', updatedAt: new Date() })
                 .where(
                     and(
                         eq(friendships.requesterId, input.requesterId),
-                        eq(friendships.addresseeId, input.addresseeId),
+                        eq(friendships.addresseeId, addresseeId),
                         eq(friendships.status, 'PENDING')
                     )
                 )
@@ -214,12 +230,14 @@ const friendsRouter = router({
     removeFriend: procedure
         .input(z.object({ userId: z.string(), friendId: z.string() }))
         .mutation(async ({ input }) => {
+            const userId = await resolveProviderIdToUserId(input.userId);
+
             return await db
                 .delete(friendships)
                 .where(
                     or(
-                        and(eq(friendships.requesterId, input.userId), eq(friendships.addresseeId, input.friendId)),
-                        and(eq(friendships.requesterId, input.friendId), eq(friendships.addresseeId, input.userId))
+                        and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, input.friendId)),
+                        and(eq(friendships.requesterId, input.friendId), eq(friendships.addresseeId, userId))
                     )
                 );
         }),
@@ -228,19 +246,21 @@ const friendsRouter = router({
      * Block a user.
      */
     blockUser: procedure.input(z.object({ userId: z.string(), blockId: z.string() })).mutation(async ({ input }) => {
+        const userId = await resolveProviderIdToUserId(input.userId);
+
         await db
             .delete(friendships)
             .where(
                 or(
-                    and(eq(friendships.requesterId, input.userId), eq(friendships.addresseeId, input.blockId)),
-                    and(eq(friendships.requesterId, input.blockId), eq(friendships.addresseeId, input.userId))
+                    and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, input.blockId)),
+                    and(eq(friendships.requesterId, input.blockId), eq(friendships.addresseeId, userId))
                 )
             );
 
         return await db
             .insert(friendships)
             .values({
-                requesterId: input.userId,
+                requesterId: userId,
                 addresseeId: input.blockId,
                 status: 'BLOCKED',
                 updatedAt: new Date(),
@@ -263,10 +283,12 @@ const friendsRouter = router({
      * Unblock a user.
      */
     unblockUser: procedure.input(z.object({ userId: z.string(), blockId: z.string() })).mutation(async ({ input }) => {
+        const userId = await resolveProviderIdToUserId(input.userId);
+
         return await db
             .update(friendships)
             .set({ status: 'DECLINED', updatedAt: new Date() })
-            .where(and(eq(friendships.requesterId, input.userId), eq(friendships.addresseeId, input.blockId)));
+            .where(and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, input.blockId)));
     }),
 });
 
