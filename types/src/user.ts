@@ -20,6 +20,7 @@ export interface UserData extends UserMetadata {
   theme: Theme;
   isAdmin: boolean;
   lastRoadmapEditAt?: string;
+  currentPlanIndex?: number;
 }
 
 export interface UserSliceState {

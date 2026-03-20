@@ -79,8 +79,12 @@ export const roadmapSlice = createSlice({
   reducers: {
     // Roadmap Window State
 
-    setInitialPlannerData: (state, action: PayloadAction<{ plans: RoadmapPlan[]; timestamp: number }>) => {
+    setInitialPlannerData: (
+      state,
+      action: PayloadAction<{ plans: RoadmapPlan[]; timestamp: number; currentPlanIndex?: number }>,
+    ) => {
       state.plans = action.payload.plans;
+      state.currentPlanIndex = action.payload.currentPlanIndex ?? 0;
       const revision: RoadmapRevision = {
         timestamp: action.payload.timestamp ?? Date.now(),
         edits: [],

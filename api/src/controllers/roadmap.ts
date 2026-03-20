@@ -1,5 +1,12 @@
 import { router, userProcedure } from '../helpers/trpc';
-import { RoadmapDiffs, roadmapDiffs, SavedPlannerData, SavedRoadmap } from '@peterportal/types';
+import {
+  RoadmapDiffs,
+  roadmapDiffs,
+  SavedPlannerData,
+  SavedRoadmap,
+  RoadmapItemDeletion,
+  RoadmapSaveInfo,
+} from '@peterportal/types';
 import { db, TransactionType } from '../db';
 import { planner, user } from '../db/schema';
 import { and, count, eq, inArray } from 'drizzle-orm';
@@ -17,17 +24,19 @@ import {
 } from '../helpers/roadmap';
 import { TRPCError } from '@trpc/server';
 
+type RoadmapChange = RoadmapItemDeletion | RoadmapSaveInfo;
+
+function extractPlannerId(change: RoadmapChange): number {
+  if ('plannerId' in change) return change.plannerId;
+  if ('data' in change) return change.data.id;
+  return change.id;
+}
+
 async function validatePlannerIds(input: RoadmapDiffs, userId: number) {
-  const plannerIds = Object.values(input)
-    .flat()
-    .flatMap((change) => {
-      if (typeof change === 'boolean') return [];
-      if ('plannerId' in change)
-        return [change.plannerId]; // All non-planner operations
-      else if ('data' in change)
-        return [change.data.id]; // Planner update
-      else return [change.id]; // Planner delete
-    });
+  const plannerIds = Object.entries(input)
+    .filter(([key]) => !['overwrite', 'currentPlanIndex'].includes(key))
+    .flatMap(([, value]) => value as RoadmapChange[])
+    .map(extractPlannerId);
   const uniquePlanIds = [...new Set(plannerIds.filter((id) => id > 0))];
 
   // Ensure every planner ID belongs to that user (maybe look into RLS in the future)
@@ -80,16 +89,20 @@ const roadmapsRouter = router({
    * Get a user's roadmap
    */
   get: userProcedure.query(async ({ ctx }) => {
-    const [planners, timestamp] = await Promise.all([
+    const [planners, users] = await Promise.all([
       queryGetPlanners(eq(planner.userId, ctx.session.userId!)),
-      db.select({ timestamp: user.lastRoadmapEditAt }).from(user).where(eq(user.id, ctx.session.userId!)),
+      db
+        .select({ timestamp: user.lastRoadmapEditAt, currentPlanIndex: user.currentPlanIndex })
+        .from(user)
+        .where(eq(user.id, ctx.session.userId!)),
     ]);
     if (planners.length === 0) {
       return undefined;
     }
     const roadmap: SavedRoadmap = {
       planners: planners as SavedPlannerData[],
-      timestamp: timestamp[0].timestamp?.toISOString(),
+      timestamp: users[0].timestamp?.toISOString(),
+      currentPlanIndex: users[0].currentPlanIndex ?? undefined,
     };
     return roadmap;
   }),
@@ -104,7 +117,10 @@ const roadmapsRouter = router({
     if (!input.overwrite) await validatePlannerIds(input, userId);
     const plannerIdLookup = await applyRoadmapChanges(input, userId);
 
-    await db.update(user).set({ lastRoadmapEditAt: new Date() }).where(eq(user.id, userId));
+    await db
+      .update(user)
+      .set({ lastRoadmapEditAt: new Date(), currentPlanIndex: input.currentPlanIndex })
+      .where(eq(user.id, userId));
 
     return plannerIdLookup;
   }),

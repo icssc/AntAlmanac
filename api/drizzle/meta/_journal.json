@@ -169,6 +169,13 @@
       "when": 1770167251312,
       "tag": "0023_slim_gabe_jones",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1774042165637,
+      "tag": "0024_hesitant_wong",
+      "breakpoints": true
     }
   ]
 }

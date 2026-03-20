@@ -89,7 +89,7 @@ const PlannerLoader: FC = () => {
     async (roadmap: SavedRoadmap) => {
       const plans = await expandAllPlanners(roadmap.planners);
       const timestamp = new Date(roadmap.timestamp ?? Date.now()).getTime();
-      dispatch(setInitialPlannerData({ plans, timestamp }));
+      dispatch(setInitialPlannerData({ plans, timestamp, currentPlanIndex: roadmap.currentPlanIndex ?? 0 }));
       dispatch(setRoadmapLoading(false));
     },
     [dispatch],
@@ -97,9 +97,13 @@ const PlannerLoader: FC = () => {
 
   // save function will update localStorage (thus comparisons above will work) and account roadmap
   const saveRoadmapAndUpsertTransfers = useCallback(
-    async (collapsedLocalPlans: SavedPlannerData[], collapsedAccountPlans: SavedPlannerData[] | null) => {
+    async (
+      collapsedLocalPlans: SavedPlannerData[],
+      collapsedAccountPlans: SavedPlannerData[] | null,
+      currentPlanIndex?: number,
+    ) => {
       // Cannot be called before format is upgraded from single to multi-planner
-      const result = await saveRoadmap(isLoggedIn, collapsedAccountPlans, collapsedLocalPlans);
+      const result = await saveRoadmap(isLoggedIn, collapsedAccountPlans, collapsedLocalPlans, currentPlanIndex);
 
       if (result.success && isLoggedIn) {
         dispatch(setToastMsg('Roadmap saved to your account!'));
@@ -165,7 +169,7 @@ const PlannerLoader: FC = () => {
       if (initialAccountRoadmap) return setShowSyncModal(true);
 
       // Logged in + doesn't exist => update everything
-      saveRoadmapAndUpsertTransfers(initialLocalRoadmap.planners, null);
+      saveRoadmapAndUpsertTransfers(initialLocalRoadmap.planners, null, initialLocalRoadmap.currentPlanIndex);
     });
   }, [
     saveRoadmapAndUpsertTransfers,
@@ -191,7 +195,11 @@ const PlannerLoader: FC = () => {
     const localRoadmap = readLocalRoadmap<SavedRoadmap>();
 
     // Update the account roadmap using local data
-    await saveRoadmapAndUpsertTransfers(localRoadmap.planners, initialAccountRoadmap?.planners ?? null);
+    await saveRoadmapAndUpsertTransfers(
+      localRoadmap.planners,
+      initialAccountRoadmap?.planners ?? null,
+      localRoadmap.currentPlanIndex,
+    );
     const roadmapWithIds = await loadRoadmap(true).then((res) => res.accountRoadmap!);
 
     // Update frontend state to show local data
