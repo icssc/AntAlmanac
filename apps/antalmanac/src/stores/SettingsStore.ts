@@ -84,7 +84,7 @@ export interface PreviewStore {
 }
 
 export const usePreviewStore = create<PreviewStore>((set) => {
-    const previewMode = typeof Storage !== 'undefined' && getLocalStoragePreviewMode() == 'true';
+    const previewMode = typeof Storage === 'undefined' || getLocalStoragePreviewMode() !== 'false';
 
     return {
         previewMode: previewMode,
@@ -104,7 +104,7 @@ export interface AutoSaveStore {
 }
 
 export const useAutoSaveStore = create<AutoSaveStore>((set) => {
-    const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() == 'true';
+    const autoSave = typeof Storage === 'undefined' || getLocalStorageAutoSave() !== 'false';
 
     return {
         autoSave,
