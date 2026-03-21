@@ -68,11 +68,22 @@ export interface MenuTileProps {
   /** Additional items to include alongsite the title */
   headerItems?: ReactNode;
   unread?: boolean;
+  onClick?: () => void;
 }
 
-const MenuTile: FC<MenuTileProps> = ({ children, title, units, setUnits, deleteFn, headerItems, unread }) => {
+const MenuTile: FC<MenuTileProps> = ({ children, title, units, setUnits, deleteFn, headerItems, unread, onClick }) => {
   return (
-    <div className="menu-tile">
+    <div
+      className={`menu-tile ${onClick ? 'clickable' : ''}`}
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+          onClick();
+        }
+      }}
+    >
       <UnreadDot show={unread ?? false} displayFullNewText={true} />
       <div className="tile-info">
         <div className="name">

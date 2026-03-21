@@ -120,6 +120,33 @@ const xsmall = {
 
 theme = createTheme(theme, {
   components: {
+    MuiBadge: {
+      styleOverrides: {
+        root: {
+          variants: [
+            {
+              props: { variant: 'circular' },
+              style: {
+                '& .MuiBadge-badge': {
+                  borderRadius: '50%',
+                  width: 26,
+                  height: 26,
+                },
+              },
+            },
+            {
+              props: { color: 'pending' },
+              style: {
+                '& .MuiBadge-badge': {
+                  backgroundColor: '#B8B8B8',
+                  color: 'white',
+                },
+              },
+            },
+          ],
+        },
+      },
+    },
     MuiButton: {
       variants: [xsmall],
       defaultProps: {

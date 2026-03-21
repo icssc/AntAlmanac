@@ -32,6 +32,28 @@
   border-radius: 8px;
   padding: 12px;
   position: relative;
+  width: 100%;
+
+  .menu-tile {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    border-color: var(--mui-palette-secondary-main);
+
+    .name {
+      font-size: 14px;
+    }
+
+    .transferred-ges {
+      display: flex;
+      gap: 42px;
+      height: 20px;
+
+      p {
+        color: var(--mui-palette-text-primary);
+        font-size: 12px;
+      }
+    }
+  }
 
   .group-header {
     display: flex;
@@ -70,6 +92,14 @@
       color: var(--mui-palette-success-main);
       text-decoration: line-through;
       text-decoration-thickness: 2px;
+    }
+
+    .menu-tile {
+      border-color: var(--mui-palette-success-main);
+
+      .name {
+        color: var(--mui-palette-success-main);
+      }
     }
 
     :is(.group-requirement, .marker-requirement, .course-requirement):not(.completed) {

@@ -68,3 +68,12 @@ declare module '@mui/material/Autocomplete' {
     xsmall: true;
   }
 }
+
+declare module '@mui/material/Badge' {
+  interface BadgePropsVariantOverrides {
+    circular: true;
+  }
+  interface BadgePropsColorOverrides {
+    pending: true;
+  }
+}

@@ -8,6 +8,10 @@
   font-size: 12px;
   color: var(--mui-palette-secondary-main);
 
+  &.clickable {
+    cursor: pointer;
+  }
+
   .tile-info {
     display: flex;
     align-items: center;

@@ -5,6 +5,7 @@ import {
   MajorSpecialization,
   MinorProgram,
   ProgramRequirement,
+  TransferredGE,
 } from '@peterportal/types';
 import { CourseGQLData } from '../types/types';
 import { Theme } from 'react-select';
@@ -246,6 +247,32 @@ function getMatchingGECategory(label: string) {
 
   // key of the matching entry, if it exists
   return categoryEntries.find((ent: [string, GETitle]) => filterFunction(ent[1]))?.[0] ?? null;
+}
+
+function findMatchingGETransfers(requirement: ProgramRequirement, transferredGEs: TransferredGE[]): TransferredGE[] {
+  const matches: TransferredGE[] = [];
+
+  const applicableGE = getMatchingGECategory(requirement.label.trim());
+  const selfMatch =
+    transferredGEs.find((ge) => ge.geName === applicableGE && (ge.numberOfCourses > 0 || ge.units > 0)) ?? null;
+  if (selfMatch) {
+    matches.push(selfMatch);
+    return matches;
+  }
+
+  if (requirement.requirementType === 'Group') {
+    for (const child of requirement.requirements) {
+      matches.push(...findMatchingGETransfers(child, transferredGEs));
+    }
+  }
+
+  return matches;
+}
+
+export function useMatchingGETransfers(requirement: ProgramRequirement): TransferredGE[] {
+  const transferredGEs = useTransferredCredits().ge;
+
+  return findMatchingGETransfers(requirement, transferredGEs);
 }
 
 function checkCourseListCompletion(
