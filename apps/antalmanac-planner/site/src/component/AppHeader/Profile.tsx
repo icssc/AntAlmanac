@@ -74,7 +74,7 @@ const ProfileMenuLinks: FC<ProfileMenuLinksProps> = ({ handleLinkClick }) => {
         <List className="profile-popover-links">
             {isMobile && (
                 <ListItem>
-                    <ListItemButton href={'https://antalmanac.com'} className="profile-popover-link" component="a">
+                    <ListItemButton href={'/'} className="profile-popover-link" component={Link}>
                         <ListItemIcon>
                             <EventNoteIcon />
                         </ListItemIcon>

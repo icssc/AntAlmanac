@@ -5,7 +5,14 @@ import AppProvider from '@peterportal/site/src/component/AppProvider/AppProvider
 import ChangelogModal from '@peterportal/site/src/component/ChangelogModal/ChangelogModal';
 import { createServerSideTrpcCaller } from '@peterportal/site/src/trpc';
 import type { Metadata } from 'next';
+import { Roboto } from 'next/font/google';
 import { headers } from 'next/headers';
+
+const roboto = Roboto({
+    subsets: ['latin'],
+    style: ['normal', 'italic'],
+    display: 'swap',
+});
 
 export const metadata: Metadata = {
     title: 'AntAlmanac Planner',
@@ -20,7 +27,7 @@ export default async function PlannerLayout({ children }: { children: React.Reac
 
     return (
         <AppProvider user={user}>
-            <div id="planner-root">
+            <div id="root" className={roboto.className} style={{ fontSize: '16px' }}>
                 <AppHeader />
                 <div className="app-body">
                     <div className="app-content">{children}</div>
