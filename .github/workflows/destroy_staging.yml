@@ -22,8 +22,17 @@ env:
     GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
     PLANNER_CLIENT_API_KEY: ${{ secrets.PLANNER_CLIENT_API_KEY }}
 
+    PLANNER_DATABASE_URL: ${{ secrets.PLANNER_DATABASE_URL }}
+    PLANNER_SESSION_SECRET: ${{ secrets.PLANNER_SESSION_SECRET }}
+    PLANNER_ADMIN_EMAILS: ${{ secrets.PLANNER_ADMIN_EMAILS }}
+    PLANNER_PUBLIC_API_URL: ${{ secrets.PLANNER_PUBLIC_API_URL }}
+    PLANNER_EXTERNAL_USER_READ_SECRET: ${{ secrets.PLANNER_EXTERNAL_USER_READ_SECRET }}
+    PLANNER_NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.PLANNER_NEXT_PUBLIC_POSTHOG_KEY }}
+    PLANNER_NEXT_PUBLIC_POSTHOG_HOST: ${{ secrets.PLANNER_NEXT_PUBLIC_POSTHOG_HOST }}
+
 jobs:
     delete-staging:
+        if: github.head_ref != 'staging-shared' && github.head_ref != 'scheduler' && github.head_ref != 'monorepo'
         runs-on: ubuntu-latest
         env:
             SST_STAGE: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}

@@ -5,6 +5,8 @@ function getDomain() {
         return 'antalmanac.com';
     } else if ($app.stage === 'staging-shared') {
         return 'staging-shared.antalmanac.com';
+    } else if ($app.stage === 'staging-monorepo') {
+        return 'staging-monorepo.antalmanac.com';
     } else if ($app.stage.match(/^staging-(\d+)$/)) {
         const subdomainPrefix = $app.stage.replace('staging-', 'scheduler-');
         return `${subdomainPrefix}.antalmanac.com`;
@@ -13,7 +15,7 @@ function getDomain() {
     throw new Error('Invalid stage');
 }
 
-const isPermanentStage = ['production', 'scheduler', 'staging-shared'];
+const isPermanentStage = ['production', 'scheduler', 'staging-shared', 'staging-monorepo'];
 const AANTS_STAGES = ['production', 'staging-1521', 'staging-1542'];
 
 export default $config({
