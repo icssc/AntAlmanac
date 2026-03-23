@@ -1,0 +1,119 @@
+.gradedist-module-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 14px;
+
+  .chart-container {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    padding-inline: 20px;
+  }
+}
+.gradedist-menu {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px 20px 0px;
+  gap: 16px;
+  width: 100%;
+}
+.gradedist-filter {
+  .MuiInputBase-root .MuiInputBase-input {
+    // @todo: try to get rid of this, likely through a variant
+    background-color: var(--mui-palette-overlay-overlay1);
+    width: 150px;
+  }
+}
+
+#grade-dist-label {
+  margin: '0';
+  width: 100%;
+}
+
+#menu {
+  display: flex;
+  margin: 0;
+}
+
+#chart {
+  display: flex;
+  justify-content: space-evenly;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.grade_distribution_chart-container {
+  display: inline-flex;
+  height: 400px;
+}
+
+.chart {
+  width: 50%;
+}
+
+.pie {
+  width: 50%;
+}
+
+.pie-text {
+  font-size: 1.5em;
+}
+
+.grade-dist-mini {
+  width: 100%;
+
+  #menu {
+    padding-top: 2vh;
+  }
+
+  .chart {
+    width: 80%;
+  }
+
+  .pie {
+    width: 80%;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  #chart {
+    flex-direction: column;
+  }
+
+  .chart {
+    width: 100%;
+  }
+
+  .pie {
+    width: 100%;
+  }
+
+  .pie-text {
+    font-size: 1.25em;
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .pie-text {
+    font-size: 1em;
+  }
+}
+
+@media only screen and (max-width: 1319px) {
+  .pie-text {
+    font-size: 1.1em;
+  }
+}
+
+@media only screen and (min-device-width: 1320px) and (max-device-width: 1440px) {
+  .pie-text {
+    font-size: 1.2em;
+  }
+}
+@media only screen and (min-device-width: 1441px) and (max-device-width: 1600px) {
+  .pie-text {
+    font-size: 1.3em;
+  }
+}

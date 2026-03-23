@@ -1,0 +1,17 @@
+@use '../../globals.scss';
+
+.review-grid-title {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.review-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: globals.$mobile-cutoff) {
+  .review-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

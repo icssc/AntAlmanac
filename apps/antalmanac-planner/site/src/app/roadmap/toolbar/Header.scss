@@ -1,0 +1,98 @@
+@use '../../../globals.scss';
+
+.MuiPaper-root.roadmap-header {
+  z-index: 2;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
+
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: globals.$roadmap-toolbar-height;
+  flex-shrink: 0;
+  border-width: 0 0 2px 0;
+  border-radius: 0;
+  padding: 12px 16px;
+  gap: 8px;
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  #title {
+    font-size: 1.5em;
+  }
+
+  .planner-left {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    z-index: 2;
+  }
+
+  .planner-actions {
+    display: flex;
+    gap: 16px;
+
+    .MuiButtonGroup-root {
+      gap: 10px;
+      display: flex;
+      align-items: center;
+    }
+
+    padding-right: 2px;
+
+    span.MuiButton-startIcon {
+      margin-right: 4px;
+    }
+
+    .header-btn {
+      white-space: nowrap;
+      color: inherit;
+      font-weight: 500;
+      height: fit-content;
+      border-radius: 4px;
+      padding: 4px 8px 4px 10px;
+      border: none;
+      box-shadow: none;
+      min-width: auto;
+
+      &[disabled] {
+        color: var(--mui-palette-text-secondary);
+      }
+    }
+  }
+}
+
+#planner-stats {
+  font-size: 1em;
+}
+
+#course-count,
+#unit-count {
+  font-weight: bold;
+}
+
+.header-icon {
+  margin-right: 6px;
+  padding-inline: 1px;
+  margin-top: 1px;
+}
+
+@media only screen and (max-width: 400px) {
+  .roadmap-header {
+    #title {
+      font-size: 1em;
+    }
+
+    .add-course {
+      font-size: 0.7em;
+    }
+  }
+}

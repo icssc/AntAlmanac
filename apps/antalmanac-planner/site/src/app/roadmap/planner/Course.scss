@@ -1,0 +1,165 @@
+.course {
+  box-shadow: 0 0 2px 0 #60616680;
+  background: var(--mui-palette-overlay-overlay1);
+  border-radius: 4px;
+  height: auto;
+  font-size: 16px;
+  padding: 12px;
+  position: relative;
+  margin: 4px;
+
+  display: grid;
+  grid-template-areas: 'A B' 'A C';
+  grid-template-columns: min-content auto;
+  grid-template-rows: repeat(2, min-content); // Fix Safari oversizing dragged courses
+  align-items: center;
+
+  .course-drag-handle {
+    grid-area: A;
+    position: relative;
+    left: -6px;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  .course-and-info {
+    grid-area: B;
+  }
+
+  .name {
+    font-weight: bold;
+    color: var(--mui-palette-secondary-main);
+  }
+
+  .warning-container {
+    position: relative;
+    top: -2px;
+    left: 4px;
+  }
+
+  .course-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .title {
+    margin-top: 2px;
+    grid-area: C;
+  }
+
+  .units {
+    margin-left: auto;
+    color: inherit;
+  }
+
+  .missing-prereq {
+    color: var(--mui-palette-error-main);
+  }
+
+  button.MuiIconButton-root {
+    width: 24px;
+    height: 24px;
+    margin: -8px 0;
+    margin-right: -4px;
+
+    .MuiSvgIcon-root {
+      font-size: 20px;
+    }
+  }
+
+  &:not(.roadmap-course) {
+    width: calc(100% - 4px);
+    margin-inline: 2px;
+
+    .course-card-top {
+      grid-area: B;
+
+      .MuiSvgIcon-root {
+        font-size: 20px;
+      }
+    }
+
+    .course-info {
+      grid-area: C;
+      font-size: 14px;
+    }
+
+    .course-synopsis {
+      margin: 4px 0;
+    }
+
+    .course-tags {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      margin-top: 4px;
+      font-size: 12px;
+      gap: 6px;
+    }
+
+    .course-card-top {
+      display: flex;
+    }
+
+    div.course-and-info {
+      display: contents;
+    }
+  }
+
+  &.roadmap-course {
+    color: var(--mui-palette-secondary-main);
+    box-shadow: none;
+    border: 1px solid var(--border-secondary);
+    margin-block: -0.5px;
+
+    .title {
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--mui-palette-secondary-main);
+    }
+
+    .course-drag-handle,
+    .course-delete-btn {
+      color: inherit;
+    }
+  }
+}
+
+.course-and-info {
+  display: flex;
+  gap: 6px;
+  margin-right: 2px;
+  align-items: center;
+  width: 100%;
+
+  > .name {
+    display: block;
+  }
+
+  .warning-container svg {
+    font-size: 20px;
+  }
+}
+
+.course.sortable-fallback {
+  height: fit-content !important;
+  animation: course-fade-in 0.2s forwards;
+}
+
+@keyframes course-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,39 @@
+.major-section {
+  &:not(:last-child) {
+    margin-bottom: 16px;
+  }
+
+  .header-tab {
+    background: none;
+    border: none;
+    font: inherit;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 6px;
+    overflow: visible;
+    padding: 0 0.5px;
+    cursor: pointer;
+  }
+
+  h4 {
+    position: relative;
+    top: -1px;
+    font-weight: 500;
+    font-size: 20px;
+    text-align: left;
+    margin-bottom: 0;
+  }
+
+  .program-requirements {
+    gap: 12px;
+  }
+
+  .expand-requirements {
+    padding: 6px;
+  }
+
+  .MuiCollapse-wrapperInner > :first-child {
+    padding-top: 8px;
+  }
+}

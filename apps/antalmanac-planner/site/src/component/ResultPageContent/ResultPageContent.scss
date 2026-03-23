@@ -1,0 +1,129 @@
+@use '../../globals';
+@use 'sass:math';
+
+.search-result-page {
+  $side-info-width: 560px;
+  $max-main-content-width: 1000px;
+  $base-percent: math.div($side-info-width, ($side-info-width + $max-main-content-width)) * 100%;
+  $base-content-width: $side-info-width + $max-main-content-width;
+  $gap: 32px;
+
+  display: flex;
+  max-height: 100%;
+  justify-content: center;
+  padding: 0;
+
+  > .side-content-wrapper {
+    padding: 32px 0;
+    max-width: $base-percent;
+
+    @media (min-width: 1700px) {
+      min-width: fit-content;
+    }
+  }
+
+  // twemoji wrapper does not allow setting className
+  > .side-content-wrapper + * {
+    width: 100%;
+    max-height: 100%;
+    max-width: 100% - $base-percent;
+  }
+
+  .side-info {
+    max-height: 100%;
+    max-width: $side-info-width;
+    width: calc(100% - 32px);
+
+    $side-margin: calc(50vw - #{math.div($base-content-width + $gap, 2)});
+    margin-left: max(#{$side-margin}, 32px);
+  }
+
+  .result-page-section {
+    margin: 0 32px 32px $gap;
+
+    @include globals.card-padding;
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-bottom: 16px;
+      &:first-child {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+    }
+
+    .MuiInputBase-root .MuiInputBase-input {
+      // @todo: try to get rid of this, likely through a variant
+      background-color: var(--mui-palette-overlay-overlay2);
+      width: 150px;
+    }
+
+    .twemoji {
+      width: 1.25em;
+    }
+  }
+
+  .result-page-body {
+    max-height: 100%;
+    overflow: auto;
+    margin-top: 0;
+    padding: 32px 0;
+  }
+
+  @media only screen and (max-width: 1300px) {
+    max-height: none;
+    flex-direction: column;
+
+    > .side-content-wrapper,
+    .side-content-wrapper + * {
+      width: 100%;
+      max-width: none;
+    }
+    .side-content-wrapper {
+      padding: 16px;
+    }
+    .side-info,
+    .result-page-section {
+      margin-inline: 0;
+      max-width: none;
+      width: 100%;
+    }
+    .result-page-body {
+      padding: 0 16px 16px;
+    }
+
+    .result-page-section {
+      margin: 0 0 16px;
+    }
+  }
+}
+
+.result-page-section {
+  background-color: var(--mui-palette-overlay-overlay1);
+  border-radius: var(--mui-shape-borderRadiusLg);
+  max-width: 1000px;
+  margin-bottom: 32px;
+
+  @include globals.card-padding;
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  h2 {
+    font-size: 24px;
+    margin-bottom: 16px;
+    &:first-child {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+  }
+
+  .twemoji {
+    width: 1.25em;
+  }
+}

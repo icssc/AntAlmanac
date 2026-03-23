@@ -1,0 +1,16 @@
+.uncategorized-credit-input-row {
+  display: flex;
+  gap: 12px;
+
+  .name-input {
+    width: fit-content;
+  }
+
+  .unit-input {
+    width: 40%;
+  }
+
+  .submit-button {
+    height: 40px;
+  }
+}

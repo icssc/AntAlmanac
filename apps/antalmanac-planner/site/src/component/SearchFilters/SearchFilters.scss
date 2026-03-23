@@ -1,0 +1,61 @@
+@use '../../globals.scss';
+
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  .filter-form-control {
+    margin-bottom: 0;
+  }
+
+  .has-selection {
+    .MuiSelect-select {
+      background-color: var(--mui-palette-primary-main);
+      color: white;
+    }
+    .MuiSvgIcon-root {
+      color: white;
+    }
+  }
+}
+
+.search-filters-menu {
+  max-width: 400px;
+
+  &.departments-menu {
+    width: 400px;
+    max-height: calc(100vh - 400px);
+
+    > ul {
+      padding-top: 0;
+    }
+
+    .MuiInputBase-input {
+      padding-top: 12px;
+    }
+  }
+
+  .search-filter-item {
+    gap: 4px;
+
+    &.hidden {
+      display: none;
+    }
+  }
+
+  .search-filter-item .item-text {
+    white-space: normal;
+  }
+
+  .dept-input {
+    position: sticky;
+    top: 0;
+    margin-bottom: 8px;
+    z-index: 1;
+    .MuiInputBase-input {
+      background-color: var(--mui-palette-background-paper);
+      background-image: var(--Paper-overlay);
+    }
+  }
+}

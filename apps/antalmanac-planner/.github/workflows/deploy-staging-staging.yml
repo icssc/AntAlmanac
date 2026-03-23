@@ -1,0 +1,96 @@
+name: Deploy staging-shared
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  repository_dispatch:
+    types:
+      - deploy-command
+
+# do not cancel in progress, SST will be stuck in a "locked" state if cancelled mid-deployment
+concurrency:
+  group: staging-${{ github.event.pull_request.number }}
+
+jobs:
+  build_and_deploy:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    # don't run if labeled "no deploy" && don't run on PRs from forks
+    if: (!contains(github.event.pull_request.labels.*.name, 'no deploy')) && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'branding-changes'
+    environment:
+      name: staging-shared
+      url: https://staging-shared.antalmanac.com/planner
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+        env:
+          HUSKY: 0
+
+      - name: Create deployment
+        id: create-deployment
+        uses: chrnorm/deployment-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: staging-shared
+          ref: ${{ github.event.pull_request.head.sha }}
+          description: Staging deployment for PR #${{ github.event.pull_request.number }}
+
+      # TODO (@cadenlee2): Remove this stage once SST fixes compat with Pulumi
+      # https://github.com/anomalyco/sst/issues/6314
+      - name: Setup Pulumi
+        uses: pulumi/actions@v5
+        with:
+          pulumi-version: 3.138.0 # Any version < 3.214.0 works
+
+      - name: Build and deploy
+        id: deploy
+        run: pnpm sst deploy --stage staging-shared
+        env:
+          DATABASE_URL: ${{ secrets.DEV_DATABASE_URL }}
+          NODE_ENV: staging
+
+          PUBLIC_API_URL: ${{ secrets.PUBLIC_API_URL }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+          OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID }}
+          OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
+          GRECAPTCHA_SECRET: ${{ secrets.GRECAPTCHA_SECRET }}
+          ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
+          PRODUCTION_DOMAIN: ${{ secrets.PRODUCTION_DOMAIN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
+          EXTERNAL_USER_READ_SECRET: ${{ secrets.EXTERNAL_USER_READ_SECRET }}
+
+      - name: Update deployment status (success)
+        if: success()
+        uses: chrnorm/deployment-status@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          deployment-id: ${{ steps.create-deployment.outputs.deployment_id }}
+          state: success
+          environment-url: https://staging-shared.antalmanac.com/planner
+
+      - name: Add reaction to comment
+        if: github.event_name == 'repository_dispatch'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          reactions: rocket
+
+      - name: Update deployment status (failure)
+        if: failure()
+        uses: chrnorm/deployment-status@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          deployment-id: ${{ steps.create-deployment.outputs.deployment_id }}
+          state: failure

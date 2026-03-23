@@ -1,0 +1,86 @@
+.profile-popover {
+  .MuiPaper-root {
+    border-radius: var(--mui-shape-borderRadiusLg);
+    margin-top: 3px;
+    margin-left: 4px;
+    width: 310px;
+    max-width: 100vw;
+    padding: 16px 20px;
+  }
+
+  .profile-popover-header {
+    display: flex;
+    margin-bottom: 16px;
+
+    h1 {
+      font-size: 18px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: bold;
+      padding-bottom: 8px;
+      margin: 0;
+    }
+
+    h2 {
+      font-size: 14px;
+      color: var(--mui-palette-text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-bottom: 4px;
+      margin: 0;
+    }
+
+    div {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    img {
+      margin-right: 12px;
+      height: 50px;
+      border-radius: 100%;
+    }
+  }
+
+  .profile-popover-theme-selector {
+    .MuiDivider-root {
+      margin: 4px 0 0;
+    }
+
+    h4 {
+      font-size: 20px;
+    }
+
+    .tab-selector {
+      background-color: var(--mui-palette-overlay-overlay2);
+    }
+  }
+
+  .profile-popover-links {
+    padding-bottom: 0;
+
+    .MuiListItem-root {
+      padding: 0;
+    }
+
+    .MuiListItemButton-root {
+      padding-inline: 10px;
+      border-radius: var(--mui-shape-borderRadiusLg);
+    }
+
+    .MuiListItemIcon-root {
+      min-width: 32px;
+    }
+  }
+
+  .profile-popover-link.active {
+    color: var(--mui-palette-secondary-main);
+
+    .MuiListItemIcon-root {
+      color: var(--mui-palette-secondary-main);
+    }
+  }
+}

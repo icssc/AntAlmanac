@@ -1,0 +1,169 @@
+@use '../../globals';
+
+.side-info {
+  width: 100%;
+  height: fit-content;
+  background-color: var(--mui-palette-overlay-overlay1);
+  border-radius: var(--mui-shape-borderRadiusLg);
+  position: sticky;
+  top: 32px;
+  overflow-y: auto;
+  font-size: 16px;
+
+  @include globals.card-padding;
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: bold;
+  }
+
+  h2 {
+    font-size: 24px;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+
+  > *:not(:last-child) {
+    margin-bottom: 20px;
+  }
+
+  .MuiInputBase-root .MuiInputBase-input {
+    // @todo: create a variant to apply the background color
+    background-color: var(--mui-palette-overlay-overlay2);
+  }
+}
+
+.side-info-overview {
+  // Force adaptive width on the professor page to work
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  > * {
+    width: 100vw;
+  }
+}
+
+.course-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.side-info-ratings .side-info-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.side-info-selected-based {
+  margin-top: 4px;
+  color: grey;
+  font-style: italic;
+  font-size: 14px;
+}
+
+.side-info-selected-rating {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 8px;
+  gap: 24px;
+}
+
+.side-info-stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .side-info-stat-label {
+    font-weight: bold;
+    font-size: 12px;
+  }
+
+  .side-info-stat-value {
+    font-weight: bold;
+    font-size: 32px;
+    line-height: 36px;
+  }
+}
+
+.side-info-featured .featured-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  @media (max-width: 1300px) {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.ratings-widget {
+  background-color: var(--mui-palette-overlay-overlay2);
+  padding: 10px 16px;
+  display: flex;
+  gap: 24px;
+  font-size: 16px;
+  margin-bottom: 0;
+  justify-content: flex-start;
+
+  > :first-child .field-value {
+    white-space: initial;
+  }
+  > :first-child {
+    width: 100%;
+    max-width: 220px;
+  }
+
+  @media (max-width: 1000px) {
+    justify-content: space-between;
+    > :first-child {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 440px) {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 12px 20px;
+    width: 100%;
+    > :first-child {
+      max-width: 100%;
+    }
+  }
+
+  .field-name {
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  .field-value {
+    white-space: nowrap;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+    @include globals.clickable();
+  }
+}
+
+@media only screen and (max-width: 1300px) {
+  .side-info {
+    width: 100%;
+    max-height: fit-content;
+  }
+}
+
+@media only screen and (max-width: 1800px) and (min-width: 600px) {
+  .side-info-denominator {
+    display: none;
+  }
+}

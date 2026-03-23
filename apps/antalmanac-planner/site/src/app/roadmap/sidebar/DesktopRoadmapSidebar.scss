@@ -1,0 +1,45 @@
+@use '../../../globals.scss';
+
+.roadmap-sidebar {
+  background-color: var(--mui-palette-overlay-overlay1);
+  height: 100%;
+  overflow: auto;
+  width: globals.$roadmap-sidebar-width;
+  flex-shrink: 0;
+  padding-top: globals.$roadmap-toolbar-height;
+  position: relative;
+  border-right: 1px solid var(--mui-palette-divider);
+  z-index: 50;
+
+  .sidebar-tabs {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: globals.$roadmap-toolbar-height;
+  }
+
+  .sidebar-tabs button {
+    min-height: 0;
+    height: globals.$roadmap-toolbar-height;
+    margin-block: -1px;
+  }
+
+  .sidebar-content {
+    height: 100%;
+    overflow: auto;
+    padding: 16px 20px;
+
+    .loading-spinner {
+      margin-top: 24px;
+    }
+  }
+
+  .MuiTabs-list {
+    border-bottom: 2px solid var(--mui-palette-divider);
+  }
+
+  .unread-badge > span {
+    margin-right: -4px;
+  }
+}

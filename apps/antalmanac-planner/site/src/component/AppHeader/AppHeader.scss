@@ -1,0 +1,117 @@
+@use '../../globals';
+
+[data-theme='dark'] {
+  .navbar {
+    box-shadow: none;
+  }
+}
+
+.school-term {
+  margin-bottom: 0;
+  margin-right: 0.75em;
+}
+
+.navbar {
+  position: sticky;
+  z-index: 300;
+  height: 52px;
+  padding-inline: 8px;
+  color: white;
+  background-color: var(--mui-palette-primary-main);
+  display: flex;
+  top: 0;
+  font-size: 14px;
+
+  box-shadow: none;
+
+  &.desktop {
+    left: 0;
+    width: 100%;
+  }
+
+  .header-button {
+    font-size: 12.25px;
+    letter-spacing: 0;
+  }
+
+  &.mobile {
+    left: 0;
+    width: 100%;
+
+    .header-button {
+      font-size: 10.5px;
+    }
+  }
+
+  .navbar-nav {
+    margin: auto;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    gap: 0px;
+
+    .navbar-left {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      margin-right: auto;
+    }
+
+    .navbar-menu-btn {
+      margin: -4px;
+    }
+
+    .navbar-logo {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      position: absolute;
+      left: 0;
+      right: 0;
+      margin-left: auto;
+      margin-right: auto;
+      width: fit-content;
+    }
+
+    @media only screen and (max-width: globals.$mobile-cutoff) {
+      .beta {
+        display: none;
+      }
+
+      .navbar-logo {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .school-term {
+        font-size: 12px;
+        max-width: 30vw;
+      }
+    }
+  }
+
+  .navbar-menu-icon {
+    font-size: 32px;
+  }
+}
+
+.fullscreen-search-row {
+  width: 100%;
+  margin-left: 8px;
+}
+
+.feedback {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

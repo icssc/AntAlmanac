@@ -1,0 +1,59 @@
+@use '../../../globals.scss';
+
+.add-course-modal {
+  @include globals.bottom-overlay(500);
+  background-color: var(--mui-palette-overlay-overlay1);
+
+  &:is(.enter, .enter-done) + .ui-overlay {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  button.fixed {
+    @include globals.bottom-button();
+  }
+
+  .content {
+    padding: 16px;
+  }
+
+  .title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 16px 0;
+    .spacer {
+      margin-left: auto;
+    }
+
+    h2,
+    .unit-count {
+      font-size: 20px;
+      margin-bottom: 0;
+    }
+
+    .unit-count {
+      font-weight: normal;
+    }
+
+    .close-button {
+      margin: -2px 4px -4px 0;
+      &.MuiButtonBase-root {
+        width: 32px;
+        height: 32px;
+      }
+    }
+  }
+
+  button.MuiButtonBase-root {
+    padding: 4px;
+    margin: -6px -2px -8px;
+  }
+
+  .quarter-offerings-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: var(--mui-palette-text-secondary);
+  }
+}

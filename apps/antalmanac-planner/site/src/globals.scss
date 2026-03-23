@@ -1,0 +1,73 @@
+:root {
+  --border-primary: rgba(96, 97, 102, 0.5);
+  --border-secondary: rgba(0, 0, 0, 0.12);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --border-secondary: rgba(255, 255, 255, 0.12);
+}
+
+$mobile-cutoff: 800px;
+$roadmap-toolbar-height: 60px;
+
+$roadmap-sidebar-width: 368px;
+$mui-transition-time: 268ms;
+
+@mixin outer-padding {
+  padding: 36px;
+  @media (max-width: $mobile-cutoff) {
+    padding: 20px 24px;
+  }
+}
+
+@mixin card-padding {
+  padding: 24px 28px;
+  @media (max-width: $mobile-cutoff) {
+    padding: 16px 20px;
+  }
+}
+
+@mixin clickable($hoverVal: 0.8, $activeVal: 0.5) {
+  transition: opacity 0.2s;
+  cursor: pointer;
+  &:hover {
+    opacity: $hoverVal;
+  }
+  &:active {
+    opacity: $activeVal;
+  }
+}
+
+@mixin bottom-overlay($zIndex: 400) {
+  position: fixed;
+  top: unset;
+  left: 0;
+  width: 100%;
+  bottom: 0;
+  z-index: $zIndex;
+  max-height: calc(100% - 40px);
+  padding-bottom: 56px;
+  transform: translateY(100%);
+  transition: transform 0.3s;
+  &.enter,
+  &.enter-done {
+    transform: unset;
+  }
+}
+
+@mixin bottom-button() {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 40px;
+  background-color: var(--mui-palette-primary-main);
+  width: 100%;
+  border: none;
+  appearance: none;
+  color: white;
+  font: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  @include clickable(0.9, 0.7);
+}

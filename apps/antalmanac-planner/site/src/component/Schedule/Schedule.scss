@@ -1,0 +1,94 @@
+.offering-alert {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  p {
+    margin: 0px;
+  }
+}
+
+.schedule-quarter {
+  color: grey;
+}
+.schedule-table {
+  min-width: 100%;
+  margin-top: 16px;
+  font-size: 14px;
+
+  th,
+  .data-col,
+  .enrollment-col {
+    padding: 4px 20px 4px 0;
+    white-space: pre;
+
+    &:first-child {
+      padding-left: 10px;
+    }
+
+    a {
+      text-decoration: underline;
+    }
+  }
+
+  :is(th, .data-col):last-child {
+    // prevents extra space on right side of table
+    width: 60px;
+    padding-right: 10px;
+  }
+}
+
+.enrollment-col {
+  width: 100px;
+
+  .capacity-text {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .enrollment-percentage {
+    color: #949494;
+    display: inline;
+    font-size: 12px;
+  }
+}
+
+[data-status] {
+  &.status-badge {
+    background-color: var(--status-color);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  &[data-status='OPEN'] {
+    --status-color: var(--mui-palette-success-main);
+    color: white;
+  }
+  &[data-status='Waitl'] {
+    --status-color: var(--mui-palette-primary-main);
+    color: white;
+  }
+  &[data-status='FULL'] {
+    --status-color: var(--mui-palette-error-main);
+    color: white;
+  }
+}
+
+.progress-bar {
+  .MuiLinearProgress-root {
+    background-color: #8888; // @todo: define this somewhere or use a different color
+  }
+
+  .MuiLinearProgress-bar {
+    background-color: var(--status-color);
+  }
+}
+
+.col-tableHolder {
+  margin-left: 50px;
+}

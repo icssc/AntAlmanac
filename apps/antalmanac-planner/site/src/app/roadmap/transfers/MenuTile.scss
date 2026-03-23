@@ -1,0 +1,97 @@
+@use '../../../globals.scss';
+
+.menu-tile {
+  border: 2px solid var(--mui-palette-divider);
+  border-radius: 8px;
+  padding: 10px 12px;
+  position: relative;
+  font-size: 12px;
+  color: var(--mui-palette-secondary-main);
+
+  &.clickable {
+    cursor: pointer;
+  }
+
+  .tile-info {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-block: -2px 4px;
+    &:last-child {
+      margin-block: -2px;
+    }
+  }
+  .tile-info p {
+    margin-block: 0;
+  }
+
+  .name {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  hr {
+    border: none;
+    margin: auto;
+  }
+  button {
+    background: none;
+    border: none;
+    padding: 0;
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 13px;
+  }
+
+  button.MuiIconButton-root {
+    color: inherit;
+    width: 24px;
+    height: 24px;
+    margin: -8px -4px;
+    .MuiSvgIcon-root {
+      font-size: 18px;
+    }
+  }
+  button.delete-btn {
+    margin-inline: -4px;
+  }
+
+  form {
+    display: contents;
+  }
+  input {
+    max-width: 44px;
+    text-align: center;
+    padding: 2px 4px;
+    height: 20px;
+    margin-right: 2px;
+  }
+
+  // Hide the number adjustment arrows on number inputs for spacing reasons
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  // Firefox
+  input[type='number'] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+
+  select {
+    font-size: 12px;
+  }
+
+  .units-display {
+    white-space: nowrap;
+    margin-right: 2px;
+  }
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+}

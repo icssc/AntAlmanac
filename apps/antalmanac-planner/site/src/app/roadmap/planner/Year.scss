@@ -1,0 +1,140 @@
+@use '../../../globals';
+
+$base-quarter-width: 250px;
+
+[data-theme='dark'] {
+  .edit-year-form {
+    .form-control,
+    .form-control:focus {
+      background-color: var(--mui-palette-overlay-overlay1);
+    }
+  }
+}
+
+div.year {
+  border-radius: 8px;
+  container: roadmap-year / inline-size;
+  background-color: var(--mui-palette-overlay-overlay1);
+
+  @mixin year-subtext() {
+    font-size: 16px;
+    color: var(--mui-palette-misc-midGray);
+    @container roadmap-year (max-width: 512px) {
+      margin-top: 4px;
+      font-size: 14px;
+    }
+  }
+
+  .year-header {
+    display: flex;
+    padding: 16px;
+    align-items: center;
+
+    button {
+      margin: -2px;
+    }
+
+    button .MuiSvgIcon-root {
+      font-size: 20px;
+    }
+
+    .action-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-right: -4px;
+      height: 20px;
+    }
+
+    .year-range {
+      @include year-subtext();
+    }
+
+    .year-number,
+    .course-count,
+    .unit-count {
+      font-weight: bold;
+    }
+
+    .year-title {
+      color: var(--mui-palette-text-primary);
+      text-align: left;
+      font-size: 18px;
+    }
+  }
+
+  .year-stats {
+    margin-block: 0;
+    margin-inline: auto 8px;
+    @include year-subtext();
+  }
+
+  @container roadmap-year (max-width: 512px) {
+    .year-header {
+      padding: 12px;
+      display: grid;
+      grid-template-areas: 'A B' 'A C';
+    }
+
+    .year-title {
+      display: flex;
+      flex-direction: column;
+      grid-area: A;
+    }
+
+    .year-stats {
+      grid-area: C;
+      margin-right: 0;
+    }
+
+    .action-row {
+      grid-area: B;
+    }
+  }
+}
+
+div.quarter-list {
+  border-radius: 8px;
+  display: grid;
+  --min-quarter-width: #{$base-quarter-width};
+  grid-template-columns: repeat(auto-fill, minmax(var(--min-quarter-width), 1fr));
+  gap: 1px;
+  margin: 16px;
+  background-color: transparent;
+
+  @media (max-width: globals.$mobile-cutoff) {
+    --min-quarter-width: 325px;
+  }
+  @media (max-width: 480px) {
+    border: none;
+    border-radius: 0;
+    margin: 0;
+  }
+}
+
+.years {
+  &[data-max-quarter-count='1'] div.quarter-list {
+    grid-template-columns: 100%;
+  }
+
+  /* We don't need perfect pixel precision because the natural column count at the breakpoint
+  already forms the same number of columns as we're forcing it to be. They aren't affected by
+  the previous breakpoint because of the data-max-quarter-count attribute.
+
+  For example, at a screen width of 1999px and 5 quarters, grid template columns is not
+  overwritten and there are naturally 5 quarters. At 2000px, the column count is forcibly
+  set to 5. At some point between 2000 and 2250px (+250 because that's the min quarter width),
+  that's when it'd naturally go to 6 columns, but because we override at 2000px, it will not
+  go to 6 if the max number of quarters is < 6. */
+
+  @for $i from 2 through 6 {
+    /* If you change the base quarter width, you may need to adjust the hard-coded value
+    below such that it's between the natural breakpoint between 1 to 2 quarters and
+    2 to 3 quarters */
+    @media only screen and (min-width: #{1250px + $base-quarter-width * ($i - 2)}) {
+      &[data-max-quarter-count='#{$i}'] div.quarter-list {
+        grid-template-columns: repeat($i, 1fr);
+      }
+    }
+  }
+}

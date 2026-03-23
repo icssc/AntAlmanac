@@ -1,0 +1,60 @@
+.reviews {
+  display: flex;
+  flex-direction: column;
+}
+.add-review-button {
+  width: auto;
+  align-self: center;
+}
+
+// sort and filter reviews
+.sort-filter-menu {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.sort-dropdown,
+.filter-dropdown {
+  max-width: 15rem;
+}
+.verified-only-checkbox {
+  display: flex;
+  align-items: center;
+  flex-basis: 100%;
+
+  .MuiFormControlLabel-root {
+    margin-left: 0;
+    margin-right: 0;
+    gap: 0.5rem;
+  }
+}
+
+// The list of ReviewCards that appears on course/professors pages
+.reviewcards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+/*
+ReviewCards on courses/professors pages need a background of overlay2,
+while ReviewCards in verification need the usual (overlay1) background
+ */
+.reviewcards > div.MuiCard-root {
+  background-color: var(--mui-palette-overlay-overlay2);
+  box-shadow: none;
+}
+
+// screen width is less than or equal to 599px
+@media only screen and (max-width: 599px) {
+  .sort-filter-menu {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .sort-dropdown,
+  .filter-dropdown {
+    max-width: none;
+  }
+}

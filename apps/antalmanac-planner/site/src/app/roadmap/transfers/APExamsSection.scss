@@ -1,0 +1,27 @@
+.ap-import-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .exam-input {
+    width: 216px;
+  }
+
+  .score-input {
+    width: 100px;
+  }
+}
+
+.select {
+  display: inline-block;
+
+  .select-box {
+    border: 1px solid var(--mui-palette-primary-main);
+    background-color: var(--mui-palette-primary-main);
+    color: white;
+    border-radius: 32px;
+    height: 20px;
+    padding-block: 0;
+    text-align: center;
+  }
+}
