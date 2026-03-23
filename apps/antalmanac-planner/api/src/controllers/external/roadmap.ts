@@ -6,20 +6,20 @@ import { z } from 'zod';
 import { queryGetPlanners } from '../../helpers/roadmap';
 
 const externalRoadmapsRouter = router({
-  getByGoogleID: publicProcedure.input(z.object({ googleUserId: z.string() })).query(async ({ input, ctx }) => {
-    const authToken = ctx.req.headers.authorization;
-    if (authToken !== 'Bearer ' + process.env.EXTERNAL_USER_READ_SECRET) {
-      throw new TRPCError({ code: 'UNAUTHORIZED' });
-    }
+    getByGoogleID: publicProcedure.input(z.object({ googleUserId: z.string() })).query(async ({ input, ctx }) => {
+        const authToken = ctx.req.headers.get('authorization');
+        if (authToken !== 'Bearer ' + process.env.EXTERNAL_USER_READ_SECRET) {
+            throw new TRPCError({ code: 'UNAUTHORIZED' });
+        }
 
-    const idLegacy = input.googleUserId;
-    const idPrefixed = `google_${idLegacy}`;
+        const idLegacy = input.googleUserId;
+        const idPrefixed = `google_${idLegacy}`;
 
-    const where = or(eq(user.googleId, idPrefixed), eq(user.googleId, idLegacy))!;
-    const planners = await queryGetPlanners(where);
+        const where = or(eq(user.googleId, idPrefixed), eq(user.googleId, idLegacy))!;
+        const planners = await queryGetPlanners(where);
 
-    return planners;
-  }),
+        return planners;
+    }),
 });
 
 export default externalRoadmapsRouter;
