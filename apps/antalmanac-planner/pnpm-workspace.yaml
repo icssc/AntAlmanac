@@ -1,7 +1,0 @@
-# Prevents installation of packages less than 1 day old
-minimumReleaseAge: 1440
-
-packages:
-  - site
-  - api
-  - types

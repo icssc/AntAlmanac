@@ -60,6 +60,16 @@ export default $config({
                 NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY,
                 PLANNER_CLIENT_API_KEY: process.env.PLANNER_CLIENT_API_KEY,
                 STAGE: $app.stage,
+                // Planner (PeterPortal) env vars
+                DATABASE_URL: process.env.PLANNER_DATABASE_URL,
+                SESSION_SECRET: process.env.PLANNER_SESSION_SECRET,
+                PRODUCTION_DOMAIN: `https://${domain}`,
+                ADMIN_EMAILS: process.env.PLANNER_ADMIN_EMAILS,
+                EXTERNAL_USER_READ_SECRET: process.env.PLANNER_EXTERNAL_USER_READ_SECRET,
+                PUBLIC_API_URL: process.env.PLANNER_PUBLIC_API_URL,
+                BACKEND_ROOT_URL: `https://${domain}/api/planner`,
+                NEXT_PUBLIC_POSTHOG_KEY: process.env.PLANNER_NEXT_PUBLIC_POSTHOG_KEY,
+                NEXT_PUBLIC_POSTHOG_HOST: process.env.PLANNER_NEXT_PUBLIC_POSTHOG_HOST,
             },
         });
 

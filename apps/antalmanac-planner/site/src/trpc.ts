@@ -2,11 +2,11 @@ import { createTRPCProxyClient, httpBatchLink } from '@trpc/client';
 import { type AppRouter } from '../../api/src/controllers';
 
 const trpc = createTRPCProxyClient<AppRouter>({
-  links: [
-    httpBatchLink({
-      url: '/planner/api/trpc',
-    }),
-  ],
+    links: [
+        httpBatchLink({
+            url: '/api/planner/trpc',
+        }),
+    ],
 });
 
 /*
@@ -15,8 +15,8 @@ const trpc = createTRPCProxyClient<AppRouter>({
  */
 
 export const createServerSideTrpcCaller = (headers: Record<string, string>) => {
-  const trpcUrl = process.env.BACKEND_ROOT_URL + '/trpc';
-  return createTRPCProxyClient<AppRouter>({ links: [httpBatchLink({ url: trpcUrl, headers })] });
+    const trpcUrl = process.env.BACKEND_ROOT_URL + '/trpc';
+    return createTRPCProxyClient<AppRouter>({ links: [httpBatchLink({ url: trpcUrl, headers })] });
 };
 
 export default trpc;
