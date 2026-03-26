@@ -65,7 +65,9 @@ export function AppSwitcher({ isMobile }: AppSwitcherProps) {
 
     useEffect(() => {
         const handlePageShow = (event: PageTransitionEvent) => {
-            if (event.persisted) setPlannerLoading(false);
+            if (event.persisted) {
+                setPlannerLoading(false);
+            }
         };
 
         window.addEventListener('pageshow', handlePageShow);
