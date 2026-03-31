@@ -33,7 +33,7 @@ env:
 
 jobs:
     deploy-staging:
-        if: github.head_ref != 'staging-shared' && github.head_ref != 'scheduler' && github.head_ref != 'kwu/aa-monorepo'
+        if: github.head_ref != 'staging-shared' && github.head_ref != 'scheduler' && github.head_ref != 'monorepo'
         runs-on: ubuntu-latest
         environment:
             name: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
