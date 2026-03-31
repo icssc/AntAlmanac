@@ -350,14 +350,6 @@ export function Import() {
                     } is missing required field: customEventId or customEventID`,
                 };
             }
-            if (!customEvent.title || typeof customEvent.title !== 'string') {
-                return {
-                    valid: false,
-                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${
-                        eventIndex + 1
-                    } is missing required field: title`,
-                };
-            }
             if (!customEvent.start || typeof customEvent.start !== 'string') {
                 return {
                     valid: false,
@@ -382,22 +374,6 @@ export function Import() {
                     } is missing required field: days (must be an array)`,
                 };
             }
-            if (!customEvent.color || typeof customEvent.color !== 'string') {
-                return {
-                    valid: false,
-                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${
-                        eventIndex + 1
-                    } is missing required field: color`,
-                };
-            }
-            if (!('building' in customEvent)) {
-                return {
-                    valid: false,
-                    error: `Schedule ${scheduleIndex + 1}, Custom Event ${
-                        eventIndex + 1
-                    } is missing required field: building`,
-                };
-            }
             return { valid: true };
         },
         []
@@ -407,9 +383,6 @@ export function Import() {
         (schedule: Record<string, unknown>, scheduleIndex: number): { valid: boolean; error?: string } => {
             if (!schedule.scheduleName || typeof schedule.scheduleName !== 'string') {
                 return { valid: false, error: `Schedule ${scheduleIndex + 1} is missing required field: scheduleName` };
-            }
-            if (!('scheduleNote' in schedule)) {
-                return { valid: false, error: `Schedule ${scheduleIndex + 1} is missing required field: scheduleNote` };
             }
             if (!schedule.courses || !Array.isArray(schedule.courses)) {
                 return {

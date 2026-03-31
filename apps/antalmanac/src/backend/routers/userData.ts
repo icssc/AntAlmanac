@@ -417,12 +417,6 @@ const userDataRouter = router({
                 }
 
                 for (const event of schedule.customEvents) {
-                    if (event.title.length === 0) {
-                        throw new TRPCError({
-                            code: 'BAD_REQUEST',
-                            message: 'Invalid custom event title: must be a non-empty string',
-                        });
-                    }
                     if (event.days.length !== 7) {
                         throw new TRPCError({
                             code: 'BAD_REQUEST',
