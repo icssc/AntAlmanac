@@ -22,7 +22,7 @@ import { DODGER_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 
 export function Export() {
-    const [skeletonMode, _setSkeletonMode] = useState(AppStore.getSkeletonMode());
+    const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedScheduleIndices, setSelectedScheduleIndices] = useState<Set<number>>(new Set());
     const [schedules, setSchedules] = useState<ShortCourseSchedule[]>([]);
@@ -91,6 +91,14 @@ export function Export() {
             setSelectedScheduleIndices(new Set(scheduleSaveState.schedules.map((_, index) => index)));
         }
     }, [openDialog]);
+
+    useEffect(() => {
+        const handleSkeletonModeChange = () => setSkeletonMode(AppStore.getSkeletonMode());
+        AppStore.on('skeletonModeChange', handleSkeletonModeChange);
+        return () => {
+            AppStore.off('skeletonModeChange', handleSkeletonModeChange);
+        };
+    }, []);
 
     return (
         <>

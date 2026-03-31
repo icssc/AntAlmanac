@@ -1113,8 +1113,7 @@ export function Import() {
                                 }
 
                                 try {
-                                    const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
-                                    const schedulesToExport = scheduleSaveState.schedules.filter((_, index) =>
+                                    const schedulesToExport = exportSchedules.filter((_, index) =>
                                         exportSelectedIndices.has(index)
                                     );
 

@@ -395,13 +395,6 @@ const userDataRouter = router({
             }
 
             for (const schedule of validatedScheduleData.schedules) {
-                if (schedule.scheduleName !== undefined && typeof schedule.scheduleName !== 'string') {
-                    throw new TRPCError({
-                        code: 'BAD_REQUEST',
-                        message: 'Invalid schedule name: must be a string',
-                    });
-                }
-
                 for (const course of schedule.courses) {
                     if (typeof course.sectionCode !== 'string' || isNaN(parseInt(course.sectionCode))) {
                         throw new TRPCError({
@@ -424,19 +417,13 @@ const userDataRouter = router({
                 }
 
                 for (const event of schedule.customEvents) {
-                    if (typeof event.title !== 'string' || event.title.length === 0) {
+                    if (event.title.length === 0) {
                         throw new TRPCError({
                             code: 'BAD_REQUEST',
                             message: 'Invalid custom event title: must be a non-empty string',
                         });
                     }
-                    if (typeof event.start !== 'string' || typeof event.end !== 'string') {
-                        throw new TRPCError({
-                            code: 'BAD_REQUEST',
-                            message: 'Invalid custom event time: start and end must be strings',
-                        });
-                    }
-                    if (!Array.isArray(event.days) || event.days.length !== 7) {
+                    if (event.days.length !== 7) {
                         throw new TRPCError({
                             code: 'BAD_REQUEST',
                             message: 'Invalid custom event days: must be an array of 7 booleans',

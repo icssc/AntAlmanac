@@ -132,7 +132,9 @@ export const useDevModeStore = create<DevModeStore>((set) => {
     return {
         devMode,
         setDevMode: (devMode: boolean) => {
-            setLocalStorageDevMode(devMode.toString());
+            if (typeof Storage !== 'undefined') {
+                setLocalStorageDevMode(devMode.toString());
+            }
             set({ devMode });
         },
     };
