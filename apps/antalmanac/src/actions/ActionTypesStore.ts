@@ -1,10 +1,10 @@
 import { EventEmitter } from 'events';
 
-import { CustomEventId, RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
+import type { CustomEventId, RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
 
 import { autoSaveSchedule } from '$actions/AppStoreActions';
 import trpc from '$lib/api/trpc';
-import { getLocalStorageAutoSave, removeLocalStorageUnsavedActions } from '$lib/localStorage';
+import { getLocalStorageAutoSave } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -134,10 +134,6 @@ class ActionTypesStore extends EventEmitter {
                 this.emit('autoSaveEnd');
             }
         }
-    }
-
-    async loadScheduleFromUnsavedActions() {
-        removeLocalStorageUnsavedActions();
     }
 }
 
