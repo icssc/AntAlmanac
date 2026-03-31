@@ -21,6 +21,7 @@ import {
     TextField,
     Tooltip,
     Typography,
+    useTheme,
 } from '@mui/material';
 import { CourseInfo, ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
@@ -50,7 +51,7 @@ import {
 } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
-import { BLUE, DODGER_BLUE } from '$src/globals';
+import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -81,7 +82,7 @@ export function Import() {
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
     const devMode = useDevModeStore((store) => store.devMode);
 
-    const { isDark } = useThemeStore();
+    const theme = useTheme();
 
     const postHog = usePostHog();
 
@@ -660,7 +661,7 @@ export function Import() {
                     {devMode ? 'Import/Export' : 'Import'}
                 </Button>
             </Tooltip>
-            <Dialog open={openImportDialog} onClose={handleClose} maxWidth="sm" fullWidth>
+            <Dialog open={openImportDialog} onClose={handleClose}>
                 {devMode && (
                     <Tabs
                         value={dialogTab}
@@ -672,7 +673,7 @@ export function Import() {
                     </Tabs>
                 )}
                 <DialogTitle>{dialogTab === 'export' ? 'Export Schedules' : 'Import Schedule'}</DialogTitle>
-                <DialogContent>
+                <DialogContent sx={theme.palette.mode === 'dark' ? { '& a': { color: LIGHT_BLUE } } : undefined}>
                     {dialogTab === 'export' ? (
                         <>
                             <DialogContentText sx={{ mb: 2 }}>
@@ -783,18 +784,18 @@ export function Import() {
                                 >
                                     <FormControlLabel
                                         value={ImportSource.STUDY_LIST_IMPORT}
-                                        control={<Radio color="primary" />}
+                                        control={<Radio color="secondary" />}
                                         label="From Study List"
                                     />
                                     <FormControlLabel
                                         value={ImportSource.ZOT_COURSE_IMPORT}
-                                        control={<Radio color="primary" />}
+                                        control={<Radio color="secondary" />}
                                         label="From Zotcourse"
                                     />
                                     <Tooltip title="Import from your unique user ID" placement="right">
                                         <FormControlLabel
                                             value={ImportSource.AA_USERNAME_IMPORT}
-                                            control={<Radio color="primary" />}
+                                            control={<Radio color="secondary" />}
                                             label="From AntAlmanac unique user ID"
                                             disabled={!sessionIsValid}
                                         />
@@ -803,7 +804,7 @@ export function Import() {
                                         <Tooltip title="Import from your schedule data" placement="right">
                                             <FormControlLabel
                                                 value={ImportSource.JSON_IMPORT}
-                                                control={<Radio color="primary" />}
+                                                control={<Radio color="secondary" />}
                                                 label="From JSON File"
                                             />
                                         </Tooltip>
@@ -830,6 +831,7 @@ export function Import() {
                                         margin="dense"
                                         type="text"
                                         placeholder="Paste here"
+                                        color="secondary"
                                         value={studyListText}
                                         onChange={handleStudyListTextChange}
                                     />
@@ -848,6 +850,7 @@ export function Import() {
                                         margin="dense"
                                         type="text"
                                         placeholder="Paste here"
+                                        color="secondary"
                                         value={zotcourseScheduleName}
                                         onChange={handleZotcourseScheduleNameChange}
                                     />
@@ -871,6 +874,7 @@ export function Import() {
                                         margin="dense"
                                         type="text"
                                         placeholder="Paste here"
+                                        color="secondary"
                                         value={aaUsername}
                                         onChange={handleAAUsernameChange}
                                     />
@@ -1074,7 +1078,7 @@ export function Import() {
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color={isDark ? 'secondary' : 'primary'}>
+                    <Button onClick={handleClose} color="inherit">
                         Cancel
                     </Button>
                     {dialogTab === 'export' ? (
@@ -1126,7 +1130,7 @@ export function Import() {
                             Export ({exportSelectedIndices.size})
                         </Button>
                     ) : (
-                        <Button onClick={handleSubmit} color={isDark ? 'secondary' : 'primary'}>
+                        <Button onClick={handleSubmit} color='inherit'>
                             Import
                         </Button>
                     )}
