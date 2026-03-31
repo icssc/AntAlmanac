@@ -51,11 +51,11 @@ import {
 } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
-import { BLUE, LIGHT_BLUE } from '$src/globals';
+import { BLUE, LIGHT_BLUE, DODGER_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore, useDevModeStore } from '$stores/SettingsStore';
+import { useDevModeStore } from '$stores/SettingsStore';
 
 enum ImportSource {
     ZOT_COURSE_IMPORT = 'zotcourse',
@@ -1123,14 +1123,14 @@ export function Import() {
                                     openSnackbar('error', errorMessage);
                                 }
                             }}
-                            color={isDark ? 'secondary' : 'primary'}
+                            color="inherit"
                             variant="contained"
                             disabled={exportSelectedIndices.size === 0}
                         >
                             Export ({exportSelectedIndices.size})
                         </Button>
                     ) : (
-                        <Button onClick={handleSubmit} color='inherit'>
+                        <Button onClick={handleSubmit} color="inherit">
                             Import
                         </Button>
                     )}
