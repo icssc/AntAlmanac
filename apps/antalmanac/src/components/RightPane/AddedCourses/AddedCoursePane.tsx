@@ -1,5 +1,5 @@
 import { verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
+import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography, useTheme } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -15,6 +15,7 @@ import { CopyScheduleButton } from '$components/buttons/Copy';
 import { SortableList } from '$components/drag-and-drop/SortableList';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
+import { LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { getCourseId } from '$stores/scheduleHelpers';
 
@@ -143,6 +144,7 @@ function CustomEventsBox() {
 }
 
 function ScheduleNoteBox() {
+    const theme = useTheme();
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const [scheduleNote, setScheduleNote] = useState(
         skeletonMode ? AppStore.getCurrentSkeletonSchedule().scheduleNote : AppStore.getCurrentScheduleNote()
@@ -212,6 +214,14 @@ function ScheduleNoteBox() {
                     '& .MuiInputBase-root': {
                         cursor: skeletonMode ? 'not-allowed' : 'text',
                     },
+                    ...(theme.palette.mode === 'dark' && {
+                        '& .MuiInputLabel-root': {
+                            color: LIGHT_BLUE,
+                        },
+                        '& .MuiInputLabel-root.Mui-focused': {
+                            color: LIGHT_BLUE,
+                        },
+                    }),
                 }}
             />
         </Box>
