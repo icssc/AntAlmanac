@@ -11,6 +11,8 @@ import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
 
+import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
+
 const DEPARTMENT_YEAR_RANGE = 10;
 
 function sanitizeSearchParams(params: Record<string, string>) {
@@ -66,30 +68,6 @@ function sortWebsocResponse(response: WebsocAPIResponse) {
                 );
             }
         }
-    }
-    return response;
-}
-
-async function fetchAnteaterAPI(url: string): Promise<Response> {
-    let response: Response;
-    try {
-        response = await fetch(url, {
-            headers: {
-                ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
-            },
-        });
-    } catch (err) {
-        throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: `Failed to reach the Anteater API: ${err}`,
-        });
-    }
-
-    if (!response.ok) {
-        throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: `Anteater API returned an error: ${response.status} ${response.statusText}`,
-        });
     }
     return response;
 }

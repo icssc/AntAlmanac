@@ -1,3 +1,29 @@
+import { TRPCError } from '@trpc/server';
+
+export async function fetchAnteaterAPI(url: string): Promise<Response> {
+    let response: Response;
+    try {
+        response = await fetch(url, {
+            headers: {
+                ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
+            },
+        });
+    } catch (err) {
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Failed to reach the Anteater API: ${err}`,
+        });
+    }
+
+    if (!response.ok) {
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Anteater API returned an error: ${response.status} ${response.statusText}`,
+        });
+    }
+    return response;
+}
+
 export async function queryGraphQL<PromiseReturnType>(queryString: string): Promise<PromiseReturnType | null> {
     const query = JSON.stringify({
         query: queryString,
