@@ -355,19 +355,6 @@ class AppStore extends EventEmitter {
         }
         this.unsavedChanges = false;
 
-        /**
-         * Attempt to load unsaved actions
-         * On failure, quietly reload from save state (essentially undoing any partially loaded unsaved actions)
-         */
-        try {
-            await actionTypesStore.loadScheduleFromUnsavedActions();
-        } catch (e: unknown) {
-            if (e instanceof Error) {
-                console.error('Unsaved actions could not be loaded:', e.message);
-            }
-            await this.loadScheduleFromSaveState(savedSchedule);
-        }
-
         this.schedule.clearPreviousStates();
 
         if (hasDataChanged) {

@@ -154,7 +154,7 @@ async function sendNotification(
                 const text = toPlainText(html);
 
                 return queueEmail({
-                    FromEmailAddress: 'no-reply@icssc.club',
+                    FromEmailAddress: '"AntAlmanac" <no-reply@icssc.club>',
                     Destination: {
                         ToAddresses: [user.email],
                     },

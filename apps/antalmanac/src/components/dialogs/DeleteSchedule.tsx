@@ -11,7 +11,6 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { deleteSchedule } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
-import { useThemeStore } from '$stores/SettingsStore';
 
 interface ScheduleNameDialogProps extends DialogProps {
     /**
@@ -24,8 +23,6 @@ interface ScheduleNameDialogProps extends DialogProps {
  * Dialog with a prompt to delete the specified schedule.
  */
 function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
-    const isDark = useThemeStore((store) => store.isDark);
-
     /**
      * {@link props.onClose} also needs to be forwarded to the {@link Dialog} component.
      */
@@ -67,7 +64,7 @@ function DeleteScheduleDialog(props: ScheduleNameDialogProps) {
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={handleCancel} color={isDark ? 'secondary' : 'primary'}>
+                <Button onClick={handleCancel} color="inherit">
                     Cancel
                 </Button>
                 <Button onClick={handleDelete} variant="contained" color="primary">
