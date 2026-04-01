@@ -1,6 +1,7 @@
 'use client';
 
 import { Alert, Snackbar, SnackbarCloseReason } from '@mui/material';
+import { mergeSx } from '@mui/x-date-pickers/internals';
 
 import { useSnackbarStore } from '$stores/SnackbarStore';
 
@@ -24,7 +25,7 @@ export const NotificationSnackbar = () => {
             autoHideDuration={durationSeconds * 1000}
             anchorOrigin={position}
             onClose={handleClose}
-            sx={style}
+            sx={mergeSx((theme) => ({ [theme.breakpoints.up('sm')]: { minWidth: '288px' } }), style)}
             className="notification-snackbar-container"
         >
             <Alert
