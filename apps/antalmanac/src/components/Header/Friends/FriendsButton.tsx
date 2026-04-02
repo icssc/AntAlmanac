@@ -20,7 +20,6 @@ export function FriendsButton() {
     const isDark = useThemeStore((store) => store.isDark);
 
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-    const [currentProviderAccountId, setCurrentProviderAccountId] = useState<string | null>(null);
     const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
     const [friends, setFriends] = useState<Friend[]>([]);
     const [blockedFriends, setBlockedFriends] = useState<Friend[]>([]);
@@ -33,13 +32,12 @@ export function FriendsButton() {
 
         setIsLoading(true);
         try {
-            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
+            const { users } = await trpc.userData.getUserAndAccountBySessionToken.query({
                 token: session,
             });
 
             const userId = users.id;
             setCurrentUserId(userId);
-            setCurrentProviderAccountId(accounts.providerAccountId);
 
             const [friendsResult, pendingResult, blockedResult] = await Promise.all([
                 trpc.friends.getFriends.query({ userId }),
@@ -81,14 +79,12 @@ export function FriendsButton() {
     useEffect(() => {
         if (!sessionIsValid || !session) {
             setCurrentUserId(null);
-            setCurrentProviderAccountId(null);
             setFriendRequests([]);
             setFriends([]);
             setBlockedFriends([]);
             setIsLoading(false);
         } else {
             setCurrentUserId(null);
-            setCurrentProviderAccountId(null);
         }
     }, [sessionIsValid, session]);
 
@@ -154,7 +150,7 @@ export function FriendsButton() {
             >
                 <FriendsMenu
                     currentUserId={currentUserId}
-                    currentProviderAccountId={currentProviderAccountId}
+                    sessionToken={session}
                     friendRequests={friendRequests}
                     friends={friends}
                     blockedFriends={blockedFriends}

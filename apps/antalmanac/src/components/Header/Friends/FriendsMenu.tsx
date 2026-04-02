@@ -106,7 +106,7 @@ function FriendsListSkeleton() {
 
 export interface FriendsMenuProps {
     currentUserId: string | null;
-    currentProviderAccountId: string | null;
+    sessionToken: string | null;
     friendRequests: FriendRequest[];
     friends: Friend[];
     blockedFriends: Friend[];
@@ -115,7 +115,7 @@ export interface FriendsMenuProps {
 }
 
 export function FriendsMenu({
-    currentProviderAccountId,
+    sessionToken,
     friendRequests,
     friends,
     blockedFriends,
@@ -133,14 +133,14 @@ export function FriendsMenu({
     const navigate = useNavigate();
 
     const handleAddFriend = async () => {
-        if (!currentProviderAccountId) {
+        if (!sessionToken) {
             openSnackbar('warning', 'You must be signed in to add friends.');
             return;
         }
 
         try {
             await trpc.friends.sendFriendRequestByEmail.mutate({
-                requesterId: currentProviderAccountId,
+                sessionToken,
                 email: email.trim(),
             });
 
@@ -160,14 +160,14 @@ export function FriendsMenu({
     };
 
     const handleAccept = async (requesterId: string) => {
-        if (!currentProviderAccountId) {
+        if (!sessionToken) {
             return;
         }
 
         try {
             await trpc.friends.acceptFriendRequest.mutate({
+                sessionToken,
                 requesterId,
-                addresseeId: currentProviderAccountId,
             });
             openSnackbar('success', 'Friend request accepted.');
             await loadFriendsData();
@@ -178,13 +178,13 @@ export function FriendsMenu({
     };
 
     const handleDecline = async (requesterId: string) => {
-        if (!currentProviderAccountId) {
+        if (!sessionToken) {
             return;
         }
 
         try {
             await trpc.friends.removeFriend.mutate({
-                userId: currentProviderAccountId,
+                sessionToken,
                 friendId: requesterId,
             });
             openSnackbar('info', 'Friend request declined.');
@@ -212,13 +212,13 @@ export function FriendsMenu({
     };
 
     const handleConfirmBlock = async () => {
-        if (!currentProviderAccountId || !userToBlock) {
+        if (!sessionToken || !userToBlock) {
             return;
         }
 
         try {
             await trpc.friends.blockUser.mutate({
-                userId: currentProviderAccountId,
+                sessionToken,
                 blockId: userToBlock,
             });
             openSnackbar('info', 'User blocked.');
@@ -251,13 +251,13 @@ export function FriendsMenu({
     };
 
     const handleUnfriend = async () => {
-        if (!currentProviderAccountId || !friendMenuAnchor) {
+        if (!sessionToken || !friendMenuAnchor) {
             return;
         }
 
         try {
             await trpc.friends.removeFriend.mutate({
-                userId: currentProviderAccountId,
+                sessionToken,
                 friendId: friendMenuAnchor.friendId,
             });
             openSnackbar('info', 'Friend removed.');
@@ -274,13 +274,13 @@ export function FriendsMenu({
     };
 
     const handleUnblock = async (blockedId: string) => {
-        if (!currentProviderAccountId) {
+        if (!sessionToken) {
             return;
         }
 
         try {
             await trpc.friends.unblockUser.mutate({
-                userId: currentProviderAccountId,
+                sessionToken,
                 blockId: blockedId,
             });
             openSnackbar('info', 'User unblocked.');

@@ -1,26 +1,24 @@
 import { db } from '@packages/db/src';
-import { accounts, friendships, schedules, users } from '@packages/db/src/schema';
+import { friendships, schedules, sessions, users } from '@packages/db/src/schema';
 import { TRPCError } from '@trpc/server';
-import { and, eq, or } from 'drizzle-orm';
+import { and, eq, gt, or } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
 
 /**
- * Resolves a provider ID (e.g. 'abc123' or 'google_abc123') to an internal userId.
- * Mirrors the same logic used in saveUserData.
+ * Resolves a session token to an internal userId, verifying the session is valid and not expired.
  */
-async function resolveProviderIdToUserId(providerId: string): Promise<string> {
-    const oidcProviderId = providerId.startsWith('google_') ? providerId : 'google_' + providerId;
-    const [account] = await db
-        .select({ userId: accounts.userId })
-        .from(accounts)
-        .where(eq(accounts.providerAccountId, oidcProviderId))
+async function resolveSessionToUserId(sessionToken: string): Promise<string> {
+    const [session] = await db
+        .select({ userId: sessions.userId })
+        .from(sessions)
+        .where(and(eq(sessions.refreshToken, sessionToken), gt(sessions.expires, new Date())))
         .limit(1);
-    if (!account) {
-        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'No account found for that provider ID.' });
+    if (!session) {
+        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Invalid or expired session.' });
     }
-    return account.userId;
+    return session.userId;
 }
 
 /**
@@ -31,9 +29,9 @@ const friendsRouter = router({
      * Send a friend request by recipient email.
      */
     sendFriendRequestByEmail: procedure
-        .input(z.object({ requesterId: z.string(), email: z.string().email() }))
+        .input(z.object({ sessionToken: z.string(), email: z.string().email() }))
         .mutation(async ({ input }) => {
-            const requesterId = await resolveProviderIdToUserId(input.requesterId);
+            const requesterId = await resolveSessionToUserId(input.sessionToken);
 
             const [addressee] = await db.select().from(users).where(eq(users.email, input.email)).limit(1);
 
@@ -94,9 +92,9 @@ const friendsRouter = router({
      * Send a friend request.
      */
     sendFriendRequest: procedure
-        .input(z.object({ requesterId: z.string(), addresseeId: z.string() }))
+        .input(z.object({ sessionToken: z.string(), addresseeId: z.string() }))
         .mutation(async ({ input }) => {
-            const requesterId = await resolveProviderIdToUserId(input.requesterId);
+            const requesterId = await resolveSessionToUserId(input.sessionToken);
 
             if (requesterId === input.addresseeId) {
                 throw new TRPCError({
@@ -149,9 +147,9 @@ const friendsRouter = router({
      * Accept a friend request.
      */
     acceptFriendRequest: procedure
-        .input(z.object({ requesterId: z.string(), addresseeId: z.string() }))
+        .input(z.object({ sessionToken: z.string(), requesterId: z.string() }))
         .mutation(async ({ input }) => {
-            const addresseeId = await resolveProviderIdToUserId(input.addresseeId);
+            const addresseeId = await resolveSessionToUserId(input.sessionToken);
 
             return await db
                 .update(friendships)
@@ -228,9 +226,9 @@ const friendsRouter = router({
      * Remove a friend or decline a request.
      */
     removeFriend: procedure
-        .input(z.object({ userId: z.string(), friendId: z.string() }))
+        .input(z.object({ sessionToken: z.string(), friendId: z.string() }))
         .mutation(async ({ input }) => {
-            const userId = await resolveProviderIdToUserId(input.userId);
+            const userId = await resolveSessionToUserId(input.sessionToken);
 
             return await db
                 .delete(friendships)
@@ -245,28 +243,30 @@ const friendsRouter = router({
     /**
      * Block a user.
      */
-    blockUser: procedure.input(z.object({ userId: z.string(), blockId: z.string() })).mutation(async ({ input }) => {
-        const userId = await resolveProviderIdToUserId(input.userId);
+    blockUser: procedure
+        .input(z.object({ sessionToken: z.string(), blockId: z.string() }))
+        .mutation(async ({ input }) => {
+            const userId = await resolveSessionToUserId(input.sessionToken);
 
-        await db
-            .delete(friendships)
-            .where(
-                or(
-                    and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, input.blockId)),
-                    and(eq(friendships.requesterId, input.blockId), eq(friendships.addresseeId, userId))
-                )
-            );
+            await db
+                .delete(friendships)
+                .where(
+                    or(
+                        and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, input.blockId)),
+                        and(eq(friendships.requesterId, input.blockId), eq(friendships.addresseeId, userId))
+                    )
+                );
 
-        return await db
-            .insert(friendships)
-            .values({
-                requesterId: userId,
-                addresseeId: input.blockId,
-                status: 'BLOCKED',
-                updatedAt: new Date(),
-            })
-            .returning();
-    }),
+            return await db
+                .insert(friendships)
+                .values({
+                    requesterId: userId,
+                    addresseeId: input.blockId,
+                    status: 'BLOCKED',
+                    updatedAt: new Date(),
+                })
+                .returning();
+        }),
 
     /**
      * Get all blocked users for a user.
@@ -282,34 +282,34 @@ const friendsRouter = router({
     /**
      * Unblock a user.
      */
-    unblockUser: procedure.input(z.object({ userId: z.string(), blockId: z.string() })).mutation(async ({ input }) => {
-        const userId = await resolveProviderIdToUserId(input.userId);
+    unblockUser: procedure
+        .input(z.object({ sessionToken: z.string(), blockId: z.string() }))
+        .mutation(async ({ input }) => {
+            const userId = await resolveSessionToUserId(input.sessionToken);
 
-        return await db
-            .delete(friendships)
-            .where(and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, input.blockId)));
-    }),
+            return await db
+                .delete(friendships)
+                .where(and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, input.blockId)));
+        }),
 
     /**
      * Get the sharing status (sharedWithFriends) for all schedules owned by the user.
      */
-    getScheduleSharingStatuses: procedure
-        .input(z.object({ providerAccountId: z.string() }))
-        .query(async ({ input }) => {
-            const userId = await resolveProviderIdToUserId(input.providerAccountId);
-            return await db
-                .select({ id: schedules.id, sharedWithFriends: schedules.sharedWithFriends })
-                .from(schedules)
-                .where(eq(schedules.userId, userId));
-        }),
+    getScheduleSharingStatuses: procedure.input(z.object({ sessionToken: z.string() })).query(async ({ input }) => {
+        const userId = await resolveSessionToUserId(input.sessionToken);
+        return await db
+            .select({ id: schedules.id, sharedWithFriends: schedules.sharedWithFriends })
+            .from(schedules)
+            .where(eq(schedules.userId, userId));
+    }),
 
     /**
      * Toggle whether a schedule is shared with friends.
      */
     toggleScheduleSharing: procedure
-        .input(z.object({ providerAccountId: z.string(), scheduleId: z.string() }))
+        .input(z.object({ sessionToken: z.string(), scheduleId: z.string() }))
         .mutation(async ({ input }) => {
-            const userId = await resolveProviderIdToUserId(input.providerAccountId);
+            const userId = await resolveSessionToUserId(input.sessionToken);
 
             const [schedule] = await db
                 .select({ sharedWithFriends: schedules.sharedWithFriends })

@@ -82,9 +82,8 @@ export function SelectSchedulePopover() {
     const fetchSharingStatuses = useCallback(async () => {
         if (!sessionIsValid || !session) return;
         try {
-            const { accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({ token: session });
             const statuses = await trpc.friends.getScheduleSharingStatuses.query({
-                providerAccountId: accounts.providerAccountId,
+                sessionToken: session,
             });
             // Map DB results back to local schedule indices by matching IDs
             const map: Record<number, boolean> = {};
@@ -116,9 +115,8 @@ export function SelectSchedulePopover() {
             if (!scheduleId) return; // Schedule not saved yet — keep local change, skip DB update
 
             try {
-                const { accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({ token: session });
                 const result = await trpc.friends.toggleScheduleSharing.mutate({
-                    providerAccountId: accounts.providerAccountId,
+                    sessionToken: session,
                     scheduleId,
                 });
                 setSharingStatuses((prev) => ({ ...prev, [scheduleIndex]: result.sharedWithFriends }));
