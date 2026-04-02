@@ -210,7 +210,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
 
                         <Tooltip title="More options">
                             <span>
-                                <IconButton onClick={handleMenuOpen} disabled={disableActionButtons}>
+                                <IconButton onClick={handleMenuOpen} disabled={skeletonMode}>
                                     <MoreVertIcon fontSize="small" />
                                 </IconButton>
                             </span>

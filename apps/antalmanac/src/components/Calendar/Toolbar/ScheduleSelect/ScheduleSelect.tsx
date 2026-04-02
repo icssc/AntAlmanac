@@ -1,5 +1,5 @@
-import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
-import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
+import { ArrowDropDown as ArrowDropDownIcon, People, PeopleOutline } from '@mui/icons-material';
+import { Box, Button, IconButton, Popover, Tooltip, Typography, useTheme } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -12,8 +12,10 @@ import { ShareScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import trpc from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useSessionStore } from '$stores/SessionStore';
 
 type EventContext = {
     triggeredBy?: string;
@@ -63,14 +65,69 @@ export function SelectSchedulePopover() {
     const [skeletonScheduleMapping, setSkeletonScheduleMapping] = useState(
         getScheduleItems(AppStore.getSkeletonScheduleNames())
     );
+    // Map from schedule index to sharedWithFriends boolean (works even for unsaved schedules)
+    const [sharingStatuses, setSharingStatuses] = useState<Record<number, boolean>>({});
 
     const anchorElementRef = useRef(null);
+
+    const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
+    const session = useSessionStore((state) => state.session);
 
     const postHog = usePostHog();
 
     // TODO: maybe these widths should be dynamic based on i.e. the viewport width?
     const minWidth = useMemo(() => 100, []);
     const maxWidth = useMemo(() => 150, []);
+
+    const fetchSharingStatuses = useCallback(async () => {
+        if (!sessionIsValid || !session) return;
+        try {
+            const { accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({ token: session });
+            const statuses = await trpc.friends.getScheduleSharingStatuses.query({
+                providerAccountId: accounts.providerAccountId,
+            });
+            // Map DB results back to local schedule indices by matching IDs
+            const map: Record<number, boolean> = {};
+            for (const { id, sharedWithFriends } of statuses) {
+                const scheduleNames = AppStore.getScheduleNames();
+                for (let i = 0; i < scheduleNames.length; i++) {
+                    if (AppStore.getScheduleId(i) === id) {
+                        map[i] = sharedWithFriends;
+                        break;
+                    }
+                }
+            }
+            setSharingStatuses(map);
+        } catch {
+            // Silently fail — sharing status is non-critical
+        }
+    }, [sessionIsValid, session]);
+
+    const handleToggleSharing = useCallback(
+        async (scheduleIndex: number) => {
+            if (!sessionIsValid || !session) return;
+
+            // Always update the icon immediately, regardless of whether the schedule has a DB ID
+            const currentValue = sharingStatuses[scheduleIndex] ?? true;
+            const newValue = !currentValue;
+            setSharingStatuses((prev) => ({ ...prev, [scheduleIndex]: newValue }));
+
+            const scheduleId = AppStore.getScheduleId(scheduleIndex);
+            if (!scheduleId) return; // Schedule not saved yet — keep local change, skip DB update
+
+            try {
+                const { accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({ token: session });
+                const result = await trpc.friends.toggleScheduleSharing.mutate({
+                    providerAccountId: accounts.providerAccountId,
+                    scheduleId,
+                });
+                setSharingStatuses((prev) => ({ ...prev, [scheduleIndex]: result.sharedWithFriends }));
+            } catch {
+                setSharingStatuses((prev) => ({ ...prev, [scheduleIndex]: currentValue }));
+            }
+        },
+        [sessionIsValid, session, sharingStatuses]
+    );
 
     const handleClick = useCallback(() => {
         setOpenScheduleSelect(true);
@@ -87,6 +144,12 @@ export function SelectSchedulePopover() {
     useEffect(() => {
         setAnchorElement(anchorElementRef.current);
     }, [anchorElementRef]);
+
+    useEffect(() => {
+        if (openScheduleSelect && sessionIsValid && !skeletonMode && !isReadonlyView) {
+            void fetchSharingStatuses();
+        }
+    }, [openScheduleSelect, sessionIsValid, skeletonMode, isReadonlyView, fetchSharingStatuses]);
 
     useEffect(() => {
         AppStore.on('addedCoursesChange', handleScheduleIndexChange);
@@ -188,7 +251,7 @@ export function SelectSchedulePopover() {
                                             flexGrow: 1,
                                         }}
                                     >
-                                        <SortableList.DragHandle disabled={skeletonMode} />
+                                        <SortableList.DragHandle disabled={skeletonMode || isReadonlyView} />
                                         <Box flexGrow={1}>
                                             <Tooltip
                                                 title={item.name}
@@ -239,6 +302,32 @@ export function SelectSchedulePopover() {
                                             <CopyScheduleButton index={index} disabled={disableActionButtons} />
                                             <RenameScheduleButton index={index} disabled={disableActionButtons} />
                                             <ShareScheduleButton index={index} disabled={disableActionButtons} />
+                                            {sessionIsValid &&
+                                                !disableActionButtons &&
+                                                (() => {
+                                                    const isShared = sharingStatuses[index] ?? true;
+                                                    return (
+                                                        <Tooltip
+                                                            title={
+                                                                isShared
+                                                                    ? 'Visible to friends — click to hide'
+                                                                    : 'Hidden from friends — click to share'
+                                                            }
+                                                            disableInteractive
+                                                        >
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => void handleToggleSharing(index)}
+                                                            >
+                                                                {isShared ? (
+                                                                    <People fontSize="small" />
+                                                                ) : (
+                                                                    <PeopleOutline fontSize="small" />
+                                                                )}
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    );
+                                                })()}
                                             <DeleteScheduleButton index={index} disabled={disableActionButtons} />
                                         </Box>
                                     </Box>

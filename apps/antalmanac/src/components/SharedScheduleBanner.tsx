@@ -19,9 +19,11 @@ import { createEmptyShortCourseSchedule } from '$stores/scheduleHelpers';
 interface Props {
     error: string | null;
     setError: (error: string | null) => void;
+    warning: string | null;
+    setWarning: (warning: string | null) => void;
 }
 
-const SharedScheduleBanner = ({ error, setError }: Props) => {
+const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) => {
     const navigate = useNavigate();
     const location = useLocation();
     const friendMatch = useMatch('/share/friend/:userId');
@@ -60,10 +62,10 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                 beginLoadingSchedule();
                 removeLocalStorageUnsavedActions();
 
-                const userData = await trpc.userData.getUserData.query({ userId });
+                const userData = await trpc.userData.getFriendUserData.query({ userId });
 
                 if (!userData?.userData?.schedules?.length) {
-                    setError("This friend doesn't have any schedules to view.");
+                    setWarning("This friend hasn't shared any schedules with you.");
                     return;
                 }
 
@@ -329,6 +331,24 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
         setOpenLoadingSchedule(false);
         navigate('/');
     }, [navigate, setOpenLoadingSchedule, beginLoadingSchedule, loadSessionSchedule]);
+
+    if (warning) {
+        return (
+            <>
+                <Alert severity="warning" variant="outlined">
+                    {warning}
+                </Alert>
+                <Stack direction="row" spacing={1}>
+                    <Button variant="outlined" onClick={() => navigate(-1)}>
+                        Go Back
+                    </Button>
+                    <Button variant="contained" onClick={handleGoHome}>
+                        Go Home
+                    </Button>
+                </Stack>
+            </>
+        );
+    }
 
     if (error) {
         return (

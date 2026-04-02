@@ -1,5 +1,5 @@
 import { createId } from '@paralleldrive/cuid2';
-import { pgTable, unique, text, timestamp, integer } from 'drizzle-orm/pg-core';
+import { pgTable, unique, text, timestamp, integer, boolean } from 'drizzle-orm/pg-core';
 import { users } from '../auth/user';
 
 export const schedules = pgTable(
@@ -30,6 +30,12 @@ export const schedules = pgTable(
         index: integer('index').notNull(),
 
         lastUpdated: timestamp('last_updated', { withTimezone: true }).notNull(),
+
+        /**
+         * Whether this schedule is visible to friends.
+         * Defaults to true so existing schedules remain visible.
+         */
+        sharedWithFriends: boolean('shared_with_friends').notNull().default(true),
     },
     (table) => [unique().on(table.userId, table.name), unique().on(table.userId, table.index)]
 );

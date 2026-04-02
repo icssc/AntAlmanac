@@ -78,6 +78,15 @@ const userDataRouter = router({
             });
         }
     }),
+
+    /**
+     * Retrieves a friend's user data filtered to only schedules shared with friends.
+     * @param input - An object containing the friend's user ID.
+     * @returns The friend's shared schedule data.
+     */
+    getFriendUserData: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
+        return await RDS.getUserFriendDataByUid(db, input.userId);
+    }),
     getUserDataWithSession: procedure.input(z.object({ refreshToken: z.string() })).query(async ({ input }) => {
         if ('refreshToken' in input) {
             return await RDS.fetchUserDataWithSession(db, input.refreshToken);

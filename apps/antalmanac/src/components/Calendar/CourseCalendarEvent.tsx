@@ -150,7 +150,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                 >
                     <Tooltip title="Quick Search">
                         <span>
-                            <Button size="small" onClick={handleQuickSearch} disabled={isReadonlyView}>
+                            <Button size="small" onClick={handleQuickSearch}>
                                 <Search fontSize="small" style={{ marginRight: 5 }} />
                                 <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{`${title} ${sectionType}`}</span>
                             </Button>

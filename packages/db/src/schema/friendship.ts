@@ -1,4 +1,5 @@
-import { pgTable, text, timestamp, pgEnum, primaryKey, index } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, pgEnum, primaryKey, index, check } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 
 import { users } from './auth/user';
 
@@ -47,6 +48,7 @@ export const friendships = pgTable(
             columns: [table.requesterId, table.addresseeId],
         }),
         index('addressee_idx').on(table.addresseeId),
+        check('friendships_no_self_friend', sql`${table.requesterId} <> ${table.addresseeId}`),
     ]
 );
 

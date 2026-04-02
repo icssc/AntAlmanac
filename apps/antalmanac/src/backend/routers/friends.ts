@@ -1,5 +1,5 @@
 import { db } from '@packages/db/src';
-import { accounts, friendships, users } from '@packages/db/src/schema';
+import { accounts, friendships, schedules, users } from '@packages/db/src/schema';
 import { TRPCError } from '@trpc/server';
 import { and, eq, or } from 'drizzle-orm';
 import { z } from 'zod';
@@ -286,10 +286,49 @@ const friendsRouter = router({
         const userId = await resolveProviderIdToUserId(input.userId);
 
         return await db
-            .update(friendships)
-            .set({ status: 'DECLINED', updatedAt: new Date() })
+            .delete(friendships)
             .where(and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, input.blockId)));
     }),
+
+    /**
+     * Get the sharing status (sharedWithFriends) for all schedules owned by the user.
+     */
+    getScheduleSharingStatuses: procedure
+        .input(z.object({ providerAccountId: z.string() }))
+        .query(async ({ input }) => {
+            const userId = await resolveProviderIdToUserId(input.providerAccountId);
+            return await db
+                .select({ id: schedules.id, sharedWithFriends: schedules.sharedWithFriends })
+                .from(schedules)
+                .where(eq(schedules.userId, userId));
+        }),
+
+    /**
+     * Toggle whether a schedule is shared with friends.
+     */
+    toggleScheduleSharing: procedure
+        .input(z.object({ providerAccountId: z.string(), scheduleId: z.string() }))
+        .mutation(async ({ input }) => {
+            const userId = await resolveProviderIdToUserId(input.providerAccountId);
+
+            const [schedule] = await db
+                .select({ sharedWithFriends: schedules.sharedWithFriends })
+                .from(schedules)
+                .where(and(eq(schedules.id, input.scheduleId), eq(schedules.userId, userId)))
+                .limit(1);
+
+            if (!schedule) {
+                throw new TRPCError({ code: 'NOT_FOUND', message: 'Schedule not found.' });
+            }
+
+            const [updated] = await db
+                .update(schedules)
+                .set({ sharedWithFriends: !schedule.sharedWithFriends })
+                .where(and(eq(schedules.id, input.scheduleId), eq(schedules.userId, userId)))
+                .returning({ sharedWithFriends: schedules.sharedWithFriends });
+
+            return { sharedWithFriends: updated.sharedWithFriends };
+        }),
 });
 
 export default friendsRouter;

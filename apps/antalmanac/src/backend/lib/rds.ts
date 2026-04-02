@@ -507,6 +507,51 @@ export class RDS {
         });
     }
 
+    /**
+     * Retrieves a friend's user data, filtered to only schedules they have chosen to share with friends.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param userId - The unique identifier of the friend.
+     * @returns A promise that resolves to a User object containing only the shared schedules, or null if not found.
+     */
+    static async getUserFriendDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
+        return db.transaction(async (tx) => {
+            const user = await tx
+                .select()
+                .from(users)
+                .where(eq(users.id, userId))
+                .then((res) => res[0]);
+
+            if (!user) {
+                return null;
+            }
+
+            const sharedCondition = and(eq(schedules.userId, userId), eq(schedules.sharedWithFriends, true));
+
+            const sectionResults = await tx
+                .select()
+                .from(schedules)
+                .where(sharedCondition)
+                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+
+            const customEventResults = await tx
+                .select()
+                .from(schedules)
+                .where(sharedCondition)
+                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+
+            const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+
+            return {
+                id: userId,
+                userData: {
+                    schedules: userSchedules,
+                    scheduleIndex: 0,
+                },
+            };
+        });
+    }
+
     private static async getUserAndAccount(
         db: DatabaseOrTransaction,
         accountType: AccountType,
