@@ -19,13 +19,16 @@ export function ScheduleSelector({ scheduleIndices, onSelectScheduleIndices, sch
 
     return (
         <FormControl style={{ maxWidth: 400 }} fullWidth>
-            <InputLabel variant="outlined">Select schedules</InputLabel>
+            <InputLabel variant="outlined" color={'secondary'}>
+                Select schedules
+            </InputLabel>
             <Select
                 variant="outlined"
                 label="Select schedules"
                 multiple
                 value={scheduleIndices}
                 onChange={handleChange}
+                color={'secondary'}
             >
                 {scheduleNames.map((name: string, index: number) => {
                     return (

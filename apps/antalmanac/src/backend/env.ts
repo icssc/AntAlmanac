@@ -34,6 +34,13 @@ export const aapiEnvSchema = z.object({
 });
 
 /**
+ * Environment variables required by the backend to connect to the Planner API.
+ */
+export const plannerEnvSchema = z.object({
+    PLANNER_CLIENT_API_KEY: z.string(),
+});
+
+/**
  * STAGE: "production" on production; staging instance on staging (e.g. "staging-1337").
  * Used to set subscription.environment so only that AANTS instance sends emails.
  */
@@ -50,4 +57,5 @@ export const backendEnvSchema = z
     .merge(oidcOAuthEnvSchema)
     .merge(rdsEnvSchema)
     .merge(mapboxEnvSchema)
-    .merge(aapiEnvSchema);
+    .merge(aapiEnvSchema)
+    .merge(plannerEnvSchema);
