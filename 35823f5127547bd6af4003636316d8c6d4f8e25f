@@ -1,0 +1,37 @@
+apps/antalmanac/src/backend/lib/rds.ts
+  c5a8324b51d88e38 510-554
+apps/antalmanac/src/components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect.tsx
+  c5a8324b51d88e38 1-2,15,18,68-69,73-74,82-131,149-153,305-320,323,325,327-330
+apps/antalmanac/src/backend/routers/friends.ts
+  c5a8324b51d88e38 2,292-331
+packages/db/migrations/0010_schedule_shared_with_friends.sql
+  c5a8324b51d88e38 1-3
+apps/antalmanac/src/routes/SharedSchedulePage.tsx
+  c5a8324b51d88e38 13,15,18,21-22,24,26-27
+apps/antalmanac/src/backend/routers/userData.ts
+  c5a8324b51d88e38 81-89
+apps/antalmanac/src/components/SharedScheduleBanner.tsx
+  c5a8324b51d88e38 22-23,26,65,68,335-352
+packages/db/src/schema/schedule/schedule.ts
+  c5a8324b51d88e38 2,33-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.4",
+  "base_commit_sha": "35823f5127547bd6af4003636316d8c6d4f8e25f",
+  "prompts": {
+    "c5a8324b51d88e38": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "03a8953e-81ac-49ef-bdac-787ba50d5098",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 236,
+      "total_deletions": 32,
+      "accepted_lines": 224,
+      "overriden_lines": 3
+    }
+  }
+}
