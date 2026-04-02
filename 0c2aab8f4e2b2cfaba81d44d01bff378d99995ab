@@ -1,0 +1,29 @@
+apps/antalmanac/src/components/Header/Friends/FriendsMenu.tsx
+  c5a8324b51d88e38 109,118,136,143,163,169,181,187,215,221,254,260,277,283
+apps/antalmanac/src/components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect.tsx
+  c5a8324b51d88e38 86,119
+apps/antalmanac/src/backend/routers/friends.ts
+  c5a8324b51d88e38 2,4,10,12-16,18-19,21,32,34,95,97,150,152,229,231,246-249,285-288,298-299,310,312
+apps/antalmanac/src/components/Header/Friends/FriendsButton.tsx
+  c5a8324b51d88e38 35,153
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.5",
+  "base_commit_sha": "0c2aab8f4e2b2cfaba81d44d01bff378d99995ab",
+  "prompts": {
+    "c5a8324b51d88e38": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "03a8953e-81ac-49ef-bdac-787ba50d5098",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 751,
+      "total_deletions": 131,
+      "accepted_lines": 677,
+      "overriden_lines": 0
+    }
+  }
+}
