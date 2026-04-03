@@ -12,8 +12,7 @@ interface FetchAAPIOptions {
  * @param url AAPI url to fetch from.
  * @param options.isApiKeyRequired Throw an error if AAPI API key is invalid?
  * @param options.invalidResponseCallback Function that is called when a response is invalid.
- *        If provided and an error should be thrown, throw the error in the callback.
- *        An error will not be thrown automatically.
+ *        If this callback does not throw an error, one with a generic message will be thrown automatically.
  * @param options.headers Headers to pass in addition or to replace default headers.
  * @returns The response's data.
  */
@@ -45,12 +44,11 @@ export async function fetchAnteaterAPI<DataType>(
     if (!response.ok) {
         if (invalidResponseCallback !== null) {
             invalidResponseCallback(response);
-        } else {
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: `Anteater API returned an error: ${response.status} ${response.statusText}`,
-            });
         }
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Anteater API returned an error: ${response.status} ${response.statusText}`,
+        });
     }
 
     try {
