@@ -3,7 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import 'dotenv/config';
-import { WebsocSchool, WebsocTerm } from '@packages/antalmanac-types';
+import { WebsocAPIResult, WebsocTerm, WebsocTermsAPIResult } from '@packages/antalmanac-types';
 
 import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
 
@@ -25,7 +25,7 @@ async function getSectionCount(term: WebsocTerm) {
     console.log(`Checking section count for ${year} ${quarter} from ${WEBSOC_URL}...`);
 
     const params = new URLSearchParams({ year, quarter });
-    const json = await fetchAnteaterAPI<{ data: { schools: WebsocSchool[] } }>(`${WEBSOC_URL}?${params.toString()}`, {
+    const json = await fetchAnteaterAPI<WebsocAPIResult>(`${WEBSOC_URL}?${params.toString()}`, {
         isApiKeyRequired: true,
     });
 
@@ -43,7 +43,7 @@ async function getSectionCount(term: WebsocTerm) {
 async function updateTerms() {
     try {
         console.log(`Fetching terms from ${TERMS_URL}...`);
-        const termsJson = await fetchAnteaterAPI<{ data: WebsocTerm[] }>(TERMS_URL, { isApiKeyRequired: true });
+        const termsJson = await fetchAnteaterAPI<WebsocTermsAPIResult>(TERMS_URL, { isApiKeyRequired: true });
 
         const data = termsJson.data;
 
