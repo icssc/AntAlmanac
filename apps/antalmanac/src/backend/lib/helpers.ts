@@ -24,6 +24,19 @@ export async function fetchAnteaterAPI(url: string): Promise<Response> {
     return response;
 }
 
+export async function fetchAnteaterAPIData<Data>(url: string): Promise<Data> {
+    const response = await fetchAnteaterAPI(url);
+
+    try {
+        return await response.json();
+    } catch (err) {
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Failed to parse Anteater API response: ${err}`,
+        });
+    }
+}
+
 export async function queryGraphQL<PromiseReturnType>(queryString: string): Promise<PromiseReturnType | null> {
     const query = JSON.stringify({
         query: queryString,
