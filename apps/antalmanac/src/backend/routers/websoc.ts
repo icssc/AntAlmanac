@@ -11,7 +11,7 @@ import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
 
-import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
+import { fetchAnteaterAPIData } from '$src/backend/lib/helpers';
 
 const DEPARTMENT_YEAR_RANGE = 10;
 
@@ -76,17 +76,7 @@ const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
     const url = `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`;
     console.log('queryWebSoc', url);
 
-    const response = await fetchAnteaterAPI(url);
-
-    let data: WebsocAPIResult;
-    try {
-        data = await response.json();
-    } catch (err) {
-        throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: `Failed to parse Anteater API response: ${err}`,
-        });
-    }
+    const data = await fetchAnteaterAPIData<WebsocAPIResult>(url);
     console.log('queryWebSoc', data);
 
     if (!data?.ok || !data?.data) {
@@ -102,17 +92,7 @@ const queryWebSocDepartments = async () => {
     const minYear = new Date().getFullYear() - DEPARTMENT_YEAR_RANGE;
     const url = `https://anteaterapi.com/v2/rest/websoc/departments?since=${minYear}`;
 
-    const response = await fetchAnteaterAPI(url);
-
-    let data: WebsocDepartmentsAPIResult;
-    try {
-        data = await response.json();
-    } catch (err) {
-        throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: `Failed to parse Anteater API response: ${err}`,
-        });
-    }
+    const data = await fetchAnteaterAPIData<WebsocDepartmentsAPIResult>(url);
 
     if (!data?.ok || !data?.data) {
         throw new TRPCError({
