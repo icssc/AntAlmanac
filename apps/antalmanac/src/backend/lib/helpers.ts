@@ -1,20 +1,39 @@
 import { TRPCError } from '@trpc/server';
 
-export async function fetchAnteaterAPI(
+interface FetchAAPIOptions {
+    isApiKeyRequired?: boolean;
+    invalidResponseCallback?: null | ((response: Response) => void);
+    headers?: NonNullable<Parameters<typeof fetch>[1]>['headers'] | null;
+}
+
+/**
+ * Fetches AAPI data and throws errors with descriptive messages.
+ *
+ * @param url AAPI url to fetch from.
+ * @param options.isApiKeyRequired Throw an error if AAPI API key is invalid?
+ * @param options.invalidResponseCallback Function that is called when a response is invalid.
+ *        If provided and an error should be thrown, throw the error in the callback.
+ *        An error will not be thrown automatically.
+ * @param options.headers Headers to pass in addition or to replace default headers.
+ * @returns The response's data.
+ */
+export async function fetchAnteaterAPI<DataType>(
     url: string,
-    headersOverride: NonNullable<Parameters<typeof fetch>[1]>['headers'] | null = null
-): Promise<Response> {
+    { isApiKeyRequired = false, invalidResponseCallback = null, headers = null }: FetchAAPIOptions = {}
+) {
+    if (isApiKeyRequired && !process.env.ANTEATER_API_KEY) {
+        throw new Error('ANTEATER_API_KEY is required');
+    }
+
     let response: Response;
     try {
         response = await fetch(url, {
-            headers:
-                headersOverride === null
-                    ? {
-                          ...(process.env.ANTEATER_API_KEY && {
-                              Authorization: `Bearer ${process.env.ANTEATER_API_KEY}`,
-                          }),
-                      }
-                    : headersOverride,
+            headers: {
+                ...(process.env.ANTEATER_API_KEY && {
+                    Authorization: `Bearer ${process.env.ANTEATER_API_KEY}`,
+                }),
+                ...headers,
+            },
         });
     } catch (err) {
         throw new TRPCError({
@@ -24,22 +43,18 @@ export async function fetchAnteaterAPI(
     }
 
     if (!response.ok) {
-        throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: `Anteater API returned an error: ${response.status} ${response.statusText}`,
-        });
+        if (invalidResponseCallback !== null) {
+            invalidResponseCallback(response);
+        } else {
+            throw new TRPCError({
+                code: 'INTERNAL_SERVER_ERROR',
+                message: `Anteater API returned an error: ${response.status} ${response.statusText}`,
+            });
+        }
     }
-    return response;
-}
-
-export async function fetchAnteaterAPIData<Data>(
-    url: string,
-    headersOverride: NonNullable<Parameters<typeof fetch>[1]>['headers'] | null = null
-): Promise<Data> {
-    const response = await fetchAnteaterAPI(url, headersOverride);
 
     try {
-        return await response.json();
+        return (await response.json()) as DataType;
     } catch (err) {
         throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',

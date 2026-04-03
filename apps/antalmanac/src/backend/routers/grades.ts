@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
 
-import { fetchAnteaterAPIData } from '$src/backend/lib/helpers';
+import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
 
 const gradesRouter = router({
     aggregateGrades: procedure
@@ -16,7 +16,7 @@ const gradesRouter = router({
             })
         )
         .query(async ({ input }) => {
-            const result = await fetchAnteaterAPIData<AggregateGradesAPIResult>(
+            const result = await fetchAnteaterAPI<AggregateGradesAPIResult>(
                 `https://anteaterapi.com/v2/rest/grades/aggregate?${new URLSearchParams(input)}`
             );
             return result.data;
@@ -37,7 +37,7 @@ const gradesRouter = router({
                 })
         )
         .mutation(async ({ input }) => {
-            const result = await fetchAnteaterAPIData<AggregateGradesByOfferingAPIResult>(
+            const result = await fetchAnteaterAPI<AggregateGradesByOfferingAPIResult>(
                 `https://anteaterapi.com/v2/rest/grades/aggregateByOffering?${new URLSearchParams(
                     input as Record<string, string>
                 )}`

@@ -11,7 +11,7 @@ import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
 
-import { fetchAnteaterAPIData } from '$src/backend/lib/helpers';
+import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
 
 const DEPARTMENT_YEAR_RANGE = 10;
 
@@ -76,7 +76,7 @@ const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
     const url = `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`;
     console.log('queryWebSoc', url);
 
-    const data = await fetchAnteaterAPIData<WebsocAPIResult>(url);
+    const data = await fetchAnteaterAPI<WebsocAPIResult>(url);
     console.log('queryWebSoc', data);
 
     if (!data?.ok || !data?.data) {
@@ -92,7 +92,7 @@ const queryWebSocDepartments = async () => {
     const minYear = new Date().getFullYear() - DEPARTMENT_YEAR_RANGE;
     const url = `https://anteaterapi.com/v2/rest/websoc/departments?since=${minYear}`;
 
-    const data = await fetchAnteaterAPIData<WebsocDepartmentsAPIResult>(url);
+    const data = await fetchAnteaterAPI<WebsocDepartmentsAPIResult>(url);
 
     if (!data?.ok || !data?.data) {
         throw new TRPCError({

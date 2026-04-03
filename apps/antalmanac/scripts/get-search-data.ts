@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import type { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 
-import { fetchAnteaterAPIData, queryGraphQL } from '../src/backend/lib/helpers';
+import { fetchAnteaterAPI, queryGraphQL } from '../src/backend/lib/helpers';
 import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';
 
 import 'dotenv/config';
@@ -22,17 +22,13 @@ const ALIASES: Record<string, string | undefined> = {
 };
 
 async function main() {
-    const apiKey = process.env.ANTEATER_API_KEY;
-    if (!apiKey) throw new Error('ANTEATER_API_KEY is required');
-
     console.log('Generating cache for fuzzy search.');
     console.log('Fetching courses from Anteater API...');
-    const headers = { Authorization: `Bearer ${apiKey}` };
     const courses: Course[] = [];
     for (let skip = 0; skip < MAX_COURSES; skip += 100) {
-        const data = await fetchAnteaterAPIData<{ data: Course[] }>(
+        const data = await fetchAnteaterAPI<{ data: Course[] }>(
             `https://anteaterapi.com/v2/rest/courses?take=100&skip=${skip}`,
-            headers
+            { isApiKeyRequired: true }
         );
         courses.push(...data.data);
     }
