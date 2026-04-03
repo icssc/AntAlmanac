@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 import 'dotenv/config';
 import { WebsocSchool, WebsocTerm } from '@packages/antalmanac-types';
 
+import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const TERMS_URL = 'https://anteaterapi.com/v2/rest/websoc/terms';
@@ -18,18 +20,15 @@ interface DeployedTermsData {
     reason?: string;
 }
 
-async function getSectionCount(term: WebsocTerm, headers: Record<string, string>) {
+async function getSectionCount(term: WebsocTerm) {
     const [year, quarter] = term.shortName.split(' ');
     console.log(`Checking section count for ${year} ${quarter} from ${WEBSOC_URL}...`);
 
     const params = new URLSearchParams({ year, quarter });
-    const res = await fetch(`${WEBSOC_URL}?${params.toString()}`, { headers });
+    const json = await fetchAnteaterAPI<{ data: { schools: WebsocSchool[] } }>(`${WEBSOC_URL}?${params.toString()}`, {
+        isApiKeyRequired: true,
+    });
 
-    if (!res.ok) {
-        throw new Error(`API error: ${res.status}`);
-    }
-
-    const json = (await res.json()) as { data: { schools: WebsocSchool[] } };
     let count = 0;
     for (const school of json.data.schools) {
         for (const dept of school.departments) {
@@ -43,19 +42,9 @@ async function getSectionCount(term: WebsocTerm, headers: Record<string, string>
 
 async function updateTerms() {
     try {
-        const apiKey = process.env.ANTEATER_API_KEY;
-        if (!apiKey) throw new Error('ANTEATER_API_KEY is required');
-
-        const headers: Record<string, string> = { Authorization: `Bearer ${apiKey}` };
-
         console.log(`Fetching terms from ${TERMS_URL}...`);
-        const termsRes = await fetch(TERMS_URL, { headers });
+        const termsJson = await fetchAnteaterAPI<{ data: WebsocTerm[] }>(TERMS_URL, { isApiKeyRequired: true });
 
-        if (!termsRes.ok) {
-            throw new Error(`API returned ${termsRes.status}: ${termsRes.statusText}`);
-        }
-
-        const termsJson = (await termsRes.json()) as { data: WebsocTerm[] };
         const data = termsJson.data;
 
         if (!data || data.length === 0) {
@@ -63,7 +52,7 @@ async function updateTerms() {
         }
 
         const latestTerm = data[0].longName;
-        const currentCount = await getSectionCount(data[0], headers);
+        const currentCount = await getSectionCount(data[0]);
 
         console.log(`Latest term from API: ${latestTerm}`);
         console.log(`Total sections from API: ${currentCount}`);
