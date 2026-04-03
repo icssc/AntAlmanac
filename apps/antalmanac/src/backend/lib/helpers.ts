@@ -1,12 +1,20 @@
 import { TRPCError } from '@trpc/server';
 
-export async function fetchAnteaterAPI(url: string): Promise<Response> {
+export async function fetchAnteaterAPI(
+    url: string,
+    headersOverride: NonNullable<Parameters<typeof fetch>[1]>['headers'] | null = null
+): Promise<Response> {
     let response: Response;
     try {
         response = await fetch(url, {
-            headers: {
-                ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
-            },
+            headers:
+                headersOverride === null
+                    ? {
+                          ...(process.env.ANTEATER_API_KEY && {
+                              Authorization: `Bearer ${process.env.ANTEATER_API_KEY}`,
+                          }),
+                      }
+                    : headersOverride,
         });
     } catch (err) {
         throw new TRPCError({
@@ -24,8 +32,11 @@ export async function fetchAnteaterAPI(url: string): Promise<Response> {
     return response;
 }
 
-export async function fetchAnteaterAPIData<Data>(url: string): Promise<Data> {
-    const response = await fetchAnteaterAPI(url);
+export async function fetchAnteaterAPIData<Data>(
+    url: string,
+    headersOverride: NonNullable<Parameters<typeof fetch>[1]>['headers'] | null = null
+): Promise<Data> {
+    const response = await fetchAnteaterAPI(url, headersOverride);
 
     try {
         return await response.json();
