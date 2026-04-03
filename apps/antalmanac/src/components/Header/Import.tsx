@@ -25,7 +25,6 @@ import { Link } from 'react-router-dom';
 
 import {
     addCustomEvent,
-    openSnackbar,
     addCourse,
     importScheduleWithUsername,
     importValidatedSchedule,
@@ -49,6 +48,7 @@ import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 
 enum ImportSource {
     ZOT_COURSE_IMPORT = 'zotcourse',
