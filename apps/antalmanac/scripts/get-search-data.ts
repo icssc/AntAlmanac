@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import type { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
 
-import { queryGraphQL } from '../src/backend/lib/helpers';
+import { fetchAnteaterAPIData, queryGraphQL } from '../src/backend/lib/helpers';
 import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';
 
 import 'dotenv/config';
@@ -30,9 +30,11 @@ async function main() {
     const headers = { Authorization: `Bearer ${apiKey}` };
     const courses: Course[] = [];
     for (let skip = 0; skip < MAX_COURSES; skip += 100) {
-        await fetch(`https://anteaterapi.com/v2/rest/courses?take=100&skip=${skip}`, { headers })
-            .then((x) => x.json())
-            .then((x) => courses.push(...(x.data as Course[])));
+        const data = await fetchAnteaterAPIData<{ data: Course[] }>(
+            `https://anteaterapi.com/v2/rest/courses?take=100&skip=${skip}`,
+            headers
+        );
+        courses.push(...data.data);
     }
     console.log(`Fetched ${courses.length} courses.`);
     const courseMap = new Map<string, CourseSearchResult & { id: string }>();
