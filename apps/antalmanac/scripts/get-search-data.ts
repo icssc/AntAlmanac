@@ -2,7 +2,12 @@ import { access, mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import type { Course, CourseSearchResult, DepartmentSearchResult } from '@packages/antalmanac-types';
+import type {
+    Course,
+    CourseSearchResult,
+    DepartmentSearchResult,
+    CoursesFilteredAPIResult,
+} from '@packages/antalmanac-types';
 
 import { fetchAnteaterAPI, queryGraphQL } from '../src/backend/lib/helpers';
 import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';
@@ -26,7 +31,7 @@ async function main() {
     console.log('Fetching courses from Anteater API...');
     const courses: Course[] = [];
     for (let skip = 0; skip < MAX_COURSES; skip += 100) {
-        const data = await fetchAnteaterAPI<{ data: Course[] }>(
+        const data = await fetchAnteaterAPI<CoursesFilteredAPIResult>(
             `https://anteaterapi.com/v2/rest/courses?take=100&skip=${skip}`,
             { isApiKeyRequired: true }
         );
