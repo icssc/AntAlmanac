@@ -1,8 +1,8 @@
-import { Delete } from '@mui/icons-material';
-import { useTheme, useMediaQuery, Box, IconButton, CircularProgress } from '@mui/material';
+import { ArrowDropDown, Delete } from '@mui/icons-material';
+import { useTheme, useMediaQuery, Box, IconButton, CircularProgress, Popover } from '@mui/material';
 import { AASection, Course, CourseDetails } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { deleteCourse } from '$actions/AppStoreActions';
@@ -30,6 +30,7 @@ export const DeleteAndNotifications = memo(({ ...props }: DeleteAndNotifications
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const postHog = usePostHog();
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     const handleClick = useCallback(() => {
         deleteCourse(props.section.sectionCode, props.term, AppStore.getCurrentScheduleIndex());
@@ -39,6 +40,24 @@ export const DeleteAndNotifications = memo(({ ...props }: DeleteAndNotifications
             action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
         });
     }, [postHog, props.term, props.section.sectionCode]);
+
+    const notifications = initialized ? (
+        <NotificationsMenu {...props} />
+    ) : (
+        <IconButton disabled>
+            <CircularProgress size={15} />
+        </IconButton>
+    );
+
+    const colorPicker = (
+        <ColorPicker
+            color={props.section.color}
+            isCustomEvent={false}
+            sectionCode={props.section.sectionCode}
+            term={props.term}
+            analyticsCategory={analyticsEnum.addedClasses}
+        />
+    );
 
     return (
         <Box
@@ -52,29 +71,30 @@ export const DeleteAndNotifications = memo(({ ...props }: DeleteAndNotifications
                 <Delete fontSize="small" />
             </IconButton>
 
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexDirection: isMobile ? 'column' : 'row',
-                    alignItems: 'center',
-                }}
-            >
-                {initialized ? (
-                    <NotificationsMenu {...props} />
-                ) : (
-                    <IconButton disabled>
-                        <CircularProgress size={15} />
+            {isMobile ? (
+                <>
+                    <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
+                        <ArrowDropDown fontSize="small" />
                     </IconButton>
-                )}
-
-                <ColorPicker
-                    color={props.section.color}
-                    isCustomEvent={false}
-                    sectionCode={props.section.sectionCode}
-                    term={props.term}
-                    analyticsCategory={analyticsEnum.addedClasses}
-                />
-            </Box>
+                    <Popover
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={() => setAnchorEl(null)}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                        transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+                    >
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 0.5 }}>
+                            {notifications}
+                            {colorPicker}
+                        </Box>
+                    </Popover>
+                </>
+            ) : (
+                <>
+                    {notifications}
+                    {colorPicker}
+                </>
+            )}
         </Box>
     );
 });
