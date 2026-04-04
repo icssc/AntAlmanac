@@ -13,7 +13,6 @@ import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
-import { openSnackbar } from '$actions/AppStoreActions';
 import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
 import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
@@ -33,6 +32,7 @@ import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
