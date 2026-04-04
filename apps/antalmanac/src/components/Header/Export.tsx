@@ -17,9 +17,9 @@ import {
 import { ShortCourseSchedule } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
 
-import { openSnackbar } from '$actions/AppStoreActions';
 import { DODGER_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 
 export function Export() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
