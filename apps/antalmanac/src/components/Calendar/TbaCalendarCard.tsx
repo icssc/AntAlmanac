@@ -1,7 +1,9 @@
 import { ExpandMore, InfoOutlined } from '@mui/icons-material';
-import { Collapse, IconButton, Alert, AlertTitle, Box, Typography, useTheme, Fade } from '@mui/material';
+import { Collapse, IconButton, Alert, AlertTitle, Box, Typography, Fade } from '@mui/material';
 import { useEffect, useState } from 'react';
 
+import { BLUE } from '$src/globals';
+//import { lightBlue } from '@mui/material/colors';
 import AppStore from '$stores/AppStore';
 
 interface TbaSection {
@@ -15,8 +17,6 @@ interface TbaCalendarCardProps {
 }
 
 function TbaCircleButton({ onClick }: { onClick: () => void }) {
-    const theme = useTheme();
-
     return (
         <Box
             sx={{
@@ -36,14 +36,12 @@ function TbaCircleButton({ onClick }: { onClick: () => void }) {
                     width: 48,
                     height: 48,
                     borderRadius: '50%',
-                    bgcolor: theme.palette.background.paper,
-                    color: theme.palette.text.primary,
-                    border: `1px solid ${theme.palette.info.light}`,
+                    bgcolor: BLUE,
                     boxShadow: 2,
                     cursor: 'pointer',
                 }}
             >
-                <Typography variant="button" sx={{ fontWeight: 600, letterSpacing: 1 }}>
+                <Typography variant="button" sx={{ fontWeight: 600, letterSpacing: 1, color: 'white' }}>
                     TBA
                 </Typography>
             </Box>
@@ -60,8 +58,6 @@ function TbaExpandedCard({
     collapsed: boolean;
     onToggle: () => void;
 }) {
-    const theme = useTheme();
-
     return (
         <Box
             sx={{
@@ -76,13 +72,13 @@ function TbaExpandedCard({
             <Alert
                 icon={<InfoOutlined fontSize="small" />}
                 severity="info"
-                variant="outlined"
+                variant="filled"
                 sx={{
-                    bgcolor: theme.palette.background.paper,
                     width: '100%',
                     alignItems: collapsed ? 'center' : 'flex-start',
                     py: 1,
                     px: 1,
+                    bgcolor: BLUE,
                     '& .MuiAlert-icon': {
                         margin: 0,
                     },
