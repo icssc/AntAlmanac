@@ -64,6 +64,7 @@ export const DeleteAndNotifications = memo(({ ...props }: DeleteAndNotifications
             sx={{
                 display: 'flex',
                 alignItems: 'center',
+                flexDirection: isMobile ? 'column' : 'row',
                 justifyContent: 'center',
             }}
         >
