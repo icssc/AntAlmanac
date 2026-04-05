@@ -1,0 +1,42 @@
+apps/antalmanac/src/backend/lib/rds.ts
+  cb0ed9264ccee4e3 212,228,232,235-237,243,256,262-264,279,282,285,290,294,296-300,302-303,309-310,317-320,322,324,328-331,335
+apps/antalmanac/src/stores/Schedules.ts
+  cb0ed9264ccee4e3 571-575,577-581
+apps/antalmanac/tests/schedule-id-race-condition.test.ts
+  cb0ed9264ccee4e3 1-245
+apps/antalmanac/src/actions/AppStoreActions.ts
+  cb0ed9264ccee4e3 140-141,193-194
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.5",
+  "base_commit_sha": "8f0d670b97a82768fea8dfe2e0f526a51cd94072",
+  "prompts": {
+    "c5a8324b51d88e38": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "03a8953e-81ac-49ef-bdac-787ba50d5098",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 623,
+      "overriden_lines": 0
+    },
+    "cb0ed9264ccee4e3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d2fb9958-3ad7-4425-aaf6-239c593f04d6",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 383,
+      "total_deletions": 127,
+      "accepted_lines": 299,
+      "overriden_lines": 0
+    }
+  }
+}
