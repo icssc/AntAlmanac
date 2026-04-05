@@ -10,7 +10,6 @@ import type {
 } from '@packages/antalmanac-types';
 import { createId } from '@paralleldrive/cuid2';
 
-
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 
 import { getDefaultTerm } from '$lib/termData';
@@ -569,13 +568,19 @@ export class Schedules {
     /**
      * Updates the persistent DB schedule IDs in the store after a successful save.
      * This ensures subsequent saves can update in-place rather than re-inserting.
+     *
+     * Keyed by frontend CUID (the id each schedule had when the save request was
+     * sent) rather than by array position. Position-based mapping is unsafe because
+     * the user may have reordered or added a schedule while the request was
+     * in-flight, which would write the returned DB IDs to the wrong slots.
      */
-    updateScheduleIds(ids: string[]) {
-        ids.forEach((id, index) => {
-            if (this.schedules[index]) {
-                this.schedules[index].scheduleId = id;
+    updateScheduleIds(scheduleIdMap: Record<string, string>) {
+        for (const schedule of this.schedules) {
+            const dbId = scheduleIdMap[schedule.scheduleId];
+            if (dbId !== undefined) {
+                schedule.scheduleId = dbId;
             }
-        });
+        }
     }
 
     /**

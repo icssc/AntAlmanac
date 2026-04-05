@@ -209,7 +209,7 @@ export class RDS {
     static async upsertUserData(
         db: DatabaseOrTransaction,
         userData: User
-    ): Promise<{ userId: string; scheduleIds: string[] }> {
+    ): Promise<{ userId: string; scheduleIdMap: Record<string, string> }> {
         return db.transaction(async (tx) => {
             const account = await this.registerUserAccount(
                 db,
@@ -225,19 +225,22 @@ export class RDS {
             }
 
             // Add schedules and courses
-            const scheduleIds = await this.upsertSchedulesAndContents(tx, userId, userData.userData.schedules);
+            const scheduleIdMap = await this.upsertSchedulesAndContents(tx, userId, userData.userData.schedules);
 
             // Update user's current schedule index
             const scheduleIndex = userData.userData.scheduleIndex;
+            const scheduleDbIds = Object.values(scheduleIdMap);
 
             const currentScheduleId =
-                scheduleIndex === undefined || scheduleIndex >= scheduleIds.length ? null : scheduleIds[scheduleIndex];
+                scheduleIndex === undefined || scheduleIndex >= scheduleDbIds.length
+                    ? null
+                    : scheduleDbIds[scheduleIndex];
 
             if (currentScheduleId !== null) {
                 await tx.update(users).set({ currentScheduleId: currentScheduleId }).where(eq(users.id, userId));
             }
 
-            return { userId, scheduleIds };
+            return { userId, scheduleIdMap };
         });
     }
 
@@ -250,16 +253,15 @@ export class RDS {
      *
      * @returns The schedule's DB ID
      */
-    private static async upsertScheduleAndContents(
+    private static async insertScheduleAndContents(
         tx: Transaction,
         userId: string,
         schedule: ShortCourseSchedule,
         index: number,
         existingIds: Set<string>
-    ): Promise<string> {
-        // Only allow the incoming ID to trigger an update if it actually belongs
-        // to this user. An unrecognized or foreign ID must not be used in the
-        // conflict target — clear it so the DB generates a fresh UUID instead.
+    ): Promise<{ frontendId: string | undefined; dbId: string }> {
+        // Reuse the existing DB ID if this schedule was previously saved by this
+        // user. An unrecognized or foreign ID must not be trusted — generate fresh.
         const safeId = schedule.id && existingIds.has(schedule.id) ? schedule.id : undefined;
 
         const result = await tx
@@ -272,65 +274,65 @@ export class RDS {
                 index,
                 lastUpdated: new Date(),
             })
-            .onConflictDoUpdate({
-                target: schedules.id,
-                set: {
-                    name: schedule.scheduleName,
-                    notes: schedule.scheduleNote,
-                    index,
-                    lastUpdated: new Date(),
-                },
-            })
             .returning({ id: schedules.id });
 
-        const scheduleId = result[0].id;
+        const dbId = result[0].id;
 
         await Promise.all([
-            this.upsertCourses(tx, scheduleId, schedule.courses).catch((error) => {
+            this.upsertCourses(tx, dbId, schedule.courses).catch((error) => {
                 throw new Error(`Failed to upsert courses for ${schedule.scheduleName}: ${error}`);
             }),
-            this.upsertCustomEvents(tx, scheduleId, schedule.customEvents).catch((error) => {
+            this.upsertCustomEvents(tx, dbId, schedule.customEvents).catch((error) => {
                 throw new Error(`Failed to upsert custom events for ${schedule.scheduleName}: ${error}`);
             }),
         ]);
 
-        return scheduleId;
+        return { frontendId: schedule.id, dbId };
     }
 
     /**
-     * Syncs a user's schedules to match the provided array:
-     * upserts each schedule and its contents, and deletes any schedules
-     * no longer present. Uniqueness of names and indices is enforced by
-     * deferred DB constraints that are checked at transaction commit.
-     * Rolls back on any constraint violation or DB error.
+     * Syncs a user's schedules to match the provided array.
      *
-     * @returns The DB IDs of the upserted schedules, in input order
+     * Deletes all existing schedules first (courses/events cascade), then
+     * re-inserts — this avoids any transient uniqueness conflicts on
+     * (user_id, name) or (user_id, index) without requiring deferred
+     * constraints. Known DB IDs are reused via safeId so foreign key
+     * references (e.g. users.currentScheduleId) survive the round-trip.
+     *
+     * Returns a map of frontend CUID → DB ID so callers can key results
+     * by schedule identity rather than array position.
      */
     private static async upsertSchedulesAndContents(
         tx: Transaction,
         userId: string,
         scheduleArray: ShortCourseSchedule[]
-    ): Promise<string[]> {
+    ): Promise<Record<string, string>> {
+        // Snapshot existing IDs before deleting so we can validate safeIds below.
         const existingSchedules = await tx
             .select({ id: schedules.id })
             .from(schedules)
             .where(eq(schedules.userId, userId));
         const existingIds = new Set(existingSchedules.map((s) => s.id));
 
-        const scheduleIds = await Promise.all(
+        // Delete all schedules up-front. Courses and custom events cascade.
+        // users.currentScheduleId is set null on delete and updated at the end
+        // of upsertUserData, so no FK violation occurs.
+        await tx.delete(schedules).where(eq(schedules.userId, userId));
+
+        const results = await Promise.all(
             scheduleArray.map((schedule, index) =>
-                this.upsertScheduleAndContents(tx, userId, schedule, index, existingIds)
+                this.insertScheduleAndContents(tx, userId, schedule, index, existingIds)
             )
         );
 
-        const incomingIds = new Set(scheduleIds);
-        for (const existingId of existingIds) {
-            if (!incomingIds.has(existingId)) {
-                await tx.delete(schedules).where(eq(schedules.id, existingId));
+        const scheduleIdMap: Record<string, string> = {};
+        for (const { frontendId, dbId } of results) {
+            if (frontendId !== undefined) {
+                scheduleIdMap[frontendId] = dbId;
             }
         }
 
-        return scheduleIds;
+        return scheduleIdMap;
     }
 
     /**

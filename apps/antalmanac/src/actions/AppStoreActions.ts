@@ -137,8 +137,8 @@ export const saveSchedule = async (
                     },
                 });
 
-                if (result?.scheduleIds) {
-                    AppStore.schedule.updateScheduleIds(result.scheduleIds);
+                if (result?.scheduleIdMap) {
+                    AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
                 }
 
                 if (useSessionStore.getState().sessionIsValid) {
@@ -190,8 +190,8 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
             },
         });
 
-        if (result?.scheduleIds) {
-            AppStore.schedule.updateScheduleIds(result.scheduleIds);
+        if (result?.scheduleIdMap) {
+            AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
         }
 
         deleteTempSaveData();
