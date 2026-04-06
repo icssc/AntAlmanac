@@ -1,9 +1,10 @@
-import { MenuItem, type SelectChangeEvent } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select, type SelectChangeEvent } from '@mui/material';
+import { useId } from 'react';
 
-import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { SORT_OPTIONS, useSectionFilterStore, type SortOption } from '$stores/SectionFilterStore';
 
 export function SearchFilter() {
+    const id = useId();
     const { sortBy, setSortBy } = useSectionFilterStore();
 
     const handleChange = (event: SelectChangeEvent<string>) => {
@@ -11,22 +12,21 @@ export function SearchFilter() {
     };
 
     return (
-        <LabeledSelect
-            label="Sort By"
-            selectProps={{
-                value: sortBy,
-                onChange: handleChange,
-                sx: {
-                    width: '100%',
-                },
-            }}
-            isAligned={true}
-        >
-            {SORT_OPTIONS.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                </MenuItem>
-            ))}
-        </LabeledSelect>
+        <FormControl size="small">
+            <InputLabel id={id}>Sort By</InputLabel>
+            <Select
+                labelId={id}
+                value={sortBy}
+                label="Sort By"
+                onChange={handleChange}
+                sx={{ height: 32, fontSize: '0.85rem' }}
+            >
+                {SORT_OPTIONS.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                    </MenuItem>
+                ))}
+            </Select>
+        </FormControl>
     );
 }
