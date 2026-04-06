@@ -1,7 +1,17 @@
-import type { WebsocAPIResponse, CourseInfo, WebsocCourse, WebsocSectionType } from '@packages/antalmanac-types';
+import type {
+    WebsocAPIResponse,
+    WebsocAPIResult,
+    WebsocDepartmentsAPIResult,
+    CourseInfo,
+    WebsocCourse,
+    WebsocSectionType,
+} from '@packages/antalmanac-types';
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
+
+const DEPARTMENT_YEAR_RANGE = 10;
 
 function sanitizeSearchParams(params: Record<string, string>) {
     if ('term' in params) {
@@ -60,18 +70,79 @@ function sortWebsocResponse(response: WebsocAPIResponse) {
     return response;
 }
 
+async function fetchAnteaterAPI(url: string): Promise<Response> {
+    let response: Response;
+    try {
+        response = await fetch(url, {
+            headers: {
+                ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
+            },
+        });
+    } catch (err) {
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Failed to reach the Anteater API: ${err}`,
+        });
+    }
+
+    if (!response.ok) {
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Anteater API returned an error: ${response.status} ${response.statusText}`,
+        });
+    }
+    return response;
+}
+
 const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
     const url = `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`;
     console.log('queryWebSoc', url);
 
-    const response = await fetch(url, {
-        headers: {
-            ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
-        },
-    });
-    const data = await response.json();
+    const response = await fetchAnteaterAPI(url);
+
+    let data: WebsocAPIResult;
+    try {
+        data = await response.json();
+    } catch (err) {
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Failed to parse Anteater API response: ${err}`,
+        });
+    }
     console.log('queryWebSoc', data);
-    return sortWebsocResponse(data.data as WebsocAPIResponse);
+
+    if (!data?.ok || !data?.data) {
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Anteater API returned an unexpected response shape',
+        });
+    }
+    return sortWebsocResponse(data.data);
+};
+
+const queryWebSocDepartments = async () => {
+    const minYear = new Date().getFullYear() - DEPARTMENT_YEAR_RANGE;
+    const url = `https://anteaterapi.com/v2/rest/websoc/departments?since=${minYear}`;
+
+    const response = await fetchAnteaterAPI(url);
+
+    let data: WebsocDepartmentsAPIResult;
+    try {
+        data = await response.json();
+    } catch (err) {
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: `Failed to parse Anteater API response: ${err}`,
+        });
+    }
+
+    if (!data?.ok || !data?.data) {
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Departments API returned no data',
+        });
+    }
+    return data.data;
 };
 
 function combineWebsocResponses(responses: WebsocAPIResponse[]) {
@@ -147,6 +218,9 @@ const websocRouter = router({
             }
         }
         return courseInfo;
+    }),
+    getDepartments: procedure.query(async () => {
+        return await queryWebSocDepartments();
     }),
 });
 

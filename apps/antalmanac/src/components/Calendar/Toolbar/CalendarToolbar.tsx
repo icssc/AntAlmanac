@@ -167,9 +167,17 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                             size="small"
                             sx={{
                                 border: '1px solid',
-                                borderColor: showFinalsSchedule ? 'primary' : 'inherit',
+                                borderColor: showFinalsSchedule ? theme.palette.primary.main : 'inherit',
                                 borderRadius: '4px',
                                 padding: '3px',
+                                ...(showFinalsSchedule &&
+                                    theme.palette.mode === 'dark' && {
+                                        backgroundColor: theme.palette.primary.main,
+                                        color: '#fff',
+                                        '&:hover': {
+                                            backgroundColor: theme.palette.primary.dark,
+                                        },
+                                    }),
                             }}
                         >
                             {showFinalsSchedule ? <DescriptionIcon /> : <DescriptionOutlinedIcon />}

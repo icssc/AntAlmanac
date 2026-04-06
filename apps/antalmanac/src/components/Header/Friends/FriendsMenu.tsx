@@ -22,9 +22,9 @@ import type { SxProps, Theme } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { openSnackbar } from '$actions/AppStoreActions';
 import trpc from '$lib/api/trpc';
 import { useThemeStore } from '$stores/SettingsStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 
 const friendCardSx: SxProps<Theme> = {
     display: 'flex',

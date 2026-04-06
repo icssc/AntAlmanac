@@ -5,15 +5,16 @@ import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useMatch, useNavigate, useParams } from 'react-router-dom';
 
-import { changeCurrentSchedule, importSharedScheduleById, openSnackbar } from '$actions/AppStoreActions';
+import { changeCurrentSchedule, importSharedScheduleById } from '$actions/AppStoreActions';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
-import { removeLocalStorageUnsavedActions } from '$lib/localStorage';
+import { removeLocalStorageTempSaveData } from '$lib/localStorage';
 import { SHARED_SCHEDULE_PREFIX } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import { createEmptyShortCourseSchedule } from '$stores/scheduleHelpers';
 
 interface Props {
@@ -60,7 +61,7 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
         async (userId: string) => {
             try {
                 beginLoadingSchedule();
-                removeLocalStorageUnsavedActions();
+                removeLocalStorageTempSaveData();
 
                 const userData = await trpc.userData.getFriendUserData.query({ userId });
 
@@ -154,7 +155,7 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
 
             try {
                 beginLoadingSchedule();
-                removeLocalStorageUnsavedActions();
+                removeLocalStorageTempSaveData();
 
                 const sharedSchedule = await trpc.userData.getSharedSchedule.query({
                     scheduleId,

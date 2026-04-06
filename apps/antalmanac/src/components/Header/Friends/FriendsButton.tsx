@@ -4,11 +4,11 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { FriendsMenu, type Friend, type FriendRequest } from './FriendsMenu';
 
-import { openSnackbar } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 
 export function FriendsButton() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

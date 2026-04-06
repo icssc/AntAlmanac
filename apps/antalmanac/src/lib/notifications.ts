@@ -1,6 +1,6 @@
 import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId } from '$lib/localStorage';
-import { Notification } from '$stores/NotificationStore';
+import type { Notification } from '$stores/NotificationStore';
+import { useSessionStore } from '$stores/SessionStore';
 
 function _transformNotificationToApiFormat(notification: Notification) {
     return {
@@ -14,31 +14,26 @@ function _transformNotificationToApiFormat(notification: Notification) {
     };
 }
 
+function getUserId(): string | null {
+    return useSessionStore.getState().userId;
+}
+
 class NotificationsClient {
     async getNotifications() {
-        const currentSession = getLocalStorageSessionId();
-        if (currentSession) {
-            const userId = await trpc.auth.getSessionUserId.query({ token: currentSession ?? '' });
-            if (userId) {
-                return await trpc.notifications.get.query({ userId });
-            }
-        } else {
-            return [];
+        const userId = getUserId();
+        if (userId) {
+            return await trpc.notifications.get.query({ userId });
         }
+        return [];
     }
 
     async setNotifications(notifications: Notification[]) {
-        const currentSession = getLocalStorageSessionId();
-        if (currentSession) {
-            const userId = await trpc.auth.getSessionUserId.query({ token: currentSession ?? '' });
-            if (userId) {
-                const transformedNotifications = notifications.map(_transformNotificationToApiFormat);
-                return await trpc.notifications.set.mutate({ userId, notifications: transformedNotifications });
-            }
-        } else {
-            console.error('No session found to set notifications successfully.');
-            return;
+        const userId = getUserId();
+        if (userId) {
+            const transformedNotifications = notifications.map(_transformNotificationToApiFormat);
+            return await trpc.notifications.set.mutate({ userId, notifications: transformedNotifications });
         }
+        console.error('No session found to set notifications successfully.');
     }
 
     async updateNotifications(notification: Notification) {
@@ -47,20 +42,15 @@ class NotificationsClient {
     }
 
     async deleteNotification(notification: Notification) {
-        const currentSession = getLocalStorageSessionId();
-        if (currentSession) {
-            const userId = await trpc.auth.getSessionUserId.query({ token: currentSession ?? '' });
-            if (userId) {
-                const transformedNotification = _transformNotificationToApiFormat(notification);
-                return await trpc.notifications.deleteNotification.mutate({
-                    userId,
-                    notification: transformedNotification,
-                });
-            }
-        } else {
-            console.error('No session found to delete notification successfully.');
-            return;
+        const userId = getUserId();
+        if (userId) {
+            const transformedNotification = _transformNotificationToApiFormat(notification);
+            return await trpc.notifications.deleteNotification.mutate({
+                userId,
+                notification: transformedNotification,
+            });
         }
+        console.error('No session found to delete notification successfully.');
     }
 }
 

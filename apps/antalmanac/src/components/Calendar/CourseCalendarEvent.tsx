@@ -148,13 +148,11 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                         marginBottom: '0.25rem',
                     }}
                 >
-                    <Tooltip title="Quick Search">
-                        <span>
-                            <Button size="small" onClick={handleQuickSearch}>
-                                <Search fontSize="small" style={{ marginRight: 5 }} />
-                                <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{`${title} ${sectionType}`}</span>
-                            </Button>
-                        </span>
+                    <Tooltip title="Quick Search (or CMD/CTRL + Click event)">
+                        <Button size="small" color="secondary" onClick={handleQuickSearch}>
+                            <Search fontSize="small" style={{ marginRight: 5 }} />
+                            <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>{`${title} ${sectionType}`}</span>
+                        </Button>
                     </Tooltip>
                     <Tooltip title="Delete">
                         <span>

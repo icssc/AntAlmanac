@@ -141,3 +141,38 @@ export function createEmptyShortCourseSchedule(): ShortCourseSchedule {
         id: undefined,
     };
 }
+
+/**
+ * Combines department code, course number, and course title to create an ID unique to a course.
+ */
+export function getCourseId(course: Pick<ScheduleCourse, 'deptCode' | 'courseNumber' | 'courseTitle'>) {
+    return course.deptCode + course.courseNumber + course.courseTitle;
+}
+
+/**
+ * Temporary measure to group each course's sections together
+ * since previous courses were unsorted.
+ *
+ * Once there are likely no users with unsorted courses, probably in a few years,
+ * this function and its call can be deleted.
+ *
+ * Date written: March 2026
+ */
+export function groupCourseSections(courses: ScheduleCourse[]): ScheduleCourse[] {
+    const courseIndexes: { [courseId: string]: number } = {};
+    const groupedCourses: ScheduleCourse[][] = [];
+    let index = 0;
+    for (const course of courses) {
+        const courseId = getCourseId(course);
+        if (!Object.hasOwn(courseIndexes, courseId)) {
+            courseIndexes[courseId] = index;
+            groupedCourses.push([]);
+            index++;
+        }
+    }
+    for (const course of courses) {
+        const courseIndex = courseIndexes[getCourseId(course)];
+        groupedCourses[courseIndex].push(course);
+    }
+    return groupedCourses.flat();
+}

@@ -1,5 +1,5 @@
-import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
-import { AACourse, ShortCourseSchedule } from '@packages/antalmanac-types';
+import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography, useTheme } from '@mui/material';
+import { AACourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -14,6 +14,7 @@ import { CopyScheduleButton } from '$components/buttons/Copy';
 import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
+import { LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 
 /**
@@ -50,10 +51,13 @@ function getCourses() {
                 needleCourse.courseTitle === course.courseTitle
         );
 
+        const sectionUpdatedAt = course.section?.updatedAt ?? null;
+
         if (formattedCourse) {
             formattedCourse.sections.push({
                 ...course.section,
             });
+            formattedCourse.updatedAt = sectionUpdatedAt;
         } else {
             formattedCourse = {
                 term: course.term,
@@ -68,7 +72,7 @@ function getCourses() {
                         ...course.section,
                     },
                 ],
-                updatedAt: null,
+                updatedAt: sectionUpdatedAt ?? null,
             };
             formattedCourses.push(formattedCourse);
         }
@@ -148,6 +152,7 @@ function CustomEventsBox() {
 }
 
 function ScheduleNoteBox() {
+    const theme = useTheme();
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
     const isReadonlyView = useIsReadonlyView();
@@ -233,6 +238,14 @@ function ScheduleNoteBox() {
                     input: {
                         disableUnderline: true,
                     },
+                    ...(theme.palette.mode === 'dark' && {
+                        '& .MuiInputLabel-root': {
+                            color: LIGHT_BLUE,
+                        },
+                        '& .MuiInputLabel-root.Mui-focused': {
+                            color: LIGHT_BLUE,
+                        },
+                    }),
                 }}
             />
         </Box>

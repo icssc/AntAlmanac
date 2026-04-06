@@ -127,6 +127,25 @@ export class RDS {
                 .then((res) => res[0])
         );
     }
+
+    /**
+     * Retrieves a google ID by their user ID from the database.
+     *
+     * @param db - The database to use for the query.
+     * @param userId - The ID of the user to retrieve.
+     * @returns The google ID if found, otherwise null.
+     */
+    static async getGoogleIdByUserId(db: DatabaseOrTransaction, userId: string): Promise<string | null> {
+        return db.transaction((tx) =>
+            tx
+                .select({ providerAccountId: accounts.providerAccountId })
+                .from(accounts)
+                .where(eq(accounts.userId, userId))
+                .limit(1)
+                .then((res) => (res.length > 0 ? res[0].providerAccountId : null))
+        );
+    }
+
     /**
      * Creates a new user and an associated account with the specified provider ID.
      *
@@ -823,9 +842,16 @@ export class RDS {
      * @param db - The database or transaction object to use for the operation.
      * @param userId - The ID of the user for whom we're upserting a notification.
      * @param notification - The notification object to upsert.
+     * @param environment - "production" on production; staging instance + number on staging (e.g. "staging-1337").
      * @returns A promise that upserts the notification associated with a userId.
      */
-    static async upsertNotification(db: DatabaseOrTransaction, userId: string, notification: Notification) {
+    static async upsertNotification(
+        db: DatabaseOrTransaction,
+        userId: string,
+        notification: Notification,
+        environmentValue?: string | null
+    ) {
+        const environment = environmentValue ?? '';
         return db.transaction((tx) =>
             tx
                 .insert(subscriptions)
@@ -840,13 +866,14 @@ export class RDS {
                     notifyOnRestriction: notification.notifyOn.notifyOnRestriction,
                     lastUpdatedStatus: notification.lastUpdatedStatus,
                     lastCodes: notification.lastCodes,
+                    environment: environment,
                 })
                 .onConflictDoUpdate({
                     target: [
                         subscriptions.userId,
+                        subscriptions.sectionCode,
                         subscriptions.year,
                         subscriptions.quarter,
-                        subscriptions.sectionCode,
                     ],
                     set: {
                         notifyOnOpen: notification.notifyOn.notifyOnOpen,
@@ -855,6 +882,7 @@ export class RDS {
                         notifyOnRestriction: notification.notifyOn.notifyOnRestriction,
                         lastUpdatedStatus: notification.lastUpdatedStatus,
                         lastCodes: notification.lastCodes,
+                        environment: environment,
                     },
                 })
         );

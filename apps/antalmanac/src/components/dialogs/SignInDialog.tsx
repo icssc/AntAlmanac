@@ -7,7 +7,7 @@ import { loginUser } from '$actions/AppStoreActions';
 interface SignInDialogProps {
     open: boolean;
     isDark: boolean;
-    feature: 'Load' | 'Save' | 'Notification' | 'Friends';
+    feature: 'Load' | 'Save' | 'Notification' | 'Planner' | 'Friends';
     onClose: () => void;
 }
 
@@ -28,29 +28,33 @@ export function SignInDialog(props: SignInDialogProps) {
         }
     };
 
-    const title =
-        feature === 'Notification'
-            ? 'Sign in to Use Notifications'
-            : feature === 'Friends'
-              ? 'Sign in to Use Friends'
-              : 'Save';
-
+    const getTitle = () => {
+        switch (feature) {
+            case 'Notification':
+                return 'Sign in to Use Notifications';
+            case 'Planner':
+                return 'Sign in to Use Filter by Planner';
+            case 'Save':
+            default:
+                return 'Save';
+        }
+    };
     return (
         <Dialog
             open={open}
             onClose={handleClose}
             maxWidth={'xl'}
             fullScreen={true}
-            sx={{
-                '& .MuiDialog-paper': {
+            PaperProps={{
+                sx: {
                     width: 'fit-content',
                     height: 'fit-content',
                     borderRadius: '0.5rem',
                 },
-                padding: '1rem',
             }}
+            sx={{ padding: '1rem' }}
         >
-            <DialogTitle>{title}</DialogTitle>
+            <DialogTitle>{getTitle()}</DialogTitle>
             <DialogContent>
                 {isLoggingIn ? (
                     <Stack alignItems="center" justifyContent="center" spacing={2} sx={{ py: 3, minWidth: 280 }}>

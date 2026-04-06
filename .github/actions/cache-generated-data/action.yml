@@ -1,0 +1,31 @@
+name: Cache Generated Data
+description: Restores, generates, and caches generated data
+
+inputs:
+  api-key:
+    description: 'Anteater API key'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Restore termData cache
+      uses: actions/cache/restore@v5
+      with:
+        path: apps/antalmanac/src/generated
+        key: termData-cache-${{ github.ref_name }}-
+        restore-keys: |
+          termData-cache-${{ github.ref_name }}-
+          termData-cache-main-
+
+    - name: Generate termData
+      run: pnpm --filter antalmanac get-data
+      shell: bash
+      env:
+        ANTEATER_API_KEY: ${{ inputs.api-key }}
+
+    - name: Save termData cache
+      uses: actions/cache/save@v5
+      with:
+        path: apps/antalmanac/src/generated
+        key: termData-cache-${{ github.ref_name }}-${{ hashFiles('apps/antalmanac/src/generated/**/*') }}

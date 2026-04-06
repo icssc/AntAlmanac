@@ -4,7 +4,6 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
 import { type ReactNode } from 'react';
 
 import { Header } from '$components/Header/Header';
-import { HelpMenu } from '$components/HelpMenu/HelpMenu';
 import InstallPWABanner from '$components/InstallPWABanner';
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
@@ -33,7 +32,6 @@ function HomePageWrapper({ children, hideHeader }: Props) {
             </Stack>
 
             <NotificationSnackbar />
-            <HelpMenu />
         </LocalizationProvider>
     );
 }

@@ -16,7 +16,7 @@ import {
     setLocalStorageSessionId,
     setLocalStorageOnFirstSignin,
 } from '$lib/localStorage';
-import { IMPORTED_SCHEDULE_PREFIX } from '$src/globals';
+import { clearSsoCookie, setSsoCookie } from '$lib/ssoCookie';
 import AppStore from '$stores/AppStore';
 
 export function AuthPage() {
@@ -30,6 +30,13 @@ export function AuthPage() {
         }
 
         try {
+            // Silent SSO returned an error — the auth server has no session.
+            if (searchParams.get('error') === 'login_required') {
+                clearSsoCookie();
+                window.location.href = '/';
+                return;
+            }
+
             const code = searchParams.get('code');
             const state = searchParams.get('state');
             if (!code || !state) {
@@ -60,6 +67,7 @@ export function AuthPage() {
             }
 
             setLocalStorageSessionId(sessionToken);
+            setSsoCookie();
 
             // load schedule without saving any changes
             if (fromLoading !== '') {
@@ -118,7 +126,8 @@ export function AuthPage() {
             window.location.href = '/';
         } catch (error) {
             console.error('Error during authentication', error);
-            isAuthenticatingRef.current = false;
+            clearSsoCookie();
+            window.location.href = '/';
         }
     }, [searchParams]);
 
