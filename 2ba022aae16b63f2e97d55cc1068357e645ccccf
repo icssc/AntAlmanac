@@ -1,0 +1,55 @@
+packages/db/migrations/meta/0011_snapshot.json
+  a9da4f8bb50a7270 1-602
+packages/db/migrations/meta/0009_snapshot.json
+  a9da4f8bb50a7270 1-605
+packages/db/migrations/meta/0010_snapshot.json
+  a9da4f8bb50a7270 1-595
+apps/antalmanac/src/components/SharedScheduleBanner.tsx
+  a9da4f8bb50a7270 8,12,64,158
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.5",
+  "base_commit_sha": "2ba022aae16b63f2e97d55cc1068357e645ccccf",
+  "prompts": {
+    "8c97a94113f92768": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "62b63c51-f3c3-4004-a26d-8bbf70238ff8",
+        "model": "claude-4.6-sonnet-medium-thinking"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 1,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "a9da4f8bb50a7270": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "eaf62539-f49b-4580-8954-f8596f782b8b",
+        "model": "claude-4.6-sonnet-medium-thinking"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 1827,
+      "total_deletions": 11,
+      "accepted_lines": 1809,
+      "overriden_lines": 0
+    },
+    "cb0ed9264ccee4e3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d2fb9958-3ad7-4425-aaf6-239c593f04d6",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 1,
+      "overriden_lines": 3
+    }
+  }
+}
