@@ -218,6 +218,9 @@ importers:
       '@packages/antalmanac-types':
         specifier: workspace:^
         version: link:../../packages/types
+      '@paralleldrive/cuid2':
+        specifier: ^2.2.2
+        version: 2.2.2
       '@reactour/tour':
         specifier: ^3.6.1
         version: 3.7.0(react@19.2.1)

@@ -110,7 +110,7 @@ export const saveSchedule = async (
             }
 
             try {
-                await trpc.userData.saveUserData.mutate({
+                const result = await trpc.userData.saveUserData.mutate({
                     id: providerId,
                     data: {
                         id: providerId,
@@ -120,6 +120,10 @@ export const saveSchedule = async (
                         userData: scheduleSaveState,
                     },
                 });
+
+                if (result?.scheduleIdMap) {
+                    AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
+                }
 
                 if (useSessionStore.getState().sessionIsValid) {
                     openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
@@ -159,7 +163,7 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
 
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
     try {
-        await trpc.userData.saveUserData.mutate({
+        const result = await trpc.userData.saveUserData.mutate({
             id: providerID,
             data: {
                 id: providerID,
@@ -169,6 +173,10 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
                 userData: scheduleSaveState,
             },
         });
+
+        if (result?.scheduleIdMap) {
+            AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
+        }
 
         deleteTempSaveData();
         AppStore.saveSchedule();
