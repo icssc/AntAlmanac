@@ -5,6 +5,7 @@ import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/Label
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 
 const GE_LIST = [
+    { value: 'ANY', label: 'Clear' },
     { value: 'ANY', label: 'Status' },
     { value: 'GE-1A', label: 'Time' },
     { value: 'GE-1B', label: 'Date: MWF' },
@@ -19,20 +20,6 @@ export function SearchFilter() {
 
         setGe(value);
         RightPaneStore.updateFormValue('ge', value);
-
-        const stateObj = { url: 'url' };
-        const url = new URL(window.location.href);
-        const urlParam = new URLSearchParams(url.search);
-
-        urlParam.delete('ge');
-
-        if (value !== 'ANY') {
-            urlParam.append('ge', value);
-        }
-
-        const param = urlParam.toString();
-        const new_url = `${param.trim() ? '?' : ''}${param}`;
-        history.replaceState(stateObj, 'url', '/' + new_url);
     };
 
     const resetField = useCallback(() => {
