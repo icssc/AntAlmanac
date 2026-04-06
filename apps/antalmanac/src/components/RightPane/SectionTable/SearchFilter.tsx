@@ -19,7 +19,7 @@ export function SearchFilter() {
                 value={sortBy}
                 label="Sort By"
                 onChange={handleChange}
-                sx={{ height: 32, fontSize: '0.85rem' }}
+                sx={{ height: 12, fontSize: '0.55rem' }}
             >
                 {SORT_OPTIONS.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
