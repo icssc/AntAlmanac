@@ -1,5 +1,5 @@
 import { Assessment, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
-import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Alert, Box, Button, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useMemo } from 'react';
 
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
@@ -118,6 +118,12 @@ function SectionTable({
                     marginTop: '4px',
                 }}
             >
+                {sortable ? (
+                    <Button variant="contained" color="secondary" sx={{ padding: 0, minWidth: 0, minHeight: 0 }}>
+                        <SortableList.DragHandle iconSx={{ color: '#212529' }} />
+                    </Button>
+                ) : null}
+
                 <CourseInfoBar
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
@@ -162,8 +168,6 @@ function SectionTable({
                         />
                     }
                 />
-
-                {sortable ? <SortableList.DragHandle /> : null}
             </Box>
 
             {missingSections?.length > 0 && (
