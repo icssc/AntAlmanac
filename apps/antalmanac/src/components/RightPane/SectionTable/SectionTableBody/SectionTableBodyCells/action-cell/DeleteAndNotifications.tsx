@@ -1,5 +1,5 @@
-import { Delete } from '@mui/icons-material';
-import { useTheme, useMediaQuery, Box, IconButton, CircularProgress } from '@mui/material';
+import { Delete, Visibility, VisibilityOff } from '@mui/icons-material';
+import { useTheme, useMediaQuery, Box, IconButton, CircularProgress, Tooltip } from '@mui/material';
 import { AASection, Course, CourseDetails } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { memo, useCallback } from 'react';
@@ -10,6 +10,7 @@ import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTab
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { Term } from '$lib/termData';
 import AppStore from '$stores/AppStore';
+import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { useNotificationStore } from '$stores/NotificationStore';
 
 interface DeleteAndNotificationsProps {
@@ -31,6 +32,11 @@ export const DeleteAndNotifications = memo(({ ...props }: DeleteAndNotifications
     const flexDirection = isMobile ? 'column' : undefined;
     const postHog = usePostHog();
 
+    const scheduleIndex = AppStore.getCurrentScheduleIndex();
+    const [isHidden, toggleHidden] = useHiddenCoursesStore(
+        useShallow((state) => [state.isHidden(scheduleIndex, props.section.sectionCode), state.toggleHidden])
+    );
+
     const handleClick = useCallback(() => {
         deleteCourse(props.section.sectionCode, props.term, AppStore.getCurrentScheduleIndex());
 
@@ -39,6 +45,10 @@ export const DeleteAndNotifications = memo(({ ...props }: DeleteAndNotifications
             action: analyticsEnum.addedClasses.actions.DELETE_COURSE,
         });
     }, [postHog, props.term, props.section.sectionCode]);
+
+    const handleToggleVisibility = useCallback(() => {
+        toggleHidden(AppStore.getCurrentScheduleIndex(), props.section.sectionCode);
+    }, [props.section.sectionCode, toggleHidden]);
 
     return (
         <Box
@@ -52,6 +62,12 @@ export const DeleteAndNotifications = memo(({ ...props }: DeleteAndNotifications
             <IconButton onClick={handleClick}>
                 <Delete fontSize="small" />
             </IconButton>
+
+            <Tooltip title={isHidden ? 'Show in calendar' : 'Hide in calendar'}>
+                <IconButton onClick={handleToggleVisibility} size="small">
+                    {isHidden ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                </IconButton>
+            </Tooltip>
 
             {initialized ? (
                 <NotificationsMenu {...props} />

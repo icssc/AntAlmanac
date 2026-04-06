@@ -23,6 +23,7 @@ import {
 } from '$lib/localStorage';
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
+import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
@@ -72,6 +73,7 @@ export const ScheduleCalendar = memo(() => {
         useShallow((state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal])
     );
     const isDark = useThemeStore(useShallow((store) => store.isDark));
+    const hiddenCourses = useHiddenCoursesStore((state) => state.hiddenCourses);
 
     const { openLoadingSchedule: loadingSchedule } = scheduleComponentsToggleStore();
     const hasHadEventsRef = useRef(false);
@@ -195,19 +197,28 @@ export const ScheduleCalendar = memo(() => {
         return new Date(2018, 0, 1, Math.min(7, Math.min(...eventStartHours)));
     }, [events]);
 
-    const eventStyleGetter = useCallback((event: CalendarEvent | SkeletonEvent) => {
-        const isSkeletonEvent = 'isSkeletonEvent' in event && event.isSkeletonEvent;
+    const eventStyleGetter = useCallback(
+        (event: CalendarEvent | SkeletonEvent) => {
+            const isSkeletonEvent = 'isSkeletonEvent' in event && event.isSkeletonEvent;
 
-        const style = {
-            backgroundColor: event.color,
-            cursor: 'pointer',
-            borderStyle: 'none',
-            borderRadius: '4px',
-            color: colorContrastSufficient(event.color) ? 'white' : 'black',
-        };
+            const hidden =
+                !isSkeletonEvent &&
+                !('isCustomEvent' in event && event.isCustomEvent) &&
+                (hiddenCourses[String(currentScheduleIndex)]?.includes((event as CourseEvent).sectionCode) ?? false);
 
-        return isSkeletonEvent ? { style, className: 'calendar-loading-event' } : { style };
-    }, []);
+            const style = {
+                backgroundColor: event.color,
+                cursor: 'pointer',
+                borderStyle: 'none',
+                borderRadius: '4px',
+                color: colorContrastSufficient(event.color) ? 'white' : 'black',
+                ...(hidden && { opacity: 0.3 }),
+            };
+
+            return isSkeletonEvent ? { style, className: 'calendar-loading-event' } : { style };
+        },
+        [currentScheduleIndex, hiddenCourses]
+    );
 
     /**
      * This prop getter overrides `react-big-calendar`'s built-in `.rbc-today` style which applies a light blue coloring on both light and dark mode.
