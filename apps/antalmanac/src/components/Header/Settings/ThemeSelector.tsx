@@ -1,23 +1,23 @@
 import { LightMode, SettingsBrightness, DarkMode } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { usePostHog } from 'posthog-js/react';
 
-import { BLUE } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 const THEME_OPTIONS = [
     { value: 'light', label: 'Light', icon: <LightMode fontSize="medium" /> },
     { value: 'system', label: 'System', icon: <SettingsBrightness fontSize="medium" /> },
-    { value: 'dark', label: 'Dark', icon: <DarkMode fontSize="small" /> },
+    { value: 'dark', label: 'Dark', icon: <DarkMode fontSize="medium" /> },
 ];
 
 export function ThemeSelector() {
-    const [themeSetting, isDark, setTheme] = useThemeStore((store) => [
-        store.themeSetting,
-        store.isDark,
-        store.setAppTheme,
-    ]);
+    const theme = useTheme();
+    const accentColor = theme.palette.secondary.main;
+    const segment = theme.palette.settingsSegment;
+
+    const [themeSetting, setTheme] = useThemeStore((store) => [store.themeSetting, store.setAppTheme]);
 
     const { forceUpdate } = useCoursePaneStore();
     const postHog = usePostHog();
@@ -36,8 +36,8 @@ export function ThemeSelector() {
             <Box
                 sx={{
                     display: 'flex',
-                    border: `1px solid ${isDark ? '#8886' : '#d3d4d5'}`,
-                    borderRadius: '4px',
+                    border: `1px solid ${theme.palette.divider}`,
+                    borderRadius: 1,
                 }}
             >
                 {THEME_OPTIONS.map((tab, index) => {
@@ -52,7 +52,7 @@ export function ThemeSelector() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                minwidth: 0,
+                                minWidth: 0,
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                                 gap: 0.5,
@@ -60,15 +60,15 @@ export function ThemeSelector() {
                                 cursor: 'pointer',
                                 fontWeight: 'bold',
                                 fontSize: '1.1rem',
-                                backgroundColor: isSelected ? BLUE : isDark ? '#333333' : '#f8f9fa',
-                                color: isSelected ? '#fff' : BLUE,
-                                borderRight: index < 2 ? `1px solid ${isDark ? '#8886' : '#d3d4d5'}` : 'none',
-                                borderTopLeftRadius: tab.value === 'light' ? 4 : 0,
-                                borderBottomLeftRadius: tab.value === 'light' ? 4 : 0,
-                                borderTopRightRadius: tab.value === 'dark' ? 4 : 0,
-                                borderBottomRightRadius: tab.value === 'dark' ? 4 : 0,
+                                backgroundColor: isSelected ? theme.palette.primary.main : segment.background,
+                                color: isSelected ? theme.palette.primary.contrastText : accentColor,
+                                borderRight: index < 2 ? `1px solid ${theme.palette.divider}` : 'none',
+                                borderTopLeftRadius: tab.value === 'light' ? 2 : 0,
+                                borderBottomLeftRadius: tab.value === 'light' ? 2 : 0,
+                                borderTopRightRadius: tab.value === 'dark' ? 2 : 0,
+                                borderBottomRightRadius: tab.value === 'dark' ? 2 : 0,
                                 '&:hover': {
-                                    backgroundColor: isSelected ? BLUE : isDark ? '#424649' : '#d3d4d5',
+                                    backgroundColor: isSelected ? theme.palette.primary.main : segment.hoverBackground,
                                 },
                             }}
                         >
