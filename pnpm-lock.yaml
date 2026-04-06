@@ -94,6 +94,9 @@ importers:
       '@packages/anteater-api-types':
         specifier: workspace:*
         version: link:../../packages/anteater-api-types
+      '@packages/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@react-email/components':
         specifier: ^1.0.8
         version: 1.0.8(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
