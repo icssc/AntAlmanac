@@ -1,5 +1,5 @@
 import { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent, Notification } from '@packages/antalmanac-types';
-import { db } from '@packages/db/src/index';
+import { db } from '@packages/db';
 import * as schema from '@packages/db/src/schema';
 import {
     schedules,
