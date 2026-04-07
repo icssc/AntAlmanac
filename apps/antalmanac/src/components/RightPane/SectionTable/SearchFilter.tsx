@@ -21,7 +21,7 @@ export function SearchFilter() {
                 return `Sort: ${option?.label ?? ''}`;
             }}
             sx={(theme) => ({
-                height: '25.75px',
+                height: '26px',
                 fontSize: '0.8125rem',
                 fontWeight: 500,
                 textTransform: 'none',
