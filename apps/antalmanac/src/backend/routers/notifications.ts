@@ -1,4 +1,4 @@
-import { db } from '@packages/db/src/index';
+import { db } from '@packages/db';
 import { z } from 'zod';
 
 import { RDS } from '../../backend/lib/rds';
