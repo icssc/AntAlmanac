@@ -8,7 +8,6 @@ import moment from 'moment';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
 import { useShallow } from 'zustand/react/shallow';
-import { shallow } from 'zustand/shallow';
 
 import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
 import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
@@ -71,8 +70,7 @@ export const ScheduleCalendar = memo(() => {
     const sectionColor = useSectionColorStore((s) => s.sectionColor);
     const { isMilitaryTime } = useTimeFormatStore();
     const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
-        (state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal],
-        shallow
+        useShallow((state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal])
     );
     const isDark = useThemeStore(useShallow((store) => store.isDark));
 
