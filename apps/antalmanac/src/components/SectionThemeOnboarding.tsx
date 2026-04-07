@@ -24,16 +24,12 @@ import { useHelpMenuStore } from '$stores/HelpMenuStore';
 import { type SectionColorSetting, useSectionColorStore, useThemeStore } from '$stores/SettingsStore';
 import { colorVariants } from '$stores/scheduleHelpers';
 
-// ─── Theme option metadata ────────────────────────────────────────────────────
-
 interface ThemeOption {
     value: SectionColorSetting;
     label: string;
     description: string;
     icon: React.ReactNode;
-    /** Representative swatches shown in the preview strip */
     swatches: string[];
-    /** Mini "event block" rows shown in the calendar preview */
     previewRows: { label: string; color: string }[];
 }
 
@@ -41,7 +37,7 @@ const THEME_OPTIONS: ThemeOption[] = [
     {
         value: 'default',
         label: 'Default',
-        description: 'Soft Material Design pastels — easy on the eyes for long planning sessions.',
+        description: 'Soft, gentle, pastels that are easy on the eyes.',
         icon: <Palette fontSize="small" />,
         swatches: [
             colorVariants.default.blue[0],
@@ -62,7 +58,7 @@ const THEME_OPTIONS: ThemeOption[] = [
     {
         value: 'legacy',
         label: 'Legacy',
-        description: 'The classic AntAlmanac palette — bold, saturated colors from the original app.',
+        description: 'The classic AntAlmanac palette: bold, saturated colors from the original app.',
         icon: <History fontSize="small" />,
         swatches: [
             colorVariants.legacy.blue[0],
@@ -103,9 +99,6 @@ const THEME_OPTIONS: ThemeOption[] = [
     },
 ];
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
-/** Small rectangular swatch */
 function Swatch({ color }: { color: string }) {
     return (
         <Box
@@ -120,7 +113,6 @@ function Swatch({ color }: { color: string }) {
     );
 }
 
-/** Mini calendar event row used inside the preview card */
 function PreviewEventRow({ label, color }: { label: string; color: string }) {
     return (
         <Box
@@ -193,7 +185,6 @@ function ThemeCard({ option, isSelected, isDark, onSelect }: ThemeCardProps) {
                 </Box>
             )}
 
-            {/* Header row: icon + label */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
                 <Box sx={{ color: isSelected ? BLUE : 'text.secondary', display: 'flex', alignItems: 'center' }}>
                     {option.icon}
@@ -210,7 +201,6 @@ function ThemeCard({ option, isSelected, isDark, onSelect }: ThemeCardProps) {
                 </Typography>
             </Box>
 
-            {/* Description */}
             <Typography
                 variant="caption"
                 sx={{
@@ -222,14 +212,12 @@ function ThemeCard({ option, isSelected, isDark, onSelect }: ThemeCardProps) {
                 {option.description}
             </Typography>
 
-            {/* Swatch strip */}
             <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
                 {option.swatches.map((color, i) => (
                     <Swatch key={i} color={color} />
                 ))}
             </Box>
 
-            {/* Mini calendar preview */}
             <Box
                 sx={{
                     display: 'flex',
@@ -249,12 +237,9 @@ function ThemeCard({ option, isSelected, isDark, onSelect }: ThemeCardProps) {
     );
 }
 
-/** Custom backdrop with a test ID */
 function OnboardingBackdrop(props: BackdropProps) {
     return <Backdrop {...props} data-testid={backdropTestId} />;
 }
-
-// ─── Main component ───────────────────────────────────────────────────────────
 
 function SectionThemeOnboarding() {
     const [showSectionThemeOnboarding, setShowSectionThemeOnboarding] = useHelpMenuStore(
@@ -272,16 +257,13 @@ function SectionThemeOnboarding() {
     const muiTheme = useTheme();
     const isSmall = useMediaQuery(muiTheme.breakpoints.down('md'));
 
-    // Local selection state — only committed when the user clicks "Apply"
     const [pendingSelection, setPendingSelection] = useState<SectionColorSetting>(sectionColor);
 
-    /** Dismiss the dialog and mark it as seen, without changing the theme. */
     const handleKeepCustom = useCallback(() => {
         setLocalStorageSectionColorOnboarding('seen');
         setShowSectionThemeOnboarding(false);
     }, [setShowSectionThemeOnboarding]);
 
-    /** Apply the selected theme, then dismiss. */
     const handleApply = useCallback(() => {
         if (pendingSelection !== sectionColor) {
             forceUpdate();
@@ -318,10 +300,9 @@ function SectionThemeOnboarding() {
                 <Stack spacing={2.5}>
                     <Typography variant="body2" color="text.secondary">
                         AntAlmanac now supports multiple color themes for your calendar sections. Pick the palette that
-                        fits your style, or skip to keep your individually customized section colors.
+                        fits your style, or skip to keep your individually customized section colors.{' '}
                     </Typography>
 
-                    {/* Theme option cards */}
                     <Box
                         sx={{
                             display: 'grid',
@@ -340,10 +321,8 @@ function SectionThemeOnboarding() {
                         ))}
                     </Box>
 
-                    <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mt: -0.5 }}>
-                        You can always change your theme later in <strong>Settings → Section Color</strong>. Choosing a
-                        theme will re-color sections that still have their auto-assigned colors. Any colors you have
-                        manually customized will remain unchanged.
+                    <Typography variant="body2" color="text.secondary">
+                        You can always change your theme later in <strong>Settings → Section Color</strong>.
                     </Typography>
                 </Stack>
             </DialogContent>
@@ -382,7 +361,6 @@ function SectionThemeOnboarding() {
 export { SectionThemeOnboarding };
 export default SectionThemeOnboarding;
 
-/* ── Test IDs ─────────────────────────────────────────────────────────────── */
 export const dialogTestId = 'section-theme-onboarding-dialog';
 export const backdropTestId = 'section-theme-onboarding-backdrop';
 export const applyButtonTestId = 'section-theme-onboarding-apply';
