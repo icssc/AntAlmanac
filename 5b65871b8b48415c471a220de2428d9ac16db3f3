@@ -1,0 +1,25 @@
+apps/antalmanac/src/actions/AppStoreActions.ts
+  c7589341853d3e88 285,297,299
+apps/antalmanac/src/components/SharedScheduleBanner.tsx
+  c7589341853d3e88 289,294,296,303
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.5",
+  "base_commit_sha": "5b65871b8b48415c471a220de2428d9ac16db3f3",
+  "prompts": {
+    "c7589341853d3e88": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "255ba2a5-94d0-4094-a1cc-406d1a0de02a",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 7,
+      "total_deletions": 5,
+      "accepted_lines": 7,
+      "overriden_lines": 0
+    }
+  }
+}
