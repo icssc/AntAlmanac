@@ -13,6 +13,7 @@ import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
 import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
 import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
 import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
+import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { skeletonBlueprintVariations } from '$components/Calendar/skeletonBlueprintVariations';
 import { useIsMobile } from '$hooks/useIsMobile';
@@ -26,7 +27,6 @@ import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
-import TbaCalenderCard from '$components/Calendar/TbaCalendarCard';
 
 /*
 //  * Always start week on Saturday for finals potentially on weekends.
@@ -356,7 +356,7 @@ export const ScheduleCalendar = memo(() => {
                 onScreenshot={() => setScreenshotTrigger((v) => v + 1)}
             />
             <Box id="screenshot" height="0" flexGrow={1}>
-                <TbaCalenderCard screenshotTrigger={screenshotTrigger} />
+                <TbaCalendarCard screenshotTrigger={screenshotTrigger} />
                 <CalendarEventPopover />
 
                 <Calendar<CalendarEvent, object>

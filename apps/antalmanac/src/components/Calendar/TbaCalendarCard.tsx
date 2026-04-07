@@ -105,7 +105,7 @@ function TbaExpandedCard({ tbaSections, onToggle }: { tbaSections: TbaSection[];
     );
 }
 
-export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardProps) {
+export function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardProps) {
     const [tbaSections, setTbaSections] = useState<TbaSection[]>([]);
     const [collapsed, setCollapsed] = useState(true);
     const visible = tbaSections.length > 0;
