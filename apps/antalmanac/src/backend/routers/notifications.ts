@@ -1,4 +1,4 @@
-import { db } from '@packages/db/src/index';
+import { db } from '@packages/db';
 import { z } from 'zod';
 
 import { RDS } from '../../backend/lib/rds';
@@ -29,8 +29,9 @@ const notificationsRouter = router({
     set: procedure
         .input(z.object({ userId: z.string(), notifications: z.array(NotificationSchema) }))
         .mutation(async ({ input }) => {
+            const stage = process.env.STAGE?.trim() || '';
             await Promise.all(
-                input.notifications.map((notification) => RDS.upsertNotification(db, input.userId, notification))
+                input.notifications.map((notification) => RDS.upsertNotification(db, input.userId, notification, stage))
             );
         }),
 

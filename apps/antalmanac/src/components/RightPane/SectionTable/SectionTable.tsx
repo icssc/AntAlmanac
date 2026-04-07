@@ -13,6 +13,7 @@ import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTabl
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
@@ -68,6 +69,7 @@ const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
 function SectionTable(props: SectionTableProps) {
     const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory, missingSections = [] } = props;
+    const { isMilitaryTime } = useTimeFormatStore();
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
@@ -76,6 +78,18 @@ function SectionTable(props: SectionTableProps) {
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
     }, [courseDetails.deptCode, courseDetails.courseNumber]);
+
+    const formattedTime = useMemo(() => {
+        if (!courseDetails.updatedAt) return null;
+        const date = new Date(courseDetails.updatedAt);
+        if (isNaN(date.getTime())) return null;
+        const timeString = date.toLocaleTimeString(undefined, {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: !isMilitaryTime,
+        });
+        return timeString.replace(/^0(\d)/, '$1');
+    }, [courseDetails.updatedAt, isMilitaryTime]);
 
     /**
      * Limit table width to force side scrolling.
@@ -200,6 +214,7 @@ function SectionTable(props: SectionTableProps) {
                         allowHighlight={allowHighlight}
                         scheduleNames={scheduleNames}
                         analyticsCategory={analyticsCategory}
+                        formattedTime={formattedTime}
                     />
                 </Table>
             </TableContainer>

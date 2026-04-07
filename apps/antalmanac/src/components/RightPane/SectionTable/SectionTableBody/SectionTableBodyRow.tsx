@@ -28,6 +28,7 @@ interface SectionTableBodyRowProps {
     scheduleNames: string[];
     scheduleConflict: boolean;
     analyticsCategory: AnalyticsCategory;
+    formattedTime: string | null;
 }
 
 // These components have too varied of types, any is fine here
@@ -47,7 +48,16 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
 };
 
 export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
-    const { section, courseDetails, term, allowHighlight, scheduleNames, scheduleConflict, analyticsCategory } = props;
+    const {
+        section,
+        courseDetails,
+        term,
+        allowHighlight,
+        scheduleNames,
+        scheduleConflict,
+        analyticsCategory,
+        formattedTime,
+    } = props;
 
     const theme = useTheme();
     const isDark = useThemeStore((store) => store.isDark);
@@ -93,7 +103,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             /* allowHighlight is always false on CourseRenderPane and always true on AddedCoursePane */
             const computedAddedCourseStyle = allowHighlight
                 ? isDark
-                    ? { backgroundColor: '#b0b04f' }
+                    ? { backgroundColor: '#b0b04fa0' }
                     : { backgroundColor: '#fcfc97' }
                 : {};
 
@@ -101,17 +111,15 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         }
 
         if (scheduleConflict) {
-            const computedScheduleConflictStyle = scheduleConflict
-                ? isDark
-                    ? { backgroundColor: '#121212', opacity: '0.6' }
-                    : { backgroundColor: '#a0a0a0', opacity: '1' }
-                : {};
+            const computedScheduleConflictStyle = isDark
+                ? { backgroundColor: '#121212', opacity: '0.6' }
+                : { backgroundColor: '#a0a0a0', opacity: '1' };
 
             return computedScheduleConflictStyle;
         }
 
         return {};
-    }, [allowHighlight, isDark, scheduleConflict, addedCourse]);
+    }, [addedCourse, allowHighlight, isDark, scheduleConflict]);
 
     return (
         <TableRow
@@ -146,6 +154,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
                             courseName={`${courseDetails.deptCode} ${courseDetails.courseNumber}`}
                             {...courseDetails}
                             analyticsCategory={analyticsCategory}
+                            formattedTime={formattedTime}
                         />
                     );
                 })}

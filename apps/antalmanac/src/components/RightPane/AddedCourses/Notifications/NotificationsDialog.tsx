@@ -1,12 +1,23 @@
 import { Notifications } from '@mui/icons-material';
-import { Dialog, DialogContent, DialogTitle, DialogActions, Button, IconButton, SxProps, Tooltip, Box } from '@mui/material';
-import { useCallback, useState, useEffect } from 'react';
+import {
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    DialogActions,
+    Button,
+    IconButton,
+    SxProps,
+    Tooltip,
+    Box,
+    useTheme,
+} from '@mui/material';
+import { useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
 import { NotificationsTabs } from '$components/RightPane/AddedCourses/Notifications/NotificationsTabs';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import { useNotificationStore } from '$stores/NotificationStore';
+import { LIGHT_BLUE } from '$src/globals';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
@@ -16,28 +27,17 @@ interface NotificationsDialogProps {
 }
 
 export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogProps) {
+    const theme = useTheme();
     const [open, setOpen] = useState(false);
     const [signInOpen, setSignInOpen] = useState<boolean>(false);
-    const loadNotifications = useNotificationStore(useShallow((store) => store.loadNotifications));
     const isDark = useThemeStore((store) => store.isDark);
 
-    const { session, isGoogleUser, fetchUserData } = useSessionStore(
+    const { session, isGoogleUser } = useSessionStore(
         useShallow((state) => ({
             session: state.session,
             isGoogleUser: state.isGoogleUser,
-            fetchUserData: state.fetchUserData,
         }))
     );
-
-    useEffect(() => {
-        if (isGoogleUser) {
-            loadNotifications();
-        }
-    }, [isGoogleUser, loadNotifications]);
-
-    useEffect(() => {
-        fetchUserData(session);
-    }, [session, fetchUserData]);
 
     const handleOpen = useCallback(() => {
         if (isGoogleUser) {
@@ -78,11 +78,28 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
                         <NotificationEmailTooltip sessionToken={session} />
                     </Box>
                 </DialogTitle>
-                <DialogContent>
+                <DialogContent
+                    sx={
+                        theme.palette.mode === 'dark'
+                            ? {
+                                  '& a, & a:hover, & a:visited': { color: LIGHT_BLUE },
+                                  '& .MuiTab-root': { color: 'text.secondary' },
+                                  '& .MuiTab-root.Mui-selected': { color: LIGHT_BLUE },
+                                  '& .MuiTabs-indicator': { backgroundColor: LIGHT_BLUE },
+                                  '& .MuiCheckbox-root.Mui-checked': { color: LIGHT_BLUE },
+                                  '& .MuiChip-label': { color: 'text.primary' },
+                                  '& .MuiTablePagination-actions .MuiIconButton-root': {
+                                      color: 'text.primary',
+                                  },
+                                  '& .MuiTablePagination-selectIcon': { color: 'text.primary' },
+                              }
+                            : undefined
+                    }
+                >
                     <NotificationsTabs />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} variant="text" sx={{ color: 'white' }}>
+                    <Button onClick={handleClose} color="inherit">
                         Close
                     </Button>
                 </DialogActions>

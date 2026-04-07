@@ -2,12 +2,11 @@ import './App.css';
 
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { TourProvider } from '@reactour/tour';
-import { SnackbarProvider } from 'notistack';
 import { useEffect } from 'react';
 import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
 import { undoDelete, redoDelete } from '$actions/AppStoreActions';
-// import { AutoSignIn } from '$components/AutoSignIn';
+import { AutoSignIn } from '$components/AutoSignIn';
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
 import AppPostHogProvider from '$providers/PostHog';
 import AppQueryProvider from '$providers/Query';
@@ -26,7 +25,7 @@ function RouteLayout() {
     return (
         <>
             <PosthogPageviewTracker />
-            {/* <AutoSignIn /> */}
+            <AutoSignIn />
             <Outlet />
         </>
     );
@@ -132,9 +131,7 @@ export default function App() {
                                 }),
                             }}
                         >
-                            <SnackbarProvider classes={{ containerRoot: 'notification-snackbar-container' }}>
-                                <RouterProvider router={ROUTER} />
-                            </SnackbarProvider>
+                            <RouterProvider router={ROUTER} />
                         </TourProvider>
                     </AppQueryProvider>
                 </AppPostHogProvider>
