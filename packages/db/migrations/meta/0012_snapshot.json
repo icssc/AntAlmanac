@@ -1,6 +1,6 @@
 {
-    "id": "c7d3a2e1-8f4b-4d9a-b6c5-e7f8a9b0c1d2",
-    "prevId": "5e93e8b1-1737-43da-8ac5-e0acd4eb4f99",
+    "id": "d8e4b3f2-9a5c-4e0b-c7d6-f8a9b0c1d2e3",
+    "prevId": "c7d3a2e1-8f4b-4d9a-b6c5-e7f8a9b0c1d2",
     "version": "7",
     "dialect": "postgresql",
     "tables": {
@@ -210,6 +210,13 @@
                     "type": "timestamp with time zone",
                     "primaryKey": false,
                     "notNull": true
+                },
+                "shared_with_friends": {
+                    "name": "shared_with_friends",
+                    "type": "boolean",
+                    "primaryKey": false,
+                    "notNull": true,
+                    "default": true
                 }
             },
             "indexes": {},

@@ -123,7 +123,9 @@ export const saveSchedule = async (
                     },
                 });
 
-                AppStore.setSchedules(result?.scheduleIds);
+                if (result?.scheduleIdMap) {
+                    AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
+                }
 
                 if (useSessionStore.getState().sessionIsValid) {
                     openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
@@ -174,7 +176,9 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
             },
         });
 
-        AppStore.setSchedules(result?.scheduleIds);
+        if (result?.scheduleIdMap) {
+            AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
+        }
 
         deleteTempSaveData();
         AppStore.saveSchedule();

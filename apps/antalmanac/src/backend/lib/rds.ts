@@ -14,10 +14,11 @@ import {
     sessions,
     Account,
     Session,
-    subscriptions,
 } from '@packages/db/src/schema';
-import { and, eq, ExtractTablesWithRelations, gt, notInArray } from 'drizzle-orm';
+import { and, eq, ExtractTablesWithRelations, gt } from 'drizzle-orm';
 import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
+
+import { NotificationRDS } from './notification-rds';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
 type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;
@@ -219,80 +220,6 @@ export class RDS {
     }
 
     /**
-     * Updates an existing schedule (reusing id for persistent share links) or inserts a new one.
-     * When the client sends an existing schedule id that belongs to this user, we update that row
-     * and replace its courses/events so the share link keeps showing the latest data.
-     */
-    private static async upsertScheduleAndContents(
-        tx: Transaction,
-        userId: string,
-        schedule: ShortCourseSchedule,
-        index: number
-    ): Promise<string> {
-        const existingId = schedule.id && schedule.id.trim() !== '' ? schedule.id : null;
-        const lastUpdated = new Date();
-
-        if (existingId) {
-            const existing = await tx
-                .select({ id: schedules.id })
-                .from(schedules)
-                .where(and(eq(schedules.id, existingId), eq(schedules.userId, userId)))
-                .limit(1)
-                .then((res) => res[0]);
-
-            if (existing) {
-                await tx
-                    .update(schedules)
-                    .set({
-                        name: schedule.scheduleName,
-                        notes: schedule.scheduleNote,
-                        index,
-                        lastUpdated,
-                    })
-                    .where(eq(schedules.id, existingId));
-
-                await Promise.all([
-                    this.upsertCourses(tx, existingId, schedule.courses).catch((error) => {
-                        throw new Error(`Failed to update courses for ${schedule.scheduleName}: ${error}`);
-                    }),
-                    this.upsertCustomEvents(tx, existingId, schedule.customEvents).catch((error) => {
-                        throw new Error(`Failed to update custom events for ${schedule.scheduleName}: ${error}`);
-                    }),
-                ]);
-                return existingId;
-            }
-        }
-
-        // New schedule or id not owned by this user: insert
-        const scheduleResult = await tx
-            .insert(schedules)
-            .values({
-                userId,
-                name: schedule.scheduleName,
-                notes: schedule.scheduleNote,
-                index,
-                lastUpdated,
-            })
-            .returning({ id: schedules.id });
-
-        const scheduleId = scheduleResult[0].id;
-        if (scheduleId === undefined) {
-            throw new Error(`Failed to insert schedule for ${userId}`);
-        }
-
-        await Promise.all([
-            this.upsertCourses(tx, scheduleId, schedule.courses).catch((error) => {
-                throw new Error(`Failed to insert courses for ${schedule.scheduleName}: ${error}`);
-            }),
-            this.upsertCustomEvents(tx, scheduleId, schedule.customEvents).catch((error) => {
-                throw new Error(`Failed to insert custom events for ${schedule.scheduleName}: ${error}`);
-            }),
-        ]);
-
-        return scheduleId;
-    }
-
-    /**
      * Does the same thing as `insertGuestUserData`, but also updates the user's schedules and courses if they exist.
      *
      * @param db The Drizzle client or transaction object
@@ -302,7 +229,7 @@ export class RDS {
     static async upsertUserData(
         db: DatabaseOrTransaction,
         userData: User
-    ): Promise<{ userId: string; scheduleIds: string[] }> {
+    ): Promise<{ userId: string; scheduleIdMap: Record<string, string> }> {
         return db.transaction(async (tx) => {
             const account = await this.registerUserAccount(
                 db,
@@ -318,43 +245,114 @@ export class RDS {
             }
 
             // Add schedules and courses
-            const scheduleIds = await this.upsertSchedulesAndContents(tx, userId, userData.userData.schedules);
+            const scheduleIdMap = await this.upsertSchedulesAndContents(tx, userId, userData.userData.schedules);
 
             // Update user's current schedule index
             const scheduleIndex = userData.userData.scheduleIndex;
+            const scheduleDbIds = Object.values(scheduleIdMap);
 
             const currentScheduleId =
-                scheduleIndex === undefined || scheduleIndex >= scheduleIds.length ? null : scheduleIds[scheduleIndex];
+                scheduleIndex === undefined || scheduleIndex >= scheduleDbIds.length
+                    ? null
+                    : scheduleDbIds[scheduleIndex];
 
             if (currentScheduleId !== null) {
                 await tx.update(users).set({ currentScheduleId: currentScheduleId }).where(eq(users.id, userId));
             }
 
-            return { userId, scheduleIds };
+            return { userId, scheduleIdMap };
         });
     }
 
     /**
-     * Syncs user's schedules: reuses existing schedule IDs when provided (so share links stay valid),
-     * updates content for those, inserts new rows for new schedules, and deletes schedules no longer in the list.
+     * Inserts a schedule and syncs its courses and custom events.
+     *
+     * If `schedule.id` is a known DB ID belonging to this user, it is reused so
+     * the row retains the same ID after the surrounding delete-then-reinsert.
+     * Otherwise a fresh ID is generated by the column default.
+     *
+     * @returns The schedule's DB ID
+     */
+    private static async insertScheduleAndContents(
+        tx: Transaction,
+        userId: string,
+        schedule: ShortCourseSchedule,
+        index: number,
+        existingIds: Set<string>
+    ): Promise<{ frontendId: string | undefined; dbId: string }> {
+        // Reuse the existing DB ID if this schedule was previously saved by this
+        // user. An unrecognized or foreign ID must not be trusted — generate fresh.
+        const safeId = schedule.id && existingIds.has(schedule.id) ? schedule.id : undefined;
+
+        const result = await tx
+            .insert(schedules)
+            .values({
+                id: safeId,
+                userId,
+                name: schedule.scheduleName,
+                notes: schedule.scheduleNote,
+                index,
+                lastUpdated: new Date(),
+            })
+            .returning({ id: schedules.id });
+
+        const dbId = result[0].id;
+
+        await Promise.all([
+            this.upsertCourses(tx, dbId, schedule.courses).catch((error) => {
+                throw new Error(`Failed to upsert courses for ${schedule.scheduleName}: ${error}`);
+            }),
+            this.upsertCustomEvents(tx, dbId, schedule.customEvents).catch((error) => {
+                throw new Error(`Failed to upsert custom events for ${schedule.scheduleName}: ${error}`);
+            }),
+        ]);
+
+        return { frontendId: schedule.id, dbId };
+    }
+
+    /**
+     * Syncs a user's schedules to match the provided array.
+     *
+     * Deletes all existing schedules first (courses/events cascade), then
+     * re-inserts — this avoids any transient uniqueness conflicts on
+     * (user_id, name) or (user_id, index) without requiring deferred
+     * constraints. Known DB IDs are reused via safeId so foreign key
+     * references (e.g. users.currentScheduleId) survive the round-trip.
+     *
+     * Returns a map of frontend CUID → DB ID so callers can key results
+     * by schedule identity rather than array position.
      */
     private static async upsertSchedulesAndContents(
         tx: Transaction,
         userId: string,
         scheduleArray: ShortCourseSchedule[]
-    ): Promise<string[]> {
-        const scheduleIds = await Promise.all(
-            scheduleArray.map((schedule, index) => this.upsertScheduleAndContents(tx, userId, schedule, index))
+    ): Promise<Record<string, string>> {
+        // Snapshot existing IDs before deleting so we can validate safeIds below.
+        const existingSchedules = await tx
+            .select({ id: schedules.id })
+            .from(schedules)
+            .where(eq(schedules.userId, userId));
+        const existingIds = new Set(existingSchedules.map((s) => s.id));
+
+        // Delete all schedules up-front. Courses and custom events cascade.
+        // users.currentScheduleId is set null on delete and updated at the end
+        // of upsertUserData, so no FK violation occurs.
+        await tx.delete(schedules).where(eq(schedules.userId, userId));
+
+        const results = await Promise.all(
+            scheduleArray.map((schedule, index) =>
+                this.insertScheduleAndContents(tx, userId, schedule, index, existingIds)
+            )
         );
 
-        // Remove schedules that belong to this user but are no longer in the saved list
-        if (scheduleIds.length > 0) {
-            await tx.delete(schedules).where(and(eq(schedules.userId, userId), notInArray(schedules.id, scheduleIds)));
-        } else {
-            await tx.delete(schedules).where(eq(schedules.userId, userId));
+        const scheduleIdMap: Record<string, string> = {};
+        for (const { frontendId, dbId } of results) {
+            if (frontendId !== undefined) {
+                scheduleIdMap[frontendId] = dbId;
+            }
         }
 
-        return scheduleIds;
+        return scheduleIdMap;
     }
 
     /**
@@ -825,125 +823,28 @@ export class RDS {
         }
     }
 
-    /**
-     * Retrieves notifications associated with a specified user
-     *
-     * @param db - The database or transaction object to use for the operation.
-     * @param userId - The ID of the user for whom we're retrieving notifications.
-     * @returns A promise that resolves to the notifications associated with a userId, or an empty array if not found.
-     */
     static async retrieveNotifications(db: DatabaseOrTransaction, userId: string) {
-        return db.transaction((tx) => tx.select().from(subscriptions).where(eq(subscriptions.userId, userId)));
+        return NotificationRDS.retrieveNotifications(db, userId);
     }
 
-    /**
-     * Upserts notification for a specified user
-     *
-     * @param db - The database or transaction object to use for the operation.
-     * @param userId - The ID of the user for whom we're upserting a notification.
-     * @param notification - The notification object to upsert.
-     * @param environment - "production" on production; staging instance + number on staging (e.g. "staging-1337").
-     * @returns A promise that upserts the notification associated with a userId.
-     */
     static async upsertNotification(
         db: DatabaseOrTransaction,
         userId: string,
         notification: Notification,
         environmentValue?: string | null
     ) {
-        const environment = environmentValue ?? '';
-        return db.transaction((tx) =>
-            tx
-                .insert(subscriptions)
-                .values({
-                    userId,
-                    sectionCode: notification.sectionCode,
-                    year: notification.term.split(' ')[0],
-                    quarter: notification.term.split(' ')[1],
-                    notifyOnOpen: notification.notifyOn.notifyOnOpen,
-                    notifyOnWaitlist: notification.notifyOn.notifyOnWaitlist,
-                    notifyOnFull: notification.notifyOn.notifyOnFull,
-                    notifyOnRestriction: notification.notifyOn.notifyOnRestriction,
-                    lastUpdatedStatus: notification.lastUpdatedStatus,
-                    lastCodes: notification.lastCodes,
-                    environment: environment,
-                })
-                .onConflictDoUpdate({
-                    target: [
-                        subscriptions.userId,
-                        subscriptions.sectionCode,
-                        subscriptions.year,
-                        subscriptions.quarter,
-                    ],
-                    set: {
-                        notifyOnOpen: notification.notifyOn.notifyOnOpen,
-                        notifyOnWaitlist: notification.notifyOn.notifyOnWaitlist,
-                        notifyOnFull: notification.notifyOn.notifyOnFull,
-                        notifyOnRestriction: notification.notifyOn.notifyOnRestriction,
-                        lastUpdatedStatus: notification.lastUpdatedStatus,
-                        lastCodes: notification.lastCodes,
-                        environment: environment,
-                    },
-                })
-        );
+        return NotificationRDS.upsertNotification(db, userId, notification, environmentValue);
     }
 
-    /**
-     * Updates lastUpdatedStatus and lastCodes of ALL notifications with a shared sectionCode, year, and quarter
-     *
-     * @param db - The database or transaction object to use for the operation.
-     * @param notification - The notification object type we are updating.
-     * @returns A promise that updates ALL notifications with a shared sectionCode, year, and quarter.
-     */
     static async updateAllNotifications(db: DatabaseOrTransaction, notification: Notification) {
-        return db.transaction((tx) =>
-            tx
-                .update(subscriptions)
-                .set({
-                    lastUpdatedStatus: notification.lastUpdatedStatus,
-                    lastCodes: notification.lastCodes,
-                })
-                .where(
-                    and(
-                        eq(subscriptions.sectionCode, notification.sectionCode),
-                        eq(subscriptions.year, notification.term.split(' ')[0]),
-                        eq(subscriptions.quarter, notification.term.split(' ')[1])
-                    )
-                )
-        );
+        return NotificationRDS.updateAllNotifications(db, notification);
     }
 
-    /**
-     * Deletes a notification for a specified user
-     *
-     * @param db - The database or transaction object to use for the operation.
-     * @param notification - The notification object type we are deleting.
-     * @param userId - The ID of the user for whom we're deleting a notification.
-     * @returns A promise that deletes a user's notification.
-     */
     static async deleteNotification(db: DatabaseOrTransaction, notification: Notification, userId: string) {
-        return db.transaction((tx) =>
-            tx
-                .delete(subscriptions)
-                .where(
-                    and(
-                        eq(subscriptions.userId, userId),
-                        eq(subscriptions.sectionCode, notification.sectionCode),
-                        eq(subscriptions.year, notification.term.split(' ')[0]),
-                        eq(subscriptions.quarter, notification.term.split(' ')[1])
-                    )
-                )
-        );
+        return NotificationRDS.deleteNotification(db, notification, userId);
     }
 
-    /**
-     * Deletes ALL notifications for a specified user
-     *
-     * @param db - The database or transaction object to use for the operation.
-     * @param userId - The ID of the user for whom we're deleting all notifications.
-     * @returns A promise that deletes all of a user's notifications.
-     */
     static async deleteAllNotifications(db: DatabaseOrTransaction, userId: string) {
-        return db.transaction((tx) => tx.delete(subscriptions).where(eq(subscriptions.userId, userId)));
+        return NotificationRDS.deleteAllNotifications(db, userId);
     }
 }

@@ -1,6 +1,6 @@
 {
-    "id": "c7d3a2e1-8f4b-4d9a-b6c5-e7f8a9b0c1d2",
-    "prevId": "5e93e8b1-1737-43da-8ac5-e0acd4eb4f99",
+    "id": "5e93e8b1-1737-43da-8ac5-e0acd4eb4f99",
+    "prevId": "c1d2e3f4-a5b6-7890-cdef-012345678901",
     "version": "7",
     "dialect": "postgresql",
     "tables": {
@@ -225,18 +225,7 @@
                 }
             },
             "compositePrimaryKeys": {},
-            "uniqueConstraints": {
-                "schedules_user_id_name_unique": {
-                    "name": "schedules_user_id_name_unique",
-                    "nullsNotDistinct": false,
-                    "columns": ["user_id", "name"]
-                },
-                "schedules_user_id_index_unique": {
-                    "name": "schedules_user_id_index_unique",
-                    "nullsNotDistinct": false,
-                    "columns": ["user_id", "index"]
-                }
-            },
+            "uniqueConstraints": {},
             "policies": {},
             "checkConstraints": {},
             "isRLSEnabled": false
@@ -517,6 +506,21 @@
                 }
             },
             "indexes": {
+                "requester_idx": {
+                    "name": "requester_idx",
+                    "columns": [
+                        {
+                            "expression": "requester_id",
+                            "isExpression": false,
+                            "asc": true,
+                            "nulls": "last"
+                        }
+                    ],
+                    "isUnique": false,
+                    "concurrently": false,
+                    "method": "btree",
+                    "with": {}
+                },
                 "addressee_idx": {
                     "name": "addressee_idx",
                     "columns": [
@@ -561,12 +565,7 @@
             },
             "uniqueConstraints": {},
             "policies": {},
-            "checkConstraints": {
-                "friendships_no_self_friend": {
-                    "name": "friendships_no_self_friend",
-                    "value": "\"friendships\".\"requester_id\" <> \"friendships\".\"addressee_id\""
-                }
-            },
+            "checkConstraints": {},
             "isRLSEnabled": false
         }
     },
