@@ -18,7 +18,7 @@ export function SearchFilter() {
             displayEmpty
             renderValue={(value) => {
                 const option = SORT_OPTIONS.find((o) => o.value === value);
-                return `Sort: ${option?.label ?? ''}`;
+                return `SORT: ${option?.label.toUpperCase() ?? ''}`;
             }}
             sx={(theme) => ({
                 height: '26px',
