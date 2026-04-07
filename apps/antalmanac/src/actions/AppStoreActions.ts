@@ -282,7 +282,7 @@ export const importScheduleWithUsername = async (username: string) => {
     }
 };
 
-export const importSharedScheduleById = async (scheduleId: string) => {
+export const importSharedScheduleById = async (scheduleId: string, friendName?: string) => {
     const sharedSchedule = await trpc.userData.getSharedSchedule.query({ scheduleId });
 
     const incomingSchedule: ShortCourseSchedule = {
@@ -294,8 +294,9 @@ export const importSharedScheduleById = async (scheduleId: string) => {
     };
 
     const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
+    const prefix = friendName ? `(${friendName})-` : SHARED_SCHEDULE_PREFIX;
 
-    mergeShortCourseSchedules(currentSchedules.schedules, [incomingSchedule], SHARED_SCHEDULE_PREFIX);
+    mergeShortCourseSchedules(currentSchedules.schedules, [incomingSchedule], prefix);
     currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
 
     scheduleComponentsToggleStore.setState({ openLoadingSchedule: true });

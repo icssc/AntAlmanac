@@ -286,20 +286,21 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
                     }
                 }
 
-                await importSharedScheduleById(idToImport);
+                await importSharedScheduleById(idToImport, friendUserId ? friendName : undefined);
             } else {
                 const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
                 const currentSchedule = currentSchedules.schedules[currentSchedules.scheduleIndex];
 
+                const prefix = friendUserId ? `(${friendName})-` : SHARED_SCHEDULE_PREFIX;
                 if (currentSchedule && currentSchedule.scheduleName === sharedSchedule.scheduleName) {
-                    const prefixedName = `${SHARED_SCHEDULE_PREFIX}${sharedSchedule.scheduleName}`;
+                    const prefixedName = `${prefix}${sharedSchedule.scheduleName}`;
                     AppStore.renameSchedule(currentSchedules.scheduleIndex, prefixedName);
                     openSnackbar(
                         'success',
                         `Shared schedule "${sharedSchedule.scheduleName}" added to your schedules!`
                     );
                 } else {
-                    await importSharedScheduleById(idToImport);
+                    await importSharedScheduleById(idToImport, friendUserId ? friendName : undefined);
                 }
             }
 
