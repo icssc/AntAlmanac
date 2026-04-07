@@ -1,0 +1,31 @@
+apps/antalmanac/src/stores/Schedules.ts
+  a9da4f8bb50a7270 15,18
+packages/db/migrations/meta/0011_snapshot.json
+  a9da4f8bb50a7270 228
+packages/db/migrations/meta/0010_snapshot.json
+  a9da4f8bb50a7270 2-3,228,509-523,568
+apps/antalmanac/src/backend/lib/rds.ts
+  a9da4f8bb50a7270 18
+packages/db/migrations/meta/0012_snapshot.json
+  a9da4f8bb50a7270 235
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.5",
+  "base_commit_sha": "b109eff954954817e1b2cade65078979f73051e8",
+  "prompts": {
+    "a9da4f8bb50a7270": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "eaf62539-f49b-4580-8954-f8596f782b8b",
+        "model": "claude-4.6-sonnet-medium-thinking"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 24,
+      "total_deletions": 46,
+      "accepted_lines": 27,
+      "overriden_lines": 0
+    }
+  }
+}
