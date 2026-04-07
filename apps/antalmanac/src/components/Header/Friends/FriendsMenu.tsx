@@ -1,4 +1,4 @@
-import { PersonAdd, Block, MoreVert, ExpandMore, ExpandLess } from '@mui/icons-material';
+import { PersonAdd, PersonRemove, Block, MoreVert, ExpandMore, ExpandLess } from '@mui/icons-material';
 import {
     Box,
     Button,
@@ -644,7 +644,21 @@ export function FriendsMenu({
                 }}
             >
                 <MenuItem onClick={handleUnfriend} sx={{ color: 'error.main' }}>
+                    <PersonRemove sx={{ mr: 1, fontSize: '1.25rem' }} />
                     Unfriend
+                </MenuItem>
+                <MenuItem
+                    onClick={() => {
+                        if (friendMenuAnchor) {
+                            setUserToBlock(friendMenuAnchor.friendId);
+                            setBlockDialogOpen(true);
+                            handleCloseFriendMenu();
+                        }
+                    }}
+                    sx={{ color: 'error.main' }}
+                >
+                    <Block sx={{ mr: 1, fontSize: '1.25rem' }} />
+                    Block User
                 </MenuItem>
             </Menu>
 
