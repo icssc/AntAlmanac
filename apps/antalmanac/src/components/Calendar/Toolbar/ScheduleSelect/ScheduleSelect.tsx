@@ -1,4 +1,4 @@
-import { ArrowDropDown as ArrowDropDownIcon, People, PeopleOutline } from '@mui/icons-material';
+import { ArrowDropDown as ArrowDropDownIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import { Box, Button, IconButton, Popover, Tooltip, Typography, useTheme } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -318,9 +318,9 @@ export function SelectSchedulePopover() {
                                                                 onClick={() => void handleToggleSharing(index)}
                                                             >
                                                                 {isShared ? (
-                                                                    <People fontSize="small" />
+                                                                    <Visibility fontSize="small" />
                                                                 ) : (
-                                                                    <PeopleOutline fontSize="small" />
+                                                                    <VisibilityOff fontSize="small" />
                                                                 )}
                                                             </IconButton>
                                                         </Tooltip>
