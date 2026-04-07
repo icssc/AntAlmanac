@@ -90,7 +90,7 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
                 setOpenLoadingSchedule(false);
             }
         },
-        [beginLoadingSchedule, setError, setOpenLoadingSchedule]
+        [beginLoadingSchedule, setError, setWarning, setOpenLoadingSchedule]
     );
 
     useEffect(() => {
