@@ -1,0 +1,36 @@
+apps/antalmanac/src/backend/lib/rds.ts
+  c7589341853d3e88 281-282,288-290,300,335-336,338,342,351
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.5",
+  "base_commit_sha": "86bc54381e294738ecf78fff079677aac3b95da0",
+  "prompts": {
+    "a9da4f8bb50a7270": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "eaf62539-f49b-4580-8954-f8596f782b8b",
+        "model": "claude-4.6-sonnet-medium-thinking"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "c7589341853d3e88": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "255ba2a5-94d0-4094-a1cc-406d1a0de02a",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 11,
+      "total_deletions": 4,
+      "accepted_lines": 11,
+      "overriden_lines": 0
+    }
+  }
+}
