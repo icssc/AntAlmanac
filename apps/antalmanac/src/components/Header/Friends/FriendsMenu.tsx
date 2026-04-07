@@ -543,7 +543,16 @@ export function FriendsMenu({
                 )}
 
                 {activeTab === 'friends' && (
-                    <Box sx={{ mt: 1 }}>
+                    <Box
+                        sx={{
+                            mt: 1,
+                            maxHeight: 320,
+                            overflowY: 'auto',
+                            '&::-webkit-scrollbar': { width: 6 },
+                            '&::-webkit-scrollbar-track': { background: 'none', boxShadow: 'none', border: 'none' },
+                            '&::-webkit-scrollbar-thumb': { borderRadius: 3, bgcolor: 'action.disabled' },
+                        }}
+                    >
                         {friends.length === 0 ? (
                             <Typography
                                 variant="body2"
