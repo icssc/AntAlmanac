@@ -94,6 +94,25 @@ export function FriendsButton() {
         }
     }, [open, sessionIsValid, session, currentUserId, loadFriendsData]);
 
+    useEffect(() => {
+        if (!open || !sessionIsValid || !session || !currentUserId) return;
+        const id = setInterval(async () => {
+            try {
+                const [friendsResult, pendingResult] = await Promise.all([
+                    trpc.friends.getFriends.query({ userId: currentUserId }),
+                    trpc.friends.getPendingRequests.query({ userId: currentUserId }),
+                ]);
+                setFriends(friendsResult.map((f) => ({ id: f.id, name: f.name ?? undefined, email: f.email ?? '' })));
+                setFriendRequests(
+                    pendingResult.map((r) => ({ id: r.id, name: r.name ?? undefined, email: r.email ?? '' }))
+                );
+            } catch {
+                // Silently skip failed polls
+            }
+        }, 10_000);
+        return () => clearInterval(id);
+    }, [open, sessionIsValid, session, currentUserId]);
+
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         if (sessionIsValid && session) {
             setAnchorEl(event.currentTarget);
