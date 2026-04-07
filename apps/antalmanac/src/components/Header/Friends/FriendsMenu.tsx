@@ -1,7 +1,8 @@
-import { PersonAdd, Block, MoreVert } from '@mui/icons-material';
+import { PersonAdd, Block, MoreVert, ExpandMore, ExpandLess } from '@mui/icons-material';
 import {
     Box,
     Button,
+    Collapse,
     Divider,
     IconButton,
     Menu,
@@ -70,7 +71,6 @@ function FriendsListSkeleton() {
             <Tabs value="friends" variant="fullWidth" sx={{ mb: 1 }}>
                 <Tab label="Requests" value="requests" disabled />
                 <Tab label="Friends" value="friends" disabled />
-                <Tab label="Blocked" value="blocked" disabled />
             </Tabs>
             <Box sx={{ mt: 1 }}>
                 {[1, 2, 3].map((i) => (
@@ -124,7 +124,8 @@ export function FriendsMenu({
 }: FriendsMenuProps) {
     const isDark = useThemeStore((store) => store.isDark);
     const hasPendingRequests = friendRequests.length > 0;
-    const [activeTab, setActiveTab] = useState<'requests' | 'friends' | 'blocked'>('friends');
+    const [activeTab, setActiveTab] = useState<'requests' | 'friends'>('friends');
+    const [blockedOpen, setBlockedOpen] = useState(false);
     const [email, setEmail] = useState('');
     const [blockMenuAnchor, setBlockMenuAnchor] = useState<{ element: HTMLElement; requestId: string } | null>(null);
     const [blockDialogOpen, setBlockDialogOpen] = useState(false);
@@ -269,7 +270,7 @@ export function FriendsMenu({
         }
     };
 
-    const handleChangeTab = (_: React.SyntheticEvent, value: 'requests' | 'friends' | 'blocked') => {
+    const handleChangeTab = (_: React.SyntheticEvent, value: 'requests' | 'friends') => {
         setActiveTab(value);
     };
 
@@ -376,13 +377,16 @@ export function FriendsMenu({
                         value="requests"
                     />
                     <Tab label="Friends" value="friends" />
-                    <Tab label="Blocked" value="blocked" />
                 </Tabs>
 
                 {activeTab === 'requests' && (
                     <Box sx={{ mb: 2, mt: 1 }}>
                         {friendRequests.length === 0 ? (
-                            <Typography variant="body2" color="text.secondary" sx={{ py: 1, fontSize: '1rem' }}>
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ py: 2, pl: 0.5, fontSize: '1rem' }}
+                            >
                                 No pending requests
                             </Typography>
                         ) : (
@@ -462,13 +466,90 @@ export function FriendsMenu({
                                 </Box>
                             ))
                         )}
+
+                        {/* Blocked users accordion */}
+                        <Box sx={{ mt: 0 }}>
+                            <Button
+                                variant="text"
+                                size="small"
+                                onClick={() => setBlockedOpen((prev) => !prev)}
+                                endIcon={blockedOpen ? <ExpandLess /> : <ExpandMore />}
+                                sx={{
+                                    color: 'text.secondary',
+                                    textTransform: 'none',
+                                    fontSize: '0.8rem',
+                                    px: 0.5,
+                                }}
+                            >
+                                Blocked{blockedFriends.length > 0 ? ` (${blockedFriends.length})` : ''}
+                            </Button>
+                            <Collapse in={blockedOpen}>
+                                <Box sx={{ mt: 1 }}>
+                                    {blockedFriends.length === 0 ? (
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                            sx={{ py: 1, fontSize: '0.875rem' }}
+                                        >
+                                            No blocked users
+                                        </Typography>
+                                    ) : (
+                                        blockedFriends.map((user) => (
+                                            <Box key={user.id} sx={friendCardSx}>
+                                                <Stack direction="row" alignItems="center" flex={1} overflow="hidden">
+                                                    <Box sx={{ minWidth: 0, ml: 0.5 }}>
+                                                        <Typography variant="body2" fontWeight={600} noWrap>
+                                                            {user.name || user.email}
+                                                        </Typography>
+                                                        <Typography
+                                                            variant="caption"
+                                                            color="text.secondary"
+                                                            noWrap
+                                                            display="block"
+                                                        >
+                                                            {user.email}
+                                                        </Typography>
+                                                    </Box>
+                                                </Stack>
+                                                <Button
+                                                    size="small"
+                                                    variant="contained"
+                                                    onClick={() => handleUnblock(user.id)}
+                                                    sx={{
+                                                        bgcolor: '#4caf50',
+                                                        color: 'white',
+                                                        fontSize: '0.8rem',
+                                                        fontWeight: 600,
+                                                        textTransform: 'none',
+                                                        minWidth: 'auto',
+                                                        px: 1.5,
+                                                        py: 0.5,
+                                                        boxShadow: 1,
+                                                        '&:hover': {
+                                                            bgcolor: '#388e3c',
+                                                            boxShadow: 2,
+                                                        },
+                                                    }}
+                                                >
+                                                    Unblock
+                                                </Button>
+                                            </Box>
+                                        ))
+                                    )}
+                                </Box>
+                            </Collapse>
+                        </Box>
                     </Box>
                 )}
 
                 {activeTab === 'friends' && (
                     <Box sx={{ mt: 1 }}>
                         {friends.length === 0 ? (
-                            <Typography variant="body2" color="text.secondary" sx={{ py: 1, fontSize: '1rem' }}>
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ py: 2, pl: 0.5, fontSize: '1rem' }}
+                            >
                                 No friends yet
                             </Typography>
                         ) : (
@@ -521,54 +602,6 @@ export function FriendsMenu({
                                             <MoreVert fontSize="small" />
                                         </IconButton>
                                     </Stack>
-                                </Box>
-                            ))
-                        )}
-                    </Box>
-                )}
-
-                {activeTab === 'blocked' && (
-                    <Box sx={{ mt: 1 }}>
-                        {blockedFriends.length === 0 ? (
-                            <Typography variant="body2" color="text.secondary" sx={{ py: 1, fontSize: '1rem' }}>
-                                No blocked users
-                            </Typography>
-                        ) : (
-                            blockedFriends.map((user) => (
-                                <Box key={user.id} sx={friendCardSx}>
-                                    <Stack direction="row" alignItems="center" flex={1} overflow="hidden">
-                                        <Box sx={{ minWidth: 0, ml: 0.5 }}>
-                                            <Typography variant="body2" fontWeight={600} noWrap>
-                                                {user.name || user.email}
-                                            </Typography>
-                                            <Typography variant="caption" color="text.secondary" noWrap display="block">
-                                                {user.email}
-                                            </Typography>
-                                        </Box>
-                                    </Stack>
-
-                                    <Button
-                                        size="small"
-                                        variant="contained"
-                                        onClick={() => handleUnblock(user.id)}
-                                        sx={{
-                                            bgcolor: '#4caf50',
-                                            color: 'white',
-                                            fontSize: '0.8rem',
-                                            fontWeight: 600,
-                                            textTransform: 'none',
-                                            minWidth: 'auto',
-                                            px: 1.5,
-                                            py: 0.5,
-                                            boxShadow: 1,
-                                            '&:hover': {
-                                                bgcolor: '#388e3c',
-                                                boxShadow: 2,
-                                            },
-                                        }}
-                                    >
-                                        Unblock
-                                    </Button>
                                 </Box>
                             ))
                         )}
