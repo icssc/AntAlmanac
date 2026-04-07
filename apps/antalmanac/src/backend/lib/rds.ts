@@ -8,9 +8,6 @@ import {
     coursesInSchedule,
     customEvents,
     AccountType,
-    Schedule,
-    CourseInSchedule,
-    CustomEvent,
     Account,
     Session,
 } from '@packages/db/src/schema';
@@ -19,6 +16,7 @@ import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 import { NotificationRDS } from './notification-rds';
 import { SessionsRDS } from './sessions-rds';
+import { UsersRDS } from './users-rds';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
 type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;
@@ -102,31 +100,12 @@ export class RDS {
         );
     }
 
-    /**
-     * Retrieves a user by their ID from the database.
-     *
-     * @param db - The database or transaction object to use for the query.
-     * @param userId - The ID of the user to retrieve.
-     * @returns A promise that resolves to the user object if found, otherwise undefined.
-     */
     static async getUserById(db: DatabaseOrTransaction, userId: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(users)
-                .where(eq(users.id, userId))
-                .then((res) => res[0])
-        );
+        return UsersRDS.getUserById(db, userId);
     }
 
     static async getUserByEmail(db: DatabaseOrTransaction, email: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(users)
-                .where(eq(users.email, email))
-                .then((res) => res[0])
-        );
+        return UsersRDS.getUserByEmail(db, email);
     }
 
     /**
@@ -371,51 +350,8 @@ export class RDS {
         await tx.insert(customEvents).values(dbCustomEvents);
     }
 
-    /**
-     * Retrieves user data by user ID, including schedules and custom events.
-     *
-     * @param db - The database or transaction object to use for the query.
-     * @param userId - The unique identifier of the user.
-     * @returns A promise that resolves to a User object containing user data and schedules, or null if the user is not found.
-     */
     static async getUserDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
-        return db.transaction(async (tx) => {
-            const user = await tx
-                .select()
-                .from(users)
-                .where(eq(users.id, userId))
-                .then((res) => res[0]);
-
-            if (!user) {
-                return null;
-            }
-
-            const sectionResults = await tx
-                .select()
-                .from(schedules)
-                .where(eq(schedules.userId, userId))
-                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
-
-            const customEventResults = await tx
-                .select()
-                .from(schedules)
-                .where(eq(schedules.userId, userId))
-                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
-
-            const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
-
-            const scheduleIndex = user.currentScheduleId
-                ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
-                : userSchedules.length;
-
-            return {
-                id: userId,
-                userData: {
-                    schedules: userSchedules,
-                    scheduleIndex,
-                },
-            };
-        });
+        return UsersRDS.getUserDataByUid(db, userId);
     }
 
     private static async getUserAndAccount(
@@ -435,69 +371,6 @@ export class RDS {
         }
 
         return { user: res[0].users, account: res[0].accounts };
-    }
-
-    /**
-     * Aggregates the user's schedule data from the results of two queries.
-     */
-    static aggregateUserData(
-        sectionResults: { schedules: Schedule; coursesInSchedule: CourseInSchedule | null }[],
-        customEventResults: { schedules: Schedule; customEvents: CustomEvent | null }[]
-    ): (ShortCourseSchedule & { id: string; index: number })[] {
-        // Map from schedule ID to schedule data
-        const schedulesMapping: Record<string, ShortCourseSchedule & { id: string; index: number }> = {};
-
-        // Add courses to schedules
-        sectionResults.forEach(({ schedules: schedule, coursesInSchedule: course }) => {
-            const scheduleId = schedule.id;
-
-            const scheduleAggregate = schedulesMapping[scheduleId] || {
-                id: scheduleId,
-                scheduleName: schedule.name,
-                scheduleNote: schedule.notes,
-                courses: [],
-                customEvents: [],
-                index: schedule.index,
-            };
-
-            if (course) {
-                scheduleAggregate.courses.push({
-                    sectionCode: course.sectionCode.toString(),
-                    term: course.term,
-                    color: course.color,
-                });
-            }
-
-            schedulesMapping[scheduleId] = scheduleAggregate;
-        });
-
-        // Add custom events to schedules
-        customEventResults.forEach(({ schedules: schedule, customEvents: customEvent }) => {
-            const scheduleId = schedule.id;
-            const scheduleAggregate = schedulesMapping[scheduleId] || {
-                scheduleName: schedule.name,
-                scheduleNote: schedule.notes,
-                courses: [],
-                customEvents: [],
-            };
-
-            if (customEvent) {
-                scheduleAggregate.customEvents.push({
-                    customEventID: customEvent.id,
-                    title: customEvent.title,
-                    start: customEvent.start,
-                    end: customEvent.end,
-                    days: customEvent.days.split('').map((day) => day === '1'),
-                    color: customEvent.color ?? undefined,
-                    building: customEvent.building ?? undefined,
-                });
-            }
-
-            schedulesMapping[scheduleId] = scheduleAggregate;
-        });
-
-        // Sort schedules by index
-        return Object.values(schedulesMapping).sort((a, b) => a.index - b.index);
     }
 
     static async getCurrentSession(db: DatabaseOrTransaction, refreshToken: string) {
@@ -521,38 +394,15 @@ export class RDS {
     }
 
     static async fetchUserDataWithSession(db: DatabaseOrTransaction, refreshToken: string) {
-        return SessionsRDS.fetchUserDataWithSession(db, refreshToken);
+        return UsersRDS.fetchUserDataWithSession(db, refreshToken);
     }
 
     static async getUserAndAccountBySessionToken(db: DatabaseOrTransaction, refreshToken: string) {
         return SessionsRDS.getUserAndAccountBySessionToken(db, refreshToken);
     }
 
-    /**
-     * Flags a user as imported based on the provided provider ID.
-     *
-     * This function checks if a user associated with the given provider ID has already been flagged as imported.
-     * If not, it updates the user's record to set the imported flag to true.
-     *
-     * @param db The database or transaction object used to perform the operation.
-     * @param providerId The provider ID used to identify the user.
-     * @returns A promise that resolves to true if the user was successfully flagged as imported, or false if the user
-     *          was already flagged or if an error occurred during the operation.
-     */
     static async flagImportedUser(db: DatabaseOrTransaction, providerId: string) {
-        try {
-            const { users: user, accounts } = await this.getGuestAccountAndUserByName(db, providerId);
-            if (user.imported) {
-                return false;
-            }
-
-            await db.transaction((tx) =>
-                tx.update(users).set({ imported: true }).where(eq(users.id, accounts.userId)).execute()
-            );
-            return true;
-        } catch (error) {
-            return false;
-        }
+        return UsersRDS.flagImportedUser(db, providerId);
     }
 
     static async retrieveNotifications(db: DatabaseOrTransaction, userId: string) {

@@ -1,18 +1,8 @@
 import { db } from '@packages/db/src/index';
 import * as schema from '@packages/db/src/schema';
-import {
-    accounts,
-    coursesInSchedule,
-    customEvents,
-    schedules,
-    Session,
-    sessions,
-    users,
-} from '@packages/db/src/schema';
-import { and, eq, ExtractTablesWithRelations, gt } from 'drizzle-orm';
+import { accounts, Session, sessions, users } from '@packages/db/src/schema';
+import { and, eq, ExtractTablesWithRelations } from 'drizzle-orm';
 import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
-
-import { RDS } from './rds';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
 type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;
@@ -90,61 +80,6 @@ export class SessionsRDS {
 
             if (currentSession) return currentSession;
             return await SessionsRDS.createSession(tx, userId);
-        });
-    }
-
-    private static async getUserDataWithSession(tx: Transaction, refreshToken: string) {
-        return tx
-            .select()
-            .from(users)
-            .leftJoin(sessions, eq(users.id, sessions.userId))
-            .where(and(eq(sessions.refreshToken, refreshToken), gt(sessions.expires, new Date())))
-            .then((res) => res[0].users);
-    }
-
-    /**
-     * Fetches user data associated with a valid session using a refresh token.
-     *
-     * This function initiates a database transaction to retrieve user information
-     * based on the provided refresh token. If a user is found, it gathers the user's
-     * schedules and custom events, aggregates them, and determines the current schedule index.
-     *
-     * @param db - The database or transaction object to perform the operation.
-     * @param refreshToken - The refresh token used to identify the session.
-     * @returns A promise that resolves to an object containing the user's ID and user data,
-     *          including schedules and the current schedule index, or null if no user is found.
-     */
-    static async fetchUserDataWithSession(db: DatabaseOrTransaction, refreshToken: string) {
-        return db.transaction(async (tx) => {
-            const user = await this.getUserDataWithSession(tx, refreshToken);
-
-            if (user) {
-                const sectionResults = await tx
-                    .select()
-                    .from(schedules)
-                    .where(eq(schedules.userId, user.id))
-                    .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
-
-                const customEventResults = await tx
-                    .select()
-                    .from(schedules)
-                    .where(eq(schedules.userId, user.id))
-                    .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
-
-                const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
-
-                const scheduleIndex = user.currentScheduleId
-                    ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
-                    : userSchedules.length;
-                return {
-                    id: user.id,
-                    userData: {
-                        schedules: userSchedules,
-                        scheduleIndex,
-                    },
-                };
-            }
-            return null;
         });
     }
 
