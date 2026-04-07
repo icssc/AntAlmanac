@@ -1,5 +1,5 @@
 import { type User } from '@packages/antalmanac-types';
-import { db } from '@packages/db/src';
+import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
 import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState, OAuth2Tokens } from 'arctic';
 import { type } from 'arktype';
