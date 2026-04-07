@@ -2,7 +2,7 @@ import { ArrowDropDown, Delete } from '@mui/icons-material';
 import { useTheme, useMediaQuery, Box, IconButton, CircularProgress, Popover } from '@mui/material';
 import { AASection, Course, CourseDetails } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { deleteCourse } from '$actions/AppStoreActions';
@@ -22,6 +22,11 @@ interface DeleteAndNotificationsProps {
     courseDetails: CourseDetails;
 }
 
+const getAddedCourseColor = (sectionCode: string, term: string, fallback: string) => {
+    const match = AppStore.getAddedCourses().find((c) => c.section.sectionCode === sectionCode && c.term === term);
+    return match?.section.color ?? fallback;
+};
+
 /**
  * Sections added to a schedule, can be recolored or deleted.
  */
@@ -31,6 +36,24 @@ export const DeleteAndNotifications = memo(({ ...props }: DeleteAndNotifications
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
     const postHog = usePostHog();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [color, setColor] = useState(() =>
+        getAddedCourseColor(props.section.sectionCode, props.term, props.section.color)
+    );
+
+    useEffect(() => {
+        const sync = () => {
+            setColor(getAddedCourseColor(props.section.sectionCode, props.term, props.section.color));
+        };
+        sync();
+        AppStore.on('addedCoursesChange', sync);
+        AppStore.on('colorChange', sync);
+        AppStore.on('currentScheduleIndexChange', sync);
+        return () => {
+            AppStore.removeListener('addedCoursesChange', sync);
+            AppStore.removeListener('colorChange', sync);
+            AppStore.removeListener('currentScheduleIndexChange', sync);
+        };
+    }, [props.section.sectionCode, props.term, props.section.color]);
 
     const handleClick = useCallback(() => {
         deleteCourse(props.section.sectionCode, props.term, AppStore.getCurrentScheduleIndex());
@@ -51,7 +74,7 @@ export const DeleteAndNotifications = memo(({ ...props }: DeleteAndNotifications
 
     const colorPicker = (
         <ColorPicker
-            color={props.section.color}
+            color={color}
             isCustomEvent={false}
             sectionCode={props.section.sectionCode}
             term={props.term}
