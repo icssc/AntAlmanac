@@ -1,9 +1,8 @@
-import { ExpandMore, InfoOutlined } from '@mui/icons-material';
-import { Collapse, IconButton, Alert, AlertTitle, Box, Typography, Fade } from '@mui/material';
+import { Close, InfoOutlined } from '@mui/icons-material';
+import { IconButton, Alert, AlertTitle, Box, Typography, Fade, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import { BLUE } from '$src/globals';
-//import { lightBlue } from '@mui/material/colors';
 import AppStore from '$stores/AppStore';
 
 interface TbaSection {
@@ -16,17 +15,16 @@ interface TbaCalendarCardProps {
     screenshotTrigger?: number;
 }
 
+const CARD_POSITION_SX = {
+    position: 'absolute' as const,
+    bottom: 16,
+    right: 16,
+    zIndex: 1,
+};
+
 function TbaCircleButton({ onClick }: { onClick: () => void }) {
     return (
-        <Box
-            sx={{
-                position: 'absolute',
-                bottom: 16,
-                left: 'auto',
-                right: 16,
-                zIndex: 1,
-            }}
-        >
+        <Box sx={CARD_POSITION_SX}>
             <Box
                 onClick={onClick}
                 sx={{
@@ -49,72 +47,61 @@ function TbaCircleButton({ onClick }: { onClick: () => void }) {
     );
 }
 
-function TbaExpandedCard({
-    tbaSections,
-    collapsed,
-    onToggle,
-}: {
-    tbaSections: TbaSection[];
-    collapsed: boolean;
-    onToggle: () => void;
-}) {
+function TbaExpandedCard({ tbaSections, onToggle }: { tbaSections: TbaSection[]; onToggle: () => void }) {
+    const theme = useTheme();
     return (
-        <Box
+        <Alert
+            icon={
+                <InfoOutlined
+                    fontSize="small"
+                    sx={{ color: theme.palette.mode === 'dark' ? theme.palette.common.white : BLUE }}
+                />
+            }
+            severity="info"
+            variant="outlined"
             sx={{
-                position: 'absolute',
-                bottom: 16,
-                left: 'auto',
-                right: 16,
-                zIndex: 1,
-                width: { s: '30%', md: '25%' },
-            }}
-        >
-            <Alert
-                icon={<InfoOutlined fontSize="small" />}
-                severity="info"
-                variant="filled"
-                sx={{
+                width: '100%',
+                bgcolor: theme.palette.background.paper,
+                borderColor: BLUE,
+                color: theme.palette.mode === 'dark' ? theme.palette.common.white : 'inherit',
+                borderWidth: 2,
+                alignItems: 'center',
+                py: 0.5,
+                px: 0.5,
+                '& .MuiAlert-icon': {
+                    padding: 0.5,
+                    margin: 0,
+                },
+                '& .MuiAlert-message': {
+                    padding: 0.5,
                     width: '100%',
-                    alignItems: collapsed ? 'center' : 'flex-start',
-                    py: 1,
-                    px: 1,
-                    bgcolor: BLUE,
-                    '& .MuiAlert-icon': {
-                        margin: 0,
-                    },
-                    '& .MuiAlert-message': {
-                        padding: 0.5,
-                        width: '100%',
-                    },
+                },
 
-                    '& .MuiAlert-action': {
-                        padding: 0,
-                        margin: 0,
-                        alignSelf: 'flex-start',
-                    },
-                }}
-                action={
-                    <IconButton size="small" onClick={onToggle} sx={{ paddingLeft: 0 }}>
-                        <ExpandMore
-                            fontSize="small"
-                            sx={{ transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)' }}
-                        />
-                    </IconButton>
-                }
-            >
-                <AlertTitle sx={{ fontSize: '0.9rem', my: 'auto' }}>TBA sections added:</AlertTitle>
+                '& .MuiAlert-action': {
+                    padding: 0,
+                    margin: 0,
+                    alignSelf: 'flex-start',
+                },
+            }}
+            action={
+                <IconButton size="small" onClick={onToggle} sx={{ paddingLeft: 0 }}>
+                    <Close fontSize="small" />
+                </IconButton>
+            }
+        >
+            <AlertTitle sx={{ typography: 'subtitle2', my: 'auto' }}>TBA sections added:</AlertTitle>
 
-                <Collapse in={!collapsed} timeout="auto" unmountOnExit>
-                    <Box sx={{ gap: 0.5 }}>
-                        {tbaSections.map((section, idx) => (
-                            <Typography key={`${section.deptCode}-${section.sectionCode}-${idx}`} variant="body2">
-                                {section.deptCode} {section.courseNumber} — {section.sectionCode}
-                            </Typography>
-                        ))}
-                    </Box>
-                </Collapse>
-            </Alert>
-        </Box>
+            <Box sx={{ gap: 0.5 }}>
+                {tbaSections.map((section) => (
+                    <Typography
+                        key={`${section.deptCode}-${section.courseNumber}-${section.sectionCode}`}
+                        variant="body2"
+                    >
+                        {section.deptCode} {section.courseNumber} — {section.sectionCode}
+                    </Typography>
+                ))}
+            </Box>
+        </Alert>
     );
 }
 
@@ -123,10 +110,9 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
     const [collapsed, setCollapsed] = useState(true);
     const visible = tbaSections.length > 0;
 
-    const scheduleIndex = AppStore.getCurrentScheduleIndex();
-
     useEffect(() => {
         const updateTbaSections = () => {
+            const scheduleIndex = AppStore.getCurrentScheduleIndex();
             if (scheduleIndex == null) {
                 setTbaSections([]);
                 return;
@@ -184,8 +170,8 @@ export default function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardPr
         <>
             {collapsed && <TbaCircleButton onClick={handleToggleCollapse} />}
             <Fade in={!collapsed} timeout={250} mountOnEnter unmountOnExit>
-                <Box>
-                    <TbaExpandedCard tbaSections={tbaSections} collapsed={collapsed} onToggle={handleToggleCollapse} />
+                <Box sx={{ ...CARD_POSITION_SX, width: '100%', maxWidth: 180 }}>
+                    <TbaExpandedCard tbaSections={tbaSections} onToggle={handleToggleCollapse} />
                 </Box>
             </Fade>
         </>
