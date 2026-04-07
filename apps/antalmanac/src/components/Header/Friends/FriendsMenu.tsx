@@ -585,7 +585,7 @@ export function FriendsMenu({
                                                 },
                                             }}
                                         >
-                                            View Schedule
+                                            View
                                         </Button>
                                         <IconButton
                                             size="small"
