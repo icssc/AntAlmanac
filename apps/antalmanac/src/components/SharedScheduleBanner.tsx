@@ -1,5 +1,5 @@
-import { Add, Close } from '@mui/icons-material';
-import { Alert, Box, Button, IconButton, Stack, Typography } from '@mui/material';
+import { Add, Close, PersonAdd } from '@mui/icons-material';
+import { Alert, Box, Button, IconButton, Stack, Tooltip, Typography } from '@mui/material';
 import type { ScheduleSaveState } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -43,6 +43,9 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
     const postHog = usePostHog();
 
     const [scheduleName, setScheduleName] = useState<string | null>(null);
+    const [scheduleOwnerId, setScheduleOwnerId] = useState<string | null>(null);
+    const [isAlreadyFriend, setIsAlreadyFriend] = useState(true);
+    const [addFriendSent, setAddFriendSent] = useState(false);
 
     const hasAttemptedLoadRef = useRef(false);
     const currentLoadKeyRef = useRef<string>(`${friendUserId ?? ''}-${scheduleId ?? ''}`);
@@ -191,6 +194,26 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
                 });
 
                 setScheduleName(sharedSchedule.scheduleName);
+                setScheduleOwnerId(sharedSchedule.userId);
+
+                const sessionAfterValidation = useSessionStore.getState().session;
+                if (sessionAfterValidation) {
+                    try {
+                        const { users: currentUser } = await trpc.userData.getUserAndAccountBySessionToken.query({
+                            token: sessionAfterValidation,
+                        });
+                        if (currentUser.id !== sharedSchedule.userId) {
+                            const alreadyFriends = await trpc.friends.areFriends.query({
+                                viewerId: currentUser.id,
+                                targetUserId: sharedSchedule.userId,
+                            });
+                            setIsAlreadyFriend(alreadyFriends);
+                        }
+                    } catch {
+                        // Non-critical — just don't show the button
+                    }
+                }
+
                 setError(null);
             } catch (err) {
                 console.error('Error loading shared schedule:', err);
@@ -334,6 +357,21 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
         navigate('/');
     }, [navigate, setOpenLoadingSchedule, beginLoadingSchedule, loadSessionSchedule]);
 
+    const handleAddFriend = useCallback(async () => {
+        if (!session || !scheduleOwnerId) return;
+        try {
+            await trpc.friends.sendFriendRequest.mutate({
+                sessionToken: session,
+                addresseeId: scheduleOwnerId,
+            });
+            setAddFriendSent(true);
+            openSnackbar('success', 'Friend request sent!');
+        } catch (err) {
+            console.error('Error sending friend request:', err);
+            openSnackbar('error', 'Failed to send friend request.');
+        }
+    }, [session, scheduleOwnerId]);
+
     if (warning) {
         return (
             <>
@@ -404,6 +442,26 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
                     )}
                 </Typography>
                 <Stack direction="row" spacing={1} alignItems="center" sx={{ flexShrink: 0 }}>
+                    {sessionIsValid && !friendUserId && !isAlreadyFriend && scheduleOwnerId && (
+                        <Tooltip title={addFriendSent ? 'Request Sent' : 'Add Friend'} disableInteractive>
+                            <span>
+                                <IconButton
+                                    aria-label="Add Friend"
+                                    onClick={handleAddFriend}
+                                    disabled={addFriendSent}
+                                    size={isMobileScreen ? 'small' : 'medium'}
+                                    sx={{
+                                        bgcolor: 'primary.main',
+                                        color: 'white',
+                                        '&:hover': { bgcolor: 'primary.dark' },
+                                        '&.Mui-disabled': { bgcolor: 'action.disabledBackground' },
+                                    }}
+                                >
+                                    <PersonAdd />
+                                </IconButton>
+                            </span>
+                        </Tooltip>
+                    )}
                     {isMobileScreen ? (
                         <IconButton
                             aria-label="Add to My Schedules"

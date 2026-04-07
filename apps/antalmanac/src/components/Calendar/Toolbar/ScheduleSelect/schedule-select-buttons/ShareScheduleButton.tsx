@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 
 interface ShareScheduleButtonProps {
     index: number;
@@ -21,10 +22,7 @@ export function ShareScheduleButton({ index, disabled }: ShareScheduleButtonProp
     const handleCopy = useCallback(async () => {
         const scheduleId = AppStore.getScheduleId(index);
         if (!scheduleId) {
-            AppStore.openSnackbar(
-                'error',
-                'Unable to find a shareable ID for this schedule. Try saving your schedule first.'
-            );
+            openSnackbar('error', 'Unable to find a shareable ID for this schedule. Try saving your schedule first.');
             return;
         }
 
@@ -44,12 +42,12 @@ export function ShareScheduleButton({ index, disabled }: ShareScheduleButtonProp
                 clearTimeout(copiedTimeoutRef.current);
             }
             setCopied(true);
-            AppStore.openSnackbar('success', `Link copied to clipboard!`, undefined, undefined, {
+            openSnackbar('success', `Link copied to clipboard!`, undefined, undefined, {
                 whiteSpace: 'pre-line',
             });
             copiedTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
         } catch (err) {
-            AppStore.openSnackbar('error', 'Failed to copy link');
+            openSnackbar('error', 'Failed to copy link');
         }
     }, [index, postHog]);
 

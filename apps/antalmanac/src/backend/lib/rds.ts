@@ -455,7 +455,7 @@ export class RDS {
     static async getSharedScheduleById(
         db: DatabaseOrTransaction,
         scheduleId: string
-    ): Promise<(ShortCourseSchedule & { id: string; index: number }) | null> {
+    ): Promise<(ShortCourseSchedule & { id: string; index: number; userId: string }) | null> {
         return db.transaction(async (tx) => {
             const schedule = await tx
                 .select()
@@ -480,7 +480,9 @@ export class RDS {
                 .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
 
             const scheduleArray = RDS.aggregateUserData(sectionResults, customEventResults);
-            return scheduleArray[0] ?? null;
+            const result = scheduleArray[0];
+            if (!result) return null;
+            return { ...result, userId: schedule.userId };
         });
     }
 
