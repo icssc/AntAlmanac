@@ -26,15 +26,15 @@ interface TableHeaderColumnDetails {
 const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHeaderColumnDetails> = {
     sectionCode: {
         label: 'Code',
-        width: '8%',
+        width: '5%',
     },
     sectionDetails: {
         label: 'Type',
-        width: '8%',
+        width: '5%',
     },
     instructors: {
         label: 'Instructors',
-        width: '15%',
+        width: '8%',
     },
     gpa: {
         label: 'GPA',
@@ -42,27 +42,27 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
     },
     dayAndTime: {
         label: 'Times',
-        width: '15%',
+        width: '12%',
     },
     location: {
         label: 'Places',
-        width: '8%',
+        width: '5%',
     },
     sectionEnrollment: {
         label: 'Enrollment',
-        width: '9%',
-    },
-    restrictions: {
-        label: 'Restr',
-        width: '8%',
+        width: '7%',
     },
     status: {
         label: 'Status',
-        width: '8%',
+        width: '5%',
+    },
+    restrictions: {
+        label: 'Restr',
+        width: '5%',
     },
     syllabus: {
         label: 'Syllabus',
-        width: '8%',
+        width: '5%',
     },
 };
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
