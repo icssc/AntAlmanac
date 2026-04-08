@@ -34,13 +34,15 @@ function RouteLayout() {
 
 const OUTAGE = false;
 
+const HOME_PAGE = <Home />;
+
 const BROWSER_ROUTER = createBrowserRouter([
     {
         element: <RouteLayout />,
         children: [
             {
                 path: '/',
-                element: <Home />,
+                element: HOME_PAGE,
                 errorElement: <ErrorPage />,
             },
             {
@@ -50,7 +52,7 @@ const BROWSER_ROUTER = createBrowserRouter([
             },
             {
                 path: '/:tab',
-                element: <Home />,
+                element: HOME_PAGE,
                 errorElement: <ErrorPage />,
             },
             {
