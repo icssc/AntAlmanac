@@ -99,6 +99,8 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
             hasAttemptedLoadRef.current = false;
             currentLoadKeyRef.current = loadKey;
             setFetchedFriendName(null);
+            setAddFriendSent(false);
+            setIsAlreadyFriend(true);
         }
 
         if (hasAttemptedLoadRef.current) {
@@ -342,7 +344,16 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
 
         setOpenLoadingSchedule(false);
         navigate('/');
-    }, [friendUserId, scheduleId, sessionIsValid, navigate, setOpenLoadingSchedule, beginLoadingSchedule, postHog]);
+    }, [
+        friendUserId,
+        scheduleId,
+        friendName,
+        sessionIsValid,
+        navigate,
+        setOpenLoadingSchedule,
+        beginLoadingSchedule,
+        postHog,
+    ]);
 
     const handleGoHome = useCallback(async () => {
         try {

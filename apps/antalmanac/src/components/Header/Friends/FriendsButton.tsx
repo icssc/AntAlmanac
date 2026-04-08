@@ -96,12 +96,14 @@ export function FriendsButton() {
 
     useEffect(() => {
         if (!open || !sessionIsValid || !session || !currentUserId) return;
+        let cancelled = false;
         const id = setInterval(async () => {
             try {
                 const [friendsResult, pendingResult] = await Promise.all([
                     trpc.friends.getFriends.query({ userId: currentUserId }),
                     trpc.friends.getPendingRequests.query({ userId: currentUserId }),
                 ]);
+                if (cancelled) return;
                 setFriends(friendsResult.map((f) => ({ id: f.id, name: f.name ?? undefined, email: f.email ?? '' })));
                 setFriendRequests(
                     pendingResult.map((r) => ({ id: r.id, name: r.name ?? undefined, email: r.email ?? '' }))
@@ -110,7 +112,10 @@ export function FriendsButton() {
                 // Silently skip failed polls
             }
         }, 10_000);
-        return () => clearInterval(id);
+        return () => {
+            cancelled = true;
+            clearInterval(id);
+        };
     }, [open, sessionIsValid, session, currentUserId]);
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
