@@ -1,5 +1,5 @@
 import type { WebsocAPIResponse, WebsocSection } from '@packages/anteater-api-types';
-import { db } from '@packages/db/src/index';
+import { db } from '@packages/db';
 import { type User as DbUser, users } from '@packages/db/src/schema/auth/user';
 import { type Subscription, subscriptions } from '@packages/db/src/schema/subscription';
 import { and, eq, inArray } from 'drizzle-orm';
