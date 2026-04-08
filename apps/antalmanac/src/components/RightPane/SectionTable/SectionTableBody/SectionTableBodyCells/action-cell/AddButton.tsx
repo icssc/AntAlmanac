@@ -27,7 +27,7 @@ export function AddButton({ section, courseDetails, term, scheduleConflict }: Ad
     }, [section, courseDetails, term]);
 
     const button = (
-        <IconButton onClick={handleClick} size="small" sx={{ p: 1 }}>
+        <IconButton onClick={handleClick} size="small" sx={{ p: 0.5 }}>
             <Add fontSize="small" />
         </IconButton>
     );

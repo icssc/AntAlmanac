@@ -8,6 +8,7 @@ import { TableBodyCellContainer } from '$components/RightPane/SectionTable/Secti
 import { AddButton } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/AddButton';
 import { DeleteButton } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/DeleteButton';
 import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
+import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
 import { Term } from '$lib/termData';
 import { useNotificationStore } from '$stores/NotificationStore';
@@ -22,9 +23,10 @@ interface ActionCellProps {
 
 export const ActionCell = memo(({ section, term, courseDetails, scheduleConflict, addedCourse }: ActionCellProps) => {
     const initialized = useNotificationStore(useShallow((state) => state.initialized));
+    const isMobile = useIsMobile();
 
     return (
-        <TableBodyCellContainer sx={{ paddingX: 1 }}>
+        <TableBodyCellContainer sx={{ paddingX: 0.5 }}>
             <Box
                 sx={{
                     display: 'inline-flex',
@@ -42,13 +44,15 @@ export const ActionCell = memo(({ section, term, courseDetails, scheduleConflict
                     />
                 )}
 
-                <ColorPicker
-                    color="#5ec8e0"
-                    analyticsCategory={analyticsEnum.addedClasses}
-                    isCustomEvent={false}
-                    term={term}
-                    sectionCode={section.sectionCode}
-                />
+                {!isMobile && (
+                    <ColorPicker
+                        color="#5ec8e0"
+                        analyticsCategory={analyticsEnum.addedClasses}
+                        isCustomEvent={false}
+                        term={term}
+                        sectionCode={section.sectionCode}
+                    />
+                )}
 
                 {initialized ? (
                     <NotificationsMenu
@@ -62,6 +66,16 @@ export const ActionCell = memo(({ section, term, courseDetails, scheduleConflict
                     <IconButton disabled size="small" sx={{ p: 1 }}>
                         <CircularProgress size={15} />
                     </IconButton>
+                )}
+
+                {!isMobile && (
+                    <ColorPicker
+                        color="#5ec8e0"
+                        analyticsCategory={analyticsEnum.addedClasses}
+                        isCustomEvent={false}
+                        term={term}
+                        sectionCode={section.sectionCode}
+                    />
                 )}
             </Box>
         </TableBodyCellContainer>

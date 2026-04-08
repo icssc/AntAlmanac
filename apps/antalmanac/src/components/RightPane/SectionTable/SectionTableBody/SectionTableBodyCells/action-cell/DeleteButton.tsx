@@ -27,7 +27,7 @@ export const DeleteButton = memo(function DeleteButton({ sectionCode, term }: De
     }, [postHog, term, sectionCode]);
 
     return (
-        <IconButton onClick={handleClick} size="small" sx={{ p: 1 }}>
+        <IconButton onClick={handleClick} size="small" sx={{ p: 0.5 }}>
             <Delete fontSize="small" />
         </IconButton>
     );
