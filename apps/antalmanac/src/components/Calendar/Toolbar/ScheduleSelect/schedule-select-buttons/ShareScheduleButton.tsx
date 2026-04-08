@@ -42,9 +42,7 @@ export function ShareScheduleButton({ index, disabled }: ShareScheduleButtonProp
                 clearTimeout(copiedTimeoutRef.current);
             }
             setCopied(true);
-            openSnackbar('success', `Link copied to clipboard!`, undefined, undefined, {
-                whiteSpace: 'pre-line',
-            });
+            openSnackbar('success', `Link copied to clipboard!`, { style: { whiteSpace: 'pre-line' } });
             copiedTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
         } catch (err) {
             openSnackbar('error', 'Failed to copy link');
