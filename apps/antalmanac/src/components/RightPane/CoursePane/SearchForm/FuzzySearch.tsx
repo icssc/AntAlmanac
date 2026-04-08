@@ -204,7 +204,7 @@ const FuzzySearch = ({ toggleSearch, postHog }: FuzzySearchProps) => {
     }, [cache, currentTerm, value, maybeDoSearchFactory, pendingRequest]);
 
     const onInputChange = (_event: unknown, inputValue: string, reason: AutocompleteInputChangeReason) => {
-        const lowerCaseValue = inputValue.toLowerCase();
+        const lowerCaseValue = inputValue.toLowerCase().trim();
         if (reason === 'input') {
             const newValue = lowerCaseValue.slice(-1) === ' ' ? lowerCaseValue.slice(0, -1) : lowerCaseValue;
 
