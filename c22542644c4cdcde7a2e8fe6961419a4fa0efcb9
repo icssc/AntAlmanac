@@ -1,0 +1,23 @@
+apps/antalmanac/src/components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/ShareScheduleButton.tsx
+  03ef7818b64842c0 45
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.5",
+  "base_commit_sha": "c22542644c4cdcde7a2e8fe6961419a4fa0efcb9",
+  "prompts": {
+    "03ef7818b64842c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "860682c6-db38-4180-8fa7-eec9c5123019",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 3,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    }
+  }
+}
