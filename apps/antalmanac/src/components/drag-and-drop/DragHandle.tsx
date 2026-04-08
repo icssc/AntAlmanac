@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useContext } from 'react';
 
-import { SortableItemContext } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableItem';
+import { SortableItemContext } from '$components/drag-and-drop/SortableItem';
 
 interface DragHandleProps {
     disabled?: boolean;
@@ -24,6 +24,7 @@ export function DragHandle({ disabled = false }: DragHandleProps) {
                 justifyContent: 'center',
                 cursor: disabled ? 'auto' : 'pointer',
                 borderRadius: 1,
+                touchAction: 'none',
                 '&:hover': {
                     backgroundColor: disabled ? 'transparent' : 'rgba(0, 0, 0, 0.1)',
                 },

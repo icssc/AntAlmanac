@@ -13,6 +13,7 @@ import { createId } from '@paralleldrive/cuid2';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 
 import { getDefaultTerm } from '$lib/termData';
+import { moveArrayElements } from '$lib/utils';
 import { WebSOC } from '$lib/websoc';
 import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
 
@@ -74,6 +75,10 @@ export class Schedules {
 
     getCurrentScheduleIndex() {
         return this.currentScheduleIndex;
+    }
+
+    getCurrentSchedule() {
+        return this.schedules[this.currentScheduleIndex];
     }
 
     getNumberOfSchedules() {
@@ -176,8 +181,7 @@ export class Schedules {
      */
     reorderSchedule(from: number, to: number) {
         this.addUndoState();
-        const [removed] = this.schedules.splice(from, 1);
-        this.schedules.splice(to, 0, removed);
+        moveArrayElements(this.schedules, from, to, { isShiftAccountedFor: true });
         if (this.currentScheduleIndex === from) {
             this.currentScheduleIndex = to;
         } else if (this.currentScheduleIndex > from && this.currentScheduleIndex <= to) {
@@ -186,6 +190,29 @@ export class Schedules {
             this.currentScheduleIndex += 1;
         }
     }
+
+    /**
+     * Moves a course's sections from one position to another.
+     *
+     * @param scheduleIndex Index of the schedule to reorder courses for.
+     * @param movedCourseId ID of the course whose sections should be moved.
+     * @param nextCourseId ID of the course directly after the moved course after reordering.
+     * Pass `null` if the course is being moved to the end.
+     */
+    reorderAddedCourses(scheduleIndex: number, movedCourseId: string, nextCourseId: string | null) {
+        this.addUndoState();
+        const courses = this.schedules[scheduleIndex].courses;
+
+        const fromIndex = courses.findIndex((course) => getCourseId(course) === movedCourseId);
+        const toIndex =
+            nextCourseId !== null
+                ? courses.findIndex((course) => getCourseId(course) === nextCourseId)
+                : courses.length;
+        const sectionCount = courses.findLastIndex((course) => getCourseId(course) === movedCourseId) - fromIndex + 1;
+
+        moveArrayElements(courses, fromIndex, toIndex, { elementMoveCount: sectionCount });
+    }
+
     getCurrentCourses() {
         return this.schedules[this.currentScheduleIndex]?.courses || [];
     }
