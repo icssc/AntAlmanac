@@ -1,37 +1,69 @@
+import { Box, CircularProgress, IconButton } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { memo } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
+import ColorPicker from '$components/ColorPicker';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { DeleteAndNotifications } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/DeleteAndNotifications';
-import { ScheduleAddCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/ScheduleAddCell';
+import { AddButton } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/AddButton';
+import { DeleteButton } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/DeleteButton';
+import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
+import analyticsEnum from '$lib/analytics/analytics';
 import { Term } from '$lib/termData';
-import { type NotifyOn } from '$stores/NotificationStore';
+import { useNotificationStore } from '$stores/NotificationStore';
 
-/**
- * Props received by components that perform actions on a specified section.
- */
-interface Props {
+interface ActionCellProps {
     section: AASection;
     term: Term['shortName'];
     courseDetails: CourseDetails;
     scheduleConflict: boolean;
     addedCourse: boolean;
-    notifyOn: NotifyOn | undefined;
-    lastUpdated: string;
-    lastCodes: string;
 }
 
-/**
- * Given a section and schedule information, provides appropriate set of actions.
- */
-export const ActionCell = memo(({ ...props }: Props) => {
+export const ActionCell = memo(({ section, term, courseDetails, scheduleConflict, addedCourse }: ActionCellProps) => {
+    const initialized = useNotificationStore(useShallow((state) => state.initialized));
+
     return (
-        <TableBodyCellContainer sx={{ width: '8%' }}>
-            {props.addedCourse ? (
-                <DeleteAndNotifications {...props} courseTitle={props.courseDetails.courseTitle} />
-            ) : (
-                <ScheduleAddCell {...props} />
-            )}
+        <TableBodyCellContainer sx={{ paddingX: 1 }}>
+            <Box
+                sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                }}
+            >
+                {addedCourse ? (
+                    <DeleteButton sectionCode={section.sectionCode} term={term} />
+                ) : (
+                    <AddButton
+                        section={section}
+                        courseDetails={courseDetails}
+                        term={term}
+                        scheduleConflict={scheduleConflict}
+                    />
+                )}
+
+                <ColorPicker
+                    color="#5ec8e0"
+                    analyticsCategory={analyticsEnum.addedClasses}
+                    isCustomEvent={false}
+                    term={term}
+                    sectionCode={section.sectionCode}
+                />
+
+                {initialized ? (
+                    <NotificationsMenu
+                        section={section}
+                        term={term}
+                        courseTitle={courseDetails.courseTitle}
+                        deptCode={courseDetails.deptCode}
+                        courseNumber={courseDetails.courseNumber}
+                    />
+                ) : (
+                    <IconButton disabled size="small" sx={{ p: 1 }}>
+                        <CircularProgress size={15} />
+                    </IconButton>
+                )}
+            </Box>
         </TableBodyCellContainer>
     );
 });
