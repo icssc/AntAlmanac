@@ -78,6 +78,13 @@
             "when": 1775632797457,
             "tag": "0010_striped_scourge",
             "breakpoints": true
+        },
+        {
+            "idx": 11,
+            "version": "7",
+            "when": 1775634019227,
+            "tag": "0011_nosy_toxin",
+            "breakpoints": true
         }
     ]
 }

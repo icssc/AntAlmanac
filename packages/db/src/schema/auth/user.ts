@@ -50,7 +50,7 @@ export const users = pgTable('users', {
 
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 
-    updatedAt: timestamp('updated_at', { withTimezone: true })
+    updatedAt: timestamp('last_updated', { withTimezone: true })
         .defaultNow()
         .notNull()
         .$onUpdateFn(() => new Date()),
