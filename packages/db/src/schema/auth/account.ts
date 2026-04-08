@@ -1,4 +1,4 @@
-import { pgTable, text, pgEnum, primaryKey } from 'drizzle-orm/pg-core';
+import { pgTable, text, pgEnum, primaryKey, timestamp } from 'drizzle-orm/pg-core';
 
 import { users } from './user';
 
@@ -22,6 +22,13 @@ export const accounts = pgTable(
             .$default(() => 'GUEST'),
 
         providerAccountId: text('provider_account_id').notNull(),
+
+        createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+
+        updatedAt: timestamp('updated_at', { withTimezone: true })
+            .defaultNow()
+            .notNull()
+            .$onUpdateFn(() => new Date()),
     },
     (table) => [primaryKey({ columns: [table.userId, table.accountType] })]
 );

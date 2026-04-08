@@ -13,6 +13,13 @@ export const sessions = pgTable('sessions', {
     expires: timestamp('expires').notNull(),
 
     refreshToken: text('refresh_token').$defaultFn(createId),
+
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+        .defaultNow()
+        .notNull()
+        .$onUpdateFn(() => new Date()),
 });
 
 export type Session = typeof sessions.$inferSelect;
