@@ -16,6 +16,7 @@ import {
     yellow,
 } from '@mui/material/colors';
 import { Schedule, ScheduleCourse, ShortCourseSchedule } from '@packages/antalmanac-types';
+import { createId } from '@paralleldrive/cuid2';
 
 import { getDefaultTerm } from '$lib/termData';
 
@@ -128,6 +129,7 @@ export function createEmptySchedule(scheduleNoteId: number): Schedule {
         courses: [],
         customEvents: [],
         scheduleNoteId: scheduleNoteId,
+        scheduleId: createId(),
         id: undefined,
     };
 }

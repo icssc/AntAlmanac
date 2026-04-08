@@ -17,6 +17,7 @@ import {
     setLocalStorageOnFirstSignin,
 } from '$lib/localStorage';
 import { clearSsoCookie, setSsoCookie } from '$lib/ssoCookie';
+import { IMPORTED_SCHEDULE_PREFIX } from '$src/globals';
 import AppStore from '$stores/AppStore';
 
 export function AuthPage() {
