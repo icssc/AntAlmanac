@@ -94,6 +94,9 @@ importers:
       '@packages/anteater-api-types':
         specifier: workspace:*
         version: link:../../packages/anteater-api-types
+      '@packages/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@react-email/components':
         specifier: ^1.0.8
         version: 1.0.8(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
@@ -218,6 +221,9 @@ importers:
       '@packages/antalmanac-types':
         specifier: workspace:^
         version: link:../../packages/types
+      '@paralleldrive/cuid2':
+        specifier: ^2.2.2
+        version: 2.2.2
       '@reactour/tour':
         specifier: ^3.6.1
         version: 3.7.0(react@19.2.1)
@@ -284,9 +290,6 @@ importers:
       next-pwa:
         specifier: ^5.6.0
         version: 5.6.0(@babel/core@7.26.0)(@types/babel__core@7.20.5)(next@16.0.10(@babel/core@7.26.0)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(webpack@5.104.1)
-      notistack:
-        specifier: ^2.0.8
-        version: 2.0.8(@emotion/react@11.13.3(@types/react@19.2.7)(react@19.2.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@19.2.7)(react@19.2.1))(@types/react@19.2.7)(react@19.2.1))(@mui/material@7.3.7(@emotion/react@11.13.3(@types/react@19.2.7)(react@19.2.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@19.2.7)(react@19.2.1))(@types/react@19.2.7)(react@19.2.1))(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       pg:
         specifier: ^8.16.3
         version: 8.16.3
@@ -5441,20 +5444,6 @@ packages:
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
-
-  notistack@2.0.8:
-    resolution: {integrity: sha512-/IY14wkFp5qjPgKNvAdfL5Jp6q90+MjgKTPh4c81r/lW70KeuX6b9pE/4f8L4FG31cNudbN9siiFS5ql1aSLRw==}
-    peerDependencies:
-      '@emotion/react': ^11.4.1
-      '@emotion/styled': ^11.3.0
-      '@mui/material': ^5.0.0
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-    peerDependenciesMeta:
-      '@emotion/react':
-        optional: true
-      '@emotion/styled':
-        optional: true
 
   npm-run-path@5.3.0:
     resolution: {integrity: sha512-ppwTtiJZq0O/ai0z7yfudtBpWIoxM8yE6nHi1X47eFR2EWORqfbu6CnPlNsjeN683eT0qG6H/Pyf9fCcvjnnnQ==}
@@ -12574,17 +12563,6 @@ snapshots:
   node-releases@2.0.27: {}
 
   normalize-path@3.0.0: {}
-
-  notistack@2.0.8(@emotion/react@11.13.3(@types/react@19.2.7)(react@19.2.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@19.2.7)(react@19.2.1))(@types/react@19.2.7)(react@19.2.1))(@mui/material@7.3.7(@emotion/react@11.13.3(@types/react@19.2.7)(react@19.2.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@19.2.7)(react@19.2.1))(@types/react@19.2.7)(react@19.2.1))(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react-dom@19.2.1(react@19.2.1))(react@19.2.1):
-    dependencies:
-      '@mui/material': 7.3.7(@emotion/react@11.13.3(@types/react@19.2.7)(react@19.2.1))(@emotion/styled@11.13.0(@emotion/react@11.13.3(@types/react@19.2.7)(react@19.2.1))(@types/react@19.2.7)(react@19.2.1))(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
-      clsx: 1.2.1
-      hoist-non-react-statics: 3.3.2
-      react: 19.2.1
-      react-dom: 19.2.1(react@19.2.1)
-    optionalDependencies:
-      '@emotion/react': 11.13.3(@types/react@19.2.7)(react@19.2.1)
-      '@emotion/styled': 11.13.0(@emotion/react@11.13.3(@types/react@19.2.7)(react@19.2.1))(@types/react@19.2.7)(react@19.2.1)
 
   npm-run-path@5.3.0:
     dependencies:

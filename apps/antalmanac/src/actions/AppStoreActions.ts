@@ -9,7 +9,6 @@ import type {
 } from '@packages/antalmanac-types';
 import { TRPCClientError } from '@trpc/client';
 import { TRPCError } from '@trpc/server';
-import { SnackbarOrigin, VariantType } from 'notistack';
 import { PostHog } from 'posthog-js/react';
 
 import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/analytics';
@@ -19,6 +18,7 @@ import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStora
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
@@ -61,22 +61,6 @@ export const addCourse = (
     };
 
     return AppStore.addCourse(newCourse, scheduleIndex);
-};
-/**
- * @param variant usually 'info', 'error', 'warning', or 'success'
- * @param message any string to display
- * @param duration in seconds and is optional.
- * @param styles object containing css-in-js object, like {[propertyName]: string}
- * if anyone comes back to refactor this, I think `notistack` provides its own types we could use.
- */
-export const openSnackbar = (
-    variant: VariantType,
-    message: string,
-    duration?: number,
-    position?: SnackbarOrigin,
-    style?: { [cssPropertyName: string]: string }
-) => {
-    AppStore.openSnackbar(variant, message, duration, position, style);
 };
 
 export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
@@ -126,7 +110,7 @@ export const saveSchedule = async (
             }
 
             try {
-                await trpc.userData.saveUserData.mutate({
+                const result = await trpc.userData.saveUserData.mutate({
                     id: providerId,
                     data: {
                         id: providerId,
@@ -136,6 +120,10 @@ export const saveSchedule = async (
                         userData: scheduleSaveState,
                     },
                 });
+
+                if (result?.scheduleIdMap) {
+                    AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
+                }
 
                 if (useSessionStore.getState().sessionIsValid) {
                     openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
@@ -175,7 +163,7 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
 
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
     try {
-        await trpc.userData.saveUserData.mutate({
+        const result = await trpc.userData.saveUserData.mutate({
             id: providerID,
             data: {
                 id: providerID,
@@ -185,6 +173,10 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
                 userData: scheduleSaveState,
             },
         });
+
+        if (result?.scheduleIdMap) {
+            AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
+        }
 
         deleteTempSaveData();
         AppStore.saveSchedule();
