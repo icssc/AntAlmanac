@@ -79,7 +79,7 @@ const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
     const data = await fetchAnteaterAPI<WebsocAPIResult>(url);
     console.log('queryWebSoc', data);
 
-    if (!data?.ok || !data?.data) {
+    if (!data?.data) {
         throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Anteater API returned an unexpected response shape',
@@ -94,7 +94,7 @@ const queryWebSocDepartments = async () => {
 
     const data = await fetchAnteaterAPI<WebsocDepartmentsAPIResult>(url);
 
-    if (!data?.ok || !data?.data) {
+    if (!data?.data) {
         throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Departments API returned no data',
