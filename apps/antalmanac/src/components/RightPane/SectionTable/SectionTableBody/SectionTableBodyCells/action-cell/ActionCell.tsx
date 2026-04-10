@@ -8,6 +8,7 @@ import { TableBodyCellContainer } from '$components/RightPane/SectionTable/Secti
 import { AddButton } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/AddButton';
 import { DeleteButton } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/DeleteButton';
 import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
+import { SectionActionMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/SectionActionMenu';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
 import { Term } from '$lib/termData';
@@ -20,13 +21,14 @@ interface ActionCellProps {
     courseDetails: CourseDetails;
     scheduleConflict: boolean;
     addedCourse: boolean;
+    scheduleNames: string[];
 }
 
 function getSectionColor(sectionCode: string, term: string): string {
     return AppStore.schedule.getExistingCourseInSchedule(sectionCode, term)?.section.color ?? '#5ec8e0';
 }
 
-export const ActionCell = memo(({ section, term, courseDetails, scheduleConflict, addedCourse }: ActionCellProps) => {
+export const ActionCell = memo(({ section, term, courseDetails, scheduleConflict, addedCourse, scheduleNames }: ActionCellProps) => {
     const initialized = useNotificationStore(useShallow((state) => state.initialized));
     const isMobile = useIsMobile();
 
@@ -81,8 +83,8 @@ export const ActionCell = memo(({ section, term, courseDetails, scheduleConflict
                     </IconButton>
                 )}
 
-                {!isMobile && (
-                    <Box sx={{ visibility: addedCourse ? 'visible' : 'hidden' }}>
+                {!isMobile &&
+                    (addedCourse ? (
                         <ColorPicker
                             color={sectionColor}
                             analyticsCategory={analyticsEnum.addedClasses}
@@ -90,8 +92,14 @@ export const ActionCell = memo(({ section, term, courseDetails, scheduleConflict
                             term={term}
                             sectionCode={section.sectionCode}
                         />
-                    </Box>
-                )}
+                    ) : (
+                        <SectionActionMenu
+                            section={section}
+                            courseDetails={courseDetails}
+                            term={term}
+                            scheduleNames={scheduleNames}
+                        />
+                    ))}
             </Box>
         </TableBodyCellContainer>
     );
