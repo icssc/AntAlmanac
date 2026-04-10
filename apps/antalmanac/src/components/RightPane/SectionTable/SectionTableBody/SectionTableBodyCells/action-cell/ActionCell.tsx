@@ -26,7 +26,7 @@ export const ActionCell = memo(({ section, term, courseDetails, scheduleConflict
     const isMobile = useIsMobile();
 
     return (
-        <TableBodyCellContainer sx={{ paddingX: isMobile ? 0.5 : 1 }}>
+        <TableBodyCellContainer sx={{ paddingX: 1 }}>
             <Box
                 sx={{
                     display: 'inline-flex',
