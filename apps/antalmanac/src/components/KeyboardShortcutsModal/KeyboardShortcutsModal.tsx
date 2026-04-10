@@ -1,6 +1,6 @@
 'use client';
 
-import { Close, Keyboard } from '@mui/icons-material';
+import { ChatBubbleOutlineOutlined, Close, Keyboard, SearchOutlined, SettingsOutlined } from '@mui/icons-material';
 import { Box, Dialog, IconButton, Stack, Typography, useMediaQuery, useTheme, alpha } from '@mui/material';
 import { useCallback, useEffect } from 'react';
 
@@ -9,14 +9,29 @@ import {
     formatShortcutKeys,
     isMacPlatform,
     type ShortcutKey,
+    type ShortcutSectionIcon,
 } from '$lib/keyboardShortcuts';
-import { BLUE } from '$src/globals';
 
-/** Single neutral kbd look — reads in light/dark without loud colors */
-function Kbd({ children }: { children: React.ReactNode }) {
+/** Accent blue: theme maps light → primary (BLUE), dark → secondary (LIGHT_BLUE) — matches links & app chrome */
+function useShortcutsAccentColor() {
     const theme = useTheme();
-    const isDark = theme.palette.mode === 'dark';
+    return theme.palette.mode === 'dark' ? theme.palette.secondary.main : theme.palette.primary.main;
+}
 
+function SectionHeaderIcon({ icon }: { icon: ShortcutSectionIcon }) {
+    const accent = useShortcutsAccentColor();
+    const sx = { fontSize: { xs: 17, md: 18 }, color: accent };
+    switch (icon) {
+        case 'general':
+            return <SettingsOutlined sx={sx} aria-hidden />;
+        case 'search':
+            return <SearchOutlined sx={sx} aria-hidden />;
+        case 'dialogs':
+            return <ChatBubbleOutlineOutlined sx={sx} aria-hidden />;
+    }
+}
+
+function Kbd({ children }: { children: React.ReactNode }) {
     return (
         <Box
             component="kbd"
@@ -24,17 +39,20 @@ function Kbd({ children }: { children: React.ReactNode }) {
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                minHeight: 22,
-                minWidth: 22,
-                px: 0.65,
-                py: 0.2,
-                borderRadius: 1,
+                minHeight: { xs: 24, md: 28 },
+                minWidth: { xs: 24, md: 28 },
+                px: { xs: 0.75, md: 0.9 },
+                py: { xs: 0.25, md: 0.35 },
+                borderRadius: 1.25,
                 fontFamily: 'ui-monospace, Menlo, Consolas, monospace',
-                fontSize: '0.6875rem',
+                fontSize: { xs: '0.75rem', md: '0.875rem' },
                 fontWeight: 600,
                 lineHeight: 1.2,
                 color: 'text.primary',
-                bgcolor: isDark ? alpha(theme.palette.common.white, 0.08) : alpha(theme.palette.common.black, 0.06),
+                bgcolor: (t) =>
+                    t.palette.mode === 'dark'
+                        ? alpha(t.palette.common.white, 0.1)
+                        : alpha(t.palette.text.primary, 0.06),
                 border: '1px solid',
                 borderColor: 'divider',
             }}
@@ -49,13 +67,17 @@ function KeyCombo({ keys }: { keys: ShortcutKey[] }) {
     const parts = formatShortcutKeys(keys, mac);
 
     return (
-        <Stack direction="row" alignItems="center" flexWrap="wrap" gap={0.35} useFlexGap>
+        <Stack direction="row" alignItems="center" flexWrap="wrap" gap={0.5} justifyContent="flex-end" useFlexGap>
             {parts.map((part, i) => (
-                <Stack key={i} direction="row" alignItems="center" gap={0.35}>
+                <Stack key={i} direction="row" alignItems="center" gap={0.5}>
                     {i > 0 && (
                         <Typography
                             component="span"
-                            sx={{ fontSize: '0.65rem', color: 'text.disabled', fontWeight: 600 }}
+                            sx={{
+                                fontSize: { xs: '0.7rem', md: '0.8rem' },
+                                color: 'text.disabled',
+                                fontWeight: 600,
+                            }}
                         >
                             +
                         </Typography>
@@ -75,20 +97,21 @@ function ShortcutRow({ description, keys, isLast }: { description: string; keys:
                 flexDirection: { xs: 'column', sm: 'row' },
                 alignItems: { xs: 'flex-start', sm: 'center' },
                 justifyContent: 'space-between',
-                gap: { xs: 0.5, sm: 1 },
-                py: { xs: 0.65, sm: 0.5 },
+                gap: { xs: 0.75, sm: 1.5 },
+                py: { xs: 1, md: 1.25 },
                 borderBottom: isLast ? 'none' : '1px solid',
                 borderColor: 'divider',
             }}
         >
             <Typography
                 sx={{
-                    fontSize: { xs: '0.8125rem', sm: '0.8rem' },
-                    lineHeight: 1.35,
-                    color: 'text.primary',
+                    fontSize: { xs: '0.9375rem', md: '1rem' },
+                    lineHeight: 1.45,
+                    color: 'text.secondary',
                     flex: 1,
                     minWidth: 0,
-                    pr: { sm: 1 },
+                    pr: { sm: 2 },
+                    overflowWrap: 'anywhere',
                 }}
             >
                 {description}
@@ -96,6 +119,7 @@ function ShortcutRow({ description, keys, isLast }: { description: string; keys:
             <Box
                 sx={{
                     flexShrink: 0,
+                    width: { xs: '100%', sm: 'auto' },
                     alignSelf: { xs: 'stretch', sm: 'center' },
                     display: 'flex',
                     justifyContent: { xs: 'flex-start', sm: 'flex-end' },
@@ -107,24 +131,44 @@ function ShortcutRow({ description, keys, isLast }: { description: string; keys:
     );
 }
 
-function SectionBlock({ title, children }: { title: string; children: React.ReactNode }) {
+function SectionBlock({
+    title,
+    icon,
+    children,
+}: {
+    title: string;
+    icon: ShortcutSectionIcon;
+    children: React.ReactNode;
+}) {
+    const accent = useShortcutsAccentColor();
+
     return (
-        <Box sx={{ mb: 1.5, '&:last-child': { mb: 0 } }}>
-            <Typography
+        <Box sx={{ mb: { xs: 2, md: 2.5 }, '&:last-child': { mb: 0 } }}>
+            <Stack
+                direction="row"
+                alignItems="center"
+                gap={1}
                 sx={{
-                    fontSize: '0.65rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    color: 'text.secondary',
+                    pb: 1,
                     mb: 0.5,
-                    pb: 0.4,
                     borderBottom: '1px solid',
                     borderColor: 'divider',
                 }}
             >
-                {title}
-            </Typography>
+                <SectionHeaderIcon icon={icon} />
+                <Typography
+                    component="h2"
+                    sx={{
+                        fontSize: { xs: '0.6875rem', md: '0.75rem' },
+                        fontWeight: 700,
+                        letterSpacing: '0.1em',
+                        textTransform: 'uppercase',
+                        color: accent,
+                    }}
+                >
+                    {title}
+                </Typography>
+            </Stack>
             <Box>{children}</Box>
         </Box>
     );
@@ -136,13 +180,14 @@ export interface KeyboardShortcutsModalProps {
 }
 
 /**
- * Compact shortcuts list; neutral keys; full-screen on small viewports + safe areas.
+ * Shortcuts reference: section icons, keycaps, full-screen on small viewports + safe areas.
  */
 export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModalProps) {
     const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-    const isDark = theme.palette.mode === 'dark';
+    const isFullScreenLayout = useMediaQuery(theme.breakpoints.down('md'));
+    const isCompactPadding = useMediaQuery(theme.breakpoints.down('sm'));
     const mac = isMacPlatform();
+    const accent = theme.palette.mode === 'dark' ? theme.palette.secondary.main : theme.palette.primary.main;
 
     const handleKeyDown = useCallback(
         (event: React.KeyboardEvent) => {
@@ -164,107 +209,160 @@ export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModal
         <Dialog
             open={open}
             onClose={onClose}
-            fullScreen={isMobile}
-            maxWidth="xs"
+            fullScreen={isFullScreenLayout}
+            maxWidth="md"
             fullWidth
             onKeyDown={handleKeyDown}
             slotProps={{
                 backdrop: {
                     sx: {
-                        backgroundColor: alpha(theme.palette.common.black, isDark ? 0.5 : 0.32),
-                        backdropFilter: 'blur(4px)',
+                        backgroundColor: (t) => alpha(t.palette.common.black, t.palette.mode === 'dark' ? 0.55 : 0.36),
+                        backdropFilter: 'blur(6px)',
                     },
                 },
                 paper: {
                     sx: {
-                        borderRadius: isMobile ? 0 : 2,
-                        maxHeight: isMobile ? '100%' : 'min(420px, 80vh)',
+                        borderRadius: isFullScreenLayout ? 0 : 3,
+                        ...(isFullScreenLayout
+                            ? {
+                                  height: '100%',
+                                  maxHeight: '100dvh',
+                              }
+                            : {
+                                  maxWidth: { md: 880 },
+                                  maxHeight: { xs: 'min(420px, 80vh)', md: 'min(640px, 88vh)' },
+                              }),
+                        minHeight: 0,
                         overflow: 'hidden',
                         display: 'flex',
                         flexDirection: 'column',
                         bgcolor: 'background.paper',
-                        // Safe area: notched phones + home indicator
-                        pt: isMobile ? 'env(safe-area-inset-top, 0px)' : undefined,
-                        pb: isMobile ? 'env(safe-area-inset-bottom, 0px)' : undefined,
+                        border: isFullScreenLayout ? 'none' : '1px solid',
+                        borderColor: 'divider',
+                        boxShadow: isFullScreenLayout
+                            ? 'none'
+                            : (t) => (t.palette.mode === 'dark' ? t.shadows[16] : t.shadows[8]),
+                        pt: isFullScreenLayout ? 'env(safe-area-inset-top, 0px)' : undefined,
+                        pb: isFullScreenLayout ? 'env(safe-area-inset-bottom, 0px)' : undefined,
                     },
                 },
             }}
         >
-            {/* Compact header */}
             <Box
                 sx={{
                     flexShrink: 0,
-                    px: { xs: 1.5, sm: 2 },
-                    py: { xs: 1, sm: 1.25 },
+                    px: isCompactPadding ? 2 : 3,
+                    py: isCompactPadding ? 1.5 : 2,
                     borderBottom: '1px solid',
                     borderColor: 'divider',
                 }}
             >
-                <Stack direction="row" alignItems="center" justifyContent="space-between" gap={1}>
-                    <Stack direction="row" alignItems="center" gap={1} sx={{ minWidth: 0 }}>
-                        <Keyboard sx={{ fontSize: 20, color: 'text.secondary', flexShrink: 0 }} />
+                <Stack direction="row" alignItems="flex-start" justifyContent="space-between" gap={1}>
+                    <Stack direction="row" alignItems="flex-start" gap={1.5} sx={{ minWidth: 0 }}>
+                        <Keyboard
+                            sx={{
+                                fontSize: { xs: 26, md: 30 },
+                                color: accent,
+                                flexShrink: 0,
+                                mt: 0.25,
+                            }}
+                        />
                         <Box sx={{ minWidth: 0 }}>
-                            <Typography fontWeight={700} sx={{ fontSize: '0.95rem', lineHeight: 1.25 }}>
-                                Shortcuts
-                            </Typography>
+                            <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap" useFlexGap>
+                                <Typography
+                                    component="h1"
+                                    id="keyboard-shortcuts-title"
+                                    sx={{
+                                        fontWeight: 700,
+                                        fontSize: { xs: '1.25rem', md: '1.5rem' },
+                                        lineHeight: 1.2,
+                                        color: 'text.primary',
+                                    }}
+                                >
+                                    Shortcuts
+                                </Typography>
+                                <Box
+                                    component="span"
+                                    sx={{
+                                        px: 1,
+                                        py: 0.35,
+                                        borderRadius: 1,
+                                        fontSize: { xs: '0.65rem', md: '0.7rem' },
+                                        fontWeight: 700,
+                                        textTransform: 'uppercase',
+                                        letterSpacing: '0.06em',
+                                        color: accent,
+                                        bgcolor: (t) =>
+                                            alpha(
+                                                t.palette.mode === 'dark'
+                                                    ? t.palette.secondary.main
+                                                    : t.palette.primary.main,
+                                                t.palette.mode === 'dark' ? 0.2 : 0.12
+                                            ),
+                                        border: '1px solid',
+                                        borderColor: (t) =>
+                                            alpha(
+                                                t.palette.mode === 'dark'
+                                                    ? t.palette.secondary.main
+                                                    : t.palette.primary.main,
+                                                t.palette.mode === 'dark' ? 0.4 : 0.28
+                                            ),
+                                    }}
+                                >
+                                    {mac ? 'Mac' : 'Windows'}
+                                </Box>
+                            </Stack>
                             <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{ fontSize: '0.7rem', display: 'block' }}
+                                sx={{
+                                    mt: 0.75,
+                                    fontFamily:
+                                        'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace',
+                                    fontSize: { xs: '0.75rem', md: '0.8125rem' },
+                                    color: 'text.secondary',
+                                    letterSpacing: '0.02em',
+                                }}
                             >
-                                {mac ? '⌘' : 'Ctrl'}+/ · Esc
+                                {mac ? '⌘' : 'Ctrl'} + / to toggle
                             </Typography>
                         </Box>
                     </Stack>
                     <IconButton
                         aria-label="Close"
                         onClick={onClose}
-                        size="small"
                         sx={{
                             color: 'text.secondary',
                             minWidth: 44,
                             minHeight: 44,
-                            mr: -0.5,
+                            mr: -0.75,
+                            borderRadius: 1.5,
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            bgcolor: (t) => alpha(t.palette.text.primary, t.palette.mode === 'dark' ? 0.06 : 0.04),
+                            '&:hover': {
+                                bgcolor: 'action.hover',
+                            },
                         }}
                     >
-                        <Close />
+                        <Close fontSize="small" />
                     </IconButton>
                 </Stack>
-                {!isMobile && (
-                    <Box
-                        component="span"
-                        sx={{
-                            display: 'inline-block',
-                            mt: 0.75,
-                            px: 1,
-                            py: 0.25,
-                            borderRadius: 1,
-                            fontSize: '0.65rem',
-                            fontWeight: 700,
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.05em',
-                            color: 'primary.main',
-                            bgcolor: alpha(BLUE, isDark ? 0.2 : 0.1),
-                        }}
-                    >
-                        {mac ? 'Mac' : 'Windows'}
-                    </Box>
-                )}
             </Box>
 
-            {/* Body — tight padding; scrolls */}
             <Box
                 sx={{
                     flex: 1,
+                    minHeight: 0,
                     overflowY: 'auto',
                     WebkitOverflowScrolling: 'touch',
-                    px: { xs: 1.5, sm: 2 },
-                    pt: 1,
-                    pb: { xs: 2, sm: 1.5 },
+                    px: isCompactPadding ? 2 : 3,
+                    pt: { xs: 1.5, md: 2 },
+                    pb: isFullScreenLayout
+                        ? `calc(${theme.spacing(2.5)} + env(safe-area-inset-bottom, 0px))`
+                        : theme.spacing(2.5),
                 }}
             >
                 {KEYBOARD_SHORTCUT_SECTIONS.map((section) => (
-                    <SectionBlock key={section.title} title={section.title}>
+                    <SectionBlock key={section.title} title={section.title} icon={section.icon}>
                         {section.items.map((item, idx) => (
                             <ShortcutRow
                                 key={item.id}

@@ -11,8 +11,11 @@ export interface ShortcutItem {
     keys: ShortcutKey[];
 }
 
+export type ShortcutSectionIcon = 'general' | 'search' | 'dialogs';
+
 export interface ShortcutSection {
     title: string;
+    icon: ShortcutSectionIcon;
     items: ShortcutItem[];
 }
 
@@ -31,6 +34,7 @@ function key(label: string): ShortcutKey {
 export const KEYBOARD_SHORTCUT_SECTIONS: ShortcutSection[] = [
     {
         title: 'General',
+        icon: 'general',
         items: [
             {
                 id: 'undo',
@@ -51,6 +55,7 @@ export const KEYBOARD_SHORTCUT_SECTIONS: ShortcutSection[] = [
     },
     {
         title: 'Search & calendar',
+        icon: 'search',
         items: [
             {
                 id: 'escape-search',
@@ -71,6 +76,7 @@ export const KEYBOARD_SHORTCUT_SECTIONS: ShortcutSection[] = [
     },
     {
         title: 'Dialogs',
+        icon: 'dialogs',
         items: [
             {
                 id: 'dialog-enter',

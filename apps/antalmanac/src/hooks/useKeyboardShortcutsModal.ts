@@ -12,6 +12,14 @@ function shouldIgnoreShortcutTarget(target: EventTarget | null): boolean {
     return false;
 }
 
+/** ⌘/ or Ctrl+/ — `code` is stable across keyboard layouts */
+function isSlashChord(event: KeyboardEvent): boolean {
+    if (!event.metaKey && !event.ctrlKey) {
+        return false;
+    }
+    return event.code === 'Slash' || event.key === '/' || event.key === '?';
+}
+
 export function useKeyboardShortcutsModal() {
     const [open, setOpen] = useState(false);
 
@@ -21,10 +29,10 @@ export function useKeyboardShortcutsModal() {
 
     useEffect(() => {
         const onKeyDown = (event: KeyboardEvent) => {
-            // Cmd+/ or Ctrl+/
-            if (event.key === '/' && (event.metaKey || event.ctrlKey)) {
+            if (isSlashChord(event)) {
                 if (shouldIgnoreShortcutTarget(event.target)) return;
                 event.preventDefault();
+                event.stopPropagation();
                 toggleModal();
                 return;
             }
