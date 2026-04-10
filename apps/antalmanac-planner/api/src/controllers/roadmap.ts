@@ -9,6 +9,7 @@ import {
 } from '@peterportal/types';
 import { TRPCError } from '@trpc/server';
 import { and, count, eq, inArray } from 'drizzle-orm';
+import { z } from 'zod';
 
 import { db, TransactionType } from '../db';
 import { planner, user } from '../db/schema';
@@ -24,7 +25,7 @@ import {
     updatePlanners,
     updateYears,
 } from '../helpers/roadmap';
-import { router, userProcedure } from '../helpers/trpc';
+import { publicProcedure, router, userProcedure } from '../helpers/trpc';
 
 type RoadmapChange = RoadmapItemDeletion | RoadmapSaveInfo;
 
@@ -108,6 +109,19 @@ const roadmapsRouter = router({
             version: latestRoadmapVersion,
         };
         return roadmap;
+    }),
+    /**
+     * Get a roadmap by its shareId
+     */
+    getByShareId: publicProcedure.input(z.object({ shareId: z.string() })).query(async ({ input }) => {
+        const planners = await queryGetPlanners(eq(planner.shareId, input.shareId));
+        if (planners.length === 0) {
+            throw new TRPCError({
+                code: 'BAD_REQUEST',
+                message: 'Shared planner not found',
+            });
+        }
+        return planners[0];
     }),
     /**
      * Save a user's roadmap

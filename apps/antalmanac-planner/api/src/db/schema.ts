@@ -1,4 +1,5 @@
 import { sql } from 'drizzle-orm';
+import { createId } from '@paralleldrive/cuid2';
 import {
     boolean,
     check,
@@ -108,7 +109,7 @@ export const planner = pgTable(
             .references(() => user.id)
             .notNull(),
         name: text('name').notNull(),
-        shareId: text('share_id'),
+        shareId: text('share_id').$defaultFn(createId),
         chc: text('chc'),
         createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
         updatedAt: timestamp('updated_at', { withTimezone: true })

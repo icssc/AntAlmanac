@@ -18,6 +18,7 @@ export async function queryGetPlanners(where: SQL) {
     const planners = (await db
         .select({
             id: planner.id,
+            shareId: planner.shareId,
             name: planner.name,
             chc: planner.chc,
             content: sql.raw(`jsonb_agg(jsonb_build_object(

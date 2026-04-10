@@ -10,6 +10,7 @@
         "db:studio": "drizzle-kit studio"
     },
     "dependencies": {
+        "@paralleldrive/cuid2": "^3.3.0",
         "@trpc/server": "^11.17.0",
         "arctic": "^3.7.0",
         "dotenv-flow": "^4.1.0",
