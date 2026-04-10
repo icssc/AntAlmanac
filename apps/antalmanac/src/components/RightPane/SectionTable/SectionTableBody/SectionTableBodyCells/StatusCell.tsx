@@ -8,7 +8,7 @@ const SECTION_STATUS_COLORS: Partial<Record<WebsocSectionStatus, SxProps<Theme>>
         color: '#00c853',
     },
     Waitl: {
-        color: (theme) => (theme.palette.mode === 'dark' ? '#f5c518' : '#1c44b2'),
+        color: (theme) => (theme.palette.mode === 'dark' ? '#f5c518' : '#ff9800'),
     },
     FULL: {
         color: '#e53935',
