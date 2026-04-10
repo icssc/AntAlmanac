@@ -10,7 +10,7 @@ const courseRouter = router({
         const data = await fetchAnteaterAPI<CourseByIdAPIResult>(
             `https://anteaterapi.com/v2/rest/courses/${encodeURIComponent(input.id)}`
         );
-        return data.ok ? data.data : null;
+        return data.data;
     }),
 });
 
