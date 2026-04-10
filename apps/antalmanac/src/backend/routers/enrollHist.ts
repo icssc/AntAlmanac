@@ -10,7 +10,8 @@ const enrollHistRouter = router({
         .input(z.object({ department: z.string(), courseNumber: z.string(), sectionType: z.string() }))
         .query(async ({ input }) => {
             const result = await fetchAnteaterAPI<EnrollmentHistoryAPIResult>(
-                `https://anteaterapi.com/v2/rest/enrollmentHistory?${new URLSearchParams(input)}`
+                `https://anteaterapi.com/v2/rest/enrollmentHistory?${new URLSearchParams(input)}`,
+                { errorType: 'trpc' }
             );
             return result.data.filter((x) => x.dates.length); // FIXME remove this shim once this is fixed on the API end
         }),

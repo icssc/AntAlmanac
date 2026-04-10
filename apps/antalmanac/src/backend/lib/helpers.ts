@@ -4,6 +4,7 @@ interface FetchAAPIOptions {
     isApiKeyRequired?: boolean;
     invalidResponseCallback?: null | ((response: Response) => void);
     headers?: NonNullable<Parameters<typeof fetch>[1]>['headers'] | null;
+    errorType?: 'base' | 'trpc';
 }
 
 /**
@@ -14,14 +15,20 @@ interface FetchAAPIOptions {
  * @param options.invalidResponseCallback Function that is called when a response is invalid.
  *        If this callback does not throw an error, one with a generic message will be thrown automatically.
  * @param options.headers Headers to pass in addition or to replace default headers.
+ * @param options.errorType The type of error to throw. Defaults to `base`.
  * @returns The response's data.
  */
 export async function fetchAnteaterAPI<DataType>(
     url: string,
-    { isApiKeyRequired = false, invalidResponseCallback = null, headers = null }: FetchAAPIOptions = {}
+    {
+        isApiKeyRequired = false,
+        invalidResponseCallback = null,
+        headers = null,
+        errorType = 'base',
+    }: FetchAAPIOptions = {}
 ) {
     if (isApiKeyRequired && !process.env.ANTEATER_API_KEY) {
-        throw new Error('ANTEATER_API_KEY is required');
+        throw getErrorByType(errorType, 'ANTEATER_API_KEY is required');
     }
 
     let response: Response;
@@ -35,29 +42,33 @@ export async function fetchAnteaterAPI<DataType>(
             },
         });
     } catch (err) {
-        throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: `Failed to reach the Anteater API: ${err}`,
-        });
+        throw getErrorByType(errorType, `Failed to reach the Anteater API: ${err}`);
     }
 
     if (!response.ok) {
         if (invalidResponseCallback !== null) {
             invalidResponseCallback(response);
         }
-        throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: `Anteater API returned an error: ${response.status} ${response.statusText}`,
-        });
+        throw getErrorByType(errorType, `Anteater API returned an error: ${response.status} ${response.statusText}`);
     }
 
     try {
         return (await response.json()) as DataType;
     } catch (err) {
-        throw new TRPCError({
-            code: 'INTERNAL_SERVER_ERROR',
-            message: `Failed to parse Anteater API response: ${err}`,
-        });
+        throw getErrorByType(errorType, `Failed to parse Anteater API response: ${err}`);
+    }
+}
+
+export function getErrorByType(errorType: FetchAAPIOptions['errorType'], message: string) {
+    switch (errorType) {
+        case 'trpc':
+            return new TRPCError({
+                code: 'INTERNAL_SERVER_ERROR',
+                message: message,
+            });
+        case 'base':
+        default:
+            return new Error(message);
     }
 }
 

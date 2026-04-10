@@ -17,7 +17,8 @@ const gradesRouter = router({
         )
         .query(async ({ input }) => {
             const result = await fetchAnteaterAPI<AggregateGradesAPIResult>(
-                `https://anteaterapi.com/v2/rest/grades/aggregate?${new URLSearchParams(input)}`
+                `https://anteaterapi.com/v2/rest/grades/aggregate?${new URLSearchParams(input)}`,
+                { errorType: 'trpc' }
             );
             return result.data;
         }),
@@ -40,7 +41,8 @@ const gradesRouter = router({
             const result = await fetchAnteaterAPI<AggregateGradesByOfferingAPIResult>(
                 `https://anteaterapi.com/v2/rest/grades/aggregateByOffering?${new URLSearchParams(
                     input as Record<string, string>
-                )}`
+                )}`,
+                { errorType: 'trpc' }
             );
             return result.data;
         }),
