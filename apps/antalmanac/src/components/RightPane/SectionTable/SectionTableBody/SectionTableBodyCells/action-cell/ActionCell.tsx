@@ -44,16 +44,6 @@ export const ActionCell = memo(({ section, term, courseDetails, scheduleConflict
                     />
                 )}
 
-                {!isMobile && (
-                    <ColorPicker
-                        color="#5ec8e0"
-                        analyticsCategory={analyticsEnum.addedClasses}
-                        isCustomEvent={false}
-                        term={term}
-                        sectionCode={section.sectionCode}
-                    />
-                )}
-
                 {initialized ? (
                     <NotificationsMenu
                         section={section}
