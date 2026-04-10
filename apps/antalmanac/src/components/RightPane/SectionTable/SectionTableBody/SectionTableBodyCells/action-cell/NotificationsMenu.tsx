@@ -6,7 +6,6 @@ import { useShallow } from 'zustand/react/shallow';
 
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import { useIsMobile } from '$hooks/useIsMobile';
 import { canTermEnrollmentChange, Term } from '$lib/termData';
 import { type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -29,7 +28,6 @@ interface NotificationsMenuProps {
 
 export const NotificationsMenu = memo(
     ({ section, term, courseTitle, deptCode, courseNumber }: NotificationsMenuProps) => {
-        const isMobile = useIsMobile();
         const notificationKey = section.sectionCode + ' ' + term;
         const [notification, setNotifications] = useNotificationStore(
             useShallow((store) => [store.notifications[notificationKey], store.setNotifications])
@@ -101,7 +99,7 @@ export const NotificationsMenu = memo(
             <>
                 <Tooltip title={tooltipText}>
                     <span>
-                        <IconButton onClick={handleNotificationClick} disabled={!isTermCurrent} sx={{ p: isMobile ? 1 : 0.5 }}>
+                        <IconButton onClick={handleNotificationClick} disabled={!isTermCurrent} sx={{ p: 0.5 }}>
                             {isGoogleUser ? (
                                 hasNotifications ? (
                                     <EditNotifications fontSize="small" />

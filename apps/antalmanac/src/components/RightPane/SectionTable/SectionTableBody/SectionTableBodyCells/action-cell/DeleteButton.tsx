@@ -5,7 +5,6 @@ import { usePostHog } from 'posthog-js/react';
 import { memo, useCallback } from 'react';
 
 import { deleteCourse } from '$actions/AppStoreActions';
-import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { Term } from '$lib/termData';
 import AppStore from '$stores/AppStore';
@@ -16,7 +15,6 @@ interface DeleteButtonProps {
 }
 
 export const DeleteButton = memo(function DeleteButton({ sectionCode, term }: DeleteButtonProps) {
-    const isMobile = useIsMobile();
     const postHog = usePostHog();
 
     const handleClick = useCallback(() => {
@@ -29,7 +27,7 @@ export const DeleteButton = memo(function DeleteButton({ sectionCode, term }: De
     }, [postHog, term, sectionCode]);
 
     return (
-        <IconButton onClick={handleClick} size="small" sx={{ p: isMobile ? 1 : 0.5 }}>
+        <IconButton onClick={handleClick} size="small" sx={{ p: 0.5 }}>
             <Delete fontSize="small" />
         </IconButton>
     );

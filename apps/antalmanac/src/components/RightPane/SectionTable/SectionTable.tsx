@@ -26,7 +26,7 @@ interface TableHeaderColumnDetails {
 const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHeaderColumnDetails> = {
     sectionCode: { label: 'Code', weight: 5 },
     sectionDetails: { label: 'Type', weight: 5 },
-    instructors: { label: 'Instructors', weight: 8 },
+    instructors: { label: 'Instructors', weight: 7 },
     gpa: { label: 'GPA', weight: 5 },
     dayAndTime: { label: 'Times', weight: 12 },
     location: { label: 'Places', weight: 5 },
