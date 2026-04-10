@@ -1,6 +1,6 @@
 import { Box, CircularProgress, IconButton } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
-import { memo } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import ColorPicker from '$components/ColorPicker';
@@ -11,6 +11,7 @@ import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTab
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
 import { Term } from '$lib/termData';
+import AppStore from '$stores/AppStore';
 import { useNotificationStore } from '$stores/NotificationStore';
 
 interface ActionCellProps {
@@ -21,9 +22,31 @@ interface ActionCellProps {
     addedCourse: boolean;
 }
 
+function getSectionColor(sectionCode: string, term: string): string {
+    return AppStore.schedule.getExistingCourseInSchedule(sectionCode, term)?.section.color ?? '#5ec8e0';
+}
+
 export const ActionCell = memo(({ section, term, courseDetails, scheduleConflict, addedCourse }: ActionCellProps) => {
     const initialized = useNotificationStore(useShallow((state) => state.initialized));
     const isMobile = useIsMobile();
+
+    const [sectionColor, setSectionColor] = useState(() => getSectionColor(section.sectionCode, term));
+
+    const updateColor = useCallback(() => {
+        setSectionColor(getSectionColor(section.sectionCode, term));
+    }, [section.sectionCode, term]);
+
+    useEffect(() => {
+        AppStore.on('addedCoursesChange', updateColor);
+        AppStore.on('colorChange', updateColor);
+        AppStore.on('currentScheduleIndexChange', updateColor);
+
+        return () => {
+            AppStore.removeListener('addedCoursesChange', updateColor);
+            AppStore.removeListener('colorChange', updateColor);
+            AppStore.removeListener('currentScheduleIndexChange', updateColor);
+        };
+    }, [updateColor]);
 
     return (
         <TableBodyCellContainer sx={{ paddingX: isMobile ? 0.5 : 1 }}>
@@ -59,13 +82,15 @@ export const ActionCell = memo(({ section, term, courseDetails, scheduleConflict
                 )}
 
                 {!isMobile && (
-                    <ColorPicker
-                        color="#5ec8e0"
-                        analyticsCategory={analyticsEnum.addedClasses}
-                        isCustomEvent={false}
-                        term={term}
-                        sectionCode={section.sectionCode}
-                    />
+                    <Box sx={{ visibility: addedCourse ? 'visible' : 'hidden' }}>
+                        <ColorPicker
+                            color={sectionColor}
+                            analyticsCategory={analyticsEnum.addedClasses}
+                            isCustomEvent={false}
+                            term={term}
+                            sectionCode={section.sectionCode}
+                        />
+                    </Box>
                 )}
             </Box>
         </TableBodyCellContainer>
