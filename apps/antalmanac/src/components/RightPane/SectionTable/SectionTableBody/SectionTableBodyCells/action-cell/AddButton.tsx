@@ -4,6 +4,7 @@ import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { useCallback } from 'react';
 
 import { addCourse } from '$actions/AppStoreActions';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { Term } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
@@ -16,6 +17,8 @@ interface AddButtonProps {
 }
 
 export function AddButton({ section, courseDetails, term, scheduleConflict }: AddButtonProps) {
+    const isMobile = useIsMobile();
+
     const handleClick = useCallback(() => {
         for (const meeting of section.meetings) {
             if (meeting.timeIsTBA) {
@@ -27,7 +30,7 @@ export function AddButton({ section, courseDetails, term, scheduleConflict }: Ad
     }, [section, courseDetails, term]);
 
     const button = (
-        <IconButton onClick={handleClick} size="small" sx={{ p: 0.5 }}>
+        <IconButton onClick={handleClick} size="small" sx={{ p: isMobile ? 1 : 0.5 }}>
             <Add fontSize="small" />
         </IconButton>
     );
