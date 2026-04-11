@@ -189,7 +189,7 @@ function SectionTable(props: SectionTableProps) {
                             <TableCell
                                 sx={{
                                     padding: 0,
-                                    width: isMobile ? '10%' : '14%',
+                                    width: isMobile ? '6%' : '8%',
                                 }}
                             />
                             {tableHeaderColumnEntries

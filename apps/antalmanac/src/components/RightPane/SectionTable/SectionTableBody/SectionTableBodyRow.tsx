@@ -129,6 +129,9 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
              * CSS errors occur when combining the `nth-of-type` selector with the computed styling, so it's split into two separate props
              */
             sx={{
+                ...(addedCourse && {
+                    borderLeft: `4px solid ${section.color}`,
+                }),
                 '&:nth-of-type(odd)': {
                     backgroundColor: theme.palette.action.hover,
                 },
