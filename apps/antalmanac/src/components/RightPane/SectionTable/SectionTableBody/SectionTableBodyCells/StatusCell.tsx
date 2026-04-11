@@ -1,14 +1,14 @@
-import { SxProps } from '@mui/material';
+import { SxProps, Theme } from '@mui/material';
 import { WebsocSectionStatus } from '@packages/antalmanac-types';
 
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 
-const SECTION_STATUS_COLORS: Partial<Record<WebsocSectionStatus, SxProps>> = {
+const SECTION_STATUS_COLORS: Partial<Record<WebsocSectionStatus, SxProps<Theme>>> = {
     OPEN: {
         color: '#00c853',
     },
     Waitl: {
-        color: '#1c44b2',
+        color: (theme) => (theme.palette.mode === 'dark' ? '#f5c518' : '#ff9800'),
     },
     FULL: {
         color: '#e53935',
