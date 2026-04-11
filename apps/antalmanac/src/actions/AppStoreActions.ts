@@ -11,7 +11,7 @@ import { TRPCClientError } from '@trpc/client';
 import { TRPCError } from '@trpc/server';
 import { PostHog } from 'posthog-js/react';
 
-import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/analytics';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
@@ -41,8 +41,7 @@ export const addCourse = (
     logAnalytics(postHog, {
         category: analyticsEnum.classSearch,
         action: analyticsEnum.classSearch.actions.ADD_COURSE,
-        label: courseDetails.deptCode,
-        value: courseNumAsDecimal(courseDetails.courseNumber),
+        label: courseDetails.deptCode + courseDetails.courseNumber,
     });
     const terms = AppStore.termsInSchedule(term);
 
