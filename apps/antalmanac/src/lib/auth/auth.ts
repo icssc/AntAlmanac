@@ -1,4 +1,5 @@
 import { betterAuth } from 'better-auth';
+import { nextCookies } from 'better-auth/next-js';
 import { genericOAuth } from 'better-auth/plugins';
 
 import { oidcOAuthEnvSchema } from '$src/backend/env';
@@ -16,8 +17,7 @@ export const auth = betterAuth({
                 {
                     providerId: AUTH_PROVIDER_ID,
                     issuer: OIDC_ISSUER_URL,
-                    authorizationUrl: `${OIDC_ISSUER_URL}/authorize`,
-                    tokenUrl: `${OIDC_ISSUER_URL}/token`,
+                    discoveryUrl: `${OIDC_ISSUER_URL}/.well-known/openid-configuration`,
                     clientId: OIDC_CLIENT_ID,
                     scopes: ['openid', 'profile', 'email'],
                     pkce: true,
@@ -25,5 +25,6 @@ export const auth = betterAuth({
                 },
             ],
         }),
+        nextCookies(),
     ],
 });
