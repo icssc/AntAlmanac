@@ -15,6 +15,8 @@ import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { getNextScheduleName } from '$lib/utils';
+import { IMPORTED_SCHEDULE_PREFIX, SHARED_SCHEDULE_PREFIX } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -196,13 +198,14 @@ export const mergeShortCourseSchedules = (
 ) => {
     const existingScheduleNames = new Set(currentSchedules.map((s: ShortCourseSchedule) => s.scheduleName));
     const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
-        let scheduleName = schedule.scheduleName;
-        if (existingScheduleNames.has(schedule.scheduleName)) {
-            scheduleName = scheduleName + '(1)';
-        }
+        const baseName = `${importMessage}${schedule.scheduleName}`;
+        const scheduleName = getNextScheduleName(baseName, existingScheduleNames);
+
+        existingScheduleNames.add(scheduleName);
+
         return {
             ...schedule,
-            scheduleName: `${importMessage}${scheduleName}`,
+            scheduleName: scheduleName,
         };
     });
     currentSchedules.push(...cacheSchedule);
@@ -237,23 +240,27 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
     const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
 
     if (scheduleSaveState?.schedules) {
-        mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, '(import)-');
+        mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, IMPORTED_SCHEDULE_PREFIX);
         currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
 
         scheduleComponentsToggleStore.setState({ openImportDialog: false, openLoadingSchedule: true });
 
         const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
-        if (isScheduleLoaded) {
-            openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
 
-            scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
-
-            await saveSchedule(accounts.providerAccountId, true, users);
-
-            await trpc.userData.flagImportedSchedule.mutate({
-                providerId: username,
-            });
+        if (!isScheduleLoaded) {
+            scheduleComponentsToggleStore.setState({ openLoadingSchedule: false });
+            return { imported: false, error: new Error('Failed to load imported schedule') };
         }
+
+        openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
+
+        scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
+
+        await saveSchedule(accounts.providerAccountId, true, users);
+
+        await trpc.userData.flagImportedSchedule.mutate({
+            providerId: username,
+        });
     }
 
     return { imported: false, error: null };
@@ -273,6 +280,65 @@ export const importScheduleWithUsername = async (username: string) => {
     } catch (e) {
         return { imported: false, error: e };
     }
+};
+
+export const importSharedScheduleById = async (scheduleId: string, friendName?: string) => {
+    const sharedSchedule = await trpc.userData.getSharedSchedule.query({ scheduleId });
+
+    const incomingSchedule: ShortCourseSchedule = {
+        id: undefined,
+        scheduleName: sharedSchedule.scheduleName,
+        scheduleNote: sharedSchedule.scheduleNote || '',
+        courses: sharedSchedule.courses,
+        customEvents: sharedSchedule.customEvents,
+    };
+
+    const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
+    const prefix = friendName ? `(${friendName})-` : SHARED_SCHEDULE_PREFIX;
+
+    mergeShortCourseSchedules(currentSchedules.schedules, [incomingSchedule], prefix);
+    currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
+
+    scheduleComponentsToggleStore.setState({ openLoadingSchedule: true });
+
+    const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
+
+    if (!isScheduleLoaded) {
+        scheduleComponentsToggleStore.setState({ openLoadingSchedule: false });
+        return { imported: false, error: new Error('Failed to load shared schedule') };
+    }
+
+    const session = useSessionStore.getState();
+    if (session.sessionIsValid && session.session) {
+        try {
+            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
+                token: session.session,
+            });
+
+            await autoSaveSchedule(accounts.providerAccountId, {
+                userInfo: {
+                    email: users.email,
+                    name: users.name,
+                    avatar: users.avatar,
+                },
+            });
+        } catch (err) {
+            openSnackbar(
+                'error',
+                'Failed to load schedules. If this continues to happen, please submit a feedback form.'
+            );
+        }
+    } else {
+        openSnackbar('warning', 'Schedule added to current session. Sign in to save permanently.');
+    }
+
+    openSnackbar('success', `Shared schedule "${incomingSchedule.scheduleName}" added to your account!`);
+
+    scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
+
+    changeCurrentSchedule(currentSchedules.scheduleIndex);
+
+    return { imported: true, error: null };
 };
 
 export const loadSchedule = async (
@@ -336,7 +402,7 @@ export const loadSchedule = async (
                 }
                 openSnackbar(
                     'error',
-                    '`Failed to load schedules. If this continues to happen, please submit a feedback form.`'
+                    'Failed to load schedules. If this continues to happen, please submit a feedback form.'
                 );
             }
         }

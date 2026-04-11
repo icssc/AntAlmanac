@@ -25,6 +25,7 @@ import { AlertDialog } from '$components/AlertDialog';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
+import { useIsSharedSchedulePage } from '$hooks/useIsSharedSchedulePage';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
 import { useNotificationStore } from '$stores/NotificationStore';
@@ -47,6 +48,7 @@ export const Signin = () => {
     const isDark = useThemeStore((store) => store.isDark);
     const { updateSession } = useSessionStore();
     const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = scheduleComponentsToggleStore();
+    const isSharedSchedulePage = useIsSharedSchedulePage();
 
     const [openAlert, setOpenalert] = useState(false);
     const [settingsAnchorEl, setSettingsAnchorEl] = useState<null | HTMLElement>(null);
@@ -101,18 +103,28 @@ export const Signin = () => {
     );
 
     const loadScheduleAndSetLoadingAuth = useCallback(
-        async (userID: string, rememberMe: boolean) => {
+        async (userID: string, rememberMe: boolean, skipScheduleLoad = false) => {
             setOpenLoadingSchedule(true);
 
             const sessionToken = getLocalStorageSessionId() ?? '';
 
             if (sessionToken) {
-                const validSession = await updateSession(sessionToken);
+                // Try to validate the session and handle accordingly
+                let validSession;
+                try {
+                    validSession = await trpc.auth.validateSession.query({
+                        token: sessionToken,
+                    });
+                } catch (err) {
+                    validSession = false;
+                }
                 if (!validSession) {
                     setOpenalert(true);
                     setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
-                } else {
-                    await loadScheduleWithSessionToken();
+                } else if (!skipScheduleLoad) {
+                    if (sessionToken && (await loadScheduleWithSessionToken())) {
+                        updateSession(sessionToken);
+                    }
                 }
             } else if (userID && userID !== '') {
                 await validateImportedUser(userID);
@@ -181,12 +193,12 @@ export const Signin = () => {
             const sessionID = getLocalStorageSessionId();
 
             if (savedUserID != null || sessionID !== null) {
-                void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
+                void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true, isSharedSchedulePage);
             } else {
                 useNotificationStore.getState().loadNotifications();
             }
         }
-    }, [loadScheduleAndSetLoadingAuth]);
+    }, [loadScheduleAndSetLoadingAuth, isSharedSchedulePage]);
 
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>

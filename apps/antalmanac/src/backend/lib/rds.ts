@@ -277,11 +277,15 @@ export class RDS {
         userId: string,
         schedule: ShortCourseSchedule,
         index: number,
-        existingIds: Set<string>
+        existingIds: Set<string>,
+        existingSharingStatuses: Map<string, boolean>
     ): Promise<{ frontendId: string | undefined; dbId: string }> {
         // Reuse the existing DB ID if this schedule was previously saved by this
         // user. An unrecognized or foreign ID must not be trusted — generate fresh.
         const safeId = schedule.id && existingIds.has(schedule.id) ? schedule.id : undefined;
+
+        // Preserve the sharing status from before the delete, falling back to the schema default.
+        const sharedWithFriends = safeId !== undefined ? (existingSharingStatuses.get(safeId) ?? true) : true;
 
         const result = await tx
             .insert(schedules)
@@ -292,6 +296,7 @@ export class RDS {
                 notes: schedule.scheduleNote,
                 index,
                 lastUpdated: new Date(),
+                sharedWithFriends,
             })
             .returning({ id: schedules.id });
 
@@ -326,12 +331,14 @@ export class RDS {
         userId: string,
         scheduleArray: ShortCourseSchedule[]
     ): Promise<Record<string, string>> {
-        // Snapshot existing IDs before deleting so we can validate safeIds below.
+        // Snapshot existing IDs and sharing statuses before deleting so we can
+        // validate safeIds and restore sharedWithFriends after the re-insert.
         const existingSchedules = await tx
-            .select({ id: schedules.id })
+            .select({ id: schedules.id, sharedWithFriends: schedules.sharedWithFriends })
             .from(schedules)
             .where(eq(schedules.userId, userId));
         const existingIds = new Set(existingSchedules.map((s) => s.id));
+        const existingSharingStatuses = new Map(existingSchedules.map((s) => [s.id, s.sharedWithFriends]));
 
         // Delete all schedules up-front. Courses and custom events cascade.
         // users.currentScheduleId is set null on delete and updated at the end
@@ -340,7 +347,7 @@ export class RDS {
 
         const results = await Promise.all(
             scheduleArray.map((schedule, index) =>
-                this.insertScheduleAndContents(tx, userId, schedule, index, existingIds)
+                this.insertScheduleAndContents(tx, userId, schedule, index, existingIds, existingSharingStatuses)
             )
         );
 
@@ -413,6 +420,72 @@ export class RDS {
     }
 
     /**
+     * Gets the schedule ID for a schedule by userId and schedule name.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param userId - The ID of the user who owns the schedule.
+     * @param scheduleName - The name of the schedule.
+     * @returns A promise that resolves to the schedule ID, or null if not found.
+     */
+    static async getScheduleIdByName(
+        db: DatabaseOrTransaction,
+        userId: string,
+        scheduleName: string
+    ): Promise<string | null> {
+        return db.transaction(async (tx) => {
+            const schedule = await tx
+                .select({ id: schedules.id })
+                .from(schedules)
+                .where(and(eq(schedules.userId, userId), eq(schedules.name, scheduleName)))
+                .limit(1)
+                .then((res) => res[0]);
+
+            return schedule?.id ?? null;
+        });
+    }
+
+    /**
+     * Retrieves a schedule by schedule ID. All schedules are publicly accessible via their ID.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param scheduleId - The unique identifier of the schedule.
+     * @returns A promise that resolves to a ShortCourseSchedule object, or null if the schedule is not found.
+     */
+    static async getSharedScheduleById(
+        db: DatabaseOrTransaction,
+        scheduleId: string
+    ): Promise<(ShortCourseSchedule & { id: string; index: number; userId: string }) | null> {
+        return db.transaction(async (tx) => {
+            const schedule = await tx
+                .select()
+                .from(schedules)
+                .where(eq(schedules.id, scheduleId))
+                .then((res) => res[0]);
+
+            if (!schedule) {
+                return null;
+            }
+
+            const sectionResults = await tx
+                .select()
+                .from(schedules)
+                .where(eq(schedules.id, scheduleId))
+                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+
+            const customEventResults = await tx
+                .select()
+                .from(schedules)
+                .where(eq(schedules.id, scheduleId))
+                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+
+            const scheduleArray = RDS.aggregateUserData(sectionResults, customEventResults);
+            const result = scheduleArray[0];
+            if (!result) return null;
+            return { ...result, userId: schedule.userId };
+        });
+    }
+
+    /**
      * Retrieves user data by user ID, including schedules and custom events.
      *
      * @param db - The database or transaction object to use for the query.
@@ -454,6 +527,51 @@ export class RDS {
                 userData: {
                     schedules: userSchedules,
                     scheduleIndex,
+                },
+            };
+        });
+    }
+
+    /**
+     * Retrieves a friend's user data, filtered to only schedules they have chosen to share with friends.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param userId - The unique identifier of the friend.
+     * @returns A promise that resolves to a User object containing only the shared schedules, or null if not found.
+     */
+    static async getUserFriendDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
+        return db.transaction(async (tx) => {
+            const user = await tx
+                .select()
+                .from(users)
+                .where(eq(users.id, userId))
+                .then((res) => res[0]);
+
+            if (!user) {
+                return null;
+            }
+
+            const sharedCondition = and(eq(schedules.userId, userId), eq(schedules.sharedWithFriends, true));
+
+            const sectionResults = await tx
+                .select()
+                .from(schedules)
+                .where(sharedCondition)
+                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+
+            const customEventResults = await tx
+                .select()
+                .from(schedules)
+                .where(sharedCondition)
+                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+
+            const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+
+            return {
+                id: userId,
+                userData: {
+                    schedules: userSchedules,
+                    scheduleIndex: 0,
                 },
             };
         });

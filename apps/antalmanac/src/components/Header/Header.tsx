@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { AlertDialog } from '$components/AlertDialog';
 import { AppSwitcher } from '$components/Header/AppSwitcher';
+import { FriendsButton } from '$components/Header/Friends/FriendsButton';
 import { Import } from '$components/Header/Import';
 import { Save } from '$components/Header/Save';
 import { Signin } from '$components/Header/Signin';
@@ -91,6 +92,7 @@ export function Header() {
                     <Stack direction="row" alignItems="center">
                         <Import key="studylist" />
                         <Save />
+                        <FriendsButton />
                         {sessionIsValid ? <Signout onLogoutComplete={handleLogoutComplete} /> : <Signin />}
                     </Stack>
 
