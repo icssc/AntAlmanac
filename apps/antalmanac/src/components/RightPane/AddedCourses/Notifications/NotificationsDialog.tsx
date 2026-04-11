@@ -71,7 +71,7 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
                 </IconButton>
             </Tooltip>
 
-            <Dialog open={open} onClose={handleClose} fullWidth>
+            <Dialog open={open} onClose={handleClose} fullWidth maxWidth="lg">
                 <DialogTitle>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         Manage Notifications
