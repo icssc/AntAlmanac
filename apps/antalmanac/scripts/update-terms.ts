@@ -63,7 +63,7 @@ async function updateTerms() {
             const currentFile = readFileSync(OUTPUT_PATH, 'utf-8');
             try {
                 deployedData = JSON.parse(currentFile);
-            } catch (e) {
+            } catch {
                 console.log('Error parsing existing deployed_terms.json, treating as empty.');
             }
             console.log(`Current deployed term: ${deployedData.latestTerm}`);
