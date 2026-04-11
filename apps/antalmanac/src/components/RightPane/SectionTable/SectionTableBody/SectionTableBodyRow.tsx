@@ -70,6 +70,10 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     );
     const [currColor, setCurrColor] = useState(section.color);
 
+    useEffect(() => {
+        setCurrColor(section.color);
+    }, [section.color]);
+
     // Stable references to event listeners will synchronize React state with the store.
 
     const updateColor = useCallback((newColor: string) => {
