@@ -13,6 +13,7 @@ import { PostHog } from 'posthog-js/react';
 
 import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
+import { signIn } from '$lib/auth/authActions';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
@@ -389,10 +390,10 @@ const cacheSchedule = () => {
 
 export const loginUser = async () => {
     try {
-        const authUrl = await trpc.userData.getGoogleAuthUrl.query();
-        if (authUrl) {
+        const { url } = await signIn();
+        if (url) {
             cacheSchedule();
-            window.location.href = authUrl.toString();
+            window.location.href = url.toString();
         }
     } catch (error) {
         console.error('Error during login initiation', error);
