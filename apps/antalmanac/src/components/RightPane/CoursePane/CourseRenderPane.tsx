@@ -11,7 +11,7 @@ import {
 } from '@packages/antalmanac-types';
 import Image from 'next/image';
 import { useQueryStates } from 'nuqs';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
 import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
@@ -259,6 +259,9 @@ const ErrorMessage = ({ formData }: { formData: SearchFormData }) => {
 
 export default function CourseRenderPane(props: { id?: number }) {
     const [formData] = useQueryStates(searchParsers);
+    const formDataRef = useRef(formData);
+    formDataRef.current = formData;
+
     const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
     const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
     const [loading, setLoading] = useState(true);
@@ -268,31 +271,32 @@ export default function CourseRenderPane(props: { id?: number }) {
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
     const loadCourses = useCallback(async () => {
+        const data = formDataRef.current;
         setLoading(true);
 
         const websocQueryParams = {
-            department: formData.deptValue,
-            term: formData.term,
-            ge: formData.ge,
-            courseNumber: formData.courseNumber,
-            sectionCodes: formData.sectionCode,
-            instructorName: formData.instructor,
-            units: formData.units,
-            endTime: formData.endTime,
-            startTime: formData.startTime,
-            fullCourses: formData.coursesFull,
-            building: formData.building,
-            room: formData.room,
-            division: formData.division,
-            excludeRestrictionCodes: formData.excludeRestrictionCodes.split('').join(','),
-            days: formData.days.split(/(?=[A-Z])/).join(','),
+            department: data.deptValue,
+            term: data.term,
+            ge: data.ge,
+            courseNumber: data.courseNumber,
+            sectionCodes: data.sectionCode,
+            instructorName: data.instructor,
+            units: data.units,
+            endTime: data.endTime,
+            startTime: data.startTime,
+            fullCourses: data.coursesFull,
+            building: data.building,
+            room: data.room,
+            division: data.division,
+            excludeRestrictionCodes: data.excludeRestrictionCodes.split('').join(','),
+            days: data.days.split(/(?=[A-Z])/).join(','),
         };
 
         const gradesQueryParams = {
-            department: formData.deptValue,
-            ge: formData.ge as GE,
-            instructor: formData.instructor,
-            sectionCode: formData.sectionCode,
+            department: data.deptValue,
+            ge: data.ge as GE,
+            instructor: data.instructor,
+            sectionCode: data.sectionCode,
         };
 
         try {
@@ -309,7 +313,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             setError(false);
             setWebsocResp(websocJsonResp);
             const allCourses = flattenSOCObject(websocJsonResp);
-            setCourseData(getFilteredCourses(allCourses, formData.mode));
+            setCourseData(getFilteredCourses(allCourses, data.mode));
         } catch (error) {
             console.error(error);
             setError(true);
@@ -317,7 +321,8 @@ export default function CourseRenderPane(props: { id?: number }) {
         } finally {
             setLoading(false);
         }
-    }, [formData]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const updateScheduleNames = () => {
         setScheduleNames(AppStore.getScheduleNames());
