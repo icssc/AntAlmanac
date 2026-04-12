@@ -11,7 +11,6 @@ enum LocalStorageKeys {
     show24HourTime = 'show24HourTime',
     previewMode = 'previewMode',
     autoSave = 'autoSave',
-    helpBoxDismissalTime = 'helpBoxDismissalTime',
     columnToggles = 'columnToggles',
     pwaDismissalTime = 'pwaDismissalTime',
     sessionId = 'sessionId',
@@ -225,19 +224,6 @@ export function getLocalStorageAutoSave() {
 
 export function removeLocalStorageAutoSave() {
     window.localStorage.removeItem(LSK.autoSave);
-}
-
-// Helper functions for helpBoxDismissalTime
-export function setLocalStorageHelpBoxDismissalTime(value: string) {
-    window.localStorage.setItem(LSK.helpBoxDismissalTime, value);
-}
-
-export function getLocalStorageHelpBoxDismissalTime() {
-    return window.localStorage.getItem(LSK.helpBoxDismissalTime);
-}
-
-export function removeLocalStorageHelpBoxDismissalTime() {
-    window.localStorage.removeItem(LSK.helpBoxDismissalTime);
 }
 
 // Helper functions for columnToggles
