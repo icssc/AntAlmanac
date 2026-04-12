@@ -4,7 +4,7 @@ import { genericOAuth } from 'better-auth/plugins';
 
 import { oidcOAuthEnvSchema } from '$src/backend/env';
 
-const { OIDC_CLIENT_ID, OIDC_ISSUER_URL } = oidcOAuthEnvSchema.parse(process.env);
+const { OIDC_CLIENT_ID, OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
 
 export const AUTH_PROVIDER_ID = 'icssc';
 
@@ -21,7 +21,7 @@ export const auth = betterAuth({
                     clientId: OIDC_CLIENT_ID,
                     scopes: ['openid', 'profile', 'email'],
                     pkce: true,
-                    requireIssuerValidation: true,
+                    redirectURI: GOOGLE_REDIRECT_URI,
                 },
             ],
         }),

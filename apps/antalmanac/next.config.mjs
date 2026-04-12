@@ -12,6 +12,15 @@ const nextConfig = {
     },
     serverExternalPackages: ['@node-rs/argon2'],
     turbopack: {},
+    async redirects() {
+        return [
+            {
+                source: '/auth',
+                destination: '/api/auth/oauth2/callback/icssc',
+                permanent: true,
+            },
+        ];
+    },
 };
 
 export default withPWA({
