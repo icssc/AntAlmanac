@@ -13,6 +13,9 @@ interface CoursePaneStore {
     toggleAdvancedSearch: () => void;
     setAdvancedSearchEnabled: (enabled: boolean) => void;
 
+    stashedManualFields: Record<string, string> | null;
+    setStashedManualFields: (fields: Record<string, string> | null) => void;
+
     key: number;
     forceUpdate: () => void;
 }
@@ -84,6 +87,9 @@ export const useCoursePaneStore = create<CoursePaneStore>((set) => {
         disableAdvancedSearch: () => set({ advancedSearchEnabled: false }),
         toggleAdvancedSearch: () => set((state) => ({ advancedSearchEnabled: !state.advancedSearchEnabled })),
         setAdvancedSearchEnabled: (enabled: boolean) => set({ advancedSearchEnabled: enabled }),
+
+        stashedManualFields: null,
+        setStashedManualFields: (fields) => set({ stashedManualFields: fields }),
 
         displaySearch: () => {
             set({ searchFormIsDisplayed: true });

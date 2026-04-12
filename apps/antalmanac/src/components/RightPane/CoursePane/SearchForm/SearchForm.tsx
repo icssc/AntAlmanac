@@ -1,7 +1,7 @@
 import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useQueryState, useQueryStates } from 'nuqs';
 import { usePostHog } from 'posthog-js/react';
-import { useCallback, useRef, type FormEvent } from 'react';
+import { useCallback, type FormEvent } from 'react';
 
 import { Footer } from '$components/RightPane/CoursePane/SearchForm/Footer';
 import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
@@ -9,8 +9,9 @@ import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/Manual
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { type SearchFormData, getDefaultFormValues, searchParsers, type SearchMode } from '$lib/searchParams';
+import { getDefaultFormValues, searchParsers, type SearchMode } from '$lib/searchParams';
 import { LIGHT_BLUE } from '$src/globals';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface SearchFormProps {
@@ -22,7 +23,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     const [formData, setFormData] = useQueryStates(searchParsers);
     const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
-    const stashedManualFieldsRef = useRef<SearchFormData | null>(null);
+    const { stashedManualFields, setStashedManualFields } = useCoursePaneStore();
 
     const onFormSubmit = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
@@ -35,11 +36,11 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     const toggleSearchMode = (_event: React.MouseEvent<HTMLElement>, value: SearchMode | null) => {
         if (!value) return;
         if (value === 'quick') {
-            stashedManualFieldsRef.current = { ...formData };
+            setStashedManualFields({ ...formData });
             setFormData({ ...getDefaultFormValues(), term: formData.term, mode: 'quick' });
-        } else if (stashedManualFieldsRef.current) {
-            setFormData({ ...stashedManualFieldsRef.current, mode: 'manual' });
-            stashedManualFieldsRef.current = null;
+        } else if (stashedManualFields) {
+            setFormData({ ...stashedManualFields, mode: 'manual' });
+            setStashedManualFields(null);
         } else {
             setMode(value);
         }
