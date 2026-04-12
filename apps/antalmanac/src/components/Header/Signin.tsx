@@ -1,32 +1,53 @@
-import { AccountCircle, Google, ExpandMore } from '@mui/icons-material';
+import { AccountCircle, ExpandMore, Google } from '@mui/icons-material';
 import {
-    Divider,
-    Stack,
     Alert,
+    AlertColor,
     AlertTitle,
+    Box,
     Button,
+    Collapse,
     Dialog,
     DialogActions,
     DialogContent,
     DialogContentText,
-    Popover,
-    TextField,
-    AlertColor,
+    Divider,
     ListItemIcon,
     ListItemText,
     MenuItem,
-    Collapse,
-    Box,
+    Popover,
+    Stack,
+    TextField,
 } from '@mui/material';
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import { loadSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
+import {
+    isEmptySchedule,
+    loadSchedule,
+    loadScheduleWithSessionToken,
+    loginUser,
+    mergeShortCourseSchedules,
+} from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
+import { authClient } from '$lib/auth/authClient';
+import {
+    getLocalStorageDataCache,
+    getLocalStorageFromLoading,
+    getLocalStorageSessionId,
+    getLocalStorageUserId,
+    removeLocalStorageDataCache,
+    removeLocalStorageFromLoading,
+    removeLocalStorageImportedUser,
+    removeLocalStorageUserId,
+    setLocalStorageFromLoading,
+    setLocalStorageImportedUser,
+    setLocalStorageOnFirstSignin,
+} from '$lib/localStorage';
+import { clearSsoCookie, setSsoCookie } from '$lib/ssoCookie';
+import AppStore from '$stores/AppStore';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -58,6 +79,8 @@ export const Signin = () => {
     const [userID, setUserID] = useState('');
     const [rememberMe] = useState(true);
     const [showLegacyLogin, setShowLegacyLogin] = useState(false);
+
+    const { data: sessionData } = authClient.useSession();
 
     const handleOpen = useCallback(() => {
         setIsOpen(true);
@@ -162,6 +185,77 @@ export const Signin = () => {
         },
         [loadScheduleAndSetLoading, userID, rememberMe, enterEvent]
     );
+
+    useEffect(() => {
+        if (sessionData) {
+            (async () => {
+                if (sessionData.session.expiresAt < new Date()) {
+                    console.log('Session expired, logging out');
+                    await authClient.signOut();
+                    return;
+                }
+                await updateSession(sessionData);
+                try {
+                    // FIXME
+                    const isNewUser = false;
+
+                    const fromLoading = getLocalStorageFromLoading();
+                    const savedUserId = getLocalStorageUserId();
+                    const savedData = getLocalStorageDataCache();
+
+                    if (isNewUser) {
+                        setLocalStorageOnFirstSignin('true');
+                    } else {
+                        removeLocalStorageUserId();
+                    }
+
+                    setSsoCookie();
+
+                    // load schedule without saving any changes
+                    if (fromLoading) {
+                        removeLocalStorageFromLoading();
+                        removeLocalStorageDataCache();
+                        removeLocalStorageImportedUser();
+                        return;
+                    }
+
+                    // no changes to save
+                    if (savedUserId === null && savedData === null) {
+                        removeLocalStorageDataCache();
+                        removeLocalStorageImportedUser();
+                        return;
+                    }
+
+                    // handle unsaved changes
+                    if (savedData) {
+                        const userData = await trpc.userData.getUserData.query({ userId: sessionData.user.id });
+                        const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+
+                        if (savedUserId) {
+                            await trpc.userData.flagImportedSchedule.mutate({ providerId: savedUserId });
+                            setLocalStorageImportedUser(savedUserId);
+                        }
+
+                        const data = JSON.parse(savedData);
+
+                        if (userData !== null && isEmptySchedule(userData.userData.schedules)) {
+                            scheduleSaveState.schedules = data;
+                        } else {
+                            const saveState = userData && 'userData' in userData ? userData.userData : userData;
+                            if (saveState !== null) {
+                                mergeShortCourseSchedules(saveState.schedules, data, '(import)-');
+                                scheduleSaveState.schedules = saveState.schedules;
+                                scheduleSaveState.scheduleIndex = saveState.schedules.length - 1;
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error during authentication', error);
+                    clearSsoCookie();
+                }
+            })();
+        }
+    }, [sessionData, updateSession]);
 
     useEffect(() => {
         if (isOpen) {

@@ -10,7 +10,6 @@ import InstallPWABanner from '$components/InstallPWABanner';
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
-import SessionInitializer from '$components/SessionInitializer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { BLUE } from '$src/globals';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
@@ -79,7 +78,6 @@ export default function Home() {
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <SessionInitializer />
             <PatchNotes />
             <InstallPWABanner />
 
