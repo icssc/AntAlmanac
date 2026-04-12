@@ -138,10 +138,12 @@ const RecruitmentBanner = () => {
                         </IconButton>
                     }
                 >
+                    Interested in software development?
+                    <br />
                     We have opportunities for developers and designers of all skill levels.
                     <br />
                     <a href="https://www.icssc.club/projects" target="_blank" rel="noopener noreferrer">
-                        Learn more about our projects!
+                        Join ICSSC and work on AntAlmanac and other projects!
                     </a>
                 </Alert>
             ) : null}
