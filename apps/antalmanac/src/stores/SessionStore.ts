@@ -1,9 +1,8 @@
 import type { Roadmap } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
-import trpc from '$lib/api/trpc';
 import { authClient, SessionData } from '$lib/auth/authClient';
-import { getLocalStorageSessionId, removeLocalStorageSessionId } from '$lib/localStorage';
+import { getLocalStorageSessionId } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 import { useNotificationStore } from '$stores/NotificationStore';
 
@@ -28,7 +27,7 @@ interface SessionState {
     setPlannerRoadmaps: (roadmaps: Roadmap[]) => void;
 }
 
-export const useSessionStore = create<SessionState>((set) => {
+export const useSessionStore = create<SessionState>((set, get) => {
     const localSessionId = getLocalStorageSessionId();
     return {
         session: localSessionId,
@@ -65,50 +64,10 @@ export const useSessionStore = create<SessionState>((set) => {
             });
             useNotificationStore.getState().loadNotifications();
             return true;
-            // if (sessionData) {
-            // const sessionIsValid: boolean = await trpc.auth.validateSession.query({
-            //     token: sessionData,
-            // });
-            // if (sessionIsValid) {
-            // setLocalStorageSessionId(sessionData);
-            // set({ session: sessionData, sessionIsValid: true });
-
-            //         try {
-            //             const { users } = await trpc.userData.getUserAndAccountBySessionToken.query({
-            //                 token: sessionData,
-            //             });
-
-            //             let googleId = await trpc.userData.getGoogleIdByUserId.query({
-            //                 userId: users.id,
-            //             });
-            //             if (googleId?.startsWith('google_')) {
-            //                 googleId = googleId.slice('google_'.length);
-            //             }
-            //             const isGoogleUser = Boolean(users.email);
-            //             set({
-            //                 userId: users.id,
-            //                 isGoogleUser,
-            //                 email: users.email ?? null,
-            //                 googleId,
-            //             });
-            //         } catch (error) {
-            //             console.error('Failed to fetch user data:', error);
-            //             set({ isGoogleUser: false, email: null, googleId: null });
-            //         }
-            //     // }
-            //     useNotificationStore.getState().loadNotifications();
-            //     return sessionIsValid;
-            // } else {
-            //     set({ session: null, sessionIsValid: false });
-            //     useNotificationStore.getState().loadNotifications();
-            //     return false;
-            // }
         },
         clearSession: async () => {
-            const currentSession = getLocalStorageSessionId();
+            const currentSession = get().session;
             if (currentSession) {
-                await trpc.auth.invalidateSession.mutate({ token: currentSession });
-                removeLocalStorageSessionId();
                 clearSsoCookie();
                 set({
                     session: null,

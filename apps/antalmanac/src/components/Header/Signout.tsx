@@ -7,6 +7,7 @@ import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import trpc from '$lib/api/trpc';
+import { authClient } from '$lib/auth/authClient';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
@@ -27,30 +28,28 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
 
     const handleLogout = async () => {
         setAnchorEl(null);
+
         if (!session) {
             await clearSession();
             onLogoutComplete?.();
             return;
         }
 
-        try {
-            const { logoutUrl } = await trpc.userData.logout.mutate({
-                sessionToken: session,
-                redirectUrl: window.location.origin,
-            });
+        const { error } = await authClient.signOut();
 
-            await clearSession();
-            onLogoutComplete?.();
-
-            if (logoutUrl) {
-                window.location.href = logoutUrl;
-            }
-        } catch (error) {
+        if (error) {
             console.error('Error during logout', error);
-            // Even on error, clear session and show dialog
-            await clearSession();
-            onLogoutComplete?.();
         }
+
+        await clearSession();
+        onLogoutComplete?.();
+
+        const { logoutUrl } = await trpc.userData.logout.mutate({
+            sessionToken: session,
+            redirectUrl: window.location.origin,
+        });
+
+        window.location.href = logoutUrl;
     };
 
     const handleAuthChange = useCallback(async () => {
