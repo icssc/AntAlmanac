@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+import { AUTH_PROVIDER_ID } from '$lib/auth/auth';
+import { getSsoResponseCookieAttributes, SSO_COOKIE_NAME } from '$lib/ssoCookie';
+
 const ALLOWED_ORIGINS = [
     'https://antalmanac.com',
     'https://www.antalmanac.com',
@@ -50,7 +53,17 @@ export function proxy(request: NextRequest) {
         });
     }
 
-    const response = NextResponse.next();
+    let response = NextResponse.next();
+
+    if (request.nextUrl.pathname === `/api/auth/oauth2/callback/${AUTH_PROVIDER_ID}`) {
+        if (request.nextUrl.searchParams.get('error') === 'login_required') {
+            response = NextResponse.redirect(new URL('/', request.url));
+            response.cookies.set(SSO_COOKIE_NAME, '', {
+                ...getSsoResponseCookieAttributes(request.nextUrl),
+                maxAge: 0,
+            });
+        }
+    }
 
     if (isOriginAllowed(origin)) {
         response.headers.set('Access-Control-Allow-Origin', origin || '*');
