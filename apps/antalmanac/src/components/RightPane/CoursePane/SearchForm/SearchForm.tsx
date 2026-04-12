@@ -33,7 +33,11 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
 
     const toggleSearchMode = (_event: React.MouseEvent<HTMLElement>, value: SearchMode | null) => {
         if (!value) return;
-        setMode(value);
+        if (value === 'quick') {
+            setFormData({ ...getDefaultFormValues(), term: formData.term, mode: 'quick' });
+        } else {
+            setMode(value);
+        }
     };
 
     const handleReset = useCallback(() => {
