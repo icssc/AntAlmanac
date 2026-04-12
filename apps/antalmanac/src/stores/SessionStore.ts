@@ -8,6 +8,7 @@ import { useNotificationStore } from '$stores/NotificationStore';
 
 interface SessionState {
     session: string | null;
+    user: SessionData['user'] | null;
     userId: string | null;
     isGoogleUser: boolean;
     email: string | null;
@@ -31,6 +32,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
     const localSessionId = getLocalStorageSessionId();
     return {
         session: localSessionId,
+        user: null,
         userId: null,
         isGoogleUser: false,
         email: null,
@@ -57,6 +59,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
             set({
                 session: sessionData.session.id,
                 sessionIsValid: true,
+                user: sessionData.user,
                 userId: sessionData.user.id,
                 isGoogleUser: true,
                 googleId: googleId,
@@ -71,6 +74,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
                 clearSsoCookie();
                 set({
                     session: null,
+                    user: null,
                     userId: null,
                     sessionIsValid: false,
                     isGoogleUser: false,

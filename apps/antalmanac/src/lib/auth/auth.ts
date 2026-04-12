@@ -22,9 +22,25 @@ export const auth = betterAuth({
                     scopes: ['openid', 'profile', 'email'],
                     pkce: true,
                     redirectURI: GOOGLE_REDIRECT_URI,
+                    mapProfileToUser: (profile) => {
+                        return {
+                            ...profile,
+                            avatar: profile.image,
+                        } as object;
+                    },
                 },
             ],
         }),
         nextCookies(),
     ],
+    user: {
+        additionalFields: {
+            avatar: {
+                type: 'string',
+                required: false,
+                defaultValue: '',
+                input: false,
+            },
+        },
+    },
 });

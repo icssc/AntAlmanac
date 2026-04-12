@@ -46,4 +46,5 @@ export const UserSchema = type({
     'imported?': 'boolean',
 });
 
-export type User = typeof UserSchema.infer;
+type DBUser = typeof UserSchema.infer;
+export type User = { [K in keyof DBUser]: DBUser[K] extends undefined ? DBUser[K] : DBUser[K] | null };

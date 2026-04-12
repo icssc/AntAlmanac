@@ -1,7 +1,6 @@
 import LogoutIcon from '@mui/icons-material/Logout';
 import { ListItemIcon, ListItemText, MenuItem, Popover, Divider } from '@mui/material';
-import { User } from '@packages/antalmanac-types';
-import { useEffect, useState, useCallback, type MouseEvent } from 'react';
+import { useState, type MouseEvent } from 'react';
 
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
@@ -17,8 +16,7 @@ interface SignoutProps {
 
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [user, setUser] = useState<Pick<User, 'name' | 'avatar' | 'email'> | null>(null);
-    const { session, sessionIsValid, clearSession } = useSessionStore();
+    const { session, clearSession, user } = useSessionStore();
     const isDark = useThemeStore((store) => store.isDark);
 
     const open = Boolean(anchorEl);
@@ -51,25 +49,6 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
 
         window.location.href = logoutUrl;
     };
-
-    const handleAuthChange = useCallback(async () => {
-        if (sessionIsValid) {
-            const userData = await trpc.userData.getUserAndAccountBySessionToken
-                .query({ token: session ?? '' })
-                .then((res) => res.users);
-            setUser({
-                name: userData.name ?? undefined,
-                avatar: userData.avatar ?? undefined,
-                email: userData.email ?? undefined,
-            });
-        }
-    }, [session, sessionIsValid, setUser]);
-
-    useEffect(() => {
-        if (sessionIsValid) {
-            handleAuthChange();
-        }
-    }, [handleAuthChange, sessionIsValid]);
 
     return (
         <div id="load-save-container">
