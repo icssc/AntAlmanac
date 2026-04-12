@@ -1,7 +1,7 @@
 import { Box } from '@mui/material';
 import { useQueryStates } from 'nuqs';
 import { usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
@@ -9,40 +9,19 @@ import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchFo
 import { usePlannerRoadmaps } from '$hooks/usePlanner';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
-import {
-    type SearchFormData,
-    searchParsers,
-    formDataIsValid,
-    formDataHasAdvancedSearch,
-    getDefaultFormValues,
-    getDefaultAdvancedSearchValues,
-} from '$lib/searchParams';
+import { searchParsers, formDataIsValid, getDefaultFormValues } from '$lib/searchParams';
 import { WebSOC } from '$lib/websoc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 
 export function CoursePaneRoot() {
-    const {
-        key,
-        forceUpdate,
-        searchFormIsDisplayed,
-        displaySearch,
-        displaySections,
-        advancedSearchEnabled,
-        setAdvancedSearchEnabled,
-    } = useCoursePaneStore();
+    const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections } = useCoursePaneStore();
     const postHog = usePostHog();
     usePlannerRoadmaps();
 
     const [formData, setFormData] = useQueryStates(searchParsers);
-    const prevFormDataRef = useRef<SearchFormData | null>(null);
 
     const handleSearch = useCallback(() => {
-        if (!advancedSearchEnabled) {
-            prevFormDataRef.current = { ...formData };
-            setFormData(getDefaultAdvancedSearchValues());
-        }
-
         if (formDataIsValid(formData)) {
             displaySections();
             forceUpdate();
@@ -52,19 +31,14 @@ export function CoursePaneRoot() {
                 `Please provide one of the following: Department, GE, Section Code/Range, or Instructor`
             );
         }
-    }, [advancedSearchEnabled, displaySections, forceUpdate, formData, setFormData]);
+    }, [displaySections, forceUpdate, formData]);
 
     const handleDisplaySearch = useCallback(() => {
         if (formData.mode === 'quick') {
             setFormData({ ...getDefaultFormValues(), mode: 'quick', term: formData.term });
-            prevFormDataRef.current = null;
-        } else if (prevFormDataRef.current) {
-            setFormData(prevFormDataRef.current);
-            prevFormDataRef.current = null;
         }
-        setAdvancedSearchEnabled(formDataHasAdvancedSearch(formData));
         displaySearch();
-    }, [displaySearch, setFormData, setAdvancedSearchEnabled, formData]);
+    }, [displaySearch, setFormData, formData]);
 
     const refreshSearch = useCallback(() => {
         logAnalytics(postHog, {
