@@ -1,6 +1,9 @@
-import { createSerializer, parseAsString } from 'nuqs';
+import { createSerializer, parseAsString, parseAsStringLiteral } from 'nuqs';
 
 import { getDefaultTerm } from '$lib/termData';
+
+export const SEARCH_MODES = ['quick', 'manual'] as const;
+export type SearchMode = (typeof SEARCH_MODES)[number];
 
 const defaultAdvancedSearchValues = {
     instructor: '',
@@ -28,6 +31,7 @@ const defaultFormValues = {
 export type SearchFormData = { [K in keyof typeof defaultFormValues]: string };
 
 export const searchParsers = {
+    mode: parseAsStringLiteral(SEARCH_MODES).withDefault('quick'),
     term: parseAsString.withDefault(defaultFormValues.term),
     deptValue: parseAsString.withDefault(defaultFormValues.deptValue),
     ge: parseAsString.withDefault(defaultFormValues.ge),

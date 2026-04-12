@@ -29,7 +29,6 @@ import { type SearchFormData, searchParsers } from '$lib/searchParams';
 import { WebSOC } from '$lib/websoc';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -81,11 +80,11 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
 };
 
 function getFilteredCourses(
-    allCourses: (WebsocSchool | WebsocDepartment | AACourse)[]
+    allCourses: (WebsocSchool | WebsocDepartment | AACourse)[],
+    mode: string
 ): (WebsocSchool | WebsocDepartment | AACourse)[] {
-    const { manualSearchEnabled } = useCoursePaneStore.getState();
     const { filterTakenCourses, userTakenCourses } = useSessionStore.getState();
-    if (manualSearchEnabled && filterTakenCourses && userTakenCourses.size > 0) {
+    if (mode === 'manual' && filterTakenCourses && userTakenCourses.size > 0) {
         return allCourses.filter((item) => {
             if ('sections' in item && 'deptCode' in item && 'courseNumber' in item) {
                 const courseKey = `${item.deptCode}${item.courseNumber}`.replace(/\s+/g, '');
@@ -310,7 +309,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             setError(false);
             setWebsocResp(websocJsonResp);
             const allCourses = flattenSOCObject(websocJsonResp);
-            setCourseData(getFilteredCourses(allCourses));
+            setCourseData(getFilteredCourses(allCourses, formData.mode));
         } catch (error) {
             console.error(error);
             setError(true);
@@ -330,7 +329,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                 return;
             }
             const flattened = flattenSOCObject(websocResp);
-            setCourseData(getFilteredCourses(flattened));
+            setCourseData(getFilteredCourses(flattened, formData.mode));
         };
 
         AppStore.on('currentScheduleIndexChange', changeColors);
@@ -338,7 +337,7 @@ export default function CourseRenderPane(props: { id?: number }) {
         return () => {
             AppStore.off('currentScheduleIndexChange', changeColors);
         };
-    }, [websocResp]);
+    }, [websocResp, formData.mode]);
 
     useEffect(() => {
         loadCourses();

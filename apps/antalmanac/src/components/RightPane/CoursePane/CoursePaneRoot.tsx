@@ -9,14 +9,27 @@ import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchFo
 import { usePlannerRoadmaps } from '$hooks/usePlanner';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
-import { type SearchFormData, searchParsers, formDataIsValid, getDefaultAdvancedSearchValues } from '$lib/searchParams';
+import {
+    type SearchFormData,
+    searchParsers,
+    formDataIsValid,
+    formDataHasAdvancedSearch,
+    getDefaultAdvancedSearchValues,
+} from '$lib/searchParams';
 import { WebSOC } from '$lib/websoc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 
 export function CoursePaneRoot() {
-    const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections, advancedSearchEnabled } =
-        useCoursePaneStore();
+    const {
+        key,
+        forceUpdate,
+        searchFormIsDisplayed,
+        displaySearch,
+        displaySections,
+        advancedSearchEnabled,
+        setAdvancedSearchEnabled,
+    } = useCoursePaneStore();
     const postHog = usePostHog();
     usePlannerRoadmaps();
 
@@ -45,8 +58,9 @@ export function CoursePaneRoot() {
             setFormData(prevFormDataRef.current);
             prevFormDataRef.current = null;
         }
+        setAdvancedSearchEnabled(formDataHasAdvancedSearch(formData));
         displaySearch();
-    }, [displaySearch, setFormData]);
+    }, [displaySearch, setFormData, setAdvancedSearchEnabled, formData]);
 
     const refreshSearch = useCallback(() => {
         logAnalytics(postHog, {

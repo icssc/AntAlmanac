@@ -15,6 +15,7 @@ import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { getDefaultFormValues, searchParsers } from '$lib/searchParams';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
 const SEARCH_TIMEOUT_MS = 150;
 
@@ -52,7 +53,6 @@ const isIpad = () => {
 };
 
 interface FuzzySearchProps {
-    toggleSearch: () => void;
     postHog?: PostHog;
 }
 
@@ -61,7 +61,8 @@ interface SearchOption {
     result: SearchResult;
 }
 
-const FuzzySearch = ({ toggleSearch, postHog }: FuzzySearchProps) => {
+const FuzzySearch = ({ postHog }: FuzzySearchProps) => {
+    const { displaySections, forceUpdate } = useCoursePaneStore();
     const [formData, setFormData] = useQueryStates(searchParsers);
 
     const [cache, setCache] = useState<Record<string, Record<string, SearchResult> | undefined>>({});
@@ -85,7 +86,7 @@ const FuzzySearch = ({ toggleSearch, postHog }: FuzzySearchProps) => {
         }
 
         const defaults = getDefaultFormValues();
-        const updates: Record<string, string> = { ...defaults, term: formData.term };
+        const updates: Record<string, string> = { ...defaults, term: formData.term, mode: 'quick' };
 
         switch (result.type) {
             case resultType.GE_CATEGORY: {
@@ -111,7 +112,8 @@ const FuzzySearch = ({ toggleSearch, postHog }: FuzzySearchProps) => {
         }
 
         setFormData(updates as typeof defaults);
-        toggleSearch();
+        displaySections();
+        forceUpdate();
         logAnalytics(postHog, {
             category: analyticsEnum.classSearch,
             action: analyticsEnum.classSearch.actions.FUZZY_SEARCH,

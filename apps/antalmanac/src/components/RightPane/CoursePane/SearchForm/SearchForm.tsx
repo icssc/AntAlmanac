@@ -1,5 +1,5 @@
 import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { useQueryStates } from 'nuqs';
+import { useQueryState, useQueryStates } from 'nuqs';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, type FormEvent } from 'react';
 
@@ -9,9 +9,8 @@ import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/Manual
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { getDefaultFormValues, searchParsers } from '$lib/searchParams';
+import { getDefaultFormValues, searchParsers, type SearchMode } from '$lib/searchParams';
 import { LIGHT_BLUE } from '$src/globals';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface SearchFormProps {
@@ -19,10 +18,10 @@ interface SearchFormProps {
 }
 
 export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
-    const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
+    const [mode, setMode] = useQueryState('mode', searchParsers.mode);
+    const [formData, setFormData] = useQueryStates(searchParsers);
     const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
-    const [formData, setFormData] = useQueryStates(searchParsers);
 
     const onFormSubmit = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
@@ -32,16 +31,15 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
         [toggleSearch]
     );
 
-    const toggleSearchMode = (event: React.MouseEvent<HTMLElement>, value: string) => {
-        event.preventDefault();
+    const toggleSearchMode = (_event: React.MouseEvent<HTMLElement>, value: SearchMode | null) => {
         if (!value) return;
-        toggleManualSearch();
+        setMode(value);
     };
 
     const handleReset = useCallback(() => {
         const defaults = getDefaultFormValues();
-        setFormData({ ...defaults, term: formData.term });
-    }, [setFormData, formData.term]);
+        setFormData({ ...defaults, term: formData.term, mode: formData.mode });
+    }, [setFormData, formData.term, formData.mode]);
 
     return (
         <Stack sx={{ height: '100%', overflowX: 'hidden' }}>
@@ -58,7 +56,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                         fullWidth
                         size="medium"
                         color="secondary"
-                        value={manualSearchEnabled ? 'manual' : 'quick'}
+                        value={mode}
                         exclusive
                         aria-label="Search selection"
                         sx={{
@@ -76,8 +74,8 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                         <TermSelector />
                     </Box>
 
-                    {!manualSearchEnabled ? (
-                        <FuzzySearch toggleSearch={toggleSearch} postHog={postHog} />
+                    {mode === 'quick' ? (
+                        <FuzzySearch postHog={postHog} />
                     ) : (
                         <ManualSearch
                             onSubmit={() => {

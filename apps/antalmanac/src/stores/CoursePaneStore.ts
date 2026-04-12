@@ -7,15 +7,11 @@ interface CoursePaneStore {
     displaySearch: () => void;
     displaySections: () => void;
 
-    manualSearchEnabled: boolean;
-    enableManualSearch: () => void;
-    disableManualSearch: () => void;
-    toggleManualSearch: () => void;
-
     advancedSearchEnabled: boolean;
     enableAdvancedSearch: () => void;
     disableAdvancedSearch: () => void;
     toggleAdvancedSearch: () => void;
+    setAdvancedSearchEnabled: (enabled: boolean) => void;
 
     key: number;
     forceUpdate: () => void;
@@ -23,7 +19,7 @@ interface CoursePaneStore {
 
 export function paramsAreInURL() {
     const search = new URLSearchParams(window.location.search);
-    const allKeys = [...BASIC_SEARCH_KEYS, ...ADVANCED_SEARCH_KEYS, 'term'] as const;
+    const allKeys = [...BASIC_SEARCH_KEYS, ...ADVANCED_SEARCH_KEYS, 'term', 'mode'] as const;
     return allKeys.some((param) => search.get(param) !== null);
 }
 
@@ -66,11 +62,6 @@ export const useCoursePaneStore = create<CoursePaneStore>((set) => {
                 days: initialFormData.days ?? '',
             }),
 
-        manualSearchEnabled: paramsAreInURL(),
-        enableManualSearch: () => set({ manualSearchEnabled: true }),
-        disableManualSearch: () => set({ manualSearchEnabled: false }),
-        toggleManualSearch: () => set((state) => ({ manualSearchEnabled: !state.manualSearchEnabled })),
-
         advancedSearchEnabled: formDataHasAdvancedSearch({
             instructor: initialFormData.instructor ?? '',
             units: initialFormData.units ?? '',
@@ -92,6 +83,7 @@ export const useCoursePaneStore = create<CoursePaneStore>((set) => {
         enableAdvancedSearch: () => set({ advancedSearchEnabled: true }),
         disableAdvancedSearch: () => set({ advancedSearchEnabled: false }),
         toggleAdvancedSearch: () => set((state) => ({ advancedSearchEnabled: !state.advancedSearchEnabled })),
+        setAdvancedSearchEnabled: (enabled: boolean) => set({ advancedSearchEnabled: enabled }),
 
         displaySearch: () => {
             set({ searchFormIsDisplayed: true });

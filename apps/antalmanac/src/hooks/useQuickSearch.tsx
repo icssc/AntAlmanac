@@ -14,6 +14,7 @@ export function useQuickSearch() {
         (deptValue: string, courseNumber: string, termValue: string) => {
             const params = {
                 ...getDefaultFormValues(),
+                mode: 'quick' as const,
                 term: termValue,
                 deptValue: deptValue,
                 courseNumber: courseNumber,

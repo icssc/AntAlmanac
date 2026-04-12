@@ -1,10 +1,11 @@
 import { PlayLesson } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { useTour } from '@reactour/tour';
+import { useQueryState } from 'nuqs';
 import { useCallback, useEffect } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 import { stepsFactory, tourShouldRun } from '$lib/TutorialHelpers';
+import { searchParsers } from '$lib/searchParams';
 import { removeSampleClasses } from '$lib/tourExampleGeneration';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 
@@ -14,16 +15,15 @@ interface TutorialButtonProps {
 
 export const TutorialButton = ({ onMenuClose }: TutorialButtonProps) => {
     const { setCurrentStep, setIsOpen, setSteps, isOpen } = useTour();
-    const [displaySearch, disableManualSearch] = useCoursePaneStore(
-        useShallow((state) => [state.displaySearch, state.disableManualSearch])
-    );
+    const displaySearch = useCoursePaneStore((state) => state.displaySearch);
+    const [, setMode] = useQueryState('mode', searchParsers.mode);
 
     const startTutorial = useCallback(() => {
         displaySearch();
-        disableManualSearch();
+        setMode('quick');
         setCurrentStep(0);
         setIsOpen(true);
-    }, [displaySearch, disableManualSearch, setCurrentStep, setIsOpen]);
+    }, [displaySearch, setMode, setCurrentStep, setIsOpen]);
 
     useEffect(() => setIsOpen(tourShouldRun), [setIsOpen]);
 
