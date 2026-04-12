@@ -14,6 +14,7 @@ import {
     searchParsers,
     formDataIsValid,
     formDataHasAdvancedSearch,
+    getDefaultFormValues,
     getDefaultAdvancedSearchValues,
 } from '$lib/searchParams';
 import { WebSOC } from '$lib/websoc';
@@ -54,7 +55,10 @@ export function CoursePaneRoot() {
     }, [advancedSearchEnabled, displaySections, forceUpdate, formData, setFormData]);
 
     const handleDisplaySearch = useCallback(() => {
-        if (prevFormDataRef.current) {
+        if (formData.mode === 'quick') {
+            setFormData({ ...getDefaultFormValues(), mode: 'quick', term: formData.term });
+            prevFormDataRef.current = null;
+        } else if (prevFormDataRef.current) {
             setFormData(prevFormDataRef.current);
             prevFormDataRef.current = null;
         }
