@@ -19,6 +19,7 @@ import {
     useTheme,
 } from '@mui/material';
 import { CourseInfo } from '@packages/antalmanac-types';
+import { useQueryState } from 'nuqs';
 import { usePostHog } from 'posthog-js/react';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -31,7 +32,6 @@ import {
 } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
@@ -42,6 +42,7 @@ import {
     removeLocalStorageOnFirstSignin,
     removeLocalStorageUserId,
 } from '$lib/localStorage';
+import { searchParsers } from '$lib/searchParams';
 import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import { BLUE, LIGHT_BLUE } from '$src/globals';
@@ -67,6 +68,7 @@ export function Import() {
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
+    const [term] = useQueryState('term', searchParsers.term);
     const { sessionIsValid } = useSessionStore();
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
 
@@ -84,7 +86,6 @@ export function Import() {
 
     const handleSubmit = async () => {
         const currentSchedule = AppStore.getCurrentScheduleIndex();
-        const term = RightPaneStore.getFormData().term;
         let sectionCodes: string[] | null = null;
 
         switch (importSource) {
@@ -161,10 +162,8 @@ export function Import() {
         setAlertDialog(false);
     };
 
-    const uploadSectionCodes = async (sectionCodes: string[], term: string, currentSchedule: number) => {
+    const uploadSectionCodes = async (sectionCodes: string[], _term: string, currentSchedule: number) => {
         try {
-            const term = RightPaneStore.getFormData().term;
-
             const sectionsAdded = addCoursesMultiple(
                 await WebSOC.getCourseInfo({
                     term,

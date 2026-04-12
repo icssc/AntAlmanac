@@ -1,6 +1,7 @@
 import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText, Tooltip, Typography } from '@mui/material';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { format, parse } from 'date-fns';
+import { useQueryStates } from 'nuqs';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 
 import {
@@ -10,10 +11,8 @@ import {
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
-import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import { safeUnreachableCase } from '$lib/utils';
+import { searchParsers } from '$lib/searchParams';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
@@ -23,6 +22,20 @@ type InputEvent =
     | SelectChangeEvent<string | string[]>
     | Date
     | null;
+
+type AdvancedFieldName =
+    | 'instructor'
+    | 'units'
+    | 'endTime'
+    | 'startTime'
+    | 'coursesFull'
+    | 'building'
+    | 'room'
+    | 'division'
+    | 'excludeRoadmapCourses'
+    | 'excludeRestrictionCodes'
+    | 'days'
+    | 'online';
 
 type RoadmapMenuItemsProps = {
     isLoggedIn: boolean;
@@ -59,145 +72,49 @@ function getRoadmapMenuItems({ isLoggedIn, roadmaps }: RoadmapMenuItemsProps) {
     ];
 }
 
+const advancedParsers = {
+    instructor: searchParsers.instructor,
+    units: searchParsers.units,
+    endTime: searchParsers.endTime,
+    startTime: searchParsers.startTime,
+    coursesFull: searchParsers.coursesFull,
+    building: searchParsers.building,
+    room: searchParsers.room,
+    division: searchParsers.division,
+    excludeRoadmapCourses: searchParsers.excludeRoadmapCourses,
+    excludeRestrictionCodes: searchParsers.excludeRestrictionCodes,
+    days: searchParsers.days,
+};
+
 export function AdvancedSearchTextFields() {
-    const [instructor, setInstructor] = useState(() => RightPaneStore.getFormData().instructor);
-    const [units, setUnits] = useState(() => RightPaneStore.getFormData().units);
-    const [endTime, setEndTime] = useState(() => RightPaneStore.getFormData().endTime);
-    const [startTime, setStartTime] = useState(() => RightPaneStore.getFormData().startTime);
-    const [coursesFull, setCoursesFull] = useState(() => RightPaneStore.getFormData().coursesFull);
-    const [building, setBuilding] = useState(() => RightPaneStore.getFormData().building);
-    const [room, setRoom] = useState(() => RightPaneStore.getFormData().room);
-    const [division, setDivision] = useState(() => RightPaneStore.getFormData().division);
-    const [excludeRestrictionCodes, setExcludeRestrictionCodes] = useState(
-        () => RightPaneStore.getFormData().excludeRestrictionCodes
-    );
-    const [days, setDays] = useState(() => RightPaneStore.getFormData().days);
-    const [excludeRoadmapCourses, setExcludeRoadmapCourses] = useState(
-        () => RightPaneStore.getFormData().excludeRoadmapCourses
-    );
+    const [formData, setFormData] = useQueryStates(advancedParsers);
     const roadmaps = useSessionStore((s) => s.plannerRoadmaps);
     const isLoggedIn = useSessionStore((s) => s.googleId !== null);
     const [signInOpen, setSignInOpen] = useState(false);
     const isDark = useThemeStore((store) => store.isDark);
 
-    const resetField = useCallback(() => {
-        const formData = RightPaneStore.getFormData();
-        setInstructor(formData.instructor);
-        setUnits(formData.units);
-        setEndTime(formData.endTime);
-        setStartTime(formData.startTime);
-        setCoursesFull(formData.coursesFull);
-        setBuilding(formData.building);
-        setRoom(formData.room);
-        setDivision(formData.division);
-        setExcludeRoadmapCourses(formData.excludeRoadmapCourses);
-        setExcludeRestrictionCodes(formData.excludeRestrictionCodes);
-        setDays(formData.days);
-    }, []);
-
-    useEffect(() => {
-        RightPaneStore.on('formReset', resetField);
-
-        return () => {
-            RightPaneStore.removeListener('formReset', resetField);
-        };
-    }, [resetField]);
-
-    const updateValue = (name: AdvancedSearchParam, stringValue: string) => {
-        const stateObj = { url: 'url' };
-        const url = new URL(window.location.href);
-        const urlParam = new URLSearchParams(url.search);
-        if (stringValue !== '') {
-            urlParam.set(name, String(stringValue));
-        } else {
-            urlParam.delete(name);
-        }
-
-        const param = urlParam.toString();
-        const newUrl = `${param.trim() ? '?' : ''}${param}`;
-        history.replaceState(stateObj, 'url', '/' + newUrl);
-
-        RightPaneStore.updateFormValue(name, stringValue);
-    };
-
-    const changeHandlerFactory = (name: AdvancedSearchParam | 'online') => (event: InputEvent) => {
+    const changeHandlerFactory = (name: AdvancedFieldName) => (event: InputEvent) => {
         if (name === 'startTime' || name === 'endTime') {
-            // time picker event is Date | null
             if (event instanceof Date || event === null) {
                 const stringTime = event ? format(event, 'HH:mm') : '';
-                if (name === 'startTime') {
-                    setStartTime(stringTime);
-                } else {
-                    setEndTime(stringTime);
-                }
-                updateValue(name, stringTime);
+                setFormData({ [name]: stringTime });
                 return;
             }
         }
 
         if (name === 'online') {
-            const url = new URL(window.location.href);
-            const urlParam = new URLSearchParams(url.search);
             const checked = (event as ChangeEvent<HTMLInputElement>).target.value === 'true';
             if (checked) {
-                setBuilding('ON');
-                setRoom('LINE');
-                RightPaneStore.updateFormValue('building', 'ON');
-                RightPaneStore.updateFormValue('room', 'LINE');
-                urlParam.set('building', 'ON');
-                urlParam.set('room', 'LINE');
+                setFormData({ building: 'ON', room: 'LINE' });
             } else {
-                setBuilding('');
-                setRoom('');
-                RightPaneStore.updateFormValue('building', '');
-                RightPaneStore.updateFormValue('room', '');
-                urlParam.delete('building');
-                urlParam.delete('room');
+                setFormData({ building: '', room: '' });
             }
             return;
         }
 
         const value = (event as Exclude<InputEvent, Date | null>).target.value;
         const stringValue = Array.isArray(value) ? value.join('') : value;
-
-        switch (name) {
-            case 'instructor':
-                setInstructor(stringValue);
-                break;
-            case 'units':
-                setUnits(stringValue);
-                break;
-            case 'coursesFull':
-                setCoursesFull(stringValue);
-                break;
-            case 'building':
-                setBuilding(stringValue);
-                break;
-            case 'room':
-                setRoom(stringValue);
-                break;
-            case 'division':
-                setDivision(stringValue);
-                break;
-            case 'excludeRoadmapCourses':
-                setExcludeRoadmapCourses(stringValue);
-                break;
-            case 'excludeRestrictionCodes':
-                setExcludeRestrictionCodes(stringValue);
-                break;
-            case 'days':
-                setDays(stringValue);
-                break;
-            case 'startTime':
-                break;
-            case 'endTime':
-                break;
-            default:
-                safeUnreachableCase(name);
-                break;
-        }
-
-        updateValue(name, stringValue);
+        setFormData({ [name]: stringValue });
     };
 
     const handleSignInClose = useCallback(() => {
@@ -205,23 +122,16 @@ export function AdvancedSearchTextFields() {
     }, []);
 
     useEffect(() => {
-        if (!excludeRoadmapCourses) return;
+        if (!formData.excludeRoadmapCourses) return;
         if (!roadmaps || roadmaps.length === 0) return;
 
-        const exists = roadmaps.some((r) => r.id.toString() === excludeRoadmapCourses);
+        const exists = roadmaps.some((r) => r.id.toString() === formData.excludeRoadmapCourses);
 
         if (!exists) {
             openSnackbar('warning', 'Invalid roadmap selection. All courses shown.');
-            setExcludeRoadmapCourses('');
-            RightPaneStore.updateFormValue('excludeRoadmapCourses', '');
-
-            const url = new URL(window.location.href);
-            const params = new URLSearchParams(url.search);
-            params.delete('excludeRoadmapCourses');
-            const newUrl = params.toString() ? `${url.pathname}?${params.toString()}` : url.pathname;
-            history.replaceState({}, '', newUrl);
+            setFormData({ excludeRoadmapCourses: '' });
         }
-    }, [roadmaps, excludeRoadmapCourses]);
+    }, [roadmaps, formData.excludeRoadmapCourses, setFormData]);
 
     return (
         <>
@@ -245,7 +155,7 @@ export function AdvancedSearchTextFields() {
                         label="Instructor"
                         textFieldProps={{
                             type: 'search',
-                            value: instructor,
+                            value: formData.instructor,
                             onChange: changeHandlerFactory('instructor'),
                             placeholder: 'Last name only',
                             fullWidth: true,
@@ -255,7 +165,7 @@ export function AdvancedSearchTextFields() {
                     <LabeledTextField
                         label="Units"
                         textFieldProps={{
-                            value: units,
+                            value: formData.units,
                             onChange: changeHandlerFactory('units'),
                             type: 'search',
                             placeholder: 'ex. 3, 4, or VAR',
@@ -266,7 +176,7 @@ export function AdvancedSearchTextFields() {
                     <LabeledSelect
                         label="Class Full Option"
                         selectProps={{
-                            value: coursesFull,
+                            value: formData.coursesFull,
                             onChange: changeHandlerFactory('coursesFull'),
                             sx: {
                                 width: '100%',
@@ -292,7 +202,7 @@ export function AdvancedSearchTextFields() {
                     <LabeledSelect
                         label="Course Level"
                         selectProps={{
-                            value: division,
+                            value: formData.division,
                             onChange: changeHandlerFactory('division'),
                             displayEmpty: true,
                             MenuProps: {
@@ -319,7 +229,7 @@ export function AdvancedSearchTextFields() {
                     <LabeledTimePicker
                         label="Starts After"
                         timePickerProps={{
-                            value: startTime ? parse(startTime, 'HH:mm', new Date()) : null,
+                            value: formData.startTime ? parse(formData.startTime, 'HH:mm', new Date()) : null,
                             onChange: changeHandlerFactory('startTime'),
                             timeSteps: { minutes: 10 },
                         }}
@@ -334,7 +244,7 @@ export function AdvancedSearchTextFields() {
                     <LabeledTimePicker
                         label="Ends Before"
                         timePickerProps={{
-                            value: endTime ? parse(endTime, 'HH:mm', new Date()) : null,
+                            value: formData.endTime ? parse(formData.endTime, 'HH:mm', new Date()) : null,
                             onChange: changeHandlerFactory('endTime'),
                             timeSteps: { minutes: 10 },
                         }}
@@ -358,7 +268,7 @@ export function AdvancedSearchTextFields() {
                     <LabeledSelect
                         label="Online Only"
                         selectProps={{
-                            value: building === 'ON' ? 'true' : 'false',
+                            value: formData.building === 'ON' ? 'true' : 'false',
                             onChange: changeHandlerFactory('online'),
                             sx: {
                                 width: '100%',
@@ -374,7 +284,7 @@ export function AdvancedSearchTextFields() {
                         textFieldProps={{
                             id: 'building',
                             type: 'search',
-                            value: building,
+                            value: formData.building,
                             onChange: changeHandlerFactory('building'),
                             fullWidth: true,
                         }}
@@ -385,7 +295,7 @@ export function AdvancedSearchTextFields() {
                         textFieldProps={{
                             id: 'room',
                             type: 'search',
-                            value: room,
+                            value: formData.room,
                             onChange: changeHandlerFactory('room'),
                             fullWidth: true,
                         }}
@@ -413,7 +323,7 @@ export function AdvancedSearchTextFields() {
                             </Tooltip>
                         }
                         selectProps={{
-                            value: excludeRoadmapCourses,
+                            value: formData.excludeRoadmapCourses,
                             onChange: changeHandlerFactory('excludeRoadmapCourses'),
                             displayEmpty: true,
                             sx: {
@@ -434,7 +344,7 @@ export function AdvancedSearchTextFields() {
                         label="Exclude Restrictions"
                         selectProps={{
                             multiple: true,
-                            value: excludeRestrictionCodes.split(''),
+                            value: formData.excludeRestrictionCodes.split(''),
                             onChange: changeHandlerFactory('excludeRestrictionCodes'),
                             renderValue: (selected) => (selected as string[]).join(', '),
                             sx: {
@@ -445,7 +355,7 @@ export function AdvancedSearchTextFields() {
                         {EXCLUDE_RESTRICTION_CODES_OPTIONS.map((option) => (
                             <MenuItem key={option.value} value={option.value} sx={{ paddingY: 0.25 }}>
                                 <Checkbox
-                                    checked={excludeRestrictionCodes.includes(option.value)}
+                                    checked={formData.excludeRestrictionCodes.includes(option.value)}
                                     inputProps={{ 'aria-labelledby': `option-label-${option.value}` }}
                                 />
                                 <ListItemText id={`option-label-${option.value}`} primary={option.label} />
@@ -457,7 +367,7 @@ export function AdvancedSearchTextFields() {
                         label="Days"
                         selectProps={{
                             multiple: true,
-                            value: days ? days.split(/(?=[A-Z])/) : [],
+                            value: formData.days ? formData.days.split(/(?=[A-Z])/) : [],
                             onChange: changeHandlerFactory('days'),
                             renderValue: (selected) =>
                                 (selected as string[])
@@ -475,7 +385,7 @@ export function AdvancedSearchTextFields() {
                         {DAYS_OPTIONS.map((option) => (
                             <MenuItem key={option.value} value={option.value} sx={{ paddingY: 0.25 }}>
                                 <Checkbox
-                                    checked={days.includes(option.value)}
+                                    checked={formData.days.includes(option.value)}
                                     inputProps={{ 'aria-labelledby': `option-label-${option.value}` }}
                                 />
                                 <ListItemText id={`option-label-${option.value}`} primary={option.label} />

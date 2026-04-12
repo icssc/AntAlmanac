@@ -1,4 +1,5 @@
 import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { useQueryStates } from 'nuqs';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, type FormEvent } from 'react';
 
@@ -7,8 +8,8 @@ import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch
 import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { getDefaultFormValues, searchParsers } from '$lib/searchParams';
 import { LIGHT_BLUE } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -21,6 +22,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
     const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
+    const [formData, setFormData] = useQueryStates(searchParsers);
 
     const onFormSubmit = useCallback(
         (event: FormEvent<HTMLFormElement>) => {
@@ -35,6 +37,11 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
         if (!value) return;
         toggleManualSearch();
     };
+
+    const handleReset = useCallback(() => {
+        const defaults = getDefaultFormValues();
+        setFormData({ ...defaults, term: formData.term });
+    }, [setFormData, formData.term]);
 
     return (
         <Stack sx={{ height: '100%', overflowX: 'hidden' }}>
@@ -79,7 +86,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                                     action: analyticsEnum.classSearch.actions.MANUAL_SEARCH,
                                 });
                             }}
-                            onReset={RightPaneStore.resetFormValues}
+                            onReset={handleReset}
                         />
                     )}
                 </Stack>

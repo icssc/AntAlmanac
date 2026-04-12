@@ -1,35 +1,16 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useQueryState } from 'nuqs';
 
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { searchParsers } from '$lib/searchParams';
 import { termData } from '$lib/termData';
 
 export function TermSelector() {
-    const [term, setTerm] = useState<string>(() => RightPaneStore.getFormData().term);
+    const [term, setTerm] = useQueryState('term', searchParsers.term);
 
     const handleChange = (_: unknown, option: string | null) => {
         const value = option ?? termData.at(0)?.shortName ?? '';
-
         setTerm(value);
-
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('term', value);
-        history.replaceState({ url: 'url' }, 'url', `/?${urlParams}`);
-
-        RightPaneStore.updateFormValue('term', value);
     };
-
-    const resetField = useCallback(() => {
-        setTerm(RightPaneStore.getFormData().term);
-    }, []);
-
-    useEffect(() => {
-        RightPaneStore.on('formReset', resetField);
-
-        return () => {
-            RightPaneStore.off('formReset', resetField);
-        };
-    }, [resetField]);
 
     return (
         <LabeledAutocomplete

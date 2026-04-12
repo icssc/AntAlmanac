@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { getDefaultFormValues, serializeSearchParams } from '$lib/searchParams';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useTabStore } from '$stores/TabStore';
 
@@ -12,20 +12,15 @@ export function useQuickSearch() {
 
     return useCallback(
         (deptValue: string, courseNumber: string, termValue: string) => {
-            const queryParams = {
+            const params = {
+                ...getDefaultFormValues(),
                 term: termValue,
                 deptValue: deptValue,
                 courseNumber: courseNumber,
             };
 
-            const href = `/?${Object.entries(queryParams)
-                .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-                .join('&')}`;
+            const href = `/${serializeSearchParams(params)}`;
 
-            RightPaneStore.resetFormValues();
-            RightPaneStore.updateFormValue('deptValue', deptValue);
-            RightPaneStore.updateFormValue('courseNumber', courseNumber);
-            RightPaneStore.updateFormValue('term', termValue);
             navigate(href, { replace: false });
             setActiveTab('search');
             displaySections();

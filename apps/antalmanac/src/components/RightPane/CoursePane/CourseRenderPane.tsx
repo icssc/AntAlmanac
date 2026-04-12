@@ -10,6 +10,7 @@ import {
     GE,
 } from '@packages/antalmanac-types';
 import Image from 'next/image';
+import { useQueryStates } from 'nuqs';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
 
@@ -18,13 +19,13 @@ import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs
 import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 import darkNoNothing from '$components/RightPane/CoursePane/static/dark-no_results.png';
 import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
+import { type SearchFormData, searchParsers } from '$lib/searchParams';
 import { WebSOC } from '$lib/websoc';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
@@ -96,19 +97,16 @@ function getFilteredCourses(
     return allCourses;
 }
 
-const RecruitmentBanner = () => {
+const RecruitmentBanner = ({ formData }: { formData: SearchFormData }) => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
     const isMobile = useIsMobile();
     const theme = useTheme();
 
-    // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
     const recruitmentDismissalTime = getLocalStorageRecruitmentDismissalTime();
     const dismissedRecently =
         recruitmentDismissalTime !== null &&
         Date.now() - parseInt(recruitmentDismissalTime) < 11 * 7 * 24 * 3600 * 1000;
-    const isSearchCS = ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(
-        RightPaneStore.getFormData().deptValue.toUpperCase()
-    );
+    const isSearchCS = ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(formData.deptValue.toUpperCase());
     const displayRecruitmentBanner = bannerVisibility && !dismissedRecently && isSearchCS;
 
     const handleClick = () => {
@@ -153,16 +151,15 @@ const RecruitmentBanner = () => {
     );
 };
 
-/* TODO: all this typecasting in the conditionals is pretty messy, but type guards don't really work in this context
- *  for reasons that are currently beyond me (probably something in the transpiling process that JS doesn't like).
- *  If you can find a way to make this cleaner, do it.
- */
 const SectionTableWrapped = (
     index: number,
-    data: { scheduleNames: string[]; courseData: (WebsocSchool | WebsocDepartment | AACourse)[] }
+    data: {
+        scheduleNames: string[];
+        courseData: (WebsocSchool | WebsocDepartment | AACourse)[];
+        formData: SearchFormData;
+    }
 ) => {
-    const { courseData, scheduleNames } = data;
-    const formData = RightPaneStore.getFormData();
+    const { courseData, scheduleNames, formData } = data;
 
     let component;
 
@@ -208,10 +205,9 @@ const LoadingMessage = () => {
     );
 };
 
-const ErrorMessage = () => {
+const ErrorMessage = ({ formData }: { formData: SearchFormData }) => {
     const { isDark } = useThemeStore();
 
-    const formData = RightPaneStore.getFormData();
     const deptValue = formData.deptValue.replace(' ', '').toUpperCase() || null;
     const courseNumber = formData.courseNumber.replace(/\s+/g, '').toUpperCase() || null;
     const courseId = deptValue && courseNumber ? `${deptValue}${courseNumber}` : null;
@@ -263,6 +259,7 @@ const ErrorMessage = () => {
 };
 
 export default function CourseRenderPane(props: { id?: number }) {
+    const [formData] = useQueryStates(searchParsers);
     const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
     const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
     const [loading, setLoading] = useState(true);
@@ -273,8 +270,6 @@ export default function CourseRenderPane(props: { id?: number }) {
 
     const loadCourses = useCallback(async () => {
         setLoading(true);
-
-        const formData = RightPaneStore.getFormData();
 
         const websocQueryParams = {
             department: formData.deptValue,
@@ -290,8 +285,8 @@ export default function CourseRenderPane(props: { id?: number }) {
             building: formData.building,
             room: formData.room,
             division: formData.division,
-            excludeRestrictionCodes: formData.excludeRestrictionCodes.split('').join(','), // comma delimited string (e.g. ABC -> A,B,C)
-            days: formData.days.split(/(?=[A-Z])/).join(','), // split on capital letters (e.g. MTuF -> M,Tu,F)
+            excludeRestrictionCodes: formData.excludeRestrictionCodes.split('').join(','),
+            days: formData.days.split(/(?=[A-Z])/).join(','),
         };
 
         const gradesQueryParams = {
@@ -302,12 +297,10 @@ export default function CourseRenderPane(props: { id?: number }) {
         };
 
         try {
-            // Query websoc for course information and populate gradescache
             const [websocJsonResp, _] = await Promise.all([
                 websocQueryParams.units.includes(',')
                     ? WebSOC.queryMultiple(websocQueryParams, 'units')
                     : WebSOC.query(websocQueryParams),
-                // Catch the error here so that the course pane still loads even if the grades cache fails to populate
                 Grades.populateGradesCache(gradesQueryParams).catch((error) => {
                     console.error(error);
                     openSnackbar('error', 'Error loading grades information');
@@ -325,7 +318,7 @@ export default function CourseRenderPane(props: { id?: number }) {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [formData]);
 
     const updateScheduleNames = () => {
         setScheduleNames(AppStore.getScheduleNames());
@@ -356,11 +349,6 @@ export default function CourseRenderPane(props: { id?: number }) {
         };
     }, [loadCourses, props.id]);
 
-    /**
-     * Removes hovered course when component unmounts
-     * Handles edge cases where the Section Table is removed, rather than the mouse
-     * ex: Swapping to the Added tab, clicking the LocationCell link
-     */
     useEffect(() => {
         return () => {
             setHoveredEvent(undefined);
@@ -374,10 +362,10 @@ export default function CourseRenderPane(props: { id?: number }) {
             {loading ? (
                 <LoadingMessage />
             ) : error || courseData.length === 0 ? (
-                <ErrorMessage />
+                <ErrorMessage formData={formData} />
             ) : (
                 <>
-                    <RecruitmentBanner />
+                    <RecruitmentBanner formData={formData} />
                     <Box>
                         {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
                             let heightEstimate = 200;
@@ -388,6 +376,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                                     {SectionTableWrapped(index, {
                                         courseData: courseData,
                                         scheduleNames: scheduleNames,
+                                        formData: formData,
                                     })}
                                 </LazyLoad>
                             );

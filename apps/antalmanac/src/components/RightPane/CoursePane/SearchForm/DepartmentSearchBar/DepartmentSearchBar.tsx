@@ -1,9 +1,10 @@
+import { useQueryState } from 'nuqs';
 import { useCallback, useEffect, useState } from 'react';
 
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { useDepartments } from '$hooks/useDepartments';
 import { getLocalStorageRecentlySearched, setLocalStorageRecentlySearched } from '$lib/localStorage';
+import { searchParsers } from '$lib/searchParams';
 
 const DEFAULT_DEPARTMENTS: Record<string, string> = {
     ALL: 'ALL: Include All Departments',
@@ -30,37 +31,19 @@ const parseLocalStorageRecentlySearched = (): string[] => {
 
 export function DepartmentSearchBar() {
     const { departments } = useDepartments();
+    const [deptValue, setDeptValue] = useQueryState('deptValue', searchParsers.deptValue);
 
     const departmentsWithAll = departments ? { ...DEFAULT_DEPARTMENTS, ...departments } : DEFAULT_DEPARTMENTS;
 
     const options = Object.keys(departmentsWithAll);
 
-    const [value, setValue] = useState(() => RightPaneStore.getFormData().deptValue);
     const [recentSearches, setRecentSearches] = useState<typeof options>(() => parseLocalStorageRecentlySearched());
-
-    const resetField = useCallback(() => {
-        setValue(() => RightPaneStore.getFormData().deptValue);
-    }, []);
 
     const handleChange = useCallback(
         (_: unknown, option: string | null) => {
-            const newValue = option ?? options[0]; // options[0] corresponds to `ALL`
+            const newValue = option ?? options[0];
 
-            setValue(newValue);
-            RightPaneStore.updateFormValue('deptValue', newValue);
-
-            const stateObj = { url: 'url' };
-            const url = new URL(window.location.href);
-            const urlParam = new URLSearchParams(url.search);
-
-            urlParam.delete('deptValue');
-
-            if (newValue != 'ALL') {
-                urlParam.append('deptValue', newValue);
-            }
-            const param = urlParam.toString();
-            const new_url = `${param.trim() ? '?' : ''}${param}`;
-            history.replaceState(stateObj, 'url', '/' + new_url);
+            setDeptValue(newValue);
 
             if (newValue === 'ALL') return;
 
@@ -72,16 +55,8 @@ export function DepartmentSearchBar() {
                   )
                 : setRecentSearches((prev) => [newValue, ...prev].slice(0, 5));
         },
-        [recentSearches, options]
+        [recentSearches, options, setDeptValue]
     );
-
-    useEffect(() => {
-        RightPaneStore.on('formReset', resetField);
-
-        return () => {
-            RightPaneStore.off('formReset', resetField);
-        };
-    }, [resetField]);
 
     useEffect(() => {
         setLocalStorageRecentlySearched(JSON.stringify(recentSearches));
@@ -91,7 +66,7 @@ export function DepartmentSearchBar() {
         <LabeledAutocomplete
             label="Department"
             autocompleteProps={{
-                value,
+                value: deptValue,
                 options: Array.from(new Set([...recentSearches, ...options])),
                 autoHighlight: true,
                 openOnFocus: true,

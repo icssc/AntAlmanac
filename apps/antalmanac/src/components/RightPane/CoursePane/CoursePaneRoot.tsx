@@ -1,14 +1,15 @@
 import { Box } from '@mui/material';
+import { useQueryStates } from 'nuqs';
 import { usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { usePlannerRoadmaps } from '$hooks/usePlanner';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
+import { type SearchFormData, searchParsers, formDataIsValid, getDefaultAdvancedSearchValues } from '$lib/searchParams';
 import { WebSOC } from '$lib/websoc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
@@ -19,13 +20,16 @@ export function CoursePaneRoot() {
     const postHog = usePostHog();
     usePlannerRoadmaps();
 
+    const [formData, setFormData] = useQueryStates(searchParsers);
+    const prevFormDataRef = useRef<SearchFormData | null>(null);
+
     const handleSearch = useCallback(() => {
         if (!advancedSearchEnabled) {
-            RightPaneStore.storePrevFormData();
-            RightPaneStore.resetAdvancedSearchValues();
+            prevFormDataRef.current = { ...formData };
+            setFormData(getDefaultAdvancedSearchValues());
         }
 
-        if (RightPaneStore.formDataIsValid()) {
+        if (formDataIsValid(formData)) {
             displaySections();
             forceUpdate();
         } else {
@@ -34,7 +38,15 @@ export function CoursePaneRoot() {
                 `Please provide one of the following: Department, GE, Section Code/Range, or Instructor`
             );
         }
-    }, [advancedSearchEnabled, displaySections, forceUpdate]);
+    }, [advancedSearchEnabled, displaySections, forceUpdate, formData, setFormData]);
+
+    const handleDisplaySearch = useCallback(() => {
+        if (prevFormDataRef.current) {
+            setFormData(prevFormDataRef.current);
+            prevFormDataRef.current = null;
+        }
+        displaySearch();
+    }, [displaySearch, setFormData]);
 
     const refreshSearch = useCallback(() => {
         logAnalytics(postHog, {
@@ -48,9 +60,9 @@ export function CoursePaneRoot() {
 
     const handleKeydown = useCallback(
         (event: KeyboardEvent) => {
-            if (event.key === 'Escape') displaySearch();
+            if (event.key === 'Escape') handleDisplaySearch();
         },
-        [displaySearch]
+        [handleDisplaySearch]
     );
 
     useEffect(() => {
@@ -65,7 +77,7 @@ export function CoursePaneRoot() {
         <Box sx={{ height: 0, flexGrow: 1 }}>
             <CoursePaneButtonRow
                 showSearch={!searchFormIsDisplayed}
-                onDismissSearchResults={displaySearch}
+                onDismissSearchResults={handleDisplaySearch}
                 onRefreshSearch={refreshSearch}
             />
             {searchFormIsDisplayed ? (
