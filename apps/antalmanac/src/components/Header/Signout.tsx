@@ -5,8 +5,7 @@ import { useState, type MouseEvent } from 'react';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
-import trpc from '$lib/api/trpc';
-import { authClient } from '$lib/auth/authClient';
+import { signOut } from '$lib/auth/authClient';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
@@ -16,7 +15,7 @@ interface SignoutProps {
 
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const { session, clearSession, user } = useSessionStore();
+    const { user } = useSessionStore();
     const isDark = useThemeStore((store) => store.isDark);
 
     const open = Boolean(anchorEl);
@@ -27,27 +26,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
     const handleLogout = async () => {
         setAnchorEl(null);
 
-        if (!session) {
-            await clearSession();
-            onLogoutComplete?.();
-            return;
-        }
-
-        const { error } = await authClient.signOut();
-
-        if (error) {
-            console.error('Error during logout', error);
-        }
-
-        await clearSession();
-        onLogoutComplete?.();
-
-        const { logoutUrl } = await trpc.userData.logout.mutate({
-            sessionToken: session,
-            redirectUrl: window.location.origin,
-        });
-
-        window.location.href = logoutUrl;
+        signOut(onLogoutComplete);
     };
 
     return (
