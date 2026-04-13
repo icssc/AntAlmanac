@@ -27,7 +27,7 @@ import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termD
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import { useSectionColorStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 
 /*
@@ -70,6 +70,7 @@ export const ScheduleCalendar = memo(() => {
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
 
     const theme = useTheme();
+    const sectionColor = useSectionColorStore((s) => s.sectionColor);
     const { isMilitaryTime } = useTimeFormatStore();
     const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
         useShallow((state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal])
@@ -333,6 +334,10 @@ export const ScheduleCalendar = memo(() => {
             AppStore.off('scheduleNamesChange', updateScheduleNames);
         };
     }, []);
+
+    useEffect(() => {
+        setEventsInCalendar(AppStore.getEventsInCalendar());
+    }, [sectionColor]);
 
     return (
         <Box

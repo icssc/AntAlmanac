@@ -5,10 +5,12 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import {
     getLocalStorageAutoSave,
     getLocalStoragePreviewMode,
+    getLocalStorageSectionColor,
     getLocalStorageShow24HourTime,
     getLocalStorageTheme,
     setLocalStorageAutoSave,
     setLocalStoragePreviewMode,
+    setLocalStorageSectionColor,
     setLocalStorageShow24HourTime,
     setLocalStorageTheme,
 } from '$lib/localStorage';
@@ -55,6 +57,32 @@ export const useThemeStore = create<ThemeStore>((set) => {
                 category: analyticsEnum.nav,
                 action: analyticsEnum.nav.actions.CHANGE_THEME,
                 label: themeSetting,
+            });
+        },
+    };
+});
+
+export type SectionColorSetting = 'default' | 'legacy' | 'catppuccin';
+
+export interface SectionColorStore {
+    sectionColor: SectionColorSetting;
+    setSectionColor: (sectionColorSetting: SectionColorSetting, postHog?: PostHog) => void;
+}
+
+export const useSectionColorStore = create<SectionColorStore>((set) => {
+    const storedSectionColor = (getLocalStorageSectionColor() ?? 'default') as SectionColorSetting;
+    return {
+        sectionColor: storedSectionColor,
+
+        setSectionColor: (sectionColor, postHog) => {
+            setLocalStorageSectionColor(sectionColor);
+
+            set({ sectionColor });
+
+            logAnalytics(postHog, {
+                category: analyticsEnum.nav,
+                action: analyticsEnum.nav.actions.CHANGE_SECTION_COLOR,
+                label: sectionColor,
             });
         },
     };

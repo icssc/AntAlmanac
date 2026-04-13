@@ -1,7 +1,11 @@
 import { create } from 'zustand';
 
 import { tourShouldRun } from '$lib/TutorialHelpers';
-import { getLocalStorageHelpBoxDismissalTime, getLocalStoragePatchNotesKey } from '$lib/localStorage';
+import {
+    getLocalStorageHelpBoxDismissalTime,
+    getLocalStoragePatchNotesKey,
+    getLocalStorageSectionColorOnboarding,
+} from '$lib/localStorage';
 
 /**
  * Active months: February/March for Spring planning, May/June for Fall planning, July/August for Summer planning,
@@ -23,10 +27,21 @@ export interface HelpMenuStoreProps {
 
     showPatchNotes: boolean;
     setShowPatchNotes: (value: boolean | ((prev: boolean) => boolean)) => void;
+
+    showSectionThemeOnboarding: boolean;
+    setShowSectionThemeOnboarding: (value: boolean | ((prev: boolean) => boolean)) => void;
 }
 
 export function shouldShowPatchNotes() {
     return getLocalStoragePatchNotesKey() !== LATEST_PATCH_NOTES_UPDATE && !tourShouldRun();
+}
+
+/**
+ * Show the section theme onboarding dialog only once — when the user has never seen it before.
+ * We track this by storing a truthy value in localStorage after dismissal.
+ */
+export function shouldShowSectionThemeOnboarding() {
+    return getLocalStorageSectionColorOnboarding() === null && !tourShouldRun();
 }
 
 export const useHelpMenuStore = create<HelpMenuStoreProps>((set) => {
@@ -47,6 +62,13 @@ export const useHelpMenuStore = create<HelpMenuStoreProps>((set) => {
         setShowPatchNotes: (value) =>
             set((state) => ({
                 showPatchNotes: typeof value === 'function' ? value(state.showPatchNotes) : value,
+            })),
+
+        showSectionThemeOnboarding: shouldShowSectionThemeOnboarding(),
+        setShowSectionThemeOnboarding: (value) =>
+            set((state) => ({
+                showSectionThemeOnboarding:
+                    typeof value === 'function' ? value(state.showSectionThemeOnboarding) : value,
             })),
     };
 });
