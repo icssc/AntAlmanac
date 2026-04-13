@@ -73,7 +73,7 @@ export const ScheduleCalendar = memo(() => {
         useShallow((state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal])
     );
     const isDark = useThemeStore(useShallow((store) => store.isDark));
-    const hiddenCourses = useHiddenCoursesStore((state) => state.hiddenCourses);
+    const visibilityMap = useHiddenCoursesStore((state) => state.visibilityMap);
 
     const { openLoadingSchedule: loadingSchedule } = scheduleComponentsToggleStore();
     const hasHadEventsRef = useRef(false);
@@ -86,19 +86,29 @@ export const ScheduleCalendar = memo(() => {
     );
 
     const getEventsForCalendar = useCallback((): CalendarEvent[] => {
-        return showFinalsSchedule
+        const raw = showFinalsSchedule
             ? hoveredCalendarizedFinal
                 ? [...finalsEventsInCalendar, hoveredCalendarizedFinal]
                 : finalsEventsInCalendar
             : hoveredCalendarizedCourses
               ? [...eventsInCalendar, ...hoveredCalendarizedCourses]
               : eventsInCalendar;
+
+        return raw.filter((e) => {
+            if ('isCustomEvent' in e && e.isCustomEvent) return true;
+            if ('isSkeletonEvent' in e && e.isSkeletonEvent) return true;
+            const visibility =
+                visibilityMap[String(currentScheduleIndex)]?.[(e as CourseEvent).sectionCode] ?? 'visible';
+            return visibility !== 'disappeared';
+        });
     }, [
         eventsInCalendar,
         finalsEventsInCalendar,
         hoveredCalendarizedCourses,
         hoveredCalendarizedFinal,
         showFinalsSchedule,
+        currentScheduleIndex,
+        visibilityMap,
     ]);
 
     useEffect(() => {
@@ -201,23 +211,31 @@ export const ScheduleCalendar = memo(() => {
         (event: CalendarEvent | SkeletonEvent) => {
             const isSkeletonEvent = 'isSkeletonEvent' in event && event.isSkeletonEvent;
 
-            const hidden =
-                !isSkeletonEvent &&
-                !('isCustomEvent' in event && event.isCustomEvent) &&
-                (hiddenCourses[String(currentScheduleIndex)]?.includes((event as CourseEvent).sectionCode) ?? false);
+            const visibility =
+                !isSkeletonEvent && !('isCustomEvent' in event && event.isCustomEvent)
+                    ? (visibilityMap[String(currentScheduleIndex)]?.[(event as CourseEvent).sectionCode] ?? 'visible')
+                    : 'visible';
 
-            const style = {
-                backgroundColor: event.color,
-                cursor: 'pointer',
-                borderStyle: 'none',
-                borderRadius: '4px',
-                color: colorContrastSufficient(event.color) ? 'white' : 'black',
-                ...(hidden && { opacity: 0.3 }),
-            };
+            const style =
+                visibility === 'outlined'
+                    ? {
+                          backgroundColor: 'transparent',
+                          border: `2px solid ${event.color}`,
+                          borderRadius: '4px',
+                          color: event.color,
+                          cursor: 'pointer',
+                      }
+                    : {
+                          backgroundColor: event.color,
+                          cursor: 'pointer',
+                          border: '2px solid transparent',
+                          borderRadius: '4px',
+                          color: colorContrastSufficient(event.color) ? 'white' : 'black',
+                      };
 
             return isSkeletonEvent ? { style, className: 'calendar-loading-event' } : { style };
         },
-        [currentScheduleIndex, hiddenCourses]
+        [currentScheduleIndex, visibilityMap]
     );
 
     /**

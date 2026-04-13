@@ -1,4 +1,4 @@
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Visibility, VisibilityOff, VisibilityOutlined } from '@mui/icons-material';
 import { Box, CircularProgress, IconButton, Tooltip } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useState } from 'react';
@@ -33,9 +33,9 @@ function getSectionColor(sectionCode: string, term: string): string {
 export const ActionCell = memo(
     ({ section, term, courseDetails, scheduleConflict, addedCourse, scheduleNames }: ActionCellProps) => {
         const initialized = useNotificationStore(useShallow((state) => state.initialized));
-        const toggleHidden = useHiddenCoursesStore((state) => state.toggleHidden);
-        const classHidden = useHiddenCoursesStore((state) =>
-            state.isHidden(AppStore.getCurrentScheduleIndex(), section.sectionCode)
+        const cycleVisibility = useHiddenCoursesStore((state) => state.cycleVisibility);
+        const classVisibility = useHiddenCoursesStore((state) =>
+            state.getVisibility(AppStore.getCurrentScheduleIndex(), section.sectionCode)
         );
         const isMobile = useIsMobile();
 
@@ -58,8 +58,8 @@ export const ActionCell = memo(
         }, [updateColor]);
 
         const handleVisibilityToggle = useCallback(() => {
-            toggleHidden(AppStore.getCurrentScheduleIndex(), section.sectionCode);
-        }, [section.sectionCode, toggleHidden]);
+            cycleVisibility(AppStore.getCurrentScheduleIndex(), section.sectionCode);
+        }, [section.sectionCode, cycleVisibility]);
 
         return (
             <TableBodyCellContainer sx={{ paddingX: isMobile ? 0.5 : 1 }}>
@@ -82,12 +82,24 @@ export const ActionCell = memo(
 
                     {!isMobile && addedCourse && (
                         <Tooltip
-                            title={classHidden ? 'Show class in calendar' : 'Hide class in calendar'}
+                            title={
+                                classVisibility === 'visible'
+                                    ? 'Outline class in calendar'
+                                    : classVisibility === 'outlined'
+                                      ? 'Hide class in calendar'
+                                      : 'Show class in calendar'
+                            }
                             arrow
                             disableInteractive
                         >
                             <IconButton onClick={handleVisibilityToggle} size="small" sx={{ p: 0.5 }}>
-                                {classHidden ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                                {classVisibility === 'visible' ? (
+                                    <Visibility fontSize="small" />
+                                ) : classVisibility === 'outlined' ? (
+                                    <VisibilityOutlined fontSize="small" />
+                                ) : (
+                                    <VisibilityOff fontSize="small" />
+                                )}
                             </IconButton>
                         </Tooltip>
                     )}

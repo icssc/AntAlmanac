@@ -2,18 +2,25 @@ import { create } from 'zustand';
 
 import { getLocalStorageHiddenCourses, setLocalStorageHiddenCourses } from '$lib/localStorage';
 
-type HiddenCoursesMap = Record<string, string[]>;
+export type VisibilityState = 'visible' | 'outlined' | 'disappeared';
+type VisibilityMap = Record<string, Record<string, VisibilityState>>;
+
+const NEXT_VISIBILITY: Record<VisibilityState, VisibilityState> = {
+    visible: 'outlined',
+    outlined: 'disappeared',
+    disappeared: 'visible',
+};
 
 interface HiddenCoursesStore {
-    hiddenCourses: HiddenCoursesMap;
-    isHidden: (scheduleIndex: number, sectionCode: string) => boolean;
-    toggleHidden: (scheduleIndex: number, sectionCode: string) => void;
+    visibilityMap: VisibilityMap;
+    getVisibility: (scheduleIndex: number, sectionCode: string) => VisibilityState;
+    cycleVisibility: (scheduleIndex: number, sectionCode: string) => void;
 }
 
-function loadFromStorage(): HiddenCoursesMap {
+function loadFromStorage(): VisibilityMap {
     try {
         const raw = getLocalStorageHiddenCourses();
-        if (raw) return JSON.parse(raw) as HiddenCoursesMap;
+        if (raw) return JSON.parse(raw) as VisibilityMap;
     } catch {
         // ignore malformed data
     }
@@ -21,22 +28,34 @@ function loadFromStorage(): HiddenCoursesMap {
 }
 
 export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
-    hiddenCourses: loadFromStorage(),
+    visibilityMap: loadFromStorage(),
 
-    isHidden: (scheduleIndex, sectionCode) => {
+    getVisibility: (scheduleIndex, sectionCode) => {
         const key = String(scheduleIndex);
-        return get().hiddenCourses[key]?.includes(sectionCode) ?? false;
+        return get().visibilityMap[key]?.[sectionCode] ?? 'visible';
     },
 
-    toggleHidden: (scheduleIndex, sectionCode) => {
+    cycleVisibility: (scheduleIndex, sectionCode) => {
         const key = String(scheduleIndex);
-        const current = get().hiddenCourses;
-        const existing = current[key] ?? [];
-        const updated = existing.includes(sectionCode)
-            ? existing.filter((code) => code !== sectionCode)
-            : [...existing, sectionCode];
-        const newMap = { ...current, [key]: updated };
+        const current = get().visibilityMap;
+        const currentState: VisibilityState = current[key]?.[sectionCode] ?? 'visible';
+        const nextState = NEXT_VISIBILITY[currentState];
+
+        const scheduleMap = { ...(current[key] ?? {}) };
+        if (nextState === 'visible') {
+            delete scheduleMap[sectionCode];
+        } else {
+            scheduleMap[sectionCode] = nextState;
+        }
+
+        const newMap = { ...current };
+        if (Object.keys(scheduleMap).length === 0) {
+            delete newMap[key];
+        } else {
+            newMap[key] = scheduleMap;
+        }
+
         setLocalStorageHiddenCourses(JSON.stringify(newMap));
-        set({ hiddenCourses: newMap });
+        set({ visibilityMap: newMap });
     },
 }));
