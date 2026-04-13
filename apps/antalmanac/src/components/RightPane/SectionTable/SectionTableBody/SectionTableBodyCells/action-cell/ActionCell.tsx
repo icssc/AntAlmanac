@@ -1,4 +1,5 @@
-import { Box, CircularProgress, IconButton } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { Box, CircularProgress, IconButton, Tooltip } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -13,6 +14,7 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
 import { Term } from '$lib/termData';
 import AppStore from '$stores/AppStore';
+import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { useNotificationStore } from '$stores/NotificationStore';
 
 interface ActionCellProps {
@@ -31,6 +33,10 @@ function getSectionColor(sectionCode: string, term: string): string {
 export const ActionCell = memo(
     ({ section, term, courseDetails, scheduleConflict, addedCourse, scheduleNames }: ActionCellProps) => {
         const initialized = useNotificationStore(useShallow((state) => state.initialized));
+        const toggleHidden = useHiddenCoursesStore((state) => state.toggleHidden);
+        const classHidden = useHiddenCoursesStore((state) =>
+            state.isHidden(AppStore.getCurrentScheduleIndex(), section.sectionCode)
+        );
         const isMobile = useIsMobile();
 
         const [sectionColor, setSectionColor] = useState(() => getSectionColor(section.sectionCode, term));
@@ -51,6 +57,10 @@ export const ActionCell = memo(
             };
         }, [updateColor]);
 
+        const handleVisibilityToggle = useCallback(() => {
+            toggleHidden(AppStore.getCurrentScheduleIndex(), section.sectionCode);
+        }, [section.sectionCode, toggleHidden]);
+
         return (
             <TableBodyCellContainer sx={{ paddingX: isMobile ? 0.5 : 1 }}>
                 <Box
@@ -68,6 +78,18 @@ export const ActionCell = memo(
                             term={term}
                             scheduleConflict={scheduleConflict}
                         />
+                    )}
+
+                    {!isMobile && addedCourse && (
+                        <Tooltip
+                            title={classHidden ? 'Show class in calendar' : 'Hide class in calendar'}
+                            arrow
+                            disableInteractive
+                        >
+                            <IconButton onClick={handleVisibilityToggle} size="small" sx={{ p: 0.5 }}>
+                                {classHidden ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                            </IconButton>
+                        </Tooltip>
                     )}
 
                     {initialized ? (
