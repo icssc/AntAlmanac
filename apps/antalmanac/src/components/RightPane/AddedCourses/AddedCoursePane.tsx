@@ -329,7 +329,7 @@ function CourseInfoBarSkeleton() {
     );
 }
 
-function SectionTableSkeleton() {
+export function SectionTableSkeleton() {
     return (
         <Box>
             <CourseInfoBarSkeleton />
