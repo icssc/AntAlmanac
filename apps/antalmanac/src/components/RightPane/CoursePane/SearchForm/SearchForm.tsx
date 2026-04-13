@@ -1,5 +1,5 @@
 import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { useQueryState, useQueryStates } from 'nuqs';
+import { useQueryStates } from 'nuqs';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, type FormEvent } from 'react';
 
@@ -19,7 +19,6 @@ interface SearchFormProps {
 }
 
 export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
-    const [mode, setMode] = useQueryState('mode', searchParsers.mode);
     const [formData, setFormData] = useQueryStates(searchParsers);
     const isDark = useThemeStore((store) => store.isDark);
     const postHog = usePostHog();
@@ -42,7 +41,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
             setFormData({ ...stashedManualFields, mode: 'manual' });
             setStashedManualFields(null);
         } else {
-            setMode(value);
+            setFormData({ mode: 'manual' });
         }
     };
 
@@ -66,7 +65,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                         fullWidth
                         size="medium"
                         color="secondary"
-                        value={mode}
+                        value={formData.mode}
                         exclusive
                         aria-label="Search selection"
                         sx={{
@@ -84,7 +83,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                         <TermSelector />
                     </Box>
 
-                    {mode === 'quick' ? (
+                    {formData.mode === 'quick' ? (
                         <FuzzySearch postHog={postHog} />
                     ) : (
                         <ManualSearch
