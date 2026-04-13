@@ -2,6 +2,7 @@
     "name": "@packages/db",
     "version": "0.0.1",
     "description": "Antalmanac database",
+    "main": "./src/index.ts",
     "scripts": {
         "db:generate": "drizzle-kit generate",
         "db:migrate": "drizzle-kit migrate",

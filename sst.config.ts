@@ -14,7 +14,7 @@ function getDomain() {
 }
 
 const isPermanentStage = ['production', 'scheduler', 'staging-shared'];
-const AANTS_STAGES = ['production', 'staging-1521'];
+const AANTS_STAGES = ['production', 'staging-1521', 'staging-1542'];
 
 export default $config({
     app(input) {
@@ -58,6 +58,7 @@ export default $config({
                 GOOGLE_REDIRECT_URI: `https://${domain}/auth`,
                 NEXT_PUBLIC_BASE_URL: domain,
                 NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY,
+                PLANNER_CLIENT_API_KEY: process.env.PLANNER_CLIENT_API_KEY,
                 STAGE: $app.stage,
             },
         });

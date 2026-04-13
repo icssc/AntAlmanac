@@ -1,45 +1,55 @@
-import { Close } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
-import { ProviderContext, withSnackbar, SnackbarKey } from 'notistack';
-import { useCallback, useEffect } from 'react';
+'use client';
 
-import AppStore from '$stores/AppStore';
+import { Alert, Snackbar, SnackbarCloseReason } from '@mui/material';
+import { mergeSx } from '@mui/x-date-pickers/internals';
 
-export const NotificationSnackbar = withSnackbar(({ enqueueSnackbar, closeSnackbar }: ProviderContext) => {
-    const snackbarAction = useCallback(
-        (key: SnackbarKey) => {
-            return (
-                <IconButton
-                    key="close"
-                    color="inherit"
-                    onClick={() => {
-                        closeSnackbar(key);
-                    }}
-                >
-                    <Close sx={{ fontSize: 20 }} />
-                </IconButton>
-            );
-        },
-        [closeSnackbar]
+import { useIsMobile } from '$hooks/useIsMobile';
+import { useSnackbarStore } from '$stores/SnackbarStore';
+
+export const NotificationSnackbar = () => {
+    const { open, snackbarClosed, message, severity, durationSeconds, position, style } = useSnackbarStore();
+
+    const isMobile = useIsMobile();
+
+    const snackbarKey = open ? Date.now() : null;
+
+    const handleClose = (_event?: React.SyntheticEvent | Event, reason?: SnackbarCloseReason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        snackbarClosed();
+    };
+
+    return (
+        <Snackbar
+            key={snackbarKey}
+            open={open}
+            autoHideDuration={durationSeconds * 1000}
+            anchorOrigin={position}
+            onClose={handleClose}
+            sx={mergeSx(
+                (theme) => ({
+                    /* Ensure snackbars sit above the mobile navigation tabs */
+                    marginBottom: isMobile ? 'calc(env(safe-area-inset-bottom, 0px) + 64px)' : undefined,
+                    [theme.breakpoints.up('sm')]: { minWidth: '288px' },
+                }),
+                style
+            )}
+        >
+            <Alert
+                severity={severity}
+                variant="filled"
+                onClose={handleClose}
+                sx={(theme) => ({
+                    width: '100%',
+                    color: theme.palette.text.primary,
+                    display: 'flex',
+                    alignItems: 'center',
+                })}
+            >
+                {message}
+            </Alert>
+        </Snackbar>
     );
-
-    const openSnackbar = useCallback(() => {
-        enqueueSnackbar(AppStore.getSnackbarMessage(), {
-            variant: AppStore.getSnackbarVariant(),
-            autoHideDuration: AppStore.getSnackbarDuration(),
-            anchorOrigin: AppStore.getSnackbarPosition(),
-            action: snackbarAction,
-            style: AppStore.getSnackbarStyle(),
-        });
-    }, [enqueueSnackbar, snackbarAction]);
-
-    useEffect(() => {
-        AppStore.on('openSnackbar', openSnackbar);
-
-        return () => {
-            AppStore.off('openSnackbar', openSnackbar);
-        };
-    }, [openSnackbar]);
-
-    return null;
-});
+};

@@ -1,5 +1,6 @@
 import { Alert, Box, Dialog, DialogContent, AlertColor, DialogActions, Button } from '@mui/material';
 
+import { LIGHT_BLUE } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 
 interface AlertDialogProps {
@@ -14,7 +15,12 @@ export const AlertDialog = ({ open, title, children, severity = 'info', onClose 
     const isDark = useThemeStore((store) => store.isDark);
     return (
         <Dialog open={open} onClose={onClose}>
-            <DialogContent sx={{ fontSize: 'small' }}>
+            <DialogContent
+                sx={{
+                    fontSize: 'small',
+                    ...(isDark && { '& a, & a:hover, & a:visited': { color: LIGHT_BLUE } }),
+                }}
+            >
                 <Alert
                     severity={severity}
                     variant={isDark ? 'outlined' : 'standard'}
