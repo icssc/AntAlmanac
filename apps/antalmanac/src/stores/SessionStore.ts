@@ -4,7 +4,6 @@ import { create } from 'zustand';
 import { authClient, SessionData } from '$lib/auth/authClient';
 import { getLocalStorageSessionId } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
-import { useNotificationStore } from '$stores/NotificationStore';
 
 interface SessionState {
     session: string | null;
@@ -48,7 +47,6 @@ export const useSessionStore = create<SessionState>((set, get) => {
 
             const { data: accountInfo } = await authClient.accountInfo();
             if (!accountInfo) {
-                console.error('FIXME');
                 return false;
             }
 
@@ -65,7 +63,6 @@ export const useSessionStore = create<SessionState>((set, get) => {
                 googleId: googleId,
                 email: sessionData.user.email,
             });
-            useNotificationStore.getState().loadNotifications();
             return true;
         },
         clearSession: async () => {

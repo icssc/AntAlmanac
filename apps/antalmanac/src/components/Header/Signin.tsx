@@ -32,11 +32,10 @@ import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import trpc from '$lib/api/trpc';
-import { authClient } from '$lib/auth/authClient';
+import { authClient, signOut } from '$lib/auth/authClient';
 import {
     getLocalStorageDataCache,
     getLocalStorageFromLoading,
-    getLocalStorageSessionId,
     getLocalStorageUserId,
     removeLocalStorageDataCache,
     removeLocalStorageFromLoading,
@@ -46,7 +45,7 @@ import {
     setLocalStorageImportedUser,
     setLocalStorageOnFirstSignin,
 } from '$lib/localStorage';
-import { clearSsoCookie, setSsoCookie } from '$lib/ssoCookie';
+import { setSsoCookie } from '$lib/ssoCookie';
 import AppStore from '$stores/AppStore';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -97,6 +96,67 @@ export const Signin = () => {
         setSettingsAnchorEl(event.currentTarget);
     };
 
+    const handleLogin = () => {
+        loginUser();
+        setLocalStorageFromLoading('true');
+    };
+
+    const handleUnsavedChanges = useCallback(async () => {
+        if (!sessionData) {
+            return;
+        }
+
+        const isNewUser = false;
+
+        const fromLoading = getLocalStorageFromLoading();
+        const savedUserId = getLocalStorageUserId();
+        const savedData = getLocalStorageDataCache();
+
+        if (isNewUser) {
+            setLocalStorageOnFirstSignin('true');
+        } else {
+            removeLocalStorageUserId();
+        }
+
+        // load schedule without saving any changes
+        if (fromLoading) {
+            removeLocalStorageFromLoading();
+            removeLocalStorageDataCache();
+            removeLocalStorageImportedUser();
+            return;
+        }
+
+        // no changes to save
+        if (savedUserId === null && savedData === null) {
+            removeLocalStorageDataCache();
+            removeLocalStorageImportedUser();
+            return;
+        }
+
+        if (savedData) {
+            const userData = await trpc.userData.getUserData.query({ userId: sessionData.user.id });
+            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+
+            if (savedUserId) {
+                await trpc.userData.flagImportedSchedule.mutate({ providerId: savedUserId });
+                setLocalStorageImportedUser(savedUserId);
+            }
+
+            const data = JSON.parse(savedData);
+
+            if (userData?.userData && isEmptySchedule(userData.userData.schedules)) {
+                scheduleSaveState.schedules = data;
+            } else {
+                const saveState = userData && 'userData' in userData ? userData.userData : userData;
+                if (saveState !== null) {
+                    mergeShortCourseSchedules(saveState.schedules, data, '(import)-');
+                    scheduleSaveState.schedules = saveState.schedules;
+                    scheduleSaveState.scheduleIndex = saveState.schedules.length - 1;
+                }
+            }
+        }
+    }, [sessionData]);
+
     const validateImportedUser = useCallback(async (userID: string) => {
         try {
             const res = await trpc.userData.getGuestAccountAndUserByName
@@ -123,34 +183,17 @@ export const Signin = () => {
         [setOpenLoadingSchedule, validateImportedUser]
     );
 
-    const loadScheduleAndSetLoadingAuth = useCallback(
-        async (userID: string, rememberMe: boolean) => {
-            setOpenLoadingSchedule(true);
+    const loadScheduleAndSetLoadingAuth = useCallback(async () => {
+        if (!sessionData) {
+            return;
+        }
 
-            const sessionToken = getLocalStorageSessionId() ?? '';
+        setOpenLoadingSchedule(true);
 
-            if (sessionToken) {
-                const validSession = await updateSession(sessionToken);
-                if (!validSession) {
-                    setOpenalert(true);
-                    setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
-                } else {
-                    await loadScheduleWithSessionToken();
-                }
-            } else if (userID && userID !== '') {
-                await validateImportedUser(userID);
-                await loadSchedule(userID, rememberMe, 'GUEST');
-            }
+        await loadScheduleWithSessionToken();
 
-            setOpenLoadingSchedule(false);
-        },
-        [setOpenLoadingSchedule, updateSession, validateImportedUser]
-    );
-
-    const handleLogin = () => {
-        loginUser();
-        setLocalStorageFromLoading('true');
-    };
+        setOpenLoadingSchedule(false);
+    }, [sessionData, setOpenLoadingSchedule]);
 
     const enterEvent = useCallback(
         (event: KeyboardEvent) => {
@@ -191,71 +234,29 @@ export const Signin = () => {
             (async () => {
                 if (sessionData.session.expiresAt < new Date()) {
                     console.log('Session expired, logging out');
-                    await authClient.signOut();
+                    signOut();
                     return;
                 }
-                await updateSession(sessionData);
                 try {
-                    // FIXME
-                    const isNewUser = false;
-
-                    const fromLoading = getLocalStorageFromLoading();
-                    const savedUserId = getLocalStorageUserId();
-                    const savedData = getLocalStorageDataCache();
-
-                    if (isNewUser) {
-                        setLocalStorageOnFirstSignin('true');
-                    } else {
-                        removeLocalStorageUserId();
+                    const isSessionValid = await updateSession(sessionData);
+                    if (!isSessionValid) {
+                        setOpenalert(true);
+                        setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
+                        return;
                     }
-
                     setSsoCookie();
+                    handleUnsavedChanges();
 
-                    // load schedule without saving any changes
-                    if (fromLoading) {
-                        removeLocalStorageFromLoading();
-                        removeLocalStorageDataCache();
-                        removeLocalStorageImportedUser();
-                        return;
-                    }
+                    loadScheduleAndSetLoadingAuth();
 
-                    // no changes to save
-                    if (savedUserId === null && savedData === null) {
-                        removeLocalStorageDataCache();
-                        removeLocalStorageImportedUser();
-                        return;
-                    }
-
-                    // handle unsaved changes
-                    if (savedData) {
-                        const userData = await trpc.userData.getUserData.query({ userId: sessionData.user.id });
-                        const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
-
-                        if (savedUserId) {
-                            await trpc.userData.flagImportedSchedule.mutate({ providerId: savedUserId });
-                            setLocalStorageImportedUser(savedUserId);
-                        }
-
-                        const data = JSON.parse(savedData);
-
-                        if (userData !== null && isEmptySchedule(userData.userData.schedules)) {
-                            scheduleSaveState.schedules = data;
-                        } else {
-                            const saveState = userData && 'userData' in userData ? userData.userData : userData;
-                            if (saveState !== null) {
-                                mergeShortCourseSchedules(saveState.schedules, data, '(import)-');
-                                scheduleSaveState.schedules = saveState.schedules;
-                                scheduleSaveState.scheduleIndex = saveState.schedules.length - 1;
-                            }
-                        }
-                    }
+                    useNotificationStore.getState().loadNotifications();
                 } catch (error) {
-                    console.error('Error during authentication', error);
-                    clearSsoCookie();
+                    console.error('Error during authentication:', error);
+                    signOut();
                 }
             })();
         }
-    }, [sessionData, updateSession]);
+    }, [sessionData, updateSession, handleUnsavedChanges, loadScheduleAndSetLoadingAuth]);
 
     useEffect(() => {
         if (isOpen) {
@@ -268,19 +269,6 @@ export const Signin = () => {
             document.removeEventListener('keydown', enterEvent, false);
         };
     }, [isOpen, enterEvent]);
-
-    useEffect(() => {
-        if (typeof Storage !== 'undefined') {
-            const savedUserID = getLocalStorageUserId();
-            const sessionID = getLocalStorageSessionId();
-
-            if (savedUserID != null || sessionID !== null) {
-                void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
-            } else {
-                useNotificationStore.getState().loadNotifications();
-            }
-        }
-    }, [loadScheduleAndSetLoadingAuth]);
 
     return (
         <div id="load-save-container" style={{ display: 'flex', flexDirection: 'row' }}>
