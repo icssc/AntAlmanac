@@ -1,8 +1,9 @@
+import { useQueryStates } from 'nuqs';
 import { useEffect, useState } from 'react';
 
-import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
+import { searchParsers } from '$lib/searchParams';
 import { WebSOC } from '$lib/websoc';
 
 /**
@@ -12,12 +13,11 @@ import { WebSOC } from '$lib/websoc';
  */
 const GeDataFetchProvider = (props: SectionTableProps) => {
     const [courseDetails, setCourseDetails] = useState(props.courseDetails);
+    const [formData] = useQueryStates(searchParsers);
 
     useEffect(
         () => {
             (async () => {
-                const formData = RightPaneStore.getFormData();
-
                 const params = {
                     department: props.courseDetails.deptCode,
                     term: formData.term,
@@ -41,7 +41,6 @@ const GeDataFetchProvider = (props: SectionTableProps) => {
                 setCourseDetails(jsonResp.schools[0].departments[0].courses[0] as SectionTableProps['courseDetails']);
             })();
         },
-        // Should only run once
         // eslint-disable-next-line react-hooks/exhaustive-deps
         []
     );

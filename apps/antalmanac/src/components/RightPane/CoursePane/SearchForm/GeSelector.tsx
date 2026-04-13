@@ -1,8 +1,8 @@
 import { MenuItem, type SelectChangeEvent } from '@mui/material';
-import { useEffect, useCallback, useState } from 'react';
+import { useQueryState } from 'nuqs';
 
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { searchParsers } from '$lib/searchParams';
 
 const GE_LIST = [
     { value: 'ANY', label: "All: Don't filter for GE" },
@@ -19,40 +19,11 @@ const GE_LIST = [
 ] as const;
 
 export function GeSelector() {
-    const [ge, setGe] = useState(() => RightPaneStore.getFormData().ge);
+    const [ge, setGe] = useQueryState('ge', searchParsers.ge);
 
     const handleChange = (event: SelectChangeEvent<string>) => {
-        const value = event.target.value;
-
-        setGe(value);
-        RightPaneStore.updateFormValue('ge', value);
-
-        const stateObj = { url: 'url' };
-        const url = new URL(window.location.href);
-        const urlParam = new URLSearchParams(url.search);
-
-        urlParam.delete('ge');
-
-        if (value !== 'ANY') {
-            urlParam.append('ge', value);
-        }
-
-        const param = urlParam.toString();
-        const new_url = `${param.trim() ? '?' : ''}${param}`;
-        history.replaceState(stateObj, 'url', '/' + new_url);
+        setGe(event.target.value);
     };
-
-    const resetField = useCallback(() => {
-        setGe(RightPaneStore.getFormData().ge);
-    }, []);
-
-    useEffect(() => {
-        RightPaneStore.on('formReset', resetField);
-
-        return () => {
-            RightPaneStore.off('formReset', resetField);
-        };
-    }, [resetField]);
 
     return (
         <LabeledSelect

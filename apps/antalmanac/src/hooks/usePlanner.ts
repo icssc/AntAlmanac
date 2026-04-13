@@ -1,8 +1,9 @@
 import type { Roadmap } from '@packages/antalmanac-types';
-import { useEffect, useState } from 'react';
+import { useQueryState } from 'nuqs';
+import { useEffect } from 'react';
 
-import RightPaneStore from '$components/RightPane/RightPaneStore';
 import trpc from '$lib/api/trpc';
+import { searchParsers } from '$lib/searchParams';
 import { getCurrentTerm } from '$lib/termData';
 import { useSessionStore } from '$stores/SessionStore';
 
@@ -54,20 +55,7 @@ export function usePlannerRoadmaps() {
     const setFilterTakenCourses = useSessionStore((s) => s.setFilterTakenCourses);
     const roadmaps = useSessionStore((s) => s.plannerRoadmaps);
     const setPlannerRoadmaps = useSessionStore((s) => s.setPlannerRoadmaps);
-    const [selectedRoadmapId, setSelectedRoadmapId] = useState(
-        () => RightPaneStore.getFormData().excludeRoadmapCourses
-    );
-
-    useEffect(() => {
-        const handleFormDataChange = () => {
-            setSelectedRoadmapId(RightPaneStore.getFormData().excludeRoadmapCourses);
-        };
-
-        RightPaneStore.on('formDataChange', handleFormDataChange);
-        return () => {
-            RightPaneStore.removeListener('formDataChange', handleFormDataChange);
-        };
-    }, []);
+    const [selectedRoadmapId] = useQueryState('excludeRoadmapCourses', searchParsers.excludeRoadmapCourses);
 
     useEffect(() => {
         let active = true;
