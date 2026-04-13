@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react';
 
-import { SectionTableSkeleton } from '$components/RightPane/AddedCourses/AddedCoursePane';
+import { SectionTableSkeleton } from '$components/RightPane/LoadingSkeleton';
 import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 
 // This should be in SectionTable.tsx, IMO

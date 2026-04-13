@@ -10,6 +10,7 @@ import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEven
 import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
 import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
 import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
+import { AddedCoursesLoadingSkeleton } from '$components/RightPane/LoadingSkeleton';
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
@@ -19,7 +20,6 @@ import { LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useTabStore } from '$stores/TabStore';
-
 /**
  * All the interactive buttons have the same styles.
  */
@@ -301,49 +301,6 @@ function SkeletonSchedule() {
             <Typography variant="body1">
                 Anteater API is currently unreachable. This is the information that we can currently retrieve.
             </Typography>
-        </Box>
-    );
-}
-
-const shimmerSx: SxProps = {
-    borderRadius: 1,
-    background: 'linear-gradient(90deg, #6d6d6d 0%, #7d7d7d 50%, #6d6d6d 100%)',
-    backgroundSize: '200% 100%',
-    animation: 'addedCoursesShimmer 2s ease-in-out infinite',
-    '@keyframes addedCoursesShimmer': {
-        '0%': { backgroundPosition: '200% 0' },
-        '100%': { backgroundPosition: '-200% 0' },
-    },
-};
-
-const SKELETON_COURSE_COUNT = 3;
-
-function CourseInfoBarSkeleton() {
-    return (
-        <Box sx={{ display: 'flex', gap: '4px', mb: 1, mt: 0.5 }}>
-            <Box sx={{ ...shimmerSx, width: 220, height: 32 }} />
-            <Box sx={{ ...shimmerSx, width: 80, height: 32 }} />
-            <Box sx={{ ...shimmerSx, width: 85, height: 32 }} />
-            <Box sx={{ ...shimmerSx, width: 120, height: 32 }} />
-        </Box>
-    );
-}
-
-export function SectionTableSkeleton() {
-    return (
-        <Box>
-            <CourseInfoBarSkeleton />
-            <Box sx={{ ...shimmerSx, width: '100%', height: 120, margin: '8px 0' }} />
-        </Box>
-    );
-}
-
-function AddedCoursesLoadingSkeleton() {
-    return (
-        <Box display="flex" flexDirection="column" gap={1}>
-            {Array.from({ length: SKELETON_COURSE_COUNT }).map((_, i) => (
-                <SectionTableSkeleton key={i} />
-            ))}
         </Box>
     );
 }
