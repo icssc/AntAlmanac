@@ -26,6 +26,7 @@ import AppStore from '$stores/AppStore';
 import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 
 /*
@@ -74,6 +75,7 @@ export const ScheduleCalendar = memo(() => {
     );
     const isDark = useThemeStore(useShallow((store) => store.isDark));
     const visibilityMap = useHiddenCoursesStore((state) => state.visibilityMap);
+    const selectedEvent = useSelectedEventStore((state) => state.selectedEvent);
 
     const { openLoadingSchedule: loadingSchedule } = scheduleComponentsToggleStore();
     const hasHadEventsRef = useRef(false);
@@ -216,6 +218,8 @@ export const ScheduleCalendar = memo(() => {
                     ? (visibilityMap[String(currentScheduleIndex)]?.[(event as CourseEvent).sectionCode] ?? 'visible')
                     : 'visible';
 
+            const isSelected = event === selectedEvent;
+
             const style =
                 visibility === 'outlined'
                     ? {
@@ -224,6 +228,7 @@ export const ScheduleCalendar = memo(() => {
                           borderRadius: '4px',
                           color: event.color,
                           cursor: 'pointer',
+                          ...(isSelected && { zIndex: 10 }),
                       }
                     : {
                           backgroundColor: event.color,
@@ -231,11 +236,12 @@ export const ScheduleCalendar = memo(() => {
                           border: '2px solid transparent',
                           borderRadius: '4px',
                           color: colorContrastSufficient(event.color) ? 'white' : 'black',
+                          ...(isSelected && { zIndex: 10 }),
                       };
 
             return isSkeletonEvent ? { style, className: 'calendar-loading-event' } : { style };
         },
-        [currentScheduleIndex, theme, visibilityMap]
+        [currentScheduleIndex, selectedEvent, theme, visibilityMap]
     );
 
     /**
