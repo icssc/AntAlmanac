@@ -31,7 +31,7 @@ const DEFAULT_SECTION_COUNT = 2;
 const DEFAULT_COURSE_COUNT = 3;
 
 function getTableHeight(sectionCount: number) {
-    return TABLE_HEADER_HEIGHT + sectionCount * SECTION_ROW_HEIGHT;
+    return sectionCount * SECTION_ROW_HEIGHT + TABLE_HEADER_HEIGHT;
 }
 
 export function SectionTableSkeleton({ sectionCount = DEFAULT_SECTION_COUNT }: { sectionCount?: number }) {
@@ -89,7 +89,10 @@ export function SectionTableSkeleton({ sectionCount = DEFAULT_SECTION_COUNT }: {
 function getBlueprint(): AddedCourseSkeletonEntry[] | null {
     try {
         const raw = getLocalStorageAddedCoursesSkeletonBlueprint();
-        if (!raw) return null;
+        if (!raw) {
+            return null;
+        }
+
         const parsed = JSON.parse(raw);
         if (Array.isArray(parsed) && parsed.length > 0) {
             return parsed;
@@ -97,6 +100,7 @@ function getBlueprint(): AddedCourseSkeletonEntry[] | null {
     } catch {
         // ignore malformed data
     }
+
     return null;
 }
 
