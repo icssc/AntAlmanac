@@ -39,6 +39,7 @@ export interface CourseWithTerm extends AACourse {
     term: string;
 }
 
+const useIsLoadingSchedule = () => scheduleComponentsToggleStore((state) => state.openLoadingSchedule);
 const NOTE_MAX_LEN = 5000;
 
 function getCourses() {
@@ -304,10 +305,54 @@ function SkeletonSchedule() {
     );
 }
 
+const shimmerSx: SxProps = {
+    borderRadius: 1,
+    background: 'linear-gradient(90deg, #6d6d6d 0%, #7d7d7d 50%, #6d6d6d 100%)',
+    backgroundSize: '200% 100%',
+    animation: 'addedCoursesShimmer 2s ease-in-out infinite',
+    '@keyframes addedCoursesShimmer': {
+        '0%': { backgroundPosition: '200% 0' },
+        '100%': { backgroundPosition: '-200% 0' },
+    },
+};
+
+const SKELETON_COURSE_COUNT = 3;
+
+function CourseInfoBarSkeleton() {
+    return (
+        <Box sx={{ display: 'flex', gap: '4px', mb: 1, mt: 0.5 }}>
+            <Box sx={{ ...shimmerSx, width: 220, height: 32 }} />
+            <Box sx={{ ...shimmerSx, width: 80, height: 32 }} />
+            <Box sx={{ ...shimmerSx, width: 85, height: 32 }} />
+            <Box sx={{ ...shimmerSx, width: 120, height: 32 }} />
+        </Box>
+    );
+}
+
+function SectionTableSkeleton() {
+    return (
+        <Box>
+            <CourseInfoBarSkeleton />
+            <Box sx={{ ...shimmerSx, width: '100%', height: 120, margin: '8px 0' }} />
+        </Box>
+    );
+}
+
+function AddedCoursesLoadingSkeleton() {
+    return (
+        <Box display="flex" flexDirection="column" gap={1}>
+            {Array.from({ length: SKELETON_COURSE_COUNT }).map((_, i) => (
+                <SectionTableSkeleton key={i} />
+            ))}
+        </Box>
+    );
+}
+
 function AddedSectionsGrid() {
     const [courses, setCourses] = useState(getCourses());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+    const loadingSchedule = useIsLoadingSchedule();
 
     useEffect(() => {
         const handleCoursesChange = () => {
@@ -363,7 +408,7 @@ function AddedSectionsGrid() {
             </Box>
             <Box sx={{ marginTop: 7 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
-                {courses.length === 0 && (
+                {courses.length === 0 && !loadingSchedule && (
                     <EmptyState
                         Icon={MenuBook}
                         title="No Courses Added Yet"
@@ -379,6 +424,7 @@ function AddedSectionsGrid() {
                     />
                 )}
                 <Box display="flex" flexDirection="column" gap={1}>
+                    {loadingSchedule && <AddedCoursesLoadingSkeleton />}
                     {courses.map((course) => {
                         const missingSections = getMissingSections(course);
 
