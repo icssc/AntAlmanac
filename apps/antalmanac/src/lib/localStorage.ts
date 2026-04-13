@@ -21,6 +21,7 @@ enum LocalStorageKeys {
     fromLoading = 'fromLoading',
     tempSaveData = 'tempSaveData',
     skeletonBlueprint = 'skeletonBlueprint',
+    addedCoursesSkeletonBlueprint = 'addedCoursesSkeletonBlueprint',
 }
 
 const LSK = LocalStorageKeys;
@@ -280,4 +281,16 @@ export function getLocalStorageSkeletonBlueprint() {
 
 export function removeLocalStorageSkeletonBlueprint() {
     window.localStorage.removeItem(LSK.skeletonBlueprint);
+}
+
+export function setLocalStorageAddedCoursesSkeletonBlueprint(value: string) {
+    window.localStorage.setItem(LSK.addedCoursesSkeletonBlueprint, value);
+}
+
+export function getLocalStorageAddedCoursesSkeletonBlueprint() {
+    return window.localStorage.getItem(LSK.addedCoursesSkeletonBlueprint);
+}
+
+export function removeLocalStorageAddedCoursesSkeletonBlueprint() {
+    window.localStorage.removeItem(LSK.addedCoursesSkeletonBlueprint);
 }

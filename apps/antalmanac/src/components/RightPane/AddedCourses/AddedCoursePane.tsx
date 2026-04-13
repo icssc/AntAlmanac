@@ -10,16 +10,20 @@ import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEven
 import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
 import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
 import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
+import { AddedCoursesLoadingSkeleton } from '$components/RightPane/LoadingSkeleton';
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
+import {
+    removeLocalStorageAddedCoursesSkeletonBlueprint,
+    setLocalStorageAddedCoursesSkeletonBlueprint,
+} from '$lib/localStorage';
 import { LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useTabStore } from '$stores/TabStore';
-
 /**
  * All the interactive buttons have the same styles.
  */
@@ -39,6 +43,7 @@ export interface CourseWithTerm extends AACourse {
     term: string;
 }
 
+const useIsLoadingSchedule = () => scheduleComponentsToggleStore((state) => state.openLoadingSchedule);
 const NOTE_MAX_LEN = 5000;
 
 function getCourses() {
@@ -308,6 +313,7 @@ function AddedSectionsGrid() {
     const [courses, setCourses] = useState(getCourses());
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+    const loadingSchedule = useIsLoadingSchedule();
 
     useEffect(() => {
         const handleCoursesChange = () => {
@@ -334,6 +340,17 @@ function AddedSectionsGrid() {
             AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
         };
     }, []);
+
+    useEffect(() => {
+        if (loadingSchedule) return;
+
+        if (courses.length > 0) {
+            const blueprint = courses.map((course) => ({ sectionCount: course.sections.length }));
+            setLocalStorageAddedCoursesSkeletonBlueprint(JSON.stringify(blueprint));
+        } else {
+            removeLocalStorageAddedCoursesSkeletonBlueprint();
+        }
+    }, [courses, loadingSchedule]);
 
     const scheduleUnits = useMemo(() => {
         let result = 0;
@@ -363,7 +380,7 @@ function AddedSectionsGrid() {
             </Box>
             <Box sx={{ marginTop: 7 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
-                {courses.length === 0 && (
+                {courses.length === 0 && !loadingSchedule && (
                     <EmptyState
                         Icon={MenuBook}
                         title="No Courses Added Yet"
@@ -379,6 +396,7 @@ function AddedSectionsGrid() {
                     />
                 )}
                 <Box display="flex" flexDirection="column" gap={1}>
+                    {loadingSchedule && <AddedCoursesLoadingSkeleton />}
                     {courses.map((course) => {
                         const missingSections = getMissingSections(course);
 
