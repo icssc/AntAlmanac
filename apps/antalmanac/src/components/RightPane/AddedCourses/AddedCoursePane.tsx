@@ -16,6 +16,10 @@ import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
+import {
+    removeLocalStorageAddedCoursesSkeletonBlueprint,
+    setLocalStorageAddedCoursesSkeletonBlueprint,
+} from '$lib/localStorage';
 import { LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -336,6 +340,17 @@ function AddedSectionsGrid() {
             AppStore.off('currentScheduleIndexChange', handleScheduleIndexChange);
         };
     }, []);
+
+    useEffect(() => {
+        if (loadingSchedule) return;
+
+        if (courses.length > 0) {
+            const blueprint = courses.map((course) => ({ sectionCount: course.sections.length }));
+            setLocalStorageAddedCoursesSkeletonBlueprint(JSON.stringify(blueprint));
+        } else {
+            removeLocalStorageAddedCoursesSkeletonBlueprint();
+        }
+    }, [courses, loadingSchedule]);
 
     const scheduleUnits = useMemo(() => {
         let result = 0;

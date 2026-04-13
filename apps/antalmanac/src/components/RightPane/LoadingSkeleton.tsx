@@ -1,5 +1,11 @@
 import { Box, Button, SxProps } from '@mui/material';
 
+import { getLocalStorageAddedCoursesSkeletonBlueprint } from '$lib/localStorage';
+
+export interface AddedCourseSkeletonEntry {
+    sectionCount: number;
+}
+
 const shimmerSx: SxProps = {
     borderRadius: 1,
     background: 'linear-gradient(90deg, #6d6d6d 0%, #7d7d7d 50%, #6d6d6d 100%)',
@@ -19,9 +25,16 @@ const skeletonButtonSx: SxProps = {
     '&:hover': { boxShadow: 'none' },
 };
 
-const SKELETON_COURSE_COUNT = 3;
+const SECTION_ROW_HEIGHT = 33;
+const TABLE_HEADER_HEIGHT = 33;
+const DEFAULT_SECTION_COUNT = 2;
+const DEFAULT_COURSE_COUNT = 3;
 
-export function SectionTableSkeleton() {
+function getTableHeight(sectionCount: number) {
+    return TABLE_HEADER_HEIGHT + sectionCount * SECTION_ROW_HEIGHT;
+}
+
+export function SectionTableSkeleton({ sectionCount = DEFAULT_SECTION_COUNT }: { sectionCount?: number }) {
     return (
         <Box>
             <Box sx={{ display: 'flex', gap: '4px', mb: 1, mt: 0.5 }}>
@@ -68,15 +81,41 @@ export function SectionTableSkeleton() {
                 </Button>
             </Box>
 
-            <Box sx={{ ...shimmerSx, width: '100%', height: 60, margin: '8px 0' }} />
+            <Box sx={{ ...shimmerSx, width: '100%', height: getTableHeight(sectionCount), margin: '8px 0' }} />
         </Box>
     );
 }
 
+function getBlueprint(): AddedCourseSkeletonEntry[] | null {
+    try {
+        const raw = getLocalStorageAddedCoursesSkeletonBlueprint();
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+        }
+    } catch {
+        // ignore malformed data
+    }
+    return null;
+}
+
 export function AddedCoursesLoadingSkeleton() {
+    const blueprint = getBlueprint();
+
+    if (blueprint) {
+        return (
+            <Box display="flex" flexDirection="column" gap={1}>
+                {blueprint.map((entry, i) => (
+                    <SectionTableSkeleton key={i} sectionCount={entry.sectionCount} />
+                ))}
+            </Box>
+        );
+    }
+
     return (
         <Box display="flex" flexDirection="column" gap={1}>
-            {Array.from({ length: SKELETON_COURSE_COUNT }).map((_, i) => (
+            {Array.from({ length: DEFAULT_COURSE_COUNT }).map((_, i) => (
                 <SectionTableSkeleton key={i} />
             ))}
         </Box>
