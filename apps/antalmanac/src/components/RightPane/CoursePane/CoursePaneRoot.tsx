@@ -65,18 +65,16 @@ export function CoursePaneRoot() {
         };
     }, [handleKeydown]);
 
+    const showResults = !searchFormIsDisplayed && formDataIsValid(formData);
+
     return (
         <Box sx={{ height: 0, flexGrow: 1 }}>
             <CoursePaneButtonRow
-                showSearch={!searchFormIsDisplayed}
+                showSearch={showResults}
                 onDismissSearchResults={handleDisplaySearch}
                 onRefreshSearch={refreshSearch}
             />
-            {searchFormIsDisplayed ? (
-                <SearchForm toggleSearch={handleSearch} />
-            ) : (
-                <CourseRenderPane key={key} id={key} />
-            )}
+            {showResults ? <CourseRenderPane key={key} id={key} /> : <SearchForm toggleSearch={handleSearch} />}
         </Box>
     );
 }
