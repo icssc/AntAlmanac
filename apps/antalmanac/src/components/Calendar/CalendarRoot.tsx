@@ -219,7 +219,7 @@ export const ScheduleCalendar = memo(() => {
             const style =
                 visibility === 'outlined'
                     ? {
-                          backgroundColor: 'transparent',
+                          backgroundColor: theme.palette.background.paper,
                           border: `2px solid ${event.color}`,
                           borderRadius: '4px',
                           color: event.color,
@@ -235,7 +235,7 @@ export const ScheduleCalendar = memo(() => {
 
             return isSkeletonEvent ? { style, className: 'calendar-loading-event' } : { style };
         },
-        [currentScheduleIndex, visibilityMap]
+        [currentScheduleIndex, theme, visibilityMap]
     );
 
     /**
