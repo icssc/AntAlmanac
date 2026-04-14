@@ -1,6 +1,6 @@
 import { db } from '@packages/db/src/index';
 import * as schema from '@packages/db/src/schema';
-import { accounts, Session, sessions, users } from '@packages/db/src/schema';
+import { Session, sessions } from '@packages/db/src/schema';
 import { and, eq, ExtractTablesWithRelations } from 'drizzle-orm';
 import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
@@ -81,20 +81,5 @@ export class SessionsRDS {
             if (currentSession) return currentSession;
             return await SessionsRDS.createSession(tx, userId);
         });
-    }
-
-    static async getUserAndAccountBySessionToken(db: DatabaseOrTransaction, refreshToken: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(sessions)
-                .innerJoin(users, eq(sessions.userId, users.id))
-                .innerJoin(accounts, eq(users.id, accounts.userId))
-                .where(eq(sessions.refreshToken, refreshToken))
-                .execute()
-                .then((res) => {
-                    return { users: res[0].users, accounts: res[0].accounts };
-                })
-        );
     }
 }

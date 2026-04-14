@@ -64,7 +64,7 @@ export class SchedulesRDS {
     static async upsertUserData(db: DatabaseOrTransaction, userData: User): Promise<string> {
         return db.transaction(async (tx) => {
             const account = await AccountsRDS.registerUserAccount(
-                db,
+                tx,
                 'OIDC',
                 userData.id,
                 userData.name,

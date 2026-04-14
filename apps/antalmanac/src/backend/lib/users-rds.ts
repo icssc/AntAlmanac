@@ -99,7 +99,7 @@ export class UsersRDS {
             .from(users)
             .leftJoin(sessions, eq(users.id, sessions.userId))
             .where(and(eq(sessions.refreshToken, refreshToken), gt(sessions.expires, new Date())))
-            .then((res) => res[0].users);
+            .then((res) => res[0]?.users ?? null);
     }
 
     /**

@@ -1,8 +1,8 @@
 import { User, Notification } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import * as schema from '@packages/db/src/schema';
-import { accounts, Account, Session } from '@packages/db/src/schema';
-import { eq, ExtractTablesWithRelations } from 'drizzle-orm';
+import { Account, Session } from '@packages/db/src/schema';
+import { ExtractTablesWithRelations } from 'drizzle-orm';
 import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 import { AccountsRDS } from './accounts-rds';
@@ -35,22 +35,8 @@ export class RDS {
         return UsersRDS.getUserByEmail(db, email);
     }
 
-    /**
-     * Retrieves a google ID by their user ID from the database.
-     *
-     * @param db - The database to use for the query.
-     * @param userId - The ID of the user to retrieve.
-     * @returns The google ID if found, otherwise null.
-     */
     static async getGoogleIdByUserId(db: DatabaseOrTransaction, userId: string): Promise<string | null> {
-        return db.transaction((tx) =>
-            tx
-                .select({ providerAccountId: accounts.providerAccountId })
-                .from(accounts)
-                .where(eq(accounts.userId, userId))
-                .limit(1)
-                .then((res) => (res.length > 0 ? res[0].providerAccountId : null))
-        );
+        return AccountsRDS.getGoogleIdByUserId(db, userId);
     }
 
     static async registerUserAccount(
