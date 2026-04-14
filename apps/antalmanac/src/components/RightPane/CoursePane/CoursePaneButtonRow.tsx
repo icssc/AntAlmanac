@@ -16,6 +16,7 @@ import { usePostHog } from 'posthog-js/react';
 import { useCallback, useMemo, useState } from 'react';
 
 import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
+import { SearchFilter } from '$components/RightPane/SectionTable/SearchFilter';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 
@@ -180,6 +181,7 @@ export function CoursePaneButtonRow(props: CoursePaneButtonRowProps) {
 
             <ColumnToggleDropdown />
             <NotificationsDialog buttonSx={buttonSx} />
+            <SearchFilter />
         </Box>
     );
 }
