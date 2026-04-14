@@ -5,13 +5,13 @@ import { TableBodyCellContainer } from '$components/RightPane/SectionTable/Secti
 
 const SECTION_STATUS_COLORS: Partial<Record<WebsocSectionStatus, SxProps<Theme>>> = {
     OPEN: {
-        color: '#00c853',
+        color: (theme) => theme.palette.enrollmentStatus.open,
     },
     Waitl: {
-        color: (theme) => (theme.palette.mode === 'dark' ? '#f5c518' : '#ff9800'),
+        color: (theme) => theme.palette.enrollmentStatus.waitlist,
     },
     FULL: {
-        color: '#e53935',
+        color: (theme) => theme.palette.enrollmentStatus.full,
     },
 };
 
