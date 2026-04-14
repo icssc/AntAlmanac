@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 
-import trpc from '$lib/api/trpc';
+import { signIn } from '$lib/auth/authActions';
+import { authClient } from '$lib/auth/authClient';
 import { hasSsoCookie } from '$lib/ssoCookie';
 import { useSessionStore } from '$stores/SessionStore';
 
@@ -15,39 +16,28 @@ import { useSessionStore } from '$stores/SessionStore';
 export function AutoSignIn() {
     const hasChecked = useRef(false);
     const sessionId = useSessionStore((state) => state.sessionId);
+    const { isPending } = authClient.useSession();
 
     useEffect(() => {
-        if (hasChecked.current) {
+        if (hasChecked.current || isPending) {
             return;
         }
         hasChecked.current = true;
 
         const checkAndSignIn = async () => {
-            // Don't interfere when AuthPage is already handling an OAuth callback.
-            // Calling getGoogleAuthUrl here would overwrite the oauth_state /
-            // oauth_code_verifier cookies that AuthPage needs to finish the exchange.
-            if (window.location.pathname === '/auth') {
-                return;
-            }
-
-            if (!hasSsoCookie()) {
-                return;
-            }
-
-            if (sessionId) {
+            if (!hasSsoCookie() || sessionId) {
                 return;
             }
 
             try {
-                const authUrl = await trpc.userData.getGoogleAuthUrl.query({ prompt: 'none' });
-                window.location.href = authUrl.toString();
+                signIn();
             } catch {
                 // Silent SSO failed (e.g. backend unavailable). Don't retry.
             }
         };
 
         checkAndSignIn();
-    }, []);
+    }, [isPending, sessionId]);
 
     return null;
 }
