@@ -25,6 +25,7 @@ import type {
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
 import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
@@ -326,6 +327,7 @@ class AppStore extends EventEmitter {
 
     reorderSchedule(from: number, to: number) {
         this.schedule.reorderSchedule(from, to);
+        useHiddenCoursesStore.getState().remapAfterReorder(from, to);
         this.unsavedChanges = true;
         const action: ReorderScheduleAction = {
             type: 'reorderSchedule',
@@ -408,6 +410,7 @@ class AppStore extends EventEmitter {
 
     deleteSchedule(scheduleIndex: number) {
         this.schedule.deleteSchedule(scheduleIndex);
+        useHiddenCoursesStore.getState().remapAfterDelete(scheduleIndex);
         this.unsavedChanges = true;
         const action: DeleteScheduleAction = {
             type: 'deleteSchedule',

@@ -15,6 +15,8 @@ interface HiddenCoursesStore {
     visibilityMap: VisibilityMap;
     getVisibility: (scheduleIndex: number, sectionCode: string) => VisibilityState;
     cycleVisibility: (scheduleIndex: number, sectionCode: string) => void;
+    remapAfterDelete: (deletedIndex: number) => void;
+    remapAfterReorder: (from: number, to: number) => void;
 }
 
 function loadFromStorage(): VisibilityMap {
@@ -55,6 +57,42 @@ export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
             newMap[key] = scheduleMap;
         }
 
+        setLocalStorageHiddenCourses(JSON.stringify(newMap));
+        set({ visibilityMap: newMap });
+    },
+
+    remapAfterDelete: (deletedIndex) => {
+        const current = get().visibilityMap;
+        const newMap: VisibilityMap = {};
+        for (const key of Object.keys(current)) {
+            const i = Number(key);
+            if (i === deletedIndex) continue;
+            if (i > deletedIndex) {
+                newMap[String(i - 1)] = current[key];
+            } else {
+                newMap[key] = current[key];
+            }
+        }
+        setLocalStorageHiddenCourses(JSON.stringify(newMap));
+        set({ visibilityMap: newMap });
+    },
+
+    remapAfterReorder: (from, to) => {
+        const current = get().visibilityMap;
+        const newMap: VisibilityMap = {};
+        const min = Math.min(from, to);
+        const max = Math.max(from, to);
+        for (const key of Object.keys(current)) {
+            const i = Number(key);
+            if (i < min || i > max) {
+                newMap[key] = current[key];
+            } else if (i === from) {
+                newMap[String(to)] = current[key];
+            } else {
+                const shift = from < to ? -1 : 1;
+                newMap[String(i + shift)] = current[key];
+            }
+        }
         setLocalStorageHiddenCourses(JSON.stringify(newMap));
         set({ visibilityMap: newMap });
     },
