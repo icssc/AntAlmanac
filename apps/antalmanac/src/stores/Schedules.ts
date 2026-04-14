@@ -8,6 +8,7 @@ import type {
     CourseInfo,
     CustomEventId,
 } from '@packages/antalmanac-types';
+import { createId } from '@paralleldrive/cuid2';
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
 
@@ -45,6 +46,7 @@ export class Schedules {
                 courses: [],
                 customEvents: [],
                 scheduleNoteId: scheduleNoteId,
+                scheduleId: createId(),
             },
         ];
         this.currentScheduleIndex = 0;
@@ -116,6 +118,7 @@ export class Schedules {
             courses: [],
             customEvents: [],
             scheduleNoteId: scheduleNoteId,
+            scheduleId: createId(),
         });
         // Setting schedule index manually otherwise 2 undo states are added
         this.currentScheduleIndex = this.getNumberOfSchedules() - 1;
@@ -553,6 +556,7 @@ export class Schedules {
     getScheduleAsSaveState(): ScheduleSaveState {
         const shortSchedules: ShortCourseSchedule[] = this.schedules.map((schedule) => {
             return {
+                id: schedule.scheduleId,
                 scheduleName: schedule.scheduleName,
                 customEvents: schedule.customEvents,
                 courses: schedule.courses.map((course) => {
@@ -566,6 +570,24 @@ export class Schedules {
             };
         });
         return { schedules: shortSchedules, scheduleIndex: this.currentScheduleIndex };
+    }
+
+    /**
+     * Updates the persistent DB schedule IDs in the store after a successful save.
+     * This ensures subsequent saves can update in-place rather than re-inserting.
+     *
+     * Keyed by frontend CUID (the id each schedule had when the save request was
+     * sent) rather than by array position. Position-based mapping is unsafe because
+     * the user may have reordered or added a schedule while the request was
+     * in-flight, which would write the returned DB IDs to the wrong slots.
+     */
+    updateScheduleIds(scheduleIdMap: Record<string, string>) {
+        for (const schedule of this.schedules) {
+            const dbId = scheduleIdMap[schedule.scheduleId];
+            if (dbId !== undefined) {
+                schedule.scheduleId = dbId;
+            }
+        }
     }
 
     /**
@@ -640,6 +662,7 @@ export class Schedules {
                     courses: groupedCourses,
                     customEvents: shortCourseSchedule.customEvents,
                     scheduleNoteId: scheduleNoteId,
+                    scheduleId: shortCourseSchedule.id ?? createId(),
                 });
             }
         } catch (e) {

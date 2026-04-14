@@ -15,6 +15,7 @@
         "@aws-sdk/client-sesv2": "^3.750.0",
         "@aws-sdk/client-sqs": "^3.750.0",
         "@packages/anteater-api-types": "workspace:*",
+        "@packages/db": "workspace:*",
         "@react-email/components": "^1.0.8",
         "@react-email/render": "^2.0.4",
         "@trpc/server": "^10.30.0",
