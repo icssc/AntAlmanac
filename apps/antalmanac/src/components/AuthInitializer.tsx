@@ -34,6 +34,7 @@ const AuthInitializer = () => {
             return;
         }
 
+        // ! FIXME
         const isNewUser = false;
 
         const fromLoading = getLocalStorageFromLoading();
