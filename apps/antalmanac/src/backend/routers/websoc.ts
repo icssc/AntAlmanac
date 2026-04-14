@@ -1,14 +1,17 @@
 import type {
     WebsocAPIResponse,
+    WebsocAPIResult,
+    WebsocDepartmentsAPIResult,
     CourseInfo,
     WebsocCourse,
     WebsocSectionType,
-    WebsocAPIDepartmentsResponse,
 } from '@packages/antalmanac-types';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
+
+import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
 
 const DEPARTMENT_YEAR_RANGE = 10;
 
@@ -73,33 +76,31 @@ const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
     const url = `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`;
     console.log('queryWebSoc', url);
 
-    const response = await fetch(url, {
-        headers: {
-            ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
-        },
-    });
-    const data = await response.json();
+    const data = await fetchAnteaterAPI<WebsocAPIResult>(url, { errorType: 'trpc' });
     console.log('queryWebSoc', data);
-    return sortWebsocResponse(data.data as WebsocAPIResponse);
+
+    if (!data?.data) {
+        throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Anteater API returned an unexpected response shape',
+        });
+    }
+    return sortWebsocResponse(data.data);
 };
 
 const queryWebSocDepartments = async () => {
     const minYear = new Date().getFullYear() - DEPARTMENT_YEAR_RANGE;
     const url = `https://anteaterapi.com/v2/rest/websoc/departments?since=${minYear}`;
 
-    const response = await fetch(url, {
-        headers: {
-            ...(process.env.ANTEATER_API_KEY && { Authorization: `Bearer ${process.env.ANTEATER_API_KEY}` }),
-        },
-    });
-    const data = await response.json();
-    if (!data || !data.data) {
+    const data = await fetchAnteaterAPI<WebsocDepartmentsAPIResult>(url, { errorType: 'trpc' });
+
+    if (!data?.data) {
         throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Departments API returned no data',
         });
     }
-    return data.data as WebsocAPIDepartmentsResponse;
+    return data.data;
 };
 
 function combineWebsocResponses(responses: WebsocAPIResponse[]) {

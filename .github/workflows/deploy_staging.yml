@@ -21,6 +21,7 @@ env:
     OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
     GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
     NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY }}
+    PLANNER_CLIENT_API_KEY: ${{ secrets.PLANNER_CLIENT_API_KEY }}
 
 jobs:
     deploy-staging:
@@ -70,12 +71,6 @@ jobs:
               uses: ./.github/actions/cache-generated-data
               with:
                 api-key: ${{ secrets.ANTEATER_API_KEY }}
-
-            # TODO (@xgraceyan): Remove this stage once SST fixes deployments
-            - name: Setup Pulumi
-              uses: pulumi/actions@v5
-              with:
-                  pulumi-version: 3.138.0 # Any version < 3.214.0 works
 
             - name: Deploy SST (staging)
               id: deploy

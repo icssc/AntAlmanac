@@ -67,6 +67,14 @@ function getFinalsStartDateForTerm(term: string) {
     return new Date(termThatMatches.finalsStartDate);
 }
 
+function getCurrentTerm(): { year: number; quarter: string } {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth() + 1;
+    const quarter = month <= 3 ? 'Winter' : month <= 6 ? 'Spring' : month <= 9 ? 'Summer' : 'Fall';
+    return { year, quarter };
+}
+
 /**
  * Enrollment can change until the drop deadline, i.e. when enrollment closes.
  * For full terms (10-week quarters), enrollment closes on the Friday of Week 2.
@@ -115,4 +123,4 @@ function isTermEnrollmentOpen(term: Term): boolean {
     return moment() <= instructionStartDate.add(weeksUntilDropDeadline, 'week').day(5);
 }
 
-export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStartDate, getFinalsStartDateForTerm };
+export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStartDate, getFinalsStartDateForTerm, getCurrentTerm };

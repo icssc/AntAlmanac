@@ -9,7 +9,7 @@ import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { DODGER_BLUE } from '$src/globals';
+import { LIGHT_BLUE } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
@@ -50,14 +50,14 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                     <ToggleButtonGroup
                         fullWidth
                         size="medium"
-                        color="primary"
+                        color="secondary"
                         value={manualSearchEnabled ? 'manual' : 'quick'}
                         exclusive
                         aria-label="Search selection"
                         sx={{
                             paddingTop: 1,
                             '& .MuiToggleButton-root.Mui-selected': {
-                                backgroundColor: isDark ? alpha(DODGER_BLUE, 0.05) : undefined,
+                                backgroundColor: isDark ? alpha(LIGHT_BLUE, 0.05) : undefined,
                             },
                         }}
                         onChange={toggleSearchMode}
