@@ -868,19 +868,36 @@ export class RDS {
     /**
      * Returns all accepted friends for the given user as an array of user objects (id, name, email).
      */
-    static async getFriends(db: DatabaseOrTransaction, userId: string) {
-        const sent = await db
+    /**
+     * Returns accepted friends where the given user sent the request.
+     */
+    static async getFriendshipsSent(db: DatabaseOrTransaction, userId: string) {
+        return db
             .select({ id: users.id, name: users.name, email: users.email })
             .from(friendships)
             .innerJoin(users, eq(friendships.addresseeId, users.id))
             .where(and(eq(friendships.requesterId, userId), eq(friendships.status, 'ACCEPTED')));
+    }
 
-        const received = await db
+    /**
+     * Returns accepted friends where the given user received the request.
+     */
+    static async getFriendshipsReceived(db: DatabaseOrTransaction, userId: string) {
+        return db
             .select({ id: users.id, name: users.name, email: users.email })
             .from(friendships)
             .innerJoin(users, eq(friendships.requesterId, users.id))
             .where(and(eq(friendships.addresseeId, userId), eq(friendships.status, 'ACCEPTED')));
+    }
 
+    /**
+     * Returns all accepted friends for the given user as an array of user objects (id, name, email).
+     */
+    static async getFriends(db: DatabaseOrTransaction, userId: string) {
+        const [sent, received] = await Promise.all([
+            this.getFriendshipsSent(db, userId),
+            this.getFriendshipsReceived(db, userId),
+        ]);
         return [...sent, ...received];
     }
 
