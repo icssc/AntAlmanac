@@ -79,6 +79,64 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
     }, []);
 };
 
+const getCourseKey = (deptCode: string, courseNumber: string) => `${deptCode}::${courseNumber}`.replace(/\s+/g, '');
+const getSelectedGEs = (ge: string) => {
+    if (!ge || ge === 'ANY') return [];
+    return ge.split(',').filter(Boolean);
+};
+const getResponseCourseKeys = (response: WebsocAPIResponse) =>
+    new Set(
+        response.schools.flatMap((school) =>
+            school.departments.flatMap((department) =>
+                department.courses.map((course) => getCourseKey(course.deptCode, course.courseNumber))
+            )
+        )
+    );
+
+const queryManualSearchCourses = async (params: Record<string, string>) => {
+    const selectedGEs = getSelectedGEs(params.ge);
+    const queryWebsoc = (queryParams: Record<string, string>) => {
+        return queryParams.units.includes(',') ? WebSOC.queryMultiple(queryParams, 'units') : WebSOC.query(queryParams);
+    };
+
+    if (selectedGEs.length <= 1) {
+        return queryWebsoc(params);
+    }
+
+    const responses = await Promise.all(
+        selectedGEs.map((ge) =>
+            queryWebsoc({
+                ...params,
+                ge,
+            })
+        )
+    );
+
+    const [firstResponse, ...restResponses] = responses;
+    let sharedCourseKeys = getResponseCourseKeys(firstResponse);
+    for (const response of restResponses) {
+        const keys = getResponseCourseKeys(response);
+        sharedCourseKeys = new Set([...sharedCourseKeys].filter((key) => keys.has(key)));
+    }
+
+    return {
+        ...firstResponse,
+        schools: firstResponse.schools
+            .map((school) => ({
+                ...school,
+                departments: school.departments
+                    .map((department) => ({
+                        ...department,
+                        courses: department.courses.filter((course) =>
+                            sharedCourseKeys.has(getCourseKey(course.deptCode, course.courseNumber))
+                        ),
+                    }))
+                    .filter((department) => department.courses.length > 0),
+            }))
+            .filter((school) => school.departments.length > 0),
+    };
+};
+
 function getFilteredCourses(
     allCourses: (WebsocSchool | WebsocDepartment | AACourse)[]
 ): (WebsocSchool | WebsocDepartment | AACourse)[] {
@@ -296,17 +354,15 @@ export default function CourseRenderPane(props: { id?: number }) {
 
         const gradesQueryParams = {
             department: formData.deptValue,
-            ge: formData.ge as GE,
+            ge: formData.ge !== 'ANY' && !formData.ge.includes(',') ? (formData.ge as GE) : ('ANY' as GE),
             instructor: formData.instructor,
             sectionCode: formData.sectionCode,
         };
 
         try {
             // Query websoc for course information and populate gradescache
-            const [websocJsonResp, _] = await Promise.all([
-                websocQueryParams.units.includes(',')
-                    ? WebSOC.queryMultiple(websocQueryParams, 'units')
-                    : WebSOC.query(websocQueryParams),
+            const [websocJsonResp] = await Promise.all([
+                queryManualSearchCourses(websocQueryParams),
                 // Catch the error here so that the course pane still loads even if the grades cache fails to populate
                 Grades.populateGradesCache(gradesQueryParams).catch((error) => {
                     console.error(error);

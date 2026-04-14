@@ -1,4 +1,4 @@
-import { MenuItem, type SelectChangeEvent } from '@mui/material';
+import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
 import { useEffect, useCallback, useState } from 'react';
 
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
@@ -18,14 +18,21 @@ const GE_LIST = [
     { value: 'GE-8', label: 'GE VIII (8): International/Global Issues' },
 ] as const;
 
+const ANY_GE = GE_LIST[0].value;
+const getLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.label ?? value;
+
 export function GeSelector() {
     const [ge, setGe] = useState(() => RightPaneStore.getFormData().ge);
+    const selectedGEs = ge && ge !== ANY_GE ? ge.split(',').filter(Boolean) : [];
 
-    const handleChange = (event: SelectChangeEvent<string>) => {
+    const handleChange = (event: SelectChangeEvent<string[]>) => {
         const value = event.target.value;
+        const values = (typeof value === 'string' ? value.split(',') : value).filter(Boolean);
+        const selectedValues = values.includes(ANY_GE) ? [] : values.filter((currentValue) => currentValue !== ANY_GE);
+        const searchValue = selectedValues.length === 0 ? ANY_GE : selectedValues.join(',');
 
-        setGe(value);
-        RightPaneStore.updateFormValue('ge', value);
+        setGe(searchValue);
+        RightPaneStore.updateFormValue('ge', searchValue);
 
         const stateObj = { url: 'url' };
         const url = new URL(window.location.href);
@@ -33,8 +40,8 @@ export function GeSelector() {
 
         urlParam.delete('ge');
 
-        if (value !== 'ANY') {
-            urlParam.append('ge', value);
+        if (searchValue !== ANY_GE) {
+            urlParam.append('ge', searchValue);
         }
 
         const param = urlParam.toString();
@@ -58,8 +65,16 @@ export function GeSelector() {
         <LabeledSelect
             label="General Education"
             selectProps={{
-                value: ge,
+                multiple: true,
+                displayEmpty: true,
+                value: selectedGEs,
                 onChange: handleChange,
+                renderValue: (selected) => {
+                    const values = selected as string[];
+                    if (values.length === 0) return getLabel(ANY_GE);
+                    if (values.length === 1) return getLabel(values[0]);
+                    return values.map((value) => getLabel(value).split(':')[0].trim()).join(' + ');
+                },
                 sx: {
                     width: '100%',
                 },
@@ -67,9 +82,13 @@ export function GeSelector() {
             isAligned={true}
         >
             {GE_LIST.map((category) => {
+                const isChecked =
+                    category.value === ANY_GE ? selectedGEs.length === 0 : selectedGEs.includes(category.value);
+
                 return (
-                    <MenuItem key={category.value} value={category.value}>
-                        {category.label}
+                    <MenuItem key={category.value} value={category.value} sx={{ paddingY: 0.25 }}>
+                        <Checkbox checked={isChecked} size="small" />
+                        <ListItemText primary={category.label} />
                     </MenuItem>
                 );
             })}
