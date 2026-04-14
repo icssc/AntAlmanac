@@ -12,7 +12,7 @@ export const authClient = createAuthClient({
 export type SessionData = typeof authClient.$Infer.Session;
 
 export async function signOut(onLogoutComplete?: () => void) {
-    const sessionId = useSessionStore.getState().session;
+    const sessionId = useSessionStore.getState().sessionId;
     if (!sessionId) {
         await useSessionStore.getState().clearSession();
         onLogoutComplete?.();

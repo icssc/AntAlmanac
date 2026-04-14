@@ -22,7 +22,7 @@ export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
     const importedUser = getLocalStorageImportedUser() ?? '';
-    const { session, sessionIsValid } = useSessionStore();
+    const { sessionId, sessionIsValid } = useSessionStore();
     const isMobile = useIsMobile();
 
     const clearStorage = () => {
@@ -47,13 +47,13 @@ export function Header() {
     useEffect(() => {
         const dataCache = getLocalStorageDataCache() ?? '';
 
-        if (importedUser !== '' && session) {
+        if (importedUser !== '' && sessionId) {
             setOpenSuccessfulSaved(true);
-        } else if (dataCache !== '' && session) {
+        } else if (dataCache !== '' && sessionId) {
             openSnackbar('success', `Unsaved changes have been saved to your account!`);
             clearStorage();
         }
-    }, [importedUser, session]);
+    }, [importedUser, sessionId]);
 
     return (
         <Box

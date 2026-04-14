@@ -115,7 +115,7 @@ class ActionTypesStore extends EventEmitter {
         const sessionStore = useSessionStore.getState();
         const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() == 'true';
 
-        if (!sessionStore.sessionIsValid || !sessionStore.session) {
+        if (!sessionStore.sessionIsValid || !sessionStore.sessionId) {
             if (autoSave) {
                 scheduleComponentsToggleStore.getState().setOpenAutoSaveWarning(true);
             }
@@ -124,7 +124,7 @@ class ActionTypesStore extends EventEmitter {
 
         if (autoSave) {
             const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
-                token: sessionStore.session,
+                token: sessionStore.sessionId,
             });
 
             if (accounts.providerAccountId) {

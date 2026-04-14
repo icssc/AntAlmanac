@@ -13,7 +13,7 @@ import { usePreviewStore, useAutoSaveStore } from '$stores/SettingsStore';
 export function ExperimentalMenu() {
     const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
     const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
-    const { sessionIsValid, session } = useSessionStore();
+    const { sessionIsValid, sessionId } = useSessionStore();
     const { setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
 
     const postHog = usePostHog();
@@ -29,7 +29,7 @@ export function ExperimentalMenu() {
             return;
         }
 
-        if (!sessionIsValid || !session) {
+        if (!sessionIsValid || !sessionId) {
             setOpenAutoSaveWarning(true);
             return;
         }

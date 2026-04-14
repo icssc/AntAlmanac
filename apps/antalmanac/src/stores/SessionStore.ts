@@ -6,7 +6,7 @@ import { getLocalStorageSessionId } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 
 interface SessionState {
-    session: string | null;
+    sessionId: string | null;
     user: SessionData['user'] | null;
     userId: string | null;
     isGoogleUser: boolean;
@@ -29,7 +29,7 @@ interface SessionState {
 export const useSessionStore = create<SessionState>((set, get) => {
     const localSessionId = getLocalStorageSessionId();
     return {
-        session: localSessionId,
+        sessionId: localSessionId,
         user: null,
         userId: null,
         isGoogleUser: false,
@@ -50,7 +50,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
             // Remove "google" prefix
             const googleId = accountInfo.userId.toString().split('_')[1];
             set({
-                session: sessionData.session.id,
+                sessionId: sessionData.session.id,
                 sessionIsValid: true,
                 user: sessionData.user,
                 userId: sessionData.user.id,
@@ -61,11 +61,11 @@ export const useSessionStore = create<SessionState>((set, get) => {
             return true;
         },
         clearSession: async () => {
-            const currentSession = get().session;
+            const currentSession = get().sessionId;
             if (currentSession) {
                 clearSsoCookie();
                 set({
-                    session: null,
+                    sessionId: null,
                     user: null,
                     userId: null,
                     sessionIsValid: false,

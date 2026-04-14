@@ -39,7 +39,7 @@ export const NotificationsMenu = memo(
 
         const { session, isGoogleUser } = useSessionStore(
             useShallow((state) => ({
-                session: state.session,
+                session: state.sessionId,
                 isGoogleUser: state.isGoogleUser,
             }))
         );
