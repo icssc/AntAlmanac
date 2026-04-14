@@ -1,0 +1,60 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "08b04a1cf26628fd5caaf3a6694fa43dbfc47ca7",
+  "prompts": {
+    "03ef7818b64842c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "860682c6-db38-4180-8fa7-eec9c5123019",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    },
+    "05c542cfb463ddf3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1f26ab27-5706-4396-a5e0-8c09dd415076",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 199,
+      "overriden_lines": 0
+    },
+    "c5a8324b51d88e38": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "03a8953e-81ac-49ef-bdac-787ba50d5098",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 54,
+      "overriden_lines": 0
+    },
+    "c7589341853d3e88": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "255ba2a5-94d0-4094-a1cc-406d1a0de02a",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 18,
+      "overriden_lines": 0
+    }
+  }
+}
