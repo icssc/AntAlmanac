@@ -14,8 +14,9 @@ import {
     sessions,
     Account,
     Session,
+    friendships,
 } from '@packages/db/src/schema';
-import { and, eq, ExtractTablesWithRelations, gt } from 'drizzle-orm';
+import { and, eq, ExtractTablesWithRelations, gt, or } from 'drizzle-orm';
 import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 import { NotificationRDS } from './notification-rds';
@@ -817,6 +818,187 @@ export class RDS {
         return db.transaction(async (tx) => {
             const user = await this.getUserDataWithSession(tx, sessionToken);
             return user?.id ?? null;
+        });
+    }
+
+    /**
+     * Returns the existing friendship row between two users regardless of direction, or undefined if none exists.
+     */
+    static async getFriendshipBetween(db: DatabaseOrTransaction, userIdA: string, userIdB: string) {
+        const [row] = await db
+            .select()
+            .from(friendships)
+            .where(
+                or(
+                    and(eq(friendships.requesterId, userIdA), eq(friendships.addresseeId, userIdB)),
+                    and(eq(friendships.requesterId, userIdB), eq(friendships.addresseeId, userIdA))
+                )
+            )
+            .limit(1);
+        return row;
+    }
+
+    /**
+     * Inserts a PENDING friend request from requesterId to addresseeId.
+     * Does nothing on conflict.
+     */
+    static async insertFriendRequest(db: DatabaseOrTransaction, requesterId: string, addresseeId: string) {
+        return db
+            .insert(friendships)
+            .values({ requesterId, addresseeId, status: 'PENDING' })
+            .onConflictDoNothing()
+            .returning();
+    }
+
+    /**
+     * Updates a PENDING friendship to ACCEPTED.
+     */
+    static async acceptFriendRequest(db: DatabaseOrTransaction, requesterId: string, addresseeId: string) {
+        return db
+            .update(friendships)
+            .set({ status: 'ACCEPTED', updatedAt: new Date() })
+            .where(
+                and(
+                    eq(friendships.requesterId, requesterId),
+                    eq(friendships.addresseeId, addresseeId),
+                    eq(friendships.status, 'PENDING')
+                )
+            )
+            .returning();
+    }
+
+    /**
+     * Returns all accepted friends for the given user as an array of user objects (id, name, email).
+     */
+    static async getFriends(db: DatabaseOrTransaction, userId: string) {
+        const sent = await db
+            .select({ id: users.id, name: users.name, email: users.email })
+            .from(friendships)
+            .innerJoin(users, eq(friendships.addresseeId, users.id))
+            .where(and(eq(friendships.requesterId, userId), eq(friendships.status, 'ACCEPTED')));
+
+        const received = await db
+            .select({ id: users.id, name: users.name, email: users.email })
+            .from(friendships)
+            .innerJoin(users, eq(friendships.requesterId, users.id))
+            .where(and(eq(friendships.addresseeId, userId), eq(friendships.status, 'ACCEPTED')));
+
+        return [...sent, ...received];
+    }
+
+    /**
+     * Returns true if an ACCEPTED friendship exists between the two users in either direction.
+     */
+    static async areFriends(db: DatabaseOrTransaction, viewerId: string, targetUserId: string): Promise<boolean> {
+        const [row] = await db
+            .select({ id: friendships.requesterId })
+            .from(friendships)
+            .where(
+                and(
+                    eq(friendships.status, 'ACCEPTED'),
+                    or(
+                        and(eq(friendships.requesterId, viewerId), eq(friendships.addresseeId, targetUserId)),
+                        and(eq(friendships.requesterId, targetUserId), eq(friendships.addresseeId, viewerId))
+                    )
+                )
+            )
+            .limit(1);
+        return Boolean(row);
+    }
+
+    /**
+     * Returns all pending friend requests received by the given user (id, name, email of requester).
+     */
+    static async getPendingFriendRequests(db: DatabaseOrTransaction, userId: string) {
+        return db
+            .select({ id: users.id, name: users.name, email: users.email })
+            .from(friendships)
+            .innerJoin(users, eq(friendships.requesterId, users.id))
+            .where(and(eq(friendships.addresseeId, userId), eq(friendships.status, 'PENDING')));
+    }
+
+    /**
+     * Deletes the friendship row between two users regardless of direction.
+     */
+    static async deleteFriendship(db: DatabaseOrTransaction, userIdA: string, userIdB: string) {
+        return db
+            .delete(friendships)
+            .where(
+                or(
+                    and(eq(friendships.requesterId, userIdA), eq(friendships.addresseeId, userIdB)),
+                    and(eq(friendships.requesterId, userIdB), eq(friendships.addresseeId, userIdA))
+                )
+            );
+    }
+
+    /**
+     * Blocks a user by removing any existing friendship and inserting a BLOCKED record.
+     */
+    static async blockUser(db: DatabaseOrTransaction, userId: string, blockId: string) {
+        return db.transaction(async (tx) => {
+            await this.deleteFriendship(tx, userId, blockId);
+            return tx
+                .insert(friendships)
+                .values({ requesterId: userId, addresseeId: blockId, status: 'BLOCKED', updatedAt: new Date() })
+                .returning();
+        });
+    }
+
+    /**
+     * Returns all users blocked by the given user (id, name, email).
+     */
+    static async getBlockedUsers(db: DatabaseOrTransaction, userId: string) {
+        return db
+            .select({ id: users.id, name: users.name, email: users.email })
+            .from(friendships)
+            .innerJoin(users, eq(friendships.addresseeId, users.id))
+            .where(and(eq(friendships.requesterId, userId), eq(friendships.status, 'BLOCKED')));
+    }
+
+    /**
+     * Removes a block placed by userId on blockId.
+     */
+    static async unblockUser(db: DatabaseOrTransaction, userId: string, blockId: string) {
+        return db
+            .delete(friendships)
+            .where(and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, blockId)));
+    }
+
+    /**
+     * Returns the sharedWithFriends status for all schedules owned by the given user.
+     */
+    static async getScheduleSharingStatuses(db: DatabaseOrTransaction, userId: string) {
+        return db
+            .select({ id: schedules.id, sharedWithFriends: schedules.sharedWithFriends })
+            .from(schedules)
+            .where(eq(schedules.userId, userId));
+    }
+
+    /**
+     * Toggles the sharedWithFriends flag on a schedule owned by the given user.
+     * Returns the updated value, or null if the schedule was not found.
+     */
+    static async toggleScheduleSharing(
+        db: DatabaseOrTransaction,
+        userId: string,
+        scheduleId: string
+    ): Promise<{ sharedWithFriends: boolean } | null> {
+        return db.transaction(async (tx) => {
+            const [schedule] = await tx
+                .select({ sharedWithFriends: schedules.sharedWithFriends })
+                .from(schedules)
+                .where(and(eq(schedules.id, scheduleId), eq(schedules.userId, userId)))
+                .limit(1);
+
+            if (!schedule) return null;
+
+            const [updated] = await tx
+                .update(schedules)
+                .set({ sharedWithFriends: !schedule.sharedWithFriends })
+                .where(and(eq(schedules.id, scheduleId), eq(schedules.userId, userId)))
+                .returning({ sharedWithFriends: schedules.sharedWithFriends });
+
+            return { sharedWithFriends: updated.sharedWithFriends };
         });
     }
 

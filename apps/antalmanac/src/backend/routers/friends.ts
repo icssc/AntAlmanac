@@ -1,7 +1,5 @@
 import { db } from '@packages/db/src';
-import { friendships, schedules, users } from '@packages/db/src/schema';
 import { TRPCError } from '@trpc/server';
-import { and, eq, or } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { RDS } from '../lib/rds';
@@ -22,7 +20,9 @@ async function resolveSessionToUserId(sessionToken: string): Promise<string> {
  */
 const friendsRouter = router({
     /**
-     * Send a friend request by recipient email.
+     * Sends a friend request to a user identified by their email address.
+     * Validates the session token, ensures the requester is not friending themselves,
+     * and checks for existing pending or accepted friendships before inserting.
      */
     sendFriendRequestByEmail: procedure
         .input(z.object({ sessionToken: z.string(), email: z.string().email() }))
@@ -45,16 +45,7 @@ const friendsRouter = router({
                 });
             }
 
-            const [existing] = await db
-                .select()
-                .from(friendships)
-                .where(
-                    or(
-                        and(eq(friendships.requesterId, requesterId), eq(friendships.addresseeId, addressee.id)),
-                        and(eq(friendships.requesterId, addressee.id), eq(friendships.addresseeId, requesterId))
-                    )
-                )
-                .limit(1);
+            const existing = await RDS.getFriendshipBetween(db, requesterId, addressee.id);
 
             if (existing?.status === 'ACCEPTED') {
                 throw new TRPCError({
@@ -73,19 +64,13 @@ const friendsRouter = router({
                 });
             }
 
-            return await db
-                .insert(friendships)
-                .values({
-                    requesterId: requesterId,
-                    addresseeId: addressee.id,
-                    status: 'PENDING',
-                })
-                .onConflictDoNothing()
-                .returning();
+            return RDS.insertFriendRequest(db, requesterId, addressee.id);
         }),
 
     /**
-     * Send a friend request.
+     * Sends a friend request to a user identified by their user ID.
+     * Validates the session token, ensures the requester is not friending themselves,
+     * and checks for existing pending or accepted friendships before inserting.
      */
     sendFriendRequest: procedure
         .input(z.object({ sessionToken: z.string(), addresseeId: z.string() }))
@@ -99,16 +84,7 @@ const friendsRouter = router({
                 });
             }
 
-            const [existing] = await db
-                .select()
-                .from(friendships)
-                .where(
-                    or(
-                        and(eq(friendships.requesterId, requesterId), eq(friendships.addresseeId, input.addresseeId)),
-                        and(eq(friendships.requesterId, input.addresseeId), eq(friendships.addresseeId, requesterId))
-                    )
-                )
-                .limit(1);
+            const existing = await RDS.getFriendshipBetween(db, requesterId, input.addresseeId);
 
             if (existing?.status === 'ACCEPTED') {
                 throw new TRPCError({
@@ -128,151 +104,75 @@ const friendsRouter = router({
                 });
             }
 
-            return await db
-                .insert(friendships)
-                .values({
-                    requesterId: requesterId,
-                    addresseeId: input.addresseeId,
-                    status: 'PENDING',
-                })
-                .onConflictDoNothing()
-                .returning();
+            return RDS.insertFriendRequest(db, requesterId, input.addresseeId);
         }),
 
     /**
-     * Accept a friend request.
+     * Accepts a pending friend request from the given requester.
+     * Validates the session token to identify the addressee, then updates the
+     * friendship status from PENDING to ACCEPTED.
      */
     acceptFriendRequest: procedure
         .input(z.object({ sessionToken: z.string(), requesterId: z.string() }))
         .mutation(async ({ input }) => {
             const addresseeId = await resolveSessionToUserId(input.sessionToken);
-
-            return await db
-                .update(friendships)
-                .set({ status: 'ACCEPTED', updatedAt: new Date() })
-                .where(
-                    and(
-                        eq(friendships.requesterId, input.requesterId),
-                        eq(friendships.addresseeId, addresseeId),
-                        eq(friendships.status, 'PENDING')
-                    )
-                )
-                .returning();
+            return RDS.acceptFriendRequest(db, input.requesterId, addresseeId);
         }),
 
     /**
-     * Get all friends for a user as user objects.
+     * Returns all accepted friends for the given user as an array of user objects (id, name, email).
+     * Unions friendships where the user is either the requester or the addressee.
      */
     getFriends: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
-        const sent = await db
-            .select({ id: users.id, name: users.name, email: users.email })
-            .from(friendships)
-            .innerJoin(users, eq(friendships.addresseeId, users.id))
-            .where(and(eq(friendships.requesterId, input.userId), eq(friendships.status, 'ACCEPTED')));
-
-        const received = await db
-            .select({ id: users.id, name: users.name, email: users.email })
-            .from(friendships)
-            .innerJoin(users, eq(friendships.requesterId, users.id))
-            .where(and(eq(friendships.addresseeId, input.userId), eq(friendships.status, 'ACCEPTED')));
-
-        return [...sent, ...received];
+        return RDS.getFriends(db, input.userId);
     }),
 
     /**
-     * Check if two users are friends (ACCEPTED friendship in either direction).
+     * Returns true if an ACCEPTED friendship exists between the viewer and the target user
+     * in either direction (viewer → target or target → viewer).
      */
     areFriends: procedure
         .input(z.object({ viewerId: z.string(), targetUserId: z.string() }))
         .query(async ({ input }) => {
-            const [row] = await db
-                .select({ id: friendships.requesterId })
-                .from(friendships)
-                .where(
-                    and(
-                        eq(friendships.status, 'ACCEPTED'),
-                        or(
-                            and(
-                                eq(friendships.requesterId, input.viewerId),
-                                eq(friendships.addresseeId, input.targetUserId)
-                            ),
-                            and(
-                                eq(friendships.requesterId, input.targetUserId),
-                                eq(friendships.addresseeId, input.viewerId)
-                            )
-                        )
-                    )
-                )
-                .limit(1);
-            return Boolean(row);
+            return RDS.areFriends(db, input.viewerId, input.targetUserId);
         }),
 
     /**
-     * Get pending friend requests for a user (requests they have received).
+     * Returns all pending friend requests received by the given user,
+     * including the requester's id, name, and email.
      */
     getPendingRequests: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
-        return await db
-            .select({ id: users.id, name: users.name, email: users.email })
-            .from(friendships)
-            .innerJoin(users, eq(friendships.requesterId, users.id))
-            .where(and(eq(friendships.addresseeId, input.userId), eq(friendships.status, 'PENDING')));
+        return RDS.getPendingFriendRequests(db, input.userId);
     }),
 
     /**
-     * Remove a friend or decline a request.
+     * Removes an existing friendship or declines a pending friend request.
+     * Validates the session token to identify the caller, then deletes the friendship
+     * row regardless of which side initiated it.
      */
     removeFriend: procedure
         .input(z.object({ sessionToken: z.string(), friendId: z.string() }))
         .mutation(async ({ input }) => {
             const userId = await resolveSessionToUserId(input.sessionToken);
-
-            return await db
-                .delete(friendships)
-                .where(
-                    or(
-                        and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, input.friendId)),
-                        and(eq(friendships.requesterId, input.friendId), eq(friendships.addresseeId, userId))
-                    )
-                );
+            return RDS.deleteFriendship(db, userId, input.friendId);
         }),
 
     /**
-     * Block a user.
+     * Blocks a user by removing any existing friendship and inserting a BLOCKED record.
+     * Validates the session token to identify the caller before modifying the friendship table.
      */
     blockUser: procedure
         .input(z.object({ sessionToken: z.string(), blockId: z.string() }))
         .mutation(async ({ input }) => {
             const userId = await resolveSessionToUserId(input.sessionToken);
-
-            await db
-                .delete(friendships)
-                .where(
-                    or(
-                        and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, input.blockId)),
-                        and(eq(friendships.requesterId, input.blockId), eq(friendships.addresseeId, userId))
-                    )
-                );
-
-            return await db
-                .insert(friendships)
-                .values({
-                    requesterId: userId,
-                    addresseeId: input.blockId,
-                    status: 'BLOCKED',
-                    updatedAt: new Date(),
-                })
-                .returning();
+            return RDS.blockUser(db, userId, input.blockId);
         }),
 
     /**
      * Get all blocked users for a user.
      */
     getBlockedUsers: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
-        return await db
-            .select({ id: users.id, name: users.name, email: users.email })
-            .from(friendships)
-            .innerJoin(users, eq(friendships.addresseeId, users.id))
-            .where(and(eq(friendships.requesterId, input.userId), eq(friendships.status, 'BLOCKED')));
+        return RDS.getBlockedUsers(db, input.userId);
     }),
 
     /**
@@ -282,10 +182,7 @@ const friendsRouter = router({
         .input(z.object({ sessionToken: z.string(), blockId: z.string() }))
         .mutation(async ({ input }) => {
             const userId = await resolveSessionToUserId(input.sessionToken);
-
-            return await db
-                .delete(friendships)
-                .where(and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, input.blockId)));
+            return RDS.unblockUser(db, userId, input.blockId);
         }),
 
     /**
@@ -293,10 +190,7 @@ const friendsRouter = router({
      */
     getScheduleSharingStatuses: procedure.input(z.object({ sessionToken: z.string() })).query(async ({ input }) => {
         const userId = await resolveSessionToUserId(input.sessionToken);
-        return await db
-            .select({ id: schedules.id, sharedWithFriends: schedules.sharedWithFriends })
-            .from(schedules)
-            .where(eq(schedules.userId, userId));
+        return RDS.getScheduleSharingStatuses(db, userId);
     }),
 
     /**
@@ -306,24 +200,11 @@ const friendsRouter = router({
         .input(z.object({ sessionToken: z.string(), scheduleId: z.string() }))
         .mutation(async ({ input }) => {
             const userId = await resolveSessionToUserId(input.sessionToken);
-
-            const [schedule] = await db
-                .select({ sharedWithFriends: schedules.sharedWithFriends })
-                .from(schedules)
-                .where(and(eq(schedules.id, input.scheduleId), eq(schedules.userId, userId)))
-                .limit(1);
-
-            if (!schedule) {
+            const result = await RDS.toggleScheduleSharing(db, userId, input.scheduleId);
+            if (!result) {
                 throw new TRPCError({ code: 'NOT_FOUND', message: 'Schedule not found.' });
             }
-
-            const [updated] = await db
-                .update(schedules)
-                .set({ sharedWithFriends: !schedule.sharedWithFriends })
-                .where(and(eq(schedules.id, input.scheduleId), eq(schedules.userId, userId)))
-                .returning({ sharedWithFriends: schedules.sharedWithFriends });
-
-            return { sharedWithFriends: updated.sharedWithFriends };
+            return result;
         }),
 });
 
