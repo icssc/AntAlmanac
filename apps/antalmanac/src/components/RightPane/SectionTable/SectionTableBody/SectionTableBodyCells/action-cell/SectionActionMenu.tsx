@@ -46,16 +46,24 @@ export const SectionActionMenu = memo(function SectionActionMenu({
 
     const handleCopyLink = useCallback(() => {
         const url = new URL(window.location.href);
-        const params = new URLSearchParams();
-        params.set('sectionCode', section.sectionCode);
-        url.search = params.toString();
+        url.searchParams.set('sectionCode', section.sectionCode);
+        url.searchParams.set('term', term);
 
-        navigator.clipboard.writeText(url.toString()).then(
-            () => openSnackbar('success', 'Course link copied!'),
-            () => openSnackbar('error', 'Failed to copy link')
-        );
+        try {
+            const { clipboard } = navigator;
+            if (clipboard && typeof clipboard.writeText === 'function') {
+                void clipboard.writeText(url.toString()).then(
+                    () => openSnackbar('success', 'Course link copied!'),
+                    () => openSnackbar('error', 'Failed to copy link')
+                );
+            } else {
+                openSnackbar('error', 'Failed to copy link');
+            }
+        } catch {
+            openSnackbar('error', 'Failed to copy link');
+        }
         handleClose();
-    }, [section.sectionCode, handleClose]);
+    }, [section.sectionCode, term, handleClose]);
 
     return (
         <>
