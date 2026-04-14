@@ -190,7 +190,7 @@ export class AccountsRDS {
             tx
                 .select({ providerAccountId: accounts.providerAccountId })
                 .from(accounts)
-                .where(eq(accounts.userId, userId))
+                .where(and(eq(accounts.userId, userId), eq(accounts.accountType, 'OIDC')))
                 .limit(1)
                 .then((res) => (res.length > 0 ? res[0].providerAccountId : null))
         );
