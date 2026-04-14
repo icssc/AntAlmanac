@@ -66,6 +66,7 @@ export const ScheduleCalendar = memo(() => {
     const [eventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
     const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
+    const [currentScheduleId, setCurrentScheduleId] = useState(() => AppStore.getCurrentScheduleId());
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
 
     const theme = useTheme();
@@ -99,8 +100,7 @@ export const ScheduleCalendar = memo(() => {
         return raw.filter((e) => {
             if ('isCustomEvent' in e && e.isCustomEvent) return true;
             if ('isSkeletonEvent' in e && e.isSkeletonEvent) return true;
-            const visibility =
-                visibilityMap[String(currentScheduleIndex)]?.[(e as CourseEvent).sectionCode] ?? 'visible';
+            const visibility = visibilityMap[currentScheduleId]?.[(e as CourseEvent).sectionCode] ?? 'visible';
             return visibility !== 'disappeared';
         });
     }, [
@@ -109,7 +109,7 @@ export const ScheduleCalendar = memo(() => {
         hoveredCalendarizedCourses,
         hoveredCalendarizedFinal,
         showFinalsSchedule,
-        currentScheduleIndex,
+        currentScheduleId,
         visibilityMap,
     ]);
 
@@ -215,7 +215,7 @@ export const ScheduleCalendar = memo(() => {
 
             const visibility =
                 !isSkeletonEvent && !('isCustomEvent' in event && event.isCustomEvent)
-                    ? (visibilityMap[String(currentScheduleIndex)]?.[(event as CourseEvent).sectionCode] ?? 'visible')
+                    ? (visibilityMap[currentScheduleId]?.[(event as CourseEvent).sectionCode] ?? 'visible')
                     : 'visible';
 
             const isSelected = event === selectedEvent;
@@ -241,7 +241,7 @@ export const ScheduleCalendar = memo(() => {
 
             return isSkeletonEvent ? { style, className: 'calendar-loading-event' } : { style };
         },
-        [currentScheduleIndex, selectedEvent, theme, visibilityMap]
+        [currentScheduleId, selectedEvent, theme, visibilityMap]
     );
 
     /**
@@ -338,6 +338,7 @@ export const ScheduleCalendar = memo(() => {
     useEffect(() => {
         const updateEventsInCalendar = () => {
             setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
+            setCurrentScheduleId(AppStore.getCurrentScheduleId());
             setEventsInCalendar(AppStore.getEventsInCalendar());
             setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
         };

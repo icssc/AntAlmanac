@@ -35,7 +35,7 @@ export const ActionCell = memo(
         const initialized = useNotificationStore(useShallow((state) => state.initialized));
         const cycleVisibility = useHiddenCoursesStore((state) => state.cycleVisibility);
         const classVisibility = useHiddenCoursesStore((state) =>
-            state.getVisibility(AppStore.getCurrentScheduleIndex(), section.sectionCode)
+            state.getVisibility(AppStore.getCurrentScheduleId(), section.sectionCode)
         );
         const isMobile = useIsMobile();
 
@@ -58,7 +58,7 @@ export const ActionCell = memo(
         }, [updateColor]);
 
         const handleVisibilityToggle = useCallback(() => {
-            cycleVisibility(AppStore.getCurrentScheduleIndex(), section.sectionCode);
+            cycleVisibility(AppStore.getCurrentScheduleId(), section.sectionCode);
         }, [section.sectionCode, cycleVisibility]);
 
         return (
