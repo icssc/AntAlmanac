@@ -1,4 +1,6 @@
+import { db } from '@packages/db';
 import { betterAuth } from 'better-auth';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { nextCookies } from 'better-auth/next-js';
 import { genericOAuth } from 'better-auth/plugins';
 
@@ -11,6 +13,7 @@ export const AUTH_PROVIDER_ID = 'icssc';
 export const auth = betterAuth({
     appName: 'AntAlmanac',
     baseUrl: process.env.BETTER_AUTH_URL,
+    database: drizzleAdapter(db, { provider: 'pg', usePlural: true }),
     plugins: [
         genericOAuth({
             config: [
@@ -34,6 +37,10 @@ export const auth = betterAuth({
         nextCookies(),
     ],
     user: {
+        fields: {
+            updatedAt: 'lastUpdated',
+            image: 'avatar',
+        },
         additionalFields: {
             avatar: {
                 type: 'string',
@@ -41,6 +48,12 @@ export const auth = betterAuth({
                 defaultValue: '',
                 input: false,
             },
+        },
+    },
+    session: {
+        fields: {
+            token: 'refreshToken',
+            expiresAt: 'expires',
         },
     },
 });

@@ -30,7 +30,9 @@ export const users = pgTable('users', {
     /**
      * User's email.
      */
-    email: text('email'),
+    email: text('email').unique(),
+
+    emailVerified: boolean('email_verified').default(false).notNull(),
 
     /**
      * Imported User Flag.
@@ -48,6 +50,7 @@ export const users = pgTable('users', {
         { onDelete: 'set null' }
     ),
 
+    createdAt: timestamp('created_at').defaultNow().notNull(),
     lastUpdated: timestamp('last_updated', { withTimezone: true }).defaultNow(),
 });
 

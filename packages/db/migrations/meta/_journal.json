@@ -71,6 +71,13 @@
             "when": 1772937827598,
             "tag": "0009_remove_schedule_unique_constraints",
             "breakpoints": true
+        },
+        {
+            "idx": 10,
+            "version": "7",
+            "when": 1776100638993,
+            "tag": "0010_simple_kid_colt",
+            "breakpoints": true
         }
     ]
 }

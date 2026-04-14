@@ -21,7 +21,6 @@ interface SessionState {
 
     plannerRoadmaps: Roadmap[];
 
-    setGoogleId: (id: string) => void;
     setFilterTakenCourses: (value: boolean) => void;
     setUserTakenCourses: (courses: Set<string>) => void;
     setPlannerRoadmaps: (roadmaps: Roadmap[]) => void;
@@ -41,19 +40,15 @@ export const useSessionStore = create<SessionState>((set, get) => {
         userTakenCourses: new Set(),
         plannerRoadmaps: [],
         updateSession: async (sessionData: SessionData) => {
-            if (typeof sessionData !== 'object') {
+            const { data, error } = await authClient.listAccounts();
+            if (!data || error) {
+                console.error('Error occurred while getting account info:', error);
                 return false;
             }
-
-            const { data: accountInfo } = await authClient.accountInfo();
-            if (!accountInfo) {
-                return false;
-            }
-
-            const googleAccountData = accountInfo.user;
+            const [accountInfo] = data;
 
             // Remove "google" prefix
-            const googleId = googleAccountData.id.toString().split('_')[1];
+            const googleId = accountInfo.userId.toString().split('_')[1];
             set({
                 session: sessionData.session.id,
                 sessionIsValid: true,
@@ -84,7 +79,6 @@ export const useSessionStore = create<SessionState>((set, get) => {
                 window.location.reload();
             }
         },
-        setGoogleId: (id) => set({ googleId: id }),
         setFilterTakenCourses: (value) => set({ filterTakenCourses: value }),
         setUserTakenCourses: (courses) => set({ userTakenCourses: courses }),
         setPlannerRoadmaps: (roadmaps) => set({ plannerRoadmaps: roadmaps }),
