@@ -223,7 +223,7 @@ export const ScheduleCalendar = memo(() => {
             const style =
                 visibility === 'outlined'
                     ? {
-                          backgroundColor: theme.palette.background.paper,
+                          backgroundColor: theme.palette.background.default,
                           border: `2px solid ${event.color}`,
                           borderRadius: '4px',
                           color: event.color,
