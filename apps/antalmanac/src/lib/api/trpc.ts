@@ -9,7 +9,7 @@ const trpc = createTRPCProxyClient<AppRouter>({
             url: '/api/trpc',
             fetch(url, options) {
                 // Double-encode %26 so CloudFront's URL decoding produces
-                // the correct %26 for the origin server instead of a bare &.
+                // the correct %26 for the origin server instead of a bare &. FIX ME
                 const fixedUrl = typeof url === 'string' ? url.replaceAll('%26', '%2526') : url;
                 return fetch(fixedUrl, {
                     ...options,
