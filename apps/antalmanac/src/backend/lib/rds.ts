@@ -446,13 +446,13 @@ export class RDS {
     }
 
     /**
-     * Retrieves a schedule by schedule ID. All schedules are publicly accessible via their ID.
+     * Retrieves a schedule by its ID. All schedules are publicly accessible via their ID.
      *
      * @param db - The database or transaction object to use for the query.
      * @param scheduleId - The unique identifier of the schedule.
      * @returns A promise that resolves to a ShortCourseSchedule object, or null if the schedule is not found.
      */
-    static async getSharedScheduleById(
+    static async getScheduleById(
         db: DatabaseOrTransaction,
         scheduleId: string
     ): Promise<(ShortCourseSchedule & { id: string; index: number; userId: string }) | null> {

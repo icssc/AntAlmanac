@@ -340,7 +340,7 @@ const userDataRouter = router({
      * @returns The schedule data associated with the schedule ID, or throws NOT_FOUND if not found.
      */
     getSharedSchedule: procedure.input(z.object({ scheduleId: z.string() })).query(async ({ input }) => {
-        const schedule = await RDS.getSharedScheduleById(db, input.scheduleId);
+        const schedule = await RDS.getScheduleById(db, input.scheduleId);
         if (!schedule) {
             throw new TRPCError({
                 code: 'NOT_FOUND',

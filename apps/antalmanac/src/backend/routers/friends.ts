@@ -22,7 +22,9 @@ async function resolveSessionToUserId(sessionToken: string): Promise<string> {
 }
 
 /**
- * Router for handling friend-related operations.
+ * Router for handling friend-related operations, including sending and accepting friend requests,
+ * retrieving friends and pending requests, removing or blocking users, and managing
+ * per-schedule sharing visibility with friends.
  */
 const friendsRouter = router({
     /**
