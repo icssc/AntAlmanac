@@ -181,7 +181,7 @@ export function CoursePaneButtonRow(props: CoursePaneButtonRowProps) {
 
             <ColumnToggleDropdown />
             <NotificationsDialog buttonSx={buttonSx} />
-            <SearchFilter />
+            <SearchFilter buttonSx={buttonSx} />
         </Box>
     );
 }

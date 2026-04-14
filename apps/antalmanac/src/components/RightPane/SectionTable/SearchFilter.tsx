@@ -1,59 +1,55 @@
-import { MenuItem, Select, type SelectChangeEvent } from '@mui/material';
+import { Sort } from '@mui/icons-material';
+import { IconButton, Menu, MenuItem, Tooltip, type SxProps } from '@mui/material';
+import { useCallback, useState } from 'react';
 
 import { SORT_OPTIONS, useSectionFilterStore, type SortOption } from '$stores/SectionFilterStore';
 
-export function SearchFilter() {
-    const { sortBy, setSortBy } = useSectionFilterStore();
+interface SearchFilterProps {
+    buttonSx?: SxProps;
+}
 
-    const handleChange = (event: SelectChangeEvent<string>) => {
-        setSortBy(event.target.value as SortOption);
-    };
+export function SearchFilter({ buttonSx }: SearchFilterProps) {
+    const { sortBy, setSortBy } = useSectionFilterStore();
+    const [anchorEl, setAnchorEl] = useState<HTMLElement>();
+    const open = Boolean(anchorEl);
+
+    const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    }, []);
+
+    const handleClose = useCallback(() => {
+        setAnchorEl(undefined);
+    }, []);
+
+    const handleSelect = useCallback(
+        (value: SortOption) => {
+            setSortBy(value);
+            handleClose();
+        },
+        [setSortBy, handleClose]
+    );
+
+    const currentLabel = SORT_OPTIONS.find((o) => o.value === sortBy)?.label ?? 'Default';
 
     return (
-        <Select
-            value={sortBy}
-            onChange={handleChange}
-            size="small"
-            variant="outlined"
-            displayEmpty
-            renderValue={(value) => {
-                const option = SORT_OPTIONS.find((o) => o.value === value);
-                return `SORT: ${option?.label.toUpperCase() ?? ''}`;
-            }}
-            sx={(theme) => ({
-                height: '26px',
-                fontSize: '0.8125rem',
-                fontWeight: 500,
-                textTransform: 'none',
-                color: theme.palette.primary.contrastText,
-                backgroundColor: theme.palette.primary.main,
-                boxShadow: theme.shadows[2],
-                '&:hover': {
-                    backgroundColor: theme.palette.primary.dark,
-                },
-                '& .MuiSelect-select': {
-                    paddingTop: 0,
-                    paddingBottom: 0,
-                    paddingLeft: '10px',
-                    paddingRight: '28px !important',
-                    minHeight: 'unset',
-                    display: 'flex',
-                    alignItems: 'center',
-                    height: '30.75px',
-                },
-                '& .MuiSelect-icon': {
-                    color: theme.palette.primary.contrastText,
-                },
-                '& .MuiOutlinedInput-notchedOutline': {
-                    border: 'none',
-                },
-            })}
-        >
-            {SORT_OPTIONS.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                </MenuItem>
-            ))}
-        </Select>
+        <>
+            <Tooltip title={`Sort: ${currentLabel}`}>
+                <IconButton onClick={handleClick} sx={buttonSx}>
+                    <Sort />
+                </IconButton>
+            </Tooltip>
+
+            <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+                {SORT_OPTIONS.map((option) => (
+                    <MenuItem
+                        key={option.value}
+                        selected={option.value === sortBy}
+                        onClick={() => handleSelect(option.value)}
+                    >
+                        {option.label}
+                    </MenuItem>
+                ))}
+            </Menu>
+        </>
     );
 }
