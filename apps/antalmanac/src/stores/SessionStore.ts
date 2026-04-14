@@ -2,7 +2,6 @@ import type { Roadmap } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
 import { authClient, SessionData } from '$lib/auth/authClient';
-import { getLocalStorageSessionId } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 
 interface SessionState {
@@ -28,10 +27,9 @@ interface SessionState {
 }
 
 export const useSessionStore = create<SessionState>((set, get) => {
-    const localSessionId = getLocalStorageSessionId();
     return {
         session: null,
-        sessionId: localSessionId,
+        sessionId: null,
         user: null,
         userId: null,
         isGoogleUser: false,

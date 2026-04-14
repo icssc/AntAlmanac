@@ -14,7 +14,6 @@ enum LocalStorageKeys {
     helpBoxDismissalTime = 'helpBoxDismissalTime',
     columnToggles = 'columnToggles',
     pwaDismissalTime = 'pwaDismissalTime',
-    sessionId = 'sessionId',
     dataCache = 'dataCache',
     newUser = 'newUser',
     importedUser = 'importedUser',
@@ -83,18 +82,6 @@ export function getLocalStorageUserId() {
 
 export function removeLocalStorageUserId() {
     window.localStorage.removeItem(LSK.userId);
-}
-
-export function setLocalStorageSessionId(value: string) {
-    window.localStorage.setItem(LSK.sessionId, value);
-}
-
-export function getLocalStorageSessionId() {
-    return window.localStorage.getItem(LSK.sessionId);
-}
-
-export function removeLocalStorageSessionId() {
-    window.localStorage.removeItem(LSK.sessionId);
 }
 
 // Helper functions for patchNotesKey

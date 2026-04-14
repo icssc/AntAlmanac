@@ -5,9 +5,9 @@ import { useParams } from 'react-router-dom';
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { getLocalStorageSessionId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { paramsAreInURL } from '$stores/CoursePaneStore';
+import { useSessionStore } from '$stores/SessionStore';
 import { useTabStore } from '$stores/TabStore';
 
 /**
@@ -18,6 +18,7 @@ export function ScheduleManagement() {
     const { activeTab, setActiveTab } = useTabStore();
     const { tab } = useParams();
     const isMobile = useIsMobile();
+    const sessionId = useSessionStore((state) => state.sessionId);
 
     // Tab index mapped to the last known scrollTop.
     const [positions, setPositions] = useState<Record<number, number>>({});
@@ -50,7 +51,6 @@ export function ScheduleManagement() {
             return;
         }
 
-        const sessionId = getLocalStorageSessionId();
         const urlHasManualSearchParams = paramsAreInURL();
         const hasLocalScheduleData = () =>
             AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;

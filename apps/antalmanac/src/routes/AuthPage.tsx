@@ -13,7 +13,6 @@ import {
     removeLocalStorageImportedUser,
     removeLocalStorageDataCache,
     removeLocalStorageFromLoading,
-    setLocalStorageSessionId,
     setLocalStorageOnFirstSignin,
 } from '$lib/localStorage';
 import { clearSsoCookie, setSsoCookie } from '$lib/ssoCookie';
@@ -66,7 +65,6 @@ export function AuthPage() {
                 return;
             }
 
-            setLocalStorageSessionId(sessionToken);
             setSsoCookie();
 
             // load schedule without saving any changes

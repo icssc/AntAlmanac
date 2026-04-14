@@ -1,8 +1,8 @@
 import { useEffect, useRef } from 'react';
 
 import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId } from '$lib/localStorage';
 import { hasSsoCookie } from '$lib/ssoCookie';
+import { useSessionStore } from '$stores/SessionStore';
 
 /**
  * Automatically signs in users who authenticated via another app on antalmanac.com
@@ -14,6 +14,7 @@ import { hasSsoCookie } from '$lib/ssoCookie';
  */
 export function AutoSignIn() {
     const hasChecked = useRef(false);
+    const sessionId = useSessionStore((state) => state.sessionId);
 
     useEffect(() => {
         if (hasChecked.current) {
@@ -33,7 +34,7 @@ export function AutoSignIn() {
                 return;
             }
 
-            if (getLocalStorageSessionId()) {
+            if (sessionId) {
                 return;
             }
 
