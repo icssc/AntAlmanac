@@ -47,4 +47,4 @@ export const UserSchema = type({
 });
 
 type DBUser = typeof UserSchema.infer;
-export type User = { [K in keyof DBUser]: DBUser[K] extends undefined ? DBUser[K] : DBUser[K] | null };
+export type User = { [K in keyof DBUser]: undefined extends DBUser[K] ? DBUser[K] | null : DBUser[K] };

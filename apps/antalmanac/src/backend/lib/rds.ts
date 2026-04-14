@@ -157,9 +157,9 @@ export class RDS {
         db: DatabaseOrTransaction,
         accountType: Account['accountType'],
         providerId: string,
-        name?: string,
-        email?: string,
-        avatar?: string
+        name?: User['name'],
+        email?: User['email'],
+        avatar?: User['avatar']
     ) {
         // ! TODO @KevinWu098
         // ! Auth uses hardcoded migration logic to handle cases in which stale userIDs
