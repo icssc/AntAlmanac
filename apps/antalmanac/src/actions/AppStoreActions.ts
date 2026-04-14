@@ -15,7 +15,7 @@ import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/
 import trpc from '$lib/api/trpc';
 import { signIn } from '$lib/auth/authActions';
 import { warnMultipleTerms } from '$lib/helpers';
-import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { setLocalStorageUserId, setLocalStorageDataCache, setLocalStorageFromLoading } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -395,6 +395,7 @@ export const loginUser = async () => {
             cacheSchedule();
             window.location.href = url.toString();
         }
+        setLocalStorageFromLoading('true');
     } catch (error) {
         console.error('Error during login initiation', error);
         openSnackbar('error', 'Error during login initiation. Please Try Again.');

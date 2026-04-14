@@ -1,7 +1,6 @@
 import { AccountCircle, ExpandMore, Google } from '@mui/icons-material';
 import {
     Alert,
-    AlertColor,
     AlertTitle,
     Box,
     Button,
@@ -20,66 +19,27 @@ import {
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 
-import {
-    isEmptySchedule,
-    loadSchedule,
-    loadScheduleWithSessionToken,
-    loginUser,
-    mergeShortCourseSchedules,
-} from '$actions/AppStoreActions';
-import { AlertDialog } from '$components/AlertDialog';
+import { loadSchedule, loginUser } from '$actions/AppStoreActions';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
+import SignInAlertDialog from '$components/SignInAlertDialog';
 import trpc from '$lib/api/trpc';
-import { authClient, signOut } from '$lib/auth/authClient';
-import {
-    getLocalStorageDataCache,
-    getLocalStorageFromLoading,
-    getLocalStorageUserId,
-    removeLocalStorageDataCache,
-    removeLocalStorageFromLoading,
-    removeLocalStorageImportedUser,
-    removeLocalStorageUserId,
-    setLocalStorageFromLoading,
-    setLocalStorageImportedUser,
-    setLocalStorageOnFirstSignin,
-} from '$lib/localStorage';
-import { setSsoCookie } from '$lib/ssoCookie';
-import AppStore from '$stores/AppStore';
-import { useNotificationStore } from '$stores/NotificationStore';
+import { getLocalStorageUserId } from '$lib/localStorage';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
-
-const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = {
-    SESSION_EXPIRED: {
-        title: 'Your session has expired. Please sign in again.',
-        severity: 'info',
-    },
-    SCHEDULE_IMPORTED: {
-        title: 'This schedule was previously imported to a Google account. Did you want to sign in with Google?',
-        severity: 'info',
-    },
-};
 
 export const Signin = () => {
     const isDark = useThemeStore((store) => store.isDark);
-    const { updateSession } = useSessionStore();
+
     const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = scheduleComponentsToggleStore();
 
-    const [openAlert, setOpenalert] = useState(false);
     const [settingsAnchorEl, setSettingsAnchorEl] = useState<null | HTMLElement>(null);
-    const [alertMessage, setAlertMessage] = useState<{ title: string; severity: AlertColor }>(
-        ALERT_MESSAGES.SCHEDULE_IMPORTED
-    );
-
     const [isOpen, setIsOpen] = useState(false);
     const [userID, setUserID] = useState('');
     const [rememberMe] = useState(true);
     const [showLegacyLogin, setShowLegacyLogin] = useState(false);
-
-    const { data: sessionData } = authClient.useSession();
+    const [openAlert, setOpenalert] = useState(false);
 
     const handleOpen = useCallback(() => {
         setIsOpen(true);
@@ -96,74 +56,12 @@ export const Signin = () => {
         setSettingsAnchorEl(event.currentTarget);
     };
 
-    const handleLogin = () => {
-        loginUser();
-        setLocalStorageFromLoading('true');
-    };
-
-    const handleUnsavedChanges = useCallback(async () => {
-        if (!sessionData) {
-            return;
-        }
-
-        const isNewUser = false;
-
-        const fromLoading = getLocalStorageFromLoading();
-        const savedUserId = getLocalStorageUserId();
-        const savedData = getLocalStorageDataCache();
-
-        if (isNewUser) {
-            setLocalStorageOnFirstSignin('true');
-        } else {
-            removeLocalStorageUserId();
-        }
-
-        // load schedule without saving any changes
-        if (fromLoading) {
-            removeLocalStorageFromLoading();
-            removeLocalStorageDataCache();
-            removeLocalStorageImportedUser();
-            return;
-        }
-
-        // no changes to save
-        if (savedUserId === null && savedData === null) {
-            removeLocalStorageDataCache();
-            removeLocalStorageImportedUser();
-            return;
-        }
-
-        if (savedData) {
-            const userData = await trpc.userData.getUserData.query({ userId: sessionData.user.id });
-            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
-
-            if (savedUserId) {
-                await trpc.userData.flagImportedSchedule.mutate({ providerId: savedUserId });
-                setLocalStorageImportedUser(savedUserId);
-            }
-
-            const data = JSON.parse(savedData);
-
-            if (userData?.userData && isEmptySchedule(userData.userData.schedules)) {
-                scheduleSaveState.schedules = data;
-            } else {
-                const saveState = userData && 'userData' in userData ? userData.userData : userData;
-                if (saveState !== null) {
-                    mergeShortCourseSchedules(saveState.schedules, data, '(import)-');
-                    scheduleSaveState.schedules = saveState.schedules;
-                    scheduleSaveState.scheduleIndex = saveState.schedules.length - 1;
-                }
-            }
-        }
-    }, [sessionData]);
-
     const validateImportedUser = useCallback(async (userID: string) => {
         try {
             const res = await trpc.userData.getGuestAccountAndUserByName
                 .query({ name: userID })
                 .then((res) => res.users);
             if (res.imported) {
-                setAlertMessage(ALERT_MESSAGES.SCHEDULE_IMPORTED);
                 setOpenalert(true);
             }
             return res;
@@ -182,18 +80,6 @@ export const Signin = () => {
         },
         [setOpenLoadingSchedule, validateImportedUser]
     );
-
-    const loadScheduleAndSetLoadingAuth = useCallback(async () => {
-        if (!sessionData) {
-            return;
-        }
-
-        setOpenLoadingSchedule(true);
-
-        await loadScheduleWithSessionToken();
-
-        setOpenLoadingSchedule(false);
-    }, [sessionData, setOpenLoadingSchedule]);
 
     const enterEvent = useCallback(
         (event: KeyboardEvent) => {
@@ -230,35 +116,6 @@ export const Signin = () => {
     );
 
     useEffect(() => {
-        if (sessionData) {
-            (async () => {
-                if (sessionData.session.expiresAt < new Date()) {
-                    console.log('Session expired, logging out');
-                    signOut();
-                    return;
-                }
-                try {
-                    const isSessionValid = await updateSession(sessionData);
-                    if (!isSessionValid) {
-                        setOpenalert(true);
-                        setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
-                        return;
-                    }
-                    setSsoCookie();
-                    handleUnsavedChanges();
-
-                    loadScheduleAndSetLoadingAuth();
-
-                    useNotificationStore.getState().loadNotifications();
-                } catch (error) {
-                    console.error('Error during authentication:', error);
-                    signOut();
-                }
-            })();
-        }
-    }, [sessionData, updateSession, handleUnsavedChanges, loadScheduleAndSetLoadingAuth]);
-
-    useEffect(() => {
         if (isOpen) {
             document.addEventListener('keydown', enterEvent, false);
         } else {
@@ -283,7 +140,7 @@ export const Signin = () => {
                 <DialogContent>
                     <Stack spacing={1}>
                         <Button
-                            onClick={handleLogin}
+                            onClick={loginUser}
                             color="primary"
                             variant="contained"
                             startIcon={<Google />}
@@ -373,9 +230,7 @@ export const Signin = () => {
                 }}
             >
                 <SettingsMenu user={null} onClose={() => setSettingsAnchorEl(null)} />
-
                 <Divider style={{ marginTop: '20px', marginBottom: '12px' }} />
-
                 <MenuItem onClick={handleOpen} sx={{ px: 1, py: 1.25, borderRadius: 1 }}>
                     <ListItemIcon>
                         <AccountCircle />
@@ -392,25 +247,11 @@ export const Signin = () => {
                     />
                 </MenuItem>
             </Popover>
-
-            <AlertDialog
+            <SignInAlertDialog
                 open={openAlert}
+                title="This schedule was previously imported to a Google account. Did you want to sign in with Google?"
                 onClose={() => setOpenalert(false)}
-                title={alertMessage.title}
-                severity={alertMessage.severity}
-            >
-                <DialogContentText>To load your schedule sign in with your Google account</DialogContentText>
-                <Button
-                    color="primary"
-                    variant="contained"
-                    startIcon={<Google />}
-                    fullWidth
-                    onClick={handleLogin}
-                    size="large"
-                >
-                    Sign in with Google
-                </Button>
-            </AlertDialog>
+            />
         </div>
     );
 };
