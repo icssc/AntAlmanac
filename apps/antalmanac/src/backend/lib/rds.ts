@@ -231,7 +231,7 @@ export class RDS {
     ): Promise<{ userId: string; scheduleIdMap: Record<string, string> }> {
         return db.transaction(async (tx) => {
             const account = await this.registerUserAccount(
-                db,
+                tx,
                 'OIDC',
                 userData.id,
                 userData.name,
