@@ -21,14 +21,14 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: 'AntAlmanac',
         description: ANTALMANAC_DESCRIPTION,
-        images: '/assets/logo.svg',
+        images: '/og-image.png',
     },
     openGraph: {
         title: 'AntAlmanac',
         description: ANTALMANAC_DESCRIPTION,
         url: 'https://antalmanac.com',
         siteName: 'AntAlmanac',
-        images: '/assets/logo.svg',
+        images: '/og-image.png',
     },
     appleWebApp: {
         title: 'AntAlmanac',
