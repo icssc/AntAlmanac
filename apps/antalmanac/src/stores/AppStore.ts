@@ -6,7 +6,6 @@ import type {
     RepeatingCustomEvent,
     CustomEventId,
 } from '@packages/antalmanac-types';
-import { SnackbarOrigin, VariantType } from 'notistack';
 
 import actionTypesStore from '$actions/ActionTypesStore';
 import type {
@@ -38,16 +37,6 @@ class AppStore extends EventEmitter {
 
     colorPickers: Record<string, EventEmitter>;
 
-    snackbarMessage: string;
-
-    snackbarVariant: VariantType;
-
-    snackbarDuration: number;
-
-    snackbarPosition: SnackbarOrigin;
-
-    snackbarStyle: object;
-
     eventsInCalendar: CalendarEvent[];
 
     finalsEventsInCalendar: CourseEvent[];
@@ -62,11 +51,6 @@ class AppStore extends EventEmitter {
         this.customEvents = [];
         this.schedule = new Schedules();
         this.colorPickers = {};
-        this.snackbarMessage = '';
-        this.snackbarVariant = 'info';
-        this.snackbarDuration = 3000;
-        this.snackbarPosition = { vertical: 'bottom', horizontal: 'left' };
-        this.snackbarStyle = {};
         this.eventsInCalendar = [];
         this.finalsEventsInCalendar = [];
         this.unsavedChanges = false;
@@ -154,26 +138,6 @@ class AppStore extends EventEmitter {
 
     getFinalEventsInCalendar() {
         return this.schedule.getCalendarizedFinals();
-    }
-
-    getSnackbarMessage() {
-        return this.snackbarMessage;
-    }
-
-    getSnackbarVariant() {
-        return this.snackbarVariant;
-    }
-
-    getSnackbarPosition() {
-        return this.snackbarPosition;
-    }
-
-    getSnackbarDuration() {
-        return this.snackbarDuration;
-    }
-
-    getSnackbarStyle() {
-        return this.snackbarStyle;
     }
 
     getAddedSectionCodes() {
@@ -486,21 +450,6 @@ class AppStore extends EventEmitter {
         actionTypesStore.autoSaveSchedule(action);
         this.colorPickers[sectionCode].emit('colorChange', newColor);
         this.emit('colorChange', false);
-    }
-
-    openSnackbar(
-        variant: VariantType,
-        message: string,
-        duration?: number,
-        position?: SnackbarOrigin,
-        style?: Record<string, string>
-    ) {
-        this.snackbarVariant = variant;
-        this.snackbarMessage = message;
-        this.snackbarDuration = duration != null ? duration * 1000 : 3000;
-        this.snackbarPosition = position ? position : this.snackbarPosition;
-        this.snackbarStyle = style ? style : this.snackbarStyle;
-        this.emit('openSnackbar');
     }
 
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
