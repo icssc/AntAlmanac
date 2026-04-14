@@ -44,13 +44,6 @@ function sortSections(sections: AASection[], sortBy: SortOption): AASection[] {
                 const bMatch = /Tu|Th/.test(getMeetingDays(b)) ? 0 : 1;
                 return aMatch - bMatch;
             }
-
-            case 'enrollment': {
-                const aRatio = parseInt(a.numCurrentlyEnrolled.totalEnrolled) / (parseInt(a.maxCapacity) || 1);
-                const bRatio = parseInt(b.numCurrentlyEnrolled.totalEnrolled) / (parseInt(b.maxCapacity) || 1);
-                return aRatio - bRatio;
-            }
-
             default:
                 return 0;
         }
