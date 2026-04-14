@@ -210,8 +210,8 @@ export const mergeShortCourseSchedules = (
 };
 
 const handleScheduleImport = async (username: string, skipImportedCheck = false) => {
-    const session = useSessionStore.getState();
-    if (!session.sessionIsValid) {
+    const sessionStore = useSessionStore.getState();
+    if (!sessionStore.sessionIsValid || !sessionStore.session) {
         throw new Error("Invalid session: User isn't logged in.");
     }
 
@@ -227,7 +227,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
     }
 
     const userAndAccount = await trpc.userData.getUserAndAccountBySessionToken.query({
-        token: session.sessionId ?? '',
+        token: sessionStore.session.token ?? '',
     });
     const { users, accounts } = userAndAccount;
 
@@ -249,7 +249,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
 
             scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
 
-            await saveSchedule(accounts.providerAccountId, true, users);
+            await saveSchedule(accounts.accountId, true, users);
 
             await trpc.userData.flagImportedSchedule.mutate({
                 providerId: username,
@@ -310,7 +310,7 @@ export const loadSchedule = async (
 
                 let error = false;
 
-                if (scheduleSaveState !== undefined) {
+                if (scheduleSaveState) {
                     if (await AppStore.loadSchedule(scheduleSaveState)) {
                         openSnackbar('success', `Schedule loaded.`);
                     } else {

@@ -13,7 +13,7 @@ import { useThemeStore } from '$stores/SettingsStore';
 
 export const Save = () => {
     const isDark = useThemeStore((store) => store.isDark);
-    const { sessionId, sessionIsValid: validSession } = useSessionStore();
+    const { session, sessionIsValid: validSession } = useSessionStore();
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
@@ -40,12 +40,12 @@ export const Save = () => {
     }, []);
 
     const saveScheduleData = async () => {
-        if (validSession && sessionId) {
+        if (validSession && session) {
             const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
-                token: sessionId,
+                token: session.token,
             });
             setSaving(true);
-            await saveSchedule(accounts.providerAccountId, true, users);
+            await saveSchedule(accounts.accountId, true, users);
             setSaving(false);
         }
     };

@@ -12,8 +12,8 @@ export const authClient = createAuthClient({
 export type SessionData = typeof authClient.$Infer.Session;
 
 export async function signOut(onLogoutComplete?: () => void) {
-    const sessionId = useSessionStore.getState().sessionId;
-    if (!sessionId) {
+    const session = useSessionStore.getState().session;
+    if (!session) {
         await useSessionStore.getState().clearSession();
         onLogoutComplete?.();
         return;
@@ -29,7 +29,7 @@ export async function signOut(onLogoutComplete?: () => void) {
     onLogoutComplete?.();
 
     const { logoutUrl } = await trpc.userData.logout.mutate({
-        sessionToken: sessionId,
+        sessionToken: session.token,
         redirectUrl: window.location.origin,
     });
 

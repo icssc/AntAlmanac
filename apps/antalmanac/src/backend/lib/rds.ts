@@ -30,7 +30,7 @@ export class RDS {
         return tx
             .select({ id: accounts.userId })
             .from(accounts)
-            .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.providerAccountId, name)))
+            .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.accountId, name)))
             .limit(1)
             .then((xs) => xs[0]?.id ?? null);
     }
@@ -39,7 +39,7 @@ export class RDS {
      * Creates a guest user if they don't already exist.
      *
      * @param tx Database or transaction object
-     * @param name Guest user's name, to be used as providerAccountID and username
+     * @param name Guest user's name, to be used as accountId and username
      * @returns The new/existing user's ID
      */
     private static async createGuestUserOptional(tx: Transaction, name: string) {
@@ -59,7 +59,7 @@ export class RDS {
 
         await tx
             .insert(accounts)
-            .values({ userId, accountType: 'GUEST', providerAccountId: name })
+            .values({ userId, accountType: 'GUEST', accountId: name })
             .onConflictDoNothing()
             .execute();
 
@@ -81,7 +81,7 @@ export class RDS {
             tx
                 .select()
                 .from(accounts)
-                .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerId)))
+                .where(and(eq(accounts.accountType, accountType), eq(accounts.accountId, providerId)))
                 .limit(1)
                 .then((res) => res[0] ?? null)
         );
@@ -138,11 +138,11 @@ export class RDS {
     static async getGoogleIdByUserId(db: DatabaseOrTransaction, userId: string): Promise<string | null> {
         return db.transaction((tx) =>
             tx
-                .select({ providerAccountId: accounts.providerAccountId })
+                .select({ accountId: accounts.accountId })
                 .from(accounts)
                 .where(eq(accounts.userId, userId))
                 .limit(1)
-                .then((res) => (res.length > 0 ? res[0].providerAccountId : null))
+                .then((res) => (res.length > 0 ? res[0].accountId : null))
         );
     }
 
@@ -192,7 +192,7 @@ export class RDS {
 
             const account = await db
                 .insert(accounts)
-                .values({ userId: newUserId, providerAccountId: oidcProviderId, accountType })
+                .values({ userId: newUserId, accountId: oidcProviderId, accountType })
                 .returning()
                 .then((res) => res[0]);
 
@@ -211,7 +211,7 @@ export class RDS {
 
         const newAccount = await db
             .insert(accounts)
-            .values({ userId: existingUser.id, providerAccountId: oidcProviderId, accountType })
+            .values({ userId: existingUser.id, accountId: oidcProviderId, accountType })
             .returning()
             .then((res) => res[0]);
 
@@ -459,15 +459,11 @@ export class RDS {
         });
     }
 
-    private static async getUserAndAccount(
-        db: DatabaseOrTransaction,
-        accountType: AccountType,
-        providerAccountId: string
-    ) {
+    private static async getUserAndAccount(db: DatabaseOrTransaction, accountType: AccountType, accountId: string) {
         const res = await db
             .select()
             .from(accounts)
-            .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerAccountId)))
+            .where(and(eq(accounts.accountType, accountType), eq(accounts.accountId, accountId)))
             .leftJoin(users, eq(accounts.userId, users.id))
             .limit(1);
 
