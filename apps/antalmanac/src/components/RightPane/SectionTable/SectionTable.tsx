@@ -8,7 +8,6 @@ import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/Cours
 import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
 import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/EnrollmentHistoryPopup';
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
-import { SearchFilter } from '$components/RightPane/SectionTable/SearchFilter';
 import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import { useIsMobile } from '$hooks/useIsMobile';
@@ -156,7 +155,6 @@ function SectionTable(props: SectionTableProps) {
                         />
                     }
                 />
-                <SearchFilter></SearchFilter>
             </Box>
 
             {missingSections?.length > 0 && (
