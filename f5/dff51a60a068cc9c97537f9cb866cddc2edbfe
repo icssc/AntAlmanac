@@ -1,0 +1,9 @@
+apps/antalmanac/src/backend/lib/rds.ts
+  cb0ed9264ccee4e3 231,247,251,254-256,262,279,313,316,321,331,338,345,351,353,355-356,366
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "f5dff51a60a068cc9c97537f9cb866cddc2edbfe",
+  "prompts": {}
+}

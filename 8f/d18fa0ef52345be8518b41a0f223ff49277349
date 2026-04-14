@@ -1,0 +1,9 @@
+apps/antalmanac/src/stores/Schedules.ts
+  cb0ed9264ccee4e3 578-582,584-588
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "8fd18fa0ef52345be8518b41a0f223ff49277349",
+  "prompts": {}
+}
