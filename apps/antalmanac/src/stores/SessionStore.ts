@@ -6,6 +6,7 @@ import { getLocalStorageSessionId } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 
 interface SessionState {
+    session: SessionData['session'] | null;
     sessionId: string | null;
     user: SessionData['user'] | null;
     userId: string | null;
@@ -29,6 +30,7 @@ interface SessionState {
 export const useSessionStore = create<SessionState>((set, get) => {
     const localSessionId = getLocalStorageSessionId();
     return {
+        session: null,
         sessionId: localSessionId,
         user: null,
         userId: null,
@@ -50,6 +52,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
             // Remove "google" prefix
             const googleId = accountInfo.userId.toString().split('_')[1];
             set({
+                session: sessionData.session,
                 sessionId: sessionData.session.id,
                 sessionIsValid: true,
                 user: sessionData.user,
@@ -65,6 +68,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
             if (currentSession) {
                 clearSsoCookie();
                 set({
+                    session: null,
                     sessionId: null,
                     user: null,
                     userId: null,

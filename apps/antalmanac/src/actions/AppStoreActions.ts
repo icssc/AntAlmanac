@@ -353,7 +353,7 @@ export const loadScheduleWithSessionToken = async () => {
     // });
     try {
         const userDataResponse = await trpc.userData.getUserDataWithSession.query({
-            refreshToken: useSessionStore.getState().sessionId ?? '',
+            refreshToken: useSessionStore.getState().session?.token ?? '',
         });
         const scheduleSaveState = userDataResponse?.userData;
         if (scheduleSaveState !== undefined && isEmptySchedule(scheduleSaveState.schedules)) {
