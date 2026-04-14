@@ -290,7 +290,3 @@ export function setLocalStorageHiddenCourses(value: string) {
 export function getLocalStorageHiddenCourses() {
     return window.localStorage.getItem(LSK.hiddenCourses);
 }
-
-export function removeLocalStorageHiddenCourses() {
-    window.localStorage.removeItem(LSK.hiddenCourses);
-}
