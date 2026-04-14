@@ -10,7 +10,7 @@ import { procedure, router } from '../trpc';
 import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { oauth } from '$src/backend/lib/auth/oauth';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
-import { RDS } from '$src/backend/lib/rds';
+import { RDS } from '$src/backend/lib/rds/rds';
 
 const { OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
 const NODE_ENV = process.env.NODE_ENV;
