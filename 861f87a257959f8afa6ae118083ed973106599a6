@@ -1,0 +1,23 @@
+apps/antalmanac/src/backend/lib/rds.ts
+  05c542cfb463ddf3 817-819
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "861f87a257959f8afa6ae118083ed973106599a6",
+  "prompts": {
+    "05c542cfb463ddf3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1f26ab27-5706-4396-a5e0-8c09dd415076",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 25,
+      "total_deletions": 45,
+      "accepted_lines": 25,
+      "overriden_lines": 0
+    }
+  }
+}
