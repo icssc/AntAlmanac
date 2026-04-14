@@ -19,7 +19,6 @@
         "@react-email/components": "^1.0.8",
         "@react-email/render": "^2.0.4",
         "@trpc/server": "^10.30.0",
-        "aws-sdk": "^2.1550.0",
         "dotenv": "^16.4.5",
         "drizzle-orm": "^0.45.1",
         "pg": "^8.13.1",
