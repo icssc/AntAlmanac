@@ -1,24 +1,18 @@
 import { db } from '@packages/db/src';
-import { friendships, schedules, sessions, users } from '@packages/db/src/schema';
+import { friendships, schedules, users } from '@packages/db/src/schema';
 import { TRPCError } from '@trpc/server';
-import { and, eq, gt, or } from 'drizzle-orm';
+import { and, eq, or } from 'drizzle-orm';
 import { z } from 'zod';
 
+import { RDS } from '../lib/rds';
 import { procedure, router } from '../trpc';
 
-/**
- * Resolves a session token to an internal userId, verifying the session is valid and not expired.
- */
 async function resolveSessionToUserId(sessionToken: string): Promise<string> {
-    const [session] = await db
-        .select({ userId: sessions.userId })
-        .from(sessions)
-        .where(and(eq(sessions.refreshToken, sessionToken), gt(sessions.expires, new Date())))
-        .limit(1);
-    if (!session) {
+    const userId = await RDS.getUserIdBySessionToken(db, sessionToken);
+    if (!userId) {
         throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Invalid or expired session.' });
     }
-    return session.userId;
+    return userId;
 }
 
 /**

@@ -806,6 +806,21 @@ export class RDS {
     }
 
     /**
+     * Resolves a session token to a userId, verifying the session is valid and not expired.
+     * Returns null if the session is invalid or expired.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param sessionToken - The refresh token identifying the session.
+     * @returns A promise that resolves to the userId string, or null if the session is not found or expired.
+     */
+    static async getUserIdBySessionToken(db: DatabaseOrTransaction, sessionToken: string): Promise<string | null> {
+        return db.transaction(async (tx) => {
+            const user = await this.getUserDataWithSession(tx, sessionToken);
+            return user?.id ?? null;
+        });
+    }
+
+    /**
      * Flags a user as imported based on the provided provider ID.
      *
      * This function checks if a user associated with the given provider ID has already been flagged as imported.
