@@ -1,0 +1,23 @@
+packages/db/src/schema/schedule/schedule.ts
+  cb0ed9264ccee4e3 5-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "7e5885b37475646a09901d77a74e84b58496207c",
+  "prompts": {
+    "cb0ed9264ccee4e3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d2fb9958-3ad7-4425-aaf6-239c593f04d6",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 4,
+      "total_deletions": 0,
+      "accepted_lines": 3,
+      "overriden_lines": 0
+    }
+  }
+}

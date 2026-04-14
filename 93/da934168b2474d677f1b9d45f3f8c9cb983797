@@ -1,0 +1,29 @@
+apps/antalmanac/src/stores/Schedules.ts
+  cb0ed9264ccee4e3 578-582,584-588
+apps/antalmanac/src/actions/AppStoreActions.ts
+  cb0ed9264ccee4e3 140-141,193-194
+apps/antalmanac/tests/schedule-id-race-condition.test.ts
+  cb0ed9264ccee4e3 1-245
+apps/antalmanac/src/backend/lib/rds.ts
+  cb0ed9264ccee4e3 231,247,251,254-256,262,275,281-283,298,301,304,309,313,315-319,321-322,328-329,336-339,341,343,347-350,354
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "93da934168b2474d677f1b9d45f3f8c9cb983797",
+  "prompts": {
+    "cb0ed9264ccee4e3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d2fb9958-3ad7-4425-aaf6-239c593f04d6",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 383,
+      "total_deletions": 127,
+      "accepted_lines": 295,
+      "overriden_lines": 0
+    }
+  }
+}
