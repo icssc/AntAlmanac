@@ -13,6 +13,26 @@ async function resolveSessionToUserId(sessionToken: string): Promise<string> {
     return userId;
 }
 
+async function validateAndSendFriendRequest(requesterId: string, addresseeId: string) {
+    const existing = await RDS.getFriendshipBetween(db, requesterId, addresseeId);
+
+    if (existing?.status === 'ACCEPTED') {
+        throw new TRPCError({ code: 'BAD_REQUEST', message: 'You are already friends with this user.' });
+    }
+
+    if (existing?.status === 'BLOCKED' || existing?.status === 'PENDING') {
+        const theyRequestedYou = existing.requesterId === addresseeId && existing.addresseeId === requesterId;
+        throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: theyRequestedYou
+                ? 'This user has already sent you a friend request. Check your Requests tab to accept.'
+                : 'A friend request is already pending with this user.',
+        });
+    }
+
+    return RDS.insertFriendRequest(db, requesterId, addresseeId);
+}
+
 /**
  * Router for handling friend-related operations, including sending and accepting friend requests,
  * retrieving friends and pending requests, removing or blocking users, and managing
@@ -45,26 +65,7 @@ const friendsRouter = router({
                 });
             }
 
-            const existing = await RDS.getFriendshipBetween(db, requesterId, addressee.id);
-
-            if (existing?.status === 'ACCEPTED') {
-                throw new TRPCError({
-                    code: 'BAD_REQUEST',
-                    message: 'You are already friends with this user.',
-                });
-            }
-
-            if (existing?.status === 'BLOCKED' || existing?.status === 'PENDING') {
-                const theyRequestedYou = existing.requesterId === addressee.id && existing.addresseeId === requesterId;
-                throw new TRPCError({
-                    code: 'BAD_REQUEST',
-                    message: theyRequestedYou
-                        ? 'This user has already sent you a friend request. Check your Requests tab to accept.'
-                        : 'A friend request is already pending with this user.',
-                });
-            }
-
-            return RDS.insertFriendRequest(db, requesterId, addressee.id);
+            return validateAndSendFriendRequest(requesterId, addressee.id);
         }),
 
     /**
@@ -84,27 +85,7 @@ const friendsRouter = router({
                 });
             }
 
-            const existing = await RDS.getFriendshipBetween(db, requesterId, input.addresseeId);
-
-            if (existing?.status === 'ACCEPTED') {
-                throw new TRPCError({
-                    code: 'BAD_REQUEST',
-                    message: 'You are already friends with this user.',
-                });
-            }
-
-            if (existing?.status === 'BLOCKED' || existing?.status === 'PENDING') {
-                const theyRequestedYou =
-                    existing.requesterId === input.addresseeId && existing.addresseeId === requesterId;
-                throw new TRPCError({
-                    code: 'BAD_REQUEST',
-                    message: theyRequestedYou
-                        ? 'This user has already sent you a friend request. Check your Requests tab to accept.'
-                        : 'A friend request is already pending with this user.',
-                });
-            }
-
-            return RDS.insertFriendRequest(db, requesterId, input.addresseeId);
+            return validateAndSendFriendRequest(requesterId, input.addresseeId);
         }),
 
     /**
