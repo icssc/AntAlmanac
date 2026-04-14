@@ -976,7 +976,13 @@ export class RDS {
     static async unblockUser(db: DatabaseOrTransaction, userId: string, blockId: string) {
         return db
             .delete(friendships)
-            .where(and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, blockId)));
+            .where(
+                and(
+                    eq(friendships.requesterId, userId),
+                    eq(friendships.addresseeId, blockId),
+                    eq(friendships.status, 'BLOCKED')
+                )
+            );
     }
 
     /**
