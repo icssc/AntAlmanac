@@ -6,7 +6,6 @@ import Split from 'react-split';
 
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { Header } from '$components/Header/Header';
-import { HelpMenu } from '$components/HelpMenu/HelpMenu';
 import InstallPWABanner from '$components/InstallPWABanner';
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
@@ -88,7 +87,6 @@ export default function Home() {
             </Stack>
 
             <NotificationSnackbar />
-            <HelpMenu />
         </LocalizationProvider>
     );
 }

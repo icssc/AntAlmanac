@@ -1,9 +1,11 @@
-import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography } from '@mui/material';
+import { MenuBook } from '@mui/icons-material';
+import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography, useTheme } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { updateScheduleNote } from '$actions/AppStoreActions';
+import { EmptyState } from '$components/EmptyState';
 import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEventDetailView';
 import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
 import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
@@ -13,7 +15,10 @@ import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
+import { LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useTabStore } from '$stores/TabStore';
 
 /**
  * All the interactive buttons have the same styles.
@@ -142,6 +147,7 @@ function CustomEventsBox() {
 }
 
 function ScheduleNoteBox() {
+    const theme = useTheme();
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const [scheduleNote, setScheduleNote] = useState(
         skeletonMode ? AppStore.getCurrentSkeletonSchedule().scheduleNote : AppStore.getCurrentScheduleNote()
@@ -211,6 +217,14 @@ function ScheduleNoteBox() {
                     '& .MuiInputBase-root': {
                         cursor: skeletonMode ? 'not-allowed' : 'text',
                     },
+                    ...(theme.palette.mode === 'dark' && {
+                        '& .MuiInputLabel-root': {
+                            color: LIGHT_BLUE,
+                        },
+                        '& .MuiInputLabel-root.Mui-focused': {
+                            color: LIGHT_BLUE,
+                        },
+                    }),
                 }}
             />
         </Box>
@@ -339,13 +353,6 @@ function AddedSectionsGrid() {
         return scheduleNames[scheduleIndex];
     }, [scheduleNames, scheduleIndex]);
 
-    // "No Courses Added Yet!" notification
-    const NoCoursesBox = (
-        <Box style={{ paddingTop: '12px', paddingBottom: '12px' }}>
-            <Typography align="left">No Courses Added Yet!</Typography>
-        </Box>
-    );
-
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Box sx={{ display: 'flex', width: 'fit-content', position: 'absolute', zIndex: 2 }}>
@@ -356,7 +363,21 @@ function AddedSectionsGrid() {
             </Box>
             <Box sx={{ marginTop: 7 }}>
                 <Typography variant="h6">{`${scheduleName} (${scheduleUnits} Units)`}</Typography>
-                {courses.length < 1 ? NoCoursesBox : null}
+                {courses.length === 0 && (
+                    <EmptyState
+                        Icon={MenuBook}
+                        title="No Courses Added Yet"
+                        description="Search for courses and add sections to build your schedule. You can also import from your study list."
+                        primaryAction={{
+                            label: 'Search Courses',
+                            onClick: () => useTabStore.getState().setActiveTab('search'),
+                        }}
+                        secondaryAction={{
+                            label: 'Import Schedule',
+                            onClick: () => scheduleComponentsToggleStore.getState().setOpenImportDialog(true),
+                        }}
+                    />
+                )}
                 <Box display="flex" flexDirection="column" gap={1}>
                     {courses.map((course) => {
                         const missingSections = getMissingSections(course);

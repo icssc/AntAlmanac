@@ -1,5 +1,4 @@
 import { AccountCircle, Google, ExpandMore } from '@mui/icons-material';
-import { LoadingButton } from '@mui/lab';
 import {
     Divider,
     Stack,
@@ -25,6 +24,7 @@ import { loadSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/
 import { AlertDialog } from '$components/AlertDialog';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
+import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
 import { useNotificationStore } from '$stores/NotificationStore';
@@ -200,7 +200,7 @@ export const Signin = () => {
             <Dialog open={isOpen} onClose={() => handleClose(true)}>
                 <DialogContent>
                     <Stack spacing={1}>
-                        <LoadingButton
+                        <Button
                             onClick={handleLogin}
                             color="primary"
                             variant="contained"
@@ -209,7 +209,7 @@ export const Signin = () => {
                             fullWidth
                         >
                             Sign in with Google
-                        </LoadingButton>
+                        </Button>
 
                         <Box
                             onClick={() => setShowLegacyLogin(!showLegacyLogin)}
@@ -252,6 +252,7 @@ export const Signin = () => {
                                     type="text"
                                     fullWidth
                                     placeholder="Enter here"
+                                    color="secondary"
                                     value={userID}
                                     onChange={(event) => setUserID(event.target.value)}
                                 />
@@ -260,11 +261,11 @@ export const Signin = () => {
                     </Stack>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => handleClose(true)} color={isDark ? 'secondary' : 'primary'}>
+                    <Button onClick={() => handleClose(true)} color="inherit">
                         Cancel
                     </Button>
                     {showLegacyLogin && (
-                        <Button onClick={() => handleClose(false)} color={isDark ? 'secondary' : 'primary'}>
+                        <Button onClick={() => handleClose(false)} color="inherit">
                             Sign in
                         </Button>
                     )}
@@ -285,23 +286,13 @@ export const Signin = () => {
                 }}
                 slotProps={{
                     paper: {
-                        sx: {
-                            width: {
-                                xs: 300,
-                                sm: 300,
-                                md: 330,
-                            },
-                            p: '16px 20px',
-                            borderRadius: 2,
-                            border: '1px solid',
-                            borderColor: 'background.default',
-                        },
+                        sx: getSettingsPopoverPaperSx(isDark),
                     },
                 }}
             >
-                <SettingsMenu user={null} />
+                <SettingsMenu user={null} onClose={() => setSettingsAnchorEl(null)} />
 
-                <Divider style={{ marginTop: '10px', marginBottom: '12px' }} />
+                <Divider style={{ marginTop: '20px', marginBottom: '12px' }} />
 
                 <MenuItem onClick={handleOpen} sx={{ px: 1, py: 1.25, borderRadius: 1 }}>
                     <ListItemIcon>
@@ -327,7 +318,7 @@ export const Signin = () => {
                 severity={alertMessage.severity}
             >
                 <DialogContentText>To load your schedule sign in with your Google account</DialogContentText>
-                <LoadingButton
+                <Button
                     color="primary"
                     variant="contained"
                     startIcon={<Google />}
@@ -336,7 +327,7 @@ export const Signin = () => {
                     size="large"
                 >
                     Sign in with Google
-                </LoadingButton>
+                </Button>
             </AlertDialog>
         </div>
     );

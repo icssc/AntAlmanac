@@ -1,5 +1,5 @@
 {
-    "id": "4723ce3a-d3e8-40d2-b094-4e10e6554106",
+    "id": "c1d2e3f4-a5b6-7890-cdef-012345678901",
     "prevId": "abb011a1-63ac-4ac8-9f0f-8755da276938",
     "version": "7",
     "dialect": "postgresql",
@@ -225,18 +225,7 @@
                 }
             },
             "compositePrimaryKeys": {},
-            "uniqueConstraints": {
-                "schedules_user_id_name_unique": {
-                    "name": "schedules_user_id_name_unique",
-                    "nullsNotDistinct": false,
-                    "columns": ["user_id", "name"]
-                },
-                "schedules_user_id_index_unique": {
-                    "name": "schedules_user_id_index_unique",
-                    "nullsNotDistinct": false,
-                    "columns": ["user_id", "index"]
-                }
-            },
+            "uniqueConstraints": {},
             "policies": {},
             "checkConstraints": {},
             "isRLSEnabled": false
@@ -451,8 +440,7 @@
                     "name": "environment",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": true,
-                    "default": "'production'"
+                    "notNull": false
                 }
             },
             "indexes": {},
@@ -468,9 +456,9 @@
                 }
             },
             "compositePrimaryKeys": {
-                "subscriptions_userId_sectionCode_year_quarter_environment_pk": {
-                    "name": "subscriptions_userId_sectionCode_year_quarter_environment_pk",
-                    "columns": ["userId", "sectionCode", "year", "quarter", "environment"]
+                "subscriptions_userId_sectionCode_year_quarter_pk": {
+                    "name": "subscriptions_userId_sectionCode_year_quarter_pk",
+                    "columns": ["userId", "sectionCode", "year", "quarter"]
                 }
             },
             "uniqueConstraints": {},

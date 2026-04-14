@@ -68,8 +68,15 @@
         {
             "idx": 9,
             "version": "7",
-            "when": 1772216423419,
-            "tag": "0009_handy_prima",
+            "when": 1772937827598,
+            "tag": "0009_remove_schedule_unique_constraints",
+            "breakpoints": true
+        },
+        {
+            "idx": 10,
+            "version": "7",
+            "when": 1772937828000,
+            "tag": "0010_handy_prima",
             "breakpoints": true
         }
     ]
