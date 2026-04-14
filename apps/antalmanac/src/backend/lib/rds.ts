@@ -814,10 +814,9 @@ export class RDS {
      * @returns A promise that resolves to the userId string, or null if the session is not found or expired.
      */
     static async getUserIdBySessionToken(db: DatabaseOrTransaction, sessionToken: string): Promise<string | null> {
-        return db.transaction(async (tx) => {
-            const user = await this.getUserDataWithSession(tx, sessionToken);
-            return user?.id ?? null;
-        });
+        const session = await this.getCurrentSession(db, sessionToken);
+        if (!session || session.expires <= new Date()) return null;
+        return session.userId;
     }
 
     /**
