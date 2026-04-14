@@ -29,7 +29,7 @@ const friendsRouter = router({
         .mutation(async ({ input }) => {
             const requesterId = await resolveSessionToUserId(input.sessionToken);
 
-            const [addressee] = await db.select().from(users).where(eq(users.email, input.email)).limit(1);
+            const addressee = await RDS.getUserByEmail(db, input.email);
 
             if (!addressee) {
                 throw new TRPCError({
