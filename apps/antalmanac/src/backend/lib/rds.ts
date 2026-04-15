@@ -231,7 +231,7 @@ export class RDS {
     ): Promise<{ userId: string; scheduleIdMap: Record<string, string> }> {
         return db.transaction(async (tx) => {
             const account = await this.registerUserAccount(
-                db,
+                tx,
                 'OIDC',
                 userData.id,
                 userData.name,
@@ -708,7 +708,7 @@ export class RDS {
                 tx.update(users).set({ imported: true }).where(eq(users.id, accounts.userId)).execute()
             );
             return true;
-        } catch (error) {
+        } catch {
             return false;
         }
     }
