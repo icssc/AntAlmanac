@@ -13,6 +13,13 @@ async function resolveSessionToUserId(sessionToken: string): Promise<string> {
     return userId;
 }
 
+async function assertSessionMatchesUser(sessionToken: string, claimedUserId: string): Promise<void> {
+    const authenticatedId = await resolveSessionToUserId(sessionToken);
+    if (authenticatedId !== claimedUserId) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Access denied.' });
+    }
+}
+
 async function validateAndSendFriendRequest(requesterId: string, addresseeId: string) {
     const existing = await RDS.getFriendshipBetween(db, requesterId, addresseeId);
 
@@ -103,28 +110,36 @@ const friendsRouter = router({
     /**
      * Returns all accepted friends for the given user as an array of user objects (id, name, email).
      * Unions friendships where the user is either the requester or the addressee.
+     * Requires a valid session token matching the requested userId.
      */
-    getFriends: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
+    getFriends: procedure.input(z.object({ sessionToken: z.string(), userId: z.string() })).query(async ({ input }) => {
+        await assertSessionMatchesUser(input.sessionToken, input.userId);
         return RDS.getFriends(db, input.userId);
     }),
 
     /**
      * Returns true if an ACCEPTED friendship exists between the viewer and the target user
      * in either direction (viewer → target or target → viewer).
+     * Requires a valid session token matching the viewerId.
      */
     areFriends: procedure
-        .input(z.object({ viewerId: z.string(), targetUserId: z.string() }))
+        .input(z.object({ sessionToken: z.string(), viewerId: z.string(), targetUserId: z.string() }))
         .query(async ({ input }) => {
+            await assertSessionMatchesUser(input.sessionToken, input.viewerId);
             return RDS.areFriends(db, input.viewerId, input.targetUserId);
         }),
 
     /**
      * Returns all pending friend requests received by the given user,
      * including the requester's id, name, and email.
+     * Requires a valid session token matching the requested userId.
      */
-    getPendingRequests: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
-        return RDS.getPendingFriendRequests(db, input.userId);
-    }),
+    getPendingRequests: procedure
+        .input(z.object({ sessionToken: z.string(), userId: z.string() }))
+        .query(async ({ input }) => {
+            await assertSessionMatchesUser(input.sessionToken, input.userId);
+            return RDS.getPendingFriendRequests(db, input.userId);
+        }),
 
     /**
      * Removes an existing friendship or declines a pending friend request.
@@ -151,10 +166,14 @@ const friendsRouter = router({
 
     /**
      * Get all blocked users for a user.
+     * Requires a valid session token matching the requested userId.
      */
-    getBlockedUsers: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
-        return RDS.getBlockedUsers(db, input.userId);
-    }),
+    getBlockedUsers: procedure
+        .input(z.object({ sessionToken: z.string(), userId: z.string() }))
+        .query(async ({ input }) => {
+            await assertSessionMatchesUser(input.sessionToken, input.userId);
+            return RDS.getBlockedUsers(db, input.userId);
+        }),
 
     /**
      * Unblock a user.

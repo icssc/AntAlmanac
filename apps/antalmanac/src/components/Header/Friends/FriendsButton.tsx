@@ -1,14 +1,13 @@
-import { People } from '@mui/icons-material';
-import { Button, Popover } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
-
-import { FriendsMenu, type Friend, type FriendRequest } from './FriendsMenu';
-
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import { People } from '@mui/icons-material';
+import { Button, Popover } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
+
+import { FriendsMenu, type Friend, type FriendRequest } from './FriendsMenu';
 
 export function FriendsButton() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -40,9 +39,9 @@ export function FriendsButton() {
             setCurrentUserId(userId);
 
             const [friendsResult, pendingResult, blockedResult] = await Promise.all([
-                trpc.friends.getFriends.query({ userId }),
-                trpc.friends.getPendingRequests.query({ userId }),
-                trpc.friends.getBlockedUsers.query({ userId }),
+                trpc.friends.getFriends.query({ sessionToken: session, userId }),
+                trpc.friends.getPendingRequests.query({ sessionToken: session, userId }),
+                trpc.friends.getBlockedUsers.query({ sessionToken: session, userId }),
             ]);
 
             setFriends(
@@ -100,8 +99,8 @@ export function FriendsButton() {
         const id = setInterval(async () => {
             try {
                 const [friendsResult, pendingResult] = await Promise.all([
-                    trpc.friends.getFriends.query({ userId: currentUserId }),
-                    trpc.friends.getPendingRequests.query({ userId: currentUserId }),
+                    trpc.friends.getFriends.query({ sessionToken: session, userId: currentUserId }),
+                    trpc.friends.getPendingRequests.query({ sessionToken: session, userId: currentUserId }),
                 ]);
                 if (cancelled) return;
                 setFriends(friendsResult.map((f) => ({ id: f.id, name: f.name ?? undefined, email: f.email ?? '' })));

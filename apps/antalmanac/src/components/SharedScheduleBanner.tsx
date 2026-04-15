@@ -1,10 +1,3 @@
-import { Add, Close, PersonAdd } from '@mui/icons-material';
-import { Alert, Box, Button, IconButton, Stack, Tooltip, Typography } from '@mui/material';
-import type { ScheduleSaveState } from '@packages/antalmanac-types';
-import { usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useLocation, useMatch, useNavigate, useParams } from 'react-router-dom';
-
 import { changeCurrentSchedule, importSharedScheduleById } from '$actions/AppStoreActions';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -13,9 +6,15 @@ import { removeLocalStorageTempSaveData } from '$lib/localStorage';
 import { SHARED_SCHEDULE_PREFIX } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { createEmptyShortCourseSchedule } from '$stores/scheduleHelpers';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import { createEmptyShortCourseSchedule } from '$stores/scheduleHelpers';
+import { Add, Close, PersonAdd } from '@mui/icons-material';
+import { Alert, Box, Button, IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import type { ScheduleSaveState } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useLocation, useMatch, useNavigate, useParams } from 'react-router-dom';
 
 interface Props {
     error: string | null;
@@ -128,6 +127,7 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
                         token: sessionAfterValidation,
                     });
                     const allowed = await trpc.friends.areFriends.query({
+                        sessionToken: sessionAfterValidation,
                         viewerId: currentUser.id,
                         targetUserId: friendUserId,
                     });
@@ -206,6 +206,7 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
                         });
                         if (currentUser.id !== sharedSchedule.userId) {
                             const alreadyFriends = await trpc.friends.areFriends.query({
+                                sessionToken: sessionAfterValidation,
                                 viewerId: currentUser.id,
                                 targetUserId: sharedSchedule.userId,
                             });
