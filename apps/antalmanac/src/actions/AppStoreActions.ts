@@ -1,6 +1,6 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
-import { signIn } from '$lib/auth/authActions';
+import { getSignInUrl } from '$lib/auth/authActions';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache, setLocalStorageFromLoading } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
@@ -387,17 +387,19 @@ const cacheSchedule = () => {
     }
 };
 
-export const loginUser = async () => {
+export const loginUser = async ({ silent = false } = {}) => {
     try {
-        const { url } = await signIn();
+        const { url } = await getSignInUrl();
         if (url) {
             cacheSchedule();
             window.location.href = url.toString();
         }
         setLocalStorageFromLoading('true');
     } catch (error) {
-        console.error('Error during login initiation', error);
-        openSnackbar('error', 'Error during login initiation. Please Try Again.');
+        if (!silent) {
+            console.error('Error during login initiation', error);
+            openSnackbar('error', 'Error during login initiation. Please Try Again.');
+        }
     }
 };
 

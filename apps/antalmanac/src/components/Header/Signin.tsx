@@ -145,7 +145,7 @@ export const Signin = () => {
                 <DialogContent>
                     <Stack spacing={1}>
                         <Button
-                            onClick={loginUser}
+                            onClick={() => loginUser()}
                             color="primary"
                             variant="contained"
                             startIcon={<Google />}

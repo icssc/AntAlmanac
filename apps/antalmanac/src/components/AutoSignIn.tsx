@@ -1,9 +1,7 @@
-import { useEffect, useRef } from 'react';
-
-import { signIn } from '$lib/auth/authActions';
+import { loginUser } from '$actions/AppStoreActions';
 import { authClient } from '$lib/auth/authClient';
 import { hasSsoCookie } from '$lib/ssoCookie';
-import { useSessionStore } from '$stores/SessionStore';
+import { useEffect, useRef } from 'react';
 
 /**
  * Automatically signs in users who authenticated via another app on antalmanac.com
@@ -15,8 +13,7 @@ import { useSessionStore } from '$stores/SessionStore';
  */
 export function AutoSignIn() {
     const hasChecked = useRef(false);
-    const sessionId = useSessionStore((state) => state.sessionId);
-    const { isPending } = authClient.useSession();
+    const { data, isPending } = authClient.useSession();
 
     useEffect(() => {
         if (hasChecked.current || isPending) {
@@ -25,19 +22,15 @@ export function AutoSignIn() {
         hasChecked.current = true;
 
         const checkAndSignIn = async () => {
-            if (!hasSsoCookie() || sessionId) {
+            if (!hasSsoCookie() || data?.session) {
                 return;
             }
 
-            try {
-                signIn();
-            } catch {
-                // Silent SSO failed (e.g. backend unavailable). Don't retry.
-            }
+            loginUser({ silent: true });
         };
 
         checkAndSignIn();
-    }, [isPending, sessionId]);
+    }, [isPending, data]);
 
     return null;
 }

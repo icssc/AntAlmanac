@@ -1,10 +1,9 @@
+import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { db } from '@packages/db';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { nextCookies } from 'better-auth/next-js';
 import { genericOAuth } from 'better-auth/plugins';
-
-import { oidcOAuthEnvSchema } from '$src/backend/env';
 
 const { OIDC_CLIENT_ID, OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
 
@@ -57,3 +56,6 @@ export const auth = betterAuth({
         },
     },
 });
+
+export type AuthorizationUrlParams =
+    (typeof auth)['options']['plugins'][0]['options']['config'][0]['authorizationUrlParams'];
