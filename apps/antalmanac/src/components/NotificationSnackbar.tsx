@@ -1,12 +1,14 @@
 'use client';
 
+import { useIsMobile } from '$hooks/useIsMobile';
+import { useSnackbarStore } from '$stores/SnackbarStore';
 import { Alert, Snackbar, SnackbarCloseReason } from '@mui/material';
 import { mergeSx } from '@mui/x-date-pickers/internals';
 
-import { useSnackbarStore } from '$stores/SnackbarStore';
-
 export const NotificationSnackbar = () => {
     const { open, snackbarClosed, message, severity, durationSeconds, position, style } = useSnackbarStore();
+
+    const isMobile = useIsMobile();
 
     const snackbarKey = open ? Date.now() : null;
 
@@ -25,8 +27,14 @@ export const NotificationSnackbar = () => {
             autoHideDuration={durationSeconds * 1000}
             anchorOrigin={position}
             onClose={handleClose}
-            sx={mergeSx((theme) => ({ [theme.breakpoints.up('sm')]: { minWidth: '288px' } }), style)}
-            className="notification-snackbar-container"
+            sx={mergeSx(
+                (theme) => ({
+                    /* Ensure snackbars sit above the mobile navigation tabs */
+                    marginBottom: isMobile ? 'calc(env(safe-area-inset-bottom, 0px) + 64px)' : undefined,
+                    [theme.breakpoints.up('sm')]: { minWidth: '288px' },
+                }),
+                style
+            )}
         >
             <Alert
                 severity={severity}

@@ -1,3 +1,12 @@
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import trpc from '$lib/api/trpc';
+import { warnMultipleTerms } from '$lib/helpers';
+import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import AppStore from '$stores/AppStore';
+import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useSessionStore } from '$stores/SessionStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import type {
     CourseDetails,
     CustomEventId,
@@ -10,16 +19,6 @@ import type {
 import { TRPCClientError } from '@trpc/client';
 import { TRPCError } from '@trpc/server';
 import { PostHog } from 'posthog-js/react';
-
-import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
-import { warnMultipleTerms } from '$lib/helpers';
-import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
-import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { openSnackbar } from '$stores/SnackbarStore';
-import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
     onError: (scheduleName: string) => unknown;
@@ -41,8 +40,7 @@ export const addCourse = (
     logAnalytics(postHog, {
         category: analyticsEnum.classSearch,
         action: analyticsEnum.classSearch.actions.ADD_COURSE,
-        label: courseDetails.deptCode,
-        value: courseNumAsDecimal(courseDetails.courseNumber),
+        label: courseDetails.deptCode + courseDetails.courseNumber,
     });
     const terms = AppStore.termsInSchedule(term);
 
@@ -110,7 +108,7 @@ export const saveSchedule = async (
             }
 
             try {
-                await trpc.userData.saveUserData.mutate({
+                const result = await trpc.userData.saveUserData.mutate({
                     id: providerId,
                     data: {
                         id: providerId,
@@ -120,6 +118,10 @@ export const saveSchedule = async (
                         userData: scheduleSaveState,
                     },
                 });
+
+                if (result?.scheduleIdMap) {
+                    AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
+                }
 
                 if (useSessionStore.getState().sessionIsValid) {
                     openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
@@ -159,7 +161,7 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
 
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
     try {
-        await trpc.userData.saveUserData.mutate({
+        const result = await trpc.userData.saveUserData.mutate({
             id: providerID,
             data: {
                 id: providerID,
@@ -169,6 +171,10 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
                 userData: scheduleSaveState,
             },
         });
+
+        if (result?.scheduleIdMap) {
+            AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
+        }
 
         deleteTempSaveData();
         AppStore.saveSchedule();
