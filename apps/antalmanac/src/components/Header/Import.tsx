@@ -72,7 +72,7 @@ export function Import() {
     const { openImportDialog, setOpenImportDialog } = useScheduleComponentsToggleStore(
         useShallow((state) => ({
             openImportDialog: state.openImportDialog,
-            setOpenImportDialog: state.setOpenAutoSaveWarning,
+            setOpenImportDialog: state.setOpenImportDialog,
         }))
     );
 
