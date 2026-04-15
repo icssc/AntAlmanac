@@ -1,6 +1,6 @@
 <h1 align=center> PRIVACY POLICY </h1>
 
-This privacy policy describes *AntAlmanac*'s usage of your activity data on the website, including collection and distribution via third party integrations such as *Google Analytics*. 
+This privacy policy describes *AntAlmanac*'s usage of your activity data on the website, including collection and distribution via third party integrations such as *PostHog*. 
 We take reasonable precautions to protect your data, but you should NOT enter sensitive information into *AntAlmanac*.
 We may change this policy when necessary.
 By using *AntAlmanac*, you consent to this privacy statement.
@@ -11,8 +11,8 @@ Information stored on your device that we do not log and that is not used to tra
 **Study plans and usernames:**
 Your username(s) and the associated schedules and enrolled classes. This allows you to save your schedules and is NOT shared with third parties.
 
-**Google Analytics usage data:**
-We use *Google Analytics* to track your usage, for example, which button you click on our your search queries. We do so to inform our prioritization and design of features. *Google Analytics* uses cookies and other tracking technologies to collect and store your information. Your usage information is anonymous and aggregated to us. HOWEVER, *Google Analytics* might collect your information individually or track you across websites. To block *Google Analytics* use *Google*’s first-party [browser add-on](https://support.google.com/analytics/answer/181881?hl=en)
+**PostHog usage data:**
+We use *PostHog* to track your usage, including page views and UI interaction events—for example, which buttons you click on our site and your search queries. We do so to inform our prioritization and design of features. *PostHog* uses cookies and other tracking technologies to collect and store your information. Your usage information is anonymous and aggregated to us. *PostHog* is a privacy-focused analytics platform.
 ## Information that we do not collect
   **Personally-identifiable information:** We do not collect any personally identifiable information. Your username should not contain your real name, and you should not enter sensitive information into *AntAlmanac*.
 

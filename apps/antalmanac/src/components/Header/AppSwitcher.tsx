@@ -1,3 +1,11 @@
+import {
+    SETTINGS_POPOVER_BG,
+    SETTINGS_POPOVER_MENU_HOVER_BG,
+    SETTINGS_POPOVER_MENU_SELECTED_BG,
+} from '$components/Header/headerStyles';
+import { Logo } from '$components/Header/Logo';
+import { BLUE, PLANNER_LINK } from '$src/globals';
+import appStore from '$stores/AppStore';
 import { EventNote, Route, UnfoldMore } from '@mui/icons-material';
 import {
     Button,
@@ -11,17 +19,8 @@ import {
     Typography,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { MouseEventHandler } from 'react';
-
-import { Logo } from '$components/Header/Logo';
-import {
-    SETTINGS_POPOVER_BG,
-    SETTINGS_POPOVER_MENU_HOVER_BG,
-    SETTINGS_POPOVER_MENU_SELECTED_BG,
-} from '$components/Header/headerStyles';
-import { BLUE, PLANNER_LINK } from '$src/globals';
-import appStore from '$stores/AppStore';
 
 type AppSwitcherProps = {
     isMobile: boolean;
@@ -62,6 +61,17 @@ export function AppSwitcher({ isMobile }: AppSwitcherProps) {
 
         setPlannerLoading(true);
     };
+
+    useEffect(() => {
+        const handlePageShow = (event: PageTransitionEvent) => {
+            if (event.persisted) {
+                setPlannerLoading(false);
+            }
+        };
+
+        window.addEventListener('pageshow', handlePageShow);
+        return () => window.removeEventListener('pageshow', handlePageShow);
+    }, []);
 
     const plannerIcon = plannerLoading ? <CircularProgress size={20} color="inherit" /> : <Route />;
 
