@@ -59,7 +59,7 @@ export function AppSwitcher({ isMobile }: AppSwitcherProps) {
             appStore.unsavedChanges = false;
         }
 
-        if (!event.ctrlKey) {
+        if (!event.ctrlKey && !event.metaKey) {
             setPlannerLoading(true);
         }
     };
