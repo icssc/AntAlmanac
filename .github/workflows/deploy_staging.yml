@@ -23,14 +23,6 @@ env:
     NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY }}
     PLANNER_CLIENT_API_KEY: ${{ secrets.PLANNER_CLIENT_API_KEY }}
 
-    PLANNER_DATABASE_URL: ${{ secrets.PLANNER_DATABASE_URL }}
-    PLANNER_SESSION_SECRET: ${{ secrets.PLANNER_SESSION_SECRET }}
-    PLANNER_ADMIN_EMAILS: ${{ secrets.PLANNER_ADMIN_EMAILS }}
-    PLANNER_PUBLIC_API_URL: ${{ secrets.PLANNER_PUBLIC_API_URL }}
-    PLANNER_EXTERNAL_USER_READ_SECRET: ${{ secrets.PLANNER_EXTERNAL_USER_READ_SECRET }}
-    PLANNER_NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.PLANNER_NEXT_PUBLIC_POSTHOG_KEY }}
-    PLANNER_NEXT_PUBLIC_POSTHOG_HOST: ${{ secrets.PLANNER_NEXT_PUBLIC_POSTHOG_HOST }}
-
 jobs:
     deploy-staging:
         if: github.head_ref != 'staging-shared' && github.head_ref != 'scheduler' && github.head_ref != 'monorepo'
@@ -78,7 +70,7 @@ jobs:
             - name: Generate termData
               uses: ./.github/actions/cache-generated-data
               with:
-                api-key: ${{ secrets.ANTEATER_API_KEY }}
+                  api-key: ${{ secrets.ANTEATER_API_KEY }}
 
             # TODO (@xgraceyan): Remove this stage once SST fixes deployments
             - name: Setup Pulumi
