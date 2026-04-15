@@ -1,0 +1,23 @@
+apps/antalmanac/src/components/Header/Signin.tsx
+  8d04213967769693 106,124,195-198
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "9c30b68eeafeb3bbc8f8bec7a07f70bba6ab9e10",
+  "prompts": {
+    "8d04213967769693": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "55e96596-5744-44cb-ab3c-839b05c4e4d9",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 9,
+      "total_deletions": 6,
+      "accepted_lines": 7,
+      "overriden_lines": 0
+    }
+  }
+}
