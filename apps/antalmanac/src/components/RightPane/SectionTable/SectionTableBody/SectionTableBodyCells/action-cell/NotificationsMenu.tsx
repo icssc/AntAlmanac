@@ -12,9 +12,9 @@ import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 
 const MENU_ITEMS: { status: keyof NotifyOn; label: string }[] = [
-    { status: 'notifyOnOpen', label: 'Section is OPEN' },
-    { status: 'notifyOnWaitlist', label: 'Section is WAITLIST' },
-    { status: 'notifyOnFull', label: 'Section is FULL' },
+    { status: 'notifyOnOpen', label: 'Section becomes OPEN' },
+    { status: 'notifyOnWaitlist', label: 'Section becomes WAITLIST' },
+    { status: 'notifyOnFull', label: 'Section becomes FULL' },
     { status: 'notifyOnRestriction', label: 'Restriction Codes have Changed' },
 ];
 
