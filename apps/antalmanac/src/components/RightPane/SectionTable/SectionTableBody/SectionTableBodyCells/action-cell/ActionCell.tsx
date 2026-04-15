@@ -56,20 +56,6 @@ export const ActionCell = memo(
                         />
                     )}
 
-                    {initialized ? (
-                        <NotificationsMenu
-                            section={section}
-                            term={term}
-                            courseTitle={courseDetails.courseTitle}
-                            deptCode={courseDetails.deptCode}
-                            courseNumber={courseDetails.courseNumber}
-                        />
-                    ) : (
-                        <IconButton disabled size="small" sx={{ p: 1 }}>
-                            <CircularProgress size={15} />
-                        </IconButton>
-                    )}
-
                     {!isMobile && addedCourse && (
                         <Tooltip
                             title={
@@ -92,6 +78,20 @@ export const ActionCell = memo(
                                 )}
                             </IconButton>
                         </Tooltip>
+                    )}
+
+                    {initialized ? (
+                        <NotificationsMenu
+                            section={section}
+                            term={term}
+                            courseTitle={courseDetails.courseTitle}
+                            deptCode={courseDetails.deptCode}
+                            courseNumber={courseDetails.courseNumber}
+                        />
+                    ) : (
+                        <IconButton disabled size="small" sx={{ p: 1 }}>
+                            <CircularProgress size={15} />
+                        </IconButton>
                     )}
 
                     {!isMobile && !addedCourse && (
