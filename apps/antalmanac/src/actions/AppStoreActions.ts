@@ -1,3 +1,14 @@
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import trpc from '$lib/api/trpc';
+import { warnMultipleTerms } from '$lib/helpers';
+import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { getNextScheduleName } from '$lib/utils';
+import { IMPORTED_SCHEDULE_PREFIX, SHARED_SCHEDULE_PREFIX } from '$src/globals';
+import AppStore from '$stores/AppStore';
+import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useSessionStore } from '$stores/SessionStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import type {
     CourseDetails,
     CustomEventId,
@@ -10,18 +21,6 @@ import type {
 import { TRPCClientError } from '@trpc/client';
 import { TRPCError } from '@trpc/server';
 import { PostHog } from 'posthog-js/react';
-
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
-import { warnMultipleTerms } from '$lib/helpers';
-import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
-import { getNextScheduleName } from '$lib/utils';
-import { IMPORTED_SCHEDULE_PREFIX, SHARED_SCHEDULE_PREFIX } from '$src/globals';
-import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { openSnackbar } from '$stores/SnackbarStore';
-import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
     onError: (scheduleName: string) => unknown;
@@ -321,7 +320,7 @@ export const importSharedScheduleById = async (scheduleId: string, friendName?: 
                     avatar: users.avatar,
                 },
             });
-        } catch (err) {
+        } catch {
             openSnackbar(
                 'error',
                 'Failed to load schedules. If this continues to happen, please submit a feedback form.'
@@ -527,7 +526,7 @@ export const copySchedule = (
     try {
         AppStore.copySchedule(scheduleIndex, newScheduleName);
         options?.onSuccess(newScheduleName);
-    } catch (error) {
+    } catch {
         options?.onError(newScheduleName);
     }
 };

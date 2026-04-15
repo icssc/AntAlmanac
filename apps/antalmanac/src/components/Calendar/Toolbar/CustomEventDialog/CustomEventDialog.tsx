@@ -1,3 +1,10 @@
+import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
+import { DaySelector } from '$components/Calendar/Toolbar/CustomEventDialog/DaySelector';
+import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog/ScheduleSelector';
+import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import AppStore from '$stores/AppStore';
 import { Add, Edit } from '@mui/icons-material';
 import {
     Button,
@@ -13,14 +20,6 @@ import {
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useState } from 'react';
-
-import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
-import { DaySelector } from '$components/Calendar/Toolbar/CustomEventDialog/DaySelector';
-import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog/ScheduleSelector';
-import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
-import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import AppStore from '$stores/AppStore';
 
 interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;
@@ -133,9 +132,11 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
 
         resetForm();
 
-        props.customEvent
-            ? editCustomEvent(newCustomEvent, scheduleIndices)
-            : addCustomEvent(newCustomEvent, scheduleIndices);
+        if (props.customEvent) {
+            editCustomEvent(newCustomEvent, scheduleIndices);
+        } else {
+            addCustomEvent(newCustomEvent, scheduleIndices);
+        }
     };
 
     useEffect(() => {

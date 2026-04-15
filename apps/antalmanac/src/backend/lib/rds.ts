@@ -1045,7 +1045,7 @@ export class RDS {
                 tx.update(users).set({ imported: true }).where(eq(users.id, accounts.userId)).execute()
             );
             return true;
-        } catch (error) {
+        } catch {
             return false;
         }
     }
