@@ -1,3 +1,23 @@
+import {
+    addCustomEvent,
+    addCourse,
+    importScheduleWithUsername,
+    importValidatedSchedule,
+} from '$actions/AppStoreActions';
+import { AlertDialog } from '$components/AlertDialog';
+import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { QueryZotcourseError } from '$lib/customErrors';
+import { warnMultipleTerms } from '$lib/helpers';
+import { getLocalStorageDataCache, getLocalStorageUserId, removeLocalStorageUserId } from '$lib/localStorage';
+import { WebSOC } from '$lib/websoc';
+import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
+import { BLUE, LIGHT_BLUE } from '$src/globals';
+import AppStore from '$stores/AppStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useSessionStore } from '$stores/SessionStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import { ContentPasteGo } from '@mui/icons-material';
 import {
     AlertColor,
@@ -22,27 +42,7 @@ import { CourseInfo } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-import {
-    addCustomEvent,
-    addCourse,
-    importScheduleWithUsername,
-    importValidatedSchedule,
-} from '$actions/AppStoreActions';
-import { AlertDialog } from '$components/AlertDialog';
-import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { QueryZotcourseError } from '$lib/customErrors';
-import { warnMultipleTerms } from '$lib/helpers';
-import { getLocalStorageDataCache, getLocalStorageUserId, removeLocalStorageUserId } from '$lib/localStorage';
-import { WebSOC } from '$lib/websoc';
-import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
-import { BLUE, LIGHT_BLUE } from '$src/globals';
-import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { openSnackbar } from '$stores/SnackbarStore';
+import { useShallow } from 'zustand/react/shallow';
 
 enum ImportSource {
     ZOT_COURSE_IMPORT = 'zotcourse',
@@ -61,7 +61,14 @@ export function Import() {
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    const { sessionIsValid, isNewUser, setIsNewUser, areSchedulesLoaded } = useSessionStore();
+    const { sessionIsValid, isNewUser, setIsNewUser, areSchedulesLoaded } = useSessionStore(
+        useShallow((state) => ({
+            sessionIsValid: state.sessionIsValid,
+            isNewUser: state.isNewUser,
+            setIsNewUser: state.setIsNewUser,
+            areSchedulesLoaded: state.areSchedulesLoaded,
+        }))
+    );
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
 
     const theme = useTheme();

@@ -1,5 +1,3 @@
-import { useCallback, useEffect, useState } from 'react';
-
 import { isEmptySchedule, loadScheduleWithSessionToken, mergeShortCourseSchedules } from '$actions/AppStoreActions';
 import SignInAlertDialog from '$components/SignInAlertDialog';
 import trpc from '$lib/api/trpc';
@@ -19,12 +17,19 @@ import AppStore from '$stores/AppStore';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { useCallback, useEffect, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 const AuthInitializer = () => {
     const [openAlert, setOpenalert] = useState(false);
 
     const { setOpenLoadingSchedule } = scheduleComponentsToggleStore();
-    const { updateSession, setAreSchedulesLoaded } = useSessionStore();
+    const { updateSession, setAreSchedulesLoaded } = useSessionStore(
+        useShallow((state) => ({
+            updateSession: state.updateSession,
+            setAreSchedulesLoaded: state.setAreSchedulesLoaded,
+        }))
+    );
 
     const { data: sessionData } = authClient.useSession();
 

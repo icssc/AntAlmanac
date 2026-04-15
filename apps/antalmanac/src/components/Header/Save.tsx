@@ -1,7 +1,3 @@
-import { Close, Save as SaveIcon } from '@mui/icons-material';
-import { Stack, Snackbar, Alert, Link, IconButton, Button } from '@mui/material';
-import { useState, useEffect } from 'react';
-
 import actionTypesStore from '$actions/ActionTypesStore';
 import { saveSchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
@@ -10,10 +6,19 @@ import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
+import { Close, Save as SaveIcon } from '@mui/icons-material';
+import { Stack, Snackbar, Alert, Link, IconButton, Button } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 export const Save = () => {
     const isDark = useThemeStore((store) => store.isDark);
-    const { session, sessionIsValid: validSession } = useSessionStore();
+    const { session, sessionIsValid } = useSessionStore(
+        useShallow((state) => ({
+            session: state.session,
+            sessionIsValid: state.sessionIsValid,
+        }))
+    );
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
@@ -40,7 +45,7 @@ export const Save = () => {
     }, []);
 
     const saveScheduleData = async () => {
-        if (validSession && session) {
+        if (sessionIsValid && session) {
             const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
                 token: session.token,
             });
@@ -68,7 +73,7 @@ export const Save = () => {
                 color="inherit"
                 startIcon={<SaveIcon />}
                 loadingPosition="start"
-                onClick={validSession ? saveScheduleData : handleClickSignIn}
+                onClick={sessionIsValid ? saveScheduleData : handleClickSignIn}
                 sx={{ fontSize: 'inherit' }}
                 disabled={skeletonMode || saving}
                 loading={saving}

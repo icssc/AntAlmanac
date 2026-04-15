@@ -1,13 +1,12 @@
-import LogoutIcon from '@mui/icons-material/Logout';
-import { ListItemIcon, ListItemText, MenuItem, Popover, Divider } from '@mui/material';
-import { useState, type MouseEvent } from 'react';
-
+import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { signOut } from '$lib/auth/authClient';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { ListItemIcon, ListItemText, MenuItem, Popover, Divider } from '@mui/material';
+import { useState, type MouseEvent } from 'react';
 
 interface SignoutProps {
     onLogoutComplete?: () => void;
@@ -15,7 +14,7 @@ interface SignoutProps {
 
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const { user } = useSessionStore();
+    const user = useSessionStore((state) => state.user);
     const isDark = useThemeStore((store) => store.isDark);
 
     const open = Boolean(anchorEl);
