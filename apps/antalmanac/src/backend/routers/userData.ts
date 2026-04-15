@@ -9,6 +9,7 @@ import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState
 import { type } from 'arktype';
 import { z } from 'zod';
 
+import { SESSION_COOKIE_NAME } from '../context';
 import { procedure, router } from '../trpc';
 
 const { OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
@@ -271,8 +272,15 @@ const userDataRouter = router({
                 // Create session with OIDC and Google tokens
                 const session = await RDS.upsertSession(db, userId, oidcRefreshToken ?? '');
 
+                const sessionCookieOptions = `Path=/; HttpOnly; ${
+                    isProduction ? 'Secure; SameSite=Lax' : 'SameSite=Lax'
+                }; Max-Age=2592000`;
+                ctx.resHeaders?.append(
+                    'Set-Cookie',
+                    `${SESSION_COOKIE_NAME}=${session?.refreshToken ?? ''}; ${sessionCookieOptions}`
+                );
+
                 return {
-                    sessionToken: session?.refreshToken,
                     userId: userId,
                     providerId: oauthUserId,
                     newUser: account.newUser,
@@ -326,24 +334,33 @@ const userDataRouter = router({
     /**
      * Logs out a user by invalidating their session and redirecting to OIDC logout
      */
-    logout: procedure
-        .input(z.object({ sessionToken: z.string(), redirectUrl: z.string().optional() }))
-        .mutation(async ({ input }) => {
-            // Invalidate the local session
-            const session = await RDS.getCurrentSession(db, input.sessionToken);
+    logout: procedure.input(z.object({ redirectUrl: z.string().optional() })).mutation(async ({ input, ctx }) => {
+        const cookieHeader = ctx.req.headers.get('cookie') ?? '';
+        const match = cookieHeader.match(new RegExp(`${SESSION_COOKIE_NAME}=([^;]*)`));
+        const sessionToken = match?.[1] ?? '';
+
+        if (sessionToken) {
+            const session = await RDS.getCurrentSession(db, sessionToken);
             if (session) {
                 await RDS.removeSession(db, session.userId, session.refreshToken);
             }
+        }
 
-            // Build OIDC logout URL
-            const oidcLogoutUrl = new URL(`${OIDC_ISSUER_URL}/logout`);
-            const redirectTo = input.redirectUrl || GOOGLE_REDIRECT_URI.replace('/auth', '');
-            oidcLogoutUrl.searchParams.set('post_logout_redirect_uri', redirectTo);
+        const isProduction = NODE_ENV === 'production';
+        ctx.resHeaders?.append(
+            'Set-Cookie',
+            `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; ${isProduction ? 'Secure; SameSite=Lax' : 'SameSite=Lax'}; Max-Age=0`
+        );
 
-            return {
-                logoutUrl: oidcLogoutUrl.toString(),
-            };
-        }),
+        // Build OIDC logout URL
+        const oidcLogoutUrl = new URL(`${OIDC_ISSUER_URL}/logout`);
+        const redirectTo = input.redirectUrl || GOOGLE_REDIRECT_URI.replace('/auth', '');
+        oidcLogoutUrl.searchParams.set('post_logout_redirect_uri', redirectTo);
+
+        return {
+            logoutUrl: oidcLogoutUrl.toString(),
+        };
+    }),
 });
 
 export default userDataRouter;
