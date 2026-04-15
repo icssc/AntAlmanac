@@ -1,5 +1,5 @@
 import { User, Notification } from '@packages/antalmanac-types';
-import { db } from '@packages/db';
+import { db } from '@packages/db/src/index';
 import * as schema from '@packages/db/src/schema';
 import { Account, Session } from '@packages/db/src/schema';
 import { ExtractTablesWithRelations } from 'drizzle-orm';
@@ -52,6 +52,7 @@ export class RDS {
 
     static async upsertUserData(db: DatabaseOrTransaction, userData: User): Promise<string> {
         return SchedulesRDS.upsertUserData(db, userData);
+    }
 
     static async getUserDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
         return UsersRDS.getUserDataByUid(db, userId);
