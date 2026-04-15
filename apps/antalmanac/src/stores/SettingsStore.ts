@@ -1,6 +1,3 @@
-import { PostHog } from 'posthog-js/react';
-import { create } from 'zustand';
-
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import {
     getLocalStorageAutoSave,
@@ -14,6 +11,8 @@ import {
     setLocalStorageShow24HourTime,
     setLocalStorageTheme,
 } from '$lib/localStorage';
+import { PostHog } from 'posthog-js/react';
+import { create } from 'zustand';
 
 export type ThemeSetting = 'light' | 'dark' | 'system';
 
@@ -62,7 +61,7 @@ export const useThemeStore = create<ThemeStore>((set) => {
     };
 });
 
-export type SectionColorSetting = 'default' | 'legacy' | 'catppuccin';
+export type SectionColorSetting = 'default' | 'legacy' | 'catppuccin' | 'custom';
 
 export interface SectionColorStore {
     sectionColor: SectionColorSetting;
@@ -70,7 +69,7 @@ export interface SectionColorStore {
 }
 
 export const useSectionColorStore = create<SectionColorStore>((set) => {
-    const storedSectionColor = (getLocalStorageSectionColor() ?? 'default') as SectionColorSetting;
+    const storedSectionColor = (getLocalStorageSectionColor() ?? 'custom') as SectionColorSetting;
     return {
         sectionColor: storedSectionColor,
 

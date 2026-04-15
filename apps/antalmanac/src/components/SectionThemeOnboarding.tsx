@@ -1,3 +1,9 @@
+import { setLocalStorageSectionColorOnboarding } from '$lib/localStorage';
+import { BLUE } from '$src/globals';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { useHelpMenuStore } from '$stores/HelpMenuStore';
+import { colorVariants } from '$stores/scheduleHelpers';
+import { type SectionColorSetting, useSectionColorStore, useThemeStore } from '$stores/SettingsStore';
 import { Check, History, Palette, Pets } from '@mui/icons-material';
 import {
     Backdrop,
@@ -16,13 +22,6 @@ import {
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-
-import { setLocalStorageSectionColorOnboarding } from '$lib/localStorage';
-import { BLUE } from '$src/globals';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
-import { useHelpMenuStore } from '$stores/HelpMenuStore';
-import { type SectionColorSetting, useSectionColorStore, useThemeStore } from '$stores/SettingsStore';
-import { colorVariants } from '$stores/scheduleHelpers';
 
 // ─── Theme option metadata ────────────────────────────────────────────────────
 
@@ -275,11 +274,12 @@ function SectionThemeOnboarding() {
     // Local selection state — only committed when the user clicks "Apply"
     const [pendingSelection, setPendingSelection] = useState<SectionColorSetting>(sectionColor);
 
-    /** Dismiss the dialog and mark it as seen, without changing the theme. */
+    /** Dismiss the dialog, persist "custom" so existing colors are preserved. */
     const handleKeepCustom = useCallback(() => {
+        setSectionColor('custom', postHog);
         setLocalStorageSectionColorOnboarding('seen');
         setShowSectionThemeOnboarding(false);
-    }, [setShowSectionThemeOnboarding]);
+    }, [setSectionColor, postHog, setShowSectionThemeOnboarding]);
 
     /** Apply the selected theme, then dismiss. */
     const handleApply = useCallback(() => {

@@ -1,19 +1,15 @@
-import { History, Palette, Pets } from '@mui/icons-material';
-import { Box, Stack, Typography } from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
-
 import { BLUE } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
-import {
-    type SectionColorSetting,
-    useSectionColorStore,
-    useThemeStore,
-} from '$stores/SettingsStore';
+import { type SectionColorSetting, useSectionColorStore, useThemeStore } from '$stores/SettingsStore';
+import { ColorLens, History, Palette, Pets } from '@mui/icons-material';
+import { Box, Stack, Typography } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 
 const SECTION_COLOR_OPTIONS: { value: SectionColorSetting; label: string; icon: React.ReactNode }[] = [
     { value: 'default', label: 'Default', icon: <Palette fontSize="small" /> },
     { value: 'legacy', label: 'Legacy', icon: <History fontSize="small" /> },
     { value: 'catppuccin', label: 'Catppuccin', icon: <Pets fontSize="small" /> },
+    { value: 'custom', label: 'Custom', icon: <ColorLens fontSize="small" /> },
 ];
 
 export function SectionColorSelector() {
