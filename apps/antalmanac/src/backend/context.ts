@@ -7,7 +7,7 @@ export const SESSION_COOKIE_NAME = 'aa_session';
 
 export const createContext = async (opts: FetchCreateContextFnOptions) => {
     const cookieHeader = opts.req.headers.get('cookie') ?? '';
-    const match = cookieHeader.match(new RegExp(`${SESSION_COOKIE_NAME}=([^;]*)`));
+    const match = cookieHeader.match(new RegExp(`(?:^|;\\s*)${SESSION_COOKIE_NAME}=([^;]*)`));
     const sessionToken = match?.[1] || null;
 
     let userId: string | null = null;

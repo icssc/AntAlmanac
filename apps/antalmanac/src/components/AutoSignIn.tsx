@@ -36,6 +36,11 @@ export function AutoSignIn() {
                 return;
             }
 
+            const loaded = await useSessionStore.getState().loadSession();
+            if (loaded) {
+                return;
+            }
+
             try {
                 const authUrl = await trpc.userData.getGoogleAuthUrl.query({ prompt: 'none' });
                 window.location.href = authUrl.toString();
