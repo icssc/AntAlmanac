@@ -6,7 +6,6 @@ export function PrivacyPolicyBanner() {
             variant="outlined"
             sx={{
                 padding: 1.5,
-                marginBottom: 1,
                 textWrap: 'pretty',
             }}
         >
