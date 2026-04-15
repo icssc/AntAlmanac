@@ -35,6 +35,16 @@ export const auth = betterAuth({
         }),
         nextCookies(),
     ],
+    account: {
+        additionalFields: {
+            accountType: {
+                type: 'string',
+                required: false,
+                defaultValue: 'OIDC',
+                input: false,
+            },
+        },
+    },
     user: {
         fields: {
             updatedAt: 'lastUpdated',
