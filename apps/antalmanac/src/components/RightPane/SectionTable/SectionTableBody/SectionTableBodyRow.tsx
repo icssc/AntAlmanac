@@ -68,8 +68,17 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     const [addedCourse, setAddedCourse] = useState(
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
     );
+    const [currColor, setCurrColor] = useState(section.color);
+
+    useEffect(() => {
+        setCurrColor(section.color);
+    }, [section.color]);
 
     // Stable references to event listeners will synchronize React state with the store.
+
+    const updateColor = useCallback((newColor: string) => {
+        setCurrColor((prev) => (prev !== newColor ? newColor : prev));
+    }, []);
 
     const updateHighlight = useCallback(() => {
         setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
@@ -97,6 +106,16 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             AppStore.removeListener('currentScheduleIndexChange', updateHighlight);
         };
     }, [updateHighlight]);
+
+    useEffect(() => {
+        if (!addedCourse) {
+            return;
+        }
+        AppStore.registerColorPicker(section.sectionCode, updateColor);
+        return () => {
+            AppStore.unregisterColorPicker(section.sectionCode, updateColor);
+        };
+    }, [addedCourse, section.sectionCode, updateColor]);
 
     const computedRowStyle = useMemo(() => {
         if (addedCourse) {
@@ -127,6 +146,9 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
              * CSS errors occur when combining the `nth-of-type` selector with the computed styling, so it's split into two separate props
              */
             sx={{
+                ...(addedCourse && {
+                    borderLeft: `4px solid ${currColor}`,
+                }),
                 '&:nth-of-type(odd)': {
                     backgroundColor: theme.palette.action.hover,
                 },
