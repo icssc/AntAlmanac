@@ -5,7 +5,7 @@ import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache, setLocalStorageFromLoading } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import type {
@@ -240,13 +240,13 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
         mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, '(import)-');
         currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
 
-        scheduleComponentsToggleStore.setState({ openImportDialog: false, openLoadingSchedule: true });
+        useScheduleComponentsToggleStore.setState({ openImportDialog: false, openLoadingSchedule: true });
 
         const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
         if (isScheduleLoaded) {
             openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
 
-            scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
+            useScheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
 
             await saveSchedule(accounts.accountId, true, users);
 

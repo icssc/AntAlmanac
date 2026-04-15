@@ -1,3 +1,12 @@
+import { loadSchedule, loginUser } from '$actions/AppStoreActions';
+import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
+import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
+import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
+import SignInAlertDialog from '$components/SignInAlertDialog';
+import trpc from '$lib/api/trpc';
+import { getLocalStorageUserId } from '$lib/localStorage';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useThemeStore } from '$stores/SettingsStore';
 import { AccountCircle, ExpandMore, Google } from '@mui/icons-material';
 import {
     Alert,
@@ -18,21 +27,17 @@ import {
     TextField,
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-
-import { loadSchedule, loginUser } from '$actions/AppStoreActions';
-import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
-import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
-import SignInAlertDialog from '$components/SignInAlertDialog';
-import trpc from '$lib/api/trpc';
-import { getLocalStorageUserId } from '$lib/localStorage';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useThemeStore } from '$stores/SettingsStore';
+import { useShallow } from 'zustand/react/shallow';
 
 export const Signin = () => {
     const isDark = useThemeStore((store) => store.isDark);
 
-    const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = scheduleComponentsToggleStore();
+    const { openLoadingSchedule, setOpenLoadingSchedule } = useScheduleComponentsToggleStore(
+        useShallow((state) => ({
+            openLoadingSchedule: state.openLoadingSchedule,
+            setOpenLoadingSchedule: state.setOpenLoadingSchedule,
+        }))
+    );
 
     const [settingsAnchorEl, setSettingsAnchorEl] = useState<null | HTMLElement>(null);
     const [isOpen, setIsOpen] = useState(false);
@@ -133,7 +138,7 @@ export const Signin = () => {
                 user={null}
                 handleOpen={handleOpen}
                 handleSettingsOpen={handleSettingsOpen}
-                loading={loadingSchedule}
+                loading={openLoadingSchedule}
             />
 
             <Dialog open={isOpen} onClose={() => handleClose(true)}>

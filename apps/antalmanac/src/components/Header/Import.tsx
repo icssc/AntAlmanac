@@ -15,7 +15,7 @@ import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { ContentPasteGo } from '@mui/icons-material';
@@ -69,7 +69,12 @@ export function Import() {
             areSchedulesLoaded: state.areSchedulesLoaded,
         }))
     );
-    const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
+    const { openImportDialog, setOpenImportDialog } = useScheduleComponentsToggleStore(
+        useShallow((state) => ({
+            openImportDialog: state.openImportDialog,
+            setOpenImportDialog: state.setOpenAutoSaveWarning,
+        }))
+    );
 
     const theme = useTheme();
 

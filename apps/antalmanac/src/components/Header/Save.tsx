@@ -3,7 +3,7 @@ import { saveSchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import trpc from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Close, Save as SaveIcon } from '@mui/icons-material';
@@ -22,7 +22,12 @@ export const Save = () => {
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-    const { openAutoSaveWarning, setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
+    const { openAutoSaveWarning, setOpenAutoSaveWarning } = useScheduleComponentsToggleStore(
+        useShallow((state) => ({
+            openAutoSaveWarning: state.openAutoSaveWarning,
+            setOpenAutoSaveWarning: state.setOpenAutoSaveWarning,
+        }))
+    );
 
     const handleClickSignIn = () => {
         setOpenSignInDialog(!openSignInDialog);

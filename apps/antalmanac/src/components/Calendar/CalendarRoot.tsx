@@ -18,7 +18,7 @@ import {
 import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import { CalendarMonth } from '@mui/icons-material';
@@ -74,7 +74,7 @@ export const ScheduleCalendar = memo(() => {
     );
     const isDark = useThemeStore(useShallow((store) => store.isDark));
 
-    const { openLoadingSchedule: loadingSchedule } = scheduleComponentsToggleStore();
+    const openLoadingSchedule = useScheduleComponentsToggleStore((state) => state.openLoadingSchedule);
     const hasHadEventsRef = useRef(false);
 
     const isMobile = useIsMobile();
@@ -101,7 +101,7 @@ export const ScheduleCalendar = memo(() => {
     ]);
 
     useEffect(() => {
-        if (!loadingSchedule) {
+        if (!openLoadingSchedule) {
             if (eventsInCalendar.length > 0) {
                 hasHadEventsRef.current = true;
                 const skeletonBlueprint = eventsInCalendar
@@ -125,7 +125,7 @@ export const ScheduleCalendar = memo(() => {
                 hasHadEventsRef.current = false;
             }
         }
-    }, [eventsInCalendar, loadingSchedule]);
+    }, [eventsInCalendar, openLoadingSchedule]);
 
     const blueprintToSkeletonEvent = useCallback(
         (blueprint: {
@@ -181,7 +181,7 @@ export const ScheduleCalendar = memo(() => {
         return fallbackBlueprints.map(blueprintToSkeletonEvent);
     }, [blueprintToSkeletonEvent]);
 
-    const events = loadingSchedule ? createSkeletonEvents() : getEventsForCalendar();
+    const events = openLoadingSchedule ? createSkeletonEvents() : getEventsForCalendar();
 
     const toggleDisplayFinalsSchedule = useCallback(() => {
         setShowFinalsSchedule((prevState) => !prevState);
@@ -252,8 +252,9 @@ export const ScheduleCalendar = memo(() => {
     };
 
     const showEmptyState = useMemo(
-        () => !loadingSchedule && !showFinalsSchedule && eventsInCalendar.length === 0 && !hoveredCalendarizedCourses,
-        [loadingSchedule, showFinalsSchedule, eventsInCalendar.length, hoveredCalendarizedCourses]
+        () =>
+            !openLoadingSchedule && !showFinalsSchedule && eventsInCalendar.length === 0 && !hoveredCalendarizedCourses,
+        [openLoadingSchedule, showFinalsSchedule, eventsInCalendar.length, hoveredCalendarizedCourses]
     );
 
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
@@ -350,7 +351,7 @@ export const ScheduleCalendar = memo(() => {
                     position: 'absolute',
                     padding: ' 0',
                 })}
-                open={loadingSchedule}
+                open={openLoadingSchedule}
             />
             <CalendarToolbar
                 currentScheduleIndex={currentScheduleIndex}

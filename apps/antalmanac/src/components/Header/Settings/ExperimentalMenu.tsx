@@ -2,7 +2,7 @@ import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import appStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { usePreviewStore, useAutoSaveStore } from '$stores/SettingsStore';
 import { Help } from '@mui/icons-material';
@@ -19,7 +19,7 @@ export function ExperimentalMenu() {
             sessionId: state.sessionId,
         }))
     );
-    const { setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
+    const setOpenAutoSaveWarning = useScheduleComponentsToggleStore((state) => state.setOpenAutoSaveWarning);
 
     const postHog = usePostHog();
 

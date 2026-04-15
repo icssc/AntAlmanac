@@ -15,7 +15,7 @@ import {
 import { setSsoCookie } from '$lib/ssoCookie';
 import AppStore from '$stores/AppStore';
 import { useNotificationStore } from '$stores/NotificationStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -23,7 +23,7 @@ import { useShallow } from 'zustand/react/shallow';
 const AuthInitializer = () => {
     const [openAlert, setOpenalert] = useState(false);
 
-    const { setOpenLoadingSchedule } = scheduleComponentsToggleStore();
+    const setOpenLoadingSchedule = useScheduleComponentsToggleStore((state) => state.setOpenLoadingSchedule);
     const { updateSession, setAreSchedulesLoaded } = useSessionStore(
         useShallow((state) => ({
             updateSession: state.updateSession,
