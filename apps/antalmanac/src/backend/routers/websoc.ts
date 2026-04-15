@@ -1,3 +1,4 @@
+import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
 import type {
     WebsocAPIResponse,
     WebsocAPIResult,
@@ -10,8 +11,6 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
-
-import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
 
 const DEPARTMENT_YEAR_RANGE = 10;
 

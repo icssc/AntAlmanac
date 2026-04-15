@@ -1,3 +1,6 @@
+import { getDefaultTerm } from '$lib/termData';
+import { WebSOC } from '$lib/websoc';
+import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
 import type {
     Schedule,
     ScheduleCourse,
@@ -11,10 +14,6 @@ import type {
 import { createId } from '@paralleldrive/cuid2';
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
-
-import { getDefaultTerm } from '$lib/termData';
-import { WebSOC } from '$lib/websoc';
-import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
 
 /**
  * Manages state of schedules. Only one instance is really needed for the app.

@@ -1,9 +1,8 @@
+import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
 import type { CourseByIdAPIResult } from '@packages/antalmanac-types';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
-
-import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
 
 const courseRouter = router({
     get: procedure.input(z.object({ id: z.string() })).query(async ({ input }) => {

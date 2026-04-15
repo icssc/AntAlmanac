@@ -21,7 +21,7 @@ const authRouter = router({
         try {
             await RDS.removeSession(db, session.userId, session.refreshToken);
             return true;
-        } catch (error) {
+        } catch {
             return false;
         }
     }),
