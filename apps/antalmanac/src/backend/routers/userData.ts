@@ -322,12 +322,8 @@ const userDataRouter = router({
      * Logs out a user by invalidating their session and redirecting to OIDC logout
      */
     logout: procedure.input(z.object({ redirectUrl: z.string().optional() })).mutation(async ({ input, ctx }) => {
-        const cookieHeader = ctx.req.headers.get('cookie') ?? '';
-        const match = cookieHeader.match(new RegExp(`${SESSION_COOKIE_NAME}=([^;]*)`));
-        const sessionToken = match?.[1] ?? '';
-
-        if (sessionToken) {
-            const session = await RDS.getCurrentSession(db, sessionToken);
+        if (ctx.sessionToken) {
+            const session = await RDS.getCurrentSession(db, ctx.sessionToken);
             if (session) {
                 await RDS.removeSession(db, session.userId, session.refreshToken);
             }
