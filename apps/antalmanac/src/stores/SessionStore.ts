@@ -43,7 +43,7 @@ export const useSessionStore = create<SessionState>((set) => {
             try {
                 const sessionIsValid = await trpc.auth.validateSession.query();
                 if (!sessionIsValid) {
-                    set({ sessionIsValid: false, userId: null });
+                    set({ sessionIsValid: false, userId: null, isGoogleUser: false, email: null, googleId: null });
                     useNotificationStore.getState().loadNotifications();
                     return false;
                 }

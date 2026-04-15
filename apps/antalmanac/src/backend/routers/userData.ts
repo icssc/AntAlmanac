@@ -259,12 +259,19 @@ const userDataRouter = router({
                 // Create session with OIDC and Google tokens
                 const session = await RDS.upsertSession(db, userId, oidcRefreshToken ?? '');
 
+                if (!session?.refreshToken) {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: 'Failed to create session',
+                    });
+                }
+
                 const sessionCookieOptions = `Path=/; HttpOnly; ${
                     isProduction ? 'Secure; SameSite=Lax' : 'SameSite=Lax'
                 }; Max-Age=2592000`;
                 ctx.resHeaders?.append(
                     'Set-Cookie',
-                    `${SESSION_COOKIE_NAME}=${session?.refreshToken ?? ''}; ${sessionCookieOptions}`
+                    `${SESSION_COOKIE_NAME}=${session.refreshToken}; ${sessionCookieOptions}`
                 );
 
                 return {
