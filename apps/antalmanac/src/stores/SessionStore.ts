@@ -49,9 +49,11 @@ export const useSessionStore = create<SessionState>((set) => {
                     set({ session: session, sessionIsValid: true });
 
                     try {
-                        const { users } = await trpc.userData.getUserAndAccountBySessionToken.query({
+                        const sessionResult = await trpc.userData.getUserAndAccountBySessionToken.query({
                             token: session,
                         });
+                        if (!sessionResult) return false;
+                        const { users } = sessionResult;
 
                         let googleId = await trpc.userData.getGoogleIdByUserId.query({
                             userId: users.id,
