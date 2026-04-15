@@ -1,3 +1,11 @@
+import {
+    SETTINGS_POPOVER_BG,
+    SETTINGS_POPOVER_MENU_HOVER_BG,
+    SETTINGS_POPOVER_MENU_SELECTED_BG,
+} from '$components/Header/headerStyles';
+import { Logo } from '$components/Header/Logo';
+import { BLUE, PLANNER_LINK } from '$src/globals';
+import appStore from '$stores/AppStore';
 import { EventNote, Route, UnfoldMore } from '@mui/icons-material';
 import {
     Button,
@@ -13,15 +21,6 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { useEffect, useState } from 'react';
 import type { MouseEventHandler } from 'react';
-
-import { Logo } from '$components/Header/Logo';
-import {
-    SETTINGS_POPOVER_BG,
-    SETTINGS_POPOVER_MENU_HOVER_BG,
-    SETTINGS_POPOVER_MENU_SELECTED_BG,
-} from '$components/Header/headerStyles';
-import { BLUE, PLANNER_LINK } from '$src/globals';
-import appStore from '$stores/AppStore';
 
 type AppSwitcherProps = {
     isMobile: boolean;

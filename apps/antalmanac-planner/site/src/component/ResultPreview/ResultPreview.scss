@@ -1,0 +1,61 @@
+@use '../../globals.scss';
+
+.result-preview {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  padding-top: 64px;
+  z-index: 10;
+  background-color: var(--mui-palette-background-default);
+  overscroll-behavior: contain;
+
+  .result-page-section {
+    margin-inline: auto;
+  }
+
+  h2,
+  h3,
+  h4 {
+    font-weight: 600;
+  }
+
+  .preview-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: globals.$roadmap-toolbar-height;
+    border-width: 0 0 2px 0;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    padding: 12px 16px 12px 12px;
+    gap: 4px;
+
+    button {
+      margin-block: -4px;
+    }
+  }
+
+  .preview-title {
+    margin-block: 0;
+    margin-right: auto;
+  }
+
+  // Target the Twemoji wrapper since we can't add a class name to it
+  > div:last-child {
+    height: 100%;
+    overflow: auto;
+    padding: 24px;
+
+    @media (max-width: globals.$mobile-cutoff) {
+      padding: 16px;
+    }
+  }
+
+  .professor-summary {
+    margin-inline: auto;
+    max-width: 1000px;
+    margin-bottom: 32px;
+  }
+}

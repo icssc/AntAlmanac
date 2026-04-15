@@ -1,0 +1,34 @@
+{
+  "name": "peterportal",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c blue,green \"pnpm --filter=api dev\" \"pnpm --filter=site dev\"",
+    "prepare": "husky",
+    "format": "prettier --write **/*.{css,scss,cjs,js,ts,tsx,yml,json,html} --no-error-on-unmatched-pattern",
+    "lint": "prettier **/*.{css,scss,cjs,js,ts,tsx,yml,json,html} --check --no-error-on-unmatched-pattern && pnpm --filter=site lint && pnpm --filter=api lint",
+    "test": "pnpm --filter=site test",
+    "db:generate": "pnpm --filter=api db:generate",
+    "db:migrate": "pnpm --filter=api db:migrate",
+    "db:studio": "pnpm --filter=api db:studio"
+  },
+  "dependencies": {
+    "dotenv-flow": "^4.0.1",
+    "sst": "3.17.10"
+  },
+  "engines": {
+    "node": "^18 || ^20 || ^22",
+    "pnpm": "^10"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "8.10.145",
+    "@types/node": "20.12.8",
+    "@typescript-eslint/eslint-plugin": "^7.8.0",
+    "@typescript-eslint/parser": "^7.8.0",
+    "concurrently": "^9.1.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.4.1"
+  }
+}

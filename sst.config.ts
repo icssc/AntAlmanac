@@ -6,6 +6,8 @@ function getDomain() {
         return 'antalmanac.com';
     } else if ($app.stage === 'staging-shared') {
         return 'staging-shared.antalmanac.com';
+    } else if ($app.stage === 'staging-monorepo') {
+        return 'staging-monorepo.antalmanac.com';
     } else if ($app.stage.match(/^staging-(\d+)$/)) {
         const subdomainPrefix = $app.stage.replace('staging-', 'scheduler-');
         return `${subdomainPrefix}.antalmanac.com`;
@@ -14,7 +16,7 @@ function getDomain() {
     throw new Error('Invalid stage');
 }
 
-const isPermanentStage = ['production', 'scheduler', 'staging-shared'];
+const isPermanentStage = ['production', 'scheduler', 'staging-shared', 'staging-monorepo'];
 const AANTS_STAGES = ['production', 'staging-1521', 'staging-1542'];
 
 export default $config({
@@ -61,6 +63,16 @@ export default $config({
                 NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY,
                 PLANNER_CLIENT_API_KEY: process.env.PLANNER_CLIENT_API_KEY,
                 STAGE: $app.stage,
+                // Planner (PeterPortal) env vars
+                DATABASE_URL: process.env.PLANNER_DATABASE_URL,
+                SESSION_SECRET: process.env.PLANNER_SESSION_SECRET,
+                PRODUCTION_DOMAIN: `https://${domain}`,
+                ADMIN_EMAILS: process.env.PLANNER_ADMIN_EMAILS,
+                EXTERNAL_USER_READ_SECRET: process.env.PLANNER_EXTERNAL_USER_READ_SECRET,
+                PUBLIC_API_URL: process.env.PLANNER_PUBLIC_API_URL,
+                BACKEND_ROOT_URL: `https://${domain}/api/planner`,
+                NEXT_PUBLIC_POSTHOG_KEY: process.env.PLANNER_NEXT_PUBLIC_POSTHOG_KEY,
+                NEXT_PUBLIC_POSTHOG_HOST: process.env.PLANNER_NEXT_PUBLIC_POSTHOG_HOST,
             },
         });
 

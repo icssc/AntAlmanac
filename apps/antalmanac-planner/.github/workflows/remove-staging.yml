@@ -1,0 +1,82 @@
+name: Remove staging
+
+on:
+  pull_request:
+    types:
+      - closed
+  repository_dispatch:
+    types:
+      - remove-command
+
+# use pr number for group instead of github.ref because ref will be main branch when the PR closes which is not a unique group for the PR
+# group should match with deploy-staging workflow so those don't run concurrently (if someone closes/reopens a PR)
+concurrency:
+  group: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
+
+jobs:
+  clean-up-pr:
+    runs-on: ubuntu-latest
+    # don't run on PRs from forks
+    env:
+      PR_NUM: ${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
+      PR_SHA: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
+      FULL_NAME: ${{ github.event.pull_request.head.repo.full_name || github.event.client_payload.pull_request.head.repo.full_name }}
+    if: ( github.event.pull_request.head.repo.full_name || github.event.client_payload.pull_request.head.repo.full_name ) == github.repository
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set commit status as pending
+        uses: myrotvorets/set-commit-status-action@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: pending
+          sha: ${{ env.PR_SHA }}
+          context: Delete Staging
+          description: Removing staging environment for PR #${{ env.PR_NUM }}
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Install Dependencies
+        run: pnpm install
+        env:
+          HUSKY: 0
+
+      # TODO (@cadenlee2): Remove this stage once SST fixes compat with Pulumi
+      # https://github.com/anomalyco/sst/issues/6314
+      - name: Setup Pulumi
+        uses: pulumi/actions@v5
+        with:
+          pulumi-version: 3.138.0 # Any version < 3.214.0 works
+
+      - name: Remove staging
+        run: pnpm sst remove --stage staging-${{ env.PR_NUM }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Deactivate deployment
+        uses: strumwolf/delete-deployment-environment@v3.0.0
+        with:
+          environment: staging-${{ env.PR_NUM }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          onlyDeactivateDeployments: true
+
+      - name: Set final commit status
+        if: always()
+        uses: myrotvorets/set-commit-status-action@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          sha: ${{ env.PR_SHA }}
+          context: Delete Staging
+          description: ${{ job.status == 'success' && 'Staging environment removed' || 'Failed to remove staging environment' }}
+
+      - name: Add reaction to comment
+        if: github.event_name == 'repository_dispatch'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          comment-id: ${{ github.event.client_payload.github.payload.comment.id }}
+          reactions: rocket

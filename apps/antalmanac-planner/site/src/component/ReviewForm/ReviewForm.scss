@@ -1,0 +1,71 @@
+@use '../../globals';
+
+.review-form-modal {
+  // "paper" refers to the component used internally to render the Dialog's content
+  .MuiDialog-paper {
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    overflow-y: auto;
+  }
+
+  .MuiDialogContentText-root {
+    margin-top: 4px;
+    font-size: 12px;
+    font-style: italic;
+  }
+
+  .year-quarter-row,
+  .grade-difficulty-row {
+    display: flex;
+    gap: 16px;
+
+    > .MuiFormControl-root {
+      flex: 1;
+    }
+  }
+
+  .rating-error .MuiRating-iconEmpty {
+    color: var(--mui-palette-error-main);
+  }
+
+  .tag-select {
+    .tag-select__menu {
+      margin-top: 0;
+      border-radius: 0 0 8px 8px;
+      overflow: hidden;
+    }
+
+    .tag-select__menu-list {
+      padding: 0;
+    }
+
+    .tag-select__control {
+      background-color: inherit;
+    }
+
+    .tag-select__control--is-focused {
+      border-color: var(--mui-palette-secondary-main);
+    }
+
+    .tag-select__value-container {
+      background-color: inherit;
+    }
+
+    .tag-select__multi-value {
+      background-color: var(--mui-palette-overlay-overlay2);
+    }
+  }
+
+  .anonymous-checkbox {
+    margin-top: 16px;
+  }
+
+  .review-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 16px;
+  }
+}

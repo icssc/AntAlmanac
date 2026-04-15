@@ -1,0 +1,53 @@
+@use '../../globals';
+
+.roadmap-page {
+  overflow: hidden;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+  .main-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 0;
+  }
+
+  .main-wrapper.mobile {
+    width: 100%;
+  }
+
+  /* fullscreen search overlay */
+  .fullscreen-search {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    background-color: var(--mui-palette-background-default);
+    box-sizing: border-box;
+    @include globals.outer-padding();
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 300ms ease-in-out;
+  }
+
+  .fullscreen-search.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* When the fullscreen search is active, hide main content but keep it mounted */
+  &.fullscreen-search-active {
+    .main-wrapper {
+      visibility: hidden;
+      pointer-events: none;
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@peterportal/types",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "postinstall": "openapi-typescript https://anteaterapi.com/openapi.json -o src/generated/anteater-api-types.ts"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "openapi-typescript": "^7.4.3"
+  }
+}

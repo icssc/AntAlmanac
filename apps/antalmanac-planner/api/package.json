@@ -1,0 +1,50 @@
+{
+    "name": "@peterportal/api",
+    "version": "1.0.0",
+    "main": "src/app.ts",
+    "type": "module",
+    "scripts": {
+        "dev": "nodemon --exec tsx ./src/app.ts",
+        "build": "tsc",
+        "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0 && tsc --noEmit",
+        "db:generate": "drizzle-kit generate",
+        "db:migrate": "drizzle-kit migrate",
+        "db:studio": "drizzle-kit studio"
+    },
+    "dependencies": {
+        "@opentelemetry/auto-instrumentations-node": "0.58.0",
+        "@trpc/server": "^10.45.2",
+        "@vendia/serverless-express": "^4.12.6",
+        "arctic": "^3.7.0",
+        "connect-pg-simple": "^10.0.0",
+        "cookie-parser": "^1.4.7",
+        "dotenv-flow": "^4.1.0",
+        "drizzle-orm": "^0.37.0",
+        "express": "^4.21.1",
+        "express-session": "^1.18.1",
+        "morgan": "^1.10.0",
+        "pg": "^8.13.1",
+        "zod": "^3.23.8"
+    },
+    "peerDependencies": {
+        "next": "*"
+    },
+    "devDependencies": {
+        "@peterportal/types": "workspace:*",
+        "@types/connect-pg-simple": "^7.0.3",
+        "@types/cookie-parser": "^1.4.8",
+        "@types/dotenv-flow": "^3.3.3",
+        "@types/express": "^5.0.0",
+        "@types/express-session": "^1.18.1",
+        "@types/morgan": "^1.9.9",
+        "@types/pg": "^8.11.10",
+        "@typescript-eslint/eslint-plugin": "^7.18.0",
+        "@typescript-eslint/parser": "^7.18.0",
+        "drizzle-kit": "^0.29.0",
+        "eslint": "^8.57.1",
+        "eslint-config-prettier": "^9.1.0",
+        "nodemon": "^3.1.7",
+        "tsx": "^4.19.2",
+        "typescript": "^5.5.4"
+    }
+}

@@ -1,0 +1,36 @@
+.professor-results {
+  // @todo merge with course results once we get things merged
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.professor-result {
+  font-size: 14px;
+
+  // @todo currently copied from Course styles, though we shoudl consider making these use MUI Paper or similar
+  box-shadow: 0 0 2px 0 #60616680;
+  margin: 4px 2px;
+  width: calc(100% - 4px);
+  padding: 12px;
+  border-radius: 4px;
+
+  a.professor-link {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .recent-courses {
+    a {
+      color: inherit;
+    }
+  }
+  .no-courses {
+    font-style: italic;
+  }
+
+  > p {
+    margin-bottom: 4px;
+  }
+}

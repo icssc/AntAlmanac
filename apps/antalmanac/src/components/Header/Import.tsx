@@ -1,28 +1,3 @@
-import { ContentPasteGo } from '@mui/icons-material';
-import {
-    AlertColor,
-    Box,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    FormControl,
-    FormControlLabel,
-    InputLabel,
-    Radio,
-    RadioGroup,
-    Stack,
-    TextField,
-    Tooltip,
-    useTheme,
-} from '@mui/material';
-import { CourseInfo } from '@packages/antalmanac-types';
-import { usePostHog } from 'posthog-js/react';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-
 import {
     addCustomEvent,
     addCourse,
@@ -49,6 +24,30 @@ import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import { ContentPasteGo } from '@mui/icons-material';
+import {
+    AlertColor,
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    FormControl,
+    FormControlLabel,
+    InputLabel,
+    Radio,
+    RadioGroup,
+    Stack,
+    TextField,
+    Tooltip,
+    useTheme,
+} from '@mui/material';
+import { CourseInfo } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 enum ImportSource {
     ZOT_COURSE_IMPORT = 'zotcourse',

@@ -1,0 +1,31 @@
+.course-info-warning {
+  .warning-primary {
+    color: var(--mui-palette-error-main);
+
+    .warning-primary-icon {
+      font-size: 20px;
+      margin-bottom: 4px;
+      margin-right: 4px;
+    }
+  }
+
+  .warning-hint-italics {
+    padding-top: 6px;
+    font-weight: 400;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--mui-palette-misc-midGray);
+    margin-bottom: 10px;
+  }
+}
+
+.course-synopsis {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  .title::after {
+    content: ': ';
+  }
+}

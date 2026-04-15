@@ -1,8 +1,3 @@
-import { Add } from '@mui/icons-material';
-import { Box, IconButton, Tooltip } from '@mui/material';
-import { AASection, CourseDetails } from '@packages/antalmanac-types';
-import { usePostHog } from 'posthog-js/react';
-
 import { addCourse } from '$actions/AppStoreActions';
 import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
 import { useIsMobile } from '$hooks/useIsMobile';
@@ -10,6 +5,10 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { Term } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import { Add } from '@mui/icons-material';
+import { Box, IconButton, Tooltip } from '@mui/material';
+import { AASection, CourseDetails } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
 
 interface Props {
     section: AASection;

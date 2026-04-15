@@ -1,0 +1,23 @@
+.transcript-form {
+  ol {
+    margin-top: 8px;
+  }
+
+  .transcript-upload {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    > .MuiButtonBase-root {
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .file-path {
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}

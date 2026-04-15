@@ -1,0 +1,1 @@
+ALTER TABLE "zot4plan_imports" ALTER COLUMN "timestamp" SET DEFAULT now();

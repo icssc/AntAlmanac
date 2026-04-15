@@ -1,0 +1,34 @@
+name: Lint
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint and check formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Install Dependencies
+        run: pnpm install
+        env:
+          HUSKY: 0
+
+      - name: Install Dependencies
+        run: pnpm --filter=site typegen
+
+      - name: Lint
+        run: pnpm lint

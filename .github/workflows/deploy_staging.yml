@@ -25,7 +25,7 @@ env:
 
 jobs:
     deploy-staging:
-        if: github.head_ref != 'staging-shared' && github.head_ref != 'scheduler'
+        if: github.head_ref != 'staging-shared' && github.head_ref != 'scheduler' && github.head_ref != 'monorepo'
         runs-on: ubuntu-latest
         environment:
             name: staging-${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
@@ -70,7 +70,7 @@ jobs:
             - name: Generate termData
               uses: ./.github/actions/cache-generated-data
               with:
-                api-key: ${{ secrets.ANTEATER_API_KEY }}
+                  api-key: ${{ secrets.ANTEATER_API_KEY }}
 
             # TODO (@xgraceyan): Remove this stage once SST fixes deployments
             - name: Setup Pulumi

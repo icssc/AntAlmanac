@@ -1,0 +1,9 @@
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  margin: 8px auto;
+
+  &.page-loader {
+    margin-top: 24px;
+  }
+}

@@ -1,0 +1,103 @@
+name: Deploy - Staging Monorepo
+
+on:
+    push:
+        branches: [monorepo]
+    workflow_dispatch:
+
+concurrency:
+    group: sst-staging-monorepo
+    cancel-in-progress: false
+
+env:
+    AWS_REGION: ${{ secrets.AWS_REGION }}
+
+    DB_URL: ${{ secrets.DEV_DB_URL }}
+    MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
+    NEXT_PUBLIC_TILES_ENDPOINT: ${{ secrets.NEXT_PUBLIC_TILES_ENDPOINT }}
+    ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
+    OIDC_CLIENT_ID: ${{ secrets.OIDC_CLIENT_ID }}
+    OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
+    NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY }}
+    PLANNER_CLIENT_API_KEY: ${{ secrets.PLANNER_CLIENT_API_KEY }}
+
+    PLANNER_DATABASE_URL: ${{ secrets.PLANNER_DEV_DATABASE_URL }}
+    PLANNER_SESSION_SECRET: ${{ secrets.PLANNER_SESSION_SECRET }}
+    PLANNER_ADMIN_EMAILS: ${{ secrets.PLANNER_ADMIN_EMAILS }}
+    PLANNER_PUBLIC_API_URL: https://anteaterapi.com/v2/rest/
+    PLANNER_EXTERNAL_USER_READ_SECRET: ${{ secrets.PLANNER_CLIENT_API_KEY }}
+    PLANNER_NEXT_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY }}
+    PLANNER_NEXT_PUBLIC_POSTHOG_HOST: https://us.i.posthog.com
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        environment:
+            name: staging-monorepo
+            url: https://staging-monorepo.antalmanac.com
+
+        env:
+            SST_STAGE: staging-monorepo
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Create deployment
+              id: create-deployment
+              uses: chrnorm/deployment-action@v2
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  environment: staging-monorepo
+                  description: Staging deployment for monorepo merge branch
+
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ env.AWS_REGION }}
+
+            - name: Setup Node.js and pnpm
+              uses: ./.github/actions/setup-node-and-pnpm
+
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+
+            - name: Migrate database
+              env:
+                  DB_URL: ${{ secrets.DEV_DB_URL }}
+              run: pnpm db:migrate
+
+            - name: Generate termData
+              uses: ./.github/actions/cache-generated-data
+              with:
+                  api-key: ${{ secrets.ANTEATER_API_KEY }}
+
+            # TODO (@xgraceyan): Remove this stage once SST fixes deployments
+            - name: Setup Pulumi
+              uses: pulumi/actions@v5
+              with:
+                  pulumi-version: 3.138.0 # Any version < 3.214.0 works
+
+            - name: Deploy SST
+              run: |
+                  echo "Deploying stage: $SST_STAGE"
+                  npx sst deploy --stage "$SST_STAGE"
+
+            - name: Update deployment status (success)
+              if: success()
+              uses: chrnorm/deployment-status@v2
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  deployment-id: ${{ steps.create-deployment.outputs.deployment_id }}
+                  state: success
+                  environment-url: https://staging-monorepo.antalmanac.com
+
+            - name: Update deployment status (failure)
+              if: failure()
+              uses: chrnorm/deployment-status@v2
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  deployment-id: ${{ steps.create-deployment.outputs.deployment_id }}
+                  state: failure

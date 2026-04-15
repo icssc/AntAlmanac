@@ -1,0 +1,1 @@
+ALTER TABLE "transferred_misc" ADD CONSTRAINT "transferred_misc_user_id_course_name_pk" PRIMARY KEY("user_id","course_name");

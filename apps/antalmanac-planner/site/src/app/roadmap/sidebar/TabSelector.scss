@@ -1,0 +1,51 @@
+.tab-selector {
+  margin-bottom: 12px;
+  width: 100%;
+
+  .tab-button {
+    width: 100%;
+    font-weight: bold;
+    text-transform: none;
+
+    &.selected {
+      background-color: var(--mui-palette-primary-main);
+      color: #fff;
+    }
+
+    .tab-icon {
+      margin-right: 4px;
+    }
+  }
+}
+
+[data-theme='dark'] .tab-selector {
+  border: 1px solid #8886;
+
+  .MuiButtonGroup-grouped:not(:last-of-type) {
+    border-right-color: #8886;
+  }
+
+  .tab-button {
+    &:hover:not(.selected) {
+      background-color: #424649;
+    }
+  }
+}
+
+[data-theme='light'] .tab-selector {
+  border: 1px solid #d3d4d5;
+
+  .MuiButtonGroup-grouped:not(:last-of-type) {
+    border-right-color: #d3d4d5;
+  }
+
+  .tab-button {
+    &:not(.selected) {
+      background-color: #f8f9fa;
+    }
+
+    &:hover:not(.selected) {
+      background-color: #d3d4d5;
+    }
+  }
+}

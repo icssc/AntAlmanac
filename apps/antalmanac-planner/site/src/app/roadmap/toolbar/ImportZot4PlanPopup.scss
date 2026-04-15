@@ -1,0 +1,11 @@
+.import-schedule-warning {
+  font-size: 14px;
+  color: var(--mui-palette-error-main);
+  gap: 5px;
+
+  .import-schedule-warning-icon {
+    margin-bottom: 4px;
+    margin-right: 4px;
+    font-size: 16px;
+  }
+}
