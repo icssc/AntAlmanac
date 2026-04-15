@@ -35,6 +35,6 @@
             "$src/*": ["src/*"]
         }
     },
-    "include": ["./dist/types/**/*.ts", "./next-env.d.ts", "./src", ".next/types/**/*.ts", ".next/dev/types/**/*.ts", "./scripts"],
+    "include": ["./dist/types/**/*.ts", "./next-env.d.ts", "./src", ".next/types/**/*.ts", ".next/dev/types/**/*.ts", "./scripts", "../antalmanac-planner/site/src/style/theme-d.ts"],
     "exclude": ["./node_modules"]
 }

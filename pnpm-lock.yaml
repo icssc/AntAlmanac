@@ -248,6 +248,9 @@ importers:
       leaflet.locatecontrol:
         specifier: ^0.79.0
         version: 0.79.0
+      minimatch:
+        specifier: ^10.2.5
+        version: 10.2.5
       moment:
         specifier: ^2.29.4
         version: 2.30.1
@@ -5720,9 +5723,6 @@ packages:
 
   brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
-
-  brace-expansion@2.0.1:
-    resolution: {integrity: sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==}
 
   brace-expansion@2.1.0:
     resolution: {integrity: sha512-TN1kCZAgdgweJhWWpgKYrQaMNHcDULHkWwQIspdtjV4Y5aurRdZpjAqn6yX3FPqTA9ngHCc4hJxMAMgGfve85w==}
@@ -15380,7 +15380,7 @@ snapshots:
 
   '@types/minimatch@6.0.0':
     dependencies:
-      minimatch: 5.1.6
+      minimatch: 10.2.5
 
   '@types/morgan@1.9.10':
     dependencies:
@@ -16217,10 +16217,6 @@ snapshots:
     dependencies:
       balanced-match: 1.0.2
       concat-map: 0.0.1
-
-  brace-expansion@2.0.1:
-    dependencies:
-      balanced-match: 1.0.2
 
   brace-expansion@2.1.0:
     dependencies:
@@ -19173,7 +19169,7 @@ snapshots:
 
   minimatch@5.1.6:
     dependencies:
-      brace-expansion: 2.0.1
+      brace-expansion: 2.1.0
 
   minimatch@9.0.9:
     dependencies:
