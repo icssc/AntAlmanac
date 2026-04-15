@@ -1,3 +1,13 @@
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import trpc from '$lib/api/trpc';
+import { signIn } from '$lib/auth/authActions';
+import { warnMultipleTerms } from '$lib/helpers';
+import { setLocalStorageUserId, setLocalStorageDataCache, setLocalStorageFromLoading } from '$lib/localStorage';
+import AppStore from '$stores/AppStore';
+import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useSessionStore } from '$stores/SessionStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import type {
     CourseDetails,
     CustomEventId,
@@ -11,16 +21,6 @@ import { TRPCClientError } from '@trpc/client';
 import { TRPCError } from '@trpc/server';
 import { PostHog } from 'posthog-js/react';
 
-import analyticsEnum, { logAnalytics, courseNumAsDecimal } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
-import { signIn } from '$lib/auth/authActions';
-import { warnMultipleTerms } from '$lib/helpers';
-import { setLocalStorageUserId, setLocalStorageDataCache, setLocalStorageFromLoading } from '$lib/localStorage';
-import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { openSnackbar } from '$stores/SnackbarStore';
-import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
     onError: (scheduleName: string) => unknown;
@@ -42,8 +42,7 @@ export const addCourse = (
     logAnalytics(postHog, {
         category: analyticsEnum.classSearch,
         action: analyticsEnum.classSearch.actions.ADD_COURSE,
-        label: courseDetails.deptCode,
-        value: courseNumAsDecimal(courseDetails.courseNumber),
+        label: courseDetails.deptCode + courseDetails.courseNumber,
     });
     const terms = AppStore.termsInSchedule(term);
 
@@ -464,7 +463,7 @@ export const copySchedule = (
     try {
         AppStore.copySchedule(scheduleIndex, newScheduleName);
         options?.onSuccess(newScheduleName);
-    } catch (error) {
+    } catch {
         options?.onError(newScheduleName);
     }
 };

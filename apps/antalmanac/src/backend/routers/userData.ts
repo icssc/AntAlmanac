@@ -1,3 +1,6 @@
+import { oidcOAuthEnvSchema } from '$src/backend/env';
+import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
+import { RDS } from '$src/backend/lib/rds';
 import { type User } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
@@ -5,10 +8,6 @@ import { type } from 'arktype';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
-
-import { oidcOAuthEnvSchema } from '$src/backend/env';
-import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
-import { RDS } from '$src/backend/lib/rds';
 
 const { OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
 

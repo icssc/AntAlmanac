@@ -1,11 +1,5 @@
 import './App.css';
-
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
-import { TourProvider } from '@reactour/tour';
-import { useEffect } from 'react';
-import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
-
-import { redoDelete, undoDelete } from '$actions/AppStoreActions';
+import { undoDelete, redoDelete } from '$actions/AppStoreActions';
 import { AutoSignIn } from '$components/AutoSignIn';
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
 import AppPostHogProvider from '$providers/PostHog';
@@ -17,6 +11,10 @@ import NewUserPage from '$routes/NewUserPage';
 import { OutagePage } from '$routes/OutagePage';
 import { Unsubscribe } from '$routes/UnsubscribePage';
 import AppThemeProvider from '$src/app/Theme';
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import { TourProvider } from '@reactour/tour';
+import { useEffect } from 'react';
+import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
 /**
  * Do not edit this unless you know what you're doing.
