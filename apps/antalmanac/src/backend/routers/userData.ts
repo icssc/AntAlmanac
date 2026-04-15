@@ -1,16 +1,15 @@
+import { SESSION_COOKIE_NAME } from '$src/backend/context';
 import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { oauth } from '$src/backend/lib/auth/oauth';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
 import { RDS } from '$src/backend/lib/rds';
-import { type User } from '@packages/antalmanac-types';
+import { procedure, protectedProcedure, router } from '$src/backend/trpc';
+import type { User } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
-import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState, OAuth2Tokens } from 'arctic';
+import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState, type OAuth2Tokens } from 'arctic';
 import { type } from 'arktype';
 import { z } from 'zod';
-
-import { SESSION_COOKIE_NAME } from '../context';
-import { procedure, router } from '../trpc';
 
 const { OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
 const NODE_ENV = process.env.NODE_ENV;
@@ -38,13 +37,8 @@ const saveGoogleSchema = type({
 });
 
 const userDataRouter = router({
-    /**
-     * Loads schedule data for a user that's logged in.
-     * @param input - An object containing the session token.
-     * @returns The account and user data associated with the session token.
-     */
-    getUserAndAccountBySessionToken: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
-        return await RDS.getUserAndAccountBySessionToken(db, input.token);
+    getUserAndAccountBySessionToken: protectedProcedure.query(async ({ ctx }) => {
+        return await RDS.getUserAndAccountBySessionToken(db, ctx.sessionToken);
     }),
 
     /**
@@ -68,8 +62,8 @@ const userDataRouter = router({
      * @param input - An object containing the user ID.
      * @returns The user's google ID associated with the user ID.
      */
-    getGoogleIdByUserId: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
-        return await RDS.getGoogleIdByUserId(db, input.userId);
+    getGoogleIdByUserId: protectedProcedure.query(async ({ ctx }) => {
+        return await RDS.getGoogleIdByUserId(db, ctx.userId);
     }),
 
     /**
@@ -87,15 +81,8 @@ const userDataRouter = router({
             });
         }
     }),
-    getUserDataWithSession: procedure.input(z.object({ refreshToken: z.string() })).query(async ({ input }) => {
-        if ('refreshToken' in input) {
-            return await RDS.fetchUserDataWithSession(db, input.refreshToken);
-        } else {
-            throw new TRPCError({
-                code: 'BAD_REQUEST',
-                message: 'Invalid input: userId is required',
-            });
-        }
+    getUserDataWithSession: protectedProcedure.query(async ({ ctx }) => {
+        return await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
     }),
 
     getGuestAccountAndUserByName: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
