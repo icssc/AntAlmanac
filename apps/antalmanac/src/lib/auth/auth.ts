@@ -1,3 +1,4 @@
+import 'server-only';
 import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { db } from '@packages/db';
 import { betterAuth } from 'better-auth';
