@@ -1,0 +1,47 @@
+apps/antalmanac/src/components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/DepartmentSearchBar.tsx
+  8d04213967769693 5
+apps/antalmanac/src/components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog.tsx
+  8d04213967769693 1-7
+apps/antalmanac/src/actions/AppStoreActions.ts
+  dd6411b3386c8df1 323
+  8d04213967769693 6
+apps/antalmanac/src/components/RightPane/SectionTable/CourseInfo/CourseInfoBar.tsx
+  8d04213967769693 1-4
+apps/antalmanac/src/components/LoadingScreen.tsx
+  8d04213967769693 1
+lint-staged.config.cjs
+  8d04213967769693 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "a973b1968af490c25cc80d82a4f7880b46133e3a",
+  "prompts": {
+    "8d04213967769693": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "55e96596-5744-44cb-ab3c-839b05c4e4d9",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 15,
+      "total_deletions": 19,
+      "accepted_lines": 15,
+      "overriden_lines": 0
+    },
+    "dd6411b3386c8df1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "95093494-c88b-4524-b24d-1d94f061ed5b",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    }
+  }
+}
