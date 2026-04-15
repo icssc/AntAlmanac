@@ -88,12 +88,12 @@ export function removeLocalStorageUserId() {
 }
 
 export function getWasLoggedIn(): boolean {
-    return window.localStorage.getItem(LSK.wasLoggedIn) === '1';
+    return window.localStorage.getItem(LSK.wasLoggedIn) === 'true';
 }
 
 export function setWasLoggedIn(value: boolean) {
     if (value) {
-        window.localStorage.setItem(LSK.wasLoggedIn, '1');
+        window.localStorage.setItem(LSK.wasLoggedIn, 'true');
     } else {
         window.localStorage.removeItem(LSK.wasLoggedIn);
     }
