@@ -1,12 +1,11 @@
-import { Check, Link } from '@mui/icons-material';
-import { IconButton, Tooltip } from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
-
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import { Check, Link } from '@mui/icons-material';
+import { IconButton, Tooltip } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface ShareScheduleButtonProps {
     index: number;
@@ -44,7 +43,7 @@ export function ShareScheduleButton({ index, disabled }: ShareScheduleButtonProp
             setCopied(true);
             openSnackbar('success', `Link copied to clipboard!`, { style: { whiteSpace: 'pre-line' } });
             copiedTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
-        } catch (err) {
+        } catch {
             openSnackbar('error', 'Failed to copy link');
         }
     }, [index, postHog]);
