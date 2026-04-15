@@ -1,10 +1,9 @@
-import { debounce } from '@mui/material';
-import type { AASection, Course, CourseInfo } from '@packages/antalmanac-types';
-import { create } from 'zustand';
-
 import { Notifications } from '$lib/notifications';
 import { WebSOC } from '$lib/websoc';
 import { useSessionStore } from '$stores/SessionStore';
+import { debounce } from '@mui/material';
+import type { AASection, Course, CourseInfo } from '@packages/antalmanac-types';
+import { create } from 'zustand';
 
 export type NotifyOn = {
     notifyOnOpen: boolean;
@@ -47,7 +46,9 @@ const pendingUpdates: Record<string, Notification> = {};
 const debouncedSetNotifications = debounce(async () => {
     try {
         const updates = Object.values(pendingUpdates);
-        Object.keys(pendingUpdates).forEach((key) => delete pendingUpdates[key]);
+        Object.keys(pendingUpdates).forEach((key) => {
+            delete pendingUpdates[key];
+        });
 
         if (updates.length > 0) {
             await Notifications.setNotifications(updates);

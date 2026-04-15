@@ -1,6 +1,3 @@
-import { useEffect, useCallback, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
-
 import { isEmptySchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
 import { LoadingScreen } from '$components/LoadingScreen';
 import trpc from '$lib/api/trpc';
@@ -13,11 +10,12 @@ import {
     removeLocalStorageImportedUser,
     removeLocalStorageDataCache,
     removeLocalStorageFromLoading,
-    setLocalStorageSessionId,
     setLocalStorageOnFirstSignin,
 } from '$lib/localStorage';
 import { clearSsoCookie, setSsoCookie } from '$lib/ssoCookie';
 import AppStore from '$stores/AppStore';
+import { useEffect, useCallback, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 export function AuthPage() {
     const [searchParams] = useSearchParams();
@@ -46,7 +44,7 @@ export function AuthPage() {
 
             isAuthenticatingRef.current = true;
 
-            const { sessionToken, userId, providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
+            const { userId, providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
                 code: code,
                 state: state,
             });
@@ -61,12 +59,11 @@ export function AuthPage() {
                 removeLocalStorageUserId();
             }
 
-            if (!(sessionToken && providerId)) {
+            if (!providerId) {
                 window.location.href = '/';
                 return;
             }
 
-            setLocalStorageSessionId(sessionToken);
             setSsoCookie();
 
             // load schedule without saving any changes

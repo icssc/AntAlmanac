@@ -1,36 +1,34 @@
-import { AccountCircle, Google, ExpandMore } from '@mui/icons-material';
+import { loadSchedule, loadScheduleWithSessionToken, loginUser } from '$actions/AppStoreActions';
+import { AlertDialog } from '$components/AlertDialog';
+import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
+import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
+import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
+import trpc from '$lib/api/trpc';
+import { getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useSessionStore } from '$stores/SessionStore';
+import { useThemeStore } from '$stores/SettingsStore';
+import { AccountCircle, ExpandMore, Google } from '@mui/icons-material';
 import {
-    Divider,
-    Stack,
     Alert,
+    type AlertColor,
     AlertTitle,
+    Box,
     Button,
+    Collapse,
     Dialog,
     DialogActions,
     DialogContent,
     DialogContentText,
-    Popover,
-    TextField,
-    AlertColor,
+    Divider,
     ListItemIcon,
     ListItemText,
     MenuItem,
-    Collapse,
-    Box,
+    Popover,
+    Stack,
+    TextField,
 } from '@mui/material';
-import { useEffect, useState, useCallback } from 'react';
-
-import { loadSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
-import { AlertDialog } from '$components/AlertDialog';
-import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
-import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
-import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
-import { useNotificationStore } from '$stores/NotificationStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
+import { useCallback, useEffect, useState } from 'react';
 
 const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = {
     SESSION_EXPIRED: {
@@ -45,7 +43,7 @@ const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = 
 
 export const Signin = () => {
     const isDark = useThemeStore((store) => store.isDark);
-    const { updateSession } = useSessionStore();
+    const { loadSession } = useSessionStore();
     const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = scheduleComponentsToggleStore();
 
     const [openAlert, setOpenalert] = useState(false);
@@ -104,16 +102,9 @@ export const Signin = () => {
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
 
-            const sessionToken = getLocalStorageSessionId() ?? '';
-
-            if (sessionToken) {
-                const validSession = await updateSession(sessionToken);
-                if (!validSession) {
-                    setOpenalert(true);
-                    setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
-                } else {
-                    await loadScheduleWithSessionToken();
-                }
+            const validSession = await loadSession();
+            if (validSession) {
+                await loadScheduleWithSessionToken();
             } else if (userID && userID !== '') {
                 await validateImportedUser(userID);
                 await loadSchedule(userID, rememberMe, 'GUEST');
@@ -121,7 +112,7 @@ export const Signin = () => {
 
             setOpenLoadingSchedule(false);
         },
-        [setOpenLoadingSchedule, updateSession, validateImportedUser]
+        [setOpenLoadingSchedule, loadSession, validateImportedUser]
     );
 
     const handleLogin = () => {
@@ -176,16 +167,8 @@ export const Signin = () => {
     }, [isOpen, enterEvent]);
 
     useEffect(() => {
-        if (typeof Storage !== 'undefined') {
-            const savedUserID = getLocalStorageUserId();
-            const sessionID = getLocalStorageSessionId();
-
-            if (savedUserID != null || sessionID !== null) {
-                void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
-            } else {
-                useNotificationStore.getState().loadNotifications();
-            }
-        }
+        const savedUserID = getLocalStorageUserId();
+        void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
     }, [loadScheduleAndSetLoadingAuth]);
 
     return (
