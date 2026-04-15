@@ -1,9 +1,8 @@
+import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
 import { EnrollmentHistoryAPIResult } from '@packages/antalmanac-types';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
-
-import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
 
 const enrollHistRouter = router({
     get: procedure

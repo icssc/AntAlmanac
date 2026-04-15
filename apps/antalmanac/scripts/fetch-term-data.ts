@@ -8,9 +8,8 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import type { CalendarTerm, CalendarAllAPIResult } from '@packages/antalmanac-types';
-
 import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
+import type { CalendarTerm, CalendarAllAPIResult } from '@packages/antalmanac-types';
 
 const PUBLIC_ANTEATER_API_KEY = 'INSqn9qP1pXlEwihpQa_GtrJhGOxQyjE5zcAKYLptLg.pk.prj9hlf3sf7q638jkq61u282';
 const __dirname = dirname(fileURLToPath(import.meta.url));
