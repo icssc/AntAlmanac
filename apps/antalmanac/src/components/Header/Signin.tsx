@@ -103,7 +103,7 @@ export const Signin = () => {
     );
 
     const loadScheduleAndSetLoadingAuth = useCallback(
-        async (userID: string, rememberMe: boolean, skipScheduleLoad = false) => {
+        async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
 
             const sessionToken = getLocalStorageSessionId() ?? '';
@@ -121,7 +121,7 @@ export const Signin = () => {
                 if (!validSession) {
                     setOpenalert(true);
                     setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
-                } else if (!skipScheduleLoad) {
+                } else {
                     if (sessionToken && (await loadScheduleWithSessionToken())) {
                         updateSession(sessionToken);
                     }
@@ -192,8 +192,10 @@ export const Signin = () => {
             const savedUserID = getLocalStorageUserId();
             const sessionID = getLocalStorageSessionId();
 
-            if (savedUserID != null || sessionID !== null) {
-                void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true, isSharedSchedulePage);
+            if (isSharedSchedulePage) {
+                useNotificationStore.getState().loadNotifications();
+            } else if (savedUserID != null || sessionID !== null) {
+                void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
             } else {
                 useNotificationStore.getState().loadNotifications();
             }
