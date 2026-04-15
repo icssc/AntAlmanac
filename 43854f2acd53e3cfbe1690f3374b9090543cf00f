@@ -1,0 +1,25 @@
+apps/antalmanac/src/components/Header/Signin.tsx
+  dd6411b3386c8df1 1-12,117
+apps/antalmanac/src/components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/ShareScheduleButton.tsx
+  dd6411b3386c8df1 5-8,46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.2.8",
+  "base_commit_sha": "43854f2acd53e3cfbe1690f3374b9090543cf00f",
+  "prompts": {
+    "dd6411b3386c8df1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "95093494-c88b-4524-b24d-1d94f061ed5b",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 18,
+      "total_deletions": 20,
+      "accepted_lines": 18,
+      "overriden_lines": 0
+    }
+  }
+}
