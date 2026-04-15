@@ -44,6 +44,7 @@ export default $config({
 
         new sst.aws.Nextjs('Website', {
             path: 'apps/antalmanac',
+            openNextVersion: '3.6.6',
             router: {
                 instance: router,
                 path: '/',
