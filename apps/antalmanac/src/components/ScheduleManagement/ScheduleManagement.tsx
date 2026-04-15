@@ -1,6 +1,7 @@
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { getWasLoggedIn } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { paramsAreInURL } from '$stores/CoursePaneStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -49,7 +50,7 @@ export function ScheduleManagement() {
             return;
         }
 
-        const hasSession = useSessionStore.getState().sessionIsValid;
+        const hasSession = useSessionStore.getState().sessionIsValid || getWasLoggedIn();
         const urlHasManualSearchParams = paramsAreInURL();
         const hasLocalScheduleData = () =>
             AppStore.getAddedCourses().length > 0 || AppStore.getCustomEvents().length > 0;

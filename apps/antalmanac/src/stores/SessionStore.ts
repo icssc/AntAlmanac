@@ -1,4 +1,5 @@
 import trpc from '$lib/api/trpc';
+import { setWasLoggedIn } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 import { useNotificationStore } from '$stores/NotificationStore';
 import type { Roadmap } from '@packages/antalmanac-types';
@@ -63,6 +64,7 @@ export const useSessionStore = create<SessionState>((set) => {
                     googleId,
                 });
 
+                setWasLoggedIn(true);
                 useNotificationStore.getState().loadNotifications();
                 return true;
             } catch (error) {
@@ -84,6 +86,7 @@ export const useSessionStore = create<SessionState>((set) => {
                 console.error('Error during logout:', error);
             }
 
+            setWasLoggedIn(false);
             clearSsoCookie();
             set({
                 userId: null,

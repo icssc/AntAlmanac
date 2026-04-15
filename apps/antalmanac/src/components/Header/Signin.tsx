@@ -4,7 +4,7 @@ import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import trpc from '$lib/api/trpc';
-import { getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
+import { getLocalStorageUserId, getWasLoggedIn, setLocalStorageFromLoading } from '$lib/localStorage';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -105,6 +105,9 @@ export const Signin = () => {
             const validSession = await loadSession();
             if (validSession) {
                 await loadScheduleWithSessionToken();
+            } else if (getWasLoggedIn()) {
+                setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
+                setOpenalert(true);
             } else if (userID && userID !== '') {
                 await validateImportedUser(userID);
                 await loadSchedule(userID, rememberMe, 'GUEST');
