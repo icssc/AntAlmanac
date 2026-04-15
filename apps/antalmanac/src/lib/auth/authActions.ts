@@ -6,6 +6,7 @@ export async function signIn() {
     return await auth.api.signInWithOAuth2({
         body: {
             providerId: AUTH_PROVIDER_ID,
+            newUserCallbackURL: '/welcome',
         },
     });
 }

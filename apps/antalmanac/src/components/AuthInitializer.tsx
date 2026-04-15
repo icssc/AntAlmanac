@@ -13,7 +13,6 @@ import {
     removeLocalStorageImportedUser,
     removeLocalStorageUserId,
     setLocalStorageImportedUser,
-    setLocalStorageOnFirstSignin,
 } from '$lib/localStorage';
 import { setSsoCookie } from '$lib/ssoCookie';
 import AppStore from '$stores/AppStore';
@@ -25,7 +24,7 @@ const AuthInitializer = () => {
     const [openAlert, setOpenalert] = useState(false);
 
     const { setOpenLoadingSchedule } = scheduleComponentsToggleStore();
-    const { updateSession } = useSessionStore();
+    const { updateSession, setAreSchedulesLoaded } = useSessionStore();
 
     const { data: sessionData } = authClient.useSession();
 
@@ -34,18 +33,11 @@ const AuthInitializer = () => {
             return;
         }
 
-        // ! FIXME
-        const isNewUser = false;
-
         const fromLoading = getLocalStorageFromLoading();
         const savedUserId = getLocalStorageUserId();
         const savedData = getLocalStorageDataCache();
 
-        if (isNewUser) {
-            setLocalStorageOnFirstSignin('true');
-        } else {
-            removeLocalStorageUserId();
-        }
+        removeLocalStorageUserId();
 
         // load schedule without saving any changes
         if (fromLoading) {
@@ -113,9 +105,11 @@ const AuthInitializer = () => {
                         return;
                     }
                     setSsoCookie();
-                    handleUnsavedChanges();
+                    await handleUnsavedChanges();
 
-                    loadScheduleAndSetLoadingAuth();
+                    await loadScheduleAndSetLoadingAuth();
+
+                    setAreSchedulesLoaded(true);
 
                     useNotificationStore.getState().loadNotifications();
                 } catch (error) {
@@ -124,7 +118,7 @@ const AuthInitializer = () => {
                 }
             })();
         }
-    }, [sessionData, updateSession, handleUnsavedChanges, loadScheduleAndSetLoadingAuth]);
+    }, [sessionData, updateSession, handleUnsavedChanges, loadScheduleAndSetLoadingAuth, setAreSchedulesLoaded]);
 
     return (
         <SignInAlertDialog

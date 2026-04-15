@@ -1,5 +1,6 @@
 import { AppBar, Box, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { AlertDialog } from '$components/AlertDialog';
 import { AppSwitcher } from '$components/Header/AppSwitcher';
@@ -22,7 +23,12 @@ export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
     const importedUser = getLocalStorageImportedUser() ?? '';
-    const { sessionId, sessionIsValid } = useSessionStore();
+    const { sessionId, sessionIsValid } = useSessionStore(
+        useShallow((state) => ({
+            sessionId: state.sessionId,
+            sessionIsValid: state.sessionIsValid,
+        }))
+    );
     const isMobile = useIsMobile();
 
     const clearStorage = () => {

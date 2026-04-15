@@ -15,7 +15,6 @@ enum LocalStorageKeys {
     columnToggles = 'columnToggles',
     pwaDismissalTime = 'pwaDismissalTime',
     dataCache = 'dataCache',
-    newUser = 'newUser',
     importedUser = 'importedUser',
     fromLoading = 'fromLoading',
     tempSaveData = 'tempSaveData',
@@ -46,18 +45,6 @@ export function getLocalStorageImportedUser() {
 
 export function removeLocalStorageImportedUser() {
     window.localStorage.removeItem(LSK.importedUser);
-}
-
-export function setLocalStorageOnFirstSignin(value: string) {
-    window.localStorage.setItem(LSK.newUser, value);
-}
-
-export function getLocalStorageOnFirstSignin() {
-    return window.localStorage.getItem(LSK.newUser);
-}
-
-export function removeLocalStorageOnFirstSignin() {
-    window.localStorage.removeItem(LSK.newUser);
 }
 
 export function setLocalStorageDataCache(value: string) {

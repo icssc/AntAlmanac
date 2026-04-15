@@ -16,6 +16,13 @@ interface SessionState {
     clearSession: () => Promise<void>;
 
     googleId: string | null;
+
+    isNewUser: boolean;
+    setIsNewUser: (isNewUser: boolean) => void;
+
+    areSchedulesLoaded: boolean;
+    setAreSchedulesLoaded: (areSchedulesLoaded: boolean) => void;
+
     filterTakenCourses: boolean;
     userTakenCourses: Set<string>;
 
@@ -36,6 +43,8 @@ export const useSessionStore = create<SessionState>((set, get) => {
         email: null,
         sessionIsValid: false,
         googleId: null,
+        isNewUser: false,
+        areSchedulesLoaded: false,
         filterTakenCourses: false,
         userTakenCourses: new Set(),
         plannerRoadmaps: [],
@@ -74,6 +83,8 @@ export const useSessionStore = create<SessionState>((set, get) => {
                     isGoogleUser: false,
                     email: null,
                     googleId: null,
+                    isNewUser: false,
+                    areSchedulesLoaded: false,
                     filterTakenCourses: false,
                     userTakenCourses: new Set(),
                     plannerRoadmaps: [],
@@ -81,6 +92,8 @@ export const useSessionStore = create<SessionState>((set, get) => {
                 window.location.reload();
             }
         },
+        setIsNewUser: (isNewUser) => set({ isNewUser: isNewUser }),
+        setAreSchedulesLoaded: (areSchedulesLoaded) => set({ areSchedulesLoaded: areSchedulesLoaded }),
         setFilterTakenCourses: (value) => set({ filterTakenCourses: value }),
         setUserTakenCourses: (courses) => set({ userTakenCourses: courses }),
         setPlannerRoadmaps: (roadmaps) => set({ plannerRoadmaps: roadmaps }),

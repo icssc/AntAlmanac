@@ -35,13 +35,7 @@ import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
-import {
-    getLocalStorageDataCache,
-    getLocalStorageOnFirstSignin,
-    getLocalStorageUserId,
-    removeLocalStorageOnFirstSignin,
-    removeLocalStorageUserId,
-} from '$lib/localStorage';
+import { getLocalStorageDataCache, getLocalStorageUserId, removeLocalStorageUserId } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import { BLUE, LIGHT_BLUE } from '$src/globals';
@@ -67,7 +61,7 @@ export function Import() {
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    const { sessionIsValid } = useSessionStore();
+    const { sessionIsValid, isNewUser, setIsNewUser, areSchedulesLoaded } = useSessionStore();
     const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
 
     const theme = useTheme();
@@ -234,16 +228,15 @@ export function Import() {
     }, []);
 
     const handleFirstTimeSignin = useCallback(async () => {
-        const newUserFlag = getLocalStorageOnFirstSignin() ?? '';
-        if (newUserFlag !== '') {
+        if (areSchedulesLoaded && isNewUser) {
             const savedUserId = getLocalStorageUserId();
             if (savedUserId) setAAUsername(savedUserId);
             handleOpen();
-            removeLocalStorageOnFirstSignin();
+            setIsNewUser(false);
             removeLocalStorageUserId();
             setImportSource(ImportSource.AA_USERNAME_IMPORT);
         }
-    }, [handleOpen]);
+    }, [handleOpen, isNewUser, setIsNewUser, areSchedulesLoaded]);
 
     useEffect(() => {
         const handleSkeletonModeChange = () => {
