@@ -1,3 +1,6 @@
+import { useIsMobile } from '$hooks/useIsMobile';
+import { EnrollmentHistory } from '$lib/enrollmentHistory';
+import { useThemeStore } from '$stores/SettingsStore';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import {
     Box,
@@ -11,7 +14,7 @@ import {
     Typography,
     type SelectChangeEvent,
 } from '@mui/material';
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import {
     LineChart,
     Line,
@@ -22,10 +25,6 @@ import {
     Tooltip as RechartsTooltip,
     Legend,
 } from 'recharts';
-
-import { useIsMobile } from '$hooks/useIsMobile';
-import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
-import { useThemeStore } from '$stores/SettingsStore';
 
 type PopupHeaderCallback = () => void;
 const ALL_INSTRUCTORS_OPTION = '__all_instructors__';
@@ -84,18 +83,25 @@ interface EnrollmentHistoryPopupProps {
     department: string;
     courseNumber: string;
     preferredInstructors?: string[];
+    enrollmentHistory?: EnrollmentHistory[] | null;
+    loading?: boolean;
 }
 
-export function EnrollmentHistoryPopup({ department, courseNumber, preferredInstructors = [] }: EnrollmentHistoryPopupProps) {
-    const [loading, setLoading] = useState(true);
-    const [enrollmentHistory, setEnrollmentHistory] = useState<EnrollmentHistory[]>();
-    const [selectedInstructor, setSelectedInstructor] = useState(ALL_INSTRUCTORS_OPTION);
-    const [graphIndex, setGraphIndex] = useState(0);
-    const hasAppliedDefaultInstructor = useRef(false);
+function graphKey(enrollment: EnrollmentHistory) {
+    return `${enrollment.year}-${enrollment.quarter}-${enrollment.instructors.join('|')}`;
+}
+
+export function EnrollmentHistoryPopup({
+    department,
+    courseNumber,
+    preferredInstructors = [],
+    enrollmentHistory,
+    loading = false,
+}: EnrollmentHistoryPopupProps) {
+    const [selectedInstructorOverride, setSelectedInstructorOverride] = useState<string>();
+    const [selectedGraphKey, setSelectedGraphKey] = useState<string>();
 
     const isMobile = useIsMobile();
-
-    const deptEnrollmentHistory = useMemo(() => new DepartmentEnrollmentHistory(department), [department]);
 
     const graphWidth = useMemo(() => (isMobile ? 250 : 450), [isMobile]);
     const graphHeight = useMemo(() => (isMobile ? 175 : 250), [isMobile]);
@@ -113,8 +119,18 @@ export function EnrollmentHistoryPopup({ department, courseNumber, preferredInst
             }
         }
 
-        return [ALL_INSTRUCTORS_OPTION, ...Array.from(instructors).sort((a, b) => a.localeCompare(b))];
+        return [ALL_INSTRUCTORS_OPTION, ...Array.from(instructors).sort((a, b) => a.localeCompare(b))] as const;
     }, [enrollmentHistory]);
+    const defaultSelectedInstructor = useMemo(() => {
+        const preferredInstructor = preferredInstructors.find((instructor) => instructorOptions.includes(instructor));
+        return preferredInstructor ?? ALL_INSTRUCTORS_OPTION;
+    }, [instructorOptions, preferredInstructors]);
+    const selectedInstructor = useMemo(() => {
+        if (selectedInstructorOverride && instructorOptions.includes(selectedInstructorOverride)) {
+            return selectedInstructorOverride;
+        }
+        return defaultSelectedInstructor;
+    }, [defaultSelectedInstructor, instructorOptions, selectedInstructorOverride]);
 
     const filteredEnrollmentHistory = useMemo(() => {
         if (!enrollmentHistory) {
@@ -136,8 +152,16 @@ export function EnrollmentHistoryPopup({ department, courseNumber, preferredInst
         if (!filteredEnrollmentHistory?.length) {
             return 0;
         }
-        return Math.min(graphIndex, filteredEnrollmentHistory.length - 1);
-    }, [filteredEnrollmentHistory, graphIndex]);
+        if (selectedGraphKey) {
+            const selectedIndex = filteredEnrollmentHistory.findIndex(
+                (enrollment) => graphKey(enrollment) === selectedGraphKey
+            );
+            if (selectedIndex >= 0) {
+                return selectedIndex;
+            }
+        }
+        return filteredEnrollmentHistory.length - 1;
+    }, [filteredEnrollmentHistory, selectedGraphKey]);
 
     const popupTitle = useMemo(() => {
         if (enrollmentHistory == null) {
@@ -166,60 +190,24 @@ export function EnrollmentHistoryPopup({ department, courseNumber, preferredInst
     const tooltipBackgroundColor = isDark ? '#1f1f1f' : '#fff';
 
     const handleBack = useCallback(() => {
-        setGraphIndex((prev) => Math.max(prev - 1, 0));
-    }, []);
+        if (!filteredEnrollmentHistory?.length || activeGraphIndex === 0) {
+            return;
+        }
+        setSelectedGraphKey(graphKey(filteredEnrollmentHistory[activeGraphIndex - 1]));
+    }, [activeGraphIndex, filteredEnrollmentHistory]);
 
     const handleForward = useCallback(() => {
-        setGraphIndex((prev) => {
-            const maxGraphIndex = filteredEnrollmentHistory?.length ? filteredEnrollmentHistory.length - 1 : 0;
-            return Math.min(prev + 1, maxGraphIndex);
-        });
-    }, [filteredEnrollmentHistory]);
+        if (!filteredEnrollmentHistory?.length || activeGraphIndex === filteredEnrollmentHistory.length - 1) {
+            return;
+        }
+        setSelectedGraphKey(graphKey(filteredEnrollmentHistory[activeGraphIndex + 1]));
+    }, [activeGraphIndex, filteredEnrollmentHistory]);
 
     const handleSelectInstructor = useCallback((event: SelectChangeEvent<string>) => {
-        setSelectedInstructor(event.target.value);
+        setSelectedInstructorOverride(event.target.value);
+        // Clear explicit graph selection so newly filtered data defaults to newest quarter.
+        setSelectedGraphKey(undefined);
     }, []);
-
-    useEffect(() => {
-        if (!loading) {
-            return;
-        }
-
-        deptEnrollmentHistory.find(courseNumber).then((data) => {
-            if (data) {
-                setEnrollmentHistory(data);
-                // The graph index is the last past enrollment graph since we want to show
-                // the most recent quarter's graph
-                setGraphIndex(data.length - 1);
-            }
-            setLoading(false);
-        });
-    }, [loading, deptEnrollmentHistory, courseNumber]);
-
-    useEffect(() => {
-        if (!instructorOptions.length || hasAppliedDefaultInstructor.current) {
-            return;
-        }
-
-        const preferredInstructor = preferredInstructors.find((instructor) => instructorOptions.includes(instructor));
-        if (preferredInstructor) {
-            setSelectedInstructor(preferredInstructor);
-            hasAppliedDefaultInstructor.current = true;
-            return;
-        }
-
-        setSelectedInstructor(ALL_INSTRUCTORS_OPTION);
-        hasAppliedDefaultInstructor.current = true;
-    }, [instructorOptions, preferredInstructors]);
-
-    useEffect(() => {
-        if (!filteredEnrollmentHistory?.length) {
-            setGraphIndex(0);
-            return;
-        }
-        // Default to the newest quarter in the active instructor filter.
-        setGraphIndex(filteredEnrollmentHistory.length - 1);
-    }, [filteredEnrollmentHistory]);
 
     if (loading) {
         return (
@@ -275,7 +263,11 @@ export function EnrollmentHistoryPopup({ department, courseNumber, preferredInst
             ) : null}
             <Box sx={{ display: 'flex', height: graphHeight, width: graphWidth }}>
                 <ResponsiveContainer width="95%" height="95%">
-                    <LineChart data={lineChartData} style={{ cursor: 'pointer' }} margin={{ top: 8, right: 16, left: 4 }}>
+                    <LineChart
+                        data={lineChartData}
+                        style={{ cursor: 'pointer' }}
+                        margin={{ top: 8, right: 16, left: 4 }}
+                    >
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
                         <XAxis dataKey="date" tick={{ fontSize: 12, fill: axisColor }} />
                         <YAxis tick={{ fontSize: 12, fill: axisColor }} width={48} />

@@ -1,11 +1,11 @@
-import { Box, Button, Popover, Tooltip, Typography } from '@mui/material';
-import { WebsocSectionEnrollment } from '@packages/antalmanac-types';
-import { useCallback, useState } from 'react';
-
 import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/EnrollmentHistoryPopup';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSecondaryColor } from '$hooks/useSecondaryColor';
+import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
+import { Box, Button, Popover, Tooltip, Typography } from '@mui/material';
+import { WebsocSectionEnrollment } from '@packages/antalmanac-types';
+import { useCallback, useMemo, useState } from 'react';
 
 interface EnrollmentCellProps {
     deptCode: string;
@@ -43,10 +43,33 @@ export const EnrollmentCell = ({
     const secondaryColor = useSecondaryColor();
     const showTooltip = !isMobile && formattedTime;
     const [anchorEl, setAnchorEl] = useState<Element>();
+    const [enrollmentHistory, setEnrollmentHistory] = useState<EnrollmentHistory[] | null>();
+    const [loadingEnrollmentHistory, setLoadingEnrollmentHistory] = useState(false);
+    const deptEnrollmentHistory = useMemo(() => new DepartmentEnrollmentHistory(deptCode), [deptCode]);
 
-    const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl((currentAnchorEl) => (currentAnchorEl ? undefined : event.currentTarget));
-    }, []);
+    const handleClick = useCallback(
+        (event: React.MouseEvent<HTMLElement>) => {
+            const openingPopover = !anchorEl;
+            setAnchorEl((currentAnchorEl) => (currentAnchorEl ? undefined : event.currentTarget));
+            if (!openingPopover || enrollmentHistory !== undefined || loadingEnrollmentHistory) {
+                return;
+            }
+
+            setLoadingEnrollmentHistory(true);
+            deptEnrollmentHistory
+                .find(courseNumber)
+                .then((history) => {
+                    setEnrollmentHistory(history ?? null);
+                })
+                .catch(() => {
+                    setEnrollmentHistory(null);
+                })
+                .finally(() => {
+                    setLoadingEnrollmentHistory(false);
+                });
+        },
+        [anchorEl, courseNumber, deptEnrollmentHistory, enrollmentHistory, loadingEnrollmentHistory]
+    );
 
     const hideEnrollmentHistory = useCallback(() => {
         setAnchorEl(undefined);
@@ -58,7 +81,7 @@ export const EnrollmentCell = ({
                 paddingX: 0,
                 paddingY: 0,
                 minWidth: 0,
-                fontWeight: 600,
+                fontWeight: 400,
                 fontSize: '1rem',
                 color: secondaryColor,
                 lineHeight: 1.2,
@@ -99,6 +122,8 @@ export const EnrollmentCell = ({
                     department={deptCode}
                     courseNumber={courseNumber}
                     preferredInstructors={instructors}
+                    enrollmentHistory={enrollmentHistory}
+                    loading={loadingEnrollmentHistory && enrollmentHistory === undefined}
                 />
             </Popover>
         </TableBodyCellContainer>
