@@ -1,4 +1,4 @@
-import { Assessment, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
+import { Assessment, Route } from '@mui/icons-material';
 import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useMemo } from 'react';
 
@@ -6,7 +6,6 @@ import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/Cou
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
 import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
-import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/EnrollmentHistoryPopup';
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
@@ -112,18 +111,6 @@ function SectionTable(props: SectionTableProps) {
                     }
                 />
 
-                <CourseInfoButton
-                    analyticsCategory={analyticsCategory}
-                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_ENROLLMENT}
-                    text="Past Enrollment"
-                    icon={<ShowChartIcon />}
-                    popupContent={
-                        <EnrollmentHistoryPopup
-                            department={courseDetails.deptCode}
-                            courseNumber={courseDetails.courseNumber}
-                        />
-                    }
-                />
             </Box>
 
             {missingSections?.length > 0 && (

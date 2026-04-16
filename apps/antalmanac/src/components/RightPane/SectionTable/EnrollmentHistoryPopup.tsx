@@ -1,6 +1,17 @@
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
-import { Box, IconButton, Typography, Skeleton, Tooltip } from '@mui/material';
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import {
+    Box,
+    FormControl,
+    IconButton,
+    InputLabel,
+    MenuItem,
+    Select,
+    Skeleton,
+    Tooltip,
+    Typography,
+    type SelectChangeEvent,
+} from '@mui/material';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import {
     LineChart,
     Line,
@@ -17,6 +28,7 @@ import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentH
 import { useThemeStore } from '$stores/SettingsStore';
 
 type PopupHeaderCallback = () => void;
+const ALL_INSTRUCTORS_OPTION = '__all_instructors__';
 
 interface PopupHeaderProps {
     graphWidth: number;
@@ -24,7 +36,7 @@ interface PopupHeaderProps {
     handleForward: PopupHeaderCallback;
     handleBack: PopupHeaderCallback;
     popupTitle: string;
-    enrollmentHistory: EnrollmentHistory[];
+    historyCount: number;
 }
 
 function PopupHeader({
@@ -33,7 +45,7 @@ function PopupHeader({
     handleForward,
     handleBack,
     popupTitle,
-    enrollmentHistory,
+    historyCount,
 }: PopupHeaderProps) {
     const isMobile = useIsMobile();
 
@@ -59,7 +71,7 @@ function PopupHeader({
             </Typography>
             <Tooltip title="Newer Graph">
                 <span>
-                    <IconButton onClick={handleForward} disabled={graphIndex === enrollmentHistory.length - 1}>
+                    <IconButton onClick={handleForward} disabled={graphIndex === historyCount - 1}>
                         <ArrowForward />
                     </IconButton>
                 </span>
@@ -71,12 +83,15 @@ function PopupHeader({
 interface EnrollmentHistoryPopupProps {
     department: string;
     courseNumber: string;
+    preferredInstructors?: string[];
 }
 
-export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentHistoryPopupProps) {
+export function EnrollmentHistoryPopup({ department, courseNumber, preferredInstructors = [] }: EnrollmentHistoryPopupProps) {
     const [loading, setLoading] = useState(true);
     const [enrollmentHistory, setEnrollmentHistory] = useState<EnrollmentHistory[]>();
+    const [selectedInstructor, setSelectedInstructor] = useState(ALL_INSTRUCTORS_OPTION);
     const [graphIndex, setGraphIndex] = useState(0);
+    const hasAppliedDefaultInstructor = useRef(false);
 
     const isMobile = useIsMobile();
 
@@ -84,26 +99,85 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
 
     const graphWidth = useMemo(() => (isMobile ? 250 : 450), [isMobile]);
     const graphHeight = useMemo(() => (isMobile ? 175 : 250), [isMobile]);
+    const instructorOptions = useMemo(() => {
+        if (!enrollmentHistory) {
+            return [];
+        }
+
+        const instructors = new Set<string>();
+        for (const quarterHistory of enrollmentHistory) {
+            for (const instructor of quarterHistory.instructors) {
+                if (instructor && instructor !== 'STAFF') {
+                    instructors.add(instructor);
+                }
+            }
+        }
+
+        return [ALL_INSTRUCTORS_OPTION, ...Array.from(instructors).sort((a, b) => a.localeCompare(b))];
+    }, [enrollmentHistory]);
+
+    const filteredEnrollmentHistory = useMemo(() => {
+        if (!enrollmentHistory) {
+            return undefined;
+        }
+
+        if (selectedInstructor === ALL_INSTRUCTORS_OPTION) {
+            return enrollmentHistory;
+        }
+
+        return enrollmentHistory.filter((quarterHistory) => quarterHistory.instructors.includes(selectedInstructor));
+    }, [enrollmentHistory, selectedInstructor]);
+
+    const selectedInstructorLabel = useMemo(
+        () => (selectedInstructor === ALL_INSTRUCTORS_OPTION ? 'all instructors' : selectedInstructor),
+        [selectedInstructor]
+    );
+    const activeGraphIndex = useMemo(() => {
+        if (!filteredEnrollmentHistory?.length) {
+            return 0;
+        }
+        return Math.min(graphIndex, filteredEnrollmentHistory.length - 1);
+    }, [filteredEnrollmentHistory, graphIndex]);
+
     const popupTitle = useMemo(() => {
         if (enrollmentHistory == null) {
             return 'No past enrollment data found for this course';
         }
 
-        const currEnrollmentHistory = enrollmentHistory[graphIndex];
+        if (!filteredEnrollmentHistory?.length) {
+            return `No past enrollment data found for ${selectedInstructorLabel}.`;
+        }
+
+        const currEnrollmentHistory = filteredEnrollmentHistory[activeGraphIndex];
         return `${department} ${courseNumber} | ${currEnrollmentHistory.year} ${
             currEnrollmentHistory.quarter
         } | ${currEnrollmentHistory.instructors.join(', ')}`;
-    }, [courseNumber, department, enrollmentHistory, graphIndex]);
+    }, [
+        activeGraphIndex,
+        courseNumber,
+        department,
+        enrollmentHistory,
+        filteredEnrollmentHistory,
+        selectedInstructorLabel,
+    ]);
     const isDark = useThemeStore((state) => state.isDark);
     const axisColor = isDark ? '#fff' : '#111';
-    const tooltipDateColor = '#111';
+    const tooltipDateColor = isDark ? '#f5f5f5' : '#111';
+    const tooltipBackgroundColor = isDark ? '#1f1f1f' : '#fff';
 
     const handleBack = useCallback(() => {
-        setGraphIndex((prev) => prev - 1);
+        setGraphIndex((prev) => Math.max(prev - 1, 0));
     }, []);
 
     const handleForward = useCallback(() => {
-        setGraphIndex((prev) => prev + 1);
+        setGraphIndex((prev) => {
+            const maxGraphIndex = filteredEnrollmentHistory?.length ? filteredEnrollmentHistory.length - 1 : 0;
+            return Math.min(prev + 1, maxGraphIndex);
+        });
+    }, [filteredEnrollmentHistory]);
+
+    const handleSelectInstructor = useCallback((event: SelectChangeEvent<string>) => {
+        setSelectedInstructor(event.target.value);
     }, []);
 
     useEffect(() => {
@@ -122,6 +196,31 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
         });
     }, [loading, deptEnrollmentHistory, courseNumber]);
 
+    useEffect(() => {
+        if (!instructorOptions.length || hasAppliedDefaultInstructor.current) {
+            return;
+        }
+
+        const preferredInstructor = preferredInstructors.find((instructor) => instructorOptions.includes(instructor));
+        if (preferredInstructor) {
+            setSelectedInstructor(preferredInstructor);
+            hasAppliedDefaultInstructor.current = true;
+            return;
+        }
+
+        setSelectedInstructor(ALL_INSTRUCTORS_OPTION);
+        hasAppliedDefaultInstructor.current = true;
+    }, [instructorOptions, preferredInstructors]);
+
+    useEffect(() => {
+        if (!filteredEnrollmentHistory?.length) {
+            setGraphIndex(0);
+            return;
+        }
+        // Default to the newest quarter in the active instructor filter.
+        setGraphIndex(filteredEnrollmentHistory.length - 1);
+    }, [filteredEnrollmentHistory]);
+
     if (loading) {
         return (
             <Box padding={1}>
@@ -130,7 +229,7 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
         );
     }
 
-    if (enrollmentHistory == null) {
+    if (enrollmentHistory == null || !filteredEnrollmentHistory?.length) {
         return (
             <Box padding={1}>
                 <Typography variant="body1" align="center">
@@ -140,29 +239,85 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
         );
     }
 
-    const lineChartData = enrollmentHistory[graphIndex].days;
+    const lineChartData = filteredEnrollmentHistory[activeGraphIndex].days;
 
     return (
         <Box sx={{ padding: 0.5 }}>
             <PopupHeader
                 graphWidth={graphWidth}
-                graphIndex={graphIndex}
+                graphIndex={activeGraphIndex}
                 handleForward={handleForward}
                 handleBack={handleBack}
                 popupTitle={popupTitle}
-                enrollmentHistory={enrollmentHistory}
+                historyCount={filteredEnrollmentHistory.length}
             />
+            {instructorOptions.length > 1 ? (
+                <Box sx={{ paddingX: 1, paddingBottom: 0.5, width: graphWidth }}>
+                    <FormControl size="small" fullWidth>
+                        <InputLabel id="enrollment-instructor-filter-label">Instructor</InputLabel>
+                        <Select
+                            labelId="enrollment-instructor-filter-label"
+                            value={selectedInstructor}
+                            label="Instructor"
+                            onChange={handleSelectInstructor}
+                        >
+                            <MenuItem value={ALL_INSTRUCTORS_OPTION}>All instructors</MenuItem>
+                            {instructorOptions
+                                .filter((option) => option !== ALL_INSTRUCTORS_OPTION)
+                                .map((instructorOption) => (
+                                    <MenuItem key={instructorOption} value={instructorOption}>
+                                        {instructorOption}
+                                    </MenuItem>
+                                ))}
+                        </Select>
+                    </FormControl>
+                </Box>
+            ) : null}
             <Box sx={{ display: 'flex', height: graphHeight, width: graphWidth }}>
                 <ResponsiveContainer width="95%" height="95%">
-                    <LineChart data={lineChartData} style={{ cursor: 'pointer' }}>
-                        <CartesianGrid strokeDasharray="3 3" />
+                    <LineChart data={lineChartData} style={{ cursor: 'pointer' }} margin={{ top: 8, right: 16, left: 4 }}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
                         <XAxis dataKey="date" tick={{ fontSize: 12, fill: axisColor }} />
-                        <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} />
-                        <RechartsTooltip labelStyle={{ color: tooltipDateColor }} />
-                        <Legend />
-                        <Line type="monotone" dataKey="totalEnrolled" stroke="#8884d8" name="Enrolled" dot={{ r: 2 }} />
-                        <Line type="monotone" dataKey="maxCapacity" stroke="#82ca9d" name="Max" dot={{ r: 2 }} />
-                        <Line type="monotone" dataKey="waitlist" stroke="#ffc658" name="Waitlist" dot={{ r: 2 }} />
+                        <YAxis tick={{ fontSize: 12, fill: axisColor }} width={48} />
+                        <RechartsTooltip
+                            labelStyle={{ color: tooltipDateColor }}
+                            contentStyle={{
+                                backgroundColor: tooltipBackgroundColor,
+                                borderRadius: 8,
+                                border: `1px solid ${isDark ? '#3a3a3a' : '#d8d8d8'}`,
+                            }}
+                            itemStyle={{ color: tooltipDateColor }}
+                        />
+                        <Legend wrapperStyle={{ fontSize: isMobile ? 11 : 12 }} />
+                        <Line
+                            type="monotone"
+                            dataKey="totalEnrolled"
+                            stroke="#3366CC"
+                            name="Enrolled"
+                            strokeWidth={2.5}
+                            dot={false}
+                            activeDot={{ r: 4 }}
+                        />
+                        <Line
+                            type="monotone"
+                            dataKey="maxCapacity"
+                            stroke="#2E8B57"
+                            name="Capacity"
+                            strokeWidth={2}
+                            strokeDasharray="6 4"
+                            dot={false}
+                            activeDot={{ r: 3 }}
+                        />
+                        <Line
+                            type="monotone"
+                            dataKey="waitlist"
+                            stroke="#D97706"
+                            name="Waitlist"
+                            strokeWidth={2}
+                            dot={false}
+                            connectNulls
+                            activeDot={{ r: 3 }}
+                        />
                     </LineChart>
                 </ResponsiveContainer>
             </Box>

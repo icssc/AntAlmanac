@@ -1,12 +1,18 @@
-import { Box, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Popover, Tooltip, Typography } from '@mui/material';
 import { WebsocSectionEnrollment } from '@packages/antalmanac-types';
+import { useCallback, useState } from 'react';
 
+import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/EnrollmentHistoryPopup';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { useSecondaryColor } from '$hooks/useSecondaryColor';
 
 interface EnrollmentCellProps {
+    deptCode: string;
+    courseNumber: string;
+    instructors: string[];
     numCurrentlyEnrolled: WebsocSectionEnrollment;
-    maxCapacity: string;
+    maxCapacity: string | number;
 
     /**
      * This is a string because sometimes it's "n/a"
@@ -23,6 +29,9 @@ interface EnrollmentCellProps {
 }
 
 export const EnrollmentCell = ({
+    deptCode,
+    courseNumber,
+    instructors,
     numCurrentlyEnrolled,
     maxCapacity,
     numOnWaitlist,
@@ -31,13 +40,34 @@ export const EnrollmentCell = ({
     formattedTime,
 }: EnrollmentCellProps) => {
     const isMobile = useIsMobile();
+    const secondaryColor = useSecondaryColor();
     const showTooltip = !isMobile && formattedTime;
+    const [anchorEl, setAnchorEl] = useState<Element>();
+
+    const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl((currentAnchorEl) => (currentAnchorEl ? undefined : event.currentTarget));
+    }, []);
+
+    const hideEnrollmentHistory = useCallback(() => {
+        setAnchorEl(undefined);
+    }, []);
+
     const enrollmentText = (
-        <Box component="span">
-            <strong>
-                {numCurrentlyEnrolled.totalEnrolled} / {maxCapacity}
-            </strong>
-        </Box>
+        <Button
+            sx={{
+                paddingX: 0,
+                paddingY: 0,
+                minWidth: 0,
+                fontWeight: 600,
+                fontSize: '1rem',
+                color: secondaryColor,
+                lineHeight: 1.2,
+            }}
+            onClick={handleClick}
+            variant="text"
+        >
+            {numCurrentlyEnrolled.totalEnrolled} / {maxCapacity}
+        </Button>
     );
 
     return (
@@ -59,6 +89,18 @@ export const EnrollmentCell = ({
                 )}
                 {numNewOnlyReserved !== '' && <Box>NOR: {numNewOnlyReserved}</Box>}
             </Box>
+            <Popover
+                open={Boolean(anchorEl)}
+                onClose={hideEnrollmentHistory}
+                anchorEl={anchorEl}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+            >
+                <EnrollmentHistoryPopup
+                    department={deptCode}
+                    courseNumber={courseNumber}
+                    preferredInstructors={instructors}
+                />
+            </Popover>
         </TableBodyCellContainer>
     );
 };
