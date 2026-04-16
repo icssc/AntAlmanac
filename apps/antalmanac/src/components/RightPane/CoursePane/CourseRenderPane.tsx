@@ -25,7 +25,7 @@ import analyticsEnum from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
-import { BLUE } from '$src/globals';
+import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useHoveredStore } from '$stores/HoveredStore';
@@ -142,7 +142,7 @@ const RecruitmentBanner = () => {
                     <br />
                     We have opportunities for developers and designers of all skill levels.
                     <br />
-                    <a href="https://www.icssc.club/projects" target="_blank" rel="noopener noreferrer">
+                    <a href={PROJECTS_LINK} target="_blank" rel="noopener noreferrer">
                         Join ICSSC and work on AntAlmanac and other projects!
                     </a>
                 </Alert>
