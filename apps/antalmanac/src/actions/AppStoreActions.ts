@@ -17,7 +17,6 @@ import type {
     WebsocSection,
 } from '@packages/antalmanac-types';
 import { TRPCClientError } from '@trpc/client';
-import { TRPCError } from '@trpc/server';
 import { PostHog } from 'posthog-js/react';
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
@@ -134,11 +133,11 @@ export const saveSchedule = async (
                 deleteTempSaveData();
                 AppStore.saveSchedule();
             } catch (e) {
-                if (e instanceof TRPCError) {
+                if (e instanceof TRPCClientError) {
                     if (useSessionStore.getState().sessionIsValid) {
                         openSnackbar('error', `Schedule could not be saved`);
                     } else {
-                        openSnackbar('error', `Schedule could not be saved under username "${providerId}`);
+                        openSnackbar('error', `Schedule could not be saved under username "${providerId}"`);
                     }
                 } else {
                     openSnackbar('error', 'Network error or server is down.');
@@ -157,7 +156,7 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
     });
     if (providerID == null) return;
     providerID = providerID.replace(/\s+/g, '');
-    if (providerID.length < 0) return;
+    if (providerID.length === 0) return;
 
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
     try {
@@ -179,8 +178,8 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
         deleteTempSaveData();
         AppStore.saveSchedule();
     } catch (e) {
-        if (e instanceof TRPCError) {
-            openSnackbar('error', `Schedule could not be auto-saved under username "${providerID}`);
+        if (e instanceof TRPCClientError) {
+            openSnackbar('error', `Schedule could not be auto-saved under username "${providerID}"`);
         } else {
             openSnackbar('error', 'Network error or server is down.');
         }

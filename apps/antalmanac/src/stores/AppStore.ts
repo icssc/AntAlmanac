@@ -1,12 +1,5 @@
 import { EventEmitter } from 'events';
 
-import type {
-    ScheduleCourse,
-    ScheduleSaveState,
-    RepeatingCustomEvent,
-    CustomEventId,
-} from '@packages/antalmanac-types';
-
 import actionTypesStore from '$actions/ActionTypesStore';
 import type {
     AddCourseAction,
@@ -21,13 +14,20 @@ import type {
     DeleteScheduleAction,
     ReorderScheduleAction,
     ChangeCourseColorAction,
+    UpdateScheduleNoteAction,
     UndoRedoAction,
     AddScheduleAction,
 } from '$actions/ActionTypesStore';
 import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { Schedules } from '$stores/Schedules';
 import { useTabStore } from '$stores/TabStore';
-import { deleteTempSaveData, loadTempSaveData, setTempSaveData } from '$stores/localTempSaveDataHelpers';
+import type {
+    ScheduleCourse,
+    ScheduleSaveState,
+    RepeatingCustomEvent,
+    CustomEventId,
+} from '@packages/antalmanac-types';
 
 class AppStore extends EventEmitter {
     schedule: Schedules;
@@ -437,6 +437,13 @@ class AppStore extends EventEmitter {
 
     updateScheduleNote(newScheduleNote: string, scheduleIndex: number) {
         this.schedule.updateScheduleNote(newScheduleNote, scheduleIndex);
+        this.unsavedChanges = true;
+        const action: UpdateScheduleNoteAction = {
+            type: 'updateScheduleNote',
+            newScheduleNote: newScheduleNote,
+            scheduleIndex: scheduleIndex,
+        };
+        actionTypesStore.autoSaveSchedule(action);
         this.emit('scheduleNotesChange');
     }
 

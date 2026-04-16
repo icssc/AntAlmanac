@@ -1,13 +1,12 @@
 import { EventEmitter } from 'events';
 
-import type { CustomEventId, RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
-
 import { autoSaveSchedule } from '$actions/AppStoreActions';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageAutoSave } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
+import type { CustomEventId, RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
 
 export interface UndoRedoAction {
     type: 'undoRedoAction';
@@ -90,6 +89,12 @@ export interface ChangeCourseColorAction {
     newColor: string;
 }
 
+export interface UpdateScheduleNoteAction {
+    type: 'updateScheduleNote';
+    newScheduleNote: string;
+    scheduleIndex: number;
+}
+
 export type ActionType =
     | AddCourseAction
     | DeleteCourseAction
@@ -104,6 +109,7 @@ export type ActionType =
     | CopyScheduleAction
     | ReorderScheduleAction
     | ChangeCourseColorAction
+    | UpdateScheduleNoteAction
     | UndoRedoAction;
 
 class ActionTypesStore extends EventEmitter {
@@ -129,9 +135,12 @@ class ActionTypesStore extends EventEmitter {
 
             if (accounts.providerAccountId) {
                 this.emit('autoSaveStart');
-                await autoSaveSchedule(accounts.providerAccountId, { userInfo: users });
-                AppStore.unsavedChanges = false;
-                this.emit('autoSaveEnd');
+                try {
+                    await autoSaveSchedule(accounts.providerAccountId, { userInfo: users });
+                    AppStore.unsavedChanges = false;
+                } finally {
+                    this.emit('autoSaveEnd');
+                }
             }
         }
     }
