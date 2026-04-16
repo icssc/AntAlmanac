@@ -35,6 +35,11 @@ const lightTheme: PaletteOptions = {
     error: {
         main: '#ce0000',
     },
+    enrollmentStatus: {
+        open: '#00c853',
+        waitlist: '#ff9800',
+        full: '#e53935',
+    },
 };
 
 const darkPaperOverride = {
@@ -63,6 +68,11 @@ const darkTheme: PaletteOptions = {
     error: {
         main: '#ff3333',
     },
+    enrollmentStatus: {
+        open: '#00c853',
+        waitlist: '#f5c518',
+        full: '#e53935',
+    },
 };
 
 interface Props {
@@ -85,6 +95,11 @@ declare module '@mui/material/styles' {
             background: string;
             hoverBackground: string;
         };
+        enrollmentStatus: {
+            open: string;
+            waitlist: string;
+            full: string;
+        };
     }
 
     interface PaletteOptions {
@@ -92,6 +107,11 @@ declare module '@mui/material/styles' {
             border: string;
             background: string;
             hoverBackground: string;
+        };
+        enrollmentStatus?: {
+            open: string;
+            waitlist: string;
+            full: string;
         };
     }
 }
