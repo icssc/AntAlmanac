@@ -1,7 +1,6 @@
 import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/EnrollmentHistoryPopup';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
-import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
 import { Box, Button, Popover, Tooltip, Typography } from '@mui/material';
 import { WebsocSectionEnrollment } from '@packages/antalmanac-types';
@@ -40,7 +39,6 @@ export const EnrollmentCell = ({
     formattedTime,
 }: EnrollmentCellProps) => {
     const isMobile = useIsMobile();
-    const secondaryColor = useSecondaryColor();
     const showTooltip = !isMobile && formattedTime;
     const [anchorEl, setAnchorEl] = useState<Element>();
     const [enrollmentHistory, setEnrollmentHistory] = useState<EnrollmentHistory[] | null>();
@@ -83,7 +81,7 @@ export const EnrollmentCell = ({
                 minWidth: 0,
                 fontWeight: 400,
                 fontSize: '1rem',
-                color: secondaryColor,
+                color: (theme) => theme.palette.secondary.main,
                 lineHeight: 1.2,
             }}
             onClick={handleClick}
