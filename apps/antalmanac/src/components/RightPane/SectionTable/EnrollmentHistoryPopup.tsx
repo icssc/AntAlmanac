@@ -128,8 +128,6 @@ export function EnrollmentHistoryPopup({
     }, [activeGraphIndex, courseNumber, department, enrollmentHistory]);
     const isDark = useThemeStore((state) => state.isDark);
     const axisColor = isDark ? '#fff' : '#111';
-    const tooltipDateColor = isDark ? '#f5f5f5' : '#111';
-    const tooltipBackgroundColor = isDark ? '#1f1f1f' : '#fff';
     const chartColors = isDark ? ENROLLMENT_STATUS_COLORS_DARK : ENROLLMENT_STATUS_COLORS_LIGHT;
 
     const handleBack = useCallback(() => {
@@ -186,16 +184,8 @@ export function EnrollmentHistoryPopup({
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
                         <XAxis dataKey="date" tick={{ fontSize: 12, fill: axisColor }} />
                         <YAxis tick={{ fontSize: 12, fill: axisColor }} width={48} />
-                        <RechartsTooltip
-                            labelStyle={{ color: tooltipDateColor }}
-                            contentStyle={{
-                                backgroundColor: tooltipBackgroundColor,
-                                borderRadius: 8,
-                                border: `1px solid ${isDark ? '#3a3a3a' : '#d8d8d8'}`,
-                            }}
-                            itemStyle={{ color: tooltipDateColor }}
-                        />
-                        <Legend wrapperStyle={{ fontSize: isMobile ? 11 : 12 }} />
+                        <RechartsTooltip />
+                        <Legend />
                         <Line
                             type="monotone"
                             dataKey="totalEnrolled"
