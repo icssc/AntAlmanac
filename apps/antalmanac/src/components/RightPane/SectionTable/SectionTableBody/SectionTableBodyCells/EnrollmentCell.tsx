@@ -82,7 +82,6 @@ export const EnrollmentCell = ({
                 fontWeight: 400,
                 fontSize: '1rem',
                 color: (theme) => theme.palette.secondary.main,
-                lineHeight: 1.2,
             }}
             onClick={handleClick}
             variant="text"

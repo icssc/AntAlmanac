@@ -87,6 +87,14 @@ interface EnrollmentHistoryPopupProps {
     loading?: boolean;
 }
 
+function primaryInstructor(enrollment: EnrollmentHistory) {
+    const [firstInstructor] = enrollment.instructors;
+    if (!firstInstructor || firstInstructor === 'STAFF') {
+        return undefined;
+    }
+    return firstInstructor;
+}
+
 function graphKey(enrollment: EnrollmentHistory) {
     return `${enrollment.year}-${enrollment.quarter}-${enrollment.instructors.join('|')}`;
 }
@@ -112,18 +120,20 @@ export function EnrollmentHistoryPopup({
 
         const instructors = new Set<string>();
         for (const quarterHistory of enrollmentHistory) {
-            for (const instructor of quarterHistory.instructors) {
-                if (instructor && instructor !== 'STAFF') {
-                    instructors.add(instructor);
-                }
+            const instructor = primaryInstructor(quarterHistory);
+            if (instructor) {
+                instructors.add(instructor);
             }
         }
 
         return [ALL_INSTRUCTORS_OPTION, ...Array.from(instructors).sort((a, b) => a.localeCompare(b))];
     }, [enrollmentHistory]);
     const defaultSelectedInstructor = useMemo(() => {
-        const preferredInstructor = preferredInstructors.find((instructor) => instructorOptions.includes(instructor));
-        return preferredInstructor ?? ALL_INSTRUCTORS_OPTION;
+        const [firstPreferredInstructor] = preferredInstructors;
+        if (firstPreferredInstructor && instructorOptions.includes(firstPreferredInstructor)) {
+            return firstPreferredInstructor;
+        }
+        return ALL_INSTRUCTORS_OPTION;
     }, [instructorOptions, preferredInstructors]);
     const selectedInstructor = useMemo(() => {
         if (selectedInstructorOverride && instructorOptions.includes(selectedInstructorOverride)) {
@@ -141,7 +151,7 @@ export function EnrollmentHistoryPopup({
             return enrollmentHistory;
         }
 
-        return enrollmentHistory.filter((quarterHistory) => quarterHistory.instructors.includes(selectedInstructor));
+        return enrollmentHistory.filter((quarterHistory) => primaryInstructor(quarterHistory) === selectedInstructor);
     }, [enrollmentHistory, selectedInstructor]);
 
     const selectedInstructorLabel = useMemo(
