@@ -11,6 +11,8 @@ enum LocalStorageKeys {
     show24HourTime = 'show24HourTime',
     previewMode = 'previewMode',
     autoSave = 'autoSave',
+    /** @deprecated Removed along with the HelpBox component in PR #1473. */
+    helpBoxDismissalTime = 'helpBoxDismissalTime',
     columnToggles = 'columnToggles',
     pwaDismissalTime = 'pwaDismissalTime',
     sessionId = 'sessionId',

@@ -11,7 +11,7 @@ import { getLocalStoragePatchNotesKey } from '$lib/localStorage';
  */
 export const LATEST_PATCH_NOTES_UPDATE = '20260130';
 
-export interface HelpMenuStoreProps {
+export interface PatchNotesStoreProps {
     showPatchNotes: boolean;
     setShowPatchNotes: (value: boolean | ((prev: boolean) => boolean)) => void;
 }
@@ -20,7 +20,7 @@ export function shouldShowPatchNotes() {
     return getLocalStoragePatchNotesKey() !== LATEST_PATCH_NOTES_UPDATE && !tourShouldRun();
 }
 
-export const useHelpMenuStore = create<HelpMenuStoreProps>((set) => {
+export const usePatchNotesStore = create<PatchNotesStoreProps>((set) => {
     return {
         showPatchNotes: shouldShowPatchNotes(),
         setShowPatchNotes: (value) =>
