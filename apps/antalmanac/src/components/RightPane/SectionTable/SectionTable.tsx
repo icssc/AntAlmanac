@@ -20,50 +20,20 @@ const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
 interface TableHeaderColumnDetails {
     label: string;
-    width?: string;
+    weight: number;
 }
 
 const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHeaderColumnDetails> = {
-    sectionCode: {
-        label: 'Code',
-        width: '8%',
-    },
-    sectionDetails: {
-        label: 'Type',
-        width: '8%',
-    },
-    instructors: {
-        label: 'Instructors',
-        width: '15%',
-    },
-    gpa: {
-        label: 'GPA',
-        width: '5%',
-    },
-    dayAndTime: {
-        label: 'Times',
-        width: '15%',
-    },
-    location: {
-        label: 'Places',
-        width: '8%',
-    },
-    sectionEnrollment: {
-        label: 'Enrollment',
-        width: '9%',
-    },
-    restrictions: {
-        label: 'Restr',
-        width: '8%',
-    },
-    status: {
-        label: 'Status',
-        width: '8%',
-    },
-    syllabus: {
-        label: 'Syllabus',
-        width: '8%',
-    },
+    sectionCode: { label: 'Code', weight: 5 },
+    sectionDetails: { label: 'Type', weight: 5 },
+    instructors: { label: 'Instructors', weight: 7 },
+    gpa: { label: 'GPA', weight: 5 },
+    dayAndTime: { label: 'Times', weight: 12 },
+    location: { label: 'Places', weight: 5 },
+    sectionEnrollment: { label: 'Enrollment', weight: 7 },
+    status: { label: 'Status', weight: 5 },
+    restrictions: { label: 'Restr', weight: 5 },
+    syllabus: { label: 'Syllabus', weight: 5 },
 };
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
@@ -181,30 +151,29 @@ function SectionTable(props: SectionTableProps) {
                     sx={{
                         minWidth: `${tableMinWidth}px`,
                         width: '100%',
-                        tableLayout: 'fixed',
+                        tableLayout: 'auto',
                     }}
                 >
                     <TableHead>
                         <TableRow>
-                            <TableCell
-                                sx={{
-                                    padding: 0,
-                                    width: isMobile ? '6%' : '8%',
-                                }}
-                            />
-                            {tableHeaderColumnEntries
-                                .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
-                                .map(([column, { label, width }]) => (
+                            <TableCell sx={{ padding: 0 }} />
+                            {(() => {
+                                const visible = tableHeaderColumnEntries.filter(([column]) =>
+                                    activeColumns.includes(column as SectionTableColumn)
+                                );
+                                const totalWeight = visible.reduce((sum, [, { weight }]) => sum + weight, 0);
+                                return visible.map(([column, { label, weight }]) => (
                                     <TableCell
                                         key={column}
                                         sx={{
-                                            width: width,
+                                            width: `${(weight / totalWeight) * 100}%`,
                                             padding: 0,
                                         }}
                                     >
                                         {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
                                     </TableCell>
-                                ))}
+                                ));
+                            })()}
                         </TableRow>
                     </TableHead>
 
