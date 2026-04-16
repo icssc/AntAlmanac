@@ -30,7 +30,6 @@ interface EnrollmentCellProps {
 export const EnrollmentCell = ({
     deptCode,
     courseNumber,
-    instructors,
     numCurrentlyEnrolled,
     maxCapacity,
     numOnWaitlist,
@@ -118,7 +117,6 @@ export const EnrollmentCell = ({
                 <EnrollmentHistoryPopup
                     department={deptCode}
                     courseNumber={courseNumber}
-                    preferredInstructors={instructors}
                     enrollmentHistory={enrollmentHistory}
                     loading={loadingEnrollmentHistory && enrollmentHistory === undefined}
                 />

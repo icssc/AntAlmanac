@@ -2,18 +2,7 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import { EnrollmentHistory } from '$lib/enrollmentHistory';
 import { useThemeStore } from '$stores/SettingsStore';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
-import {
-    Box,
-    FormControl,
-    IconButton,
-    InputLabel,
-    MenuItem,
-    Select,
-    Skeleton,
-    Tooltip,
-    Typography,
-    type SelectChangeEvent,
-} from '@mui/material';
+import { Box, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
 import { useState, useMemo, useCallback } from 'react';
 import {
     LineChart,
@@ -27,7 +16,17 @@ import {
 } from 'recharts';
 
 type PopupHeaderCallback = () => void;
-const ALL_INSTRUCTORS_OPTION = '__all_instructors__';
+const ENROLLMENT_STATUS_COLORS_LIGHT = {
+    open: '#00c853',
+    waitlist: '#ff9800',
+    full: '#e53935',
+} as const;
+
+const ENROLLMENT_STATUS_COLORS_DARK = {
+    open: '#00c853',
+    waitlist: '#f5c518',
+    full: '#e53935',
+} as const;
 
 interface PopupHeaderProps {
     graphWidth: number;
@@ -82,17 +81,8 @@ function PopupHeader({
 interface EnrollmentHistoryPopupProps {
     department: string;
     courseNumber: string;
-    preferredInstructors?: string[];
     enrollmentHistory?: EnrollmentHistory[] | null;
     loading?: boolean;
-}
-
-function primaryInstructor(enrollment: EnrollmentHistory) {
-    const [firstInstructor] = enrollment.instructors;
-    if (!firstInstructor || firstInstructor === 'STAFF') {
-        return undefined;
-    }
-    return firstInstructor;
 }
 
 function graphKey(enrollment: EnrollmentHistory) {
@@ -102,122 +92,59 @@ function graphKey(enrollment: EnrollmentHistory) {
 export function EnrollmentHistoryPopup({
     department,
     courseNumber,
-    preferredInstructors = [],
     enrollmentHistory,
     loading = false,
 }: EnrollmentHistoryPopupProps) {
-    const [selectedInstructorOverride, setSelectedInstructorOverride] = useState<string>();
     const [selectedGraphKey, setSelectedGraphKey] = useState<string>();
 
     const isMobile = useIsMobile();
 
     const graphWidth = useMemo(() => (isMobile ? 250 : 450), [isMobile]);
     const graphHeight = useMemo(() => (isMobile ? 175 : 250), [isMobile]);
-    const instructorOptions = useMemo<string[]>(() => {
-        if (!enrollmentHistory) {
-            return [];
-        }
-
-        const instructors = new Set<string>();
-        for (const quarterHistory of enrollmentHistory) {
-            const instructor = primaryInstructor(quarterHistory);
-            if (instructor) {
-                instructors.add(instructor);
-            }
-        }
-
-        return [ALL_INSTRUCTORS_OPTION, ...Array.from(instructors).sort((a, b) => a.localeCompare(b))];
-    }, [enrollmentHistory]);
-    const defaultSelectedInstructor = useMemo(() => {
-        const [firstPreferredInstructor] = preferredInstructors;
-        if (firstPreferredInstructor && instructorOptions.includes(firstPreferredInstructor)) {
-            return firstPreferredInstructor;
-        }
-        return ALL_INSTRUCTORS_OPTION;
-    }, [instructorOptions, preferredInstructors]);
-    const selectedInstructor = useMemo(() => {
-        if (selectedInstructorOverride && instructorOptions.includes(selectedInstructorOverride)) {
-            return selectedInstructorOverride;
-        }
-        return defaultSelectedInstructor;
-    }, [defaultSelectedInstructor, instructorOptions, selectedInstructorOverride]);
-
-    const filteredEnrollmentHistory = useMemo(() => {
-        if (!enrollmentHistory) {
-            return undefined;
-        }
-
-        if (selectedInstructor === ALL_INSTRUCTORS_OPTION) {
-            return enrollmentHistory;
-        }
-
-        return enrollmentHistory.filter((quarterHistory) => primaryInstructor(quarterHistory) === selectedInstructor);
-    }, [enrollmentHistory, selectedInstructor]);
-
-    const selectedInstructorLabel = useMemo(
-        () => (selectedInstructor === ALL_INSTRUCTORS_OPTION ? 'all instructors' : selectedInstructor),
-        [selectedInstructor]
-    );
     const activeGraphIndex = useMemo(() => {
-        if (!filteredEnrollmentHistory?.length) {
+        if (!enrollmentHistory?.length) {
             return 0;
         }
         if (selectedGraphKey) {
-            const selectedIndex = filteredEnrollmentHistory.findIndex(
+            const selectedIndex = enrollmentHistory.findIndex(
                 (enrollment) => graphKey(enrollment) === selectedGraphKey
             );
             if (selectedIndex >= 0) {
                 return selectedIndex;
             }
         }
-        return filteredEnrollmentHistory.length - 1;
-    }, [filteredEnrollmentHistory, selectedGraphKey]);
+        return enrollmentHistory.length - 1;
+    }, [enrollmentHistory, selectedGraphKey]);
 
     const popupTitle = useMemo(() => {
         if (enrollmentHistory == null) {
             return 'No past enrollment data found for this course';
         }
 
-        if (!filteredEnrollmentHistory?.length) {
-            return `No past enrollment data found for ${selectedInstructorLabel}.`;
-        }
-
-        const currEnrollmentHistory = filteredEnrollmentHistory[activeGraphIndex];
+        const currEnrollmentHistory = enrollmentHistory[activeGraphIndex];
         return `${department} ${courseNumber} | ${currEnrollmentHistory.year} ${
             currEnrollmentHistory.quarter
         } | ${currEnrollmentHistory.instructors.join(', ')}`;
-    }, [
-        activeGraphIndex,
-        courseNumber,
-        department,
-        enrollmentHistory,
-        filteredEnrollmentHistory,
-        selectedInstructorLabel,
-    ]);
+    }, [activeGraphIndex, courseNumber, department, enrollmentHistory]);
     const isDark = useThemeStore((state) => state.isDark);
     const axisColor = isDark ? '#fff' : '#111';
     const tooltipDateColor = isDark ? '#f5f5f5' : '#111';
     const tooltipBackgroundColor = isDark ? '#1f1f1f' : '#fff';
+    const chartColors = isDark ? ENROLLMENT_STATUS_COLORS_DARK : ENROLLMENT_STATUS_COLORS_LIGHT;
 
     const handleBack = useCallback(() => {
-        if (!filteredEnrollmentHistory?.length || activeGraphIndex === 0) {
+        if (!enrollmentHistory?.length || activeGraphIndex === 0) {
             return;
         }
-        setSelectedGraphKey(graphKey(filteredEnrollmentHistory[activeGraphIndex - 1]));
-    }, [activeGraphIndex, filteredEnrollmentHistory]);
+        setSelectedGraphKey(graphKey(enrollmentHistory[activeGraphIndex - 1]));
+    }, [activeGraphIndex, enrollmentHistory]);
 
     const handleForward = useCallback(() => {
-        if (!filteredEnrollmentHistory?.length || activeGraphIndex === filteredEnrollmentHistory.length - 1) {
+        if (!enrollmentHistory?.length || activeGraphIndex === enrollmentHistory.length - 1) {
             return;
         }
-        setSelectedGraphKey(graphKey(filteredEnrollmentHistory[activeGraphIndex + 1]));
-    }, [activeGraphIndex, filteredEnrollmentHistory]);
-
-    const handleSelectInstructor = useCallback((event: SelectChangeEvent<string>) => {
-        setSelectedInstructorOverride(event.target.value);
-        // Clear explicit graph selection so newly filtered data defaults to newest quarter.
-        setSelectedGraphKey(undefined);
-    }, []);
+        setSelectedGraphKey(graphKey(enrollmentHistory[activeGraphIndex + 1]));
+    }, [activeGraphIndex, enrollmentHistory]);
 
     if (loading) {
         return (
@@ -227,7 +154,7 @@ export function EnrollmentHistoryPopup({
         );
     }
 
-    if (enrollmentHistory == null || !filteredEnrollmentHistory?.length) {
+    if (enrollmentHistory == null || !enrollmentHistory.length) {
         return (
             <Box padding={1}>
                 <Typography variant="body1" align="center">
@@ -237,7 +164,7 @@ export function EnrollmentHistoryPopup({
         );
     }
 
-    const lineChartData = filteredEnrollmentHistory[activeGraphIndex].days;
+    const lineChartData = enrollmentHistory[activeGraphIndex].days;
 
     return (
         <Box sx={{ padding: 0.5 }}>
@@ -247,30 +174,8 @@ export function EnrollmentHistoryPopup({
                 handleForward={handleForward}
                 handleBack={handleBack}
                 popupTitle={popupTitle}
-                historyCount={filteredEnrollmentHistory.length}
+                historyCount={enrollmentHistory.length}
             />
-            {instructorOptions.length > 1 ? (
-                <Box sx={{ paddingX: 1, paddingBottom: 0.5, width: graphWidth }}>
-                    <FormControl size="small" fullWidth>
-                        <InputLabel id="enrollment-instructor-filter-label">Instructor</InputLabel>
-                        <Select
-                            labelId="enrollment-instructor-filter-label"
-                            value={selectedInstructor}
-                            label="Instructor"
-                            onChange={handleSelectInstructor}
-                        >
-                            <MenuItem value={ALL_INSTRUCTORS_OPTION}>All instructors</MenuItem>
-                            {instructorOptions
-                                .filter((option) => option !== ALL_INSTRUCTORS_OPTION)
-                                .map((instructorOption) => (
-                                    <MenuItem key={instructorOption} value={instructorOption}>
-                                        {instructorOption}
-                                    </MenuItem>
-                                ))}
-                        </Select>
-                    </FormControl>
-                </Box>
-            ) : null}
             <Box sx={{ display: 'flex', height: graphHeight, width: graphWidth }}>
                 <ResponsiveContainer width="95%" height="95%">
                     <LineChart
@@ -294,7 +199,7 @@ export function EnrollmentHistoryPopup({
                         <Line
                             type="monotone"
                             dataKey="totalEnrolled"
-                            stroke="#3366CC"
+                            stroke={chartColors.open}
                             name="Enrolled"
                             strokeWidth={2.5}
                             dot={false}
@@ -303,7 +208,7 @@ export function EnrollmentHistoryPopup({
                         <Line
                             type="monotone"
                             dataKey="maxCapacity"
-                            stroke="#2E8B57"
+                            stroke={chartColors.full}
                             name="Capacity"
                             strokeWidth={2}
                             strokeDasharray="6 4"
@@ -313,7 +218,7 @@ export function EnrollmentHistoryPopup({
                         <Line
                             type="monotone"
                             dataKey="waitlist"
-                            stroke="#D97706"
+                            stroke={chartColors.waitlist}
                             name="Waitlist"
                             strokeWidth={2}
                             dot={false}
