@@ -105,7 +105,7 @@ export function EnrollmentHistoryPopup({
 
     const graphWidth = useMemo(() => (isMobile ? 250 : 450), [isMobile]);
     const graphHeight = useMemo(() => (isMobile ? 175 : 250), [isMobile]);
-    const instructorOptions = useMemo(() => {
+    const instructorOptions = useMemo<string[]>(() => {
         if (!enrollmentHistory) {
             return [];
         }
@@ -119,7 +119,7 @@ export function EnrollmentHistoryPopup({
             }
         }
 
-        return [ALL_INSTRUCTORS_OPTION, ...Array.from(instructors).sort((a, b) => a.localeCompare(b))] as const;
+        return [ALL_INSTRUCTORS_OPTION, ...Array.from(instructors).sort((a, b) => a.localeCompare(b))];
     }, [enrollmentHistory]);
     const defaultSelectedInstructor = useMemo(() => {
         const preferredInstructor = preferredInstructors.find((instructor) => instructorOptions.includes(instructor));
