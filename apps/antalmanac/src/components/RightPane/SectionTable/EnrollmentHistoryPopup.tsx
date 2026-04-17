@@ -1,8 +1,8 @@
 import { useIsMobile } from '$hooks/useIsMobile';
 import { EnrollmentHistory } from '$lib/enrollmentHistory';
-import { useThemeStore } from '$stores/SettingsStore';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { Box, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { useState, useMemo, useCallback } from 'react';
 import {
     LineChart,
@@ -16,17 +16,6 @@ import {
 } from 'recharts';
 
 type PopupHeaderCallback = () => void;
-const ENROLLMENT_STATUS_COLORS_LIGHT = {
-    open: '#00c853',
-    waitlist: '#ff9800',
-    full: '#e53935',
-} as const;
-
-const ENROLLMENT_STATUS_COLORS_DARK = {
-    open: '#00c853',
-    waitlist: '#f5c518',
-    full: '#e53935',
-} as const;
 
 interface PopupHeaderProps {
     graphWidth: number;
@@ -97,6 +86,7 @@ export function EnrollmentHistoryPopup({
 }: EnrollmentHistoryPopupProps) {
     const [selectedGraphKey, setSelectedGraphKey] = useState<string>();
 
+    const theme = useTheme();
     const isMobile = useIsMobile();
 
     const graphWidth = useMemo(() => (isMobile ? 250 : 450), [isMobile]);
@@ -126,9 +116,8 @@ export function EnrollmentHistoryPopup({
             currEnrollmentHistory.quarter
         } | ${currEnrollmentHistory.instructors.join(', ')}`;
     }, [activeGraphIndex, courseNumber, department, enrollmentHistory]);
-    const isDark = useThemeStore((state) => state.isDark);
-    const axisColor = isDark ? '#fff' : '#111';
-    const chartColors = isDark ? ENROLLMENT_STATUS_COLORS_DARK : ENROLLMENT_STATUS_COLORS_LIGHT;
+    const axisColor = theme.palette.text.primary;
+    const chartColors = theme.palette.enrollmentStatus;
 
     const handleBack = useCallback(() => {
         if (!enrollmentHistory?.length || activeGraphIndex === 0) {
