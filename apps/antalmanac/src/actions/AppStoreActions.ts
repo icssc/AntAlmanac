@@ -181,7 +181,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
         return { imported: true, error: null };
     }
 
-    const incomingData: User | null = await trpc.userData.getUserData.query({ userId: incomingUser.id });
+    const incomingData: User | null = await trpc.userData.getGuestUserData.query({ userId: incomingUser.id });
     const scheduleSaveState =
         incomingData !== null && 'userData' in incomingData ? incomingData.userData : incomingData;
 
@@ -202,7 +202,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
             await saveSchedule(true);
 
             await trpc.userData.flagImportedSchedule.mutate({
-                providerId: username,
+                username,
             });
         }
     }
@@ -226,30 +226,30 @@ export const importScheduleWithUsername = async (username: string) => {
     }
 };
 
-export const loadSchedule = async (providerId: string, rememberMe: boolean, postHog?: PostHog) => {
+export const loadSchedule = async (username: string, rememberMe: boolean, postHog?: PostHog) => {
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
-        label: providerId,
+        label: username,
         value: rememberMe ? 1 : 0,
     });
     if (
-        providerId != null &&
+        username != null &&
         (!AppStore.hasUnsavedChanges() ||
             window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
     ) {
-        providerId = providerId.replace(/\s+/g, '');
-        if (providerId.length > 0) {
+        username = username.replace(/\s+/g, '');
+        if (username.length > 0) {
             if (rememberMe) {
-                setLocalStorageUserId(providerId);
+                setLocalStorageUserId(username);
             }
 
             try {
-                const account = await trpc.userData.getAccountByProviderId.query({
-                    providerId,
+                const account = await trpc.userData.getGuestAccountByUsername.query({
+                    username,
                 });
 
-                const userDataResponse = await trpc.userData.getUserData.query({ userId: account.userId });
+                const userDataResponse = await trpc.userData.getGuestUserData.query({ userId: account.userId });
                 const scheduleSaveState = userDataResponse?.userData;
 
                 let error = false;
@@ -268,7 +268,7 @@ export const loadSchedule = async (providerId: string, rememberMe: boolean, post
                 if (error) {
                     openSnackbar(
                         'error',
-                        `Network error loading course information for "${providerId}". 	              
+                        `Network error loading course information for "${username}". 	              
                         If this continues to happen, please submit a feedback form.`
                     );
                 }

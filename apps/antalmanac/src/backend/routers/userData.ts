@@ -14,8 +14,6 @@ import { z } from 'zod';
 const { OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
 const NODE_ENV = process.env.NODE_ENV;
 
-const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
-
 const saveInputSchema = z.object({
     /**
      * Schedule data being saved on behalf of the authenticated session user.
@@ -52,20 +50,15 @@ const userDataRouter = router({
     }),
 
     /**
-     * Retrieves user data by user ID.
-     * @param input - An object containing the user ID.
-     * @returns The user data associated with the user ID.
+     * Retrieves a guest user's public schedule data by internal user ID.
+     *
+     * Returns `null` for any user that has a non-GUEST account attached;
+     * OIDC users read their own data via `getUserDataWithSession`.
      */
-    getUserData: procedure.input(userInputSchema.assert).query(async ({ input }) => {
-        if ('userId' in input) {
-            return await RDS.getUserDataByUid(db, input.userId);
-        } else {
-            throw new TRPCError({
-                code: 'BAD_REQUEST',
-                message: 'Invalid input: userId is required',
-            });
-        }
+    getGuestUserData: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
+        return await RDS.getGuestUserDataByUid(db, input.userId);
     }),
+
     getUserDataWithSession: protectedProcedure.query(async ({ ctx }) => {
         return await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
     }),
@@ -83,17 +76,17 @@ const userDataRouter = router({
 
     /**
      * Resolves a guest username to its internal account/user id so callers can
-     * then read the guest's public schedule via `getUserData`.
+     * then read the guest's public schedule via `getGuestUserData`.
      *
      * Intentionally restricted to GUEST accounts — OIDC accounts are not
      * lookup-able by provider id through this public endpoint.
      */
-    getAccountByProviderId: procedure.input(z.object({ providerId: z.string() })).query(async ({ input }) => {
-        const account = await RDS.getAccountByProviderId(db, 'GUEST', input.providerId);
+    getGuestAccountByUsername: procedure.input(z.object({ username: z.string() })).query(async ({ input }) => {
+        const account = await RDS.getAccountByProviderId(db, 'GUEST', input.username);
         if (!account) {
             throw new TRPCError({
                 code: 'NOT_FOUND',
-                message: `Couldn't find schedules for username "${input.providerId}".`,
+                message: `Couldn't find schedules for username "${input.username}".`,
             });
         }
         return account;
@@ -312,8 +305,8 @@ const userDataRouter = router({
         );
     }),
 
-    flagImportedSchedule: protectedProcedure.input(z.object({ providerId: z.string() })).mutation(async ({ input }) => {
-        return await RDS.flagImportedUser(db, input.providerId);
+    flagImportedSchedule: protectedProcedure.input(z.object({ username: z.string() })).mutation(async ({ input }) => {
+        return await RDS.flagImportedUser(db, input.username);
     }),
 
     /**

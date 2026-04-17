@@ -89,7 +89,7 @@ export function AuthPage() {
                 const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
                 if (savedUserId !== '') {
-                    await trpc.userData.flagImportedSchedule.mutate({ providerId: savedUserId });
+                    await trpc.userData.flagImportedSchedule.mutate({ username: savedUserId });
                     setLocalStorageImportedUser(savedUserId);
                 }
 

@@ -405,17 +405,14 @@ export class RDS {
     }
 
     /**
-     * Retrieves user data by user ID, including schedules and custom events.
+     * Retrieves a guest user's schedule data by internal user ID.
      *
-     * Only returns data for users whose account is GUEST. OIDC users' schedules
-     * are private — authenticated callers should use `fetchUserDataWithSession`
-     * to read their own data instead.
-     *
-     * @param db - The database or transaction object to use for the query.
-     * @param userId - The unique identifier of the user.
-     * @returns A promise that resolves to a User object containing user data and schedules, or null if the user is not a guest.
+     * Returns `null` if the user does not exist, does not have a GUEST
+     * account, or has any non-GUEST account attached. OIDC users' schedules
+     * are private — authenticated callers should use
+     * `fetchUserDataWithSession` to read their own data instead.
      */
-    static async getUserDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
+    static async getGuestUserDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
         return db.transaction(async (tx) => {
             const userAccounts = await tx
                 .select({ accountType: accounts.accountType })
@@ -700,17 +697,15 @@ export class RDS {
     /**
      * Flags a user as imported based on the provided provider ID.
      *
-     * This function checks if a user associated with the given provider ID has already been flagged as imported.
-     * If not, it updates the user's record to set the imported flag to true.
+     * Flags the guest user with the given username as imported, so the
+     * "import by username" flow doesn't re-run for the same legacy schedule.
      *
-     * @param db The database or transaction object used to perform the operation.
-     * @param providerId The provider ID used to identify the user.
-     * @returns A promise that resolves to true if the user was successfully flagged as imported, or false if the user
-     *          was already flagged or if an error occurred during the operation.
+     * @returns true if the user was successfully flagged as imported,
+     *          false if they were already flagged or no matching guest exists.
      */
-    static async flagImportedUser(db: DatabaseOrTransaction, providerId: string) {
+    static async flagImportedUser(db: DatabaseOrTransaction, username: string) {
         try {
-            const { users: user, accounts } = await this.getGuestAccountAndUserByName(db, providerId);
+            const { users: user, accounts } = await this.getGuestAccountAndUserByName(db, username);
             if (user.imported) {
                 return false;
             }
