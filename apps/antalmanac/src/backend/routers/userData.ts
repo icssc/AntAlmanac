@@ -50,46 +50,23 @@ const userDataRouter = router({
     }),
 
     /**
-     * Retrieves a guest user's public schedule data by internal user ID.
-     *
-     * Returns `null` for any user that has a non-GUEST account attached;
+     * Retrieves a guest user's publicly-shareable schedule data by their
+     * guest username. The single public read path for guest schedules;
      * OIDC users read their own data via `getUserDataWithSession`.
      */
-    getGuestUserData: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
-        return await RDS.getGuestUserData(db, input.userId);
-    }),
-
-    getUserDataWithSession: protectedProcedure.query(async ({ ctx }) => {
-        return await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
-    }),
-
-    getGuestAccountAndUserByName: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
-        const result = await RDS.getGuestAccountAndUserByName(db, input.name);
+    getGuestScheduleByUsername: procedure.input(z.object({ username: z.string() })).query(async ({ input }) => {
+        const result = await RDS.getGuestScheduleByUsername(db, input.username);
         if (!result) {
-            throw new TRPCError({
-                code: 'NOT_FOUND',
-                message: 'User not found',
-            });
-        }
-        return result;
-    }),
-
-    /**
-     * Resolves a guest username to its internal account/user id so callers can
-     * then read the guest's public schedule via `getGuestUserData`.
-     *
-     * Intentionally restricted to GUEST accounts — OIDC accounts are not
-     * lookup-able by provider id through this public endpoint.
-     */
-    getGuestAccountByUsername: procedure.input(z.object({ username: z.string() })).query(async ({ input }) => {
-        const account = await RDS.getAccountByProviderId(db, 'GUEST', input.username);
-        if (!account) {
             throw new TRPCError({
                 code: 'NOT_FOUND',
                 message: `Couldn't find schedules for username "${input.username}".`,
             });
         }
-        return account;
+        return result;
+    }),
+
+    getUserDataWithSession: protectedProcedure.query(async ({ ctx }) => {
+        return await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
     }),
     /**
      * Retrieves Google authentication URL for login/sign up.

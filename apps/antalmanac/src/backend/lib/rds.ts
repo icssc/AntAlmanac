@@ -94,20 +94,6 @@ export class RDS {
         );
     }
 
-    static async getGuestAccountAndUserByName(db: DatabaseOrTransaction, name: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(accounts)
-                .innerJoin(users, eq(accounts.userId, users.id))
-                .where(and(eq(users.name, name), eq(accounts.accountType, 'GUEST')))
-                .execute()
-                .then((res) => {
-                    return { users: res[0].users, accounts: res[0].accounts };
-                })
-        );
-    }
-
     /**
      * Retrieves a user by their ID from the database.
      *
@@ -405,34 +391,33 @@ export class RDS {
     }
 
     /**
-     * Retrieves a guest user's schedule data by internal user ID.
+     * Retrieves a guest user's publicly-shareable schedule data by their
+     * guest username.
      *
-     * Returns `null` if the user does not exist or does not have a GUEST
-     * account. OIDC users' schedules are private — authenticated callers
-     * should use `fetchUserDataWithSession` to read their own data instead.
+     * The `where accountType = 'GUEST'` clause on the account lookup is the
+     * sole gate — OIDC users are not reachable through this path because
+     * their provider id is not registered as a GUEST account. Only returns
+     * the fields the public viewer needs (`imported` plus the schedule
+     * payload); email/name/avatar are intentionally not exposed here.
      */
-    static async getGuestUserData(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
+    static async getGuestScheduleByUsername(
+        db: DatabaseOrTransaction,
+        username: string
+    ): Promise<{ user: { imported: boolean }; userData: User['userData'] } | null> {
         return db.transaction(async (tx) => {
-            const guestAccount = await tx
-                .select({ userId: accounts.userId })
+            const row = await tx
+                .select()
                 .from(accounts)
-                .where(and(eq(accounts.userId, userId), eq(accounts.accountType, 'GUEST')))
+                .innerJoin(users, eq(accounts.userId, users.id))
+                .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.providerAccountId, username)))
                 .limit(1)
                 .then((res) => res[0] ?? null);
 
-            if (!guestAccount) {
+            if (!row) {
                 return null;
             }
 
-            const user = await tx
-                .select()
-                .from(users)
-                .where(eq(users.id, userId))
-                .then((res) => res[0]);
-
-            if (!user) {
-                return null;
-            }
+            const userId = row.users.id;
 
             const sectionResults = await tx
                 .select()
@@ -448,12 +433,12 @@ export class RDS {
 
             const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
 
-            const scheduleIndex = user.currentScheduleId
-                ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
+            const scheduleIndex = row.users.currentScheduleId
+                ? userSchedules.findIndex((s) => s.id === row.users.currentScheduleId)
                 : userSchedules.length;
 
             return {
-                id: userId,
+                user: { imported: row.users.imported ?? false },
                 userData: {
                     schedules: userSchedules,
                     scheduleIndex,
@@ -690,8 +675,6 @@ export class RDS {
     }
 
     /**
-     * Flags a user as imported based on the provided provider ID.
-     *
      * Flags the guest user with the given username as imported, so the
      * "import by username" flow doesn't re-run for the same legacy schedule.
      *
@@ -699,19 +682,22 @@ export class RDS {
      *          false if they were already flagged or no matching guest exists.
      */
     static async flagImportedUser(db: DatabaseOrTransaction, username: string) {
-        try {
-            const { users: user, accounts } = await this.getGuestAccountAndUserByName(db, username);
-            if (user.imported) {
+        return db.transaction(async (tx) => {
+            const row = await tx
+                .select({ userId: users.id, imported: users.imported })
+                .from(accounts)
+                .innerJoin(users, eq(accounts.userId, users.id))
+                .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.providerAccountId, username)))
+                .limit(1)
+                .then((res) => res[0] ?? null);
+
+            if (!row || row.imported) {
                 return false;
             }
 
-            await db.transaction((tx) =>
-                tx.update(users).set({ imported: true }).where(eq(users.id, accounts.userId)).execute()
-            );
+            await tx.update(users).set({ imported: true }).where(eq(users.id, row.userId)).execute();
             return true;
-        } catch {
-            return false;
-        }
+        });
     }
 
     /**
