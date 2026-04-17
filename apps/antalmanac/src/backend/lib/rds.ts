@@ -407,12 +407,31 @@ export class RDS {
     /**
      * Retrieves user data by user ID, including schedules and custom events.
      *
+     * Only returns data for users whose account is GUEST. OIDC users' schedules
+     * are private — authenticated callers should use `fetchUserDataWithSession`
+     * to read their own data instead.
+     *
      * @param db - The database or transaction object to use for the query.
      * @param userId - The unique identifier of the user.
-     * @returns A promise that resolves to a User object containing user data and schedules, or null if the user is not found.
+     * @returns A promise that resolves to a User object containing user data and schedules, or null if the user is not a guest.
      */
     static async getUserDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
         return db.transaction(async (tx) => {
+            const userAccounts = await tx
+                .select({ accountType: accounts.accountType })
+                .from(accounts)
+                .where(eq(accounts.userId, userId));
+
+            const hasGuestAccount = userAccounts.some((a) => a.accountType === 'GUEST');
+            const hasAuthenticatedAccount = userAccounts.some((a) => a.accountType !== 'GUEST');
+
+            // Only guest-only users are publicly readable. A user that has been
+            // promoted to an OIDC account (or has any non-GUEST account
+            // attached) is considered private.
+            if (!hasGuestAccount || hasAuthenticatedAccount) {
+                return null;
+            }
+
             const user = await tx
                 .select()
                 .from(users)

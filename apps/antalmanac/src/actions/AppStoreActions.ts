@@ -226,12 +226,7 @@ export const importScheduleWithUsername = async (username: string) => {
     }
 };
 
-export const loadSchedule = async (
-    providerId: string,
-    rememberMe: boolean,
-    accountType: 'OIDC' | 'GOOGLE' | 'GUEST',
-    postHog?: PostHog
-) => {
+export const loadSchedule = async (providerId: string, rememberMe: boolean, postHog?: PostHog) => {
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
@@ -251,7 +246,6 @@ export const loadSchedule = async (
 
             try {
                 const account = await trpc.userData.getAccountByProviderId.query({
-                    accountType,
                     providerId,
                 });
 

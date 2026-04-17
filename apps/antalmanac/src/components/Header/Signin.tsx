@@ -91,7 +91,7 @@ export const Signin = () => {
     const loadScheduleAndSetLoading = useCallback(
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
-            await loadSchedule(userID, rememberMe, 'GUEST');
+            await loadSchedule(userID, rememberMe);
             await validateImportedUser(userID);
             setOpenLoadingSchedule(false);
         },
@@ -110,7 +110,7 @@ export const Signin = () => {
                 setOpenalert(true);
             } else if (userID && userID !== '') {
                 await validateImportedUser(userID);
-                await loadSchedule(userID, rememberMe, 'GUEST');
+                await loadSchedule(userID, rememberMe);
             }
 
             setOpenLoadingSchedule(false);

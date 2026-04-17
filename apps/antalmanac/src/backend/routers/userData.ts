@@ -81,18 +81,23 @@ const userDataRouter = router({
         return result;
     }),
 
-    getAccountByProviderId: procedure
-        .input(z.object({ accountType: z.enum(['OIDC', 'GOOGLE', 'GUEST']), providerId: z.string() }))
-        .query(async ({ input }) => {
-            const account = await RDS.getAccountByProviderId(db, input.accountType, input.providerId);
-            if (!account) {
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                    message: `Couldn't find schedules for username "${input.providerId}".`,
-                });
-            }
-            return account;
-        }),
+    /**
+     * Resolves a guest username to its internal account/user id so callers can
+     * then read the guest's public schedule via `getUserData`.
+     *
+     * Intentionally restricted to GUEST accounts — OIDC accounts are not
+     * lookup-able by provider id through this public endpoint.
+     */
+    getAccountByProviderId: procedure.input(z.object({ providerId: z.string() })).query(async ({ input }) => {
+        const account = await RDS.getAccountByProviderId(db, 'GUEST', input.providerId);
+        if (!account) {
+            throw new TRPCError({
+                code: 'NOT_FOUND',
+                message: `Couldn't find schedules for username "${input.providerId}".`,
+            });
+        }
+        return account;
+    }),
     /**
      * Retrieves Google authentication URL for login/sign up.
      * Retrieves Google auth url to login/sign up
