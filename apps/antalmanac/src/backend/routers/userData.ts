@@ -302,7 +302,7 @@ const userDataRouter = router({
         const userData = input.userData;
         userData.schedules = mangleDuplicateScheduleNames(userData.schedules);
 
-        return await RDS.upsertUserDataForUser(db, ctx.userId, userData).catch((error) =>
+        return await RDS.upsertUserData(db, ctx.userId, userData).catch((error) =>
             console.error('RDS Failed to upsert user data:', error)
         );
     }),

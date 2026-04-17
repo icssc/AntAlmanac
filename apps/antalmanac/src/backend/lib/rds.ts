@@ -226,40 +226,33 @@ export class RDS {
     }
 
     /**
-     * Does the same thing as `insertGuestUserData`, but also updates the user's schedules and courses if they exist.
+     * Upserts the given user's schedules and selected schedule index.
      *
      * @param db The Drizzle client or transaction object
-     * @param userData The object of data containing the user's schedules and courses
-     * @returns The user's ID
+     * @param userId The internal user ID whose data is being saved
+     * @param saveState The schedules and selected index to persist
      */
-    /**
-     * Upserts a user's schedule data by internal user ID. Intended for
-     * session-authenticated saves where the owning user is already known.
-     */
-    static async upsertUserDataForUser(
+    static async upsertUserData(
         db: DatabaseOrTransaction,
         userId: string,
         saveState: ScheduleSaveState
     ): Promise<{ userId: string; scheduleIdMap: Record<string, string> }> {
         return db.transaction(async (tx) => {
-            return { userId, ...(await this.writeScheduleSaveState(tx, userId, saveState)) };
+            const scheduleIdMap = await this.upsertSchedulesAndContents(tx, userId, saveState.schedules);
+
+            const scheduleDbIds = Object.values(scheduleIdMap);
+            const scheduleIndex = saveState.scheduleIndex;
+            const currentScheduleId =
+                scheduleIndex === undefined || scheduleIndex >= scheduleDbIds.length
+                    ? null
+                    : scheduleDbIds[scheduleIndex];
+
+            if (currentScheduleId !== null) {
+                await tx.update(users).set({ currentScheduleId }).where(eq(users.id, userId));
+            }
+
+            return { userId, scheduleIdMap };
         });
-    }
-
-    private static async writeScheduleSaveState(tx: Transaction, userId: string, saveState: ScheduleSaveState) {
-        const scheduleIdMap = await this.upsertSchedulesAndContents(tx, userId, saveState.schedules);
-
-        const scheduleIndex = saveState.scheduleIndex;
-        const scheduleDbIds = Object.values(scheduleIdMap);
-
-        const currentScheduleId =
-            scheduleIndex === undefined || scheduleIndex >= scheduleDbIds.length ? null : scheduleDbIds[scheduleIndex];
-
-        if (currentScheduleId !== null) {
-            await tx.update(users).set({ currentScheduleId: currentScheduleId }).where(eq(users.id, userId));
-        }
-
-        return { scheduleIdMap };
     }
 
     /**
