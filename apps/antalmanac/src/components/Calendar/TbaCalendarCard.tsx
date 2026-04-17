@@ -80,21 +80,12 @@ function TbaExpandedCard({ tbaSections, onToggle }: { tbaSections: TbaSection[];
                 },
             }}
             action={
-                <IconButton
-                    size="small"
-                    onClick={onToggle}
-                    sx={{
-                        p: 0.5,
-                        width: 28,
-                        height: 28,
-                        alignSelf: 'flex-start',
-                    }}
-                >
+                <IconButton size="small" onClick={onToggle} sx={{ p: 0.5 }}>
                     <Close fontSize="small" />
                 </IconButton>
             }
         >
-            <AlertTitle sx={{ typography: 'subtitle2', my: 'auto' }}>TBA sections added:</AlertTitle>
+            <AlertTitle sx={{ typography: 'subtitle2', my: 'auto' }}>Async added:</AlertTitle>
 
             <Box sx={{ gap: 0.5 }}>
                 {tbaSections.map((section) => (
