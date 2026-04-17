@@ -28,7 +28,7 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
     instructors: { label: 'Instructors', weight: 7 },
     gpa: { label: 'GPA', weight: 5 },
     dayAndTime: { label: 'Times', weight: 12 },
-    location: { label: 'Places', weight: 5 },
+    location: { label: 'Places', weight: 7 },
     sectionEnrollment: { label: 'Enrollment', weight: 7 },
     status: { label: 'Status', weight: 5 },
     restrictions: { label: 'Restr', weight: 5 },
