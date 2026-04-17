@@ -1,4 +1,4 @@
-import { addWeeks, differenceInWeeks, isAfter, setDay } from 'date-fns';
+import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
 
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { terms } from '$generated/termData';
@@ -120,7 +120,7 @@ function isTermEnrollmentOpen(term: Term): boolean {
     }
 
     const dropDeadline = setDay(addWeeks(term.startDate, weeksUntilDropDeadline), 5);
-    return !isAfter(new Date(), dropDeadline);
+    return new Date() <= dropDeadline;
 }
 
 export { defaultTerm, getDefaultTerm, termData, getDefaultFinalsStartDate, getFinalsStartDateForTerm, getCurrentTerm };
