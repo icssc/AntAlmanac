@@ -1,5 +1,6 @@
 import { createId } from '@paralleldrive/cuid2';
 import { pgTable, text, timestamp, integer } from 'drizzle-orm/pg-core';
+
 import { users } from '../auth/user';
 
 // NOTE: unique constraints on (userId, name) and (userId, index) are intentionally
