@@ -46,15 +46,24 @@ const userDataRouter = router({
      * @param input - An object containing the user ID.
      * @returns The user information associated with the user ID.
      */
-    getUserByUid: procedure.input(userInputSchema.assert).query(async ({ input }) => {
-        if ('userId' in input) {
-            return await RDS.getUserById(db, input.userId);
-        } else {
+    getUserByUid: protectedProcedure.input(userInputSchema.assert).query(async ({ input, ctx }) => {
+        if (!('userId' in input)) {
             throw new TRPCError({
                 code: 'BAD_REQUEST',
                 message: 'Invalid input: userId is required',
             });
         }
+
+        // Callers can only look up their own user record; this endpoint exposes
+        // email/name/avatar and must not be usable to enumerate other users.
+        if (input.userId !== ctx.userId) {
+            throw new TRPCError({
+                code: 'FORBIDDEN',
+                message: 'Cannot fetch user information for another user',
+            });
+        }
+
+        return await RDS.getUserById(db, ctx.userId);
     }),
 
     /**
@@ -308,12 +317,31 @@ const userDataRouter = router({
     //         return null;
     //     }),
     /**
-     * Loads schedule data for a user that's logged in.
+     * Saves schedule data for the currently authenticated user.
+     *
+     * The provider/account id supplied by the client is used only to find the
+     * caller's OIDC account; it is validated against the session to prevent
+     * one user from writing to another user's schedules.
      */
-    saveUserData: procedure.input(saveInputSchema).mutation(async ({ input }) => {
+    saveUserData: protectedProcedure.input(saveInputSchema).mutation(async ({ input, ctx }) => {
+        const callerGoogleId = await RDS.getGoogleIdByUserId(db, ctx.userId);
+        if (!callerGoogleId) {
+            throw new TRPCError({
+                code: 'FORBIDDEN',
+                message: 'No OIDC account is associated with this session',
+            });
+        }
+
+        const normalize = (id: string) => (id.startsWith('google_') ? id : `google_${id}`);
+        if (normalize(input.id) !== callerGoogleId || normalize(input.data.id) !== callerGoogleId) {
+            throw new TRPCError({
+                code: 'FORBIDDEN',
+                message: 'Cannot save data on behalf of another user',
+            });
+        }
+
         const data = input.data;
 
-        // Mangle duplicate schedule names
         data.userData.schedules = mangleDuplicateScheduleNames(data.userData.schedules);
 
         return await RDS.upsertUserData(db, data).catch((error) =>
@@ -321,7 +349,7 @@ const userDataRouter = router({
         );
     }),
 
-    flagImportedSchedule: procedure.input(z.object({ providerId: z.string() })).mutation(async ({ input }) => {
+    flagImportedSchedule: protectedProcedure.input(z.object({ providerId: z.string() })).mutation(async ({ input }) => {
         return await RDS.flagImportedUser(db, input.providerId);
     }),
 
