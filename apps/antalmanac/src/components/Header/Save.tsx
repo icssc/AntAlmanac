@@ -1,7 +1,6 @@
 import actionTypesStore from '$actions/ActionTypesStore';
 import { saveSchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import trpc from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -40,9 +39,8 @@ export const Save = () => {
 
     const saveScheduleData = async () => {
         if (sessionIsValid) {
-            const { accounts } = await trpc.userData.getUserAndAccountBySessionToken.query();
             setSaving(true);
-            await saveSchedule(accounts.providerAccountId, true);
+            await saveSchedule(true);
             setSaving(false);
         }
     };

@@ -1,6 +1,5 @@
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
-import { getLocalStorageUserId } from '$lib/localStorage';
 import appStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -33,14 +32,8 @@ export function ExperimentalMenu() {
             return;
         }
 
-        const savedUserID = getLocalStorageUserId();
-
-        if (!savedUserID) {
-            return;
-        }
-
         actionTypesStore.emit('autoSaveStart');
-        await autoSaveSchedule(savedUserID, { postHog });
+        await autoSaveSchedule({ postHog });
         appStore.unsavedChanges = false;
         actionTypesStore.emit('autoSaveEnd');
     };
