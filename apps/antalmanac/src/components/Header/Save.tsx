@@ -40,9 +40,9 @@ export const Save = () => {
 
     const saveScheduleData = async () => {
         if (sessionIsValid) {
-            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query();
+            const { accounts } = await trpc.userData.getUserAndAccountBySessionToken.query();
             setSaving(true);
-            await saveSchedule(accounts.providerAccountId, true, users);
+            await saveSchedule(accounts.providerAccountId, true);
             setSaving(false);
         }
     };

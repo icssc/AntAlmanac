@@ -4,7 +4,7 @@ import { oauth } from '$src/backend/lib/auth/oauth';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
 import { RDS } from '$src/backend/lib/rds';
 import { procedure, protectedProcedure, router } from '$src/backend/trpc';
-import type { User } from '@packages/antalmanac-types';
+import type { ScheduleSaveState } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
 import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState, type OAuth2Tokens } from 'arctic';
@@ -18,17 +18,9 @@ const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]
 
 const saveInputSchema = z.object({
     /**
-     * ID of the requester.
+     * Schedule data being saved on behalf of the authenticated session user.
      */
-    id: z.string(),
-
-    /**
-     * Schedule data being saved.
-     *
-     * The ID of the requester and user ID in the schedule data may differ,
-     * i.e. if the user is editing and saving another user's schedule.
-     */
-    data: z.custom<User>(),
+    userData: z.custom<ScheduleSaveState>(),
 });
 
 const saveGoogleSchema = type({
@@ -42,27 +34,11 @@ const userDataRouter = router({
     }),
 
     /**
-     * Retrieves user information by user ID.
-     * @param input - An object containing the user ID.
-     * @returns The user information associated with the user ID.
+     * Retrieves the currently authenticated user's profile.
+     *
+     * @returns The user row (email/name/avatar/...) for the session user.
      */
-    getUserByUid: protectedProcedure.input(userInputSchema.assert).query(async ({ input, ctx }) => {
-        if (!('userId' in input)) {
-            throw new TRPCError({
-                code: 'BAD_REQUEST',
-                message: 'Invalid input: userId is required',
-            });
-        }
-
-        // Callers can only look up their own user record; this endpoint exposes
-        // email/name/avatar and must not be usable to enumerate other users.
-        if (input.userId !== ctx.userId) {
-            throw new TRPCError({
-                code: 'FORBIDDEN',
-                message: 'Cannot fetch user information for another user',
-            });
-        }
-
+    getCurrentUser: protectedProcedure.query(async ({ ctx }) => {
         return await RDS.getUserById(db, ctx.userId);
     }),
 
@@ -319,32 +295,14 @@ const userDataRouter = router({
     /**
      * Saves schedule data for the currently authenticated user.
      *
-     * The provider/account id supplied by the client is used only to find the
-     * caller's OIDC account; it is validated against the session to prevent
-     * one user from writing to another user's schedules.
+     * The owning user is derived from the session; the client only sends the
+     * schedule payload.
      */
     saveUserData: protectedProcedure.input(saveInputSchema).mutation(async ({ input, ctx }) => {
-        const callerGoogleId = await RDS.getGoogleIdByUserId(db, ctx.userId);
-        if (!callerGoogleId) {
-            throw new TRPCError({
-                code: 'FORBIDDEN',
-                message: 'No OIDC account is associated with this session',
-            });
-        }
+        const userData = input.userData;
+        userData.schedules = mangleDuplicateScheduleNames(userData.schedules);
 
-        const normalize = (id: string) => (id.startsWith('google_') ? id : `google_${id}`);
-        if (normalize(input.id) !== callerGoogleId || normalize(input.data.id) !== callerGoogleId) {
-            throw new TRPCError({
-                code: 'FORBIDDEN',
-                message: 'Cannot save data on behalf of another user',
-            });
-        }
-
-        const data = input.data;
-
-        data.userData.schedules = mangleDuplicateScheduleNames(data.userData.schedules);
-
-        return await RDS.upsertUserData(db, data).catch((error) =>
+        return await RDS.upsertUserDataForUser(db, ctx.userId, userData).catch((error) =>
             console.error('RDS Failed to upsert user data:', error)
         );
     }),

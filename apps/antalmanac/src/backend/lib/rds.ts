@@ -1,4 +1,11 @@
-import { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent, Notification } from '@packages/antalmanac-types';
+import {
+    ShortCourse,
+    ShortCourseSchedule,
+    User,
+    RepeatingCustomEvent,
+    Notification,
+    ScheduleSaveState,
+} from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import * as schema from '@packages/db/src/schema';
 import {
@@ -225,42 +232,34 @@ export class RDS {
      * @param userData The object of data containing the user's schedules and courses
      * @returns The user's ID
      */
-    static async upsertUserData(
+    /**
+     * Upserts a user's schedule data by internal user ID. Intended for
+     * session-authenticated saves where the owning user is already known.
+     */
+    static async upsertUserDataForUser(
         db: DatabaseOrTransaction,
-        userData: User
+        userId: string,
+        saveState: ScheduleSaveState
     ): Promise<{ userId: string; scheduleIdMap: Record<string, string> }> {
         return db.transaction(async (tx) => {
-            const account = await this.registerUserAccount(
-                tx,
-                'OIDC',
-                userData.id,
-                userData.name,
-                userData.email,
-                userData.avatar
-            );
-            const userId = account.userId;
-            if (!account) {
-                throw new Error(`Failed to create user`);
-            }
-
-            // Add schedules and courses
-            const scheduleIdMap = await this.upsertSchedulesAndContents(tx, userId, userData.userData.schedules);
-
-            // Update user's current schedule index
-            const scheduleIndex = userData.userData.scheduleIndex;
-            const scheduleDbIds = Object.values(scheduleIdMap);
-
-            const currentScheduleId =
-                scheduleIndex === undefined || scheduleIndex >= scheduleDbIds.length
-                    ? null
-                    : scheduleDbIds[scheduleIndex];
-
-            if (currentScheduleId !== null) {
-                await tx.update(users).set({ currentScheduleId: currentScheduleId }).where(eq(users.id, userId));
-            }
-
-            return { userId, scheduleIdMap };
+            return { userId, ...(await this.writeScheduleSaveState(tx, userId, saveState)) };
         });
+    }
+
+    private static async writeScheduleSaveState(tx: Transaction, userId: string, saveState: ScheduleSaveState) {
+        const scheduleIdMap = await this.upsertSchedulesAndContents(tx, userId, saveState.schedules);
+
+        const scheduleIndex = saveState.scheduleIndex;
+        const scheduleDbIds = Object.values(scheduleIdMap);
+
+        const currentScheduleId =
+            scheduleIndex === undefined || scheduleIndex >= scheduleDbIds.length ? null : scheduleDbIds[scheduleIndex];
+
+        if (currentScheduleId !== null) {
+            await tx.update(users).set({ currentScheduleId: currentScheduleId }).where(eq(users.id, userId));
+        }
+
+        return { scheduleIdMap };
     }
 
     /**

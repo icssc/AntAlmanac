@@ -25,7 +25,6 @@ export interface CopyScheduleOptions {
 }
 
 interface AutoSaveScheduleOptions {
-    userInfo?: { email?: string | null; name?: string | null; avatar?: string | null };
     postHog?: PostHog;
 }
 
@@ -79,12 +78,7 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
     return true;
 }
 
-export const saveSchedule = async (
-    providerId: string,
-    rememberMe: boolean,
-    userInfo?: { email?: string | null; name?: string | null; avatar?: string | null },
-    postHog?: PostHog
-) => {
+export const saveSchedule = async (providerId: string, rememberMe: boolean, postHog?: PostHog) => {
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
@@ -109,14 +103,7 @@ export const saveSchedule = async (
 
             try {
                 const result = await trpc.userData.saveUserData.mutate({
-                    id: providerId,
-                    data: {
-                        id: providerId,
-                        email: userInfo?.email ?? undefined,
-                        name: userInfo?.name ?? undefined,
-                        avatar: userInfo?.avatar ?? undefined,
-                        userData: scheduleSaveState,
-                    },
+                    userData: scheduleSaveState,
                 });
 
                 if (result?.scheduleIdMap) {
@@ -149,7 +136,7 @@ export const saveSchedule = async (
 };
 
 export async function autoSaveSchedule(providerID: string, options: AutoSaveScheduleOptions) {
-    const { userInfo, postHog } = options;
+    const { postHog } = options;
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
@@ -162,14 +149,7 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
     try {
         const result = await trpc.userData.saveUserData.mutate({
-            id: providerID,
-            data: {
-                id: providerID,
-                email: userInfo?.email ?? undefined,
-                name: userInfo?.name ?? undefined,
-                avatar: userInfo?.avatar ?? undefined,
-                userData: scheduleSaveState,
-            },
+            userData: scheduleSaveState,
         });
 
         if (result?.scheduleIdMap) {
@@ -224,7 +204,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
     }
 
     const userAndAccount = await trpc.userData.getUserAndAccountBySessionToken.query();
-    const { users, accounts } = userAndAccount;
+    const { accounts } = userAndAccount;
 
     const incomingData: User | null = await trpc.userData.getUserData.query({ userId: incomingUser.id });
     const scheduleSaveState =
@@ -244,7 +224,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
 
             scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
 
-            await saveSchedule(accounts.providerAccountId, true, users);
+            await saveSchedule(accounts.providerAccountId, true);
 
             await trpc.userData.flagImportedSchedule.mutate({
                 providerId: username,
