@@ -1,4 +1,4 @@
-import { loadSchedule, loadScheduleWithSessionToken, loginUser } from '$actions/AppStoreActions';
+import { loadGuestSchedule, loadSchedule, loginUser } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
@@ -91,7 +91,7 @@ export const Signin = () => {
     const loadScheduleAndSetLoading = useCallback(
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
-            await loadSchedule(userID, rememberMe);
+            await loadGuestSchedule(userID, rememberMe);
             await validateImportedUser(userID);
             setOpenLoadingSchedule(false);
         },
@@ -104,13 +104,13 @@ export const Signin = () => {
 
             const validSession = await loadSession();
             if (validSession) {
-                await loadScheduleWithSessionToken();
+                await loadSchedule();
             } else if (getWasLoggedIn()) {
                 setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
                 setOpenalert(true);
             } else if (userID && userID !== '') {
                 await validateImportedUser(userID);
-                await loadSchedule(userID, rememberMe);
+                await loadGuestSchedule(userID, rememberMe);
             }
 
             setOpenLoadingSchedule(false);

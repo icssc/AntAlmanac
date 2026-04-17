@@ -226,7 +226,7 @@ export const importScheduleWithUsername = async (username: string) => {
     }
 };
 
-export const loadSchedule = async (username: string, rememberMe: boolean, postHog?: PostHog) => {
+export const loadGuestSchedule = async (username: string, rememberMe: boolean, postHog?: PostHog) => {
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
@@ -288,7 +288,7 @@ export const loadSchedule = async (username: string, rememberMe: boolean, postHo
     }
 };
 
-export const loadScheduleWithSessionToken = async () => {
+export const loadSchedule = async () => {
     // logAnalytics({
     //     category: analyticsEnum.nav.title,
     //     action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
@@ -317,7 +317,7 @@ export const loadScheduleWithSessionToken = async () => {
         }
         return false;
     } catch (e) {
-        console.error('Error in loadScheduleWithSessionToken:', e);
+        console.error('Error in loadSchedule:', e);
         openSnackbar('error', `Failed to load schedules. If this continues to happen, please submit a feedback form.`);
         return false;
     }
