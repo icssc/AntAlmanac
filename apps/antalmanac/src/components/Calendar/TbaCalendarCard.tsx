@@ -11,10 +11,6 @@ interface TbaSection {
     sectionCode: string;
 }
 
-interface TbaCalendarCardProps {
-    screenshotTrigger?: number;
-}
-
 const CARD_POSITION_SX = {
     position: 'absolute' as const,
     bottom: 16,
@@ -31,8 +27,8 @@ function TbaCircleButton({ onClick }: { onClick: () => void }) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: 48,
-                    height: 48,
+                    width: 52,
+                    height: 52,
                     borderRadius: '50%',
                     bgcolor: BLUE,
                     boxShadow: 2,
@@ -40,7 +36,7 @@ function TbaCircleButton({ onClick }: { onClick: () => void }) {
                 }}
             >
                 <Typography variant="button" sx={{ fontWeight: 600, letterSpacing: 1, color: 'white' }}>
-                    TBA
+                    ASYNC
                 </Typography>
             </Box>
         </Box>
@@ -84,7 +80,16 @@ function TbaExpandedCard({ tbaSections, onToggle }: { tbaSections: TbaSection[];
                 },
             }}
             action={
-                <IconButton size="small" onClick={onToggle} sx={{ paddingLeft: 0 }}>
+                <IconButton
+                    size="small"
+                    onClick={onToggle}
+                    sx={{
+                        p: 0.5,
+                        width: 28,
+                        height: 28,
+                        alignSelf: 'flex-start',
+                    }}
+                >
                     <Close fontSize="small" />
                 </IconButton>
             }
@@ -105,7 +110,7 @@ function TbaExpandedCard({ tbaSections, onToggle }: { tbaSections: TbaSection[];
     );
 }
 
-export function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardProps) {
+export function TbaCalendarCard() {
     const [tbaSections, setTbaSections] = useState<TbaSection[]>([]);
     const [collapsed, setCollapsed] = useState(true);
     const visible = tbaSections.length > 0;
@@ -152,12 +157,6 @@ export function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardProps) {
         };
     }, []);
 
-    useEffect(() => {
-        if (screenshotTrigger != null) {
-            setCollapsed(false);
-        }
-    }, [screenshotTrigger]);
-
     const handleToggleCollapse = () => {
         setCollapsed((prev) => !prev);
     };
@@ -167,13 +166,13 @@ export function TbaCalendarCard({ screenshotTrigger }: TbaCalendarCardProps) {
     }
 
     return (
-        <>
+        <Box data-html2canvas-ignore>
             {collapsed && <TbaCircleButton onClick={handleToggleCollapse} />}
             <Fade in={!collapsed} timeout={250} mountOnEnter unmountOnExit>
                 <Box sx={{ ...CARD_POSITION_SX, width: '100%', maxWidth: 180 }}>
                     <TbaExpandedCard tbaSections={tbaSections} onToggle={handleToggleCollapse} />
                 </Box>
             </Fade>
-        </>
+        </Box>
     );
 }

@@ -69,7 +69,6 @@ export const ScheduleCalendar = memo(() => {
     const [finalsEventsInCalendar, setFinalEventsInCalendar] = useState(() => AppStore.getFinalEventsInCalendar());
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(() => AppStore.getCurrentScheduleIndex());
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
-    const [screenshotTrigger, setScreenshotTrigger] = useState(0);
 
     const theme = useTheme();
     const { isMilitaryTime } = useTimeFormatStore();
@@ -361,10 +360,9 @@ export const ScheduleCalendar = memo(() => {
                 toggleDisplayFinalsSchedule={toggleDisplayFinalsSchedule}
                 showFinalsSchedule={showFinalsSchedule}
                 scheduleNames={scheduleNames}
-                onScreenshot={() => setScreenshotTrigger((v) => v + 1)}
             />
             <Box id="screenshot" height="0" flexGrow={1} position="relative">
-                <TbaCalendarCard screenshotTrigger={screenshotTrigger} />
+                <TbaCalendarCard />
                 <CalendarEventPopover />
 
                 {showEmptyState && (
