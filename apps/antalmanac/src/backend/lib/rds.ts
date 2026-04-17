@@ -407,25 +407,20 @@ export class RDS {
     /**
      * Retrieves a guest user's schedule data by internal user ID.
      *
-     * Returns `null` if the user does not exist, does not have a GUEST
-     * account, or has any non-GUEST account attached. OIDC users' schedules
-     * are private — authenticated callers should use
-     * `fetchUserDataWithSession` to read their own data instead.
+     * Returns `null` if the user does not exist or does not have a GUEST
+     * account. OIDC users' schedules are private — authenticated callers
+     * should use `fetchUserDataWithSession` to read their own data instead.
      */
-    static async getGuestUserDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
+    static async getGuestUserData(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
         return db.transaction(async (tx) => {
-            const userAccounts = await tx
-                .select({ accountType: accounts.accountType })
+            const guestAccount = await tx
+                .select({ userId: accounts.userId })
                 .from(accounts)
-                .where(eq(accounts.userId, userId));
+                .where(and(eq(accounts.userId, userId), eq(accounts.accountType, 'GUEST')))
+                .limit(1)
+                .then((res) => res[0] ?? null);
 
-            const hasGuestAccount = userAccounts.some((a) => a.accountType === 'GUEST');
-            const hasAuthenticatedAccount = userAccounts.some((a) => a.accountType !== 'GUEST');
-
-            // Only guest-only users are publicly readable. A user that has been
-            // promoted to an OIDC account (or has any non-GUEST account
-            // attached) is considered private.
-            if (!hasGuestAccount || hasAuthenticatedAccount) {
+            if (!guestAccount) {
                 return null;
             }
 

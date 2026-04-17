@@ -56,7 +56,7 @@ const userDataRouter = router({
      * OIDC users read their own data via `getUserDataWithSession`.
      */
     getGuestUserData: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
-        return await RDS.getGuestUserDataByUid(db, input.userId);
+        return await RDS.getGuestUserData(db, input.userId);
     }),
 
     getUserDataWithSession: protectedProcedure.query(async ({ ctx }) => {
