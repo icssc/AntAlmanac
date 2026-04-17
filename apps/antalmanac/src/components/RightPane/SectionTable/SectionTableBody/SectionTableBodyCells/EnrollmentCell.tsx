@@ -3,6 +3,7 @@ import { TableBodyCellContainer } from '$components/RightPane/SectionTable/Secti
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
+import { InfoOutlined } from '@mui/icons-material';
 import { Box, Button, Popover, Tooltip, Typography } from '@mui/material';
 import { WebsocSectionEnrollment } from '@packages/antalmanac-types';
 import { useCallback, useMemo, useState } from 'react';
@@ -94,13 +95,14 @@ export const EnrollmentCell = ({
     return (
         <TableBodyCellContainer>
             <Box>
-                {showTooltip ? (
-                    <Tooltip title={<Typography fontSize={'0.85rem'}>Last updated at {formattedTime}</Typography>}>
-                        <Box component="span">{enrollmentText}</Box>
-                    </Tooltip>
-                ) : (
-                    enrollmentText
-                )}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    {enrollmentText}
+                    {showTooltip ? (
+                        <Tooltip title={<Typography fontSize={'0.85rem'}>Last updated at {formattedTime}</Typography>}>
+                            <InfoOutlined sx={{ fontSize: '0.9rem', color: 'text.secondary' }} />
+                        </Tooltip>
+                    ) : null}
+                </Box>
                 {numOnWaitlist !== '' && (
                     <Box>
                         WL: {numOnWaitlist} / {numWaitlistCap}
