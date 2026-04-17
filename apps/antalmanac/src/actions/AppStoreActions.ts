@@ -17,7 +17,7 @@ import type {
 } from '@packages/antalmanac-types';
 import { TRPCClientError } from '@trpc/client';
 import { TRPCError } from '@trpc/server';
-import { PostHog } from 'posthog-js/react';
+import type { PostHog } from 'posthog-js/react';
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
     onError: (scheduleName: string) => unknown;
@@ -77,7 +77,7 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
     return true;
 }
 
-export const saveSchedule = async (rememberMe: boolean, postHog?: PostHog) => {
+export const saveSchedule = async ({ rememberMe, postHog }: { rememberMe: boolean; postHog?: PostHog }) => {
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
@@ -153,7 +153,7 @@ export const mergeShortCourseSchedules = (
     const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
         let scheduleName = schedule.scheduleName;
         if (existingScheduleNames.has(schedule.scheduleName)) {
-            scheduleName = scheduleName + '(1)';
+            scheduleName = `${scheduleName}(1)`;
         }
         return {
             ...schedule,
@@ -193,7 +193,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
 
             scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
 
-            await saveSchedule(true);
+            await saveSchedule({ rememberMe: true });
 
             await trpc.userData.flagImportedSchedule.mutate({
                 username,
@@ -233,7 +233,7 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
             window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
     ) {
         username = username.replace(/\s+/g, '');
-        if (username.length > 0) {
+        if (username?.length) {
             if (rememberMe) {
                 setLocalStorageUserId(username);
             }

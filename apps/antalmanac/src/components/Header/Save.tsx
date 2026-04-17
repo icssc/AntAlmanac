@@ -40,7 +40,7 @@ export const Save = () => {
     const saveScheduleData = async () => {
         if (sessionIsValid) {
             setSaving(true);
-            await saveSchedule(true);
+            await saveSchedule({ rememberMe: true });
             setSaving(false);
         }
     };

@@ -1,4 +1,4 @@
-import {
+import type {
     ShortCourse,
     ShortCourseSchedule,
     User,
@@ -6,29 +6,30 @@ import {
     Notification,
     ScheduleSaveState,
 } from '@packages/antalmanac-types';
-import { db } from '@packages/db';
-import * as schema from '@packages/db/src/schema';
+import type { db } from '@packages/db';
+import type * as schema from '@packages/db/src/schema';
 import {
     schedules,
     users,
     accounts,
     coursesInSchedule,
     customEvents,
-    AccountType,
-    Schedule,
-    CourseInSchedule,
-    CustomEvent,
+    type AccountType,
+    type Schedule,
+    type CourseInSchedule,
+    type CustomEvent,
     sessions,
-    Account,
-    Session,
+    type Account,
+    type Session,
     subscriptions,
 } from '@packages/db/src/schema';
-import { and, eq, ExtractTablesWithRelations, gt } from 'drizzle-orm';
-import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
+import { and, eq, type ExtractTablesWithRelations, gt } from 'drizzle-orm';
+import type { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
 type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;
 
+// biome-ignore lint/complexity/noStaticOnlyClass: todo
 export class RDS {
     /**
      * If a guest user with the specified name exists, return their ID, otherwise return null.
@@ -393,12 +394,6 @@ export class RDS {
     /**
      * Retrieves a guest user's publicly-shareable schedule data by their
      * guest username.
-     *
-     * The `where accountType = 'GUEST'` clause on the account lookup is the
-     * sole gate — OIDC users are not reachable through this path because
-     * their provider id is not registered as a GUEST account. Only returns
-     * the fields the public viewer needs (`imported` plus the schedule
-     * payload); email/name/avatar are intentionally not exposed here.
      */
     static async getGuestScheduleByUsername(
         db: DatabaseOrTransaction,
@@ -445,25 +440,6 @@ export class RDS {
                 },
             };
         });
-    }
-
-    private static async getUserAndAccount(
-        db: DatabaseOrTransaction,
-        accountType: AccountType,
-        providerAccountId: string
-    ) {
-        const res = await db
-            .select()
-            .from(accounts)
-            .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerAccountId)))
-            .leftJoin(users, eq(accounts.userId, users.id))
-            .limit(1);
-
-        if (res.length === 0 || res[0].users === null || res[0].accounts === null) {
-            return null;
-        }
-
-        return { user: res[0].users, account: res[0].accounts };
     }
 
     /**

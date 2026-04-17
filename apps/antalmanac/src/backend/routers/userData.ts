@@ -16,7 +16,7 @@ const NODE_ENV = process.env.NODE_ENV;
 
 const saveInputSchema = z.object({
     /**
-     * Schedule data being saved on behalf of the authenticated session user.
+     * Schedule data being saved
      */
     userData: z.custom<ScheduleSaveState>(),
 });
@@ -34,7 +34,7 @@ const userDataRouter = router({
     /**
      * Retrieves the currently authenticated user's profile.
      *
-     * @returns The user row (email/name/avatar/...) for the session user.
+     * @returns The user row for the session user.
      */
     getCurrentUser: protectedProcedure.query(async ({ ctx }) => {
         return await RDS.getUserById(db, ctx.userId);
@@ -49,11 +49,6 @@ const userDataRouter = router({
         return await RDS.getGoogleIdByUserId(db, ctx.userId);
     }),
 
-    /**
-     * Retrieves a guest user's publicly-shareable schedule data by their
-     * guest username. The single public read path for guest schedules;
-     * OIDC users read their own data via `getUserDataWithSession`.
-     */
     getGuestScheduleByUsername: procedure.input(z.object({ username: z.string() })).query(async ({ input }) => {
         const result = await RDS.getGuestScheduleByUsername(db, input.username);
         if (!result) {
@@ -255,24 +250,6 @@ const userDataRouter = router({
         }
     }),
 
-    /**
-     * Logs in or signs up existing user
-     */
-    //     handleGuestLogin: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
-    //         const account = await RDS.registerUserAccount(db, input.name, input.name, 'GUEST');
-    //
-    //         if (account.userId.length > 0) {
-    //             const session = await RDS.upsertSession(db, account.userId);
-    //             return session?.refreshToken;
-    //         }
-    //         return null;
-    //     }),
-    /**
-     * Saves schedule data for the currently authenticated user.
-     *
-     * The owning user is derived from the session; the client only sends the
-     * schedule payload.
-     */
     saveUserData: protectedProcedure.input(saveInputSchema).mutation(async ({ input, ctx }) => {
         const userData = input.userData;
         userData.schedules = mangleDuplicateScheduleNames(userData.schedules);
