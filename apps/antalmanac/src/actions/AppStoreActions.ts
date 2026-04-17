@@ -16,8 +16,8 @@ import type {
     WebsocSection,
 } from '@packages/antalmanac-types';
 import { TRPCClientError } from '@trpc/client';
-import { TRPCError } from '@trpc/server';
 import type { PostHog } from 'posthog-js/react';
+
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
     onError: (scheduleName: string) => unknown;
@@ -108,7 +108,7 @@ export const saveSchedule = async ({ rememberMe, postHog }: { rememberMe: boolea
         deleteTempSaveData();
         AppStore.saveSchedule();
     } catch (e) {
-        if (e instanceof TRPCError) {
+        if (e instanceof TRPCClientError) {
             openSnackbar('error', `Schedule could not be saved`);
         } else {
             openSnackbar('error', 'Network error or server is down.');
@@ -136,7 +136,7 @@ export async function autoSaveSchedule(options: AutoSaveScheduleOptions) {
         deleteTempSaveData();
         AppStore.saveSchedule();
     } catch (e) {
-        if (e instanceof TRPCError) {
+        if (e instanceof TRPCClientError) {
             openSnackbar('error', 'Schedule could not be auto-saved');
         } else {
             openSnackbar('error', 'Network error or server is down.');
