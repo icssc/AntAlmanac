@@ -14,7 +14,6 @@ import {
     accounts,
     coursesInSchedule,
     customEvents,
-    type AccountType,
     type Schedule,
     type CourseInSchedule,
     type CustomEvent,
