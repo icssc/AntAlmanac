@@ -119,21 +119,66 @@ const queryManualSearchCourses = async (params: Record<string, string>) => {
         sharedCourseKeys = new Set([...sharedCourseKeys].filter((key) => keys.has(key)));
     }
 
+    const resultSchools = firstResponse.schools
+        .map((school) => ({
+            ...school,
+            departments: school.departments
+                .map((department) => ({
+                    ...department,
+                    courses: department.courses.filter((course) =>
+                        sharedCourseKeys.has(getCourseKey(course.deptCode, course.courseNumber))
+                    ),
+                }))
+                .filter((department) => department.courses.length > 0),
+        }))
+        .filter((school) => school.departments.length > 0);
+
+    const appendedKeys = new Set(sharedCourseKeys);
+    const schoolMap = new Map<string, WebsocSchool>();
+    const deptMap = new Map<string, WebsocDepartment>();
+
+    resultSchools.forEach((school) => {
+        schoolMap.set(school.schoolName, school);
+        school.departments.forEach((department) => {
+            deptMap.set(`${school.schoolName}::${department.deptCode}`, department);
+        });
+    });
+
+    for (const response of responses) {
+        for (const school of response.schools) {
+            for (const department of school.departments) {
+                for (const course of department.courses) {
+                    const courseKey = getCourseKey(course.deptCode, course.courseNumber);
+                    if (appendedKeys.has(courseKey)) {
+                        continue;
+                    }
+
+                    appendedKeys.add(courseKey);
+
+                    let resultSchool = schoolMap.get(school.schoolName);
+                    if (!resultSchool) {
+                        resultSchool = { ...school, departments: [] };
+                        resultSchools.push(resultSchool);
+                        schoolMap.set(school.schoolName, resultSchool);
+                    }
+
+                    const deptKey = `${school.schoolName}::${department.deptCode}`;
+                    let resultDepartment = deptMap.get(deptKey);
+                    if (!resultDepartment) {
+                        resultDepartment = { ...department, courses: [] };
+                        resultSchool.departments.push(resultDepartment);
+                        deptMap.set(deptKey, resultDepartment);
+                    }
+
+                    resultDepartment.courses.push(course);
+                }
+            }
+        }
+    }
+
     return {
         ...firstResponse,
-        schools: firstResponse.schools
-            .map((school) => ({
-                ...school,
-                departments: school.departments
-                    .map((department) => ({
-                        ...department,
-                        courses: department.courses.filter((course) =>
-                            sharedCourseKeys.has(getCourseKey(course.deptCode, course.courseNumber))
-                        ),
-                    }))
-                    .filter((department) => department.courses.length > 0),
-            }))
-            .filter((school) => school.departments.length > 0),
+        schools: resultSchools,
     };
 };
 
