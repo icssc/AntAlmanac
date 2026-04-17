@@ -9,7 +9,6 @@ import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Cale
 import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { skeletonBlueprintVariations } from '$components/Calendar/skeletonBlueprintVariations';
-import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import {
