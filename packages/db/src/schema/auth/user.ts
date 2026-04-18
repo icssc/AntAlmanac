@@ -30,7 +30,7 @@ export const users = pgTable('users', {
     /**
      * User's email.
      */
-    email: text('email').unique(),
+    email: text('email'),
 
     emailVerified: boolean('email_verified').default(false).notNull(),
 

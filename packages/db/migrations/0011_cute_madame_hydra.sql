@@ -25,4 +25,3 @@ ALTER TABLE "sessions" ADD COLUMN IF NOT EXISTS "user_agent" text;--> statement-
 ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "email_verified" boolean DEFAULT false NOT NULL;--> statement-breakpoint
 ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "created_at" timestamp DEFAULT now() NOT NULL;--> statement-breakpoint
 CREATE INDEX "session_userId_idx" ON "sessions" USING btree ("user_id");--> statement-breakpoint
-ALTER TABLE "users" ADD CONSTRAINT "users_email_unique" UNIQUE("email");
