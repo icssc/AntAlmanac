@@ -79,8 +79,8 @@ export const ActionCell = memo(
                             courseNumber={courseDetails.courseNumber}
                         />
                     ) : (
-                        <IconButton disabled size="small" sx={{ p: 1 }}>
-                            <CircularProgress size={15} />
+                        <IconButton disabled size="small" sx={{ p: 0.5 }}>
+                            <CircularProgress size={20} />
                         </IconButton>
                     )}
 
