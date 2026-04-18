@@ -1,7 +1,3 @@
-import { Assessment, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
-import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { useMemo } from 'react';
-
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
@@ -15,6 +11,9 @@ import analyticsEnum from '$lib/analytics/analytics';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
+import { Assessment, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
+import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { useMemo } from 'react';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -22,6 +21,8 @@ interface TableHeaderColumnDetails {
     label: string;
     weight: number;
 }
+
+const ACTION_COLUMN_WEIGHT = 5;
 
 const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHeaderColumnDetails> = {
     sectionCode: { label: 'Code', weight: 5 },
@@ -156,23 +157,41 @@ function SectionTable(props: SectionTableProps) {
                 >
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ padding: 0 }} />
                             {(() => {
                                 const visible = tableHeaderColumnEntries.filter(([column]) =>
                                     activeColumns.includes(column as SectionTableColumn)
                                 );
-                                const totalWeight = visible.reduce((sum, [, { weight }]) => sum + weight, 0);
-                                return visible.map(([column, { label, weight }]) => (
-                                    <TableCell
-                                        key={column}
-                                        sx={{
-                                            width: `${(weight / totalWeight) * 100}%`,
-                                            padding: 0,
-                                        }}
-                                    >
-                                        {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
-                                    </TableCell>
-                                ));
+                                const hasAction = activeColumns.includes('action');
+                                const totalWeight =
+                                    visible.reduce((sum, [, { weight }]) => sum + weight, 0) +
+                                    (hasAction ? ACTION_COLUMN_WEIGHT : 0);
+                                return (
+                                    <>
+                                        {hasAction && (
+                                            <TableCell
+                                                sx={{
+                                                    width: `${(ACTION_COLUMN_WEIGHT / totalWeight) * 100}%`,
+                                                    padding: 0,
+                                                }}
+                                            />
+                                        )}
+                                        {visible.map(([column, { label, weight }]) => (
+                                            <TableCell
+                                                key={column}
+                                                sx={{
+                                                    width: `${(weight / totalWeight) * 100}%`,
+                                                    padding: 0,
+                                                }}
+                                            >
+                                                {label === 'Enrollment' ? (
+                                                    <EnrollmentColumnHeader label={label} />
+                                                ) : (
+                                                    label
+                                                )}
+                                            </TableCell>
+                                        ))}
+                                    </>
+                                );
                             })()}
                         </TableRow>
                     </TableHead>
