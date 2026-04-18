@@ -1,6 +1,7 @@
-import { termData } from './termData';
-
 import trpc from '$lib/api/trpc';
+import type { WebsocSectionType } from '@packages/antalmanac-types';
+
+import { termData } from './termData';
 
 // This represents the enrollment history of a course section during one quarter
 export interface EnrollmentHistoryGraphQL {
@@ -45,7 +46,7 @@ export interface EnrollmentHistoryDay {
 
 export class DepartmentEnrollmentHistory {
     // Each key in the cache will be the department and courseNumber concatenated
-    static enrollmentHistoryCache: Record<string, EnrollmentHistory[] | null> = {};
+    static enrollmentHistoryCache: Record<string, EnrollmentHistory[]> = {};
     static termShortNames: string[] = termData.map((term) => term.shortName);
 
     department: string;
@@ -54,18 +55,30 @@ export class DepartmentEnrollmentHistory {
         this.department = department;
     }
 
-    async find(courseNumber: string): Promise<EnrollmentHistory[] | null> {
+    async find(courseNumber: string, sectionType: WebsocSectionType): Promise<EnrollmentHistory[]> {
         const cacheKey = this.department + courseNumber;
-        return (DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey] ??= await this.queryEnrollmentHistory(
-            courseNumber
-        ));
+        const cacheResult = DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey];
+
+        if (cacheResult) {
+            return cacheResult;
+        }
+
+        const result = await this.queryEnrollmentHistory(courseNumber, sectionType);
+
+        DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey] = result;
+
+        return result;
     }
 
-    async queryEnrollmentHistory(courseNumber: string): Promise<EnrollmentHistory[] | null> {
-        const res = await trpc.enrollHist.get.query({ department: this.department, courseNumber, sectionType: 'Lec' });
+    async queryEnrollmentHistory(courseNumber: string, sectionType: WebsocSectionType): Promise<EnrollmentHistory[]> {
+        const res = await trpc.enrollHist.get.query({
+            department: this.department,
+            courseNumber,
+            sectionType,
+        });
 
         if (!res?.length) {
-            return null;
+            return [];
         }
 
         const parsedEnrollmentHistory = DepartmentEnrollmentHistory.parseEnrollmentHistoryResponse(res);

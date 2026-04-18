@@ -1,18 +1,19 @@
 import { useIsMobile } from '$hooks/useIsMobile';
-import { EnrollmentHistory } from '$lib/enrollmentHistory';
+import type { EnrollmentHistory } from '$lib/enrollmentHistory';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { Box, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useState, useMemo, useCallback } from 'react';
+import type { WebsocSectionType } from '@packages/antalmanac-types';
+import { useCallback, useMemo, useState } from 'react';
 import {
-    LineChart,
-    Line,
     CartesianGrid,
+    Legend,
+    Line,
+    LineChart,
+    Tooltip as RechartsTooltip,
     ResponsiveContainer,
     XAxis,
     YAxis,
-    Tooltip as RechartsTooltip,
-    Legend,
 } from 'recharts';
 
 type PopupHeaderCallback = () => void;
@@ -34,8 +35,6 @@ function PopupHeader({
     popupTitle,
     historyCount,
 }: PopupHeaderProps) {
-    const isMobile = useIsMobile();
-
     return (
         <Box
             sx={{
@@ -53,7 +52,12 @@ function PopupHeader({
                     </IconButton>
                 </span>
             </Tooltip>
-            <Typography sx={{ fontWeight: 500, fontSize: isMobile ? '0.8rem' : '1rem', textAlign: 'center' }}>
+            <Typography
+                sx={{
+                    fontWeight: 500,
+                    textAlign: 'center',
+                }}
+            >
                 {popupTitle}
             </Typography>
             <Tooltip title="Newer Graph">
@@ -68,9 +72,10 @@ function PopupHeader({
 }
 
 interface EnrollmentHistoryPopupProps {
+    sectionType: WebsocSectionType;
     department: string;
     courseNumber: string;
-    enrollmentHistory?: EnrollmentHistory[] | null;
+    enrollmentHistory: EnrollmentHistory[] | undefined;
     loading?: boolean;
 }
 
@@ -79,6 +84,7 @@ function graphKey(enrollment: EnrollmentHistory) {
 }
 
 export function EnrollmentHistoryPopup({
+    sectionType,
     department,
     courseNumber,
     enrollmentHistory,
@@ -95,10 +101,12 @@ export function EnrollmentHistoryPopup({
         if (!enrollmentHistory?.length) {
             return 0;
         }
+
         if (selectedGraphKey) {
             const selectedIndex = enrollmentHistory.findIndex(
                 (enrollment) => graphKey(enrollment) === selectedGraphKey
             );
+
             if (selectedIndex >= 0) {
                 return selectedIndex;
             }
@@ -107,16 +115,17 @@ export function EnrollmentHistoryPopup({
     }, [enrollmentHistory, selectedGraphKey]);
 
     const popupTitle = useMemo(() => {
-        if (enrollmentHistory == null) {
+        const currEnrollmentHistory = enrollmentHistory?.at(activeGraphIndex);
+
+        if (!currEnrollmentHistory) {
             return 'No past enrollment data found for this course';
         }
 
-        const currEnrollmentHistory = enrollmentHistory[activeGraphIndex];
-        return `${department} ${courseNumber} | ${currEnrollmentHistory.year} ${
+        return `${department} ${courseNumber} — ${currEnrollmentHistory.year} ${
             currEnrollmentHistory.quarter
-        } | ${currEnrollmentHistory.instructors.join(', ')}`;
-    }, [activeGraphIndex, courseNumber, department, enrollmentHistory]);
-    const axisColor = theme.palette.text.primary;
+        } | ${sectionType} | ${currEnrollmentHistory.instructors.join(', ')}`;
+    }, [activeGraphIndex, courseNumber, department, enrollmentHistory, sectionType]);
+
     const chartColors = theme.palette.enrollmentStatus;
 
     const handleBack = useCallback(() => {
@@ -171,16 +180,18 @@ export function EnrollmentHistoryPopup({
                         margin={{ top: 8, right: 16, left: 4 }}
                     >
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="date" tick={{ fontSize: 12, fill: axisColor }} />
-                        <YAxis tick={{ fontSize: 12, fill: axisColor }} width={48} />
-                        <RechartsTooltip />
+                        <RechartsTooltip contentStyle={{ backgroundColor: theme.palette.background.paper }} />
                         <Legend />
+
+                        <XAxis dataKey="date" tick={{ fontSize: 12, fill: theme.palette.text.primary }} />
+                        <YAxis tick={{ fontSize: 12, fill: theme.palette.text.primary }} width={48} />
+
                         <Line
                             type="monotone"
                             dataKey="totalEnrolled"
                             stroke={chartColors.open}
                             name="Enrolled"
-                            strokeWidth={2.5}
+                            strokeWidth={2}
                             dot={false}
                             activeDot={{ r: 4 }}
                         />
@@ -190,7 +201,7 @@ export function EnrollmentHistoryPopup({
                             stroke={chartColors.full}
                             name="Capacity"
                             strokeWidth={2}
-                            strokeDasharray="6 4"
+                            strokeDasharray="16 24"
                             dot={false}
                             activeDot={{ r: 3 }}
                         />

@@ -1,13 +1,14 @@
-import { Box, ButtonBase, Popover, Tooltip, Typography } from "@mui/material";
-import type { WebsocSectionEnrollment } from "@packages/antalmanac-types";
-import { useCallback, useMemo, useState } from "react";
-import { EnrollmentHistoryPopup } from "$components/RightPane/SectionTable/EnrollmentHistoryPopup";
-import { TableBodyCellContainer } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer";
-import { useIsMobile } from "$hooks/useIsMobile";
-import { useSecondaryColor } from "$hooks/useSecondaryColor";
-import { DepartmentEnrollmentHistory, type EnrollmentHistory } from "$lib/enrollmentHistory";
+import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/EnrollmentHistoryPopup';
+import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { useIsMobile } from '$hooks/useIsMobile';
+import { useSecondaryColor } from '$hooks/useSecondaryColor';
+import { DepartmentEnrollmentHistory, type EnrollmentHistory } from '$lib/enrollmentHistory';
+import { Box, ButtonBase, Popover, Tooltip, Typography } from '@mui/material';
+import type { WebsocSectionEnrollment, WebsocSectionType } from '@packages/antalmanac-types';
+import { useCallback, useMemo, useState } from 'react';
 
 interface EnrollmentCellProps {
+    sectionType: WebsocSectionType;
     deptCode: string;
     courseNumber: string;
     instructors: string[];
@@ -29,6 +30,7 @@ interface EnrollmentCellProps {
 }
 
 export const EnrollmentCell = ({
+    sectionType,
     deptCode,
     courseNumber,
     numCurrentlyEnrolled,
@@ -43,79 +45,90 @@ export const EnrollmentCell = ({
     const showTooltip = !isMobile && formattedTime;
 
     const [anchorEl, setAnchorEl] = useState<Element>();
-    const [enrollmentHistory, setEnrollmentHistory] = useState<EnrollmentHistory[] | null>(null);
+    const [enrollmentHistory, setEnrollmentHistory] = useState<EnrollmentHistory[]>();
     const [loadingEnrollmentHistory, setLoadingEnrollmentHistory] = useState(false);
 
     const deptEnrollmentHistory = useMemo(() => new DepartmentEnrollmentHistory(deptCode), [deptCode]);
 
     const handleClick = useCallback(
         (event: React.MouseEvent<HTMLElement>) => {
-            const openingPopover = !anchorEl;
             setAnchorEl((currentAnchorEl) => (currentAnchorEl ? undefined : event.currentTarget));
-            if (!openingPopover || enrollmentHistory !== undefined || loadingEnrollmentHistory) {
+
+            if (anchorEl || loadingEnrollmentHistory) {
                 return;
             }
 
             setLoadingEnrollmentHistory(true);
+
             deptEnrollmentHistory
-                .find(courseNumber)
+                .find(courseNumber, sectionType)
                 .then((history) => {
                     setEnrollmentHistory(history);
                 })
                 .catch(() => {
-                    setEnrollmentHistory(null);
+                    setEnrollmentHistory(undefined);
                 })
                 .finally(() => {
                     setLoadingEnrollmentHistory(false);
                 });
         },
-        [anchorEl, courseNumber, deptEnrollmentHistory, enrollmentHistory, loadingEnrollmentHistory],
+        [anchorEl, courseNumber, deptEnrollmentHistory, loadingEnrollmentHistory, sectionType]
     );
 
     const hideEnrollmentHistory = useCallback(() => {
         setAnchorEl(undefined);
     }, []);
 
+    const enrollmentText = useMemo(
+        () => (
+            <ButtonBase
+                sx={{
+                    fontFamily: 'inherit',
+                    fontSize: 'unset',
+                    color: secondaryColor,
+                    fontWeight: 700,
+                }}
+                onClick={handleClick}
+            >
+                {numCurrentlyEnrolled.totalEnrolled} / {maxCapacity}
+            </ButtonBase>
+        ),
+        [handleClick, numCurrentlyEnrolled.totalEnrolled, maxCapacity, secondaryColor]
+    );
+
     return (
         <TableBodyCellContainer>
             <Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     {showTooltip ? (
                         <Tooltip title={<Typography>Last updated at {formattedTime}</Typography>}>
-                            <ButtonBase
-                                sx={{
-                                    fontFamily: "inherit",
-                                    fontSize: "unset",
-                                    color: secondaryColor,
-                                    fontWeight: 700,
-                                }}
-                                onClick={handleClick}
-                            >
-                                {numCurrentlyEnrolled.totalEnrolled} / {maxCapacity}
-                            </ButtonBase>
+                            {enrollmentText}
                         </Tooltip>
-                    ) : null}
+                    ) : (
+                        enrollmentText
+                    )}
                 </Box>
 
-                {numOnWaitlist !== "" && (
+                {numOnWaitlist !== '' && (
                     <Box>
                         WL: {numOnWaitlist} / {numWaitlistCap}
                     </Box>
                 )}
-                {numNewOnlyReserved !== "" && <Box>NOR: {numNewOnlyReserved}</Box>}
+                {numNewOnlyReserved !== '' && <Box>NOR: {numNewOnlyReserved}</Box>}
             </Box>
 
             <Popover
                 open={Boolean(anchorEl)}
                 onClose={hideEnrollmentHistory}
                 anchorEl={anchorEl}
-                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >
                 <EnrollmentHistoryPopup
+                    sectionType={sectionType}
                     department={deptCode}
                     courseNumber={courseNumber}
                     enrollmentHistory={enrollmentHistory}
-                    loading={loadingEnrollmentHistory && enrollmentHistory === undefined}
+                    loading={loadingEnrollmentHistory}
                 />
             </Popover>
         </TableBodyCellContainer>
