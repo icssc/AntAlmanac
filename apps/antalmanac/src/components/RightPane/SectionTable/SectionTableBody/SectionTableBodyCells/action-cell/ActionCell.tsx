@@ -51,7 +51,7 @@ export const ActionCell = memo(
         }, [updateColor]);
 
         return (
-            <TableBodyCellContainer sx={{ paddingX: isMobile ? 0.5 : 1 }}>
+            <TableBodyCellContainer>
                 <Box
                     sx={{
                         display: 'flex',

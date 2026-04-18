@@ -7,7 +7,15 @@ interface TableBodyCellContainerProps extends TableCellProps {
 
 export function TableBodyCellContainer({ sx, children, ...rest }: TableBodyCellContainerProps) {
     return (
-        <TableCell sx={{ padding: 0, wordBreak: 'break-word', ...sx }} {...rest}>
+        <TableCell
+            sx={{
+                padding: 0,
+                paddingRight: 0.5,
+                wordBreak: 'break-word',
+                ...sx,
+            }}
+            {...rest}
+        >
             {children}
         </TableCell>
     );
