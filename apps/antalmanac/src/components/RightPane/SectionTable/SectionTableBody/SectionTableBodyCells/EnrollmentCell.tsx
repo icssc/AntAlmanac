@@ -1,12 +1,11 @@
-import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/EnrollmentHistoryPopup';
-import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { useIsMobile } from '$hooks/useIsMobile';
-import { useSecondaryColor } from '$hooks/useSecondaryColor';
-import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
-import { InfoOutlined } from '@mui/icons-material';
-import { Box, Button, Popover, Tooltip, Typography } from '@mui/material';
-import { WebsocSectionEnrollment } from '@packages/antalmanac-types';
-import { useCallback, useMemo, useState } from 'react';
+import { Box, ButtonBase, Popover, Tooltip, Typography } from "@mui/material";
+import type { WebsocSectionEnrollment } from "@packages/antalmanac-types";
+import { useCallback, useMemo, useState } from "react";
+import { EnrollmentHistoryPopup } from "$components/RightPane/SectionTable/EnrollmentHistoryPopup";
+import { TableBodyCellContainer } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer";
+import { useIsMobile } from "$hooks/useIsMobile";
+import { useSecondaryColor } from "$hooks/useSecondaryColor";
+import { DepartmentEnrollmentHistory, type EnrollmentHistory } from "$lib/enrollmentHistory";
 
 interface EnrollmentCellProps {
     deptCode: string;
@@ -42,9 +41,11 @@ export const EnrollmentCell = ({
     const isMobile = useIsMobile();
     const secondaryColor = useSecondaryColor();
     const showTooltip = !isMobile && formattedTime;
+
     const [anchorEl, setAnchorEl] = useState<Element>();
-    const [enrollmentHistory, setEnrollmentHistory] = useState<EnrollmentHistory[] | null>();
+    const [enrollmentHistory, setEnrollmentHistory] = useState<EnrollmentHistory[] | null>(null);
     const [loadingEnrollmentHistory, setLoadingEnrollmentHistory] = useState(false);
+
     const deptEnrollmentHistory = useMemo(() => new DepartmentEnrollmentHistory(deptCode), [deptCode]);
 
     const handleClick = useCallback(
@@ -59,7 +60,7 @@ export const EnrollmentCell = ({
             deptEnrollmentHistory
                 .find(courseNumber)
                 .then((history) => {
-                    setEnrollmentHistory(history ?? null);
+                    setEnrollmentHistory(history);
                 })
                 .catch(() => {
                     setEnrollmentHistory(null);
@@ -68,53 +69,47 @@ export const EnrollmentCell = ({
                     setLoadingEnrollmentHistory(false);
                 });
         },
-        [anchorEl, courseNumber, deptEnrollmentHistory, enrollmentHistory, loadingEnrollmentHistory]
+        [anchorEl, courseNumber, deptEnrollmentHistory, enrollmentHistory, loadingEnrollmentHistory],
     );
 
     const hideEnrollmentHistory = useCallback(() => {
         setAnchorEl(undefined);
     }, []);
 
-    const enrollmentText = (
-        <Button
-            sx={{
-                paddingX: 0,
-                paddingY: 0,
-                minWidth: 0,
-                fontWeight: 400,
-                fontSize: '1rem',
-                color: secondaryColor,
-            }}
-            onClick={handleClick}
-            variant="text"
-        >
-            {numCurrentlyEnrolled.totalEnrolled} / {maxCapacity}
-        </Button>
-    );
-
     return (
         <TableBodyCellContainer>
             <Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    {enrollmentText}
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                     {showTooltip ? (
-                        <Tooltip title={<Typography fontSize={'0.85rem'}>Last updated at {formattedTime}</Typography>}>
-                            <InfoOutlined sx={{ fontSize: '0.9rem', color: 'text.secondary' }} />
+                        <Tooltip title={<Typography>Last updated at {formattedTime}</Typography>}>
+                            <ButtonBase
+                                sx={{
+                                    fontFamily: "inherit",
+                                    fontSize: "unset",
+                                    color: secondaryColor,
+                                    fontWeight: 700,
+                                }}
+                                onClick={handleClick}
+                            >
+                                {numCurrentlyEnrolled.totalEnrolled} / {maxCapacity}
+                            </ButtonBase>
                         </Tooltip>
                     ) : null}
                 </Box>
-                {numOnWaitlist !== '' && (
+
+                {numOnWaitlist !== "" && (
                     <Box>
                         WL: {numOnWaitlist} / {numWaitlistCap}
                     </Box>
                 )}
-                {numNewOnlyReserved !== '' && <Box>NOR: {numNewOnlyReserved}</Box>}
+                {numNewOnlyReserved !== "" && <Box>NOR: {numNewOnlyReserved}</Box>}
             </Box>
+
             <Popover
                 open={Boolean(anchorEl)}
                 onClose={hideEnrollmentHistory}
                 anchorEl={anchorEl}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
             >
                 <EnrollmentHistoryPopup
                     department={deptCode}

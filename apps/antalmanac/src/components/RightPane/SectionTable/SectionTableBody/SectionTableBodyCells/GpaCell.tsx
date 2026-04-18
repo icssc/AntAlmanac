@@ -1,14 +1,14 @@
-import { Button, Popover } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { ButtonBase, Popover } from "@mui/material";
+import { useCallback, useEffect, useState } from "react";
 
-import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
-import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { useIsMobile } from '$hooks/useIsMobile';
-import { useSecondaryColor } from '$hooks/useSecondaryColor';
-import { Grades } from '$lib/grades';
+import GradesPopup from "$components/RightPane/SectionTable/GradesPopup";
+import { TableBodyCellContainer } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer";
+import { useIsMobile } from "$hooks/useIsMobile";
+import { useSecondaryColor } from "$hooks/useSecondaryColor";
+import { Grades } from "$lib/grades";
 
 async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
-    const namedInstructors = instructors.filter((instructor) => instructor !== 'STAFF');
+    const namedInstructors = instructors.filter((instructor) => instructor !== "STAFF");
 
     // Get the GPA of the first instructor of this section where data exists
     for (const instructor of namedInstructors) {
@@ -34,8 +34,8 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
     const isMobile = useIsMobile();
     const secondaryColor = useSecondaryColor();
 
-    const [gpa, setGpa] = useState('');
-    const [instructor, setInstructor] = useState('');
+    const [gpa, setGpa] = useState("");
+    const [instructor, setInstructor] = useState("");
     const [anchorEl, setAnchorEl] = useState<Element>();
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
@@ -59,25 +59,18 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
 
     return (
         <TableBodyCellContainer>
-            <Button
-                sx={{
-                    paddingX: 0,
-                    paddingY: 0,
-                    minWidth: 0,
-                    fontWeight: 400,
-                    fontSize: '1rem',
-                    color: secondaryColor,
-                }}
+            <ButtonBase
+                sx={{ fontFamily: "inherit", fontSize: "unset", color: secondaryColor, fontWeight: 700 }}
                 onClick={handleClick}
-                variant="text"
             >
                 {gpa}
-            </Button>
+            </ButtonBase>
+
             <Popover
                 open={Boolean(anchorEl)}
                 onClose={hideDistribution}
                 anchorEl={anchorEl}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
             >
                 <GradesPopup
                     deptCode={deptCode}
