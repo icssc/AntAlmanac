@@ -121,7 +121,7 @@ export function EnrollmentHistoryPopup({
             return 'No past enrollment data found for this course';
         }
 
-        const instructor = currEnrollmentHistory.instructors.at(0);
+        const instructor = currEnrollmentHistory.instructors.at(0) ?? 'Unknown instructor';
         const term = `${currEnrollmentHistory.year} ${currEnrollmentHistory.quarter}`;
 
         return `${department} ${courseNumber} — ${instructor} | ${sectionType} | ${term}`;
