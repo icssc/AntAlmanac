@@ -36,7 +36,7 @@ const ACTION_COLUMN_WIDTH_MOBILE = '60px';
 function getTableHeaderColumns(isMobile: boolean): Record<SectionTableColumn, TableHeaderColumnDetails> {
     return {
         action: { label: '', width: isMobile ? ACTION_COLUMN_WIDTH_MOBILE : ACTION_COLUMN_WIDTH_DESKTOP },
-        sectionCode: { label: 'Code', weight: 5 },
+        sectionCode: { label: 'Code', weight: 3 },
         sectionDetails: { label: 'Type', weight: 5 },
         instructors: { label: 'Instructors', weight: 7 },
         gpa: { label: 'GPA', weight: 5 },
