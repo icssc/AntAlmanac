@@ -17,27 +17,30 @@ import { useMemo } from 'react';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
-interface TableHeaderColumnDetails {
-    label: string;
-    weight: number;
-}
+/**
+ * Columns either claim a fixed pixel width (`width`) or a share of the remaining
+ * table width proportional to their `weight` relative to other weighted columns.
+ */
+type TableHeaderColumnDetails = { label: string; weight: number } | { label: string; width: string };
 
-const tableHeaderColumns: Record<SectionTableColumn, TableHeaderColumnDetails> = {
-    action: { label: '', weight: 5 },
-    sectionCode: { label: 'Code', weight: 5 },
-    sectionDetails: { label: 'Type', weight: 5 },
-    instructors: { label: 'Instructors', weight: 7 },
-    gpa: { label: 'GPA', weight: 5 },
-    dayAndTime: { label: 'Times', weight: 12 },
-    location: { label: 'Places', weight: 7 },
-    sectionEnrollment: { label: 'Enrollment', weight: 7 },
-    status: { label: 'Status', weight: 5 },
-    restrictions: { label: 'Restr', weight: 5 },
-    syllabus: { label: 'Syllabus', weight: 5 },
-};
-const tableHeaderColumnEntries = Object.entries(tableHeaderColumns) as Array<
-    [SectionTableColumn, TableHeaderColumnDetails]
->;
+const ACTION_COLUMN_WIDTH_DESKTOP = '100px';
+const ACTION_COLUMN_WIDTH_MOBILE = '72px';
+
+function getTableHeaderColumns(isMobile: boolean): Record<SectionTableColumn, TableHeaderColumnDetails> {
+    return {
+        action: { label: '', width: isMobile ? ACTION_COLUMN_WIDTH_MOBILE : ACTION_COLUMN_WIDTH_DESKTOP },
+        sectionCode: { label: 'Code', weight: 5 },
+        sectionDetails: { label: 'Type', weight: 5 },
+        instructors: { label: 'Instructors', weight: 7 },
+        gpa: { label: 'GPA', weight: 5 },
+        dayAndTime: { label: 'Times', weight: 12 },
+        location: { label: 'Places', weight: 7 },
+        sectionEnrollment: { label: 'Enrollment', weight: 7 },
+        status: { label: 'Status', weight: 5 },
+        restrictions: { label: 'Restr', weight: 5 },
+        syllabus: { label: 'Syllabus', weight: 5 },
+    };
+}
 
 function SectionTable(props: SectionTableProps) {
     const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory, missingSections = [] } = props;
@@ -71,6 +74,32 @@ function SectionTable(props: SectionTableProps) {
         const numActiveColumns = activeColumns.length;
         return (width * numActiveColumns) / TOTAL_NUM_COLUMNS;
     }, [activeColumns]);
+
+    /**
+     * Header cells to render, with their resolved CSS `width`.
+     *
+     * Columns that declare an explicit pixel `width` (e.g. the action column)
+     * keep that width verbatim. The remaining table width is split among the
+     * weighted columns proportional to each column's `weight`.
+     */
+    const visibleHeaderCells = useMemo(() => {
+        const tableHeaderColumns = getTableHeaderColumns(isMobile);
+        const visible = (
+            Object.entries(tableHeaderColumns) as Array<[SectionTableColumn, TableHeaderColumnDetails]>
+        ).filter(([column]) => activeColumns.includes(column));
+
+        const fixedWidths = visible
+            .map(([, details]) => ('width' in details ? details.width : null))
+            .filter((w): w is string => w !== null);
+        const remainingWidthExpr = fixedWidths.length > 0 ? `calc(100% - ${fixedWidths.join(' - ')})` : '100%';
+        const totalWeight = visible.reduce((sum, [, details]) => sum + ('weight' in details ? details.weight : 0), 0);
+
+        return visible.map(([column, details]) => {
+            const width =
+                'width' in details ? details.width : `calc(${remainingWidthExpr} * ${details.weight / totalWeight})`;
+            return { column, label: details.label, width };
+        });
+    }, [activeColumns, isMobile]);
 
     return (
         <>
@@ -158,23 +187,17 @@ function SectionTable(props: SectionTableProps) {
                 >
                     <TableHead>
                         <TableRow>
-                            {(() => {
-                                const visible = tableHeaderColumnEntries.filter(([column]) =>
-                                    activeColumns.includes(column)
-                                );
-                                const totalWeight = visible.reduce((sum, [, { weight }]) => sum + weight, 0);
-                                return visible.map(([column, { label, weight }]) => (
-                                    <TableCell
-                                        key={column}
-                                        sx={{
-                                            width: `${(weight / totalWeight) * 100}%`,
-                                            padding: 0,
-                                        }}
-                                    >
-                                        {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
-                                    </TableCell>
-                                ));
-                            })()}
+                            {visibleHeaderCells.map(({ column, label, width }) => (
+                                <TableCell
+                                    key={column}
+                                    sx={{
+                                        width,
+                                        padding: 0,
+                                    }}
+                                >
+                                    {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
+                                </TableCell>
+                            ))}
                         </TableRow>
                     </TableHead>
 
