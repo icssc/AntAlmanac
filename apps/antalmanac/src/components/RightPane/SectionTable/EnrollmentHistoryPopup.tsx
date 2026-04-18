@@ -121,9 +121,10 @@ export function EnrollmentHistoryPopup({
             return 'No past enrollment data found for this course';
         }
 
-        return `${department} ${courseNumber} — ${currEnrollmentHistory.year} ${
-            currEnrollmentHistory.quarter
-        } | ${sectionType} | ${currEnrollmentHistory.instructors.join(', ')}`;
+        const instructor = currEnrollmentHistory.instructors.at(0);
+        const term = `${currEnrollmentHistory.year} ${currEnrollmentHistory.quarter}`;
+
+        return `${department} ${courseNumber} — ${instructor} | ${sectionType} | ${term}`;
     }, [activeGraphIndex, courseNumber, department, enrollmentHistory, sectionType]);
 
     const chartColors = theme.palette.enrollmentStatus;
@@ -172,8 +173,9 @@ export function EnrollmentHistoryPopup({
                 popupTitle={popupTitle}
                 historyCount={enrollmentHistory.length}
             />
+
             <Box sx={{ display: 'flex', height: graphHeight, width: graphWidth }}>
-                <ResponsiveContainer width="95%" height="95%">
+                <ResponsiveContainer>
                     <LineChart
                         data={lineChartData}
                         style={{ cursor: 'pointer' }}
@@ -181,7 +183,7 @@ export function EnrollmentHistoryPopup({
                     >
                         <CartesianGrid strokeDasharray="3 3" vertical={false} />
                         <RechartsTooltip contentStyle={{ backgroundColor: theme.palette.background.paper }} />
-                        <Legend />
+                        <Legend wrapperStyle={{ left: 0, width: '100%' }} />
 
                         <XAxis dataKey="date" tick={{ fontSize: 12, fill: theme.palette.text.primary }} />
                         <YAxis tick={{ fontSize: 12, fill: theme.palette.text.primary }} width={48} />
