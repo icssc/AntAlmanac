@@ -13,7 +13,7 @@ interface EnrollmentCellProps {
     courseNumber: string;
     instructors: string[];
     numCurrentlyEnrolled: WebsocSectionEnrollment;
-    maxCapacity: string | number;
+    maxCapacity: number;
 
     /**
      * This is a string because sometimes it's "n/a"
