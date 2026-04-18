@@ -1,9 +1,8 @@
+import { loginUser } from '$actions/AppStoreActions';
+import { AlertDialog } from '$components/AlertDialog';
 import { Google } from '@mui/icons-material';
 import { DialogContentText, Button } from '@mui/material';
 import { ComponentProps } from 'react';
-
-import { loginUser } from '$actions/AppStoreActions';
-import { AlertDialog } from '$components/AlertDialog';
 
 interface Props {
     open: boolean;
@@ -21,7 +20,9 @@ const SignInAlertDialog = ({ open, title, severity = 'info', onClose }: Props) =
                 variant="contained"
                 startIcon={<Google />}
                 fullWidth
-                onClick={loginUser}
+                onClick={() => {
+                    loginUser();
+                }}
                 size="large"
             >
                 Sign in with Google
