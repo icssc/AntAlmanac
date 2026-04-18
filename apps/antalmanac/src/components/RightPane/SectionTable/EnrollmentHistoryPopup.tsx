@@ -175,7 +175,7 @@ export function EnrollmentHistoryPopup({
             />
 
             <Box sx={{ display: 'flex', height: graphHeight, width: graphWidth }}>
-                <ResponsiveContainer>
+                <ResponsiveContainer width="95%" height="95%">
                     <LineChart
                         data={lineChartData}
                         style={{ cursor: 'pointer' }}
