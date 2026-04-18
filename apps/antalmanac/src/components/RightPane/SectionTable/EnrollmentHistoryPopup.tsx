@@ -194,6 +194,7 @@ export function EnrollmentHistoryPopup({
                             strokeWidth={2}
                             dot={false}
                             activeDot={{ r: 4 }}
+                            isAnimationActive={false}
                         />
                         <Line
                             type="monotone"
@@ -204,6 +205,7 @@ export function EnrollmentHistoryPopup({
                             strokeDasharray="16 24"
                             dot={false}
                             activeDot={{ r: 3 }}
+                            isAnimationActive={false}
                         />
                         <Line
                             type="monotone"
@@ -214,6 +216,7 @@ export function EnrollmentHistoryPopup({
                             dot={false}
                             connectNulls
                             activeDot={{ r: 3 }}
+                            isAnimationActive={false}
                         />
                     </LineChart>
                 </ResponsiveContainer>
