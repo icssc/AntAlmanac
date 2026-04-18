@@ -22,9 +22,8 @@ interface TableHeaderColumnDetails {
     weight: number;
 }
 
-const ACTION_COLUMN_WEIGHT = 5;
-
-const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHeaderColumnDetails> = {
+const tableHeaderColumns: Record<SectionTableColumn, TableHeaderColumnDetails> = {
+    action: { label: '', weight: 5 },
     sectionCode: { label: 'Code', weight: 5 },
     sectionDetails: { label: 'Type', weight: 5 },
     instructors: { label: 'Instructors', weight: 7 },
@@ -36,7 +35,9 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
     restrictions: { label: 'Restr', weight: 5 },
     syllabus: { label: 'Syllabus', weight: 5 },
 };
-const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
+const tableHeaderColumnEntries = Object.entries(tableHeaderColumns) as Array<
+    [SectionTableColumn, TableHeaderColumnDetails]
+>;
 
 function SectionTable(props: SectionTableProps) {
     const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory, missingSections = [] } = props;
@@ -159,39 +160,20 @@ function SectionTable(props: SectionTableProps) {
                         <TableRow>
                             {(() => {
                                 const visible = tableHeaderColumnEntries.filter(([column]) =>
-                                    activeColumns.includes(column as SectionTableColumn)
+                                    activeColumns.includes(column)
                                 );
-                                const hasAction = activeColumns.includes('action');
-                                const totalWeight =
-                                    visible.reduce((sum, [, { weight }]) => sum + weight, 0) +
-                                    (hasAction ? ACTION_COLUMN_WEIGHT : 0);
-                                return (
-                                    <>
-                                        {hasAction && (
-                                            <TableCell
-                                                sx={{
-                                                    width: `${(ACTION_COLUMN_WEIGHT / totalWeight) * 100}%`,
-                                                    padding: 0,
-                                                }}
-                                            />
-                                        )}
-                                        {visible.map(([column, { label, weight }]) => (
-                                            <TableCell
-                                                key={column}
-                                                sx={{
-                                                    width: `${(weight / totalWeight) * 100}%`,
-                                                    padding: 0,
-                                                }}
-                                            >
-                                                {label === 'Enrollment' ? (
-                                                    <EnrollmentColumnHeader label={label} />
-                                                ) : (
-                                                    label
-                                                )}
-                                            </TableCell>
-                                        ))}
-                                    </>
-                                );
+                                const totalWeight = visible.reduce((sum, [, { weight }]) => sum + weight, 0);
+                                return visible.map(([column, { label, weight }]) => (
+                                    <TableCell
+                                        key={column}
+                                        sx={{
+                                            width: `${(weight / totalWeight) * 100}%`,
+                                            padding: 0,
+                                        }}
+                                    >
+                                        {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
+                                    </TableCell>
+                                ));
                             })()}
                         </TableRow>
                     </TableHead>
