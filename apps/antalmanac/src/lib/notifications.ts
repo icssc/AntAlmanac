@@ -30,11 +30,6 @@ class NotificationsClient {
         console.error('No session found to set notifications successfully.');
     }
 
-    async updateNotifications(notification: Notification) {
-        const transformedNotification = _transformNotificationToApiFormat(notification);
-        return await trpc.notifications.updateNotifications.mutate({ notification: transformedNotification });
-    }
-
     async deleteNotification(notification: Notification) {
         const userId = useSessionStore.getState().userId;
         if (userId) {

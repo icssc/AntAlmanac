@@ -744,33 +744,6 @@ export class RDS {
     }
 
     /**
-     * Updates lastUpdatedStatus and lastCodes of ALL notifications with a shared sectionCode, year, quarter, and environment.
-     *
-     * @param db - The database or transaction object to use for the operation.
-     * @param notification - The notification object type we are updating.
-     * @param environment - The deployment environment to filter by (e.g. "production", "staging-1337").
-     * @returns A promise that updates ALL notifications with a shared sectionCode, year, quarter, and environment.
-     */
-    static async updateAllNotifications(db: DatabaseOrTransaction, notification: Notification, environment: string) {
-        return db.transaction((tx) =>
-            tx
-                .update(subscriptions)
-                .set({
-                    lastUpdatedStatus: notification.lastUpdatedStatus,
-                    lastCodes: notification.lastCodes,
-                })
-                .where(
-                    and(
-                        eq(subscriptions.sectionCode, notification.sectionCode),
-                        eq(subscriptions.year, notification.term.split(' ')[0]),
-                        eq(subscriptions.quarter, notification.term.split(' ')[1]),
-                        eq(subscriptions.environment, environment)
-                    )
-                )
-        );
-    }
-
-    /**
      * Deletes a notification for a specified user and environment.
      *
      * @param db - The database or transaction object to use for the operation.
