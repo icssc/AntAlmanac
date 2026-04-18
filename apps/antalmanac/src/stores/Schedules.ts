@@ -1,4 +1,5 @@
 import { getDefaultTerm } from '$lib/termData';
+import { moveArrayElements } from '$lib/utils';
 import { WebSOC } from '$lib/websoc';
 import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
 import type {
