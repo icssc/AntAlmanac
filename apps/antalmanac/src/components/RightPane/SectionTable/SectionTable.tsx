@@ -23,8 +23,15 @@ const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
  */
 type TableHeaderColumnDetails = { label: string; weight: number } | { label: string; width: string };
 
+/**
+ * Sized to exactly fit the icon buttons rendered in ActionCell:
+ * - Each IconButton: 20px icon (fontSize="small") + 2 * 4px padding (p: 0.5) = 28px
+ * - Cell horizontal padding: 2 * 8px (desktop) / 2 * 4px (mobile)
+ * - Desktop shows 3 icons: 3 * 28 + 16 = 100px
+ * - Mobile shows 2 icons:  2 * 28 + 8  = 64px
+ */
 const ACTION_COLUMN_WIDTH_DESKTOP = '100px';
-const ACTION_COLUMN_WIDTH_MOBILE = '72px';
+const ACTION_COLUMN_WIDTH_MOBILE = '64px';
 
 function getTableHeaderColumns(isMobile: boolean): Record<SectionTableColumn, TableHeaderColumnDetails> {
     return {
