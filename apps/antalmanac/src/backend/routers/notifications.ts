@@ -37,6 +37,11 @@ const notificationsRouter = router({
             );
         }),
 
+    updateNotifications: procedure.input(z.object({ notification: NotificationSchema })).mutation(async ({ input }) => {
+        const stage = getStage();
+        await RDS.updateAllNotifications(db, input.notification, stage);
+    }),
+
     // Intentionally public: used by unauthenticated unsubscribe links
     deleteNotification: procedure
         .input(z.object({ userId: z.string(), notification: NotificationSchema }))

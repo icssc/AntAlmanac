@@ -81,6 +81,9 @@ export const useNotificationStore = create<NotificationStore>((set) => {
             set((state) => {
                 const notifications = state.notifications;
                 const existingNotification = notifications[key];
+                const previousLastUpdated = existingNotification?.lastUpdated ?? null;
+
+                const previousLastCodes = existingNotification?.lastCodes ?? null;
 
                 const newNotification = existingNotification
                     ? {
@@ -117,6 +120,12 @@ export const useNotificationStore = create<NotificationStore>((set) => {
                     ...notifications,
                     [key]: newNotification,
                 };
+                if (
+                    previousLastUpdated !== newNotification.lastUpdated ||
+                    previousLastCodes !== newNotification.lastCodes
+                ) {
+                    Notifications.updateNotifications(newNotification);
+                }
 
                 pendingUpdates[key] = newNotification;
 
