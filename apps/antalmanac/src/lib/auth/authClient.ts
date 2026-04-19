@@ -38,3 +38,16 @@ export async function signOut(onLogoutComplete?: () => void) {
         console.error('Error during logout', error);
     }
 }
+
+/**
+ * Returns the current user's google account info if valid, `null` if invalid.
+ */
+export async function getGoogleAccount() {
+    const { data, error } = await authClient.listAccounts();
+    if (!data || data.length === 0 || error) {
+        console.error('Error occurred while getting account info:', error);
+        return null;
+    }
+    const [account] = data;
+    return account;
+}

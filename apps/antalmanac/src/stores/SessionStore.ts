@@ -1,4 +1,4 @@
-import { authClient, SessionData } from '$lib/auth/authClient';
+import { getGoogleAccount, SessionData } from '$lib/auth/authClient';
 import { clearSsoCookie } from '$lib/ssoCookie';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { create } from 'zustand';
@@ -55,12 +55,10 @@ export const useSessionStore = create<SessionState>((set, get) => {
     return {
         ...initState,
         updateSession: async (sessionData: SessionData) => {
-            const { data, error } = await authClient.listAccounts();
-            if (!data || data.length === 0 || error) {
-                console.error('Error occurred while getting account info:', error);
+            const accountInfo = await getGoogleAccount();
+            if (!accountInfo) {
                 return false;
             }
-            const [accountInfo] = data;
 
             // Remove "google" prefix
             const googleId = accountInfo.userId.toString().split('_')[1];

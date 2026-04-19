@@ -74,7 +74,7 @@ const userDataRouter = router({
         return result;
     }),
 
-    getAccountByProviderId: procedure
+    getAccountByProviderAccountId: procedure
         .input(z.object({ accountType: z.enum(['OIDC', 'GOOGLE', 'GUEST']), providerId: z.string() }))
         .query(async ({ input }) => {
             const account = await RDS.getAccountByProviderId(db, input.accountType, input.providerId);

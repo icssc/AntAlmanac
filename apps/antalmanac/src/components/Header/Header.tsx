@@ -1,23 +1,16 @@
-import { AppBar, Box, Stack } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
-
 import { AlertDialog } from '$components/AlertDialog';
 import { AppSwitcher } from '$components/Header/AppSwitcher';
 import { Import } from '$components/Header/Import';
 import { Save } from '$components/Header/Save';
 import { Signin } from '$components/Header/Signin';
 import { Signout } from '$components/Header/Signout';
-import {
-    getLocalStorageDataCache,
-    getLocalStorageImportedUser,
-    removeLocalStorageDataCache,
-    removeLocalStorageImportedUser,
-} from '$lib/localStorage';
+import { getLocalStorageImportedUser, removeLocalStorageImportedUser } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
 import { useIsMobile } from '$src/hooks/useIsMobile';
 import { useSessionStore } from '$stores/SessionStore';
-import { openSnackbar } from '$stores/SnackbarStore';
+import { AppBar, Box, Stack } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
@@ -33,7 +26,6 @@ export function Header() {
 
     const clearStorage = () => {
         removeLocalStorageImportedUser();
-        removeLocalStorageDataCache();
     };
 
     const handleCloseSuccessfulSaved = () => {
@@ -51,15 +43,10 @@ export function Header() {
     };
 
     useEffect(() => {
-        const dataCache = getLocalStorageDataCache() ?? '';
-
         if (importedUser !== '' && sessionId) {
             setOpenSuccessfulSaved(true);
-        } else if (dataCache !== '' && sessionId) {
-            openSnackbar('success', `Unsaved changes have been saved to your account!`);
-            clearStorage();
         }
-    }, [importedUser, sessionId]);
+    }, [sessionId]);
 
     return (
         <Box

@@ -2,7 +2,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { getSignInUrl } from '$lib/auth/authActions';
 import { warnMultipleTerms } from '$lib/helpers';
-import { setLocalStorageUserId, setLocalStorageDataCache, setLocalStorageFromLoading } from '$lib/localStorage';
+import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -82,7 +82,7 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
 }
 
 export const saveSchedule = async (
-    providerId: string,
+    providerAccountId: string,
     rememberMe: boolean,
     userInfo?: { email?: string | null; name?: string | null; avatar?: string | null },
     postHog?: PostHog
@@ -90,14 +90,14 @@ export const saveSchedule = async (
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
-        label: providerId,
+        label: providerAccountId,
         value: rememberMe ? 1 : 0,
     });
 
-    if (providerId != null) {
-        providerId = providerId.replace(/\s+/g, '');
+    if (providerAccountId != null) {
+        providerAccountId = providerAccountId.replace(/\s+/g, '');
 
-        if (providerId.length > 0) {
+        if (providerAccountId.length > 0) {
             const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
             if (
@@ -111,9 +111,9 @@ export const saveSchedule = async (
 
             try {
                 const result = await trpc.userData.saveUserData.mutate({
-                    id: providerId,
+                    id: providerAccountId,
                     data: {
-                        id: providerId,
+                        id: providerAccountId,
                         email: userInfo?.email ?? undefined,
                         name: userInfo?.name ?? undefined,
                         avatar: userInfo?.avatar ?? undefined,
@@ -130,7 +130,7 @@ export const saveSchedule = async (
                 } else {
                     openSnackbar(
                         'success',
-                        `Schedule saved under username "${providerId}". Don't forget to sign up for classes on WebReg!`
+                        `Schedule saved under username "${providerAccountId}". Don't forget to sign up for classes on WebReg!`
                     );
                 }
                 deleteTempSaveData();
@@ -140,7 +140,7 @@ export const saveSchedule = async (
                     if (useSessionStore.getState().sessionIsValid) {
                         openSnackbar('error', `Schedule could not be saved`);
                     } else {
-                        openSnackbar('error', `Schedule could not be saved under username "${providerId}`);
+                        openSnackbar('error', `Schedule could not be saved under username "${providerAccountId}`);
                     }
                 } else {
                     openSnackbar('error', 'Network error or server is down.');
@@ -150,23 +150,23 @@ export const saveSchedule = async (
     }
 };
 
-export async function autoSaveSchedule(providerID: string, options: AutoSaveScheduleOptions) {
+export async function autoSaveSchedule(providerAccountId: string, options: AutoSaveScheduleOptions) {
     const { userInfo, postHog } = options;
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
-        label: providerID,
+        label: providerAccountId,
     });
-    if (providerID == null) return;
-    providerID = providerID.replace(/\s+/g, '');
-    if (providerID.length < 0) return;
+    if (providerAccountId == null) return;
+    providerAccountId = providerAccountId.replace(/\s+/g, '');
+    if (providerAccountId.length === 0) return;
 
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
     try {
         const result = await trpc.userData.saveUserData.mutate({
-            id: providerID,
+            id: providerAccountId,
             data: {
-                id: providerID,
+                id: providerAccountId,
                 email: userInfo?.email ?? undefined,
                 name: userInfo?.name ?? undefined,
                 avatar: userInfo?.avatar ?? undefined,
@@ -182,7 +182,7 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
         AppStore.saveSchedule();
     } catch (e) {
         if (e instanceof TRPCError) {
-            openSnackbar('error', `Schedule could not be auto-saved under username "${providerID}`);
+            openSnackbar('error', `Schedule could not be auto-saved under username "${providerAccountId}`);
         } else {
             openSnackbar('error', 'Network error or server is down.');
         }
@@ -299,7 +299,7 @@ export const loadSchedule = async (
             }
 
             try {
-                const account = await trpc.userData.getAccountByProviderId.query({
+                const account = await trpc.userData.getAccountByProviderAccountId.query({
                     accountType,
                     providerId,
                 });
@@ -397,7 +397,6 @@ export const loginUser = async ({ silent = false, signInUrl = '' } = {}) => {
             cacheSchedule();
             window.location.href = url.toString();
         }
-        setLocalStorageFromLoading('true');
     } catch (error) {
         if (!silent) {
             console.error('Error during login initiation', error);

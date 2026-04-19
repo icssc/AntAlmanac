@@ -31,13 +31,13 @@ export class RDS {
     static async getAccountByProviderId(
         db: DatabaseOrTransaction,
         accountType: Account['accountType'],
-        providerId: string
+        providerAccountId: string
     ): Promise<Account | null> {
         return db.transaction((tx) =>
             tx
                 .select()
                 .from(accounts)
-                .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerId)))
+                .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerAccountId)))
                 .limit(1)
                 .then((res) => res[0] ?? null)
         );
@@ -58,105 +58,6 @@ export class RDS {
     }
 
     /**
-     * Retrieves a user by their ID from the database.
-     *
-     * @param db - The database or transaction object to use for the query.
-     * @param userId - The ID of the user to retrieve.
-     * @returns A promise that resolves to the user object if found, otherwise undefined.
-     */
-    static async getUserById(db: DatabaseOrTransaction, userId: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(users)
-                .where(eq(users.id, userId))
-                .then((res) => res[0])
-        );
-    }
-
-    static async getUserByEmail(db: DatabaseOrTransaction, email: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(users)
-                .where(eq(users.email, email))
-                .then((res) => res[0])
-        );
-    }
-
-    /**
-     * Creates a new user and an associated account with the specified provider ID.
-     *
-     * @param db - The database or transaction object.
-     * @param providerId - The provider account ID for the new account.
-     * @returns A promise that resolves to the newly created account object.
-     */
-    static async registerUserAccount(
-        db: DatabaseOrTransaction,
-        accountType: Account['accountType'],
-        providerId: string,
-        name?: User['name'],
-        email?: User['email'],
-        avatar?: User['avatar']
-    ) {
-        // ! TODO @KevinWu098
-        // ! Auth uses hardcoded migration logic to handle cases in which stale userIDs
-        // ! still contain non OIDC google ids. This is not correct and needs to be fixed.
-        // ! Auth and operations upon users and accounts should not depend on localStorage. This is a hack.
-        const oidcProviderId = providerId.startsWith('google_') ? providerId : `google_${providerId}`;
-        if (accountType !== 'OIDC') {
-            throw new Error('Invalid account type. Must be OIDC.');
-        }
-
-        // First check if an account with OIDC providerId already exists
-        const existingAccount = await this.getAccountByProviderId(db, accountType, oidcProviderId);
-        if (existingAccount && accountType === 'OIDC') {
-            return { ...existingAccount, newUser: false };
-        }
-
-        const existingUser = email ? await this.getUserByEmail(db, email) : null;
-
-        if (!existingUser) {
-            const result = await db
-                .insert(users)
-                .values({
-                    avatar: avatar ?? '',
-                    name: name,
-                    email: email ?? '',
-                })
-                .returning({ userId: users.id })
-                .then((res) => res[0]);
-            const newUserId = result.userId;
-
-            const account = await db
-                .insert(accounts)
-                .values({ userId: newUserId, providerAccountId: oidcProviderId, accountType })
-                .returning()
-                .then((res) => res[0]);
-
-            return { ...account, newUser: true };
-        }
-
-        await db
-            .update(users)
-            .set({
-                name: name,
-                email: email ?? '',
-                avatar: avatar ?? existingUser.avatar,
-                lastUpdated: new Date(),
-            })
-            .where(eq(users.id, existingUser.id));
-
-        const newAccount = await db
-            .insert(accounts)
-            .values({ userId: existingUser.id, providerAccountId: oidcProviderId, accountType })
-            .returning()
-            .then((res) => res[0]);
-
-        return { ...newAccount, newUser: false };
-    }
-
-    /**
      * Does the same thing as `insertGuestUserData`, but also updates the user's schedules and courses if they exist.
      *
      * @param db The Drizzle client or transaction object
@@ -168,21 +69,8 @@ export class RDS {
         userData: User
     ): Promise<{ userId: string; scheduleIdMap: Record<string, string> }> {
         return db.transaction(async (tx) => {
-            const account = await this.registerUserAccount(
-                tx,
-                'OIDC',
-                userData.id,
-                userData.name,
-                userData.email,
-                userData.avatar
-            );
-            const userId = account.userId;
-            if (!account) {
-                throw new Error(`Failed to create user`);
-            }
-
             // Add schedules and courses
-            const scheduleIdMap = await this.upsertSchedulesAndContents(tx, userId, userData.userData.schedules);
+            const scheduleIdMap = await this.upsertSchedulesAndContents(tx, userData.id, userData.userData.schedules);
 
             // Update user's current schedule index
             const scheduleIndex = userData.userData.scheduleIndex;
@@ -194,10 +82,10 @@ export class RDS {
                     : scheduleDbIds[scheduleIndex];
 
             if (currentScheduleId !== null) {
-                await tx.update(users).set({ currentScheduleId: currentScheduleId }).where(eq(users.id, userId));
+                await tx.update(users).set({ currentScheduleId: currentScheduleId }).where(eq(users.id, userData.id));
             }
 
-            return { userId, scheduleIdMap };
+            return { userId: userData.id, scheduleIdMap };
         });
     }
 

@@ -1,13 +1,11 @@
 import { isEmptySchedule, loadScheduleWithSessionToken, mergeShortCourseSchedules } from '$actions/AppStoreActions';
 import SignInAlertDialog from '$components/SignInAlertDialog';
 import trpc from '$lib/api/trpc';
-import { authClient, signOut } from '$lib/auth/authClient';
+import { authClient, getGoogleAccount, signOut } from '$lib/auth/authClient';
 import {
     getLocalStorageDataCache,
-    getLocalStorageFromLoading,
     getLocalStorageUserId,
     removeLocalStorageDataCache,
-    removeLocalStorageFromLoading,
     removeLocalStorageImportedUser,
     removeLocalStorageUserId,
     setLocalStorageImportedUser,
@@ -17,6 +15,7 @@ import AppStore from '$stores/AppStore';
 import { useNotificationStore } from '$stores/NotificationStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import { useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -31,26 +30,19 @@ const AuthInitializer = () => {
         }))
     );
 
-    const { data: sessionData } = authClient.useSession();
+    const loadNotifications = useNotificationStore((state) => state.loadNotifications);
+
+    const { data: sessionData, isPending } = authClient.useSession();
 
     const handleUnsavedChanges = useCallback(async () => {
         if (!sessionData) {
             return;
         }
 
-        const fromLoading = getLocalStorageFromLoading();
         const savedUserId = getLocalStorageUserId();
         const savedData = getLocalStorageDataCache();
 
         removeLocalStorageUserId();
-
-        // load schedule without saving any changes
-        if (fromLoading) {
-            removeLocalStorageFromLoading();
-            removeLocalStorageDataCache();
-            removeLocalStorageImportedUser();
-            return;
-        }
 
         // no changes to save
         if (savedUserId === null && savedData === null) {
@@ -59,7 +51,9 @@ const AuthInitializer = () => {
             return;
         }
 
-        if (savedData) {
+        const googleAccount = await getGoogleAccount();
+
+        if (savedData && googleAccount) {
             const userData = await trpc.userData.getUserData.query({ userId: sessionData.user.id });
             const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
@@ -80,6 +74,16 @@ const AuthInitializer = () => {
                     scheduleSaveState.scheduleIndex = saveState.schedules.length - 1;
                 }
             }
+
+            await trpc.userData.saveUserData.mutate({
+                id: googleAccount.userId,
+                data: {
+                    id: googleAccount.userId,
+                    userData: scheduleSaveState,
+                },
+            });
+
+            openSnackbar('success', `Unsaved changes have been saved to your account!`);
         }
     }, [sessionData]);
 
@@ -116,14 +120,23 @@ const AuthInitializer = () => {
 
                     setAreSchedulesLoaded(true);
 
-                    useNotificationStore.getState().loadNotifications();
+                    loadNotifications();
                 } catch (error) {
                     console.error('Error during authentication:', error);
                     signOut();
                 }
             })();
+        } else if (!isPending) {
+            loadNotifications();
         }
-    }, [sessionData, updateSession, handleUnsavedChanges, loadScheduleAndSetLoadingAuth, setAreSchedulesLoaded]);
+    }, [
+        sessionData,
+        updateSession,
+        handleUnsavedChanges,
+        loadScheduleAndSetLoadingAuth,
+        setAreSchedulesLoaded,
+        isPending,
+    ]);
 
     return (
         <SignInAlertDialog
