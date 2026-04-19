@@ -1,3 +1,6 @@
+import { BLUE } from '$src/globals';
+import AppStore from '$stores/AppStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import { ContentPaste } from '@mui/icons-material';
 import {
     Box,
@@ -16,10 +19,6 @@ import {
 } from '@mui/material';
 import { ShortCourseSchedule } from '@packages/antalmanac-types';
 import { useCallback, useEffect, useState } from 'react';
-
-import { DODGER_BLUE } from '$src/globals';
-import AppStore from '$stores/AppStore';
-import { openSnackbar } from '$stores/SnackbarStore';
 
 export function Export() {
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
@@ -126,6 +125,7 @@ export function Export() {
                             <FormControlLabel
                                 control={
                                     <Checkbox
+                                        color="secondary"
                                         checked={
                                             selectedScheduleIndices.size === schedules.length && schedules.length > 0
                                         }
@@ -165,9 +165,10 @@ export function Export() {
                                             key={index}
                                             sx={{
                                                 p: 1.5,
-                                                border: selectedScheduleIndices.has(index)
-                                                    ? `2px solid ${DODGER_BLUE}`
-                                                    : '2px solid transparent',
+                                                border: '2px solid',
+                                                borderColor: selectedScheduleIndices.has(index)
+                                                    ? 'secondary.main'
+                                                    : 'transparent',
                                                 backgroundColor: selectedScheduleIndices.has(index)
                                                     ? 'action.selected'
                                                     : 'background.paper',
@@ -177,6 +178,7 @@ export function Export() {
                                             <FormControlLabel
                                                 control={
                                                     <Checkbox
+                                                        color="secondary"
                                                         checked={selectedScheduleIndices.has(index)}
                                                         onChange={() => handleToggleSchedule(index)}
                                                     />
@@ -201,8 +203,16 @@ export function Export() {
                     )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleExport} variant="contained" disabled={selectedScheduleIndices.size === 0}>
+                    <Button onClick={handleClose} color="inherit">
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={handleExport}
+                        color="primary"
+                        variant="contained"
+                        disabled={selectedScheduleIndices.size === 0}
+                        sx={{ backgroundColor: BLUE }}
+                    >
                         Export ({selectedScheduleIndices.size})
                     </Button>
                 </DialogActions>

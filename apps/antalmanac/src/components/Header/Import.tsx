@@ -1,3 +1,31 @@
+import {
+    addCustomEvent,
+    addCourse,
+    importScheduleWithUsername,
+    importValidatedSchedule,
+    mergeShortCourseSchedules,
+} from '$actions/AppStoreActions';
+import { AlertDialog } from '$components/AlertDialog';
+import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { QueryZotcourseError } from '$lib/customErrors';
+import { warnMultipleTerms } from '$lib/helpers';
+import {
+    getLocalStorageDataCache,
+    getLocalStorageOnFirstSignin,
+    getLocalStorageUserId,
+    removeLocalStorageOnFirstSignin,
+    removeLocalStorageUserId,
+} from '$lib/localStorage';
+import { WebSOC } from '$lib/websoc';
+import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
+import { BLUE, LIGHT_BLUE } from '$src/globals';
+import AppStore from '$stores/AppStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useSessionStore } from '$stores/SessionStore';
+import { useDevModeStore } from '$stores/SettingsStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import { CloudUpload, ContentPasteGo } from '@mui/icons-material';
 import {
     AlertColor,
@@ -27,35 +55,6 @@ import { CourseInfo, ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-import {
-    addCustomEvent,
-    addCourse,
-    importScheduleWithUsername,
-    importValidatedSchedule,
-    mergeShortCourseSchedules,
-} from '$actions/AppStoreActions';
-import { AlertDialog } from '$components/AlertDialog';
-import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { QueryZotcourseError } from '$lib/customErrors';
-import { warnMultipleTerms } from '$lib/helpers';
-import {
-    getLocalStorageDataCache,
-    getLocalStorageOnFirstSignin,
-    getLocalStorageUserId,
-    removeLocalStorageOnFirstSignin,
-    removeLocalStorageUserId,
-} from '$lib/localStorage';
-import { WebSOC } from '$lib/websoc';
-import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
-import { BLUE, LIGHT_BLUE, DODGER_BLUE } from '$src/globals';
-import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { useDevModeStore } from '$stores/SettingsStore';
-import { openSnackbar } from '$stores/SnackbarStore';
 
 enum ImportSource {
     ZOT_COURSE_IMPORT = 'zotcourse',
@@ -383,7 +382,10 @@ export function Import() {
     const validateSchedule = useCallback(
         (schedule: Record<string, unknown>, scheduleIndex: number): { valid: boolean; error?: string } => {
             if (!schedule.scheduleName || typeof schedule.scheduleName !== 'string') {
-                return { valid: false, error: `Schedule ${scheduleIndex + 1} is missing required field: scheduleName` };
+                return {
+                    valid: false,
+                    error: `Schedule ${scheduleIndex + 1} is missing required field: scheduleName`,
+                };
             }
             if (!schedule.courses || !Array.isArray(schedule.courses)) {
                 return {
@@ -418,12 +420,18 @@ export function Import() {
     const validateScheduleData = useCallback(
         (scheduleData: unknown): { valid: boolean; error?: string } => {
             if (!scheduleData || typeof scheduleData !== 'object') {
-                return { valid: false, error: 'Invalid schedule data format. Schedule data must be an object.' };
+                return {
+                    valid: false,
+                    error: 'Invalid schedule data format. Schedule data must be an object.',
+                };
             }
 
             const data = scheduleData as { schedules?: unknown };
             if (!data.schedules || !Array.isArray(data.schedules)) {
-                return { valid: false, error: 'Invalid schedule data format. Schedules must be an array.' };
+                return {
+                    valid: false,
+                    error: 'Invalid schedule data format. Schedules must be an array.',
+                };
             }
 
             for (let i = 0; i < data.schedules.length; i++) {
@@ -666,6 +674,8 @@ export function Import() {
                     <Tabs
                         value={dialogTab}
                         onChange={(_, newValue) => setDialogTab(newValue)}
+                        textColor="secondary"
+                        indicatorColor="secondary"
                         sx={{ borderBottom: 1, borderColor: 'divider' }}
                     >
                         <Tab label="Import" value="import" />
@@ -686,6 +696,7 @@ export function Import() {
                                     <FormControlLabel
                                         control={
                                             <Checkbox
+                                                color="secondary"
                                                 checked={
                                                     exportSelectedIndices.size === exportSchedules.length &&
                                                     exportSchedules.length > 0
@@ -728,9 +739,10 @@ export function Import() {
                                                     key={index}
                                                     sx={{
                                                         p: 1.5,
-                                                        border: exportSelectedIndices.has(index)
-                                                            ? `2px solid ${DODGER_BLUE}`
-                                                            : '2px solid transparent',
+                                                        border: '2px solid',
+                                                        borderColor: exportSelectedIndices.has(index)
+                                                            ? 'secondary.main'
+                                                            : 'transparent',
                                                         backgroundColor: exportSelectedIndices.has(index)
                                                             ? 'action.selected'
                                                             : 'background.paper',
@@ -740,6 +752,7 @@ export function Import() {
                                                     <FormControlLabel
                                                         control={
                                                             <Checkbox
+                                                                color="secondary"
                                                                 checked={exportSelectedIndices.has(index)}
                                                                 onChange={() => {
                                                                     setExportSelectedIndices((prev) => {
@@ -817,9 +830,7 @@ export function Import() {
                                         Paste the contents of your Study List below to import it into AntAlmanac.
                                         <br />
                                         To find your Study List, go to{' '}
-                                        <a href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>
-                                            WebReg
-                                        </a> or{' '}
+                                        <a href={'https://www.reg.uci.edu/cgi-bin/webreg-redirect.sh'}>WebReg</a> or{' '}
                                         <a href={'https://www.reg.uci.edu/access/student/welcome/'}>StudentAccess</a>,
                                         and click on Study List once you&apos;ve logged in. Copy everything below the
                                         column names (Code, Dept, etc.) under the Enrolled Classes section.
@@ -897,7 +908,13 @@ export function Import() {
                                         Upload your schedule data JSON file here to import it into AntAlmanac.
                                     </DialogContentText>
 
-                                    <InputLabel style={{ fontSize: '9px', marginTop: '16px', marginBottom: '8px' }}>
+                                    <InputLabel
+                                        style={{
+                                            fontSize: '9px',
+                                            marginTop: '16px',
+                                            marginBottom: '8px',
+                                        }}
+                                    >
                                         Schedule Data JSON File
                                     </InputLabel>
 
@@ -922,13 +939,14 @@ export function Import() {
                                         <Paper
                                             sx={{
                                                 border: '2px dashed',
-                                                borderColor: isDragging || selectedFileName ? DODGER_BLUE : 'divider',
+                                                borderColor:
+                                                    isDragging || selectedFileName ? 'secondary.main' : 'divider',
                                                 backgroundColor: isDragging ? 'action.hover' : 'background.paper',
                                                 padding: 3,
                                                 textAlign: 'center',
                                                 transition: 'all 0.2s ease-in-out',
                                                 '&:hover': {
-                                                    borderColor: DODGER_BLUE,
+                                                    borderColor: 'secondary.main',
                                                     backgroundColor: 'action.hover',
                                                 },
                                             }}
@@ -939,7 +957,7 @@ export function Import() {
                                                         fontSize: 48,
                                                         color:
                                                             isDragging || selectedFileName
-                                                                ? DODGER_BLUE
+                                                                ? 'secondary.main'
                                                                 : 'text.secondary',
                                                     }}
                                                 />
@@ -947,7 +965,7 @@ export function Import() {
                                                     <>
                                                         <Typography
                                                             variant="body1"
-                                                            sx={{ color: DODGER_BLUE }}
+                                                            sx={{ color: 'secondary.main' }}
                                                             fontWeight="medium"
                                                         >
                                                             {selectedFileName}
@@ -978,6 +996,7 @@ export function Import() {
                                             <FormControlLabel
                                                 control={
                                                     <Checkbox
+                                                        color="secondary"
                                                         checked={
                                                             selectedScheduleIndices.size === importedSchedules.length &&
                                                             importedSchedules.length > 0
@@ -1024,9 +1043,10 @@ export function Import() {
                                                             key={index}
                                                             sx={{
                                                                 p: 1.5,
-                                                                border: selectedScheduleIndices.has(index)
-                                                                    ? `2px solid ${DODGER_BLUE}`
-                                                                    : '2px solid transparent',
+                                                                border: '2px solid',
+                                                                borderColor: selectedScheduleIndices.has(index)
+                                                                    ? 'secondary.main'
+                                                                    : 'transparent',
                                                                 backgroundColor: selectedScheduleIndices.has(index)
                                                                     ? 'action.selected'
                                                                     : 'background.paper',
@@ -1036,6 +1056,7 @@ export function Import() {
                                                             <FormControlLabel
                                                                 control={
                                                                     <Checkbox
+                                                                        color="secondary"
                                                                         checked={selectedScheduleIndices.has(index)}
                                                                         onChange={() => {
                                                                             setSelectedScheduleIndices((prev) => {
@@ -1099,7 +1120,9 @@ export function Import() {
                                     };
 
                                     const jsonString = JSON.stringify(exportData, null, 2);
-                                    const blob = new Blob([jsonString], { type: 'application/json' });
+                                    const blob = new Blob([jsonString], {
+                                        type: 'application/json',
+                                    });
                                     const url = URL.createObjectURL(blob);
                                     const link = document.createElement('a');
                                     link.href = url;
@@ -1123,9 +1146,10 @@ export function Import() {
                                     openSnackbar('error', errorMessage);
                                 }
                             }}
-                            color="inherit"
+                            color="primary"
                             variant="contained"
                             disabled={exportSelectedIndices.size === 0}
+                            sx={{ backgroundColor: BLUE }}
                         >
                             Export ({exportSelectedIndices.size})
                         </Button>
