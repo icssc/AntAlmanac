@@ -145,7 +145,7 @@ export const ScheduleCalendar = memo(() => {
             end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
 
             return {
-                color: '#6d6d6d',
+                color: '#8d8d8d',
                 start,
                 end,
                 title: '',

@@ -6,9 +6,10 @@ export interface AddedCourseSkeletonEntry {
     sectionCount: number;
 }
 
+// shade is #9d9d9d instead of #8d8d8d to account for gray overlay on calendar
 const shimmerSx: SxProps = {
     borderRadius: 1,
-    background: 'linear-gradient(90deg, #6d6d6d 0%, #7d7d7d 50%, #6d6d6d 100%)',
+    background: 'linear-gradient(90deg, #9d9d9d 0%, #AdAdAd 50%, #9d9d9d 100%)',
     backgroundSize: '200% 100%',
     animation: 'addedCoursesShimmer 2s ease-in-out infinite',
     '@keyframes addedCoursesShimmer': {
