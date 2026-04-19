@@ -248,7 +248,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
 
             useScheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
 
-            await saveSchedule(accounts.accountId, true, users);
+            await saveSchedule(accounts.providerAccountId, true, users);
 
             await trpc.userData.flagImportedSchedule.mutate({
                 providerId: username,

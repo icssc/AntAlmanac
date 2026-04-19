@@ -55,7 +55,7 @@ export const Save = () => {
                 token: session.token,
             });
             setSaving(true);
-            await saveSchedule(accounts.accountId, true, users);
+            await saveSchedule(accounts.providerAccountId, true, users);
             setSaving(false);
         }
     };

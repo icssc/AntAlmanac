@@ -126,9 +126,9 @@ class ActionTypesStore extends EventEmitter {
                 token: sessionStore.session.token,
             });
 
-            if (accounts.accountId) {
+            if (accounts.providerAccountId) {
                 this.emit('autoSaveStart');
-                await autoSaveSchedule(accounts.accountId, { userInfo: users });
+                await autoSaveSchedule(accounts.providerAccountId, { userInfo: users });
                 AppStore.unsavedChanges = false;
                 this.emit('autoSaveEnd');
             }

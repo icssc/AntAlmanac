@@ -37,7 +37,7 @@ export class RDS {
             tx
                 .select()
                 .from(accounts)
-                .where(and(eq(accounts.accountType, accountType), eq(accounts.accountId, providerId)))
+                .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerId)))
                 .limit(1)
                 .then((res) => res[0] ?? null)
         );
@@ -130,7 +130,7 @@ export class RDS {
 
             const account = await db
                 .insert(accounts)
-                .values({ userId: newUserId, accountId: oidcProviderId, accountType })
+                .values({ userId: newUserId, providerAccountId: oidcProviderId, accountType })
                 .returning()
                 .then((res) => res[0]);
 
@@ -149,7 +149,7 @@ export class RDS {
 
         const newAccount = await db
             .insert(accounts)
-            .values({ userId: existingUser.id, accountId: oidcProviderId, accountType })
+            .values({ userId: existingUser.id, providerAccountId: oidcProviderId, accountType })
             .returning()
             .then((res) => res[0]);
 
