@@ -4,14 +4,11 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { addSchedule } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
-import { useThemeStore } from '$stores/SettingsStore';
 
 /**
  * Dialog with a text field to add a schedule.
  */
 function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
-    const isDark = useThemeStore((store) => store.isDark);
-
     const [name, setName] = useState(
         AppStore.getNextScheduleName(AppStore.getScheduleNames().length, AppStore.getDefaultScheduleName())
     );
@@ -69,7 +66,7 @@ function AddScheduleDialog({ onClose, onKeyDown, ...props }: DialogProps) {
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={handleCancel} color={isDark ? 'secondary' : 'primary'}>
+                <Button onClick={handleCancel} color="inherit">
                     Cancel
                 </Button>
                 <Button onClick={submitName} variant="contained" color="primary" disabled={name?.trim() === ''}>

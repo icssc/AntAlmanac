@@ -7,9 +7,11 @@ import { useEffect, useState, useCallback, type MouseEvent } from 'react';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import trpc from '$lib/api/trpc';
 import { getErrorMessage } from '$lib/utils';
 import { useSessionStore } from '$stores/SessionStore';
+import { useThemeStore } from '$stores/SettingsStore';
 
 interface SignoutProps {
     onLogoutComplete?: () => void;
@@ -20,6 +22,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
     const [user, setUser] = useState<Pick<User, 'name' | 'avatar' | 'email'> | null>(null);
     const { session, sessionIsValid, clearSession } = useSessionStore();
     const postHog = usePostHog();
+    const isDark = useThemeStore((store) => store.isDark);
 
     const open = Boolean(anchorEl);
     const handleClick = (event: MouseEvent<HTMLElement>) => {
@@ -102,23 +105,13 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
                 }}
                 slotProps={{
                     paper: {
-                        sx: {
-                            width: {
-                                xs: 300,
-                                sm: 300,
-                                md: 330,
-                            },
-                            p: '16px 20px',
-                            borderRadius: 2,
-                            border: '1px solid',
-                            borderColor: 'background.default',
-                        },
+                        sx: getSettingsPopoverPaperSx(isDark),
                     },
                 }}
             >
                 <SettingsMenu user={user} onClose={() => setAnchorEl(null)} />
 
-                <Divider style={{ marginTop: '10px', marginBottom: '12px' }} />
+                <Divider style={{ marginTop: '20px', marginBottom: '12px' }} />
 
                 <MenuItem onClick={handleLogout} sx={{ px: 1, py: 1.25, borderRadius: 1 }}>
                     <ListItemIcon>

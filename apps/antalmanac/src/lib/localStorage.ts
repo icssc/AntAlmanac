@@ -11,7 +11,7 @@ enum LocalStorageKeys {
     show24HourTime = 'show24HourTime',
     previewMode = 'previewMode',
     autoSave = 'autoSave',
-    unsavedActions = 'unsavedActions',
+    /** @deprecated Removed along with the HelpBox component in PR #1473. */
     helpBoxDismissalTime = 'helpBoxDismissalTime',
     columnToggles = 'columnToggles',
     pwaDismissalTime = 'pwaDismissalTime',
@@ -226,32 +226,6 @@ export function getLocalStorageAutoSave() {
 
 export function removeLocalStorageAutoSave() {
     window.localStorage.removeItem(LSK.autoSave);
-}
-
-// Helper functions for autoSave
-export function setLocalStorageUnsavedActions(value: string) {
-    window.localStorage.setItem(LSK.unsavedActions, value);
-}
-
-export function getLocalStorageUnsavedActions() {
-    return window.localStorage.getItem(LSK.unsavedActions);
-}
-
-export function removeLocalStorageUnsavedActions() {
-    window.localStorage.removeItem(LSK.unsavedActions);
-}
-
-// Helper functions for helpBoxDismissalTime
-export function setLocalStorageHelpBoxDismissalTime(value: string) {
-    window.localStorage.setItem(LSK.helpBoxDismissalTime, value);
-}
-
-export function getLocalStorageHelpBoxDismissalTime() {
-    return window.localStorage.getItem(LSK.helpBoxDismissalTime);
-}
-
-export function removeLocalStorageHelpBoxDismissalTime() {
-    window.localStorage.removeItem(LSK.helpBoxDismissalTime);
 }
 
 // Helper functions for columnToggles

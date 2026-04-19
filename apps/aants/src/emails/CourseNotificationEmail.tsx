@@ -15,6 +15,7 @@ import {
 
 import { CourseDetailsBox } from '../components/CourseDetailsBox';
 import { StatusChange, WhatChangedBox } from '../components/WhatChangedBox';
+import { BLUE } from '../theme';
 
 export interface CourseNotificationEmailProps {
     messageId: string;
@@ -96,7 +97,7 @@ export function CourseNotificationEmail({
                 <Container style={{ width: '100%', maxWidth: '520px', margin: '0 auto' }}>
                     <Section
                         style={{
-                            backgroundColor: '#305db7',
+                            backgroundColor: BLUE,
                             padding: '10px 20px',
                             textAlign: 'center' as const,
                             borderRadius: '8px 8px 0 0',
@@ -162,7 +163,7 @@ export function CourseNotificationEmail({
                         <Section style={{ margin: '0 0 24px' }}>
                             <Button
                                 style={{
-                                    backgroundColor: '#0066cc',
+                                    backgroundColor: BLUE,
                                     borderRadius: '6px',
                                     color: '#fff',
                                     fontSize: '16px',
@@ -189,16 +190,13 @@ export function CourseNotificationEmail({
                                 textAlign: 'center' as const,
                             }}
                         >
-                            <Link
-                                href="https://antalmanac.com"
-                                style={{ color: '#0066cc', textDecoration: 'underline' }}
-                            >
+                            <Link href="https://antalmanac.com" style={{ color: BLUE, textDecoration: 'underline' }}>
                                 Go to AntAlmanac
                             </Link>
                             {' · '}
                             <Link
                                 href="https://antalmanac.com/feedback"
-                                style={{ color: '#0066cc', textDecoration: 'underline' }}
+                                style={{ color: BLUE, textDecoration: 'underline' }}
                             >
                                 Give feedback or report a bug
                             </Link>
@@ -212,11 +210,11 @@ export function CourseNotificationEmail({
                                 textAlign: 'center' as const,
                             }}
                         >
-                            <Link href={unsubscribeUrl} style={{ color: '#0066cc', textDecoration: 'underline' }}>
+                            <Link href={unsubscribeUrl} style={{ color: BLUE, textDecoration: 'underline' }}>
                                 Unsubscribe from this course
                             </Link>
                             {' · '}
-                            <Link href={unsubscribeAllUrl} style={{ color: '#0066cc', textDecoration: 'underline' }}>
+                            <Link href={unsubscribeAllUrl} style={{ color: BLUE, textDecoration: 'underline' }}>
                                 Unsubscribe from all courses
                             </Link>
                         </Text>

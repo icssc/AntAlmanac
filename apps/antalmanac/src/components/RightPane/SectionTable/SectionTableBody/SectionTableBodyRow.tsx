@@ -42,8 +42,8 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     dayAndTime: DayAndTimeCell,
     location: LocationsCell,
     sectionEnrollment: EnrollmentCell,
-    restrictions: RestrictionsCell,
     status: StatusCell,
+    restrictions: RestrictionsCell,
     syllabus: SyllabusCell,
 };
 
@@ -103,7 +103,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             /* allowHighlight is always false on CourseRenderPane and always true on AddedCoursePane */
             const computedAddedCourseStyle = allowHighlight
                 ? isDark
-                    ? { backgroundColor: '#b0b04f' }
+                    ? { backgroundColor: '#b0b04fa0' }
                     : { backgroundColor: '#fcfc97' }
                 : {};
 
@@ -111,17 +111,15 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         }
 
         if (scheduleConflict) {
-            const computedScheduleConflictStyle = scheduleConflict
-                ? isDark
-                    ? { backgroundColor: '#121212', opacity: '0.6' }
-                    : { backgroundColor: '#a0a0a0', opacity: '1' }
-                : {};
+            const computedScheduleConflictStyle = isDark
+                ? { backgroundColor: '#121212', opacity: '0.6' }
+                : { backgroundColor: '#a0a0a0', opacity: '1' };
 
             return computedScheduleConflictStyle;
         }
 
         return {};
-    }, [allowHighlight, isDark, scheduleConflict, addedCourse]);
+    }, [addedCourse, allowHighlight, isDark, scheduleConflict]);
 
     return (
         <TableRow

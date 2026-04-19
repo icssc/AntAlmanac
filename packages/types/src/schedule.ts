@@ -1,7 +1,8 @@
+import { WebsocSectionType } from '@packages/anteater-api-types';
 import { type, arrayOf } from 'arktype';
+
 import { RepeatingCustomEvent, RepeatingCustomEventSchema } from './customevent';
 import { AASection } from './websoc';
-import { WebsocSectionType } from '@packages/anteater-api-types';
 
 export type ScheduleCourse = {
     courseComment: string;
@@ -19,6 +20,7 @@ export type Schedule = {
     courses: ScheduleCourse[];
     customEvents: RepeatingCustomEvent[];
     scheduleNoteId: number;
+    scheduleId: string;
 };
 
 export const ShortCourseSchema = type({
@@ -34,6 +36,7 @@ export const ShortCourseScheduleSchema = type([
         courses: arrayOf(ShortCourseSchema),
         customEvents: arrayOf(RepeatingCustomEventSchema),
         'scheduleNote?': 'string',
+        'id?': 'string',
     },
     '|>',
     (s) => ({ scheduleNote: '', ...s }),

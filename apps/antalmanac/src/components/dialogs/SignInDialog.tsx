@@ -37,14 +37,14 @@ export function SignInDialog(props: SignInDialogProps) {
             onClose={handleClose}
             maxWidth={'xl'}
             fullScreen={true}
-            sx={{
-                '& .MuiDialog-paper': {
+            PaperProps={{
+                sx: {
                     width: 'fit-content',
                     height: 'fit-content',
                     borderRadius: '0.5rem',
                 },
-                padding: '1rem',
             }}
+            sx={{ padding: '1rem' }}
         >
             <DialogTitle>{getTitle()}</DialogTitle>
             <DialogContent>

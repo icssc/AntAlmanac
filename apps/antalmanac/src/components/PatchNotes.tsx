@@ -16,7 +16,7 @@ import { useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { setLocalStoragePatchNotesKey } from '$lib/localStorage';
-import { LATEST_PATCH_NOTES_UPDATE, useHelpMenuStore } from '$stores/HelpMenuStore';
+import { LATEST_PATCH_NOTES_UPDATE, usePatchNotesStore } from '$stores/PatchNotesStore';
 
 /**
  * Custom backdrop that can be tested via a test ID.
@@ -29,7 +29,7 @@ function PatchNotesBackdrop(props: BackdropProps) {
  * PatchNotes follows structure/layout of AboutPage.tsx
  */
 function PatchNotes() {
-    const [showPatchNotes, setShowPatchNotes] = useHelpMenuStore(
+    const [showPatchNotes, setShowPatchNotes] = usePatchNotesStore(
         useShallow((store) => [store.showPatchNotes, store.setShowPatchNotes])
     );
 
@@ -119,7 +119,7 @@ function PatchNotes() {
             </DialogContent>
 
             <DialogActions>
-                <Button onClick={handleClose} color="primary" data-testid={closeButtonTestId}>
+                <Button onClick={handleClose} color="inherit" data-testid={closeButtonTestId}>
                     Close
                 </Button>
             </DialogActions>
