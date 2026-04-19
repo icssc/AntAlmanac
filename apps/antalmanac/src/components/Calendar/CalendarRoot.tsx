@@ -2,19 +2,13 @@
 
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
-
-import { Box, Backdrop, useTheme } from '@mui/material';
-import moment from 'moment';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
-import { useShallow } from 'zustand/react/shallow';
-
 import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
 import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
 import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
 import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
-import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { skeletonBlueprintVariations } from '$components/Calendar/skeletonBlueprintVariations';
+import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
+import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import {
     getLocalStorageSkeletonBlueprint,
@@ -26,31 +20,29 @@ import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import { useTabStore } from '$stores/TabStore';
+import { CalendarMonth } from '@mui/icons-material';
+import { Box, Backdrop, useTheme } from '@mui/material';
+import { format, getDay, startOfWeek, type Locale } from 'date-fns';
+import { enUS } from 'date-fns/locale';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Calendar, Components, DateLocalizer, dateFnsLocalizer, Views, ViewsProps } from 'react-big-calendar';
+import { useShallow } from 'zustand/react/shallow';
 
 /*
-//  * Always start week on Saturday for finals potentially on weekends.
-//  * CALENDAR_VIEWS will set the correct day range
  * Start week on Sunday so Saturday appears after Friday.
  * This ensures the standard week layout: Su, M, Tu, W, Th, F, Sa
  * Normal schedules: Su ... Sa (Sa rightmost)
+ *
+ * Finals locale: week starts Saturday (Sa ... Fr)
  */
-// eslint-disable-next-line import/no-named-as-default-member
-moment.defineLocale('en-us', {
-    parentLocale: 'en',
-    week: {
-        dow: 0, // Sunday = 0, Monday = 1, ..., Saturday = 6
-    },
-});
+const enUSSunday: Locale = { ...enUS, options: { ...enUS.options, weekStartsOn: 0 } };
+const enUSFinals: Locale = { ...enUS, options: { ...enUS.options, weekStartsOn: 6 } };
 
-// Finals locale: week starts Saturday (Sa ... Fr)
-// eslint-disable-next-line import/no-named-as-default-member
-moment.defineLocale('en-us-finals', {
-    parentLocale: 'en-us',
-    week: { dow: 6 },
-});
-
-// eslint-disable-next-line import/no-named-as-default-member
-moment.locale('en-us');
+const locales: Record<string, Locale> = {
+    'en-us': enUSSunday,
+    'en-us-finals': enUSFinals,
+};
 const CALENDAR_VIEWS: ViewsProps<CalendarEvent, object> = [Views.WEEK, Views.WORK_WEEK];
 const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
     event: CalendarCourseEvent,
@@ -250,9 +242,14 @@ export const ScheduleCalendar = memo(() => {
         return Math.abs(bgBrightness - textBrightness) > minBrightnessDiff;
     };
 
+    const showEmptyState = useMemo(
+        () => !loadingSchedule && !showFinalsSchedule && eventsInCalendar.length === 0 && !hoveredCalendarizedCourses,
+        [loadingSchedule, showFinalsSchedule, eventsInCalendar.length, hoveredCalendarizedCourses]
+    );
+
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
-    const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
-    const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
+    const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm a';
+    const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h a';
 
     const finalsDate = hoveredCalendarizedFinal
         ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
@@ -264,11 +261,7 @@ export const ScheduleCalendar = memo(() => {
 
     const culture = finalsStartsOnSaturday ? 'en-us-finals' : 'en-us';
 
-    const calendarLocalizer = useMemo(() => {
-        // eslint-disable-next-line import/no-named-as-default-member
-        moment.locale(culture);
-        return momentLocalizer(moment);
-    }, [culture]);
+    const calendarLocalizer = useMemo(() => dateFnsLocalizer({ format, getDay, startOfWeek, locales }), []);
 
     // Check if there are any finals on weekends (else only display M-F)
     const hasWeekendFinals =
@@ -280,14 +273,14 @@ export const ScheduleCalendar = memo(() => {
     const shouldShowWeekView = showFinalsSchedule ? hasWeekendFinals : hasWeekendCourse;
     const calendarView = shouldShowWeekView ? Views.WEEK : Views.WORK_WEEK;
 
-    const finalsDateFormat = isMobile ? 'M/DD' : 'ddd M/DD';
+    const finalsDateFormat = isMobile ? 'M/dd' : 'eee M/dd';
     const date = showFinalsSchedule ? finalsDate : new Date(2018, 0, 1);
 
     const formats = useMemo(
         () => ({
             timeGutterFormat: (date: Date, culture?: string, localizer?: DateLocalizer) =>
                 date.getMinutes() > 0 || !localizer ? '' : localizer.format(date, calendarGutterTimeFormat, culture),
-            dayFormat: showFinalsSchedule ? finalsDateFormat : 'ddd',
+            dayFormat: showFinalsSchedule ? finalsDateFormat : 'eee',
             eventTimeRangeFormat: (range: { start: Date; end: Date }, culture?: string, localizer?: DateLocalizer) =>
                 localizer
                     ? `${localizer.format(range.start, calendarTimeFormat, culture)} - ${localizer.format(
@@ -352,8 +345,37 @@ export const ScheduleCalendar = memo(() => {
                 showFinalsSchedule={showFinalsSchedule}
                 scheduleNames={scheduleNames}
             />
-            <Box id="screenshot" height="0" flexGrow={1}>
+            <Box id="screenshot" height="0" flexGrow={1} position="relative">
                 <CalendarEventPopover />
+
+                {showEmptyState && (
+                    <Box
+                        data-html2canvas-ignore
+                        position="absolute"
+                        top={0}
+                        left={0}
+                        right={0}
+                        bottom={0}
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        zIndex={1}
+                        sx={{
+                            backgroundColor: (theme) =>
+                                theme.palette.mode === 'dark' ? 'rgba(18, 18, 18, 0.75)' : 'rgba(255, 255, 255, 0.7)',
+                        }}
+                    >
+                        <EmptyState
+                            Icon={CalendarMonth}
+                            title="Your schedule is empty"
+                            description="Search for courses to start building your schedule."
+                            primaryAction={{
+                                label: 'Search for Courses',
+                                onClick: () => useTabStore.getState().setActiveTab('search'),
+                            }}
+                        />
+                    </Box>
+                )}
 
                 <Calendar<CalendarEvent, object>
                     key={`${culture}-${calendarView}`}

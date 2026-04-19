@@ -3,7 +3,6 @@ import type { Roadmap } from '@packages/antalmanac-types';
 import { format, parse } from 'date-fns';
 import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
 
-import { openSnackbar } from '$actions/AppStoreActions';
 import {
     EXCLUDE_RESTRICTION_CODES_OPTIONS,
     DAYS_OPTIONS,
@@ -17,6 +16,7 @@ import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { safeUnreachableCase } from '$lib/utils';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 
 type InputEvent =
     | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

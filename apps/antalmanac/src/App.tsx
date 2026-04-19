@@ -1,11 +1,4 @@
 import './App.css';
-
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
-import { TourProvider } from '@reactour/tour';
-import { SnackbarProvider } from 'notistack';
-import { useEffect } from 'react';
-import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
-
 import { undoDelete, redoDelete } from '$actions/AppStoreActions';
 import { AutoSignIn } from '$components/AutoSignIn';
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
@@ -18,6 +11,10 @@ import Home from '$routes/Home';
 import { OutagePage } from '$routes/OutagePage';
 import { Unsubscribe } from '$routes/UnsubscribePage';
 import AppThemeProvider from '$src/app/Theme';
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import { TourProvider } from '@reactour/tour';
+import { useEffect } from 'react';
+import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
 /**
  * Do not edit this unless you know what you're doing.
@@ -34,13 +31,15 @@ function RouteLayout() {
 
 const OUTAGE = false;
 
+const HOME_PAGE = <Home />;
+
 const BROWSER_ROUTER = createBrowserRouter([
     {
         element: <RouteLayout />,
         children: [
             {
                 path: '/',
-                element: <Home />,
+                element: HOME_PAGE,
                 errorElement: <ErrorPage />,
             },
             {
@@ -50,7 +49,7 @@ const BROWSER_ROUTER = createBrowserRouter([
             },
             {
                 path: '/:tab',
-                element: <Home />,
+                element: HOME_PAGE,
                 errorElement: <ErrorPage />,
             },
             {
@@ -132,9 +131,7 @@ export default function App() {
                                 }),
                             }}
                         >
-                            <SnackbarProvider classes={{ containerRoot: 'notification-snackbar-container' }}>
-                                <RouterProvider router={ROUTER} />
-                            </SnackbarProvider>
+                            <RouterProvider router={ROUTER} />
                         </TourProvider>
                     </AppQueryProvider>
                 </AppPostHogProvider>
