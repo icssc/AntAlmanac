@@ -1,7 +1,6 @@
-import { loginUser } from '$actions/AppStoreActions';
 import { AlertDialog } from '$components/AlertDialog';
-import { Google } from '@mui/icons-material';
-import { DialogContentText, Button } from '@mui/material';
+import SignInButton from '$components/buttons/SignInButton';
+import { DialogContentText } from '@mui/material';
 import { ComponentProps } from 'react';
 
 interface Props {
@@ -15,18 +14,7 @@ const SignInAlertDialog = ({ open, title, severity = 'info', onClose }: Props) =
     return (
         <AlertDialog open={open} onClose={onClose} title={title} severity={severity}>
             <DialogContentText>To load your schedule sign in with your Google account</DialogContentText>
-            <Button
-                color="primary"
-                variant="contained"
-                startIcon={<Google />}
-                fullWidth
-                onClick={() => {
-                    loginUser();
-                }}
-                size="large"
-            >
-                Sign in with Google
-            </Button>
+            <SignInButton fullWidth />
         </AlertDialog>
     );
 };

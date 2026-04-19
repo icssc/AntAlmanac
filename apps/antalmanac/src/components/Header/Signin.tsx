@@ -1,4 +1,5 @@
-import { loadSchedule, loginUser } from '$actions/AppStoreActions';
+import { loadSchedule } from '$actions/AppStoreActions';
+import SignInButton from '$components/buttons/SignInButton';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
@@ -7,7 +8,7 @@ import trpc from '$lib/api/trpc';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import { AccountCircle, ExpandMore, Google } from '@mui/icons-material';
+import { AccountCircle, ExpandMore } from '@mui/icons-material';
 import {
     Alert,
     AlertTitle,
@@ -144,16 +145,7 @@ export const Signin = () => {
             <Dialog open={isOpen} onClose={() => handleClose(true)}>
                 <DialogContent>
                     <Stack spacing={1}>
-                        <Button
-                            onClick={() => loginUser()}
-                            color="primary"
-                            variant="contained"
-                            startIcon={<Google />}
-                            size="large"
-                            fullWidth
-                        >
-                            Sign in with Google
-                        </Button>
+                        <SignInButton fullWidth />
 
                         <Box
                             onClick={() => setShowLegacyLogin(!showLegacyLogin)}
