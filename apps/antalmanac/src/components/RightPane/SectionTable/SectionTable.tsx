@@ -151,7 +151,7 @@ function SectionTable(props: SectionTableProps) {
                     sx={{
                         minWidth: `${tableMinWidth}px`,
                         width: '100%',
-                        tableLayout: 'auto',
+                        tableLayout: 'fixed',
                     }}
                 >
                     <TableHead>
