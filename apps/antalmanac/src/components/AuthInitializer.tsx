@@ -83,6 +83,8 @@ const AuthInitializer = () => {
                 },
             });
 
+            removeLocalStorageDataCache();
+
             openSnackbar('success', `Unsaved changes have been saved to your account!`);
         }
     }, [sessionData]);
