@@ -97,7 +97,7 @@ export const ScheduleCalendar = memo(() => {
                 hasHadEventsRef.current = true;
                 const skeletonBlueprint = eventsInCalendar
                     .map((event) => {
-                        const dayOffset = event.start.getDate() - BASE_DATE.getDate();
+                        const dayOffset = event.start.getDay() - 1;
                         return {
                             dayOffset,
                             startHour: event.start.getHours(),
@@ -106,7 +106,7 @@ export const ScheduleCalendar = memo(() => {
                             endMinute: event.end.getMinutes(),
                         };
                     })
-                    .filter((blueprint) => blueprint.dayOffset >= 0 && blueprint.dayOffset <= 6);
+                    .filter((blueprint) => blueprint.dayOffset >= -1 && blueprint.dayOffset <= 5);
 
                 if (skeletonBlueprint.length > 0) {
                     setLocalStorageSkeletonBlueprint(JSON.stringify(skeletonBlueprint));
