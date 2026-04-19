@@ -271,8 +271,8 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
         const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
         if (isScheduleLoaded) {
             logAnalytics(postHog, {
-                category: analyticsEnum.auth,
-                action: analyticsEnum.auth.actions.IMPORT_LEGACY,
+                category: analyticsEnum.nav,
+                action: analyticsEnum.nav.actions.IMPORT_LEGACY,
             });
 
             openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
@@ -370,7 +370,10 @@ export const loadSchedule = async (
                 } else {
                     logAnalytics(postHog, {
                         category: analyticsEnum.auth,
-                        action: analyticsEnum.auth.actions.LOAD_SCHEDULE,
+                        action:
+                            accountType === 'GOOGLE'
+                                ? analyticsEnum.auth.actions.LOAD_SCHEDULE
+                                : analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY,
                         ...(accountType !== 'GOOGLE' && {
                             customProps: { providerId, rememberMe },
                         }),
