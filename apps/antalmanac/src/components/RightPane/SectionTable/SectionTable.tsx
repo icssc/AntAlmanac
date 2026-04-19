@@ -45,12 +45,7 @@ function SectionTable(props: SectionTableProps) {
     const [activeTab] = useTabStore((store) => [store.activeTab]);
     const isMobile = useIsMobile();
 
-    /**
-     * Width reserved for the action column (add/delete, notifications, color/menu).
-     * With `table-layout: fixed`, this pixel width is honored first, and the
-     * remaining columns split what's left according to their percentage weights.
-     */
-    const actionColumnWidth = isMobile ? 64 : 100;
+    const actionColumnWidth = isMobile ? 60 : 88;
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
