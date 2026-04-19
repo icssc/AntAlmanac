@@ -2,8 +2,12 @@ import { paths } from './generated/anteater-api-types';
 
 export type GE = NonNullable<NonNullable<paths['/v2/rest/grades/raw']['get']['parameters']['query']>['ge']>;
 
-export type AggregateGrades =
-    paths['/v2/rest/grades/aggregate']['get']['responses']['200']['content']['application/json']['data'];
+export type AggregateGradesAPIResult =
+    paths['/v2/rest/grades/aggregate']['get']['responses']['200']['content']['application/json'];
 
-export type AggregateGradesByOffering =
-    paths['/v2/rest/grades/aggregateByOffering']['get']['responses']['200']['content']['application/json']['data'];
+export type AggregateGrades = AggregateGradesAPIResult['data'];
+
+export type AggregateGradesByOfferingAPIResult =
+    paths['/v2/rest/grades/aggregateByOffering']['get']['responses']['200']['content']['application/json'];
+
+export type AggregateGradesByOffering = AggregateGradesByOfferingAPIResult['data'];

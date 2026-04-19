@@ -1,3 +1,7 @@
+import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import trpc from '$lib/api/trpc';
 import {
     type AutocompleteInputChangeReason,
     type AutocompleteRenderGroupParams,
@@ -9,11 +13,6 @@ import type { SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import UAParser from 'ua-parser-js';
-
-import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
 
 const SEARCH_TIMEOUT_MS = 150;
 
@@ -204,7 +203,7 @@ const FuzzySearch = ({ toggleSearch, postHog }: FuzzySearchProps) => {
     }, [cache, currentTerm, value, maybeDoSearchFactory, pendingRequest]);
 
     const onInputChange = (_event: unknown, inputValue: string, reason: AutocompleteInputChangeReason) => {
-        const lowerCaseValue = inputValue.toLowerCase();
+        const lowerCaseValue = inputValue.toLowerCase().trim();
         if (reason === 'input') {
             const newValue = lowerCaseValue.slice(-1) === ' ' ? lowerCaseValue.slice(0, -1) : lowerCaseValue;
 

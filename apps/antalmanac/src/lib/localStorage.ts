@@ -13,6 +13,7 @@ enum LocalStorageKeys {
     autoSave = 'autoSave',
     devMode = 'devMode',
     unsavedActions = 'unsavedActions',
+    /** @deprecated Removed along with the HelpBox component in PR #1473. */
     helpBoxDismissalTime = 'helpBoxDismissalTime',
     columnToggles = 'columnToggles',
     pwaDismissalTime = 'pwaDismissalTime',
