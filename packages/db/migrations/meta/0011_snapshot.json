@@ -1,5 +1,5 @@
 {
-  "id": "2b739469-4cb6-4fe1-8619-56ccb7b8d6b7",
+  "id": "aa43f98f-2c61-425f-87c1-b21c19c4c0f1",
   "prevId": "4723ce3a-d3e8-40d2-b094-4e10e6554106",
   "version": "7",
   "dialect": "postgresql",
@@ -20,8 +20,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "account_id": {
-          "name": "account_id",
+        "provider_account_id": {
+          "name": "provider_account_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -299,15 +299,7 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "users_email_unique": {
-          "name": "users_email_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
-        }
-      },
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
