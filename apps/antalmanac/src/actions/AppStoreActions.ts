@@ -177,7 +177,7 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
     const { userInfo, postHog } = options;
     if (providerID == null) return;
     providerID = providerID.replace(/\s+/g, '');
-    if (providerID.length < 0) return;
+    if (providerID.length === 0) return;
 
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
     try {
@@ -197,7 +197,6 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
             category: analyticsEnum.auth,
             action: analyticsEnum.auth.actions.SAVE_SCHEDULE,
             customProps: {
-                providerID,
                 autoSave: true,
             },
         });
@@ -212,7 +211,6 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
             action: analyticsEnum.auth.actions.SAVE_SCHEDULE_FAIL,
             error: getErrorMessage(e),
             customProps: {
-                providerID,
                 autoSave: true,
             },
         });
@@ -357,7 +355,7 @@ export const loadSchedule = async (
                                 ? analyticsEnum.auth.actions.LOAD_SCHEDULE_FAIL
                                 : analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY_FAIL,
                         error: 'Load schedule error',
-                        ...(accountType !== 'GOOGLE' && { customProps: { rememberMe } }),
+                        ...(accountType !== 'GOOGLE' && { customProps: { providerId, rememberMe } }),
                     });
                     openSnackbar(
                         'error',
@@ -368,6 +366,7 @@ export const loadSchedule = async (
                     logAnalytics(postHog, {
                         category: analyticsEnum.auth,
                         action: analyticsEnum.auth.actions.LOAD_SCHEDULE,
+                        ...(accountType !== 'GOOGLE' && { customProps: { providerId, rememberMe } }),
                     });
                 }
             } catch (e) {
@@ -378,7 +377,7 @@ export const loadSchedule = async (
                             ? analyticsEnum.auth.actions.LOAD_SCHEDULE_FAIL
                             : analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY_FAIL,
                     error: getErrorMessage(e),
-                    ...(accountType !== 'GOOGLE' && { customProps: { rememberMe } }),
+                    ...(accountType !== 'GOOGLE' && { customProps: { providerId, rememberMe } }),
                 });
                 if (e instanceof TRPCClientError) {
                     if (e.data.httpStatus === 404) {

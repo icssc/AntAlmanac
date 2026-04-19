@@ -10,6 +10,7 @@ import {
     removeLocalStorageUnsavedActions,
     setLocalStorageUnsavedActions,
 } from '$lib/localStorage';
+import { postHog } from '$providers/PostHog';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -144,7 +145,7 @@ class ActionTypesStore extends EventEmitter {
 
             if (accounts.providerAccountId) {
                 this.emit('autoSaveStart');
-                await autoSaveSchedule(accounts.providerAccountId, { userInfo: users });
+                await autoSaveSchedule(accounts.providerAccountId, { userInfo: users, postHog });
                 AppStore.unsavedChanges = false;
                 this.emit('autoSaveEnd');
             }
