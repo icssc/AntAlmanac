@@ -1,19 +1,13 @@
-import { MenuBook } from '@mui/icons-material';
-import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography, useTheme } from '@mui/material';
-import { AACourse } from '@packages/antalmanac-types';
-import { usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-
 import { updateScheduleNote } from '$actions/AppStoreActions';
-import { EmptyState } from '$components/EmptyState';
-import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEventDetailView';
-import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
-import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
-import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
-import { AddedCoursesLoadingSkeleton } from '$components/RightPane/LoadingSkeleton';
-import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
+import { EmptyState } from '$components/EmptyState';
+import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEventDetailView';
+import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
+import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
+import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
+import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
+import { AddedCoursesLoadingSkeleton } from "$components/RightPane/LoadingSkeleton";
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import {
@@ -24,6 +18,12 @@ import { LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useTabStore } from '$stores/TabStore';
+import { MenuBook } from '@mui/icons-material';
+import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography, useTheme } from '@mui/material';
+import { AACourse } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
 /**
  * All the interactive buttons have the same styles.
  */
