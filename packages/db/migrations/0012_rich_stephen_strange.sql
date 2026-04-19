@@ -1,0 +1,1 @@
+ALTER TABLE "accounts" RENAME COLUMN "account_id" TO "provider_account_id";--> statement-breakpoint

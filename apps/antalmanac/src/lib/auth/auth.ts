@@ -37,6 +37,9 @@ export const auth = betterAuth({
         nextCookies(),
     ],
     account: {
+        fields: {
+            accountId: 'providerAccountId',
+        },
         additionalFields: {
             accountType: {
                 type: 'string',
