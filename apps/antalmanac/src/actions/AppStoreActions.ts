@@ -1,7 +1,8 @@
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -19,16 +20,6 @@ import type {
 import { TRPCClientError } from '@trpc/client';
 import { TRPCError } from '@trpc/server';
 import { PostHog } from 'posthog-js/react';
-
-import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
-import { warnMultipleTerms } from '$lib/helpers';
-import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
-import { getErrorMessage } from '$lib/utils';
-import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
@@ -260,7 +251,9 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
     });
     const { users, accounts } = userAndAccount;
 
-    const incomingData: User | null = await trpc.userData.getUserData.query({ userId: incomingUser.id });
+    const incomingData: User | null = await trpc.userData.getUserData.query({
+        userId: incomingUser.id,
+    });
     const scheduleSaveState =
         incomingData !== null && 'userData' in incomingData ? incomingData.userData : incomingData;
 
@@ -270,7 +263,10 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
         mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, '(import)-');
         currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
 
-        scheduleComponentsToggleStore.setState({ openImportDialog: false, openLoadingSchedule: true });
+        scheduleComponentsToggleStore.setState({
+            openImportDialog: false,
+            openLoadingSchedule: true,
+        });
 
         const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
         if (isScheduleLoaded) {
@@ -281,7 +277,10 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
 
             openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
 
-            scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
+            scheduleComponentsToggleStore.setState({
+                openScheduleSelect: true,
+                openLoadingSchedule: false,
+            });
 
             await saveSchedule(accounts.providerAccountId, true, users, postHog);
 
@@ -333,7 +332,9 @@ export const loadSchedule = async (
                     providerId,
                 });
 
-                const userDataResponse = await trpc.userData.getUserData.query({ userId: account.userId });
+                const userDataResponse = await trpc.userData.getUserData.query({
+                    userId: account.userId,
+                });
                 const scheduleSaveState = userDataResponse?.userData;
 
                 let error = false;
@@ -357,7 +358,9 @@ export const loadSchedule = async (
                                 ? analyticsEnum.auth.actions.LOAD_SCHEDULE_FAIL
                                 : analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY_FAIL,
                         error: 'Load schedule error',
-                        ...(accountType !== 'GOOGLE' && { customProps: { providerId, rememberMe } }),
+                        ...(accountType !== 'GOOGLE' && {
+                            customProps: { providerId, rememberMe },
+                        }),
                     });
                     openSnackbar(
                         'error',
@@ -368,7 +371,9 @@ export const loadSchedule = async (
                     logAnalytics(postHog, {
                         category: analyticsEnum.auth,
                         action: analyticsEnum.auth.actions.LOAD_SCHEDULE,
-                        ...(accountType !== 'GOOGLE' && { customProps: { providerId, rememberMe } }),
+                        ...(accountType !== 'GOOGLE' && {
+                            customProps: { providerId, rememberMe },
+                        }),
                     });
                 }
             } catch (e) {
