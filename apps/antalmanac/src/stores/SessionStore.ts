@@ -1,8 +1,7 @@
-import type { Roadmap } from '@packages/antalmanac-types';
-import { create } from 'zustand';
-
 import { authClient, SessionData } from '$lib/auth/authClient';
 import { clearSsoCookie } from '$lib/ssoCookie';
+import type { Roadmap } from '@packages/antalmanac-types';
+import { create } from 'zustand';
 
 interface SessionState {
     session: SessionData['session'] | null;
@@ -33,24 +32,31 @@ interface SessionState {
     setPlannerRoadmaps: (roadmaps: Roadmap[]) => void;
 }
 
+const initState: Pick<
+    SessionState,
+    { [K in keyof SessionState]: SessionState[K] extends Function ? never : K }[keyof SessionState]
+> = {
+    session: null,
+    sessionId: null,
+    user: null,
+    userId: null,
+    isGoogleUser: false,
+    email: null,
+    sessionIsValid: false,
+    googleId: null,
+    isNewUser: false,
+    areSchedulesLoaded: false,
+    filterTakenCourses: false,
+    userTakenCourses: new Set(),
+    plannerRoadmaps: [],
+};
+
 export const useSessionStore = create<SessionState>((set, get) => {
     return {
-        session: null,
-        sessionId: null,
-        user: null,
-        userId: null,
-        isGoogleUser: false,
-        email: null,
-        sessionIsValid: false,
-        googleId: null,
-        isNewUser: false,
-        areSchedulesLoaded: false,
-        filterTakenCourses: false,
-        userTakenCourses: new Set(),
-        plannerRoadmaps: [],
+        ...initState,
         updateSession: async (sessionData: SessionData) => {
             const { data, error } = await authClient.listAccounts();
-            if (!data || error) {
+            if (!data || data.length === 0 || error) {
                 console.error('Error occurred while getting account info:', error);
                 return false;
             }
@@ -74,21 +80,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
             const currentSession = get().sessionId;
             if (currentSession) {
                 clearSsoCookie();
-                set({
-                    session: null,
-                    sessionId: null,
-                    user: null,
-                    userId: null,
-                    sessionIsValid: false,
-                    isGoogleUser: false,
-                    email: null,
-                    googleId: null,
-                    isNewUser: false,
-                    areSchedulesLoaded: false,
-                    filterTakenCourses: false,
-                    userTakenCourses: new Set(),
-                    plannerRoadmaps: [],
-                });
+                set({ ...initState });
                 window.location.reload();
             }
         },
