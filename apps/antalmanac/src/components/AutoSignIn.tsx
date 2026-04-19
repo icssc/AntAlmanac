@@ -1,4 +1,5 @@
 import { loginUser } from '$actions/AppStoreActions';
+import { getSignInUrl } from '$lib/auth/authActions';
 import { authClient } from '$lib/auth/authClient';
 import { hasSsoCookie } from '$lib/ssoCookie';
 import { useEffect, useRef } from 'react';
@@ -26,7 +27,8 @@ export function AutoSignIn() {
                 return;
             }
 
-            loginUser({ silent: true });
+            const { url } = await getSignInUrl({ prompt: 'none' });
+            loginUser({ silent: true, signInUrl: url });
         };
 
         checkAndSignIn();

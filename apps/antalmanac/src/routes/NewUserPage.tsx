@@ -1,7 +1,6 @@
+import { useSessionStore } from '$stores/SessionStore';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-import { useSessionStore } from '$stores/SessionStore';
 
 const NewUserPage = () => {
     const navigate = useNavigate();
@@ -9,7 +8,7 @@ const NewUserPage = () => {
 
     useEffect(() => {
         setIsNewUser(true);
-        navigate('/');
+        navigate('/', { replace: true });
     }, [navigate, setIsNewUser]);
     return null;
 };

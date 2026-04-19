@@ -1,4 +1,5 @@
 import 'server-only';
+import { AUTH_PROVIDER_ID } from '$lib/constants';
 import { betterAuthEnvSchema, oidcOAuthEnvSchema } from '$src/backend/env';
 import { db } from '@packages/db';
 import { betterAuth } from 'better-auth';
@@ -8,8 +9,6 @@ import { genericOAuth } from 'better-auth/plugins';
 
 const { OIDC_CLIENT_ID, OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
 const { BETTER_AUTH_URL } = betterAuthEnvSchema.parse(process.env);
-
-export const AUTH_PROVIDER_ID = 'icssc';
 
 export const auth = betterAuth({
     appName: 'AntAlmanac',

@@ -1,9 +1,10 @@
 'use server';
 
-import { auth, AUTH_PROVIDER_ID, AuthorizationUrlParams } from '$lib/auth/auth';
+import { auth, AuthorizationUrlParams } from '$lib/auth/auth';
+import { AUTH_PROVIDER_ID } from '$lib/constants';
 
 export async function getSignInUrl(authorizationUrlParams?: AuthorizationUrlParams) {
-    // Workaround so `AutoSIgnIn` can pass `prompt: none` since better-auth currently doesn't support this
+    // TODO: Remove this hack once better-auth supports dynamic prompts/config
     auth.options.plugins[0].options.config[0].authorizationUrlParams = authorizationUrlParams;
 
     return await auth.api.signInWithOAuth2({

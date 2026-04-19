@@ -387,9 +387,12 @@ const cacheSchedule = () => {
     }
 };
 
-export const loginUser = async ({ silent = false } = {}) => {
+/**
+ * If `signInUrl` is not provided, {@link getSignInUrl} with default params will be used.
+ */
+export const loginUser = async ({ silent = false, signInUrl = '' } = {}) => {
     try {
-        const { url } = await getSignInUrl();
+        const url = signInUrl !== '' ? signInUrl : (await getSignInUrl()).url;
         if (url) {
             cacheSchedule();
             window.location.href = url.toString();

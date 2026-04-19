@@ -1,8 +1,7 @@
+import { AUTH_PROVIDER_ID } from '$lib/constants';
+import { getSsoResponseCookieAttributes, SSO_COOKIE_NAME } from '$lib/ssoCookie';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-
-import { AUTH_PROVIDER_ID } from '$lib/auth/auth';
-import { getSsoResponseCookieAttributes, SSO_COOKIE_NAME } from '$lib/ssoCookie';
 
 const ALLOWED_ORIGINS = [
     'https://antalmanac.com',
