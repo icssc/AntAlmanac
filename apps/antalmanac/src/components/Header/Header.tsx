@@ -46,7 +46,7 @@ export function Header() {
         if (importedUser !== '' && sessionId) {
             setOpenSuccessfulSaved(true);
         }
-    }, [sessionId]);
+    }, [importedUser, sessionId]);
 
     return (
         <Box
