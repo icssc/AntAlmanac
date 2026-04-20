@@ -46,7 +46,7 @@ const SearchWithPlannerButton = () => {
                         : 'Sign in to search with planner'
                 }
             >
-                <span>
+                <span style={{ width: '50%', minWidth: '300px' }}>
                     <Button
                         onClick={handleMenuOpen}
                         disabled={!sessionIsValid}
