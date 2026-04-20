@@ -1,7 +1,7 @@
 import { isEmptySchedule, loadScheduleWithSessionToken, mergeShortCourseSchedules } from '$actions/AppStoreActions';
 import SignInAlertDialog from '$components/SignInAlertDialog';
 import trpc from '$lib/api/trpc';
-import { authClient, getGoogleAccount, signOut } from '$lib/auth/authClient';
+import { authClient, signOut } from '$lib/auth/authClient';
 import {
     getLocalStorageDataCache,
     getLocalStorageUserId,
@@ -23,10 +23,11 @@ const AuthInitializer = () => {
     const [openAlert, setOpenalert] = useState(false);
 
     const setOpenLoadingSchedule = useScheduleComponentsToggleStore((state) => state.setOpenLoadingSchedule);
-    const { updateSession, setAreSchedulesLoaded } = useSessionStore(
+    const { updateSession, setAreSchedulesLoaded, googleId } = useSessionStore(
         useShallow((state) => ({
             updateSession: state.updateSession,
             setAreSchedulesLoaded: state.setAreSchedulesLoaded,
+            googleId: state.googleId,
         }))
     );
 
@@ -51,9 +52,7 @@ const AuthInitializer = () => {
             return;
         }
 
-        const googleAccount = await getGoogleAccount();
-
-        if (savedData && googleAccount) {
+        if (savedData && googleId) {
             const userData = await trpc.userData.getUserData.query({ userId: sessionData.user.id });
             const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
@@ -76,9 +75,9 @@ const AuthInitializer = () => {
             }
 
             await trpc.userData.saveUserData.mutate({
-                id: googleAccount.userId,
+                id: googleId,
                 data: {
-                    id: googleAccount.userId,
+                    id: googleId,
                     userData: scheduleSaveState,
                 },
             });

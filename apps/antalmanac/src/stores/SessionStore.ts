@@ -61,7 +61,6 @@ export const useSessionStore = create<SessionState>((set, get) => {
             }
 
             // Remove "google" prefix
-            const googleId = accountInfo.userId.toString().split('_')[1];
             set({
                 session: sessionData.session,
                 sessionId: sessionData.session.id,
@@ -69,7 +68,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
                 user: sessionData.user,
                 userId: sessionData.user.id,
                 isGoogleUser: true,
-                googleId: googleId,
+                googleId: accountInfo.userId,
                 email: sessionData.user.email,
             });
             return true;
