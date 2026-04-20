@@ -1,7 +1,3 @@
-import { Assessment, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
-import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { useMemo } from 'react';
-
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
@@ -12,9 +8,23 @@ import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTab
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
-import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
+import { SECTION_TABLE_COLUMNS, useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
+import { Assessment, ExpandLess, ExpandMore, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
+import {
+    Alert,
+    Box,
+    Collapse,
+    IconButton,
+    Paper,
+    Table,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+} from '@mui/material';
+import { useMemo, useState } from 'react';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -38,12 +48,18 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
 function SectionTable(props: SectionTableProps) {
+    const [openContent, setOpenContent] = useState(true);
+
     const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory, missingSections = [] } = props;
     const { isMilitaryTime } = useTimeFormatStore();
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
     const isMobile = useIsMobile();
+
+    const handleToggleExpand = () => {
+        setOpenContent(!openContent);
+    };
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
@@ -124,6 +140,14 @@ function SectionTable(props: SectionTableProps) {
                         />
                     }
                 />
+
+                <IconButton
+                    onClick={handleToggleExpand}
+                    size="small"
+                    sx={{ padding: '4px', marginLeft: 'auto', marginRight: 0.5 }}
+                >
+                    {openContent ? <ExpandLess /> : <ExpandMore />}
+                </IconButton>
             </Box>
 
             {missingSections?.length > 0 && (
@@ -140,53 +164,50 @@ function SectionTable(props: SectionTableProps) {
                     Missing required sections: {missingSections.join(', ')}
                 </Alert>
             )}
-            <TableContainer
-                component={Paper}
-                sx={{ margin: '8px 0px 8px 0px', width: '100%' }}
-                elevation={0}
-                variant="outlined"
-            >
-                <Table
-                    size="small"
-                    sx={{
-                        minWidth: `${tableMinWidth}px`,
-                        width: '100%',
-                        tableLayout: 'auto',
-                    }}
-                >
-                    <TableHead>
-                        <TableRow>
-                            <TableCell sx={{ padding: 0 }} />
-                            {(() => {
-                                const visible = tableHeaderColumnEntries.filter(([column]) =>
-                                    activeColumns.includes(column as SectionTableColumn)
-                                );
-                                const totalWeight = visible.reduce((sum, [, { weight }]) => sum + weight, 0);
-                                return visible.map(([column, { label, weight }]) => (
-                                    <TableCell
-                                        key={column}
-                                        sx={{
-                                            width: `${(weight / totalWeight) * 100}%`,
-                                            padding: 0,
-                                        }}
-                                    >
-                                        {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
-                                    </TableCell>
-                                ));
-                            })()}
-                        </TableRow>
-                    </TableHead>
+            <Collapse in={openContent}>
+                <TableContainer component={Paper} sx={{ marginBottom: 0.5 }} elevation={0} variant="outlined">
+                    <Table
+                        size="small"
+                        sx={{
+                            minWidth: `${tableMinWidth}px`,
+                            width: '100%',
+                            tableLayout: 'auto',
+                        }}
+                    >
+                        <TableHead>
+                            <TableRow>
+                                <TableCell sx={{ padding: 0 }} />
+                                {(() => {
+                                    const visible = tableHeaderColumnEntries.filter(([column]) =>
+                                        activeColumns.includes(column as SectionTableColumn)
+                                    );
+                                    const totalWeight = visible.reduce((sum, [, { weight }]) => sum + weight, 0);
+                                    return visible.map(([column, { label, weight }]) => (
+                                        <TableCell
+                                            key={column}
+                                            sx={{
+                                                width: `${(weight / totalWeight) * 100}%`,
+                                                padding: 0,
+                                            }}
+                                        >
+                                            {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
+                                        </TableCell>
+                                    ));
+                                })()}
+                            </TableRow>
+                        </TableHead>
 
-                    <SectionTableBody
-                        courseDetails={courseDetails}
-                        term={term}
-                        allowHighlight={allowHighlight}
-                        scheduleNames={scheduleNames}
-                        analyticsCategory={analyticsCategory}
-                        formattedTime={formattedTime}
-                    />
-                </Table>
-            </TableContainer>
+                        <SectionTableBody
+                            courseDetails={courseDetails}
+                            term={term}
+                            allowHighlight={allowHighlight}
+                            scheduleNames={scheduleNames}
+                            analyticsCategory={analyticsCategory}
+                            formattedTime={formattedTime}
+                        />
+                    </Table>
+                </TableContainer>
+            </Collapse>
         </>
     );
 }
