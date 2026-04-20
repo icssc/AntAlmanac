@@ -107,18 +107,16 @@ const userDataRouter = router({
     /**
      * Logs out a user by invalidating their session and redirecting to OIDC logout
      */
-    getLogoutUrl: procedure
-        .input(z.object({ sessionToken: z.string(), redirectUrl: z.string().optional() }))
-        .query(async ({ input }) => {
-            // Build OIDC logout URL
-            const oidcLogoutUrl = new URL(`${OIDC_ISSUER_URL}/logout`);
-            const redirectTo = input.redirectUrl || GOOGLE_REDIRECT_URI.replace('/auth', '');
-            oidcLogoutUrl.searchParams.set('post_logout_redirect_uri', redirectTo);
+    getLogoutUrl: procedure.input(z.object({ redirectUrl: z.string().optional() })).query(async ({ input }) => {
+        // Build OIDC logout URL
+        const oidcLogoutUrl = new URL(`${OIDC_ISSUER_URL}/logout`);
+        const redirectTo = input.redirectUrl || GOOGLE_REDIRECT_URI.replace('/auth', '');
+        oidcLogoutUrl.searchParams.set('post_logout_redirect_uri', redirectTo);
 
-            return {
-                logoutUrl: oidcLogoutUrl.toString(),
-            };
-        }),
+        return {
+            logoutUrl: oidcLogoutUrl.toString(),
+        };
+    }),
 });
 
 export default userDataRouter;

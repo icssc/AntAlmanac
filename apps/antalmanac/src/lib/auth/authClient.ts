@@ -29,7 +29,6 @@ export async function signOut(onLogoutComplete?: () => void) {
         await useSessionStore.getState().clearSession();
 
         const { logoutUrl } = await trpc.userData.getLogoutUrl.query({
-            sessionToken: session.token,
             redirectUrl: window.location.origin,
         });
 
