@@ -1,0 +1,49 @@
+apps/antalmanac/src/components/Calendar/CalendarRoot.tsx
+  349f97e9c449937d 26,100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.0",
+  "base_commit_sha": "ac3dd3a49b6ded1a343c841b019abf8e628d58ee",
+  "prompts": {
+    "349f97e9c449937d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3823bc66-50d8-4c0d-b658-ca148ca37fd5",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 2,
+      "total_deletions": 2,
+      "accepted_lines": 2,
+      "overriden_lines": 0
+    },
+    "6c68eeef43a61aea": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "dde11297-12cb-4cda-8d7c-90742f0af683",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 156,
+      "total_deletions": 0,
+      "accepted_lines": 0,
+      "overriden_lines": 0
+    },
+    "cb0ed9264ccee4e3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d2fb9958-3ad7-4425-aaf6-239c593f04d6",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": null,
+      "messages": [],
+      "total_additions": 0,
+      "total_deletions": 0,
+      "accepted_lines": 22,
+      "overriden_lines": 0
+    }
+  }
+}
