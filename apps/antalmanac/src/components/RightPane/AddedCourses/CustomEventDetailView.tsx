@@ -1,7 +1,7 @@
 import { Delete } from '@mui/icons-material';
 import { Box, Card, CardActions, CardHeader, IconButton, Tooltip } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
-import moment from 'moment';
+import { format, set } from 'date-fns';
 import { useEffect, useState } from 'react';
 
 import { deleteCustomEvent } from '$actions/AppStoreActions';
@@ -37,12 +37,13 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
     }, []);
 
     const readableDateAndTimeFormat = (start: string, end: string, days: boolean[]) => {
-        const startTime = moment({
+        const baseDate = new Date(2000, 0, 1);
+        const startTime = set(baseDate, {
             hours: parseInt(start.slice(0, 2)),
             minutes: parseInt(start.slice(3, 5)),
         });
 
-        const endTime = moment({
+        const endTime = set(baseDate, {
             hours: parseInt(end.slice(0, 2)),
             minutes: parseInt(end.slice(3, 5)),
         });
@@ -50,9 +51,9 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
         const dayAbbreviations = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
         const daysString = days.map((includeDate, index) => (includeDate ? dayAbbreviations[index] : '')).join(' ');
 
-        const timeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
+        const timeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm a';
 
-        return `${startTime.format(timeFormat)} — ${endTime.format(timeFormat)} • ${daysString}`;
+        return `${format(startTime, timeFormat)} — ${format(endTime, timeFormat)} • ${daysString}`;
     };
 
     return (
