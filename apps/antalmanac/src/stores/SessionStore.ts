@@ -52,7 +52,11 @@ export const useSessionStore = create<SessionState>((set) => {
                         const sessionResult = await trpc.userData.getUserAndAccountBySessionToken.query({
                             token: session,
                         });
-                        if (!sessionResult) return false;
+                        if (!sessionResult) {
+                            set({ session: null, sessionIsValid: false });
+                            useNotificationStore.getState().loadNotifications();
+                            return false;
+                        }
                         const { users } = sessionResult;
 
                         let googleId = await trpc.userData.getGoogleIdByUserId.query({
