@@ -63,11 +63,11 @@ const AuthInitializer = () => {
 
             const data = JSON.parse(savedData);
 
-            if (userData?.userData && isEmptySchedule(userData.userData.schedules)) {
-                scheduleSaveState.schedules = data;
-            } else {
-                const saveState = userData && 'userData' in userData ? userData.userData : userData;
-                if (saveState !== null) {
+            const saveState = userData?.userData;
+            if (saveState) {
+                if (isEmptySchedule(saveState.schedules)) {
+                    scheduleSaveState.schedules = data;
+                } else {
                     mergeShortCourseSchedules(saveState.schedules, data, '(import)-');
                     scheduleSaveState.schedules = saveState.schedules;
                     scheduleSaveState.scheduleIndex = saveState.schedules.length - 1;
