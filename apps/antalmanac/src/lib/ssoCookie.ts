@@ -6,8 +6,10 @@
  * and PeterPortal (/planner). It is NOT a session token.
  */
 
-import { ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies';
-import { NextURL } from 'next/dist/server/web/next-url';
+import { NextRequest, NextResponse } from 'next/server';
+
+type NextResponseCookie = Parameters<NextResponse['cookies']['set']>[2];
+type NextURL = NextRequest['nextUrl'];
 
 export const SSO_COOKIE_NAME = 'icssc_logged_in';
 const MAX_AGE_SECONDS = 30 * 24 * 60 * 60; // 30 days
@@ -15,7 +17,7 @@ const MAX_AGE_SECONDS = 30 * 24 * 60 * 60; // 30 days
 /**
  * When changing this function, also change {@link getCookieAttributes}
  */
-export function getSsoResponseCookieAttributes(nextUrl: NextURL): Partial<ResponseCookie> {
+export function getSsoResponseCookieAttributes(nextUrl: NextURL): Partial<NextResponseCookie> {
     const isLocalhost = nextUrl.hostname === 'localhost';
     const domain = isLocalhost ? '' : 'antalmanac.com';
     return {
