@@ -57,7 +57,7 @@ const AuthInitializer = () => {
             const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
             if (savedUserId) {
-                await trpc.userData.flagImportedSchedule.mutate({ providerId: savedUserId });
+                await trpc.userData.flagImportedSchedule.mutate({ providerAccountId: savedUserId });
                 setLocalStorageImportedUser(savedUserId);
             }
 

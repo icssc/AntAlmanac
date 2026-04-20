@@ -238,7 +238,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
             await saveSchedule(accounts.providerAccountId, true);
 
             await trpc.userData.flagImportedSchedule.mutate({
-                providerId: username,
+                providerAccountId: username,
             });
         }
     }
@@ -263,7 +263,7 @@ export const importScheduleWithUsername = async (username: string) => {
 };
 
 export const loadSchedule = async (
-    providerId: string,
+    providerAccountId: string,
     rememberMe: boolean,
     accountType: 'OIDC' | 'GOOGLE' | 'GUEST',
     postHog?: PostHog
@@ -271,24 +271,24 @@ export const loadSchedule = async (
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
-        label: providerId,
+        label: providerAccountId,
         value: rememberMe ? 1 : 0,
     });
     if (
-        providerId != null &&
+        providerAccountId != null &&
         (!AppStore.hasUnsavedChanges() ||
             window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
     ) {
-        providerId = providerId.replace(/\s+/g, '');
-        if (providerId.length > 0) {
+        providerAccountId = providerAccountId.replace(/\s+/g, '');
+        if (providerAccountId.length > 0) {
             if (rememberMe) {
-                setLocalStorageUserId(providerId);
+                setLocalStorageUserId(providerAccountId);
             }
 
             try {
                 const account = await trpc.userData.getAccountByProviderAccountId.query({
                     accountType,
-                    providerId,
+                    providerAccountId: providerAccountId,
                 });
 
                 const userDataResponse = await trpc.userData.getUserData.query({ userId: account.userId });
@@ -310,7 +310,7 @@ export const loadSchedule = async (
                 if (error) {
                     openSnackbar(
                         'error',
-                        `Network error loading course information for "${providerId}". 	              
+                        `Network error loading course information for "${providerAccountId}". 	              
                         If this continues to happen, please submit a feedback form.`
                     );
                 }

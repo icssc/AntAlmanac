@@ -75,13 +75,13 @@ const userDataRouter = router({
     }),
 
     getAccountByProviderAccountId: procedure
-        .input(z.object({ accountType: z.enum(['OIDC', 'GOOGLE', 'GUEST']), providerId: z.string() }))
+        .input(z.object({ accountType: z.enum(['OIDC', 'GOOGLE', 'GUEST']), providerAccountId: z.string() }))
         .query(async ({ input }) => {
-            const account = await RDS.getAccountByProviderId(db, input.accountType, input.providerId);
+            const account = await RDS.getAccountByProviderAccountId(db, input.accountType, input.providerAccountId);
             if (!account) {
                 throw new TRPCError({
                     code: 'NOT_FOUND',
-                    message: `Couldn't find schedules for username "${input.providerId}".`,
+                    message: `Couldn't find schedules for username "${input.providerAccountId}".`,
                 });
             }
             return account;
@@ -100,8 +100,8 @@ const userDataRouter = router({
         );
     }),
 
-    flagImportedSchedule: procedure.input(z.object({ providerId: z.string() })).mutation(async ({ input }) => {
-        return await RDS.flagImportedUser(db, input.providerId);
+    flagImportedSchedule: procedure.input(z.object({ providerAccountId: z.string() })).mutation(async ({ input }) => {
+        return await RDS.flagImportedUser(db, input.providerAccountId);
     }),
 
     /**

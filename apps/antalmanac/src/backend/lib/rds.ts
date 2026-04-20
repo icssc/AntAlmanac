@@ -28,7 +28,7 @@ export class RDS {
      * @param userId - The ID of the user whose account is to be retrieved.
      * @returns A promise that resolves to the account object if found, otherwise null.
      */
-    static async getAccountByProviderId(
+    static async getAccountByProviderAccountId(
         db: DatabaseOrTransaction,
         accountType: Account['accountType'],
         providerAccountId: string
