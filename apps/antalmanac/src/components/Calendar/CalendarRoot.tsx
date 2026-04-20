@@ -23,7 +23,7 @@ import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import { CalendarMonth } from '@mui/icons-material';
 import { Box, Backdrop, useTheme } from '@mui/material';
-import { format, getDay, startOfWeek, type Locale } from 'date-fns';
+import { differenceInCalendarDays, format, getDay, startOfWeek, type Locale } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, Components, DateLocalizer, dateFnsLocalizer, Views, ViewsProps } from 'react-big-calendar';
@@ -97,7 +97,7 @@ export const ScheduleCalendar = memo(() => {
                 hasHadEventsRef.current = true;
                 const skeletonBlueprint = eventsInCalendar
                     .map((event) => {
-                        const dayOffset = event.start.getDay() - 1;
+                        const dayOffset = differenceInCalendarDays(event.start, BASE_DATE);
                         return {
                             dayOffset,
                             startHour: event.start.getHours(),
