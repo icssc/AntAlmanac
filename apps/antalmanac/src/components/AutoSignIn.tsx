@@ -27,8 +27,12 @@ export function AutoSignIn() {
                 return;
             }
 
-            const { url } = await getSignInUrl({ prompt: 'none' });
-            loginUser({ silent: true, signInUrl: url });
+            try {
+                const { url } = await getSignInUrl({ prompt: 'none' });
+                loginUser({ silent: true, signInUrl: url });
+            } catch {
+                // Silent SSO failed (e.g. backend unavailable). Don't retry.
+            }
         };
 
         checkAndSignIn();
