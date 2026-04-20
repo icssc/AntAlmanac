@@ -1,4 +1,6 @@
 // import { usePlannerRoadmaps } from '$hooks/usePlanner';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { Box, Button, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
@@ -9,6 +11,8 @@ const SearchWithPlannerButton = () => {
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
     const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
+
+    const displaySections = useCoursePaneStore((state) => state.displaySections);
 
     // const { roadmaps } = usePlannerRoadmaps();
     // TODO
@@ -35,6 +39,21 @@ const SearchWithPlannerButton = () => {
     const search = (roadmapId: Roadmap['id']) => {
         console.log('searching', roadmapId);
         handleMenuClose();
+        RightPaneStore.setMultiSearchData([
+            {
+                deptValue: 'I&C SCI',
+                courseNumber: '6B',
+            },
+            {
+                deptValue: 'I&C SCI',
+                courseNumber: '6D',
+            },
+            {
+                deptValue: 'SOC SCI',
+                courseNumber: 'H1E',
+            },
+        ]);
+        displaySections();
     };
 
     return (
