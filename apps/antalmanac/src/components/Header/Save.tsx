@@ -1,7 +1,6 @@
 import actionTypesStore from '$actions/ActionTypesStore';
 import { saveSchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import trpc from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -13,10 +12,10 @@ import { useShallow } from 'zustand/react/shallow';
 
 export const Save = () => {
     const isDark = useThemeStore((store) => store.isDark);
-    const { session, sessionIsValid } = useSessionStore(
+    const { sessionIsValid, user } = useSessionStore(
         useShallow((state) => ({
-            session: state.session,
             sessionIsValid: state.sessionIsValid,
+            user: state.user,
         }))
     );
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
@@ -50,12 +49,9 @@ export const Save = () => {
     }, []);
 
     const saveScheduleData = async () => {
-        if (sessionIsValid && session) {
-            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
-                token: session.token,
-            });
+        if (sessionIsValid && user) {
             setSaving(true);
-            await saveSchedule(accounts.providerAccountId, true, users);
+            await saveSchedule(user.id, true);
             setSaving(false);
         }
     };

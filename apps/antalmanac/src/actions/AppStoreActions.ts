@@ -2,7 +2,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { getSignInUrl } from '$lib/auth/authActions';
 import { warnMultipleTerms } from '$lib/helpers';
-import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { setLocalStorageDataCache, setLocalStorageUserId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -27,7 +27,6 @@ export interface CopyScheduleOptions {
 }
 
 interface AutoSaveScheduleOptions {
-    userInfo?: { email?: string | null; name?: string | null; avatar?: string | null };
     postHog?: PostHog;
 }
 
@@ -81,23 +80,18 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
     return true;
 }
 
-export const saveSchedule = async (
-    providerAccountId: string,
-    rememberMe: boolean,
-    userInfo?: { email?: string | null; name?: string | null; avatar?: string | null },
-    postHog?: PostHog
-) => {
+export const saveSchedule = async (userId: string, rememberMe: boolean, postHog?: PostHog) => {
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
-        label: providerAccountId,
+        label: userId,
         value: rememberMe ? 1 : 0,
     });
 
-    if (providerAccountId != null) {
-        providerAccountId = providerAccountId.replace(/\s+/g, '');
+    if (userId != null) {
+        userId = userId.replace(/\s+/g, '');
 
-        if (providerAccountId.length > 0) {
+        if (userId.length > 0) {
             const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
             if (
@@ -111,12 +105,9 @@ export const saveSchedule = async (
 
             try {
                 const result = await trpc.userData.saveUserData.mutate({
-                    id: providerAccountId,
+                    id: userId,
                     data: {
-                        id: providerAccountId,
-                        email: userInfo?.email ?? undefined,
-                        name: userInfo?.name ?? undefined,
-                        avatar: userInfo?.avatar ?? undefined,
+                        id: userId,
                         userData: scheduleSaveState,
                     },
                 });
@@ -130,7 +121,7 @@ export const saveSchedule = async (
                 } else {
                     openSnackbar(
                         'success',
-                        `Schedule saved under username "${providerAccountId}". Don't forget to sign up for classes on WebReg!`
+                        `Schedule saved under username "${userId}". Don't forget to sign up for classes on WebReg!`
                     );
                 }
                 deleteTempSaveData();
@@ -140,7 +131,7 @@ export const saveSchedule = async (
                     if (useSessionStore.getState().sessionIsValid) {
                         openSnackbar('error', `Schedule could not be saved`);
                     } else {
-                        openSnackbar('error', `Schedule could not be saved under username "${providerAccountId}`);
+                        openSnackbar('error', `Schedule could not be saved under username "${userId}"`);
                     }
                 } else {
                     openSnackbar('error', 'Network error or server is down.');
@@ -150,26 +141,22 @@ export const saveSchedule = async (
     }
 };
 
-export async function autoSaveSchedule(providerAccountId: string, options: AutoSaveScheduleOptions) {
-    const { userInfo, postHog } = options;
+export async function autoSaveSchedule(userId: string, { postHog }: AutoSaveScheduleOptions = {}) {
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
-        label: providerAccountId,
+        label: userId,
     });
-    if (providerAccountId == null) return;
-    providerAccountId = providerAccountId.replace(/\s+/g, '');
-    if (providerAccountId.length === 0) return;
+    if (userId == null) return;
+    userId = userId.replace(/\s+/g, '');
+    if (userId.length === 0) return;
 
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
     try {
         const result = await trpc.userData.saveUserData.mutate({
-            id: providerAccountId,
+            id: userId,
             data: {
-                id: providerAccountId,
-                email: userInfo?.email ?? undefined,
-                name: userInfo?.name ?? undefined,
-                avatar: userInfo?.avatar ?? undefined,
+                id: userId,
                 userData: scheduleSaveState,
             },
         });
@@ -182,7 +169,7 @@ export async function autoSaveSchedule(providerAccountId: string, options: AutoS
         AppStore.saveSchedule();
     } catch (e) {
         if (e instanceof TRPCError) {
-            openSnackbar('error', `Schedule could not be auto-saved under username "${providerAccountId}`);
+            openSnackbar('error', `Schedule could not be auto-saved under username "${userId}"`);
         } else {
             openSnackbar('error', 'Network error or server is down.');
         }
@@ -228,7 +215,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
     const userAndAccount = await trpc.userData.getUserAndAccountBySessionToken.query({
         token: sessionStore.session.token ?? '',
     });
-    const { users, accounts } = userAndAccount;
+    const { accounts } = userAndAccount;
 
     const incomingData: User | null = await trpc.userData.getUserData.query({ userId: incomingUser.id });
     const scheduleSaveState =
@@ -248,7 +235,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
 
             useScheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
 
-            await saveSchedule(accounts.providerAccountId, true, users);
+            await saveSchedule(accounts.providerAccountId, true);
 
             await trpc.userData.flagImportedSchedule.mutate({
                 providerId: username,

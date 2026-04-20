@@ -1,7 +1,6 @@
 import { EventEmitter } from 'events';
 
 import { autoSaveSchedule } from '$actions/AppStoreActions';
-import trpc from '$lib/api/trpc';
 import { getLocalStorageAutoSave } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -122,13 +121,9 @@ class ActionTypesStore extends EventEmitter {
         }
 
         if (autoSave) {
-            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
-                token: sessionStore.session.token,
-            });
-
-            if (accounts.providerAccountId) {
+            if (sessionStore?.user?.id) {
                 this.emit('autoSaveStart');
-                await autoSaveSchedule(accounts.providerAccountId, { userInfo: users });
+                await autoSaveSchedule(sessionStore.user.id);
                 AppStore.unsavedChanges = false;
                 this.emit('autoSaveEnd');
             }
