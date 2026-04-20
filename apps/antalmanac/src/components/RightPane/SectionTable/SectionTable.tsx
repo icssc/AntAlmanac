@@ -1,5 +1,5 @@
 import { Assessment, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
-import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Alert, Box, Button, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useMemo } from 'react';
 
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
@@ -10,6 +10,7 @@ import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/Enrol
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
+import { SortableList } from '$components/drag-and-drop/SortableList';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
 import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
@@ -37,8 +38,15 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
 };
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
-function SectionTable(props: SectionTableProps) {
-    const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory, missingSections = [] } = props;
+function SectionTable({
+    courseDetails,
+    term,
+    allowHighlight,
+    scheduleNames,
+    analyticsCategory,
+    missingSections = [],
+    sortable = false,
+}: SectionTableProps) {
     const { isMilitaryTime } = useTimeFormatStore();
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
@@ -71,7 +79,7 @@ function SectionTable(props: SectionTableProps) {
     }, [activeColumns]);
 
     return (
-        <>
+        <Box>
             <Box
                 sx={{
                     display: 'flex',
@@ -80,6 +88,12 @@ function SectionTable(props: SectionTableProps) {
                     marginTop: '4px',
                 }}
             >
+                {sortable ? (
+                    <Button variant="contained" color="secondary" sx={{ padding: 0, minWidth: 0, minHeight: 0 }}>
+                        <SortableList.DragHandle iconSx={{ color: 'inherit' }} />
+                    </Button>
+                ) : null}
+
                 <CourseInfoBar
                     deptCode={courseDetails.deptCode}
                     courseTitle={courseDetails.courseTitle}
@@ -187,7 +201,7 @@ function SectionTable(props: SectionTableProps) {
                     />
                 </Table>
             </TableContainer>
-        </>
+        </Box>
     );
 }
 

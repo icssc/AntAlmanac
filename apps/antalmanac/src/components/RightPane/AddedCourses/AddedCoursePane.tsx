@@ -1,6 +1,7 @@
 import { updateScheduleNote } from '$actions/AppStoreActions';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import { CopyScheduleButton } from '$components/buttons/Copy';
+import { SortableList } from '$components/drag-and-drop/SortableList';
 import { EmptyState } from '$components/EmptyState';
 import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEventDetailView';
 import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
@@ -12,7 +13,9 @@ import { clickToCopy } from '$lib/helpers';
 import { LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { getCourseId } from '$stores/scheduleHelpers';
 import { useTabStore } from '$stores/TabStore';
+import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { MenuBook } from '@mui/icons-material';
 import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography, useTheme } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
@@ -36,6 +39,7 @@ const buttonSx: SxProps = {
 
 export interface CourseWithTerm extends AACourse {
     term: string;
+    id: string;
 }
 
 const NOTE_MAX_LEN = 5000;
@@ -46,12 +50,8 @@ function getCourses() {
     const formattedCourses: CourseWithTerm[] = [];
 
     for (const course of currentCourses) {
-        let formattedCourse = formattedCourses.find(
-            (needleCourse) =>
-                needleCourse.courseNumber === course.courseNumber &&
-                needleCourse.deptCode === course.deptCode &&
-                needleCourse.courseTitle === course.courseTitle
-        );
+        const courseId = getCourseId(course);
+        let formattedCourse = formattedCourses.find((needleCourse) => getCourseId(needleCourse) === courseId);
 
         const sectionUpdatedAt = course.section?.updatedAt ?? null;
 
@@ -75,6 +75,7 @@ function getCourses() {
                     },
                 ],
                 updatedAt: sectionUpdatedAt ?? null,
+                id: getCourseId(course),
             };
             formattedCourses.push(formattedCourse);
         }
@@ -304,9 +305,22 @@ function SkeletonSchedule() {
 }
 
 function AddedSectionsGrid() {
-    const [courses, setCourses] = useState(getCourses());
+    const [courses, setCourses] = useState(getCourses);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [scheduleIndex, setScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
+
+    const handleCourseOrderChange = (updatedCourses: CourseWithTerm[], _activeIndex: number, overIndex: number) => {
+        setCourses(updatedCourses);
+
+        const movedCourse = updatedCourses[overIndex];
+        const nextConsecutiveCourse = overIndex + 1 !== updatedCourses.length ? updatedCourses[overIndex + 1] : null;
+
+        AppStore.reorderAddedCourses(
+            AppStore.getCurrentScheduleIndex(),
+            getCourseId(movedCourse),
+            nextConsecutiveCourse !== null ? getCourseId(nextConsecutiveCourse) : null
+        );
+    };
 
     useEffect(() => {
         const handleCoursesChange = () => {
@@ -377,12 +391,17 @@ function AddedSectionsGrid() {
                         }}
                     />
                 )}
-                <Box display="flex" flexDirection="column" gap={1}>
-                    {courses.map((course) => {
+                <SortableList
+                    disableHorizontalScroll
+                    items={courses}
+                    onChange={handleCourseOrderChange}
+                    sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}
+                    sortingStrategy={verticalListSortingStrategy}
+                    renderItem={(course: CourseWithTerm) => {
                         const missingSections = getMissingSections(course);
 
                         return (
-                            <Box key={course.deptCode + course.courseNumber + course.courseTitle}>
+                            <SortableList.Item id={course.id}>
                                 <SectionTableLazyWrapper
                                     courseDetails={course}
                                     term={course.term}
@@ -390,11 +409,12 @@ function AddedSectionsGrid() {
                                     analyticsCategory={analyticsEnum.addedClasses}
                                     scheduleNames={scheduleNames}
                                     missingSections={missingSections}
+                                    sortable
                                 />
-                            </Box>
+                            </SortableList.Item>
                         );
-                    })}
-                </Box>
+                    }}
+                />
             </Box>
 
             <CustomEventsBox />

@@ -1,9 +1,8 @@
+import { BLUE } from '$src/globals';
 import { Dialog, DialogContent, LinearProgress, Stack, Box } from '@mui/material';
 import { useState, useEffect } from 'react';
 
 import { Logo } from './Header/Logo';
-
-import { BLUE } from '$src/globals';
 
 const FUN_FACTS = [
     'Did you know? AntAlmanac is maintained by the ICS Student Council at UCI!',
