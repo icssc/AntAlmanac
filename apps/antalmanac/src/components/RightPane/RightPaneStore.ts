@@ -34,6 +34,7 @@ export interface BuildingFocusInfo {
 class RightPaneStore extends EventEmitter {
     private formData: Record<ManualSearchParam, string>;
     private prevFormData?: Record<ManualSearchParam, string>;
+    private multiSearchData: (typeof this.formData)[];
     private urlSectionCodeValue: string;
     private urlTermValue: string;
     private urlGEValue: string;
@@ -45,6 +46,7 @@ class RightPaneStore extends EventEmitter {
         this.setMaxListeners(15);
         this.formData = structuredClone(defaultFormValues);
         const search = new URLSearchParams(window.location.search);
+        this.multiSearchData = [];
         this.urlSectionCodeValue = search.get('sectionCode') || '';
         this.urlTermValue = search.get('term') || '';
         this.urlGEValue = search.get('ge') || '';
@@ -76,6 +78,8 @@ class RightPaneStore extends EventEmitter {
         return defaultFormValues;
     };
 
+    getMultiSearchData = () => this.multiSearchData;
+
     getUrlSectionCodeValue = () => this.urlSectionCodeValue;
     getUrlTermValue = () => this.urlTermValue;
     getUrlGEValue = () => this.urlGEValue;
@@ -85,6 +89,14 @@ class RightPaneStore extends EventEmitter {
     updateFormValue = (field: ManualSearchParam, value: string) => {
         this.formData[field] = value;
         this.emit('formDataChange');
+    };
+
+    setMultiSearchData = (data: Partial<(typeof this.multiSearchData)[number]>[]) => {
+        this.multiSearchData = data.map((params) => ({ ...defaultFormValues, ...params }));
+    };
+
+    clearMultiSearchData = () => {
+        this.multiSearchData = [];
     };
 
     storePrevFormData = () => {

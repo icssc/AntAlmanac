@@ -134,7 +134,7 @@ function combineWebsocResponses(responses: WebsocAPIResponse[]) {
 
 const websocRouter = router({
     getOne: procedure.input(z.record(z.string(), z.string())).query(queryWebSoc),
-    getMany: procedure
+    getManyOfField: procedure
         .input(z.object({ params: z.record(z.string(), z.string()), fieldName: z.string() }))
         .query(async ({ input }) => {
             const responses: WebsocAPIResponse[] = [];
@@ -143,6 +143,14 @@ const websocRouter = router({
                 req[input.fieldName] = field;
                 responses.push(await queryWebSoc({ input: req }));
             }
+            return combineWebsocResponses(responses);
+        }),
+    getMultiple: procedure
+        .input(z.object({ params: z.array(z.record(z.string(), z.string())) }))
+        .query(async ({ input }) => {
+            const responses: WebsocAPIResponse[] = await Promise.all(
+                input.params.map((query) => queryWebSoc({ input: query }))
+            );
             return combineWebsocResponses(responses);
         }),
     getCourseInfo: procedure.input(z.record(z.string(), z.string())).query(async ({ input }) => {
