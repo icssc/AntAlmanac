@@ -86,7 +86,7 @@ const AuthInitializer = () => {
 
             openSnackbar('success', `Unsaved changes have been saved to your account!`);
         }
-    }, [sessionData]);
+    }, [sessionData, googleId]);
 
     const loadScheduleAndSetLoadingAuth = useCallback(async () => {
         if (!sessionData) {
