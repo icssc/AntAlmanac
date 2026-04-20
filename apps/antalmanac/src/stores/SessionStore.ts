@@ -60,7 +60,6 @@ export const useSessionStore = create<SessionState>((set, get) => {
                 return false;
             }
 
-            // Remove "google" prefix
             set({
                 session: sessionData.session,
                 sessionId: sessionData.session.id,
