@@ -1,20 +1,19 @@
-import { Assessment, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
-import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { useMemo } from 'react';
-
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
 import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
 import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/EnrollmentHistoryPopup';
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
-import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
+import type { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
-import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
+import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
+import { Assessment, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
+import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { useMemo } from 'react';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -45,21 +44,29 @@ function SectionTable(props: SectionTableProps) {
     const [activeTab] = useTabStore((store) => [store.activeTab]);
     const isMobile = useIsMobile();
 
-    const actionColumnWidth = isMobile ? 60 : 88;
+    const actionColumnWidth = isMobile ? 54 : 85;
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
     }, [courseDetails.deptCode, courseDetails.courseNumber]);
 
     const formattedTime = useMemo(() => {
-        if (!courseDetails.updatedAt) return null;
+        if (!courseDetails.updatedAt) {
+            return null;
+        }
+
         const date = new Date(courseDetails.updatedAt);
-        if (isNaN(date.getTime())) return null;
+
+        if (Number.isNaN(date.getTime())) {
+            return null;
+        }
+
         const timeString = date.toLocaleTimeString(undefined, {
             hour: '2-digit',
             minute: '2-digit',
             hour12: !isMilitaryTime,
         });
+
         return timeString.replace(/^0(\d)/, '$1');
     }, [courseDetails.updatedAt, isMilitaryTime]);
 
