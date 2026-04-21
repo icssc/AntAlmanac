@@ -1,5 +1,6 @@
 import { SectionThemeGrid } from '$components/SectionTheme/SectionThemeGrid';
-import { getSectionThemeOptions, type SectionThemePreset } from '$lib/sectionThemes';
+import { getSectionThemeOptions } from '$lib/sectionThemes';
+import { type SectionColorSetting } from '$lib/themes';
 import { BLUE } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
@@ -10,17 +11,14 @@ export const sectionThemePickerDialogTestId = 'section-theme-picker-dialog';
 export interface SectionThemePickerModalProps {
     open: boolean;
     onClose: () => void;
-    sectionColor: SectionThemePreset | 'custom';
-    onApply: (preset: SectionThemePreset) => void;
+    sectionColor: SectionColorSetting;
+    onApply: (setting: SectionColorSetting) => void;
     title?: string;
     description?: React.ReactNode;
 }
 
-function initialPending(
-    sectionColor: SectionThemePreset | 'custom',
-    firstPreset: SectionThemePreset
-): SectionThemePreset {
-    return sectionColor === 'custom' ? firstPreset : sectionColor;
+function initialPending(sectionColor: SectionColorSetting): SectionColorSetting {
+    return sectionColor;
 }
 
 export function SectionThemePickerModal({
@@ -33,20 +31,21 @@ export function SectionThemePickerModal({
 }: SectionThemePickerModalProps) {
     const isDark = useThemeStore((s) => s.isDark);
     const options = useMemo(() => getSectionThemeOptions(isDark), [isDark]);
-    const firstPreset = options.find((o) => o.value === 'default')?.value ?? options[0]?.value ?? 'default';
 
-    const [pending, setPending] = useState<SectionThemePreset>(() => initialPending(sectionColor, firstPreset));
+    const [pending, setPending] = useState<SectionColorSetting>(() => initialPending(sectionColor));
 
     useEffect(() => {
         if (open) {
-            setPending(initialPending(sectionColor, firstPreset));
+            setPending(initialPending(sectionColor));
         }
-    }, [open, sectionColor, firstPreset]);
+    }, [open, sectionColor]);
 
     const handleApply = useCallback(() => {
         onApply(pending);
         onClose();
     }, [onApply, onClose, pending]);
+
+    const applyThemeLabel = pending === 'custom' ? 'Custom' : (options.find((o) => o.value === pending)?.label ?? '');
 
     return (
         <Dialog
@@ -124,7 +123,7 @@ export function SectionThemePickerModal({
                         px: 3,
                     }}
                 >
-                    Apply {options.find((o) => o.value === pending)?.label ?? ''} Theme
+                    Apply {applyThemeLabel} Theme
                 </Button>
             </DialogActions>
         </Dialog>

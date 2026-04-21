@@ -1,15 +1,15 @@
 import { SectionThemePickerModal } from '$components/SectionTheme/SectionThemePickerModal';
 import { getSectionThemeOptions } from '$lib/sectionThemes';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
-import { type SectionColorSetting, useSectionColorStore, useThemeStore } from '$stores/SettingsStore';
-import { Colorize, Palette } from '@mui/icons-material';
+import { useSectionColorStore, useThemeStore } from '$stores/SettingsStore';
+import { Palette } from '@mui/icons-material';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { usePostHog } from 'posthog-js/react';
 import { useMemo, useState } from 'react';
 
 const PICKER_DESCRIPTION =
-    'Select a theme to apply to all new sections you add to the calendar. To customize each section color, use the custom theme in the Settings Menu.';
+    'Choose a preset theme or Custom. Presets apply to new sections you add. Custom lets you set each section’s color from its course block on the calendar.';
 
 export function SectionColorSelector() {
     const muiTheme = useTheme();
@@ -31,11 +31,6 @@ export function SectionColorSelector() {
 
     const isCustom = sectionColor === 'custom';
     const activeLabel = isCustom ? 'Custom' : (currentPresetMeta?.label ?? sectionColor);
-
-    const handleSectionColorChange = (value: SectionColorSetting) => {
-        forceUpdate();
-        setSectionColor(value, postHog);
-    };
 
     const actionButtonSx = {
         textTransform: 'none' as const,
@@ -120,34 +115,15 @@ export function SectionColorSelector() {
                 Browse Themes
             </Button>
 
-            <Button
-                fullWidth
-                variant="outlined"
-                onClick={() => handleSectionColorChange('custom')}
-                sx={{
-                    ...actionButtonSx,
-                    ...(isCustom
-                        ? {
-                              color: accent,
-                              borderColor: accent,
-                              bgcolor: muiTheme.palette.action.selected,
-                          }
-                        : {}),
-                }}
-                startIcon={<Colorize fontSize="small" />}
-            >
-                {isCustom ? 'Using Custom Theme' : 'Custom Theme'}
-            </Button>
-
             <SectionThemePickerModal
                 open={pickerOpen}
                 onClose={() => setPickerOpen(false)}
                 sectionColor={sectionColor}
                 title="Section Themes"
                 description={PICKER_DESCRIPTION}
-                onApply={(preset) => {
+                onApply={(setting) => {
                     forceUpdate();
-                    setSectionColor(preset, postHog);
+                    setSectionColor(setting, postHog);
                 }}
             />
         </Box>

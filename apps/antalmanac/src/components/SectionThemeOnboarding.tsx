@@ -1,6 +1,7 @@
 import { SectionThemeGrid } from '$components/SectionTheme/SectionThemeGrid';
 import { setLocalStorageSectionColorOnboarding } from '$lib/localStorage';
-import { getSectionThemeOptions, type SectionThemePreset } from '$lib/sectionThemes';
+import { getSectionThemeOptions } from '$lib/sectionThemes';
+import { type SectionColorSetting } from '$lib/themes';
 import { BLUE } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useSectionThemeOnboardingStore } from '$stores/SectionThemeOnboardingStore';
@@ -42,18 +43,15 @@ function SectionThemeOnboarding() {
     const muiTheme = useTheme();
 
     const themeOptions = useMemo(() => getSectionThemeOptions(isDark), [isDark]);
-    const firstPreset = themeOptions.find((o) => o.value === 'default')?.value ?? themeOptions[0]?.value ?? 'default';
 
-    const [pendingSelection, setPendingSelection] = useState<SectionThemePreset>(() =>
-        sectionColor === 'custom' ? firstPreset : (sectionColor as SectionThemePreset)
-    );
+    const [pendingSelection, setPendingSelection] = useState<SectionColorSetting>(() => sectionColor);
 
     useEffect(() => {
         if (!showSectionThemeOnboarding) {
             return;
         }
-        setPendingSelection(sectionColor === 'custom' ? firstPreset : (sectionColor as SectionThemePreset));
-    }, [showSectionThemeOnboarding, sectionColor, firstPreset]);
+        setPendingSelection(sectionColor);
+    }, [showSectionThemeOnboarding, sectionColor]);
 
     const handleKeepCustom = useCallback(() => {
         setSectionColor('custom', postHog);
@@ -70,7 +68,10 @@ function SectionThemeOnboarding() {
         setShowSectionThemeOnboarding(false);
     }, [pendingSelection, sectionColor, forceUpdate, setSectionColor, postHog, setShowSectionThemeOnboarding]);
 
-    const selectedLabel = themeOptions.find((o) => o.value === pendingSelection)?.label ?? '';
+    const selectedLabel =
+        pendingSelection === 'custom'
+            ? 'Custom'
+            : (themeOptions.find((o) => o.value === pendingSelection)?.label ?? '');
 
     return (
         <Dialog
@@ -132,11 +133,9 @@ function SectionThemeOnboarding() {
                         />
                     </Box>
 
-                    <Typography variant="body2" color="text.secondary" sx={{ display: 'block', lineHeight: 1.5 }}>
+                    <Typography variant="body1" color="text.secondary" sx={{ display: 'block', lineHeight: 1.5 }}>
                         You can always change your theme later in{' '}
-                        <strong>Settings → Section Color → Choose section theme</strong>. Choosing a theme will re-color
-                        sections that still have their auto-assigned colors. Any colors you have manually customized
-                        will remain unchanged.
+                        <strong>Settings → Section Color → Browse Themes</strong>.
                     </Typography>
                 </Stack>
             </DialogContent>
