@@ -124,7 +124,7 @@ export function SectionThemePickerModal({
                         px: 3,
                     }}
                 >
-                    Apply {options.find((o) => o.value === pending)?.label ?? ''} theme
+                    Apply {options.find((o) => o.value === pending)?.label ?? ''} Theme
                 </Button>
             </DialogActions>
         </Dialog>

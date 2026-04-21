@@ -1,9 +1,16 @@
 import { catppuccinTheme } from '$lib/themes/catppuccin';
 import { defaultTheme } from '$lib/themes/defaultTheme';
 import { legacyTheme } from '$lib/themes/legacyTheme';
+import { pastelTheme } from '$lib/themes/pastelTheme';
 import { quietLuxuryTheme } from '$lib/themes/quietLuxury';
 
-export const sectionColorThemeDefinitions = [defaultTheme, legacyTheme, catppuccinTheme, quietLuxuryTheme] as const;
+export const sectionColorThemeDefinitions = [
+    defaultTheme,
+    legacyTheme,
+    pastelTheme,
+    catppuccinTheme,
+    quietLuxuryTheme,
+] as const;
 
 export type SectionColorPresetId = (typeof sectionColorThemeDefinitions)[number]['id'];
 export type SectionColorSetting = SectionColorPresetId | 'custom';
@@ -22,6 +29,7 @@ export const colorVariants: Record<SectionColorSetting, Record<string, string[]>
     custom: defaultTheme.palette,
     default: defaultTheme.palette,
     legacy: legacyTheme.palette,
+    pastel: pastelTheme.palette,
     catppuccin: catppuccinTheme.palette,
     quiet_luxury: quietLuxuryTheme.palette,
 };
