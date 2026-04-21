@@ -1,15 +1,14 @@
 {
     "$schema": "./node_modules/oxlint/configuration_schema.json",
-    "plugins": null,
-    "categories": {},
+    "plugins": ["eslint", "react", "unicorn", "oxc", "typescript"],
     "rules": {
         "sort-imports": [
             "error",
             {
-                "ignoreDeclarationSort": true,
+                "ignoreDeclarationSort": true
             }
         ]
     },
     "globals": {},
-    "ignorePatterns": []
+    "ignorePatterns": ["node_modules/**", ".next/**", "dist/**", "build/**"]
 }
