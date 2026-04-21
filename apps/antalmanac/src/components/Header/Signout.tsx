@@ -57,7 +57,10 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
         if (sessionIsValid) {
             const userData = await trpc.userData.getUserAndAccountBySessionToken
                 .query({ token: session ?? '' })
-                .then((res) => res.users);
+                .then((res) => res?.users);
+            if (!userData) {
+                return;
+            }
             setUser({
                 name: userData.name ?? undefined,
                 avatar: userData.avatar ?? undefined,

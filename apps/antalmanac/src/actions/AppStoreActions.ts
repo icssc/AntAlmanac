@@ -236,6 +236,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
     const userAndAccount = await trpc.userData.getUserAndAccountBySessionToken.query({
         token: session.session ?? '',
     });
+    if (!userAndAccount) return { imported: false, error: 'Session not found' };
     const { users, accounts } = userAndAccount;
 
     const incomingData: User | null = await trpc.userData.getUserData.query({ userId: incomingUser.id });
