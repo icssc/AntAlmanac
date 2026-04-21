@@ -6,7 +6,7 @@ export const RepeatingCustomEventSchema = type({
     end: 'string',
     days: 'boolean[]',
     customEventID: 'string',
-    'color?': 'string',
+    color: 'string',
     'building?': 'string | undefined',
 });
 

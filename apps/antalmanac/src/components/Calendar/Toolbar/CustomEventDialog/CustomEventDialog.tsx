@@ -31,6 +31,7 @@ const defaultCustomEventValues: Omit<RepeatingCustomEvent, 'customEventID'> = {
     start: '10:30',
     end: '15:30',
     title: '',
+    color: '#551a8b',
     days: [false, false, false, false, false, false, false],
     building: undefined,
 };
@@ -50,15 +51,6 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
 
     const postHog = usePostHog();
 
-    const resetForm = () => {
-        setStart(defaultCustomEventValues.start);
-        setEnd(defaultCustomEventValues.end);
-        setTitle(defaultCustomEventValues.title);
-        setDays(defaultCustomEventValues.days);
-        setBuilding(undefined);
-        setScheduleIndices([]);
-    };
-
     const disabled = !(scheduleIndices.length && days.includes(true));
 
     const handleSubmit = () => {
@@ -72,12 +64,22 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
     };
 
     const handleOpen = useCallback(() => {
-        setOpen(true);
         if (props.customEvent) {
+            setStart(props.customEvent.start);
+            setEnd(props.customEvent.end);
+            setTitle(props.customEvent.title);
+            setDays(props.customEvent.days);
+            setBuilding(props.customEvent.building);
             setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(props.customEvent.customEventID));
         } else {
+            setStart(defaultCustomEventValues.start);
+            setEnd(defaultCustomEventValues.end);
+            setTitle(defaultCustomEventValues.title);
+            setDays(defaultCustomEventValues.days);
+            setBuilding(defaultCustomEventValues.building);
             setScheduleIndices([AppStore.getCurrentScheduleIndex()]);
         }
+        setOpen(true);
 
         logAnalytics(postHog, {
             category: analyticsEnum.calendar,
@@ -126,8 +128,6 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             building: building,
         };
 
-        resetForm();
-
         if (props.customEvent) {
             editCustomEvent(newCustomEvent, scheduleIndices);
         } else {
@@ -151,7 +151,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
         <>
             {props.customEvent ? (
                 <Tooltip title="Edit">
-                    <IconButton onClick={handleOpen}>
+                    <IconButton sx={{ padding: 0.5 }} onClick={handleOpen}>
                         <Edit fontSize="small" />
                     </IconButton>
                 </Tooltip>

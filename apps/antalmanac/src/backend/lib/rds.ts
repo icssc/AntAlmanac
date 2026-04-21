@@ -536,7 +536,7 @@ export class RDS {
                     start: customEvent.start,
                     end: customEvent.end,
                     days: customEvent.days.split('').map((day) => day === '1'),
-                    color: customEvent.color ?? undefined,
+                    color: customEvent.color ?? '#551a8b',
                     building: customEvent.building ?? undefined,
                 });
             }
