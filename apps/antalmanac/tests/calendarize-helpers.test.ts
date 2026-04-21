@@ -1,8 +1,7 @@
-import type { Schedule, RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { describe, test, expect } from 'vitest';
-
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
+import type { Schedule, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { describe, test, expect } from 'vitest';
 
 describe('calendarize-helpers', () => {
     const courses: Schedule['courses'] = [
@@ -167,7 +166,7 @@ describe('calendarize-helpers', () => {
     const calendarizedCourseFinals: CourseEvent[] = [
         {
             locations: [],
-            color: '#2196f3',
+            color: 'placeholderColor',
             term: '2024 Winter',
             title: 'placeholderDeptCode placeholderCourseNumber',
             courseNumber: 'placeholderCourseNumber',
