@@ -9,7 +9,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { alpha, Box, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, type FormEvent } from 'react';
 
@@ -70,10 +70,11 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                     </Box>
 
                     {!manualSearchEnabled ? (
-                        <>
+                        <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
                             <FuzzySearch toggleSearch={toggleSearch} postHog={postHog} />
+                            <Typography>or</Typography>
                             <SearchWithPlannerButton />
-                        </>
+                        </Stack>
                     ) : (
                         <ManualSearch
                             onSubmit={() => {
