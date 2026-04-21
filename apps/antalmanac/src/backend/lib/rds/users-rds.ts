@@ -79,9 +79,10 @@ export class UsersRDS {
 
             const userSchedules = UsersRDS.aggregateUserData(sectionResults, customEventResults);
 
-            const scheduleIndex = user.currentScheduleId
+            const foundIndex = user.currentScheduleId
                 ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
-                : userSchedules.length;
+                : -1;
+            const scheduleIndex = foundIndex === -1 ? 0 : foundIndex;
 
             return {
                 id: userId,
@@ -133,9 +134,10 @@ export class UsersRDS {
 
                 const userSchedules = UsersRDS.aggregateUserData(sectionResults, customEventResults);
 
-                const scheduleIndex = user.currentScheduleId
+                const foundIndex = user.currentScheduleId
                     ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
-                    : userSchedules.length;
+                    : -1;
+                const scheduleIndex = foundIndex === -1 ? 0 : foundIndex;
                 return {
                     id: user.id,
                     userData: {
@@ -179,7 +181,7 @@ export class UsersRDS {
                 tx.update(users).set({ imported: true }).where(eq(users.id, res.accounts.userId)).execute()
             );
             return true;
-        } catch (error) {
+        } catch {
             return false;
         }
     }

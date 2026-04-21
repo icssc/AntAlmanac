@@ -71,10 +71,10 @@ export class SchedulesRDS {
                 userData.email,
                 userData.avatar
             );
-            const userId = account.userId;
             if (!account) {
                 throw new Error(`Failed to create user`);
             }
+            const userId = account.userId;
 
             // Add schedules and courses
             const scheduleIds = await this.upsertSchedulesAndContents(tx, userId, userData.userData.schedules);
