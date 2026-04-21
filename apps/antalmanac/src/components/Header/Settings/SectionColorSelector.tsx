@@ -9,7 +9,7 @@ import { usePostHog } from 'posthog-js/react';
 import { useMemo, useState } from 'react';
 
 const PICKER_DESCRIPTION =
-    'This only affects new auto-assigned section colors. If you already picked a color for a section on the calendar, that choice is kept.';
+    'Select a theme to apply to all new sections you add to the calendar. To customize each section color, use the custom theme in the Settings Menu.';
 
 export function SectionColorSelector() {
     const muiTheme = useTheme();
