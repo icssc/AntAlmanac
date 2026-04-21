@@ -792,14 +792,21 @@ export class RDS {
                         subscriptions.quarter,
                         subscriptions.environment,
                     ],
-                    set: {
-                        notifyOnOpen: notification.notifyOn.notifyOnOpen,
-                        notifyOnWaitlist: notification.notifyOn.notifyOnWaitlist,
-                        notifyOnFull: notification.notifyOn.notifyOnFull,
-                        notifyOnRestriction: notification.notifyOn.notifyOnRestriction,
-                        lastUpdatedStatus: notification.lastUpdatedStatus,
-                        lastCodes: notification.lastCodes,
-                    },
+                    set: buildConflictUpdateSet(subscriptions, {
+                        userId: 'keep',
+                        sectionCode: 'keep',
+                        year: 'keep',
+                        quarter: 'keep',
+                        environment: 'keep',
+                        notifyOnOpen: 'update',
+                        notifyOnWaitlist: 'update',
+                        notifyOnFull: 'update',
+                        notifyOnRestriction: 'update',
+                        lastUpdatedStatus: 'update',
+                        lastCodes: 'update',
+                        createdAt: 'keep',
+                        updatedAt: 'update',
+                    }),
                 })
         );
     }
