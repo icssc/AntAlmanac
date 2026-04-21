@@ -1,6 +1,3 @@
-import { useEffect, useCallback, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
-
 import { isEmptySchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
 import { LoadingScreen } from '$components/LoadingScreen';
 import trpc from '$lib/api/trpc';
@@ -18,6 +15,8 @@ import {
 } from '$lib/localStorage';
 import { clearSsoCookie, setSsoCookie } from '$lib/ssoCookie';
 import AppStore from '$stores/AppStore';
+import { useEffect, useCallback, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 export function AuthPage() {
     const [searchParams] = useSearchParams();

@@ -1,7 +1,6 @@
-import { describe, test, expect } from 'vitest';
-
 import type { CalendarEvent } from '$components/Calendar/CourseCalendarEvent';
 import { getEventsFromCourses } from '$lib/download';
+import { describe, test, expect } from 'vitest';
 
 describe('download-ics', () => {
     test('converts schedule courses to events for the ics library', () => {

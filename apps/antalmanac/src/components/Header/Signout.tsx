@@ -1,14 +1,13 @@
+import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
+import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
+import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
+import trpc from '$lib/api/trpc';
+import { useSessionStore } from '$stores/SessionStore';
+import { useThemeStore } from '$stores/SettingsStore';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { ListItemIcon, ListItemText, MenuItem, Popover, Divider } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
 import { useEffect, useState, useCallback, type MouseEvent } from 'react';
-
-import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
-import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
-import trpc from '$lib/api/trpc';
-import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
 
 interface SignoutProps {
     onLogoutComplete?: () => void;

@@ -1,6 +1,3 @@
-import { AppBar, Box, Stack } from '@mui/material';
-import { useEffect, useState } from 'react';
-
 import { AlertDialog } from '$components/AlertDialog';
 import { AppSwitcher } from '$components/Header/AppSwitcher';
 import { Import } from '$components/Header/Import';
@@ -15,8 +12,12 @@ import {
 } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
 import { useIsMobile } from '$src/hooks/useIsMobile';
+import { openGradeExplorer } from '$stores/GradeExplorerStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import { BarChart as BarChartIcon } from '@mui/icons-material';
+import { AppBar, Box, IconButton, Stack, Tooltip } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
 
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
@@ -43,6 +44,10 @@ export function Header() {
         setOpenSignoutDialog(false);
         window.location.reload();
     };
+
+    const handleOpenGradeExplorer = useCallback(() => {
+        openGradeExplorer();
+    }, []);
 
     useEffect(() => {
         const dataCache = getLocalStorageDataCache() ?? '';
@@ -89,6 +94,15 @@ export function Header() {
                     </Stack>
 
                     <Stack direction="row" alignItems="center">
+                        <Tooltip title="Grade Explorer">
+                            <IconButton
+                                onClick={handleOpenGradeExplorer}
+                                sx={{ color: 'inherit' }}
+                                aria-label="Open Grade Explorer"
+                            >
+                                <BarChartIcon />
+                            </IconButton>
+                        </Tooltip>
                         <Import key="studylist" />
                         <Save />
                         {sessionIsValid ? <Signout onLogoutComplete={handleLogoutComplete} /> : <Signin />}

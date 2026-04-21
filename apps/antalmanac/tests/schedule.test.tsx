@@ -1,7 +1,7 @@
-import { describe, test, expect } from 'vitest';
-import { render } from '@testing-library/react';
-import { Schedules } from '$stores/Schedules';
 import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
+import { Schedules } from '$stores/Schedules';
+import { render } from '@testing-library/react';
+import { describe, test, expect } from 'vitest';
 
 describe('schedule logic', () => {
     const scheduleStore = new Schedules();

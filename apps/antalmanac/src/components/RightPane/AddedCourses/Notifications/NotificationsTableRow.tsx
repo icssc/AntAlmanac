@@ -1,6 +1,3 @@
-import { TableRow, TableCell } from '@mui/material';
-import { memo } from 'react';
-
 import { DeptCourseNumberCell } from '$components/RightPane/AddedCourses/Notifications/DeptCourseNumberCell';
 import { NotificationTableDeleteCell } from '$components/RightPane/AddedCourses/Notifications/NotificationTableDeleteCell';
 import { NotificationTableRowCheckbox } from '$components/RightPane/AddedCourses/Notifications/NotificationTableRowCheckbox';
@@ -8,6 +5,8 @@ import { CourseCodeCell } from '$components/RightPane/SectionTable/SectionTableB
 import { DetailsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell';
 import { InstructorsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/InstructorsCell';
 import { NotifyOn, useNotificationStore } from '$stores/NotificationStore';
+import { TableRow, TableCell } from '@mui/material';
+import { memo } from 'react';
 
 interface NotificationTableRowProps {
     notificationKey: string;

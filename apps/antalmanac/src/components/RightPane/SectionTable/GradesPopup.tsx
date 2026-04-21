@@ -1,9 +1,10 @@
-import { Box, Link, Typography, Skeleton } from '@mui/material';
-import { useState, useEffect, useMemo } from 'react';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-
 import { Grades, type GradesProps } from '$lib/grades';
+import { openGradeExplorer } from '$stores/GradeExplorerStore';
 import { useThemeStore } from '$stores/SettingsStore';
+import { OpenInNew } from '@mui/icons-material';
+import { Box, Button, Link, Stack, Typography, Skeleton } from '@mui/material';
+import { useCallback, useState, useEffect, useMemo } from 'react';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 export interface GradeData {
     grades: {
         name: string;
@@ -70,12 +71,12 @@ function GradesPopup(props: GradesPopupProps) {
 
     const graphTitle = useMemo(() => {
         return gradeData
-            ? `${deptCode} ${courseNumber}${
-                  instructor ? ` — ${instructor}` : ''
+            ? `${deptCode} ${courseNumber}${instructor ? ` — ${instructor}` : ''} | Average GPA: ${
                   // GPA is `null` if the class is pass/no-pass only.
                   // This is more correct compared to returning a zero GPA,
                   // which so far has not happened, but is entirely possible.
-              } | Average GPA: ${gradeData.courseGrades.averageGPA?.toFixed(2) ?? 'n/a'}`
+                  gradeData.courseGrades.averageGPA?.toFixed(2) ?? 'n/a'
+              }`
             : 'Grades are not available for this class.';
     }, [gradeData, deptCode, courseNumber, instructor]);
 
@@ -96,6 +97,15 @@ function GradesPopup(props: GradesPopupProps) {
             setLoading(false);
         });
     }, [loading, deptCode, courseNumber, instructor]);
+
+    const handleOpenExplorer = useCallback(() => {
+        openGradeExplorer({
+            kind: 'section',
+            department: deptCode,
+            courseNumber,
+            instructor: instructor || undefined,
+        });
+    }, [deptCode, courseNumber, instructor]);
 
     if (loading) {
         return (
@@ -132,14 +142,9 @@ function GradesPopup(props: GradesPopupProps) {
             >
                 {graphTitle}
             </Typography>
-            <Link
-                href={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
-                target="_blank"
-                rel="noopener noreferrer"
-                sx={{ display: 'flex', height, width }}
-            >
+            <Box sx={{ display: 'flex', height, width }}>
                 <ResponsiveContainer width="95%" height="95%">
-                    <BarChart data={gradeData.grades} style={{ cursor: 'pointer' }}>
+                    <BarChart data={gradeData.grades}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
                         <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} unit="%" />
@@ -157,7 +162,21 @@ function GradesPopup(props: GradesPopupProps) {
                         <Bar dataKey="all" fill="#5182ed" />
                     </BarChart>
                 </ResponsiveContainer>
-            </Link>
+            </Box>
+            <Stack direction="row" spacing={1} justifyContent="center" alignItems="center" sx={{ mt: 0.5, mb: 0.5 }}>
+                <Button size="small" variant="outlined" onClick={handleOpenExplorer}>
+                    Open in Grade Explorer
+                </Button>
+                <Link
+                    href={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, fontSize: '0.75rem' }}
+                >
+                    zotistics.com
+                    <OpenInNew sx={{ fontSize: 12 }} />
+                </Link>
+            </Stack>
         </Box>
     );
 }

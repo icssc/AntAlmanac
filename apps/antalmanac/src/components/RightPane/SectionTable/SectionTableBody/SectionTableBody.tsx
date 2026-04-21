@@ -1,11 +1,10 @@
-import { TableBody } from '@mui/material';
-import { AACourse, AASection } from '@packages/antalmanac-types';
-import { useCallback, useEffect, useState } from 'react';
-
 import { SectionTableBodyRow } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRow';
 import { AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { normalizeTime, parseDaysString } from '$stores/calendarizeHelpers';
+import { TableBody } from '@mui/material';
+import { AACourse, AASection } from '@packages/antalmanac-types';
+import { useCallback, useEffect, useState } from 'react';
 
 interface SectionTableBodyProps {
     courseDetails: AACourse;
