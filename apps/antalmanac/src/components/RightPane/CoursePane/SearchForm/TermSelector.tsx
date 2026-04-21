@@ -1,10 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
-
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { termData } from '$lib/termData';
+import { ComponentProps, useCallback, useEffect, useState } from 'react';
 
-export function TermSelector() {
+type Props = Omit<
+    ComponentProps<typeof LabeledAutocomplete>,
+    'label' | 'autocompleteProps' | 'textFieldProps' | 'isAligned'
+>;
+
+export function TermSelector(props: Props) {
     const [term, setTerm] = useState<string>(() => RightPaneStore.getFormData().term);
 
     const handleChange = (_: unknown, option: string | null) => {
@@ -33,6 +37,7 @@ export function TermSelector() {
 
     return (
         <LabeledAutocomplete
+            {...props}
             label="Term"
             autocompleteProps={{
                 value: term,

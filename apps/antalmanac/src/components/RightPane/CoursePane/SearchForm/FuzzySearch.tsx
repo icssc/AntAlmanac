@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { ComponentProps, useCallback, useEffect, useRef, useState } from 'react';
 import UAParser from 'ua-parser-js';
 
 const SEARCH_TIMEOUT_MS = 150;
@@ -52,6 +52,7 @@ const isIpad = () => {
 interface FuzzySearchProps {
     toggleSearch: () => void;
     postHog?: PostHog;
+    labelProps?: ComponentProps<typeof LabeledAutocomplete>['labelProps'];
 }
 
 interface SearchOption {
@@ -59,7 +60,7 @@ interface SearchOption {
     result: SearchResult;
 }
 
-const FuzzySearch = ({ toggleSearch, postHog }: FuzzySearchProps) => {
+const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) => {
     const [cache, setCache] = useState<Record<string, Record<string, SearchResult> | undefined>>({});
     const [open, setOpen] = useState<boolean>(false);
     const [results, setResults] = useState<Record<string, SearchResult> | undefined>({});
@@ -351,6 +352,7 @@ const FuzzySearch = ({ toggleSearch, postHog }: FuzzySearchProps) => {
                 popupIcon: '',
                 clearOnBlur: false,
             }}
+            labelProps={labelProps}
             textFieldProps={{
                 autoFocus: !isMobile(),
                 placeholder: 'Search for courses, departments, GEs...',
