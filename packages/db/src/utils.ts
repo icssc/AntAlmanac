@@ -43,7 +43,7 @@ export function buildConflictUpdateSet<T extends PgTable>(
     for (const key in policy) {
         if (policy[key] === 'update') {
             const colName = columns[key as keyof typeof columns].name;
-            set[key as keyof T['_']['columns']] = sql.raw(`excluded.${colName}`);
+            set[key as keyof T['_']['columns']] = sql.raw(`excluded."${colName.replace(/"/g, '""')}"`);
         }
     }
 
