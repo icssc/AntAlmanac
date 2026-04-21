@@ -71,3 +71,107 @@ $mui-transition-time: 268ms;
     font-size: 14px;
     @include clickable(0.9, 0.7);
 }
+
+@media print {
+  header,
+  .roadmap-header,
+  .roadmap-sidebar,
+  .app-footer,
+  .sidebar-tabs {
+    display: none !important;
+    height: 0 !important;
+    width: 0 !important;
+
+    * {
+      display: none !important;
+      height: 0 !important;
+      width: 0 !important;
+    }
+  }
+
+  html,
+  body,
+  .planner {
+    width: 100%;
+    height: 100%;
+    --webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    box-decoration-break: clone;
+  }
+
+  * {
+    background-color: white !important;
+    color: black !important;
+    overflow: visible !important;
+    float: none !important;
+  }
+
+  button[aria-label='delete'] {
+    display: none;
+  }
+
+  .action-row,
+  .action-row * {
+    display: none !important;
+  }
+
+  .quarter-course-list {
+    .roadmap-course {
+      display: flex;
+      flex-direction: column;
+      justify-content: left;
+      border: 1px solid black !important;
+
+      * {
+        text-wrap: wrap !important;
+        text-align: center;
+      }
+
+      .course-drag-handle {
+        display: none;
+      }
+    }
+
+    &:before {
+      display: none;
+    }
+  }
+
+  .year {
+    border: none;
+    outline: 1px solid black !important;
+    outline-offset: -1px;
+  }
+
+  .year,
+  .quarter,
+  .roadmap-course {
+    break-inside: avoid-page !important;
+  }
+
+  .quarter {
+    margin: 0 !important;
+    border: 1px solid black !important;
+    overflow: hidden !important;
+  }
+
+  .quarter-list {
+    gap: 0 !important;
+  }
+
+  .quarter-header {
+    background-color: #eeeeee !important;
+
+    * {
+      background-color: #eeeeee !important;
+    }
+  }
+
+  .MuiButton-root {
+    display: none !important;
+
+    * {
+      display: none !important;
+    }
+  }
+}
