@@ -11,7 +11,7 @@
     "bracketSpacing": true,
     "arrowParens": "always",
     "endOfLine": "lf",
-    "ignorePatterns": [],
+    "ignorePatterns": ["node_modules/**", ".next/**", "dist/**", "build/**"],
     "experimentalSortImports": {
         "enabled": true,
         "groupImports": true
