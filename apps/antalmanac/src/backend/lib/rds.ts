@@ -84,14 +84,12 @@ export class RDS {
         accountType: Account['accountType'],
         providerId: string
     ): Promise<Account | null> {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(accounts)
-                .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerId)))
-                .limit(1)
-                .then((res) => res[0] ?? null)
-        );
+        return db
+            .select()
+            .from(accounts)
+            .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerId)))
+            .limit(1)
+            .then((res) => res[0] ?? null);
     }
 
     /**
@@ -102,23 +100,19 @@ export class RDS {
      * @returns A promise that resolves to the user object if found, otherwise undefined.
      */
     static async getUserById(db: DatabaseOrTransaction, userId: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(users)
-                .where(eq(users.id, userId))
-                .then((res) => res[0])
-        );
+        return db
+            .select()
+            .from(users)
+            .where(eq(users.id, userId))
+            .then((res) => res[0]);
     }
 
     static async getUserByEmail(db: DatabaseOrTransaction, email: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(users)
-                .where(eq(users.email, email))
-                .then((res) => res[0])
-        );
+        return db
+            .select()
+            .from(users)
+            .where(eq(users.email, email))
+            .then((res) => res[0]);
     }
 
     /**
@@ -129,14 +123,12 @@ export class RDS {
      * @returns The google ID if found, otherwise null.
      */
     static async getGoogleIdByUserId(db: DatabaseOrTransaction, userId: string): Promise<string | null> {
-        return db.transaction((tx) =>
-            tx
-                .select({ providerAccountId: accounts.providerAccountId })
-                .from(accounts)
-                .where(eq(accounts.userId, userId))
-                .limit(1)
-                .then((res) => (res.length > 0 ? res[0].providerAccountId : null))
-        );
+        return db
+            .select({ providerAccountId: accounts.providerAccountId })
+            .from(accounts)
+            .where(eq(accounts.userId, userId))
+            .limit(1)
+            .then((res) => (res.length > 0 ? res[0].providerAccountId : null));
     }
 
     /**
@@ -512,13 +504,11 @@ export class RDS {
      * @returns A promise that resolves to the current session object if found, or null if not found.
      */
     static async getCurrentSession(db: DatabaseOrTransaction, refreshToken: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(sessions)
-                .where(eq(sessions.refreshToken, refreshToken))
-                .then((res) => res[0] ?? null)
-        );
+        return db
+            .select()
+            .from(sessions)
+            .where(eq(sessions.refreshToken, refreshToken))
+            .then((res) => res[0] ?? null);
     }
 
     /**
@@ -635,18 +625,16 @@ export class RDS {
     }
 
     static async getUserAndAccountBySessionToken(db: DatabaseOrTransaction, refreshToken: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(sessions)
-                .innerJoin(users, eq(sessions.userId, users.id))
-                .innerJoin(accounts, eq(users.id, accounts.userId))
-                .where(eq(sessions.refreshToken, refreshToken))
-                .execute()
-                .then((res) => {
-                    return { users: res[0].users, accounts: res[0].accounts };
-                })
-        );
+        return db
+            .select()
+            .from(sessions)
+            .innerJoin(users, eq(sessions.userId, users.id))
+            .innerJoin(accounts, eq(users.id, accounts.userId))
+            .where(eq(sessions.refreshToken, refreshToken))
+            .execute()
+            .then((res) => {
+                return { users: res[0].users, accounts: res[0].accounts };
+            });
     }
 
     /**
@@ -684,12 +672,10 @@ export class RDS {
      * @returns A promise that resolves to the notifications associated with a userId, or an empty array if not found.
      */
     static async retrieveNotifications(db: DatabaseOrTransaction, userId: string, environment: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(subscriptions)
-                .where(and(eq(subscriptions.userId, userId), eq(subscriptions.environment, environment)))
-        );
+        return db
+            .select()
+            .from(subscriptions)
+            .where(and(eq(subscriptions.userId, userId), eq(subscriptions.environment, environment)));
     }
 
     /**
@@ -707,40 +693,38 @@ export class RDS {
         notification: Notification,
         environment: string
     ) {
-        return db.transaction((tx) =>
-            tx
-                .insert(subscriptions)
-                .values({
-                    userId,
-                    sectionCode: notification.sectionCode,
-                    year: notification.term.split(' ')[0],
-                    quarter: notification.term.split(' ')[1],
+        return db
+            .insert(subscriptions)
+            .values({
+                userId,
+                sectionCode: notification.sectionCode,
+                year: notification.term.split(' ')[0],
+                quarter: notification.term.split(' ')[1],
+                notifyOnOpen: notification.notifyOn.notifyOnOpen,
+                notifyOnWaitlist: notification.notifyOn.notifyOnWaitlist,
+                notifyOnFull: notification.notifyOn.notifyOnFull,
+                notifyOnRestriction: notification.notifyOn.notifyOnRestriction,
+                lastUpdatedStatus: notification.lastUpdatedStatus,
+                lastCodes: notification.lastCodes,
+                environment,
+            })
+            .onConflictDoUpdate({
+                target: [
+                    subscriptions.userId,
+                    subscriptions.sectionCode,
+                    subscriptions.year,
+                    subscriptions.quarter,
+                    subscriptions.environment,
+                ],
+                set: {
                     notifyOnOpen: notification.notifyOn.notifyOnOpen,
                     notifyOnWaitlist: notification.notifyOn.notifyOnWaitlist,
                     notifyOnFull: notification.notifyOn.notifyOnFull,
                     notifyOnRestriction: notification.notifyOn.notifyOnRestriction,
                     lastUpdatedStatus: notification.lastUpdatedStatus,
                     lastCodes: notification.lastCodes,
-                    environment,
-                })
-                .onConflictDoUpdate({
-                    target: [
-                        subscriptions.userId,
-                        subscriptions.sectionCode,
-                        subscriptions.year,
-                        subscriptions.quarter,
-                        subscriptions.environment,
-                    ],
-                    set: {
-                        notifyOnOpen: notification.notifyOn.notifyOnOpen,
-                        notifyOnWaitlist: notification.notifyOn.notifyOnWaitlist,
-                        notifyOnFull: notification.notifyOn.notifyOnFull,
-                        notifyOnRestriction: notification.notifyOn.notifyOnRestriction,
-                        lastUpdatedStatus: notification.lastUpdatedStatus,
-                        lastCodes: notification.lastCodes,
-                    },
-                })
-        );
+                },
+            });
     }
 
     /**
@@ -752,22 +736,20 @@ export class RDS {
      * @returns A promise that updates ALL notifications with a shared sectionCode, year, quarter, and environment.
      */
     static async updateAllNotifications(db: DatabaseOrTransaction, notification: Notification, environment: string) {
-        return db.transaction((tx) =>
-            tx
-                .update(subscriptions)
-                .set({
-                    lastUpdatedStatus: notification.lastUpdatedStatus,
-                    lastCodes: notification.lastCodes,
-                })
-                .where(
-                    and(
-                        eq(subscriptions.sectionCode, notification.sectionCode),
-                        eq(subscriptions.year, notification.term.split(' ')[0]),
-                        eq(subscriptions.quarter, notification.term.split(' ')[1]),
-                        eq(subscriptions.environment, environment)
-                    )
+        return db
+            .update(subscriptions)
+            .set({
+                lastUpdatedStatus: notification.lastUpdatedStatus,
+                lastCodes: notification.lastCodes,
+            })
+            .where(
+                and(
+                    eq(subscriptions.sectionCode, notification.sectionCode),
+                    eq(subscriptions.year, notification.term.split(' ')[0]),
+                    eq(subscriptions.quarter, notification.term.split(' ')[1]),
+                    eq(subscriptions.environment, environment)
                 )
-        );
+            );
     }
 
     /**
@@ -785,19 +767,17 @@ export class RDS {
         userId: string,
         environment: string
     ) {
-        return db.transaction((tx) =>
-            tx
-                .delete(subscriptions)
-                .where(
-                    and(
-                        eq(subscriptions.userId, userId),
-                        eq(subscriptions.sectionCode, notification.sectionCode),
-                        eq(subscriptions.year, notification.term.split(' ')[0]),
-                        eq(subscriptions.quarter, notification.term.split(' ')[1]),
-                        eq(subscriptions.environment, environment)
-                    )
+        return db
+            .delete(subscriptions)
+            .where(
+                and(
+                    eq(subscriptions.userId, userId),
+                    eq(subscriptions.sectionCode, notification.sectionCode),
+                    eq(subscriptions.year, notification.term.split(' ')[0]),
+                    eq(subscriptions.quarter, notification.term.split(' ')[1]),
+                    eq(subscriptions.environment, environment)
                 )
-        );
+            );
     }
 
     /**
@@ -809,10 +789,8 @@ export class RDS {
      * @returns A promise that deletes all of a user's notifications.
      */
     static async deleteAllNotifications(db: DatabaseOrTransaction, userId: string, environment: string) {
-        return db.transaction((tx) =>
-            tx
-                .delete(subscriptions)
-                .where(and(eq(subscriptions.userId, userId), eq(subscriptions.environment, environment)))
-        );
+        return db
+            .delete(subscriptions)
+            .where(and(eq(subscriptions.userId, userId), eq(subscriptions.environment, environment)));
     }
 }
