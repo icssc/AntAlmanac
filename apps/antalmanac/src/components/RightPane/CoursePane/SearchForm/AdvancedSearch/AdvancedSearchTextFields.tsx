@@ -1,22 +1,21 @@
-import { MenuItem, Box, type SelectChangeEvent, Checkbox, ListItemText, Tooltip, Typography } from '@mui/material';
-import type { Roadmap } from '@packages/antalmanac-types';
-import { format, parse } from 'date-fns';
-import { useState, useEffect, useCallback, type ChangeEvent } from 'react';
-
+import { SignInDialog } from '$components/dialogs/SignInDialog';
 import {
-    EXCLUDE_RESTRICTION_CODES_OPTIONS,
     DAYS_OPTIONS,
+    EXCLUDE_RESTRICTION_CODES_OPTIONS,
 } from '$components/RightPane/CoursePane/SearchForm/AdvancedSearch/constants';
+import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { LabeledTimePicker } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTimePicker';
-import { AdvancedSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { safeUnreachableCase } from '$lib/utils';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import { Box, Checkbox, ListItemText, MenuItem, type SelectChangeEvent, Tooltip, Typography } from '@mui/material';
+import type { Roadmap } from '@packages/antalmanac-types';
+import { format, parse } from 'date-fns';
+import { type ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 type InputEvent =
     | ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

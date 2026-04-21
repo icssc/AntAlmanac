@@ -2,10 +2,10 @@ import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { oauth } from '$src/backend/lib/auth/oauth';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
 import { RDS } from '$src/backend/lib/rds';
-import { type User, ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
+import { ScheduleSaveState, ScheduleSaveStateSchema, type User } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
-import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState, OAuth2Tokens } from 'arctic';
+import { CodeChallengeMethod, OAuth2Tokens, decodeIdToken, generateCodeVerifier, generateState } from 'arctic';
 import { type } from 'arktype';
 import { z } from 'zod';
 

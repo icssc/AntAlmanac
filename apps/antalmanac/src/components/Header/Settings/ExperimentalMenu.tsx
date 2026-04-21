@@ -1,14 +1,13 @@
-import { Help } from '@mui/icons-material';
-import { Stack, Box, Typography, Tooltip, Switch } from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
-
 import actionTypesStore from '$actions/ActionTypesStore';
 import { autoSaveSchedule } from '$actions/AppStoreActions';
 import { getLocalStorageUserId } from '$lib/localStorage';
 import appStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { usePreviewStore, useAutoSaveStore, useDevModeStore } from '$stores/SettingsStore';
+import { useAutoSaveStore, useDevModeStore, usePreviewStore } from '$stores/SettingsStore';
+import { Help } from '@mui/icons-material';
+import { Box, Stack, Switch, Tooltip, Typography } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 
 export function ExperimentalMenu() {
     const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);

@@ -1,9 +1,8 @@
-import { Box, Link, Typography, Skeleton } from '@mui/material';
-import { useState, useEffect, useMemo } from 'react';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-
 import { Grades, type GradesProps } from '$lib/grades';
 import { useThemeStore } from '$stores/SettingsStore';
+import { Box, Link, Skeleton, Typography } from '@mui/material';
+import { useEffect, useMemo, useState } from 'react';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 export interface GradeData {
     grades: {
         name: string;
@@ -70,12 +69,12 @@ function GradesPopup(props: GradesPopupProps) {
 
     const graphTitle = useMemo(() => {
         return gradeData
-            ? `${deptCode} ${courseNumber}${
-                  instructor ? ` — ${instructor}` : ''
+            ? `${deptCode} ${courseNumber}${instructor ? ` — ${instructor}` : ''} | Average GPA: ${
                   // GPA is `null` if the class is pass/no-pass only.
                   // This is more correct compared to returning a zero GPA,
                   // which so far has not happened, but is entirely possible.
-              } | Average GPA: ${gradeData.courseGrades.averageGPA?.toFixed(2) ?? 'n/a'}`
+                  gradeData.courseGrades.averageGPA?.toFixed(2) ?? 'n/a'
+              }`
             : 'Grades are not available for this class.';
     }, [gradeData, deptCode, courseNumber, instructor]);
 

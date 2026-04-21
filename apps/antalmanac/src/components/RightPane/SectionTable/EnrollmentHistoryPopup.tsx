@@ -1,20 +1,19 @@
-import { ArrowBack, ArrowForward } from '@mui/icons-material';
-import { Box, IconButton, Typography, Skeleton, Tooltip } from '@mui/material';
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import {
-    LineChart,
-    Line,
-    CartesianGrid,
-    ResponsiveContainer,
-    XAxis,
-    YAxis,
-    Tooltip as RechartsTooltip,
-    Legend,
-} from 'recharts';
-
 import { useIsMobile } from '$hooks/useIsMobile';
 import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
 import { useThemeStore } from '$stores/SettingsStore';
+import { ArrowBack, ArrowForward } from '@mui/icons-material';
+import { Box, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+    CartesianGrid,
+    Legend,
+    Line,
+    LineChart,
+    Tooltip as RechartsTooltip,
+    ResponsiveContainer,
+    XAxis,
+    YAxis,
+} from 'recharts';
 
 type PopupHeaderCallback = () => void;
 

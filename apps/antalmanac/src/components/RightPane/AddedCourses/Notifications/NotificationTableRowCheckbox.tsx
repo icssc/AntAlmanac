@@ -1,7 +1,6 @@
-import { TableCell, Checkbox } from '@mui/material';
-import { memo, useCallback } from 'react';
-
 import { Notification, NotifyOn, useNotificationStore } from '$stores/NotificationStore';
+import { Checkbox, TableCell } from '@mui/material';
+import { memo, useCallback } from 'react';
 
 type NotificationTableRowCheckboxProps = Omit<Notification, 'notifyOn'> & {
     notificationKey: string;

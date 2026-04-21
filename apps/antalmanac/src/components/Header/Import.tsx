@@ -1,6 +1,6 @@
 import {
-    addCustomEvent,
     addCourse,
+    addCustomEvent,
     importScheduleWithUsername,
     importValidatedSchedule,
     mergeShortCourseSchedules,

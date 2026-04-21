@@ -1,18 +1,3 @@
-import { Close } from '@mui/icons-material';
-import { Alert, Box, IconButton, Link, useTheme } from '@mui/material';
-import {
-    AACourse,
-    AASection,
-    WebsocDepartment,
-    WebsocSchool,
-    WebsocAPIResponse,
-    WebsocSectionType,
-    GE,
-} from '@packages/antalmanac-types';
-import Image from 'next/image';
-import { useCallback, useEffect, useState } from 'react';
-import LazyLoad from 'react-lazyload';
-
 import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
 import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
@@ -32,6 +17,20 @@ import { useHoveredStore } from '$stores/HoveredStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import { Close } from '@mui/icons-material';
+import { Alert, Box, IconButton, Link, useTheme } from '@mui/material';
+import {
+    AACourse,
+    AASection,
+    GE,
+    WebsocAPIResponse,
+    WebsocDepartment,
+    WebsocSchool,
+    WebsocSectionType,
+} from '@packages/antalmanac-types';
+import Image from 'next/image';
+import { useCallback, useEffect, useState } from 'react';
+import LazyLoad from 'react-lazyload';
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();

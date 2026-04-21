@@ -1,11 +1,10 @@
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { useThemeStore } from '$stores/SettingsStore';
 import { Panorama } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
 import { usePostHog } from 'posthog-js/react';
-
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { useThemeStore } from '$stores/SettingsStore';
 
 const ScreenshotButton = () => {
     const { isDark } = useThemeStore();

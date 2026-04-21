@@ -5,12 +5,12 @@ import { fileURLToPath } from 'node:url';
 import type {
     Course,
     CourseSearchResult,
-    DepartmentSearchResult,
     CoursesFilteredAPIResult,
+    DepartmentSearchResult,
 } from '@packages/antalmanac-types';
 
 import { fetchAnteaterAPI, queryGraphQL } from '../src/backend/lib/helpers';
-import { parseSectionCodes, SectionCodesGraphQLResponse, termData } from '../src/backend/lib/term-section-codes';
+import { SectionCodesGraphQLResponse, parseSectionCodes, termData } from '../src/backend/lib/term-section-codes';
 
 import 'dotenv/config';
 

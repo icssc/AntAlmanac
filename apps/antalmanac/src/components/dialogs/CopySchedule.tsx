@@ -1,18 +1,17 @@
+import { copySchedule } from '$actions/AppStoreActions';
+import AppStore from '$stores/AppStore';
 import {
     Box,
     Button,
     Dialog,
     DialogActions,
     DialogContent,
+    type DialogProps,
     DialogTitle,
     TextField,
-    type DialogProps,
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useState, useEffect, useCallback } from 'react';
-
-import { copySchedule } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
+import { useCallback, useEffect, useState } from 'react';
 
 interface CopyScheduleDialogProps extends DialogProps {
     index: number;

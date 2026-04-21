@@ -1,10 +1,10 @@
 import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
 import type {
+    CourseInfo,
     WebsocAPIResponse,
     WebsocAPIResult,
-    WebsocDepartmentsAPIResult,
-    CourseInfo,
     WebsocCourse,
+    WebsocDepartmentsAPIResult,
     WebsocSectionType,
 } from '@packages/antalmanac-types';
 import { TRPCError } from '@trpc/server';
