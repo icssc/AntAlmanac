@@ -13,8 +13,11 @@ import {
     setLocalStorageShow24HourTime,
     setLocalStorageTheme,
 } from '$lib/localStorage';
+import { isSectionColorSetting, type SectionColorSetting } from '$lib/themes';
 import { PostHog } from 'posthog-js/react';
 import { create } from 'zustand';
+
+export type { SectionColorSetting };
 
 export type ThemeSetting = 'light' | 'dark' | 'system';
 
@@ -62,19 +65,6 @@ export const useThemeStore = create<ThemeStore>((set) => {
         },
     };
 });
-
-export type SectionColorSetting = 'default' | 'legacy' | 'catppuccin' | 'custom';
-
-const SECTION_COLOR_SETTINGS = [
-    'default',
-    'legacy',
-    'catppuccin',
-    'custom',
-] as const satisfies readonly SectionColorSetting[];
-
-function isSectionColorSetting(value: unknown): value is SectionColorSetting {
-    return typeof value === 'string' && (SECTION_COLOR_SETTINGS as readonly string[]).includes(value);
-}
 
 export interface SectionColorStore {
     sectionColor: SectionColorSetting;

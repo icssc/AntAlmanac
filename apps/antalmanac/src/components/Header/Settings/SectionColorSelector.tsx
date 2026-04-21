@@ -1,74 +1,147 @@
-import { BLUE } from '$src/globals';
+import { SectionThemePickerModal } from '$components/SectionTheme/SectionThemePickerModal';
+import { getSectionThemeOptions } from '$lib/sectionThemes';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { type SectionColorSetting, useSectionColorStore, useThemeStore } from '$stores/SettingsStore';
-import { ColorLens, History, Palette, Pets } from '@mui/icons-material';
-import { Box, Stack, Typography } from '@mui/material';
+import { Colorize, Palette } from '@mui/icons-material';
+import { Box, Button, Stack, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { usePostHog } from 'posthog-js/react';
+import { useMemo, useState } from 'react';
 
-const SECTION_COLOR_OPTIONS: { value: SectionColorSetting; label: string; icon: React.ReactNode }[] = [
-    { value: 'default', label: 'Default', icon: <Palette fontSize="small" /> },
-    { value: 'legacy', label: 'Legacy', icon: <History fontSize="small" /> },
-    { value: 'catppuccin', label: 'Catppuccin', icon: <Pets fontSize="small" /> },
-    { value: 'custom', label: 'Custom', icon: <ColorLens fontSize="small" /> },
-];
+const PICKER_DESCRIPTION =
+    'This only affects new auto-assigned section colors. If you already picked a color for a section on the calendar, that choice is kept.';
 
 export function SectionColorSelector() {
+    const muiTheme = useTheme();
+    const borderColor = muiTheme.palette.divider;
+    const accent = muiTheme.palette.primary.main;
+    const isDark = useThemeStore((s) => s.isDark);
+
     const [sectionColor, setSectionColor] = useSectionColorStore((store) => [
         store.sectionColor,
         store.setSectionColor,
     ]);
-    const isDark = useThemeStore((store) => store.isDark);
     const { forceUpdate } = useCoursePaneStore();
     const postHog = usePostHog();
+
+    const [pickerOpen, setPickerOpen] = useState(false);
+    const themeOptions = useMemo(() => getSectionThemeOptions(isDark), [isDark]);
+    const currentPresetMeta =
+        sectionColor !== 'custom' ? themeOptions.find((o) => o.value === sectionColor) : undefined;
+
+    const isCustom = sectionColor === 'custom';
+    const activeLabel = isCustom ? 'Custom' : (currentPresetMeta?.label ?? sectionColor);
 
     const handleSectionColorChange = (value: SectionColorSetting) => {
         forceUpdate();
         setSectionColor(value, postHog);
     };
 
+    const actionButtonSx = {
+        textTransform: 'none' as const,
+        fontWeight: 700,
+        fontSize: '1.1rem',
+        py: 1,
+        borderColor,
+        borderRadius: '4px',
+    };
+
     return (
-        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 1.25 }}>
             <Typography variant="h5" sx={{ fontWeight: 600 }}>
                 Section Color
             </Typography>
+
             <Stack
-                spacing={1}
+                direction="row"
+                alignItems="center"
+                flexWrap="wrap"
+                gap={1}
                 sx={{
-                    width: '100%',
-                    border: `1px solid ${isDark ? '#8886' : '#d3d4d5'}`,
+                    rowGap: 0.75,
+                    border: `1px solid ${borderColor}`,
                     borderRadius: '4px',
-                    padding: '4px',
+                    px: 1.5,
+                    py: 1.25,
+                    bgcolor: 'action.hover',
                 }}
             >
-                {SECTION_COLOR_OPTIONS.map((opt) => {
-                    const isSelected = sectionColor === opt.value;
-                    return (
-                        <Box
-                            key={opt.value}
-                            onClick={() => handleSectionColorChange(opt.value)}
-                            sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: 1,
-                                padding: '8px 12px',
-                                cursor: 'pointer',
-                                fontWeight: 'bold',
-                                fontSize: '1rem',
-                                borderRadius: '4px',
-                                backgroundColor: isSelected ? BLUE : isDark ? '#333333' : '#f8f9fa',
-                                color: isSelected ? '#fff' : BLUE,
-                                '&:hover': {
-                                    backgroundColor: isSelected ? BLUE : isDark ? '#424649' : '#d3d4d5',
-                                },
-                            }}
-                        >
-                            {opt.icon}
-                            {opt.label}
-                        </Box>
-                    );
-                })}
+                <Typography
+                    component="span"
+                    variant="body1"
+                    sx={{
+                        fontWeight: 700,
+                        color: accent,
+                        letterSpacing: '-0.01em',
+                    }}
+                >
+                    {activeLabel}
+                </Typography>
+                {!isCustom && currentPresetMeta ? (
+                    <Stack direction="row" gap={0.5} alignItems="center" sx={{ flexWrap: 'wrap' }}>
+                        {currentPresetMeta.swatches.slice(0, 8).map((c, i) => (
+                            <Box
+                                key={i}
+                                sx={{
+                                    width: 14,
+                                    height: 14,
+                                    borderRadius: '3px',
+                                    bgcolor: c,
+                                    border: `1px solid ${muiTheme.palette.divider}`,
+                                    flexShrink: 0,
+                                }}
+                            />
+                        ))}
+                    </Stack>
+                ) : null}
             </Stack>
+
+            {isCustom ? (
+                <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.4, mt: -0.5 }}>
+                    Set each color from the course block on the calendar.
+                </Typography>
+            ) : null}
+
+            <Button
+                fullWidth
+                variant="outlined"
+                onClick={() => setPickerOpen(true)}
+                sx={actionButtonSx}
+                startIcon={<Palette fontSize="small" />}
+            >
+                Browse Themes
+            </Button>
+
+            <Button
+                fullWidth
+                variant="outlined"
+                onClick={() => handleSectionColorChange('custom')}
+                sx={{
+                    ...actionButtonSx,
+                    ...(isCustom
+                        ? {
+                              color: accent,
+                              borderColor: accent,
+                              bgcolor: muiTheme.palette.action.selected,
+                          }
+                        : {}),
+                }}
+                startIcon={<Colorize fontSize="small" />}
+            >
+                {isCustom ? 'Using Custom Theme' : 'Custom Theme'}
+            </Button>
+
+            <SectionThemePickerModal
+                open={pickerOpen}
+                onClose={() => setPickerOpen(false)}
+                sectionColor={sectionColor}
+                title="Section Themes"
+                description={PICKER_DESCRIPTION}
+                onApply={(preset) => {
+                    forceUpdate();
+                    setSectionColor(preset, postHog);
+                }}
+            />
         </Box>
     );
 }
