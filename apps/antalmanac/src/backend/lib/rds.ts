@@ -31,48 +31,6 @@ type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;
 // biome-ignore lint/complexity/noStaticOnlyClass: todo
 export class RDS {
     /**
-     * If a guest user with the specified name exists, return their ID, otherwise return null.
-     */
-    private static async guestUserIdWithNameOrNull(tx: Transaction, name: string): Promise<string | null> {
-        return tx
-            .select({ id: accounts.userId })
-            .from(accounts)
-            .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.providerAccountId, name)))
-            .limit(1)
-            .then((xs) => xs[0]?.id ?? null);
-    }
-
-    /**
-     * Creates a guest user if they don't already exist.
-     *
-     * @param tx Database or transaction object
-     * @param name Guest user's name, to be used as providerAccountID and username
-     * @returns The new/existing user's ID
-     */
-    private static async createGuestUserOptional(tx: Transaction, name: string) {
-        const maybeUserId = await RDS.guestUserIdWithNameOrNull(tx, name);
-
-        const userId = maybeUserId
-            ? maybeUserId
-            : await tx
-                  .insert(users)
-                  .values({ name })
-                  .returning({ id: users.id })
-                  .then((users) => users[0].id);
-
-        if (userId === undefined) {
-            throw new Error(`Failed to create guest user for ${name}`);
-        }
-
-        await tx
-            .insert(accounts)
-            .values({ userId, accountType: 'GUEST', providerAccountId: name })
-            .onConflictDoNothing()
-            .execute();
-
-        return userId;
-    }
-    /**
      * Retrieves an account with the specified user ID and account type.
      *
      * @param db - The database or transaction object.
