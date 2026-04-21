@@ -1,12 +1,11 @@
-import { MoreHoriz } from '@mui/icons-material';
-import { IconButton, Menu, MenuItem } from '@mui/material';
-import { AASection, CourseDetails } from '@packages/antalmanac-types';
-import { memo, useCallback, useState } from 'react';
-
 import { addCourse } from '$actions/AppStoreActions';
 import { Term } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import { MoreHoriz } from '@mui/icons-material';
+import { IconButton, Menu, MenuItem } from '@mui/material';
+import { AASection, CourseDetails } from '@packages/antalmanac-types';
+import { memo, useCallback, useState } from 'react';
 
 interface SectionActionMenuProps {
     section: AASection;
@@ -46,24 +45,16 @@ export const SectionActionMenu = memo(function SectionActionMenu({
 
     const handleCopyLink = useCallback(() => {
         const url = new URL(window.location.href);
-        url.searchParams.set('sectionCode', section.sectionCode);
-        url.searchParams.set('term', term);
+        const params = new URLSearchParams();
+        params.set('sectionCode', section.sectionCode);
+        url.search = params.toString();
 
-        try {
-            const { clipboard } = navigator;
-            if (clipboard && typeof clipboard.writeText === 'function') {
-                void clipboard.writeText(url.toString()).then(
-                    () => openSnackbar('success', 'Course link copied!'),
-                    () => openSnackbar('error', 'Failed to copy link')
-                );
-            } else {
-                openSnackbar('error', 'Failed to copy link');
-            }
-        } catch {
-            openSnackbar('error', 'Failed to copy link');
-        }
+        navigator.clipboard.writeText(url.toString()).then(
+            () => openSnackbar('success', 'Course link copied!'),
+            () => openSnackbar('error', 'Failed to copy link')
+        );
         handleClose();
-    }, [section.sectionCode, term, handleClose]);
+    }, [section.sectionCode, handleClose]);
 
     return (
         <>

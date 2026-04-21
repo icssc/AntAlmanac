@@ -1,20 +1,19 @@
+import { SignInDialog } from '$components/dialogs/SignInDialog';
+import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
+import { canTermEnrollmentChange, Term } from '$lib/termData';
+import { type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
+import { useSessionStore } from '$stores/SessionStore';
+import { useThemeStore } from '$stores/SettingsStore';
 import { Check, EditNotifications, NotificationAddOutlined } from '@mui/icons-material';
 import { Box, IconButton, Menu, MenuItem, Tooltip, Typography } from '@mui/material';
 import type { AASection, Course } from '@packages/antalmanac-types';
 import { memo, useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
-import { SignInDialog } from '$components/dialogs/SignInDialog';
-import { canTermEnrollmentChange, Term } from '$lib/termData';
-import { type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
-
 const MENU_ITEMS: { status: keyof NotifyOn; label: string }[] = [
-    { status: 'notifyOnOpen', label: 'Section is OPEN' },
-    { status: 'notifyOnWaitlist', label: 'Section is WAITLIST' },
-    { status: 'notifyOnFull', label: 'Section is FULL' },
+    { status: 'notifyOnOpen', label: 'Section becomes OPEN' },
+    { status: 'notifyOnWaitlist', label: 'Section becomes WAITLIST' },
+    { status: 'notifyOnFull', label: 'Section becomes FULL' },
     { status: 'notifyOnRestriction', label: 'Restriction Codes have Changed' },
 ];
 

@@ -30,8 +30,8 @@ const authRouter = router({
      */
     getSessionUserId: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
         if (input.token === '') return '';
-        const session = (await RDS.getCurrentSession(db, input.token)) ?? '';
-        return session.userId;
+        const session = await RDS.getCurrentSession(db, input.token);
+        return session?.userId ?? '';
     }),
 });
 
