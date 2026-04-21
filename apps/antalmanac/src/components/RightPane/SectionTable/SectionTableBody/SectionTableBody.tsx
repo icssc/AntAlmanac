@@ -71,8 +71,17 @@ export function SectionTableBody({
 
         Promise.all(
             courseDetails.sections.map(async (section) => {
-                const data = await getGpaData(courseDetails.deptCode, courseDetails.courseNumber, section.instructors);
-                return [section.sectionCode, data] as const;
+                try {
+                    const data = await getGpaData(
+                        courseDetails.deptCode,
+                        courseDetails.courseNumber,
+                        section.instructors
+                    );
+                    return [section.sectionCode, data] as const;
+                } catch (error) {
+                    console.error(`Failed to load GPA for ${section.sectionCode}`, error);
+                    return [section.sectionCode, null] as const;
+                }
             })
         ).then((entries) => {
             if (cancelled) return;
