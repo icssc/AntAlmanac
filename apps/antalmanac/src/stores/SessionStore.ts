@@ -9,6 +9,8 @@ interface SessionState {
     userId: string | null;
     isGoogleUser: boolean;
     email: string | null;
+    name: string | null;
+    avatar: string | null;
     sessionIsValid: boolean;
     loadSession: () => Promise<boolean>;
     clearSession: () => Promise<string | null>;
@@ -33,6 +35,8 @@ export const useSessionStore = create<SessionState>((set) => {
         userId: null,
         isGoogleUser: false,
         email: null,
+        name: null,
+        avatar: null,
         sessionIsValid: false,
         googleId: null,
         filterTakenCourses: false,
@@ -43,7 +47,15 @@ export const useSessionStore = create<SessionState>((set) => {
             try {
                 const sessionIsValid = await trpc.auth.validateSession.query();
                 if (!sessionIsValid) {
-                    set({ sessionIsValid: false, userId: null, isGoogleUser: false, email: null, googleId: null });
+                    set({
+                        sessionIsValid: false,
+                        userId: null,
+                        isGoogleUser: false,
+                        email: null,
+                        name: null,
+                        avatar: null,
+                        googleId: null,
+                    });
                     useNotificationStore.getState().loadNotifications();
                     return false;
                 }
@@ -61,6 +73,8 @@ export const useSessionStore = create<SessionState>((set) => {
                     userId: users.id,
                     isGoogleUser,
                     email: users.email ?? null,
+                    name: users.name ?? null,
+                    avatar: users.avatar ?? null,
                     googleId,
                 });
 
@@ -69,7 +83,15 @@ export const useSessionStore = create<SessionState>((set) => {
                 return true;
             } catch (error) {
                 console.error('Failed to load session:', error);
-                set({ sessionIsValid: false, userId: null, isGoogleUser: false, email: null, googleId: null });
+                set({
+                    sessionIsValid: false,
+                    userId: null,
+                    isGoogleUser: false,
+                    email: null,
+                    name: null,
+                    avatar: null,
+                    googleId: null,
+                });
                 useNotificationStore.getState().loadNotifications();
                 return false;
             }
@@ -93,6 +115,8 @@ export const useSessionStore = create<SessionState>((set) => {
                 sessionIsValid: false,
                 isGoogleUser: false,
                 email: null,
+                name: null,
+                avatar: null,
                 googleId: null,
                 filterTakenCourses: false,
                 userTakenCourses: new Set(),
