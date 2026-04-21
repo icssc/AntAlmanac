@@ -17,7 +17,7 @@ import {
     subscriptions,
 } from '@packages/db/src/schema';
 import { buildConflictUpdateSet } from '@packages/db/src/utils';
-import { and, eq, ExtractTablesWithRelations, gt, notInArray } from 'drizzle-orm';
+import { and, eq, ExtractTablesWithRelations, gt, not, notInArray, or } from 'drizzle-orm';
 import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
@@ -353,36 +353,47 @@ export class RDS {
         return scheduleIdMap;
     }
 
-    /**
-     * Drops all courses in the schedule and re-add them,
-     * deduplicating by section code and term.
-     * */
     private static async upsertCourses(tx: Transaction, scheduleId: string, courses: ShortCourse[]) {
-        await tx.delete(coursesInSchedule).where(eq(coursesInSchedule.scheduleId, scheduleId));
+        const uniqueByKey = new Map<string, { sectionCode: number; term: string; color: string }>();
+        for (const course of courses) {
+            const sectionCode = parseInt(course.sectionCode);
+            const key = `${sectionCode}-${course.term}`;
+            if (!uniqueByKey.has(key)) {
+                uniqueByKey.set(key, { sectionCode, term: course.term, color: course.color });
+            }
+        }
+        const incoming = [...uniqueByKey.values()];
 
-        if (courses.length === 0) {
+        const incomingCourses = incoming.map((course) =>
+            and(eq(coursesInSchedule.sectionCode, course.sectionCode), eq(coursesInSchedule.term, course.term))
+        );
+
+        await tx
+            .delete(coursesInSchedule)
+            .where(
+                incomingCourses.length === 0
+                    ? eq(coursesInSchedule.scheduleId, scheduleId)
+                    : and(eq(coursesInSchedule.scheduleId, scheduleId), not(or(...incomingCourses)!))
+            );
+
+        if (incoming.length === 0) {
             return;
         }
 
-        const coursesUnique: Set<string> = new Set();
-
-        const dbCourses = courses.map((course) => ({
-            scheduleId,
-            sectionCode: parseInt(course.sectionCode),
-            term: course.term,
-            color: course.color,
-        }));
-
-        const dbCoursesUnique = dbCourses.filter((course) => {
-            const key = `${course.sectionCode}-${course.term}`;
-            if (coursesUnique.has(key)) {
-                return false;
-            }
-            coursesUnique.add(key);
-            return true;
-        });
-
-        await tx.insert(coursesInSchedule).values(dbCoursesUnique);
+        await tx
+            .insert(coursesInSchedule)
+            .values(incoming.map((course) => ({ scheduleId, ...course })))
+            .onConflictDoUpdate({
+                target: [coursesInSchedule.scheduleId, coursesInSchedule.sectionCode, coursesInSchedule.term],
+                set: buildConflictUpdateSet(coursesInSchedule, {
+                    scheduleId: 'keep',
+                    sectionCode: 'keep',
+                    term: 'keep',
+                    color: 'update',
+                    createdAt: 'keep',
+                    lastUpdated: 'update',
+                }),
+            });
     }
 
     private static async upsertCustomEvents(
