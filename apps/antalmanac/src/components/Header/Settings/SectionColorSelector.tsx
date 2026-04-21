@@ -55,30 +55,38 @@ export function SectionColorSelector() {
             <Stack
                 direction="row"
                 alignItems="center"
-                flexWrap="wrap"
-                gap={1}
+                justifyContent="space-between"
+                gap={1.5}
                 sx={{
-                    rowGap: 0.75,
+                    width: '100%',
+                    minHeight: 48,
                     border: `1px solid ${borderColor}`,
                     borderRadius: '4px',
                     px: 1.5,
-                    py: 1.25,
+                    py: 1,
                     bgcolor: 'action.hover',
                 }}
             >
                 <Typography
-                    component="span"
-                    variant="body1"
+                    variant="h6"
                     sx={{
                         fontWeight: 700,
                         color: accent,
                         letterSpacing: '-0.01em',
+                        lineHeight: 1.3,
+                        minWidth: 0,
                     }}
                 >
                     {activeLabel}
                 </Typography>
                 {!isCustom && currentPresetMeta ? (
-                    <Stack direction="row" gap={0.5} alignItems="center" sx={{ flexWrap: 'wrap' }}>
+                    <Stack
+                        direction="row"
+                        gap={0.5}
+                        alignItems="center"
+                        justifyContent="flex-end"
+                        sx={{ flexWrap: 'wrap', flexShrink: 0 }}
+                    >
                         {currentPresetMeta.swatches.slice(0, 8).map((c, i) => (
                             <Box
                                 key={i}
@@ -97,7 +105,7 @@ export function SectionColorSelector() {
             </Stack>
 
             {isCustom ? (
-                <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.4, mt: -0.5 }}>
+                <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.4 }}>
                     Set each color from the course block on the calendar.
                 </Typography>
             ) : null}
