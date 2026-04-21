@@ -1,12 +1,12 @@
-import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
-import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
-import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
-import LogoutIcon from '@mui/icons-material/Logout';
-import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from '@mui/material';
-import type { User } from '@packages/antalmanac-types';
-import { type MouseEvent, useMemo, useState } from 'react';
+import LogoutIcon from "@mui/icons-material/Logout";
+import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from "@mui/material";
+import type { User } from "@packages/antalmanac-types";
+import { type MouseEvent, useMemo, useState } from "react";
+import { getSettingsPopoverPaperSx } from "$components/Header/headerStyles";
+import { ProfileMenuButtons } from "$components/Header/ProfileMenuButtons";
+import { SettingsMenu } from "$components/Header/Settings/SettingsMenu";
+import { useSessionStore } from "$stores/SessionStore";
+import { useThemeStore } from "$stores/SettingsStore";
 
 interface SignoutProps {
     onLogoutComplete?: () => void;
@@ -17,7 +17,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
     const { sessionIsValid, clearSession, name, avatar, email } = useSessionStore();
     const isDark = useThemeStore((store) => store.isDark);
 
-    const user = useMemo<Pick<User, 'name' | 'avatar' | 'email'> | null>(
+    const user = useMemo<Pick<User, "name" | "avatar" | "email"> | null>(
         () =>
             sessionIsValid
                 ? {
@@ -26,7 +26,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
                       email: email ?? undefined,
                   }
                 : null,
-        [sessionIsValid, name, avatar, email]
+        [sessionIsValid, name, avatar, email],
     );
 
     const open = Boolean(anchorEl);
@@ -45,7 +45,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
                 window.location.href = logoutUrl;
             }
         } catch (error) {
-            console.error('Error during logout', error);
+            console.error("Error during logout", error);
             onLogoutComplete?.();
         }
     };
@@ -58,12 +58,12 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
                 anchorEl={anchorEl}
                 onClose={() => setAnchorEl(null)}
                 anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
+                    vertical: "bottom",
+                    horizontal: "right",
                 }}
                 transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
+                    vertical: "top",
+                    horizontal: "right",
                 }}
                 slotProps={{
                     paper: {
@@ -73,7 +73,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
             >
                 <SettingsMenu user={user} onClose={() => setAnchorEl(null)} />
 
-                <Divider style={{ marginTop: '20px', marginBottom: '12px' }} />
+                <Divider style={{ marginTop: "20px", marginBottom: "12px" }} />
 
                 <MenuItem onClick={handleLogout} sx={{ px: 1, py: 1.25, borderRadius: 1 }}>
                     <ListItemIcon>
@@ -83,9 +83,9 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
                         primary="Log out"
                         primaryTypographyProps={{
                             sx: {
-                                fontSize: '1rem',
+                                fontSize: "1rem",
                                 fontWeight: 600,
-                                textTransform: 'uppercase',
+                                textTransform: "uppercase",
                             },
                         }}
                     />
