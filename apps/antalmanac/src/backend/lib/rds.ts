@@ -148,13 +148,6 @@ export class RDS {
         );
     }
 
-    /**
-     * Creates a new user and an associated account with the specified provider ID.
-     *
-     * @param db - The database or transaction object.
-     * @param providerId - The provider account ID for the new account.
-     * @returns A promise that resolves to the newly created account object.
-     */
     static async registerUserAccount(
         db: DatabaseOrTransaction,
         accountType: Account['accountType'],
@@ -163,60 +156,59 @@ export class RDS {
         email?: string,
         avatar?: string
     ) {
-        // ! TODO @KevinWu098
-        // ! Auth uses hardcoded migration logic to handle cases in which stale userIDs
-        // ! still contain non OIDC google ids. This is not correct and needs to be fixed.
-        // ! Auth and operations upon users and accounts should not depend on localStorage. This is a hack.
-        const oidcProviderId = providerId.startsWith('google_') ? providerId : `google_${providerId}`;
         if (accountType !== 'OIDC') {
             throw new Error('Invalid account type. Must be OIDC.');
         }
 
-        // First check if an account with OIDC providerId already exists
-        const existingAccount = await this.getAccountByProviderId(db, accountType, oidcProviderId);
-        if (existingAccount && accountType === 'OIDC') {
-            return { ...existingAccount, newUser: false };
-        }
+        const oidcProviderId = providerId.startsWith('google_') ? providerId : `google_${providerId}`;
 
-        const existingUser = email ? await this.getUserByEmail(db, email) : null;
+        return db.transaction(async (tx) => {
+            const existingAccount = await this.getAccountByProviderId(tx, accountType, oidcProviderId);
 
-        if (!existingUser) {
-            const result = await db
-                .insert(users)
-                .values({
-                    avatar: avatar ?? '',
-                    name: name,
-                    email: email ?? '',
-                })
-                .returning({ userId: users.id })
-                .then((res) => res[0]);
-            const newUserId = result.userId;
+            if (existingAccount) {
+                return { ...existingAccount, newUser: false };
+            }
 
-            const account = await db
+            const existingUser = email ? await this.getUserByEmail(tx, email) : null;
+
+            let userId: string;
+            let newUser: boolean;
+
+            if (existingUser) {
+                await tx
+                    .update(users)
+                    .set({ name, email: email ?? '', avatar: avatar ?? existingUser.avatar })
+                    .where(eq(users.id, existingUser.id));
+                userId = existingUser.id;
+                newUser = false;
+            } else {
+                const inserted = await tx
+                    .insert(users)
+                    .values({ name, email: email ?? '', avatar: avatar ?? '' })
+                    .returning({ id: users.id })
+                    .then((res) => res[0]);
+                userId = inserted.id;
+                newUser = true;
+            }
+
+            const account = await tx
                 .insert(accounts)
-                .values({ userId: newUserId, providerAccountId: oidcProviderId, accountType })
+                .values({ userId, accountType, providerAccountId: oidcProviderId })
+                .onConflictDoUpdate({
+                    target: [accounts.userId, accounts.accountType],
+                    set: buildConflictUpdateSet(accounts, {
+                        userId: 'keep',
+                        accountType: 'keep',
+                        providerAccountId: 'update',
+                        createdAt: 'keep',
+                        updatedAt: 'update',
+                    }),
+                })
                 .returning()
                 .then((res) => res[0]);
 
-            return { ...account, newUser: true };
-        }
-
-        await db
-            .update(users)
-            .set({
-                name: name,
-                email: email ?? '',
-                avatar: avatar ?? existingUser.avatar,
-            })
-            .where(eq(users.id, existingUser.id));
-
-        const newAccount = await db
-            .insert(accounts)
-            .values({ userId: existingUser.id, providerAccountId: oidcProviderId, accountType })
-            .returning()
-            .then((res) => res[0]);
-
-        return { ...newAccount, newUser: false };
+            return { ...account, newUser };
+        });
     }
 
     /**
@@ -272,9 +264,6 @@ export class RDS {
         const existingRows = await tx.select({ id: schedules.id }).from(schedules).where(eq(schedules.userId, userId));
         const existingIds = new Set(existingRows.map((s) => s.id));
 
-        // Pre-compute the DB id for each incoming schedule so we can both
-        // scope the orphan delete and wire up downstream courses/customEvents
-        // without a round-trip via `returning`.
         const prepared = scheduleArray.map((schedule, index) => ({
             schedule,
             index,
