@@ -29,11 +29,9 @@ export const calendarizeCourseEvents = (
 
     for (const course of currentCourses) {
         if (resolvedColor !== 'custom') {
-            const color = getColorForNewSection(course, themedCourses, resolvedColor);
-            themedCourses.push({ ...course, section: { ...course.section, color } });
-        } else {
-            themedCourses.push(course);
+            course.section.color = getColorForNewSection(course, themedCourses, resolvedColor);
         }
+        themedCourses.push(course);
     }
 
     return themedCourses.flatMap((course) => {
