@@ -16,7 +16,8 @@ import {
     Session,
     subscriptions,
 } from '@packages/db/src/schema';
-import { and, eq, ExtractTablesWithRelations, gt } from 'drizzle-orm';
+import { buildConflictUpdateSet } from '@packages/db/src/utils';
+import { and, eq, ExtractTablesWithRelations, gt, notInArray } from 'drizzle-orm';
 import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
@@ -389,23 +390,49 @@ export class RDS {
         scheduleId: string,
         repeatingCustomEvents: RepeatingCustomEvent[]
     ) {
-        await tx.delete(customEvents).where(eq(customEvents.scheduleId, scheduleId));
+        const incomingIds = repeatingCustomEvents.map((event) => event.customEventID);
+
+        await tx
+            .delete(customEvents)
+            .where(
+                incomingIds.length === 0
+                    ? eq(customEvents.scheduleId, scheduleId)
+                    : and(eq(customEvents.scheduleId, scheduleId), notInArray(customEvents.id, incomingIds))
+            );
 
         if (repeatingCustomEvents.length === 0) {
             return;
         }
 
-        const dbCustomEvents = repeatingCustomEvents.map((event) => ({
-            scheduleId,
-            title: event.title,
-            start: event.start,
-            end: event.end,
-            days: event.days.map((day) => (day ? '1' : '0')).join(''),
-            color: event.color,
-            building: event.building,
-        }));
-
-        await tx.insert(customEvents).values(dbCustomEvents);
+        await tx
+            .insert(customEvents)
+            .values(
+                repeatingCustomEvents.map((event) => ({
+                    id: event.customEventID,
+                    scheduleId,
+                    title: event.title,
+                    start: event.start,
+                    end: event.end,
+                    days: event.days.map((day) => (day ? '1' : '0')).join(''),
+                    color: event.color,
+                    building: event.building,
+                }))
+            )
+            .onConflictDoUpdate({
+                target: customEvents.id,
+                set: buildConflictUpdateSet(customEvents, {
+                    id: 'keep',
+                    scheduleId: 'keep',
+                    title: 'update',
+                    start: 'update',
+                    end: 'update',
+                    days: 'update',
+                    color: 'update',
+                    building: 'update',
+                    createdAt: 'keep',
+                    lastUpdated: 'update',
+                }),
+            });
     }
 
     /**

@@ -1,4 +1,3 @@
-import { createId } from '@paralleldrive/cuid2';
 import { pgTable, text, timestamp } from 'drizzle-orm/pg-core';
 
 import { schedules } from './schedule';
@@ -9,7 +8,7 @@ import { schedules } from './schedule';
  * There can be multiple custom events with the same name in a schedule.
  */
 export const customEvents = pgTable('customEvents', {
-    id: text('id').primaryKey().$defaultFn(createId),
+    id: text('id').primaryKey(),
 
     scheduleId: text('scheduleId')
         .references(() => schedules.id, { onDelete: 'cascade' })

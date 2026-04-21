@@ -1,3 +1,9 @@
+import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
+import { DaySelector } from '$components/Calendar/Toolbar/CustomEventDialog/DaySelector';
+import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog/ScheduleSelector';
+import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import AppStore from '$stores/AppStore';
 import { Add, Edit } from '@mui/icons-material';
 import {
     Button,
@@ -11,15 +17,9 @@ import {
     Tooltip,
 } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { createId } from '@paralleldrive/cuid2';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useState } from 'react';
-
-import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
-import { DaySelector } from '$components/Calendar/Toolbar/CustomEventDialog/DaySelector';
-import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog/ScheduleSelector';
-import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import AppStore from '$stores/AppStore';
 
 interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;
@@ -27,12 +27,11 @@ interface CustomEventDialogProps {
     scheduleNames: string[];
 }
 
-const defaultCustomEventValues: RepeatingCustomEvent = {
+const defaultCustomEventValues: Omit<RepeatingCustomEvent, 'customEventID'> = {
     start: '10:30',
     end: '15:30',
     title: '',
     days: [false, false, false, false, false, false, false],
-    customEventID: 0,
     building: undefined,
 };
 
@@ -75,8 +74,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
     const handleOpen = useCallback(() => {
         setOpen(true);
         if (props.customEvent) {
-            const customEventId = Number(props.customEvent.customEventID);
-            setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(customEventId));
+            setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(props.customEvent.customEventID));
         } else {
             setScheduleIndices([AppStore.getCurrentScheduleIndex()]);
         }
@@ -124,7 +122,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             days: days,
             start: start,
             end: end,
-            customEventID: props.customEvent?.customEventID ?? Date.now(),
+            customEventID: props.customEvent?.customEventID ?? createId(),
             building: building,
         };
 

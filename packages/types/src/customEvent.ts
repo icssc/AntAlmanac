@@ -5,7 +5,7 @@ export const RepeatingCustomEventSchema = type({
     start: 'string',
     end: 'string',
     days: 'boolean[]',
-    customEventID: 'string | number', // Unique only within the schedule.
+    customEventID: 'string',
     'color?': 'string',
     'building?': 'string | undefined',
 });
