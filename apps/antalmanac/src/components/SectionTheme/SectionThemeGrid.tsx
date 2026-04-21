@@ -41,6 +41,22 @@ function PreviewEventRow({ label, color }: { label: string; color: string }) {
 }
 
 export type SectionThemeGridSelection = SectionThemePreset | 'custom';
+const themeCardButtonSx = {
+    width: '100%',
+    textAlign: 'left' as const,
+    font: 'inherit',
+    color: 'inherit',
+    margin: 0,
+    appearance: 'none' as const,
+    WebkitAppearance: 'none' as const,
+    '&:focus': {
+        outline: 'none',
+    },
+    '&:focus-visible': {
+        outline: `2px solid ${BLUE}`,
+        outlineOffset: 2,
+    },
+};
 
 interface CustomThemeCardProps {
     isSelected: boolean;
@@ -54,10 +70,13 @@ function CustomThemeCard({ isSelected, isDark, compact, onSelect }: CustomThemeC
 
     return (
         <Box
+            component="button"
+            type="button"
             onClick={onSelect}
-            role="button"
             aria-pressed={isSelected}
+            aria-label="Select Custom Theme"
             sx={{
+                ...themeCardButtonSx,
                 position: 'relative',
                 display: 'flex',
                 flexDirection: 'column',
@@ -150,10 +169,13 @@ function ThemeCard({ option, isSelected, isDark, compact, onSelect }: ThemeCardP
 
     return (
         <Box
+            component="button"
+            type="button"
             onClick={() => onSelect(option.value)}
-            role="button"
             aria-pressed={isSelected}
+            aria-label={`Select ${option.label} theme`}
             sx={{
+                ...themeCardButtonSx,
                 position: 'relative',
                 display: 'flex',
                 flexDirection: 'column',
