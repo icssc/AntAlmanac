@@ -11,7 +11,9 @@ enum LocalStorageKeys {
     show24HourTime = 'show24HourTime',
     previewMode = 'previewMode',
     autoSave = 'autoSave',
+    devMode = 'devMode',
     unsavedActions = 'unsavedActions',
+    /** @deprecated Removed along with the HelpBox component in PR #1473. */
     helpBoxDismissalTime = 'helpBoxDismissalTime',
     columnToggles = 'columnToggles',
     pwaDismissalTime = 'pwaDismissalTime',
@@ -226,6 +228,19 @@ export function getLocalStorageAutoSave() {
 
 export function removeLocalStorageAutoSave() {
     window.localStorage.removeItem(LSK.autoSave);
+}
+
+// Helper functions for devMode
+export function setLocalStorageDevMode(value: string) {
+    localStorage.setItem(LocalStorageKeys.devMode, value);
+}
+
+export function getLocalStorageDevMode() {
+    return localStorage.getItem(LocalStorageKeys.devMode);
+}
+
+export function removeLocalStorageDevMode() {
+    localStorage.removeItem(LocalStorageKeys.devMode);
 }
 
 // Helper functions for autoSave
