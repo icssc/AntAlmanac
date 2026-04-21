@@ -18,12 +18,6 @@ function getMeetingStartMinutes(section: AASection): number {
     return meeting.startTime.hour * 60 + meeting.startTime.minute;
 }
 
-function getMeetingDays(section: AASection): string {
-    const meeting = section.meetings[0];
-    if (!meeting || meeting.timeIsTBA) return '';
-    return meeting.days;
-}
-
 const STATUS_ORDER: Record<string, number> = { OPEN: 0, NewOnly: 1, Waitl: 2, FULL: 3, '': 4 };
 
 function sortSections(sections: AASection[], sortBy: SortOption, gpaMap: GpaMap): AASection[] {
@@ -36,18 +30,6 @@ function sortSections(sections: AASection[], sortBy: SortOption, gpaMap: GpaMap)
 
             case 'time_asc':
                 return getMeetingStartMinutes(a) - getMeetingStartMinutes(b);
-
-            case 'days_mwf': {
-                const aMatch = /[MWF]/.test(getMeetingDays(a)) ? 0 : 1;
-                const bMatch = /[MWF]/.test(getMeetingDays(b)) ? 0 : 1;
-                return aMatch - bMatch;
-            }
-
-            case 'days_tuth': {
-                const aMatch = /Tu|Th/.test(getMeetingDays(a)) ? 0 : 1;
-                const bMatch = /Tu|Th/.test(getMeetingDays(b)) ? 0 : 1;
-                return aMatch - bMatch;
-            }
 
             case 'gpa_descending': {
                 const aGpa = parseFloat(gpaMap.get(a.sectionCode)?.gpa ?? '');
