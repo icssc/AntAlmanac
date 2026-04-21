@@ -1,12 +1,16 @@
 import { TableBody } from '@mui/material';
 import { AACourse, AASection } from '@packages/antalmanac-types';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 
+import { getGpaData } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/GpaCell';
 import { SectionTableBodyRow } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRow';
 import { AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
-import { useSectionFilterStore, type SortOption } from '$stores/SectionFilterStore';
+import { type SortOption, useSectionFilterStore } from '$stores/SectionFilterStore';
 import { normalizeTime, parseDaysString } from '$stores/calendarizeHelpers';
+
+export type GpaEntry = { gpa: string; instructor: string };
+export type GpaMap = Map<string, GpaEntry>;
 
 function getMeetingStartMinutes(section: AASection): number {
     const meeting = section.meetings[0];
@@ -22,7 +26,7 @@ function getMeetingDays(section: AASection): string {
 
 const STATUS_ORDER: Record<string, number> = { OPEN: 0, NewOnly: 1, Waitl: 2, FULL: 3, '': 4 };
 
-function sortSections(sections: AASection[], sortBy: SortOption): AASection[] {
+function sortSections(sections: AASection[], sortBy: SortOption, gpaMap: GpaMap): AASection[] {
     if (sortBy === 'default') return sections;
 
     return [...sections].sort((a, b) => {
@@ -44,6 +48,15 @@ function sortSections(sections: AASection[], sortBy: SortOption): AASection[] {
                 const bMatch = /Tu|Th/.test(getMeetingDays(b)) ? 0 : 1;
                 return aMatch - bMatch;
             }
+
+            case 'gpa_descending': {
+                const aGpa = parseFloat(gpaMap.get(a.sectionCode)?.gpa ?? '');
+                const bGpa = parseFloat(gpaMap.get(b.sectionCode)?.gpa ?? '');
+                const aValue = Number.isNaN(aGpa) ? -Infinity : aGpa;
+                const bValue = Number.isNaN(bGpa) ? -Infinity : bGpa;
+                return bValue - aValue;
+            }
+
             default:
                 return 0;
         }
@@ -67,8 +80,31 @@ export function SectionTableBody({
     analyticsCategory,
     formattedTime,
 }: SectionTableBodyProps) {
-    const { sortBy } = useSectionFilterStore();
     const [calendarEvents, setCalendarEvents] = useState(() => AppStore.getCourseEventsInCalendar());
+    const [gpaMap, setGpaMap] = useState<GpaMap>(() => new Map());
+    const sortBy = useSectionFilterStore((state) => state.sortBy);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        Promise.all(
+            courseDetails.sections.map(async (section) => {
+                const data = await getGpaData(courseDetails.deptCode, courseDetails.courseNumber, section.instructors);
+                return [section.sectionCode, data] as const;
+            })
+        ).then((entries) => {
+            if (cancelled) return;
+            const next: GpaMap = new Map();
+            for (const [code, data] of entries) {
+                if (data) next.set(code, data);
+            }
+            setGpaMap(next);
+        });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [courseDetails]);
 
     /**
      * Additional information about the current section being rendered.
@@ -127,14 +163,15 @@ export function SectionTableBody({
     }, [updateCalendarEvents]);
 
     const sortedSections = useMemo(
-        () => sortSections(courseDetails.sections, sortBy),
-        [courseDetails.sections, sortBy]
+        () => sortSections(courseDetails.sections, sortBy, gpaMap),
+        [courseDetails.sections, sortBy, gpaMap]
     );
 
     return (
         <TableBody>
             {sortedSections.map((section) => {
                 const conflict = scheduleConflict(section);
+                const gpaEntry = gpaMap.get(section.sectionCode);
 
                 return (
                     <SectionTableBodyRow
@@ -147,6 +184,8 @@ export function SectionTableBody({
                         scheduleConflict={conflict}
                         analyticsCategory={analyticsCategory}
                         formattedTime={formattedTime}
+                        gpa={gpaEntry?.gpa}
+                        gpaInstructor={gpaEntry?.instructor}
                     />
                 );
             })}

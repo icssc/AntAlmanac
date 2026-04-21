@@ -29,6 +29,8 @@ interface SectionTableBodyRowProps {
     scheduleConflict: boolean;
     analyticsCategory: AnalyticsCategory;
     formattedTime: string | null;
+    gpa?: string;
+    gpaInstructor?: string;
 }
 
 // These components have too varied of types, any is fine here
@@ -57,6 +59,8 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         scheduleConflict,
         analyticsCategory,
         formattedTime,
+        gpa,
+        gpaInstructor,
     } = props;
 
     const theme = useTheme();
@@ -155,6 +159,8 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
                             {...courseDetails}
                             analyticsCategory={analyticsCategory}
                             formattedTime={formattedTime}
+                            gpa={gpa}
+                            gpaInstructor={gpaInstructor}
                         />
                     );
                 })}
