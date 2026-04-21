@@ -205,7 +205,6 @@ export class RDS {
                 name: name,
                 email: email ?? '',
                 avatar: avatar ?? existingUser.avatar,
-                lastUpdated: new Date(),
             })
             .where(eq(users.id, existingUser.id));
 
@@ -291,7 +290,6 @@ export class RDS {
                 name: schedule.scheduleName,
                 notes: schedule.scheduleNote,
                 index,
-                lastUpdated: new Date(),
             })
             .returning({ id: schedules.id });
 
@@ -372,7 +370,6 @@ export class RDS {
             sectionCode: parseInt(course.sectionCode),
             term: course.term,
             color: course.color,
-            lastUpdated: new Date(),
         }));
 
         const dbCoursesUnique = dbCourses.filter((course) => {
@@ -406,7 +403,6 @@ export class RDS {
             days: event.days.map((day) => (day ? '1' : '0')).join(''),
             color: event.color,
             building: event.building,
-            lastUpdated: new Date(),
         }));
 
         await tx.insert(customEvents).values(dbCustomEvents);
