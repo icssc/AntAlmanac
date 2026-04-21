@@ -16,7 +16,7 @@ export class NotificationRDS {
      * @param userId - The ID of the user for whom we're retrieving notifications.
      * @returns A promise that resolves to the notifications associated with a userId, or an empty array if not found.
      */
-    static async retrieveNotifications(db: DatabaseOrTransaction, userId: string) {
+    static async retrieveNotifications(db: DatabaseOrTransaction, userId: string, _stage?: string) {
         return db.transaction((tx) => tx.select().from(subscriptions).where(eq(subscriptions.userId, userId)));
     }
 
@@ -79,7 +79,7 @@ export class NotificationRDS {
      * @param notification - The notification object type we are updating.
      * @returns A promise that updates ALL notifications with a shared sectionCode, year, and quarter.
      */
-    static async updateAllNotifications(db: DatabaseOrTransaction, notification: Notification) {
+    static async updateAllNotifications(db: DatabaseOrTransaction, notification: Notification, _stage?: string) {
         return db.transaction((tx) =>
             tx
                 .update(subscriptions)
@@ -105,7 +105,12 @@ export class NotificationRDS {
      * @param userId - The ID of the user for whom we're deleting a notification.
      * @returns A promise that deletes a user's notification.
      */
-    static async deleteNotification(db: DatabaseOrTransaction, notification: Notification, userId: string) {
+    static async deleteNotification(
+        db: DatabaseOrTransaction,
+        notification: Notification,
+        userId: string,
+        _stage?: string
+    ) {
         return db.transaction((tx) =>
             tx
                 .delete(subscriptions)
@@ -127,7 +132,7 @@ export class NotificationRDS {
      * @param userId - The ID of the user for whom we're deleting all notifications.
      * @returns A promise that deletes all of a user's notifications.
      */
-    static async deleteAllNotifications(db: DatabaseOrTransaction, userId: string) {
+    static async deleteAllNotifications(db: DatabaseOrTransaction, userId: string, _stage?: string) {
         return db.transaction((tx) => tx.delete(subscriptions).where(eq(subscriptions.userId, userId)));
     }
 }

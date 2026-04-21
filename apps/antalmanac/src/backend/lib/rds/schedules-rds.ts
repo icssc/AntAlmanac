@@ -61,7 +61,10 @@ export class SchedulesRDS {
      * @param userData The object of data containing the user's schedules and courses
      * @returns The user's ID
      */
-    static async upsertUserData(db: DatabaseOrTransaction, userData: User): Promise<string> {
+    static async upsertUserData(
+        db: DatabaseOrTransaction,
+        userData: User
+    ): Promise<{ userId: string; scheduleIdMap: Record<string, string> }> {
         return db.transaction(async (tx) => {
             const account = await AccountsRDS.registerUserAccount(
                 tx,
@@ -79,6 +82,14 @@ export class SchedulesRDS {
             // Add schedules and courses
             const scheduleIds = await this.upsertSchedulesAndContents(tx, userId, userData.userData.schedules);
 
+            // Build a map from client-side schedule ID to DB-assigned schedule ID
+            const scheduleIdMap: Record<string, string> = {};
+            userData.userData.schedules.forEach((schedule, index) => {
+                if (schedule.id !== undefined) {
+                    scheduleIdMap[schedule.id] = scheduleIds[index];
+                }
+            });
+
             // Update user's current schedule index
             const scheduleIndex = userData.userData.scheduleIndex;
 
@@ -89,7 +100,7 @@ export class SchedulesRDS {
                 await tx.update(users).set({ currentScheduleId: currentScheduleId }).where(eq(users.id, userId));
             }
 
-            return userId;
+            return { userId, scheduleIdMap };
         });
     }
 

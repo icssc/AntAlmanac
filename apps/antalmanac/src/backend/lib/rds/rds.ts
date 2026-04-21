@@ -50,7 +50,10 @@ export class RDS {
         return AccountsRDS.registerUserAccount(db, accountType, providerId, name, email, avatar);
     }
 
-    static async upsertUserData(db: DatabaseOrTransaction, userData: User): Promise<string> {
+    static async upsertUserData(
+        db: DatabaseOrTransaction,
+        userData: User
+    ): Promise<{ userId: string; scheduleIdMap: Record<string, string> }> {
         return SchedulesRDS.upsertUserData(db, userData);
     }
 
@@ -90,8 +93,8 @@ export class RDS {
         return UsersRDS.flagImportedUser(db, providerId);
     }
 
-    static async retrieveNotifications(db: DatabaseOrTransaction, userId: string) {
-        return NotificationRDS.retrieveNotifications(db, userId);
+    static async retrieveNotifications(db: DatabaseOrTransaction, userId: string, stage?: string) {
+        return NotificationRDS.retrieveNotifications(db, userId, stage);
     }
 
     static async upsertNotification(
@@ -103,15 +106,20 @@ export class RDS {
         return NotificationRDS.upsertNotification(db, userId, notification, environmentValue);
     }
 
-    static async updateAllNotifications(db: DatabaseOrTransaction, notification: Notification) {
-        return NotificationRDS.updateAllNotifications(db, notification);
+    static async updateAllNotifications(db: DatabaseOrTransaction, notification: Notification, stage?: string) {
+        return NotificationRDS.updateAllNotifications(db, notification, stage);
     }
 
-    static async deleteNotification(db: DatabaseOrTransaction, notification: Notification, userId: string) {
-        return NotificationRDS.deleteNotification(db, notification, userId);
+    static async deleteNotification(
+        db: DatabaseOrTransaction,
+        notification: Notification,
+        userId: string,
+        stage?: string
+    ) {
+        return NotificationRDS.deleteNotification(db, notification, userId, stage);
     }
 
-    static async deleteAllNotifications(db: DatabaseOrTransaction, userId: string) {
-        return NotificationRDS.deleteAllNotifications(db, userId);
+    static async deleteAllNotifications(db: DatabaseOrTransaction, userId: string, stage?: string) {
+        return NotificationRDS.deleteAllNotifications(db, userId, stage);
     }
 }
