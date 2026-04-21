@@ -64,6 +64,7 @@ export class NotificationRDS {
                         subscriptions.sectionCode,
                         subscriptions.year,
                         subscriptions.quarter,
+                        subscriptions.environment,
                     ],
                     set: {
                         notifyOnOpen: notification.notifyOn.notifyOnOpen,
