@@ -1,8 +1,8 @@
 import { colorContrastSufficient } from '$lib/calendarEventTextColor';
 import { type SectionThemeOption, type SectionThemePreset } from '$lib/sectionThemes';
-import { BLUE } from '$src/globals';
 import { Check, Colorize } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 function Swatch({ color }: { color: string }) {
     return (
@@ -41,31 +41,35 @@ function PreviewEventRow({ label, color }: { label: string; color: string }) {
 }
 
 export type SectionThemeGridSelection = SectionThemePreset | 'custom';
-const themeCardButtonSx = {
-    width: '100%',
-    textAlign: 'left' as const,
-    font: 'inherit',
-    color: 'inherit',
-    margin: 0,
-    appearance: 'none' as const,
-    WebkitAppearance: 'none' as const,
-    '&:focus': {
-        outline: 'none',
-    },
-    '&:focus-visible': {
-        outline: `2px solid ${BLUE}`,
-        outlineOffset: 2,
-    },
-};
+
+function themeCardButtonBaseSx(selectionAccent: string) {
+    return {
+        width: '100%',
+        textAlign: 'left' as const,
+        font: 'inherit',
+        color: 'inherit',
+        margin: 0,
+        appearance: 'none' as const,
+        WebkitAppearance: 'none' as const,
+        '&:focus': {
+            outline: 'none',
+        },
+        '&:focus-visible': {
+            outline: `2px solid ${selectionAccent}`,
+            outlineOffset: 2,
+        },
+    };
+}
 
 interface CustomThemeCardProps {
     isSelected: boolean;
     isDark: boolean;
     compact?: boolean;
+    selectionAccent: string;
     onSelect: () => void;
 }
 
-function CustomThemeCard({ isSelected, isDark, compact, onSelect }: CustomThemeCardProps) {
+function CustomThemeCard({ isSelected, isDark, compact, selectionAccent, onSelect }: CustomThemeCardProps) {
     const pad = compact ? '12px' : '14px';
 
     return (
@@ -76,7 +80,7 @@ function CustomThemeCard({ isSelected, isDark, compact, onSelect }: CustomThemeC
             aria-pressed={isSelected}
             aria-label="Select Custom Theme"
             sx={{
-                ...themeCardButtonSx,
+                ...themeCardButtonBaseSx(selectionAccent),
                 position: 'relative',
                 display: 'flex',
                 flexDirection: 'column',
@@ -84,11 +88,11 @@ function CustomThemeCard({ isSelected, isDark, compact, onSelect }: CustomThemeC
                 padding: pad,
                 borderRadius: '8px',
                 cursor: 'pointer',
-                border: `2px solid ${isSelected ? BLUE : isDark ? '#555' : '#d3d4d5'}`,
+                border: `2px solid ${isSelected ? selectionAccent : isDark ? '#555' : '#d3d4d5'}`,
                 backgroundColor: isSelected ? (isDark ? '#1a2740' : '#eef3fc') : isDark ? '#2a2a2a' : '#fafafa',
                 transition: 'border-color 0.15s, background-color 0.15s',
                 '&:hover': {
-                    borderColor: isSelected ? BLUE : isDark ? '#888' : '#aaa',
+                    borderColor: isSelected ? selectionAccent : isDark ? '#888' : '#aaa',
                     backgroundColor: isSelected ? (isDark ? '#1a2740' : '#eef3fc') : isDark ? '#333' : '#f0f0f0',
                 },
             }}
@@ -102,7 +106,7 @@ function CustomThemeCard({ isSelected, isDark, compact, onSelect }: CustomThemeC
                         width: 22,
                         height: 22,
                         borderRadius: '50%',
-                        backgroundColor: BLUE,
+                        backgroundColor: selectionAccent,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -115,7 +119,7 @@ function CustomThemeCard({ isSelected, isDark, compact, onSelect }: CustomThemeC
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, pr: 3.5 }}>
                 <Box
                     sx={{
-                        color: isSelected ? BLUE : 'text.secondary',
+                        color: isSelected ? selectionAccent : 'text.secondary',
                         display: 'inline-flex',
                         flexShrink: 0,
                         alignItems: 'center',
@@ -133,7 +137,7 @@ function CustomThemeCard({ isSelected, isDark, compact, onSelect }: CustomThemeC
                         m: 0,
                         fontSize: compact ? '1rem' : '1.0625rem',
                         fontWeight: isSelected ? 700 : 600,
-                        color: isSelected ? BLUE : 'text.primary',
+                        color: isSelected ? selectionAccent : 'text.primary',
                         lineHeight: 1.35,
                         letterSpacing: '-0.01em',
                     }}
@@ -161,10 +165,11 @@ interface ThemeCardProps {
     isSelected: boolean;
     isDark: boolean;
     compact?: boolean;
+    selectionAccent: string;
     onSelect: (value: SectionThemePreset) => void;
 }
 
-function ThemeCard({ option, isSelected, isDark, compact, onSelect }: ThemeCardProps) {
+function ThemeCard({ option, isSelected, isDark, compact, selectionAccent, onSelect }: ThemeCardProps) {
     const pad = compact ? '12px' : '14px';
 
     return (
@@ -175,7 +180,7 @@ function ThemeCard({ option, isSelected, isDark, compact, onSelect }: ThemeCardP
             aria-pressed={isSelected}
             aria-label={`Select ${option.label} theme`}
             sx={{
-                ...themeCardButtonSx,
+                ...themeCardButtonBaseSx(selectionAccent),
                 position: 'relative',
                 display: 'flex',
                 flexDirection: 'column',
@@ -183,11 +188,11 @@ function ThemeCard({ option, isSelected, isDark, compact, onSelect }: ThemeCardP
                 padding: pad,
                 borderRadius: '8px',
                 cursor: 'pointer',
-                border: `2px solid ${isSelected ? BLUE : isDark ? '#555' : '#d3d4d5'}`,
+                border: `2px solid ${isSelected ? selectionAccent : isDark ? '#555' : '#d3d4d5'}`,
                 backgroundColor: isSelected ? (isDark ? '#1a2740' : '#eef3fc') : isDark ? '#2a2a2a' : '#fafafa',
                 transition: 'border-color 0.15s, background-color 0.15s',
                 '&:hover': {
-                    borderColor: isSelected ? BLUE : isDark ? '#888' : '#aaa',
+                    borderColor: isSelected ? selectionAccent : isDark ? '#888' : '#aaa',
                     backgroundColor: isSelected ? (isDark ? '#1a2740' : '#eef3fc') : isDark ? '#333' : '#f0f0f0',
                 },
             }}
@@ -201,7 +206,7 @@ function ThemeCard({ option, isSelected, isDark, compact, onSelect }: ThemeCardP
                         width: 22,
                         height: 22,
                         borderRadius: '50%',
-                        backgroundColor: BLUE,
+                        backgroundColor: selectionAccent,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -214,7 +219,7 @@ function ThemeCard({ option, isSelected, isDark, compact, onSelect }: ThemeCardP
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, pr: 3.5 }}>
                 <Box
                     sx={{
-                        color: isSelected ? BLUE : 'text.secondary',
+                        color: isSelected ? selectionAccent : 'text.secondary',
                         display: 'inline-flex',
                         flexShrink: 0,
                         alignItems: 'center',
@@ -232,7 +237,7 @@ function ThemeCard({ option, isSelected, isDark, compact, onSelect }: ThemeCardP
                         m: 0,
                         fontSize: compact ? '1rem' : '1.0625rem',
                         fontWeight: isSelected ? 700 : 600,
-                        color: isSelected ? BLUE : 'text.primary',
+                        color: isSelected ? selectionAccent : 'text.primary',
                         lineHeight: 1.35,
                         letterSpacing: '-0.01em',
                     }}
@@ -324,6 +329,9 @@ export function SectionThemeGrid({
     compact,
     showCustomOption = true,
 }: SectionThemeGridProps) {
+    const muiTheme = useTheme();
+    const selectionAccent = isDark ? muiTheme.palette.secondary.main : muiTheme.palette.primary.main;
+
     return (
         <Box
             sx={{
@@ -339,6 +347,7 @@ export function SectionThemeGrid({
                         isSelected={selectedValue === 'custom'}
                         isDark={isDark}
                         compact={compact}
+                        selectionAccent={selectionAccent}
                         onSelect={() => onSelect('custom')}
                     />
                 </Box>
@@ -350,6 +359,7 @@ export function SectionThemeGrid({
                     isSelected={selectedValue === option.value}
                     isDark={isDark}
                     compact={compact}
+                    selectionAccent={selectionAccent}
                     onSelect={onSelect}
                 />
             ))}

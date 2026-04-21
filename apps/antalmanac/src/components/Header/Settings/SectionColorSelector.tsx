@@ -14,8 +14,8 @@ const PICKER_DESCRIPTION =
 export function SectionColorSelector() {
     const muiTheme = useTheme();
     const borderColor = muiTheme.palette.divider;
-    const accent = muiTheme.palette.primary.main;
     const isDark = useThemeStore((s) => s.isDark);
+    const accent = isDark ? muiTheme.palette.secondary.main : muiTheme.palette.primary.main;
 
     const [sectionColor, setSectionColor] = useSectionColorStore((store) => [
         store.sectionColor,
@@ -37,8 +37,8 @@ export function SectionColorSelector() {
         fontWeight: 700,
         fontSize: '1.1rem',
         py: 1,
-        borderColor,
         borderRadius: '4px',
+        ...(!isDark ? { borderColor } : {}),
     };
 
     return (
@@ -108,6 +108,7 @@ export function SectionColorSelector() {
             <Button
                 fullWidth
                 variant="outlined"
+                color={isDark ? 'secondary' : 'primary'}
                 onClick={() => setPickerOpen(true)}
                 sx={actionButtonSx}
                 startIcon={<Palette fontSize="small" />}
