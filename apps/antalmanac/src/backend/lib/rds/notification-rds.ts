@@ -16,8 +16,14 @@ export class NotificationRDS {
      * @param userId - The ID of the user for whom we're retrieving notifications.
      * @returns A promise that resolves to the notifications associated with a userId, or an empty array if not found.
      */
-    static async retrieveNotifications(db: DatabaseOrTransaction, userId: string, _stage?: string) {
-        return db.transaction((tx) => tx.select().from(subscriptions).where(eq(subscriptions.userId, userId)));
+    static async retrieveNotifications(db: DatabaseOrTransaction, userId: string, stage?: string) {
+        const environment = stage ?? 'production';
+        return db.transaction((tx) =>
+            tx
+                .select()
+                .from(subscriptions)
+                .where(and(eq(subscriptions.userId, userId), eq(subscriptions.environment, environment)))
+        );
     }
 
     /**
@@ -79,7 +85,8 @@ export class NotificationRDS {
      * @param notification - The notification object type we are updating.
      * @returns A promise that updates ALL notifications with a shared sectionCode, year, and quarter.
      */
-    static async updateAllNotifications(db: DatabaseOrTransaction, notification: Notification, _stage?: string) {
+    static async updateAllNotifications(db: DatabaseOrTransaction, notification: Notification, stage?: string) {
+        const environment = stage ?? 'production';
         return db.transaction((tx) =>
             tx
                 .update(subscriptions)
@@ -91,7 +98,8 @@ export class NotificationRDS {
                     and(
                         eq(subscriptions.sectionCode, notification.sectionCode),
                         eq(subscriptions.year, notification.term.split(' ')[0]),
-                        eq(subscriptions.quarter, notification.term.split(' ')[1])
+                        eq(subscriptions.quarter, notification.term.split(' ')[1]),
+                        eq(subscriptions.environment, environment)
                     )
                 )
         );
@@ -109,8 +117,9 @@ export class NotificationRDS {
         db: DatabaseOrTransaction,
         notification: Notification,
         userId: string,
-        _stage?: string
+        stage?: string
     ) {
+        const environment = stage ?? 'production';
         return db.transaction((tx) =>
             tx
                 .delete(subscriptions)
@@ -119,7 +128,8 @@ export class NotificationRDS {
                         eq(subscriptions.userId, userId),
                         eq(subscriptions.sectionCode, notification.sectionCode),
                         eq(subscriptions.year, notification.term.split(' ')[0]),
-                        eq(subscriptions.quarter, notification.term.split(' ')[1])
+                        eq(subscriptions.quarter, notification.term.split(' ')[1]),
+                        eq(subscriptions.environment, environment)
                     )
                 )
         );
@@ -132,7 +142,12 @@ export class NotificationRDS {
      * @param userId - The ID of the user for whom we're deleting all notifications.
      * @returns A promise that deletes all of a user's notifications.
      */
-    static async deleteAllNotifications(db: DatabaseOrTransaction, userId: string, _stage?: string) {
-        return db.transaction((tx) => tx.delete(subscriptions).where(eq(subscriptions.userId, userId)));
+    static async deleteAllNotifications(db: DatabaseOrTransaction, userId: string, stage?: string) {
+        const environment = stage ?? 'production';
+        return db.transaction((tx) =>
+            tx
+                .delete(subscriptions)
+                .where(and(eq(subscriptions.userId, userId), eq(subscriptions.environment, environment)))
+        );
     }
 }
