@@ -1,7 +1,7 @@
 import { setLocalStorageSectionColorOnboarding } from '$lib/localStorage';
 import { BLUE } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
-import { useHelpMenuStore } from '$stores/HelpMenuStore';
+import { useSectionThemeOnboardingStore } from '$stores/SectionThemeOnboardingStore';
 import { colorVariants } from '$stores/scheduleHelpers';
 import { type SectionColorSetting, useSectionColorStore, useThemeStore } from '$stores/SettingsStore';
 import { Check, History, Palette, Pets } from '@mui/icons-material';
@@ -256,7 +256,7 @@ function OnboardingBackdrop(props: BackdropProps) {
 // ─── Main component ───────────────────────────────────────────────────────────
 
 function SectionThemeOnboarding() {
-    const [showSectionThemeOnboarding, setShowSectionThemeOnboarding] = useHelpMenuStore(
+    const [showSectionThemeOnboarding, setShowSectionThemeOnboarding] = useSectionThemeOnboardingStore(
         useShallow((store) => [store.showSectionThemeOnboarding, store.setShowSectionThemeOnboarding])
     );
 

@@ -1,7 +1,7 @@
-import { SxProps, TableCell, TableCellProps } from '@mui/material';
+import { SxProps, TableCell, TableCellProps, Theme } from '@mui/material';
 
 interface TableBodyCellContainerProps extends TableCellProps {
-    sx?: SxProps;
+    sx?: SxProps<Theme>;
     children: React.ReactNode;
 }
 

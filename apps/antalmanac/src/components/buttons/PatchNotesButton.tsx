@@ -3,10 +3,10 @@ import { Button } from '@mui/material';
 import { useCallback } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-import { useHelpMenuStore } from '$stores/HelpMenuStore';
+import { usePatchNotesStore } from '$stores/PatchNotesStore';
 
 export const PatchNotesButton = () => {
-    const setShowPatchNotes = useHelpMenuStore(useShallow((store) => store.setShowPatchNotes));
+    const setShowPatchNotes = usePatchNotesStore(useShallow((store) => store.setShowPatchNotes));
 
     const handleClick = useCallback(() => {
         setShowPatchNotes(true);

@@ -21,32 +21,38 @@ const NotificationSchema = z.object({
     notifyOn: NotifyOnSchema,
 });
 
+const getStage = () => process.env.STAGE?.trim() || 'production';
+
 const notificationsRouter = router({
     get: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
-        return await RDS.retrieveNotifications(db, input.userId);
+        const stage = getStage();
+        return await RDS.retrieveNotifications(db, input.userId, stage);
     }),
 
     set: procedure
         .input(z.object({ userId: z.string(), notifications: z.array(NotificationSchema) }))
         .mutation(async ({ input }) => {
-            const stage = process.env.STAGE?.trim() || '';
+            const stage = getStage();
             await Promise.all(
                 input.notifications.map((notification) => RDS.upsertNotification(db, input.userId, notification, stage))
             );
         }),
 
     updateNotifications: procedure.input(z.object({ notification: NotificationSchema })).mutation(async ({ input }) => {
-        await RDS.updateAllNotifications(db, input.notification);
+        const stage = getStage();
+        await RDS.updateAllNotifications(db, input.notification, stage);
     }),
 
     deleteNotification: procedure
         .input(z.object({ userId: z.string(), notification: NotificationSchema }))
         .mutation(async ({ input }) => {
-            await RDS.deleteNotification(db, input.notification, input.userId);
+            const stage = getStage();
+            await RDS.deleteNotification(db, input.notification, input.userId, stage);
         }),
 
     deleteAllNotifications: procedure.input(z.object({ userId: z.string() })).mutation(async ({ input }) => {
-        await RDS.deleteAllNotifications(db, input.userId);
+        const stage = getStage();
+        await RDS.deleteAllNotifications(db, input.userId, stage);
     }),
 });
 
