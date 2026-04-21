@@ -7,7 +7,7 @@ import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAx
 
 import type { QueryResults } from './useGradeQueries';
 
-const GRADE_ORDER: Array<keyof AggregateGrades['gradeDistribution']> = [
+const GRADE_ORDER = [
     'gradeACount',
     'gradeBCount',
     'gradeCCount',
@@ -15,7 +15,7 @@ const GRADE_ORDER: Array<keyof AggregateGrades['gradeDistribution']> = [
     'gradeFCount',
     'gradePCount',
     'gradeNPCount',
-];
+] as const satisfies ReadonlyArray<keyof AggregateGrades['gradeDistribution']>;
 
 const GRADE_LABEL: Record<(typeof GRADE_ORDER)[number], string> = {
     gradeACount: 'A',

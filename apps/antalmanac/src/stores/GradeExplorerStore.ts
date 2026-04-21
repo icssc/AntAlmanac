@@ -1,4 +1,4 @@
-import type { Division, Quarter } from '@packages/antalmanac-types';
+import type { Division, Quarter } from '@packages/anteater-api-types/src/grades';
 import { create } from 'zustand';
 
 /**

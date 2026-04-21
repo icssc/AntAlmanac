@@ -113,15 +113,13 @@ export function TrendPanel({ queries, results }: TrendPanelProps) {
                             border: `1px solid ${isDark ? '#444' : '#ddd'}`,
                             borderRadius: 4,
                         }}
-                        formatter={(value: number | null, name: string, item) => {
+                        formatter={(value, name, item) => {
                             if (value == null) return ['—', name];
+                            const gpa = Number(value);
                             const payload = item.payload as Record<string, number | string>;
                             const studentsKey = `${String(item.dataKey)}_students`;
                             const students = payload[studentsKey];
-                            return [
-                                `GPA ${value.toFixed(2)} (${Number(students ?? 0).toLocaleString()} students)`,
-                                name,
-                            ];
+                            return [`GPA ${gpa.toFixed(2)} (${Number(students ?? 0).toLocaleString()} students)`, name];
                         }}
                     />
                     <Legend wrapperStyle={{ paddingTop: 4 }} />

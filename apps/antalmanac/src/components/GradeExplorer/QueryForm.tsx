@@ -11,7 +11,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import type { Division, Quarter } from '@packages/antalmanac-types';
+import type { Division, Quarter } from '@packages/anteater-api-types/src/grades';
 import { useMemo } from 'react';
 
 const QUARTERS: Quarter[] = ['Fall', 'Winter', 'Spring', 'Summer1', 'Summer10wk', 'Summer2'];
