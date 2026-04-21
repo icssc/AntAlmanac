@@ -1,8 +1,7 @@
-import { Box, Tooltip, Typography } from '@mui/material';
-import { WebsocSectionEnrollment } from '@packages/antalmanac-types';
-
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { Box, Tooltip, Typography } from '@mui/material';
+import { WebsocSectionEnrollment } from '@packages/antalmanac-types';
 
 interface EnrollmentCellProps {
     numCurrentlyEnrolled: WebsocSectionEnrollment;

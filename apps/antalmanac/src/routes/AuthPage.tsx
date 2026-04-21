@@ -1,23 +1,22 @@
-import { useEffect, useCallback, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
-
 import { isEmptySchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
 import { LoadingScreen } from '$components/LoadingScreen';
 import trpc from '$lib/api/trpc';
 import {
     getLocalStorageDataCache,
     getLocalStorageFromLoading,
-    setLocalStorageImportedUser,
     getLocalStorageUserId,
-    removeLocalStorageUserId,
-    removeLocalStorageImportedUser,
     removeLocalStorageDataCache,
     removeLocalStorageFromLoading,
-    setLocalStorageSessionId,
+    removeLocalStorageImportedUser,
+    removeLocalStorageUserId,
+    setLocalStorageImportedUser,
     setLocalStorageOnFirstSignin,
+    setLocalStorageSessionId,
 } from '$lib/localStorage';
 import { clearSsoCookie, setSsoCookie } from '$lib/ssoCookie';
 import AppStore from '$stores/AppStore';
+import { useCallback, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 export function AuthPage() {
     const [searchParams] = useSearchParams();

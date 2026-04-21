@@ -2,14 +2,14 @@ import { getDefaultTerm } from '$lib/termData';
 import { WebSOC } from '$lib/websoc';
 import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
 import type {
+    CourseInfo,
+    CustomEventId,
+    RepeatingCustomEvent,
     Schedule,
     ScheduleCourse,
     ScheduleSaveState,
     ScheduleUndoState,
     ShortCourseSchedule,
-    RepeatingCustomEvent,
-    CourseInfo,
-    CustomEventId,
 } from '@packages/antalmanac-types';
 import { createId } from '@paralleldrive/cuid2';
 

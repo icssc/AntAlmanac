@@ -3,7 +3,7 @@ export type notifyOn = {
     notifyOnWaitlist: boolean;
     notifyOnFull: boolean;
     notifyOnRestriction: boolean;
-};  
+};
 
 export type Notification = {
     term: string;

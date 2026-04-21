@@ -1,9 +1,8 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
-import type { DialogProps } from '@mui/material';
-import { useState, useEffect, useCallback } from 'react';
-
 import { addSchedule } from '$actions/AppStoreActions';
 import AppStore from '$stores/AppStore';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import type { DialogProps } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
 
 /**
  * Dialog with a text field to add a schedule.

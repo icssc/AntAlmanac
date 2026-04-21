@@ -1,7 +1,6 @@
-import { InfoOutlined } from '@mui/icons-material';
-import { Box, SxProps, Tooltip, IconButton } from '@mui/material';
-
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { InfoOutlined } from '@mui/icons-material';
+import { Box, IconButton, SxProps, Tooltip } from '@mui/material';
 
 interface DeptCourseNumberCellProps {
     deptCode?: string;

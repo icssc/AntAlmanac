@@ -1,7 +1,6 @@
+import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
 import { Autocomplete, TextField, type TextFieldProps } from '@mui/material';
 import { useCallback, useMemo } from 'react';
-
-import buildingCatalogue, { Building } from '$lib/locations/buildingCatalogue';
 
 export interface ExtendedBuilding extends Building {
     id: string;

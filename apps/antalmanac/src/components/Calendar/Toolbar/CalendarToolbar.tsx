@@ -1,38 +1,37 @@
-import {
-    Undo as UndoIcon,
-    Redo as RedoIcon,
-    Description as DescriptionIcon,
-    DescriptionOutlined as DescriptionOutlinedIcon,
-    MoreVert as MoreVertIcon,
-    Panorama,
-    Download,
-    DeleteOutline,
-} from '@mui/icons-material';
-import {
-    useTheme,
-    useMediaQuery,
-    Box,
-    Button,
-    IconButton,
-    Paper,
-    Tooltip,
-    Menu,
-    MenuItem,
-    ListItemIcon,
-    ListItemText,
-} from '@mui/material';
-import { PostHog, usePostHog } from 'posthog-js/react';
-import { useState, useCallback, useEffect, memo, useRef } from 'react';
-
 import { redoAction, undoDelete } from '$actions/AppStoreActions';
-import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
 import { ClearScheduleButton } from '$components/buttons/Clear';
 import DownloadButton from '$components/buttons/Download';
 import ScreenshotButton from '$components/buttons/Screenshot';
+import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
+import {
+    DeleteOutline,
+    Description as DescriptionIcon,
+    DescriptionOutlined as DescriptionOutlinedIcon,
+    Download,
+    MoreVert as MoreVertIcon,
+    Panorama,
+    Redo as RedoIcon,
+    Undo as UndoIcon,
+} from '@mui/icons-material';
+import {
+    Box,
+    Button,
+    IconButton,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
+    Paper,
+    Tooltip,
+    useMediaQuery,
+    useTheme,
+} from '@mui/material';
+import { PostHog, usePostHog } from 'posthog-js/react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 function handleUndo(postHog?: PostHog) {
     return () => {
