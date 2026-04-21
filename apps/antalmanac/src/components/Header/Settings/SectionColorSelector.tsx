@@ -9,7 +9,7 @@ import { usePostHog } from 'posthog-js/react';
 import { useMemo, useState } from 'react';
 
 const PICKER_DESCRIPTION =
-    'Choose a preset theme or Custom. Presets apply to new sections you add. Custom lets you set each section’s color from its course block on the calendar.';
+    "Choose a preset theme or create your own theme by selecting the Custom Theme option. With Custom Theme, set each section's color by clicking on a course on the calendar.";
 
 export function SectionColorSelector() {
     const muiTheme = useTheme();
