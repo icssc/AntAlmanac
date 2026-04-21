@@ -403,7 +403,7 @@ export class RDS {
                 }))
             )
             .onConflictDoUpdate({
-                target: customEvents.id,
+                target: [customEvents.scheduleId, customEvents.id],
                 set: buildConflictUpdateSet(customEvents, {
                     id: 'keep',
                     scheduleId: 'keep',
