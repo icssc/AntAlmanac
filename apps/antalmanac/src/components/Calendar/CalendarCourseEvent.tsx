@@ -6,7 +6,7 @@ import { memo } from 'react';
 
 export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) => {
     if (isSkeletonEvent(event)) {
-        return;
+        return null;
     }
 
     if (event.isCustomEvent) {
