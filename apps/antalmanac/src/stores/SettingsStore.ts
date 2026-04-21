@@ -65,13 +65,25 @@ export const useThemeStore = create<ThemeStore>((set) => {
 
 export type SectionColorSetting = 'default' | 'legacy' | 'catppuccin' | 'custom';
 
+const SECTION_COLOR_SETTINGS = [
+    'default',
+    'legacy',
+    'catppuccin',
+    'custom',
+] as const satisfies readonly SectionColorSetting[];
+
+function isSectionColorSetting(value: unknown): value is SectionColorSetting {
+    return typeof value === 'string' && (SECTION_COLOR_SETTINGS as readonly string[]).includes(value);
+}
+
 export interface SectionColorStore {
     sectionColor: SectionColorSetting;
     setSectionColor: (sectionColorSetting: SectionColorSetting, postHog?: PostHog) => void;
 }
 
 export const useSectionColorStore = create<SectionColorStore>((set) => {
-    const storedSectionColor = (getLocalStorageSectionColor() ?? 'custom') as SectionColorSetting;
+    const stored = getLocalStorageSectionColor();
+    const storedSectionColor: SectionColorSetting = isSectionColorSetting(stored) ? stored : 'custom';
     return {
         sectionColor: storedSectionColor,
 
