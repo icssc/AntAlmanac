@@ -1,5 +1,6 @@
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
+import { useThemeStore } from '$stores/SettingsStore';
 import { Close, InfoOutlined } from '@mui/icons-material';
 import { IconButton, Alert, AlertTitle, Box, Typography, Fade, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
@@ -44,21 +45,17 @@ function TbaCircleButton({ onClick }: { onClick: () => void }) {
 
 function TbaExpandedCard({ tbaSections, onToggle }: { tbaSections: TbaSection[]; onToggle: () => void }) {
     const theme = useTheme();
+    const isDark = useThemeStore((store) => store.isDark);
     return (
         <Alert
-            icon={
-                <InfoOutlined
-                    fontSize="small"
-                    sx={{ color: theme.palette.mode === 'dark' ? theme.palette.common.white : BLUE }}
-                />
-            }
+            icon={<InfoOutlined fontSize="small" sx={{ color: isDark ? theme.palette.common.white : BLUE }} />}
             severity="info"
             variant="outlined"
             sx={{
                 width: '100%',
                 bgcolor: theme.palette.background.paper,
                 borderColor: BLUE,
-                color: theme.palette.mode === 'dark' ? theme.palette.common.white : 'inherit',
+                color: isDark ? theme.palette.common.white : 'inherit',
                 borderWidth: 2,
                 alignItems: 'center',
                 py: 0.5,
