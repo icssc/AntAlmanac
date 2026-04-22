@@ -18,7 +18,6 @@ import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
-
 interface SectionTableBodyRowProps {
     section: AASection;
     courseDetails: CourseDetails;
