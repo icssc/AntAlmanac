@@ -3,10 +3,12 @@ import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs
 import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
 import darkNoNothing from '$components/RightPane/CoursePane/static/dark-no_results.png';
 import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
+import RightPaneStore, { CourseSearchParams } from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
 import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
+import WarningAlert from '$components/WarningAlert';
 import analyticsEnum from '$lib/analytics/analytics';
+import trpc from '$lib/api/trpc';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
@@ -265,6 +267,8 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
+    const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
+    const [searchedTerm, setSearchedTerm] = useState('');
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
@@ -314,17 +318,35 @@ export default function CourseRenderPane(props: { id?: number }) {
         setError(false);
 
         try {
+            const formData = RightPaneStore.getFormData();
             const multiSearchData = RightPaneStore.getMultiSearchData();
             let websocJsonResp;
             if (multiSearchData.length > 0) {
-                websocJsonResp = await WebSOC.queryMultiple(multiSearchData);
+                const [year, quarter] = formData.term.split(' ');
+                const offeredCourses: CourseSearchParams[] = [];
+                const unofferedCourses: CourseSearchParams[] = [];
+                const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
+                    year: year,
+                    quarter: quarter,
+                    courses: multiSearchData.map((params) => ({ ...params, department: params.deptValue })),
+                });
+                for (const course of multiSearchData) {
+                    if (offeredCoursesMapping[course.deptValue]?.has(course.courseNumber)) {
+                        offeredCourses.push(course);
+                    } else {
+                        unofferedCourses.push(course);
+                    }
+                }
+                setUnofferedCourses(unofferedCourses);
+                websocJsonResp = await WebSOC.queryMultiple(offeredCourses);
                 RightPaneStore.clearMultiSearchData();
             } else {
-                websocJsonResp = await getSearchResponse(RightPaneStore.getFormData());
+                websocJsonResp = await getSearchResponse(formData);
             }
             setWebsocResp(websocJsonResp);
             const allCourses = flattenSOCObject(websocJsonResp);
             setCourseData(getFilteredCourses(allCourses));
+            setSearchedTerm(formData.term);
         } catch (error) {
             console.error(error);
             setError(true);
@@ -378,6 +400,13 @@ export default function CourseRenderPane(props: { id?: number }) {
         <>
             <Box sx={{ height: '56px' }} />
 
+            {unofferedCourses.map((course) => {
+                return (
+                    <WarningAlert closable>
+                        {course.deptValue} {course.courseNumber} is not offered in {searchedTerm}.
+                    </WarningAlert>
+                );
+            })}
             {loading ? (
                 <LoadingMessage />
             ) : error || courseData.length === 0 ? (

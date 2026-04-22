@@ -26,15 +26,17 @@ const defaultFormValues: Record<ManualSearchParam, string> = {
     ...defaultAdvancedSearchValues,
 };
 
+export type CourseSearchParams = Record<ManualSearchParam, string>;
+
 export interface BuildingFocusInfo {
     location: string; // E.g., ICS 174
     courseName: string;
 }
 
 class RightPaneStore extends EventEmitter {
-    private formData: Record<ManualSearchParam, string>;
+    private formData: CourseSearchParams;
     private prevFormData?: Record<ManualSearchParam, string>;
-    private multiSearchData: (typeof this.formData)[];
+    private multiSearchData: CourseSearchParams[];
     private urlSectionCodeValue: string;
     private urlTermValue: string;
     private urlGEValue: string;

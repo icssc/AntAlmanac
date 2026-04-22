@@ -38,6 +38,10 @@ const SearchWithPlannerButton = () => {
                 deptValue: 'SOC SCI',
                 courseNumber: 'H1E',
             },
+            {
+                deptValue: 'BIO SCI',
+                courseNumber: '199W',
+            },
         ]);
         displaySections();
     };

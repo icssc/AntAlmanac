@@ -1,15 +1,14 @@
 import { readFile } from 'fs/promises';
 import { join } from 'node:path';
 
+// eslint-disable-next-line import/no-unresolved
+import * as searchData from '$generated/searchData';
 import uFuzzy from '@leeoniya/ufuzzy';
 import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
 import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
-
-// eslint-disable-next-line import/no-unresolved
-import * as searchData from '$generated/searchData';
 
 const MAX_AUTOCOMPLETE_RESULTS = 12;
 
@@ -18,6 +17,8 @@ const termsFolderPath = join(process.cwd(), 'src', 'generated', 'terms');
 const geCategoryKeys = ['ge1a', 'ge1b', 'ge2', 'ge3', 'ge4', 'ge5a', 'ge5b', 'ge6', 'ge7', 'ge8'] as const;
 
 type GECategoryKey = (typeof geCategoryKeys)[number];
+
+type BareCourse = Pick<SectionSearchResult, 'department' | 'courseNumber'>;
 
 const geCategories: Record<GECategoryKey, GESearchResult> = {
     ge1a: { type: 'GE_CATEGORY', name: 'Lower Division Writing' },
@@ -39,6 +40,21 @@ const toGESearchResult = (key: GECategoryKey): [string, SearchResult] => [
 
 const toMutable = <T>(arr: readonly T[]): T[] => arr as T[];
 
+async function getTermSectionCodes(year: string, quarter: string): Promise<Record<string, SectionSearchResult>> {
+    const parsedTerm = `${quarter}_${year}`;
+    try {
+        const filePath = join(termsFolderPath, `${parsedTerm}.json`);
+        const fileContent = await readFile(filePath, 'utf-8');
+        return JSON.parse(fileContent);
+    } catch (err) {
+        throw new Error(`Failed to load term data for ${parsedTerm}: ${err}`);
+    }
+}
+
+function getOfferedCourses(termSectionCodes: Awaited<ReturnType<typeof getTermSectionCodes>>) {
+    return new Set(Object.values(termSectionCodes).map((s) => `${s.department}-${s.courseNumber}`));
+}
+
 const isCourseOffered = (department: string, courseNumber: string, offeredCourseSet: Set<string>): boolean => {
     return offeredCourseSet.has(`${department}-${courseNumber}`);
 };
@@ -49,20 +65,10 @@ const searchRouter = router({
         .query(async ({ input }): Promise<Record<string, SearchResult>> => {
             const { query } = input;
             const [year, quarter] = input.term.split(' ');
-            const parsedTerm = `${quarter}_${year}`;
 
-            let termSectionCodes: Record<string, SectionSearchResult>;
-            try {
-                const filePath = join(termsFolderPath, `${parsedTerm}.json`);
-                const fileContent = await readFile(filePath, 'utf-8');
-                termSectionCodes = JSON.parse(fileContent);
-            } catch (err) {
-                throw new Error(`Failed to load term data for ${parsedTerm}: ${err}`);
-            }
+            const termSectionCodes = await getTermSectionCodes(year, quarter);
 
-            const offeredCourseSet = new Set(
-                Object.values(termSectionCodes).map((s) => `${s.department}-${s.courseNumber}`)
-            );
+            const offeredCourseSet = getOfferedCourses(termSectionCodes);
 
             const num = Number(input.query);
             const matchedSections: SectionSearchResult[] = [];
@@ -127,6 +133,29 @@ const searchRouter = router({
                 ...matchedDepts.map((x) => [x.obj.id, x.obj]),
                 ...matchedCourses.map((x) => [x.obj.id, x.obj]),
             ]);
+        }),
+    filterOfferedCourses: procedure
+        .input(
+            z.object({
+                courses: z.array(z.custom<BareCourse>()),
+                year: z.string(),
+                quarter: z.string(),
+            })
+        )
+        .query(async ({ input }): Promise<Record<string, Set<string>>> => {
+            const { courses, year, quarter } = input;
+            const termSectionCodes = await getTermSectionCodes(year, quarter);
+            const offeredCourseSet = getOfferedCourses(termSectionCodes);
+            const offeredCourses: Record<string, Set<string>> = {};
+            for (const course of courses) {
+                if (isCourseOffered(course.department, course.courseNumber, offeredCourseSet)) {
+                    if (!Object.hasOwn(offeredCourses, course.department)) {
+                        offeredCourses[course.department] = new Set();
+                    }
+                    offeredCourses[course.department].add(course.courseNumber);
+                }
+            }
+            return offeredCourses;
         }),
 });
 
