@@ -7,23 +7,7 @@ export type { Quarter, RoadmapContent, Roadmap, PlannerAPIResponse } from '@pack
 
 export const PLANNER_API_URL = 'https://antalmanac.com/planner/api/trpc/external.roadmaps.getByGoogleID';
 
-export const quarterSchema = z.object({
-    name: z.string(),
-    courses: z.array(z.string()),
-});
-
-export const roadmapContentSchema = z.object({
-    name: z.string(),
-    startYear: z.number(),
-    quarters: z.array(quarterSchema),
-});
-
-export const roadmapSchema = z.object({
-    id: z.union([z.string(), z.number()]),
-    name: z.string(),
-    chc: z.string().nullable().optional(),
-    content: z.array(roadmapContentSchema),
-});
+const roadmapSchema = z.custom<Roadmap>();
 
 export async function fetchUserPlannerRoadmaps(userId: string): Promise<Roadmap[]> {
     const env = plannerEnvSchema.parse(process.env);
@@ -46,7 +30,7 @@ export async function fetchUserPlannerRoadmaps(userId: string): Promise<Roadmap[
             throw new Error(`Failed to fetch: ${response.statusText}`);
         }
         const data = await response.json();
-        const validRoadmaps = z.array(roadmapSchema).parse(data.result?.data ?? []);
+        const validRoadmaps = z.array(roadmapSchema).parse(data.result.data);
 
         return validRoadmaps;
     } catch (e) {
