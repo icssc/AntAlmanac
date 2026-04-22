@@ -146,19 +146,38 @@ function GradesPopup(props: GradesPopupProps) {
                     marginBottom: '.5rem',
                 }}
             >
+                {graphTitle}
+
                 {instructor && (
                     <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '.5rem' }}>
                         <ToggleButtonGroup value={view} exclusive onChange={handleViewChange} size="small">
-                            <ToggleButton value="instructor" sx={{ textTransform: 'none', paddingX: 1.5 }}>
+                            <ToggleButton
+                                value="instructor"
+                                sx={{
+                                    textTransform: 'none',
+                                    paddingX: 1,
+                                    paddingY: 0.25,
+                                    fontSize: '0.75rem',
+                                    minHeight: '24px',
+                                }}
+                            >
                                 {instructor}
                             </ToggleButton>
-                            <ToggleButton value="overall" sx={{ textTransform: 'none', paddingX: 1.5 }}>
+                            <ToggleButton
+                                value="overall"
+                                sx={{
+                                    textTransform: 'none',
+                                    paddingX: 1,
+                                    paddingY: 0.25,
+                                    fontSize: '0.75rem',
+                                    minHeight: '24px',
+                                }}
+                            >
                                 Overall
                             </ToggleButton>
                         </ToggleButtonGroup>
                     </Box>
                 )}
-                {graphTitle}
             </Typography>
             <Link
                 href={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
