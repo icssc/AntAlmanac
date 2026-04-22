@@ -4,7 +4,7 @@ import { oauth } from '$src/backend/lib/auth/oauth';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
 import { RDS } from '$src/backend/lib/rds';
 import { procedure, protectedProcedure, router } from '$src/backend/trpc';
-import { type User, type ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
+import { type ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
 import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState, type OAuth2Tokens } from 'arctic';
@@ -302,22 +302,16 @@ const userDataRouter = router({
      * @param input - An object containing the user ID.
      * @returns The schedule data in JSON format.
      */
-    exportScheduleData: procedure.input(userInputSchema.assert).query(async ({ input }) => {
-        if ('userId' in input) {
-            const userData = await RDS.getUserDataByUid(db, input.userId);
-            if (!userData) {
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                    message: 'User not found',
-                });
-            }
-            return userData.userData;
-        } else {
+    exportScheduleData: protectedProcedure.query(async ({ ctx }) => {
+        const userData = await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
+        if (!userData) {
             throw new TRPCError({
-                code: 'BAD_REQUEST',
-                message: 'Invalid input: userId is required',
+                code: 'NOT_FOUND',
+                message: 'User not found',
             });
         }
+
+        return userData.userData;
     }),
 
     /**
@@ -326,14 +320,9 @@ const userDataRouter = router({
      * @param input - An object containing the user ID and the schedule data to import.
      * @returns Success status.
      */
-    importScheduleData: procedure
-        .input(
-            z.object({
-                userId: z.string(),
-                scheduleData: z.unknown(),
-            })
-        )
-        .mutation(async ({ input }) => {
+    importScheduleData: protectedProcedure
+        .input(z.object({ scheduleData: z.unknown() }))
+        .mutation(async ({ input, ctx }) => {
             let validatedScheduleData: ScheduleSaveState;
             try {
                 validatedScheduleData = ScheduleSaveStateSchema.assert(input.scheduleData);
@@ -387,12 +376,7 @@ const userDataRouter = router({
 
             validatedScheduleData.schedules = mangleDuplicateScheduleNames(validatedScheduleData.schedules);
 
-            const userData: User = {
-                id: input.userId,
-                userData: validatedScheduleData,
-            };
-
-            await RDS.upsertUserData(db, userData).catch((error) => {
+            await RDS.upsertUserData(db, ctx.userId, validatedScheduleData).catch((error) => {
                 console.error('RDS Failed to import user data:', error);
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',
