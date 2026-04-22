@@ -2,8 +2,6 @@
     "name": "aants",
     "version": "1.0.0",
     "description": "",
-    "keywords": [],
-    "author": "",
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
@@ -11,6 +9,8 @@
         "template": "tsx scripts/createTemplate.ts",
         "preview:email": "tsx watch scripts/previewEmail.tsx"
     },
+    "keywords": [],
+    "author": "",
     "dependencies": {
         "@aws-sdk/client-sesv2": "^3.750.0",
         "@aws-sdk/client-sqs": "^3.750.0",

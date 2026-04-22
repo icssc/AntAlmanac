@@ -1,9 +1,10 @@
+import type { Roadmap } from '@packages/antalmanac-types';
+import { useEffect, useState } from 'react';
+
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import trpc from '$lib/api/trpc';
 import { getCurrentTerm } from '$lib/termData';
 import { useSessionStore } from '$stores/SessionStore';
-import type { Roadmap } from '@packages/antalmanac-types';
-import { useEffect, useState } from 'react';
 
 const QUARTER_ORDER: Record<string, number> = {
     Winter: 0,

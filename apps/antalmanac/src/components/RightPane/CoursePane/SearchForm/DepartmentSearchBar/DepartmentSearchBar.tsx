@@ -1,8 +1,9 @@
+import { useCallback, useEffect, useState } from 'react';
+
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { useDepartments } from '$hooks/useDepartments';
 import { getLocalStorageRecentlySearched, setLocalStorageRecentlySearched } from '$lib/localStorage';
-import { useCallback, useEffect, useState } from 'react';
 
 const DEFAULT_DEPARTMENTS: Record<string, string> = {
     ALL: 'ALL: Include All Departments',

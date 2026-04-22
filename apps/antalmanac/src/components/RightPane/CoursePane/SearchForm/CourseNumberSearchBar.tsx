@@ -1,6 +1,7 @@
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 export function CourseNumberSearchBar() {
     const [value, setValue] = useState(() => RightPaneStore.getFormData().courseNumber);

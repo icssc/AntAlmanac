@@ -1,3 +1,6 @@
+import { AppBar, Box, Stack } from '@mui/material';
+import { useEffect, useState } from 'react';
+
 import { AlertDialog } from '$components/AlertDialog';
 import { AppSwitcher } from '$components/Header/AppSwitcher';
 import { Import } from '$components/Header/Import';
@@ -14,8 +17,6 @@ import { BLUE } from '$src/globals';
 import { useIsMobile } from '$src/hooks/useIsMobile';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import { AppBar, Box, Stack } from '@mui/material';
-import { useEffect, useState } from 'react';
 
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);

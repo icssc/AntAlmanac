@@ -1,6 +1,7 @@
+import { create } from 'zustand';
+
 import { DEPARTMENT_MAP } from '$components/RightPane/CoursePane/SearchForm/DepartmentSearchBar/constants';
 import { WebSOC } from '$lib/websoc';
-import { create } from 'zustand';
 
 interface DepartmentsState {
     departments: Record<string, string> | null;

@@ -1,6 +1,7 @@
+import { useMemo } from 'react';
+
 import { BLUE, LIGHT_BLUE } from '$src/globals';
 import { useThemeStore } from '$stores/SettingsStore';
-import { useMemo } from 'react';
 
 export function useSecondaryColor() {
     const isDark = useThemeStore((store) => store.isDark);

@@ -1,3 +1,7 @@
+import { Box } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
+import { useCallback, useEffect } from 'react';
+
 import { CoursePaneButtonRow } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
 import CourseRenderPane from '$components/RightPane/CoursePane/CourseRenderPane';
 import { SearchForm } from '$components/RightPane/CoursePane/SearchForm/SearchForm';
@@ -8,9 +12,6 @@ import { Grades } from '$lib/grades';
 import { WebSOC } from '$lib/websoc';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import { Box } from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect } from 'react';
 
 export function CoursePaneRoot() {
     const { key, forceUpdate, searchFormIsDisplayed, displaySearch, displaySections, advancedSearchEnabled } =

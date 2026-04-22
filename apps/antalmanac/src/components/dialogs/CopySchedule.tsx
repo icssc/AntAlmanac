@@ -1,5 +1,3 @@
-import { copySchedule } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
 import {
     Box,
     Button,
@@ -12,6 +10,9 @@ import {
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useState, useEffect, useCallback } from 'react';
+
+import { copySchedule } from '$actions/AppStoreActions';
+import AppStore from '$stores/AppStore';
 
 interface CopyScheduleDialogProps extends DialogProps {
     index: number;

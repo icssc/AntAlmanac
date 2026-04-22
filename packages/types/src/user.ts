@@ -1,6 +1,5 @@
-import { type } from 'arktype';
-
 import { ScheduleSaveStateSchema } from './schedule';
+import { type } from 'arktype';
 
 /**
  * Users are stored in one shared table.

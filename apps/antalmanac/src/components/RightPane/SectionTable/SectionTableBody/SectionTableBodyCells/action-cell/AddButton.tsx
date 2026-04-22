@@ -1,11 +1,12 @@
-import { addCourse } from '$actions/AppStoreActions';
-import { Term } from '$lib/termData';
-import AppStore from '$stores/AppStore';
-import { openSnackbar } from '$stores/SnackbarStore';
 import { Add } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { useCallback } from 'react';
+
+import { addCourse } from '$actions/AppStoreActions';
+import { Term } from '$lib/termData';
+import AppStore from '$stores/AppStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 
 interface AddButtonProps {
     section: AASection;

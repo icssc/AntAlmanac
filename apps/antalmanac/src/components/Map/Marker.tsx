@@ -1,10 +1,11 @@
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { DirectionsWalk as DirectionsWalkIcon, Info } from '@mui/icons-material';
 import { Box, Button, IconButton, Typography } from '@mui/material';
 import { type Marker, divIcon } from 'leaflet';
 import { usePostHog } from 'posthog-js/react';
 import { forwardRef, type Ref } from 'react';
 import { Marker as ReactLeafletMarker, Popup } from 'react-leaflet';
+
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 
 const GOOGLE_MAPS_URL = 'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination=';
 const IMAGE_CMS_URL = 'https://cms.concept3d.com/map/lib/image-cache/i.php?mapId=463&image=';

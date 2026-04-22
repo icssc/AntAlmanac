@@ -1,7 +1,8 @@
-import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { useNotificationStore } from '$stores/NotificationStore';
 import { Delete } from '@mui/icons-material';
 import { IconButton, Box } from '@mui/material';
+
+import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { useNotificationStore } from '$stores/NotificationStore';
 
 interface DeleteNotificationButtonProps {
     notificationKey: string;

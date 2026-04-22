@@ -1,7 +1,8 @@
+import { useEffect, useRef } from 'react';
+
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId } from '$lib/localStorage';
 import { hasSsoCookie } from '$lib/ssoCookie';
-import { useEffect, useRef } from 'react';
 
 /**
  * Automatically signs in users who authenticated via another app on antalmanac.com

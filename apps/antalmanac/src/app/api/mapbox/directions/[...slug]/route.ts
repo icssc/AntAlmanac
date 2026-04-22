@@ -1,6 +1,7 @@
-import { backendEnvSchema } from '$src/backend/env';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+
+import { backendEnvSchema } from '$src/backend/env';
 
 const MAPBOX_API_URL = 'https://api.mapbox.com';
 

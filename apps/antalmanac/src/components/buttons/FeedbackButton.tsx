@@ -1,6 +1,7 @@
-import { FEEDBACK_LINK } from '$src/globals';
 import { Assignment } from '@mui/icons-material';
 import { Button, Tooltip } from '@mui/material';
+
+import { FEEDBACK_LINK } from '$src/globals';
 
 export const FeedbackButton = () => {
     return (

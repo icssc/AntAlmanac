@@ -1,12 +1,13 @@
-import { deleteCourse } from '$actions/AppStoreActions';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import { Term } from '$lib/termData';
-import AppStore from '$stores/AppStore';
 import { Delete } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { AASection } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { memo, useCallback } from 'react';
+
+import { deleteCourse } from '$actions/AppStoreActions';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { Term } from '$lib/termData';
+import AppStore from '$stores/AppStore';
 
 interface DeleteButtonProps {
     sectionCode: AASection['sectionCode'];

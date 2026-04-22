@@ -1,9 +1,10 @@
-import AppStore from '$stores/AppStore';
 import { AccountCircle, Menu } from '@mui/icons-material';
 import { Button, IconButton, CircularProgress } from '@mui/material';
 import { User } from '@packages/antalmanac-types';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+
+import AppStore from '$stores/AppStore';
 
 interface ProfileMenuButtonsProps {
     user: Pick<User, 'name' | 'avatar' | 'email'> | null;

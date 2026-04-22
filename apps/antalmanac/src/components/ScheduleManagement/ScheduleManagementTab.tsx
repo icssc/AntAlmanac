@@ -1,8 +1,9 @@
+import { Tab } from '@mui/material';
+import { Link } from 'react-router-dom';
+
 import { ScheduleManagementTabInfo } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useTabStore } from '$stores/TabStore';
-import { Tab } from '@mui/material';
-import { Link } from 'react-router-dom';
 
 interface ScheduleManagementTabProps {
     tab: ScheduleManagementTabInfo;

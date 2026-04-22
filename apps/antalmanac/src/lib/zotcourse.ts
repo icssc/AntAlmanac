@@ -1,8 +1,9 @@
-import AppStore from '$stores/AppStore';
 import { RepeatingCustomEvent } from '@packages/antalmanac-types';
 
 import trpc from './api/trpc';
 import { QueryZotcourseError } from './customErrors';
+
+import AppStore from '$stores/AppStore';
 
 export interface ZotcourseResponse {
     codes: string[];

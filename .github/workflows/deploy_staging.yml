@@ -70,7 +70,7 @@ jobs:
             - name: Generate termData
               uses: ./.github/actions/cache-generated-data
               with:
-                  api-key: ${{ secrets.ANTEATER_API_KEY }}
+                api-key: ${{ secrets.ANTEATER_API_KEY }}
 
             - name: Deploy SST (staging)
               id: deploy

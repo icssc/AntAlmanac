@@ -1,9 +1,10 @@
+import { Box, Popover, Tooltip, Typography } from '@mui/material';
+import { Fragment, useCallback, useMemo, useState } from 'react';
+
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import restrictionsMapping from '$components/RightPane/SectionTable/static/restrictionsMapping.json';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSecondaryColor } from '$hooks/useSecondaryColor';
-import { Box, Popover, Tooltip, Typography } from '@mui/material';
-import { Fragment, useCallback, useMemo, useState } from 'react';
 
 interface RestrictionsCellProps {
     restrictions: string;

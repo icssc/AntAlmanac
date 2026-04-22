@@ -1,7 +1,8 @@
-import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleManagementTab';
-import { useTabStore } from '$stores/TabStore';
 import { Event, FormatListBulleted, MyLocation, Search } from '@mui/icons-material';
 import { Paper, Tabs } from '@mui/material';
+
+import { ScheduleManagementTab } from '$components/ScheduleManagement/ScheduleManagementTab';
+import { useTabStore } from '$stores/TabStore';
 
 /**
  * Information about the tab navigation buttons.

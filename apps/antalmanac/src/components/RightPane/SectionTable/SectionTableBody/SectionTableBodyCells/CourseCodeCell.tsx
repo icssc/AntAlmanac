@@ -1,10 +1,11 @@
+import { Chip, SxProps, TableCellProps, Tooltip } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
+import { useState } from 'react';
+
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import { useThemeStore } from '$stores/SettingsStore';
-import { Chip, SxProps, TableCellProps, Tooltip } from '@mui/material';
-import { usePostHog } from 'posthog-js/react';
-import { useState } from 'react';
 
 interface CourseCodeCellProps extends TableCellProps {
     sectionCode: string;

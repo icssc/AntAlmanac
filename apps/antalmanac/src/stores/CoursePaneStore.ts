@@ -1,6 +1,7 @@
+import { create } from 'zustand';
+
 import { MANUAL_SEARCH_PARAMS } from '$components/RightPane/CoursePane/SearchForm/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { create } from 'zustand';
 
 interface CoursePaneStore {
     /** Whether the search form is displayed (or the classes view) */

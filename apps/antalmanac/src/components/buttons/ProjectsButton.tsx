@@ -1,5 +1,6 @@
-import { PROJECTS_LINK } from '$src/globals';
 import { Button, SvgIcon, SvgIconProps, Tooltip } from '@mui/material';
+
+import { PROJECTS_LINK } from '$src/globals';
 
 export const ICSSCIcon = (props: SvgIconProps) => (
     <SvgIcon viewBox="0 0 446 359" {...props}>

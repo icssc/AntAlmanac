@@ -1,6 +1,7 @@
-import { useIsMobile } from '$hooks/useIsMobile';
 import { Help } from '@mui/icons-material';
 import { Box, Tooltip, Typography } from '@mui/material';
+
+import { useIsMobile } from '$hooks/useIsMobile';
 
 interface EnrollmentColumnHeaderProps {
     label: string;

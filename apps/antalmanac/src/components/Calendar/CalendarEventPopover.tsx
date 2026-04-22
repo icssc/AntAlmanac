@@ -1,11 +1,12 @@
 'use client';
 
-import { CourseCalendarEvent, isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
-import AppStore from '$stores/AppStore';
-import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { Popover } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+
+import { CourseCalendarEvent, isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
+import AppStore from '$stores/AppStore';
+import { useSelectedEventStore } from '$stores/SelectedEventStore';
 
 export function CalendarEventPopover() {
     const [anchorEl, selectedEvent, setSelectedEvent] = useSelectedEventStore(

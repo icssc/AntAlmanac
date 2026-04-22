@@ -1,12 +1,13 @@
-import { About } from '$components/Header/About';
-import { ExperimentalMenu } from '$components/Header/Settings/ExperimentalMenu';
-import { ThemeSelector } from '$components/Header/Settings/ThemeSelector';
-import { TimeSelector } from '$components/Header/Settings/TimeSelector';
 import { AccountCircle } from '@mui/icons-material';
 import { Box, Divider, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { User } from '@packages/antalmanac-types';
 import Image from 'next/image';
+
+import { About } from '$components/Header/About';
+import { ExperimentalMenu } from '$components/Header/Settings/ExperimentalMenu';
+import { ThemeSelector } from '$components/Header/Settings/ThemeSelector';
+import { TimeSelector } from '$components/Header/Settings/TimeSelector';
 
 interface UserProfileSectionProps {
     user: Pick<User, 'name' | 'avatar' | 'email'> | null;

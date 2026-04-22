@@ -1,9 +1,10 @@
+import type { Roadmap } from '@packages/antalmanac-types';
+import { create } from 'zustand';
+
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, removeLocalStorageSessionId, setLocalStorageSessionId } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 import { useNotificationStore } from '$stores/NotificationStore';
-import type { Roadmap } from '@packages/antalmanac-types';
-import { create } from 'zustand';
 
 interface SessionState {
     session: string | null;

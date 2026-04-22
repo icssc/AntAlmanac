@@ -1,5 +1,3 @@
-import { renameSchedule } from '$actions/AppStoreActions';
-import AppStore from '$stores/AppStore';
 import {
     Box,
     Button,
@@ -11,6 +9,9 @@ import {
     type DialogProps,
 } from '@mui/material';
 import { useCallback, useState, useEffect } from 'react';
+
+import { renameSchedule } from '$actions/AppStoreActions';
+import AppStore from '$stores/AppStore';
 
 interface ScheduleNameDialogProps extends DialogProps {
     /**

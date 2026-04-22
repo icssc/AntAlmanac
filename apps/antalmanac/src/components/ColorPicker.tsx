@@ -1,13 +1,14 @@
-import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
-import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
-import AppStore from '$stores/AppStore';
-import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, PopoverProps, Tooltip } from '@mui/material';
 import { CustomEventId } from '@packages/antalmanac-types';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
+
+import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
+import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
+import AppStore from '$stores/AppStore';
+import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 
 interface ColorPickerProps {
     color: string;

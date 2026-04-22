@@ -1,5 +1,5 @@
-import { parseDaysString, SHORT_DAYS } from '$stores/calendarizeHelpers';
 import { describe, test, expect } from 'vitest';
+import { parseDaysString, SHORT_DAYS } from '$stores/calendarizeHelpers';
 
 describe('parse days string', () => {
     // This is a hardcoded example.

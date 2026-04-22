@@ -1,8 +1,9 @@
-import { useQuickSearch } from '$src/hooks/useQuickSearch';
 import { Search } from '@mui/icons-material';
 import { Button } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { useCallback } from 'react';
+
+import { useQuickSearch } from '$src/hooks/useQuickSearch';
 
 /**
  * Routes the user to the corresponding search result

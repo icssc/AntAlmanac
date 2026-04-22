@@ -1,13 +1,14 @@
-import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
-import { AddedCoursePane } from '$components/RightPane/AddedCourses/AddedCoursePane';
-import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
-import { useThemeStore } from '$stores/SettingsStore';
-import { useTabStore } from '$stores/TabStore';
 import Image from 'next/image';
 import { lazy, Suspense } from 'react';
 
 import darkModeLoadingGif from '../RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
 import loadingGif from '../RightPane/CoursePane/SearchForm/Gifs/loading.gif';
+
+import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
+import { AddedCoursePane } from '$components/RightPane/AddedCourses/AddedCoursePane';
+import { CoursePaneRoot } from '$components/RightPane/CoursePane/CoursePaneRoot';
+import { useThemeStore } from '$stores/SettingsStore';
+import { useTabStore } from '$stores/TabStore';
 
 const UCIMap = lazy(() => import('../Map/Map'));
 

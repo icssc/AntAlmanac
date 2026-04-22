@@ -1,9 +1,3 @@
-import { SignInDialog } from '$components/dialogs/SignInDialog';
-import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
-import { NotificationsTabs } from '$components/RightPane/AddedCourses/Notifications/NotificationsTabs';
-import { LIGHT_BLUE } from '$src/globals';
-import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import { Notifications } from '@mui/icons-material';
 import {
     Dialog,
@@ -19,6 +13,13 @@ import {
 } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+
+import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
+import { NotificationsTabs } from '$components/RightPane/AddedCourses/Notifications/NotificationsTabs';
+import { SignInDialog } from '$components/dialogs/SignInDialog';
+import { LIGHT_BLUE } from '$src/globals';
+import { useSessionStore } from '$stores/SessionStore';
+import { useThemeStore } from '$stores/SettingsStore';
 
 interface NotificationsDialogProps {
     disabled?: boolean;

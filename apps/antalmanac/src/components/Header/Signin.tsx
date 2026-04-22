@@ -1,14 +1,3 @@
-import { loadSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
-import { AlertDialog } from '$components/AlertDialog';
-import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
-import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
-import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
-import { useNotificationStore } from '$stores/NotificationStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import { AccountCircle, Google, ExpandMore } from '@mui/icons-material';
 import {
     Divider,
@@ -30,6 +19,18 @@ import {
     Box,
 } from '@mui/material';
 import { useEffect, useState, useCallback } from 'react';
+
+import { loadSchedule, loginUser, loadScheduleWithSessionToken } from '$actions/AppStoreActions';
+import { AlertDialog } from '$components/AlertDialog';
+import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
+import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
+import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
+import trpc from '$lib/api/trpc';
+import { getLocalStorageSessionId, getLocalStorageUserId, setLocalStorageFromLoading } from '$lib/localStorage';
+import { useNotificationStore } from '$stores/NotificationStore';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useSessionStore } from '$stores/SessionStore';
+import { useThemeStore } from '$stores/SettingsStore';
 
 const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = {
     SESSION_EXPIRED: {

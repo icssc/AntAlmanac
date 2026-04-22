@@ -1,7 +1,8 @@
-import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
 import { Edit as EditIcon } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
+
+import RenameScheduleDialog from '$components/dialogs/RenameSchedule';
 
 interface RenameScheduleButtonProps {
     index: number;

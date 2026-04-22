@@ -1,6 +1,7 @@
+import { describe, test, expect } from 'vitest';
+
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import locationIds from '$lib/locations/locations';
-import { describe, test, expect } from 'vitest';
 
 describe('locationIds', () => {
     test('no duplicate names', () => {

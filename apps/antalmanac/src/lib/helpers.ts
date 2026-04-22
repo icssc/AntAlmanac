@@ -1,5 +1,6 @@
-import { openSnackbar } from '$stores/SnackbarStore';
 import { MouseEvent } from 'react';
+
+import { openSnackbar } from '$stores/SnackbarStore';
 
 export const warnMultipleTerms = (terms: Set<string>) => {
     openSnackbar(

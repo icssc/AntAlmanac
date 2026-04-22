@@ -1,7 +1,8 @@
-import { useSessionStore } from '$stores/SessionStore';
 import { HelpOutline } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { memo } from 'react';
+
+import { useSessionStore } from '$stores/SessionStore';
 
 interface NotificationEmailTooltipProps {
     sessionToken?: string | null;

@@ -1,5 +1,6 @@
-import { useDepartmentsStore } from '$stores/DepartmentsStore';
 import { useEffect } from 'react';
+
+import { useDepartmentsStore } from '$stores/DepartmentsStore';
 
 export function useDepartments() {
     const { departments, loadDepartments } = useDepartmentsStore();

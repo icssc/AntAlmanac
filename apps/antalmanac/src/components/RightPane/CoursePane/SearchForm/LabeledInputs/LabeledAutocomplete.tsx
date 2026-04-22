@@ -1,12 +1,13 @@
-import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import { Autocomplete, type AutocompleteProps, Popper, type PopperProps, type TextFieldProps } from '@mui/material';
 import { useEffect, useId, useState } from 'react';
+
+import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 
 interface LabeledAutocompleteProps<
     T,
     Multiple extends boolean = false,
     DisableClearable extends boolean = false,
-    FreeSolo extends boolean = false,
+    FreeSolo extends boolean = false
 > {
     label: string;
     autocompleteProps: Omit<AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>, 'renderInput'>;

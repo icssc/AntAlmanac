@@ -1,3 +1,7 @@
+import { GlobalStyles, Stack } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
+
 import { ScheduleManagementContent } from '$components/ScheduleManagement/ScheduleManagementContent';
 import { ScheduleManagementTabs } from '$components/ScheduleManagement/ScheduleManagementTabs';
 import { useIsMobile } from '$hooks/useIsMobile';
@@ -5,9 +9,6 @@ import { getLocalStorageSessionId } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { paramsAreInURL } from '$stores/CoursePaneStore';
 import { useTabStore } from '$stores/TabStore';
-import { GlobalStyles, Stack } from '@mui/material';
-import { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
 
 /**
  * List of interactive tab buttons with their accompanying content.
