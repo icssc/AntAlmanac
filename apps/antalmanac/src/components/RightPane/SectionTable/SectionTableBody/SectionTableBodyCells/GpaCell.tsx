@@ -77,7 +77,6 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
                     instructor={instructor}
                     isMobile={isMobile}
                 />
-                <GradesPopup deptCode={deptCode} courseNumber={courseNumber} isMobile={isMobile} />
             </Popover>
         </TableBodyCellContainer>
     );
