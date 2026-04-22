@@ -135,6 +135,11 @@ class RightPaneStore extends EventEmitter {
         const formFields = Object.keys(defaultAdvancedSearchValues) as AdvancedSearchParam[];
         return formFields.some((key) => this.formData[key] !== defaultAdvancedSearchValues[key]);
     };
+
+    getTermParts = (): { year: string; quarter: string } => {
+        const [year, quarter] = this.formData.term.split(' ');
+        return { year, quarter };
+    };
 }
 
 const store = new RightPaneStore();
