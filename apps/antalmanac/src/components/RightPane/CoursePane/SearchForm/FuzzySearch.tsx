@@ -1,14 +1,9 @@
+import RightDivider from '$components/RightDivider';
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
-import {
-    type AutocompleteInputChangeReason,
-    type AutocompleteRenderGroupParams,
-    Box,
-    Divider,
-    Typography,
-} from '@mui/material';
+import { type AutocompleteInputChangeReason, type AutocompleteRenderGroupParams, Box, Typography } from '@mui/material';
 import type { SearchResult } from '@packages/antalmanac-types';
 import { PostHog } from 'posthog-js/react';
 import { ComponentProps, useCallback, useEffect, useRef, useState } from 'react';
@@ -265,18 +260,9 @@ const FuzzySearch = ({ toggleSearch, postHog, labelProps }: FuzzySearchProps) =>
 
         return (
             <Box key={params.key}>
-                <Divider
-                    textAlign="left"
-                    sx={{
-                        mt: 1,
-                        mb: 1,
-                        ml: 0.5,
-                        '&::before': { width: '0px' },
-                        '&::after': { borderColor: 'text.primary', opacity: 0.45 },
-                    }}
-                >
+                <RightDivider sx={{ mt: 1, mb: 1, ml: 0.5, '&::after': { opacity: 0.45 } }}>
                     <Typography variant="subtitle1">{label}</Typography>
-                </Divider>
+                </RightDivider>
                 {params.children}
             </Box>
         );
