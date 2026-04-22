@@ -1,4 +1,4 @@
-import { pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core';
+import { index, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core';
 
 import { schedules } from './schedule';
 
@@ -37,6 +37,7 @@ export const customEvents = pgTable(
         primaryKey({
             columns: [table.scheduleId, table.id],
         }),
+        index('customEvents_scheduleId_idx').on(table.scheduleId),
     ]
 );
 
