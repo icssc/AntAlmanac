@@ -11,9 +11,9 @@ import { memo, useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 const MENU_ITEMS: { status: keyof NotifyOn; label: string }[] = [
-    { status: 'notifyOnOpen', label: 'Section is OPEN' },
-    { status: 'notifyOnWaitlist', label: 'Section is WAITLIST' },
-    { status: 'notifyOnFull', label: 'Section is FULL' },
+    { status: 'notifyOnOpen', label: 'Section becomes OPEN' },
+    { status: 'notifyOnWaitlist', label: 'Section becomes WAITLIST' },
+    { status: 'notifyOnFull', label: 'Section becomes FULL' },
     { status: 'notifyOnRestriction', label: 'Restriction Codes have Changed' },
 ];
 
@@ -97,7 +97,7 @@ export const NotificationsMenu = memo(
             <>
                 <Tooltip title={tooltipText}>
                     <span>
-                        <IconButton onClick={handleNotificationClick} disabled={!isTermCurrent}>
+                        <IconButton onClick={handleNotificationClick} disabled={!isTermCurrent} sx={{ p: 0.5 }}>
                             {isGoogleUser ? (
                                 hasNotifications ? (
                                     <EditNotifications fontSize="small" />

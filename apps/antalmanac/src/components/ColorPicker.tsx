@@ -83,7 +83,7 @@ const ColorPicker = memo(function ColorPicker({
         <>
             <Tooltip title="Change Color">
                 <IconButton
-                    style={{ color: currColor, padding: 8 }}
+                    sx={{ color: currColor, padding: 0.5 }}
                     onClick={(e) => {
                         handleClick(e, postHog);
                     }}

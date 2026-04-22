@@ -157,7 +157,7 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
     });
     if (providerID == null) return;
     providerID = providerID.replace(/\s+/g, '');
-    if (providerID.length < 0) return;
+    if (providerID.length <= 0) return;
 
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
     try {
