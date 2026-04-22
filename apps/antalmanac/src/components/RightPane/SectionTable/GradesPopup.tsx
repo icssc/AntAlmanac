@@ -1,9 +1,11 @@
-import { Box, Link, Typography, Skeleton } from '@mui/material';
+import { Grades, type GradesProps } from '$lib/grades';
+import { useThemeStore } from '$stores/SettingsStore';
+import { Box, Link, ToggleButton, ToggleButtonGroup, Typography, Skeleton } from '@mui/material';
 import { useState, useEffect, useMemo } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-import { Grades, type GradesProps } from '$lib/grades';
-import { useThemeStore } from '$stores/SettingsStore';
+type GradeView = 'instructor' | 'overall';
+
 export interface GradeData {
     grades: {
         name: string;
@@ -62,40 +64,54 @@ function GradesPopup(props: GradesPopupProps) {
 
     const [loading, setLoading] = useState(true);
 
-    const [gradeData, setGradeData] = useState<GradeData>();
+    const [instructorData, setInstructorData] = useState<GradeData>();
+    const [overallData, setOverallData] = useState<GradeData>();
+    const [view, setView] = useState<GradeView>(instructor ? 'instructor' : 'overall');
 
     const width = useMemo(() => (isMobile ? 250 : 400), [isMobile]);
 
     const height = useMemo(() => (isMobile ? 150 : 200), [isMobile]);
 
-    const graphTitle = useMemo(() => {
-        return gradeData
-            ? `${deptCode} ${courseNumber}${
-                  instructor ? ` — ${instructor}` : ''
-                  // GPA is `null` if the class is pass/no-pass only.
-                  // This is more correct compared to returning a zero GPA,
-                  // which so far has not happened, but is entirely possible.
-              } | Average GPA: ${gradeData.courseGrades.averageGPA?.toFixed(2) ?? 'n/a'}`
-            : 'Grades are not available for this class.';
-    }, [gradeData, deptCode, courseNumber, instructor]);
+    const activeData = view === 'instructor' ? instructorData : overallData;
 
-    // const gpaString = useMemo(
-    //     () => (gradeData ? `Average GPA: ${gradeData.courseGrades.averageGPA.toFixed(2)}` : ''),
-    //     [gradeData]
-    // );
+    const graphTitle = useMemo(() => {
+        if (!activeData) {
+            return 'Grades are not available for this class.';
+        }
+        const instructorLabel = view === 'instructor' && instructor ? ` — ${instructor}` : '';
+        // GPA is `null` if the class is pass/no-pass only.
+        return `${deptCode} ${courseNumber}${instructorLabel} | Average GPA: ${
+            activeData.courseGrades.averageGPA?.toFixed(2) ?? 'n/a'
+        }`;
+    }, [activeData, view, deptCode, courseNumber, instructor]);
 
     useEffect(() => {
         if (loading === false) {
             return;
         }
 
-        getGradeData(deptCode, courseNumber, instructor).then((result) => {
-            if (result) {
-                setGradeData(result);
-            }
-            setLoading(false);
-        });
+        const fetches: Promise<unknown>[] = [
+            getGradeData(deptCode, courseNumber, '').then((result) => {
+                if (result) setOverallData(result);
+            }),
+        ];
+
+        if (instructor) {
+            fetches.push(
+                getGradeData(deptCode, courseNumber, instructor).then((result) => {
+                    if (result) setInstructorData(result);
+                })
+            );
+        }
+
+        Promise.all(fetches).finally(() => setLoading(false));
     }, [loading, deptCode, courseNumber, instructor]);
+
+    const handleViewChange = (_event: React.MouseEvent<HTMLElement>, newView: GradeView | null) => {
+        if (newView !== null) {
+            setView(newView);
+        }
+    };
 
     if (loading) {
         return (
@@ -105,7 +121,7 @@ function GradesPopup(props: GradesPopupProps) {
         );
     }
 
-    if (!gradeData) {
+    if (!activeData) {
         return (
             <Box padding={1}>
                 <Typography variant="body1" align="center">
@@ -120,6 +136,18 @@ function GradesPopup(props: GradesPopupProps) {
 
     return (
         <Box sx={{ padding: '4px' }}>
+            {instructor && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '.5rem' }}>
+                    <ToggleButtonGroup value={view} exclusive onChange={handleViewChange} size="small">
+                        <ToggleButton value="instructor" sx={{ textTransform: 'none', paddingX: 1.5 }}>
+                            {instructor}
+                        </ToggleButton>
+                        <ToggleButton value="overall" sx={{ textTransform: 'none', paddingX: 1.5 }}>
+                            Overall
+                        </ToggleButton>
+                    </ToggleButtonGroup>
+                </Box>
+            )}
             <Typography
                 sx={{
                     marginTop: '.5rem',
@@ -139,7 +167,7 @@ function GradesPopup(props: GradesPopupProps) {
                 sx={{ display: 'flex', height, width }}
             >
                 <ResponsiveContainer width="95%" height="95%">
-                    <BarChart data={gradeData.grades} style={{ cursor: 'pointer' }}>
+                    <BarChart data={activeData.grades} style={{ cursor: 'pointer' }}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
                         <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} unit="%" />
