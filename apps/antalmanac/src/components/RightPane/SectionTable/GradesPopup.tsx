@@ -136,18 +136,6 @@ function GradesPopup(props: GradesPopupProps) {
 
     return (
         <Box sx={{ padding: '4px' }}>
-            {instructor && (
-                <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '.5rem' }}>
-                    <ToggleButtonGroup value={view} exclusive onChange={handleViewChange} size="small">
-                        <ToggleButton value="instructor" sx={{ textTransform: 'none', paddingX: 1.5 }}>
-                            {instructor}
-                        </ToggleButton>
-                        <ToggleButton value="overall" sx={{ textTransform: 'none', paddingX: 1.5 }}>
-                            Overall
-                        </ToggleButton>
-                    </ToggleButtonGroup>
-                </Box>
-            )}
             <Typography
                 sx={{
                     marginTop: '.5rem',
@@ -158,6 +146,18 @@ function GradesPopup(props: GradesPopupProps) {
                     marginBottom: '.5rem',
                 }}
             >
+                {instructor && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '.5rem' }}>
+                        <ToggleButtonGroup value={view} exclusive onChange={handleViewChange} size="small">
+                            <ToggleButton value="instructor" sx={{ textTransform: 'none', paddingX: 1.5 }}>
+                                {instructor}
+                            </ToggleButton>
+                            <ToggleButton value="overall" sx={{ textTransform: 'none', paddingX: 1.5 }}>
+                                Overall
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    </Box>
+                )}
                 {graphTitle}
             </Typography>
             <Link
