@@ -1,7 +1,6 @@
-import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
-
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { terms } from '$generated/termData';
+import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
 
 /**
  * Quarterly Academic Calendar {@link https://www.reg.uci.edu/calendars/quarterly/2023-2024/quarterly23-24.html}
@@ -73,6 +72,10 @@ function getCurrentTerm(): { year: number; quarter: string } {
     const month = today.getMonth() + 1;
     const quarter = month <= 3 ? 'Winter' : month <= 6 ? 'Spring' : month <= 9 ? 'Summer' : 'Fall';
     return { year, quarter };
+}
+
+export function getTermLongName(termShortName: string) {
+    return termData.find((term) => term.shortName === termShortName)?.longName ?? '';
 }
 
 /**

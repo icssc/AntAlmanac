@@ -11,6 +11,7 @@ import analyticsEnum from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
+import { getTermLongName } from '$lib/termData';
 import { WebSOC } from '$lib/websoc';
 import { BLUE, PROJECTS_LINK } from '$src/globals';
 import AppStore from '$stores/AppStore';
@@ -268,7 +269,7 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
     const [unofferedCourses, setUnofferedCourses] = useState<CourseSearchParams[]>([]);
-    const [searchedTerm, setSearchedTerm] = useState('');
+    const [searchedTerm, setSearchedTerm] = useState(() => getTermLongName(RightPaneStore.getFormData().term));
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
@@ -346,7 +347,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             setWebsocResp(websocJsonResp);
             const allCourses = flattenSOCObject(websocJsonResp);
             setCourseData(getFilteredCourses(allCourses));
-            setSearchedTerm(formData.term);
+            setSearchedTerm(getTermLongName(RightPaneStore.getFormData().term));
         } catch (error) {
             console.error(error);
             setError(true);

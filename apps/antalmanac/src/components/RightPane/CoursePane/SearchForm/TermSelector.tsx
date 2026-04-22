@@ -1,6 +1,6 @@
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { termData } from '$lib/termData';
+import { getTermLongName, termData } from '$lib/termData';
 import { ComponentProps, useCallback, useEffect, useState } from 'react';
 
 type Props = Omit<
@@ -42,7 +42,7 @@ export function TermSelector(props: Props) {
             autocompleteProps={{
                 value: term,
                 options: termData.map((term) => term.shortName),
-                getOptionLabel: (option) => termData.find((term) => term.shortName === option)?.longName ?? '',
+                getOptionLabel: (option) => getTermLongName(option),
                 autoHighlight: true,
                 openOnFocus: true,
                 onChange: handleChange,
