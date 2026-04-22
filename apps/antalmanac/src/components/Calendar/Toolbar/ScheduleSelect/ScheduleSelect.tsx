@@ -1,17 +1,16 @@
-import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
-import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
-import { PostHog, usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-
 import { changeCurrentSchedule } from '$actions/AppStoreActions';
+import { CopyScheduleButton } from '$components/buttons/Copy';
 import { SortableList } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableList';
 import { AddScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton';
 import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/DeleteScheduleButton';
 import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
-import { CopyScheduleButton } from '$components/buttons/Copy';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
+import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
+import { PostHog, usePostHog } from 'posthog-js/react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type EventContext = {
     triggeredBy?: string;

@@ -1,6 +1,5 @@
-import { create } from 'zustand';
-
 import { getLocalStorageHiddenCourses, setLocalStorageHiddenCourses } from '$lib/localStorage';
+import { create } from 'zustand';
 
 export type VisibilityState = 'visible' | 'outlined' | 'disappeared';
 type VisibilityMap = Record<string, Record<string, VisibilityState>>;
@@ -39,7 +38,7 @@ export const useHiddenCoursesStore = create<HiddenCoursesStore>((set, get) => ({
         const currentState: VisibilityState = current[scheduleId]?.[sectionCode] ?? 'visible';
         const nextState = NEXT_VISIBILITY[currentState];
 
-        const scheduleMap = { ...(current[scheduleId] ?? {}) };
+        const scheduleMap = { ...current[scheduleId] };
         if (nextState === 'visible') {
             delete scheduleMap[sectionCode];
         } else {

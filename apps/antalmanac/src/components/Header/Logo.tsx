@@ -1,6 +1,5 @@
-import Image from 'next/image';
-
 import { useIsMobile } from '$hooks/useIsMobile';
+import Image from 'next/image';
 
 type Logo = {
     name: string;

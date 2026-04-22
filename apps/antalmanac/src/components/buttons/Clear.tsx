@@ -1,9 +1,8 @@
+import { clearSchedules } from '$actions/AppStoreActions';
+import analyticsEnum, { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import { DeleteOutline } from '@mui/icons-material';
 import { IconButton, SxProps, Tooltip } from '@mui/material';
 import { PostHog, usePostHog } from 'posthog-js/react';
-
-import { clearSchedules } from '$actions/AppStoreActions';
-import analyticsEnum, { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 
 function handleClearSchedule(postHog?: PostHog, analyticsCategory?: AnalyticsCategory) {
     return () => {

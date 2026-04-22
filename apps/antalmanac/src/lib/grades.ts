@@ -1,6 +1,5 @@
-import { GE } from '@packages/antalmanac-types';
-
 import trpc from '$lib/api/trpc';
+import { GE } from '@packages/antalmanac-types';
 
 export interface GradesProps {
     averageGPA: number | null;

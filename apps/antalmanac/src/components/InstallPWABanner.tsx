@@ -1,12 +1,11 @@
+import { getLocalStoragePWADismissalTime, setLocalStoragePWADismissalTime } from '$lib/localStorage';
+import { BeforeInstallPromptEvent, usePWAStore } from '$stores/PWAStore';
+import { useThemeStore } from '$stores/SettingsStore';
 import { Close } from '@mui/icons-material';
 import BrowserUpdatedIcon from '@mui/icons-material/BrowserUpdated';
 import { Alert, Box, Button, IconButton, Slide } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-
-import { getLocalStoragePWADismissalTime, setLocalStoragePWADismissalTime } from '$lib/localStorage';
-import { BeforeInstallPromptEvent, usePWAStore } from '$stores/PWAStore';
-import { useThemeStore } from '$stores/SettingsStore';
 
 function InstallPWABanner() {
     const [setInstallPrompt, setCanInstall, canInstall, installPrompt] = usePWAStore(
