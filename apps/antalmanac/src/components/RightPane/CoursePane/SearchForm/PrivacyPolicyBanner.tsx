@@ -6,9 +6,6 @@ export function PrivacyPolicyBanner() {
             variant="outlined"
             sx={{
                 padding: 1.5,
-                paddingRight: 6, // FIX ME: Magic Number padding for the Help Menu
-                marginBottom: 1,
-                marginRight: 0.5,
                 textWrap: 'pretty',
             }}
         >

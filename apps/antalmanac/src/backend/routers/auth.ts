@@ -19,6 +19,9 @@ const authRouter = router({
             return false;
         }
     }),
+    /**
+     * Returns the user id associated with the current session
+     */
     getSessionUserId: procedure.query(({ ctx }) => {
         return ctx.userId ?? '';
     }),

@@ -42,8 +42,8 @@ const tableBodyCells: Record<SectionTableColumn, React.ComponentType<any>> = {
     dayAndTime: DayAndTimeCell,
     location: LocationsCell,
     sectionEnrollment: EnrollmentCell,
-    restrictions: RestrictionsCell,
     status: StatusCell,
+    restrictions: RestrictionsCell,
     syllabus: SyllabusCell,
 };
 

@@ -7,7 +7,7 @@ import locationIds from '$lib/locations/locations';
 
 export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) => {
     if (isSkeletonEvent(event)) {
-        return;
+        return null;
     }
 
     if (event.isCustomEvent) {
