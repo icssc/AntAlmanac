@@ -1,11 +1,10 @@
-import { Button, Popover } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
-
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { Grades } from '$lib/grades';
+import { ButtonBase, Popover } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
 
 async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
     const namedInstructors = instructors.filter((instructor) => instructor !== 'STAFF');
@@ -59,20 +58,13 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
 
     return (
         <TableBodyCellContainer>
-            <Button
-                sx={{
-                    paddingX: 0,
-                    paddingY: 0,
-                    minWidth: 0,
-                    fontWeight: 400,
-                    fontSize: '1rem',
-                    color: secondaryColor,
-                }}
+            <ButtonBase
+                sx={{ fontFamily: 'inherit', fontSize: 'unset', color: secondaryColor, fontWeight: 700 }}
                 onClick={handleClick}
-                variant="text"
             >
                 {gpa}
-            </Button>
+            </ButtonBase>
+
             <Popover
                 open={Boolean(anchorEl)}
                 onClose={hideDistribution}
@@ -85,6 +77,7 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
                     instructor={instructor}
                     isMobile={isMobile}
                 />
+                <GradesPopup deptCode={deptCode} courseNumber={courseNumber} isMobile={isMobile} />
             </Popover>
         </TableBodyCellContainer>
     );
