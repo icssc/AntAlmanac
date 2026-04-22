@@ -73,10 +73,8 @@ function sortWebsocResponse(response: WebsocAPIResponse) {
 
 const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
     const url = `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`;
-    console.log('queryWebSoc', url);
 
     const data = await fetchAnteaterAPI<WebsocAPIResult>(url, { errorType: 'trpc' });
-    console.log('queryWebSoc', data);
 
     if (!data?.data) {
         throw new TRPCError({

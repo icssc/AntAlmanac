@@ -4,7 +4,7 @@ import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/Cours
 import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
 import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/EnrollmentHistoryPopup';
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
-import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
+import type { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import WarningAlert from '$components/WarningAlert';
 import { useIsMobile } from '$hooks/useIsMobile';
@@ -50,20 +50,29 @@ function SectionTable(props: SectionTableProps) {
     const handleToggleExpand = () => {
         setOpenContent(!openContent);
     };
+    const actionColumnWidth = isMobile ? 54 : 85;
 
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
     }, [courseDetails.deptCode, courseDetails.courseNumber]);
 
     const formattedTime = useMemo(() => {
-        if (!courseDetails.updatedAt) return null;
+        if (!courseDetails.updatedAt) {
+            return null;
+        }
+
         const date = new Date(courseDetails.updatedAt);
-        if (isNaN(date.getTime())) return null;
+
+        if (Number.isNaN(date.getTime())) {
+            return null;
+        }
+
         const timeString = date.toLocaleTimeString(undefined, {
             hour: '2-digit',
             minute: '2-digit',
             hour12: !isMilitaryTime,
         });
+
         return timeString.replace(/^0(\d)/, '$1');
     }, [courseDetails.updatedAt, isMilitaryTime]);
 
@@ -144,18 +153,23 @@ function SectionTable(props: SectionTableProps) {
                 <WarningAlert>Missing required sections: {missingSections.join(', ')}</WarningAlert>
             )}
             <Collapse in={openContent}>
-                <TableContainer component={Paper} sx={{ marginBottom: 0.5 }} elevation={0} variant="outlined">
+                <TableContainer
+                    component={Paper}
+                    sx={{ margin: '8px 0px 8px 0px', width: '100%' }}
+                    elevation={0}
+                    variant="outlined"
+                >
                     <Table
                         size="small"
                         sx={{
                             minWidth: `${tableMinWidth}px`,
                             width: '100%',
-                            tableLayout: 'auto',
+                            tableLayout: 'fixed',
                         }}
                     >
                         <TableHead>
                             <TableRow>
-                                <TableCell sx={{ padding: 0 }} />
+                                <TableCell sx={{ padding: 0, width: `${actionColumnWidth}px` }} />
                                 {(() => {
                                     const visible = tableHeaderColumnEntries.filter(([column]) =>
                                         activeColumns.includes(column as SectionTableColumn)
