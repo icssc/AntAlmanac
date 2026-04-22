@@ -1,9 +1,8 @@
+import { BLUE } from '$src/globals';
+import AppStore from '$stores/AppStore';
 import { Close, InfoOutlined } from '@mui/icons-material';
 import { IconButton, Alert, AlertTitle, Box, Typography, Fade, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
-
-import { BLUE } from '$src/globals';
-import AppStore from '$stores/AppStore';
 
 interface TbaSection {
     deptCode: string;
@@ -27,8 +26,8 @@ function TbaCircleButton({ onClick }: { onClick: () => void }) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: 52,
-                    height: 52,
+                    width: 48,
+                    height: 48,
                     borderRadius: '50%',
                     bgcolor: BLUE,
                     boxShadow: 2,
@@ -36,7 +35,7 @@ function TbaCircleButton({ onClick }: { onClick: () => void }) {
                 }}
             >
                 <Typography variant="button" sx={{ fontWeight: 600, letterSpacing: 1, color: 'white' }}>
-                    ASYNC
+                    TBA
                 </Typography>
             </Box>
         </Box>
@@ -85,7 +84,7 @@ function TbaExpandedCard({ tbaSections, onToggle }: { tbaSections: TbaSection[];
                 </IconButton>
             }
         >
-            <AlertTitle sx={{ typography: 'subtitle2', my: 'auto' }}>Async added:</AlertTitle>
+            <AlertTitle sx={{ typography: 'subtitle2', my: 'auto' }}>TBA section added:</AlertTitle>
 
             <Box sx={{ gap: 0.5 }}>
                 {tbaSections.map((section) => (
