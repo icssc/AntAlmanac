@@ -1,3 +1,4 @@
+import { useIsMobile } from '$hooks/useIsMobile';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -46,6 +47,7 @@ function TbaCircleButton({ onClick }: { onClick: () => void }) {
 function TbaExpandedCard({ tbaSections, onToggle }: { tbaSections: TbaSection[]; onToggle: () => void }) {
     const theme = useTheme();
     const isDark = useThemeStore((store) => store.isDark);
+    const isMobile = useIsMobile();
     return (
         <Alert
             icon={<InfoOutlined fontSize="small" sx={{ color: isDark ? theme.palette.common.white : BLUE }} />}
@@ -81,7 +83,11 @@ function TbaExpandedCard({ tbaSections, onToggle }: { tbaSections: TbaSection[];
                 </IconButton>
             }
         >
-            <AlertTitle sx={{ typography: 'subtitle2', my: 'auto' }}>TBA section added:</AlertTitle>
+            {isMobile ? (
+                <AlertTitle sx={{ typography: 'subtitle2', my: 'auto' }}>TBA added:</AlertTitle>
+            ) : (
+                <AlertTitle sx={{ typography: 'subtitle2', my: 'auto' }}>TBA section added:</AlertTitle>
+            )}
 
             <Box sx={{ gap: 0.5 }}>
                 {tbaSections.map((section) => (
@@ -89,7 +95,9 @@ function TbaExpandedCard({ tbaSections, onToggle }: { tbaSections: TbaSection[];
                         key={`${section.deptCode}-${section.courseNumber}-${section.sectionCode}`}
                         variant="body2"
                     >
-                        {section.deptCode} {section.courseNumber} — {section.sectionCode}
+                        {isMobile
+                            ? `${section.deptCode} ${section.courseNumber}`
+                            : `${section.deptCode} ${section.courseNumber} — ${section.sectionCode}`}
                     </Typography>
                 ))}
             </Box>
@@ -101,6 +109,7 @@ export function TbaCalendarCard() {
     const [tbaSections, setTbaSections] = useState<TbaSection[]>([]);
     const [collapsed, setCollapsed] = useState(true);
     const visible = tbaSections.length > 0;
+    const isMobile = useIsMobile();
 
     useEffect(() => {
         const updateTbaSections = () => {
@@ -156,7 +165,7 @@ export function TbaCalendarCard() {
         <Box data-html2canvas-ignore>
             {collapsed && <TbaCircleButton onClick={handleToggleCollapse} />}
             <Fade in={!collapsed} timeout={250} mountOnEnter unmountOnExit>
-                <Box sx={{ ...CARD_POSITION_SX, width: '100%', maxWidth: 180 }}>
+                <Box sx={{ ...CARD_POSITION_SX, width: '100%', maxWidth: isMobile ? 140 : 180 }}>
                     <TbaExpandedCard tbaSections={tbaSections} onToggle={handleToggleCollapse} />
                 </Box>
             </Fade>
