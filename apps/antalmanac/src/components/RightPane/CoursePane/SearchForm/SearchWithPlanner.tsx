@@ -120,7 +120,7 @@ const SearchWithPlanner = () => {
         );
         if (termRoadmapIdMapping[RoadmapTermRelation.NoCourses].has(roadmap.id.toString())) {
             return (
-                <Tooltip title="This roadmap doesn't have any courses for this term">
+                <Tooltip title="This roadmap has no courses for this term">
                     <span>{menuItem}</span>
                 </Tooltip>
             );
