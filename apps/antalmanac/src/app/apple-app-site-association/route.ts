@@ -14,21 +14,23 @@ import { NextResponse } from 'next/server';
  * 2. Authorize AA for shared web credentials, which enables passkey autofill
  *    and the Associated Domains `webcredentials` entitlement.
  *
+ * ## Values below
+ *
+ * Both the Team ID and Bundle IDs are public — the AASA file is fetched by
+ * Apple's CDN over plain HTTPS and is visible in every signed App Store
+ * binary. They're hardcoded here intentionally (no secret manager needed).
+ *
+ * - `TEAM_ID`: 10-char Apple Developer Team ID from developer.apple.com ->
+ *   Membership. Same for every app under the ICSSC org.
+ * - `BUNDLE_IDS`: every bundle ID that should resolve Universal Links for
+ *   antalmanac.com. List both the production App Store bundle and the
+ *   TestFlight bundle so OAuth callbacks work in either build.
+ *
  * ## Operational notes
  *
- * - The `appIDs` value is `TEAMID.BUNDLEID`. Both must be set for this to
- *   work. We read them from env vars so the same code runs against the
- *   TestFlight and production bundles without recompiling. Set these in the
- *   SST environment (see `sst.config.ts`).
- *   - `APPLE_TEAM_ID`: Apple Developer Team ID (10-char alphanumeric).
- *   - `APPLE_BUNDLE_IDS`: comma-separated list of bundle IDs (e.g.
- *     `com.icssc.antalmanac,com.antalmanac.testflight1127`). Typically one
- *     for prod and one for TestFlight; both are listed here so that both
- *     builds can resolve the same Universal Link.
- *
  * - Apple's CDN aggressively caches AASA files. After changing this file,
- *   uninstall + reinstall the app or use the `swcutil show --name 'applinks'`
- *   command to verify propagation. Changes can take up to 24 hours to roll
+ *   uninstall + reinstall the app or run `sudo swcutil dl -d antalmanac.com`
+ *   on a Mac to force a refresh. Changes can take up to 24 hours to roll
  *   out to new installs.
  *
  * - The file must be served with `Content-Type: application/json` and MUST
@@ -40,11 +42,15 @@ import { NextResponse } from 'next/server';
  *   - https://developer.apple.com/documentation/bundleresources/applinks
  */
 
-const TEAM_ID = process.env.APPLE_TEAM_ID ?? '';
-const BUNDLE_IDS = (process.env.APPLE_BUNDLE_IDS ?? '')
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean);
+const TEAM_ID = '66682RDDDK';
+
+// Universal Links. Current value includes the TestFlight bundle from
+// apps/pwa/src/AntAlmanac.xcodeproj/project.pbxproj. Add the App Store
+// production bundle ID when it's registered.
+const BUNDLE_IDS: readonly string[] = [
+    'com.antalmanac.testflight1127',
+    // 'com.icssc.antalmanac', // App Store production — uncomment when registered
+];
 
 const appIDs = BUNDLE_IDS.map((bundleId) => `${TEAM_ID}.${bundleId}`);
 
@@ -72,17 +78,16 @@ const aasa = {
 export const runtime = 'edge';
 
 export function GET() {
-    // When the team/bundle IDs aren't configured in the environment, return 404
-    // rather than serving a malformed AASA. An AASA with an empty appIDs array
-    // is still cached aggressively by Apple's CDN and can be hard to revoke.
-    if (appIDs.length === 0) {
+    // Defensive: if someone nukes the values above, serve 404 instead of a
+    // malformed AASA that Apple will aggressively cache.
+    if (TEAM_ID.startsWith('REPLACE_WITH_') || appIDs.length === 0) {
         return new NextResponse('Not Found', { status: 404 });
     }
 
     return NextResponse.json(aasa, {
         headers: {
             'Content-Type': 'application/json',
-            // Short cache so env-var changes propagate quickly after deploy.
+            // Short cache so edits propagate quickly after deploy.
             // Apple's fetcher ignores most caching headers anyway.
             'Cache-Control': 'public, max-age=300, stale-while-revalidate=86400',
         },
