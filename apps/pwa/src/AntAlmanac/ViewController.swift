@@ -1,5 +1,6 @@
 import UIKit
 import WebKit
+import AuthenticationServices
 
 var webView: WKWebView! = nil
 
@@ -18,7 +19,10 @@ class ViewController: UIViewController, WKNavigationDelegate, UIDocumentInteract
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var connectionProblemView: UIImageView!
     @IBOutlet weak var webviewView: UIView!
-    var toolbarView: UIToolbar!
+
+    // Held strongly so ARC doesn't drop the session mid-flow (iOS < 13 guidance,
+    // retained here as defensive; also makes the lifecycle obvious).
+    var currentAuthSession: ASWebAuthenticationSession?
     
     var htmlIsLoaded = false;
     private var loadingMode = LoadingMode.defaultCachePolicy
@@ -39,7 +43,6 @@ class ViewController: UIViewController, WKNavigationDelegate, UIDocumentInteract
     override func viewDidLoad() {
         super.viewDidLoad()
         initWebView()
-        initToolbarView()
         loadRootUrl()
     
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification , object: nil)
@@ -86,31 +89,6 @@ class ViewController: UIViewController, WKNavigationDelegate, UIDocumentInteract
         sender.endRefreshing()
     }
 
-    func createToolbarView() -> UIToolbar{
-        let winScene = UIApplication.shared.connectedScenes.first
-        let windowScene = winScene as! UIWindowScene
-        var statusBarHeight = windowScene.statusBarManager?.statusBarFrame.height ?? 60
-        
-        #if targetEnvironment(macCatalyst)
-        if (statusBarHeight == 0){
-            statusBarHeight = 30
-        }
-        #endif
-        
-        let toolbarView = UIToolbar(frame: CGRect(x: 0, y: 0, width: webviewView.frame.width, height: 0))
-        toolbarView.sizeToFit()
-        toolbarView.frame = CGRect(x: 0, y: 0, width: webviewView.frame.width, height: toolbarView.frame.height + statusBarHeight)
-//        toolbarView.autoresizingMask = [.flexibleTopMargin, .flexibleRightMargin, .flexibleWidth]
-        
-        let flex = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let close = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(loadRootUrl))
-        toolbarView.setItems([close,flex], animated: true)
-        
-        toolbarView.isHidden = true
-        
-        return toolbarView
-    }
-    
     func overrideUIStyle(toDefault: Bool = false) {
         if #available(iOS 15.0, *), adaptiveUIStyle {
             if (((htmlIsLoaded && !AntAlmanac.webView.isHidden) || toDefault) && self.currentWebViewTheme != .unspecified) {
@@ -121,12 +99,6 @@ class ViewController: UIViewController, WKNavigationDelegate, UIDocumentInteract
                     .first { $0.isKeyWindow }?.overrideUserInterfaceStyle = toDefault ? .unspecified : self.currentWebViewTheme;
             }
         }
-    }
-    
-    func initToolbarView() {
-        toolbarView =  createToolbarView()
-        
-        webviewView.addSubview(toolbarView)
     }
     
     @objc func loadRootUrl(cachePolicy: NSURLRequest.CachePolicy = .useProtocolCachePolicy) {
@@ -272,4 +244,71 @@ extension ViewController: WKScriptMessageHandler {
             handleFCMToken()
         }
   }
+}
+
+// MARK: - ASWebAuthenticationSession handoff
+//
+// Auth origins (auth.icssc.club, accounts.google.com, shib.service.uci.edu,
+// duosecurity.com, google.com) can't run inside the WKWebView:
+//   1. Google rejects embedded-webview OAuth with `disallowed_useragent` since
+//      2021-09-30 (Google Developers Blog).
+//   2. Passkeys / WebAuthn bound to a third-party RP ID (e.g. google.com) only
+//      work in top-level Safari context, not in a WKWebView owned by our app
+//      (passkeys.dev, Apple docs on passkey use in web browsers).
+//
+// We intercept navigation to those hosts in `decidePolicyFor`, cancel the
+// WKWebView navigation, and hand the URL to an ASWebAuthenticationSession.
+// The OIDC provider (auth.icssc.club) is configured to redirect to
+// `antalmanac://auth?code=...&state=...`. We rewrite that callback to
+// `https://antalmanac.com/auth?...` and load it in the WKWebView; the
+// existing AuthPage.tsx route completes the PKCE exchange via tRPC. The
+// oauth_state / oauth_code_verifier cookies set when the WKWebView called
+// getGoogleAuthUrl are still present in the WKWebView's cookie jar, so the
+// exchange works without any further native involvement.
+extension ViewController: ASWebAuthenticationPresentationContextProviding {
+    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+        return view.window ?? ASPresentationAnchor()
+    }
+
+    func startAuthSession(url: URL, webView: WKWebView) {
+        let session = ASWebAuthenticationSession(
+            url: url,
+            callbackURLScheme: "antalmanac"
+        ) { [weak self, weak webView] callbackURL, error in
+            self?.currentAuthSession = nil
+
+            if let error = error {
+                let nsError = error as NSError
+                // User-cancelled is expected; ignore silently.
+                if nsError.domain == ASWebAuthenticationSessionError.errorDomain &&
+                    nsError.code == ASWebAuthenticationSessionError.canceledLogin.rawValue {
+                    return
+                }
+                print("ASWebAuthenticationSession error: \(error)")
+                return
+            }
+
+            guard let callbackURL = callbackURL,
+                  var components = URLComponents(url: callbackURL, resolvingAgainstBaseURL: false) else {
+                return
+            }
+
+            // Rewrite antalmanac://auth?... -> https://antalmanac.com/auth?...
+            components.scheme = "https"
+            components.host = "antalmanac.com"
+            if components.path.isEmpty || components.path == "/" {
+                components.path = "/auth"
+            }
+
+            if let httpsURL = components.url {
+                webView?.load(URLRequest(url: httpsURL))
+            }
+        }
+        session.presentationContextProvider = self
+        // Share Safari cookies + iCloud Keychain passkeys so Google SSO, UCI
+        // Shib/Duo, and any cross-session credentials reuse cleanly.
+        session.prefersEphemeralWebBrowserSession = false
+        self.currentAuthSession = session
+        session.start()
+    }
 }

@@ -1,5 +1,5 @@
 import { oidcOAuthEnvSchema } from '$src/backend/env';
-import { oauth } from '$src/backend/lib/auth/oauth';
+import { ALLOWED_REDIRECT_URIS, isAllowedRedirectUri, oauthClientForRedirectUri } from '$src/backend/lib/auth/oauth';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
 import { RDS } from '$src/backend/lib/rds';
 import { type User, ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
@@ -125,12 +125,29 @@ const userDataRouter = router({
      * Retrieves Google auth url to login/sign up
      */
     getGoogleAuthUrl: procedure
-        .input(z.object({ prompt: z.enum(['none', 'consent']).optional() }).optional())
+        .input(
+            z
+                .object({
+                    prompt: z.enum(['none', 'consent']).optional(),
+                    /**
+                     * Optional redirect URI override. Defaults to the browser
+                     * redirect URI (`GOOGLE_REDIRECT_URI`). Pass `antalmanac://auth`
+                     * from the iOS wrapper so the callback is delivered via
+                     * `ASWebAuthenticationSession` instead of a browser navigation.
+                     * Must be one of {@link ALLOWED_REDIRECT_URIS}.
+                     */
+                    redirectUri: z.enum(ALLOWED_REDIRECT_URIS).optional(),
+                })
+                .optional()
+        )
         .query(async ({ input, ctx }) => {
             const state = generateState();
             const codeVerifier = generateCodeVerifier();
 
-            const url = oauth.createAuthorizationURLWithPKCE(
+            const redirectUri = input?.redirectUri ?? ALLOWED_REDIRECT_URIS[0];
+            const client = oauthClientForRedirectUri(redirectUri);
+
+            const url = client.createAuthorizationURLWithPKCE(
                 'https://auth.icssc.club/authorize',
                 state,
                 CodeChallengeMethod.S256,
@@ -155,6 +172,12 @@ const userDataRouter = router({
             // Set cookies via response headers (Next.js cookies() doesn't work in TRPC)
             ctx.resHeaders?.append('Set-Cookie', `oauth_state=${state}; ${cookieOptions}`);
             ctx.resHeaders?.append('Set-Cookie', `oauth_code_verifier=${codeVerifier}; ${cookieOptions}`);
+            // Pin the redirect URI to this PKCE transaction. The token exchange in
+            // handleGoogleCallback must use the same URI the authorize request was
+            // built with, or the OIDC provider will reject it. Also prevents a code
+            // issued for one client context (e.g. native scheme) from being redeemed
+            // against the browser redirect URI.
+            ctx.resHeaders?.append('Set-Cookie', `oauth_redirect_uri=${redirectUri}; ${cookieOptions}`);
 
             const referer = ctx.req.headers.get('referer');
             if (referer) {
@@ -185,6 +208,7 @@ const userDataRouter = router({
 
             const storedState = cookies['oauth_state'] ?? null;
             const codeVerifier = cookies['oauth_code_verifier'] ?? null;
+            const pinnedRedirectUri = cookies['oauth_redirect_uri'] ?? null;
             const redirectUrl = decodeURIComponent(cookies['auth_redirect_url'] ?? '/');
 
             // Delete cookies via response headers
@@ -194,6 +218,7 @@ const userDataRouter = router({
             }; Max-Age=0`;
             ctx.resHeaders?.append('Set-Cookie', `oauth_state=; ${deleteCookieOptions}`);
             ctx.resHeaders?.append('Set-Cookie', `oauth_code_verifier=; ${deleteCookieOptions}`);
+            ctx.resHeaders?.append('Set-Cookie', `oauth_redirect_uri=; ${deleteCookieOptions}`);
             ctx.resHeaders?.append('Set-Cookie', `auth_redirect_url=; ${deleteCookieOptions}`);
 
             if (!input.code || !input.state || !storedState || !codeVerifier) {
@@ -220,9 +245,18 @@ const userDataRouter = router({
                 });
             }
 
+            // Validate pinned redirect URI: must exist and be an allowlisted value.
+            // Falling back to the default only if the cookie is absent (legacy
+            // client that hit getGoogleAuthUrl before this change rolled out).
+            const resolvedRedirectUri =
+                pinnedRedirectUri && isAllowedRedirectUri(pinnedRedirectUri)
+                    ? pinnedRedirectUri
+                    : ALLOWED_REDIRECT_URIS[0];
+            const tokenClient = oauthClientForRedirectUri(resolvedRedirectUri);
+
             let tokens: OAuth2Tokens;
             try {
-                tokens = await oauth.validateAuthorizationCode(
+                tokens = await tokenClient.validateAuthorizationCode(
                     'https://auth.icssc.club/token',
                     input.code,
                     codeVerifier

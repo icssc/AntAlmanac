@@ -30,9 +30,11 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string></string>
+			<string>com.icssc.antalmanac.auth</string>
 			<key>CFBundleURLSchemes</key>
-			<array />
+			<array>
+				<string>antalmanac</string>
+			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
@@ -99,11 +101,6 @@
 	<key>WKAppBoundDomains</key>
 	<array>
 		<string>antalmanac.com</string>
-<string>auth.icssc.club</string>
-<string>accounts.google.com</string>
-<string>shib.service.uci.edu</string>
-<string>duosecurity.com</string>
-<string>google.com</string>
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>

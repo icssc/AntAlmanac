@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
-
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId } from '$lib/localStorage';
+import { isNativeIosApp } from '$lib/platform';
 import { hasSsoCookie } from '$lib/ssoCookie';
+import { useEffect, useRef } from 'react';
 
 /**
  * Automatically signs in users who authenticated via another app on antalmanac.com
@@ -26,6 +26,15 @@ export function AutoSignIn() {
             // Calling getGoogleAuthUrl here would overwrite the oauth_state /
             // oauth_code_verifier cookies that AuthPage needs to finish the exchange.
             if (window.location.pathname === '/auth') {
+                return;
+            }
+
+            // Skip silent SSO inside the native iOS wrapper. A full-page navigation
+            // to auth.icssc.club would be intercepted in WebView.swift and trigger
+            // an ASWebAuthenticationSession modal on every app launch, which
+            // defeats the purpose of prompt=none and produces an awful UX.
+            // Users sign in explicitly via the Sign in button instead.
+            if (isNativeIosApp()) {
                 return;
             }
 

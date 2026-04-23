@@ -2,6 +2,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
 import AppStore from '$stores/AppStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -387,7 +388,13 @@ const cacheSchedule = () => {
 
 export const loginUser = async () => {
     try {
-        const authUrl = await trpc.userData.getGoogleAuthUrl.query();
+        // Inside the iOS wrapper we want the OAuth callback to come back via
+        // the custom URL scheme so ASWebAuthenticationSession can intercept it
+        // and hand it to the WKWebView (see apps/pwa/src/AntAlmanac/ViewController.swift).
+        // On the web, omit the redirectUri so the backend uses its default.
+        const redirectUri = isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined;
+
+        const authUrl = await trpc.userData.getGoogleAuthUrl.query(redirectUri ? { redirectUri } : undefined);
         if (authUrl) {
             cacheSchedule();
             window.location.href = authUrl.toString();
