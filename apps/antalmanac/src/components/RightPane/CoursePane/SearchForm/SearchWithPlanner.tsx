@@ -23,7 +23,7 @@ function getDefaultTermRoadmapIdMapping(): TermRoadmapIdMapping {
     };
 }
 
-const SearchWithPlannerButton = () => {
+const SearchWithPlanner = () => {
     const [termRoadmapIdMapping, setTermRoadmapIdMapping] =
         useState<TermRoadmapIdMapping>(getDefaultTermRoadmapIdMapping);
     const [isLoading, setIsLoading] = useState(false);
@@ -164,4 +164,4 @@ const SearchWithPlannerButton = () => {
         />
     );
 };
-export default SearchWithPlannerButton;
+export default SearchWithPlanner;

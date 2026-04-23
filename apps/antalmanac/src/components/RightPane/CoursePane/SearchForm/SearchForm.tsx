@@ -1,8 +1,8 @@
-import SearchWithPlannerButton from '$components/buttons/SearchWithPlannerButton';
 import { Footer } from '$components/RightPane/CoursePane/SearchForm/Footer';
 import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
 import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
+import SearchWithPlanner from '$components/RightPane/CoursePane/SearchForm/SearchWithPlanner';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
@@ -81,7 +81,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                                 labelProps={{ sx: QUICKSEARCH_LABEL_SX }}
                             />
                             <Typography>or</Typography>
-                            <SearchWithPlannerButton />
+                            <SearchWithPlanner />
                         </Stack>
                     ) : (
                         <ManualSearch
