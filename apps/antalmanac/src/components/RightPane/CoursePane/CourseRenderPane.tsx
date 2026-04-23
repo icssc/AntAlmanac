@@ -273,7 +273,7 @@ export default function CourseRenderPane(props: { id?: number }) {
 
     const setHoveredEvent = useHoveredStore((store) => store.setHoveredEvent);
 
-    const getSearchResponse = useCallback(async (searchData: ReturnType<typeof RightPaneStore.getFormData>) => {
+    const getQueryParams = useCallback((searchData: CourseSearchParams) => {
         const websocQueryParams = {
             department: searchData.deptValue,
             term: searchData.term,
@@ -299,19 +299,15 @@ export default function CourseRenderPane(props: { id?: number }) {
             sectionCode: searchData.sectionCode,
         };
 
-        // Query websoc for course information and populate gradescache
-        const [websocJsonResp, _] = await Promise.all([
-            websocQueryParams.units.includes(',')
-                ? WebSOC.queryMultipleOfField(websocQueryParams, 'units')
-                : WebSOC.query(websocQueryParams),
-            // Catch the error here so that the course pane still loads even if the grades cache fails to populate
-            Grades.populateGradesCache(gradesQueryParams).catch((error) => {
-                console.error(error);
-                openSnackbar('error', 'Error loading grades information');
-            }),
-        ]);
+        return { websocQueryParams, gradesQueryParams };
+    }, []);
 
-        return websocJsonResp;
+    const queryGrades = useCallback(async (gradesQueryParams: Parameters<typeof Grades.populateGradesCache>[0]) => {
+        // Catch the error here so that the course pane still loads even if the grades cache fails to populate
+        Grades.populateGradesCache(gradesQueryParams).catch((error) => {
+            console.error(error);
+            openSnackbar('error', 'Error loading grades information');
+        });
     }, []);
 
     const loadCourses = useCallback(async () => {
@@ -324,7 +320,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             let websocJsonResp;
             if (multiSearchData.length > 0) {
                 const [year, quarter] = formData.term.split(' ');
-                const offeredCourses: CourseSearchParams[] = [];
+                const offeredCourses: Record<string, string>[] = [];
                 const unofferedCourses: CourseSearchParams[] = [];
                 const offeredCoursesMapping = await trpc.search.filterOfferedCourses.query({
                     year: year,
@@ -333,7 +329,9 @@ export default function CourseRenderPane(props: { id?: number }) {
                 });
                 for (const course of multiSearchData) {
                     if (offeredCoursesMapping[course.deptValue]?.has(course.courseNumber)) {
-                        offeredCourses.push(course);
+                        const { websocQueryParams, gradesQueryParams } = getQueryParams(course);
+                        offeredCourses.push(websocQueryParams);
+                        queryGrades(gradesQueryParams);
                     } else {
                         unofferedCourses.push(course);
                     }
@@ -342,7 +340,14 @@ export default function CourseRenderPane(props: { id?: number }) {
                 websocJsonResp = await WebSOC.queryMultiple(offeredCourses);
                 RightPaneStore.clearMultiSearchData();
             } else {
-                websocJsonResp = await getSearchResponse(formData);
+                const { websocQueryParams, gradesQueryParams } = getQueryParams(formData);
+                const [websocJsonResponse, _] = await Promise.all([
+                    websocQueryParams.units.includes(',')
+                        ? WebSOC.queryMultipleOfField(websocQueryParams, 'units')
+                        : WebSOC.query(websocQueryParams),
+                    queryGrades(gradesQueryParams),
+                ]);
+                websocJsonResp = websocJsonResponse;
             }
             setWebsocResp(websocJsonResp);
             const allCourses = flattenSOCObject(websocJsonResp);

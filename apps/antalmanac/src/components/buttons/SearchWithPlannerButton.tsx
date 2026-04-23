@@ -1,8 +1,11 @@
 import RightDivider from '$components/RightDivider';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { doesRoadmapIncludeTerm } from '$lib/plannerHelpers';
+import { useDepartments } from '$hooks/useDepartments';
+import { usePlannerRoadmaps } from '$hooks/usePlanner';
+import { doesRoadmapIncludeTerm, getQuarterPlan, parsePlannerCourseId } from '$lib/plannerHelpers';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import { Autocomplete, AutocompleteRenderGroupParams, MenuItem, TextField, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
 import { useEffect, useMemo, useState } from 'react';
@@ -19,18 +22,10 @@ const SearchWithPlannerButton = () => {
 
     const displaySections = useCoursePaneStore((state) => state.displaySections);
 
-    // const { roadmaps } = usePlannerRoadmaps();
-    // TODO
-    const roadmaps = [
-        {
-            id: 1,
-            name: 'hi',
-        },
-        {
-            id: 2,
-            name: 'aaaaa',
-        },
-    ];
+    const { roadmaps } = usePlannerRoadmaps();
+
+    // Load departments
+    useDepartments();
 
     const sortedRoadmaps = useMemo(
         () =>
@@ -41,26 +36,30 @@ const SearchWithPlannerButton = () => {
     );
 
     const search = (roadmapId: Roadmap['id']) => {
-        console.log('searching', roadmapId);
-        RightPaneStore.setMultiSearchData([
-            {
-                deptValue: 'I&C SCI',
-                courseNumber: '6B',
-            },
-            {
-                deptValue: 'I&C SCI',
-                courseNumber: '6D',
-            },
-            {
-                deptValue: 'SOC SCI',
-                courseNumber: 'H1E',
-            },
-            {
-                deptValue: 'BIO SCI',
-                courseNumber: '199W',
-            },
-        ]);
-        displaySections();
+        const roadmap = roadmaps.find((roadmap) => roadmap.id === roadmapId);
+        if (!roadmap) {
+            openSnackbar('error', "Couldn't find selected roadmap!");
+            return;
+        }
+
+        const { year, quarter } = RightPaneStore.getTermParts();
+        const quarterPlan = getQuarterPlan(roadmap, year, quarter);
+        if (!quarterPlan) {
+            openSnackbar('error', "Couldn't find selected roadmap!");
+            return;
+        }
+        try {
+            const searchData = quarterPlan.courses.map(({ courseId }) => {
+                const { department, courseNumber } = parsePlannerCourseId(courseId);
+                return { deptValue: department, courseNumber };
+            });
+
+            RightPaneStore.setMultiSearchData(searchData);
+            displaySections();
+        } catch (error) {
+            console.error('Something went wrong while searching with planner:', error);
+            openSnackbar('error', 'Something went wrong while searching with planner.');
+        }
     };
 
     const groupBy = (option: Roadmap) => {
@@ -103,7 +102,7 @@ const SearchWithPlannerButton = () => {
         return () => {
             RightPaneStore.removeListener('formDataChange', updateTermRoadmaps);
         };
-    }, []);
+    }, [roadmaps]);
 
     return (
         <Autocomplete
