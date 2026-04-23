@@ -14,6 +14,10 @@ export function doesRoadmapIncludeTerm(roadmap: Roadmap, year: string, quarter: 
     return getQuarterPlan(roadmap, year, quarter) !== null;
 }
 
+/**
+ * Planner course IDs combine departments and course numbers without spaces, so we have to search.
+ * For example, I&C SCI 31 is passed as I&CSCI31.
+ */
 export function parsePlannerCourseId(courseId: string): { department: string; courseNumber: string } {
     const departments = useDepartmentsStore.getState().departments;
     if (!departments) {
