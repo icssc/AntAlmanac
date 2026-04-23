@@ -2,22 +2,28 @@ import RightDivider from '$components/RightDivider';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { usePlannerRoadmaps } from '$hooks/usePlanner';
 import trpc from '$lib/api/trpc';
-import { doesRoadmapIncludeTerm, getQuarterPlan } from '$lib/plannerHelpers';
+import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$lib/plannerHelpers';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import { Autocomplete, AutocompleteRenderGroupParams, MenuItem, TextField, Typography } from '@mui/material';
+import { Autocomplete, AutocompleteRenderGroupParams, MenuItem, TextField, Tooltip, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
 import { useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-enum RoadmapGroup {
-    IncludesTerm = 'includes',
-    ExcludesTerm = 'excludes',
+type TermRoadmapIdMapping = Record<RoadmapTermRelation, Set<string>>;
+
+function getDefaultTermRoadmapIdMapping(): TermRoadmapIdMapping {
+    return {
+        [RoadmapTermRelation.IncludesTerm]: new Set(),
+        [RoadmapTermRelation.ExcludesTerm]: new Set(),
+        [RoadmapTermRelation.NoCourses]: new Set(),
+    };
 }
 
 const SearchWithPlannerButton = () => {
-    const [termRoadmapIds, setTermRoadmapIds] = useState<Set<string>>(() => new Set());
+    const [termRoadmapIdMapping, setTermRoadmapIdMapping] =
+        useState<TermRoadmapIdMapping>(getDefaultTermRoadmapIdMapping);
     const [isLoading, setIsLoading] = useState(false);
 
     const { sessionIsValid, isPlannerLoading } = useSessionStore(
@@ -28,13 +34,15 @@ const SearchWithPlannerButton = () => {
 
     const { roadmaps } = usePlannerRoadmaps();
 
-    const sortedRoadmaps = useMemo(
-        () =>
-            roadmaps.toSorted((a, _b) => {
-                return termRoadmapIds.has(a.id.toString()) ? -1 : 1;
-            }),
-        [roadmaps, termRoadmapIds]
-    );
+    const doesRoadmapIncludeTerm = (roadmapId: Roadmap['id']) => {
+        return termRoadmapIdMapping[RoadmapTermRelation.IncludesTerm].has(roadmapId.toString());
+    };
+
+    const sortedRoadmaps = useMemo(() => {
+        return roadmaps.toSorted((a, _b) => {
+            return doesRoadmapIncludeTerm(a.id) ? -1 : 1;
+        });
+    }, [roadmaps, termRoadmapIdMapping]);
 
     const search = async (roadmapId: Roadmap['id']) => {
         const roadmap = roadmaps.find((roadmap) => roadmap.id === roadmapId);
@@ -66,12 +74,12 @@ const SearchWithPlannerButton = () => {
     };
 
     const groupBy = (option: Roadmap) => {
-        return termRoadmapIds.has(option.id.toString()) ? RoadmapGroup.IncludesTerm : RoadmapGroup.ExcludesTerm;
+        return doesRoadmapIncludeTerm(option.id) ? RoadmapTermRelation.IncludesTerm : RoadmapTermRelation.ExcludesTerm;
     };
 
     const renderGroup = (params: AutocompleteRenderGroupParams) => {
         const term = RightPaneStore.getFormData().term;
-        const includesTerm = params.group === RoadmapGroup.IncludesTerm;
+        const includesTerm = params.group === RoadmapTermRelation.IncludesTerm;
         const keyword = includesTerm ? 'Includes' : 'Excludes';
 
         return (
@@ -89,13 +97,12 @@ const SearchWithPlannerButton = () => {
     useEffect(() => {
         const updateTermRoadmaps = () => {
             const { year, quarter } = RightPaneStore.getTermParts();
-            const roadmapsWithTerm: typeof termRoadmapIds = new Set();
+            const roadmapsWithTerm: typeof termRoadmapIdMapping = getDefaultTermRoadmapIdMapping();
             for (const roadmap of roadmaps) {
-                if (doesRoadmapIncludeTerm(roadmap, year, quarter)) {
-                    roadmapsWithTerm.add(roadmap.id.toString());
-                }
+                const roadmapTermRelation = getRoadmapTermRelation(roadmap, year, quarter);
+                roadmapsWithTerm[roadmapTermRelation].add(roadmap.id.toString());
             }
-            setTermRoadmapIds(roadmapsWithTerm);
+            setTermRoadmapIdMapping(roadmapsWithTerm);
         };
 
         updateTermRoadmaps();
@@ -128,17 +135,25 @@ const SearchWithPlannerButton = () => {
                     />
                 );
             }}
-            renderOption={(props, option) => {
-                return (
+            renderOption={(props, roadmap) => {
+                const menuItem = (
                     <MenuItem
                         {...props}
-                        key={option.id}
-                        onClick={() => search(option.id)}
-                        disabled={!termRoadmapIds.has(option.id.toString())}
+                        key={roadmap.id}
+                        onClick={() => search(roadmap.id)}
+                        disabled={!doesRoadmapIncludeTerm(roadmap.id)}
                     >
-                        <Typography sx={{ marginLeft: 1 }}>{option.name}</Typography>
+                        <Typography sx={{ marginLeft: 1 }}>{roadmap.name}</Typography>
                     </MenuItem>
                 );
+                if (termRoadmapIdMapping[RoadmapTermRelation.NoCourses].has(roadmap.id.toString())) {
+                    return (
+                        <Tooltip title="This roadmap doesn't have any courses for this term">
+                            <span>{menuItem}</span>
+                        </Tooltip>
+                    );
+                }
+                return menuItem;
             }}
         />
     );
