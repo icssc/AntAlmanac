@@ -29,11 +29,6 @@ export function AutoSignIn() {
                 return;
             }
 
-            // Skip silent SSO inside the native iOS wrapper. A full-page navigation
-            // to auth.icssc.club would be intercepted in WebView.swift and trigger
-            // an ASWebAuthenticationSession modal on every app launch, which
-            // defeats the purpose of prompt=none and produces an awful UX.
-            // Users sign in explicitly via the Sign in button instead.
             if (isNativeIosApp()) {
                 return;
             }

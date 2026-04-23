@@ -129,13 +129,6 @@ const userDataRouter = router({
             z
                 .object({
                     prompt: z.enum(['none', 'consent']).optional(),
-                    /**
-                     * Optional redirect URI override. Defaults to the browser
-                     * redirect URI (`GOOGLE_REDIRECT_URI`). Pass `antalmanac://auth`
-                     * from the iOS wrapper so the callback is delivered via
-                     * `ASWebAuthenticationSession` instead of a browser navigation.
-                     * Must be one of {@link ALLOWED_REDIRECT_URIS}.
-                     */
                     redirectUri: z.enum(ALLOWED_REDIRECT_URIS).optional(),
                 })
                 .optional()
@@ -172,11 +165,6 @@ const userDataRouter = router({
             // Set cookies via response headers (Next.js cookies() doesn't work in TRPC)
             ctx.resHeaders?.append('Set-Cookie', `oauth_state=${state}; ${cookieOptions}`);
             ctx.resHeaders?.append('Set-Cookie', `oauth_code_verifier=${codeVerifier}; ${cookieOptions}`);
-            // Pin the redirect URI to this PKCE transaction. The token exchange in
-            // handleGoogleCallback must use the same URI the authorize request was
-            // built with, or the OIDC provider will reject it. Also prevents a code
-            // issued for one client context (e.g. native scheme) from being redeemed
-            // against the browser redirect URI.
             ctx.resHeaders?.append('Set-Cookie', `oauth_redirect_uri=${redirectUri}; ${cookieOptions}`);
 
             const referer = ctx.req.headers.get('referer');
@@ -245,9 +233,6 @@ const userDataRouter = router({
                 });
             }
 
-            // Validate pinned redirect URI: must exist and be an allowlisted value.
-            // Falling back to the default only if the cookie is absent (legacy
-            // client that hit getGoogleAuthUrl before this change rolled out).
             const resolvedRedirectUri =
                 pinnedRedirectUri && isAllowedRedirectUri(pinnedRedirectUri)
                     ? pinnedRedirectUri

@@ -388,10 +388,6 @@ const cacheSchedule = () => {
 
 export const loginUser = async () => {
     try {
-        // Inside the iOS wrapper we want the OAuth callback to come back via
-        // the custom URL scheme so ASWebAuthenticationSession can intercept it
-        // and hand it to the WKWebView (see apps/pwa/src/AntAlmanac/ViewController.swift).
-        // On the web, omit the redirectUri so the backend uses its default.
         const redirectUri = isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined;
 
         const authUrl = await trpc.userData.getGoogleAuthUrl.query(redirectUri ? { redirectUri } : undefined);
