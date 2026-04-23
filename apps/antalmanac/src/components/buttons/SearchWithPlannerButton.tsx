@@ -160,7 +160,7 @@ const SearchWithPlannerButton = () => {
             renderGroup={renderGroup}
             renderInput={renderInput}
             renderOption={renderOption}
-            sx={{ minWidth: '30%' }}
+            sx={{ minWidth: '25%' }}
         />
     );
 };
