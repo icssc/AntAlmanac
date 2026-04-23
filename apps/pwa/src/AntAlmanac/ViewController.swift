@@ -137,8 +137,23 @@ class ViewController: UIViewController, WKNavigationDelegate, UIDocumentInteract
     
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         htmlIsLoaded = false;
-        
-        if (error as NSError)._code == (-999) { return }
+
+        // Swallow cancellation errors. WKWebView reports cancels in two different
+        // domains depending on where the cancel originated:
+        //
+        //   - NSURLErrorDomain / NSURLErrorCancelled (-999): request-level cancel,
+        //     e.g. a follow-up nav started before the previous one finished.
+        //   - WebKitErrorDomain / 102 (WKError.frameLoadInterruptedByPolicyChange):
+        //     fired when we call decisionHandler(.cancel) in decidePolicyFor to
+        //     hand a navigation off to ASWebAuthenticationSession.
+        //
+        // Without the second check, every auth.icssc.club interception would
+        // trigger the connection-problem fallback below and re-load rootUrl (/),
+        // which is visible as a flash of the scheduler behind the ASW sheet
+        // and a bounce back to / before the OAuth callback returns us to /planner.
+        let nsError = error as NSError
+        if nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorCancelled { return }
+        if nsError.domain == "WebKitErrorDomain" && nsError.code == 102 { return }
         
         self.overrideUIStyle(toDefault: true);
         webView.isHidden = true;

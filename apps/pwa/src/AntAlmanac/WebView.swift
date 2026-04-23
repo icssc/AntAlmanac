@@ -122,13 +122,18 @@ extension ViewController: WKUIDelegate, WKDownloadDelegate {
         if let requestUrl = navigationAction.request.url{
             if let requestHost = requestUrl.host {
                 // NOTE: Match auth origin first, because host origin may be a subset of auth origin and may therefore always match
-                let matchingAuthOrigin = authOrigins.first(where: { requestHost.range(of: $0) != nil })
-                if (matchingAuthOrigin != nil) {
-                    // Hand off auth flows (Google OAuth, UCI Shib/Duo) to ASWebAuthenticationSession
-                    // so they run in a real Safari context with access to iCloud Keychain passkeys
-                    // and shared cookies, and bypass Google's "disallowed_useragent" check.
+                let handOffOidc = authOrigins.contains(where: { requestHost.range(of: $0) != nil })
+                    && shouldHandOffOidcToASWebAuthenticationSession(requestUrl)
+                if handOffOidc {
+                    // Only /authorize: Google + passkeys; see Settings.swift. Logout (/logout) etc. stay in WKWebView.
                     decisionHandler(.cancel)
                     self.startAuthSession(url: requestUrl, webView: webView)
+                    return
+                }
+
+                // Remaining IdP URLs (e.g. /logout with post_logout_redirect_uri) load in the webview
+                if authOrigins.contains(where: { requestHost.range(of: $0) != nil }) {
+                    decisionHandler(.allow)
                     return
                 }
 

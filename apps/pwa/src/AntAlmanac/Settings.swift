@@ -14,13 +14,21 @@ let rootUrl = URL(string: "https://antalmanac.com")!
 // This should also appear in Info.plist
 let allowedOrigins: [String] = ["antalmanac.com"]
 
-// Hosts whose top-level navigations get handed off to ASWebAuthenticationSession
-// instead of loading inside the WKWebView. Only the FIRST outbound redirect
-// matters here; everything downstream (e.g. accounts.google.com, myaccount.google.com,
-// shib.service.uci.edu, duosecurity.com, Google session-sync hops) happens inside
-// the Safari-backed ASW session and never reaches WKNavigationDelegate, so those
-// hosts don't need to be listed.
+// IdP host for ICSSC. Not every path on this host should use ASWebAuthenticationSession —
+// only interactive OAuth/OIDC *authorize* requests. See
+// `shouldHandOffOidcToASWebAuthenticationSession(_:)`.
 let authOrigins: [String] = ["auth.icssc.club"]
+
+/// `true` only for URLs that must run in a real Safari context (Google OAuth, passkeys).
+/// `/logout` and other IdP pages load in the WKWebView so `post_logout_redirect_uri` works
+/// and users don't see a bogus "sign in" sheet on logout.
+func shouldHandOffOidcToASWebAuthenticationSession(_ url: URL) -> Bool {
+    guard let host = url.host else { return false }
+    guard authOrigins.contains(where: { host.range(of: $0) != nil }) else { return false }
+    // OIDC spec: authorization request hits .../authorize. (auth.icssc.club)
+    // Logout, discovery, JWKS, etc. stay in-app.
+    return url.path.hasPrefix("/authorize")
+}
 
 let platformCookie = Cookie(name: "app-platform", value: "iOS App Store")
 

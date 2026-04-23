@@ -3,6 +3,9 @@ name: Deploy - Production
 on:
     push:
         branches: [main]
+        # iOS PWA shell (Xcode) — not part of SST; skip expensive deploy when that’s all that changed
+        paths-ignore:
+            - 'apps/pwa/**'
 
 concurrency:
     group: sst-production
