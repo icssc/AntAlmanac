@@ -344,19 +344,23 @@ extension ViewController: ASWebAuthenticationPresentationContextProviding {
                 return
             }
 
-            // AntAlmanac-specific: /auth/native is only a Universal-Link sink
-            // for ASW; the real callback page is /auth. Rewrite so AuthPage.tsx
-            // runs and completes the PKCE exchange using the oauth_state /
-            // oauth_code_verifier cookies that are already in the WKWebView jar.
+            // ICSSC-wide convention: any OAuth callback path ending in
+            // `/native` is a Universal-Link sink that exists only so ASW's
+            // `.https(host:path:)` callback API (iOS 17.4+) has an
+            // AASA-listed path to match. The real server handler lives at
+            // the same path without the `/native` suffix, and relies on
+            // cookies that are already in the WKWebView jar from the
+            // /authorize step (AntAlmanac's oauth_state / oauth_code_verifier
+            // for /auth, peterportal's connect.sid for /planner/...).
             //
-            // Planner callbacks (/planner/api/users/auth/google/callback) are
-            // loaded verbatim — peterportal's Express handler expects exactly
-            // that path and the WKWebView already carries its connect.sid
-            // session cookie from the authorize step, so the code+state
-            // validation and token exchange complete server-side without
-            // any further native involvement.
-            if components.path == "/auth/native" {
-                components.path = "/auth"
+            // Strip the suffix so the WKWebView loads the real handler.
+            // Listing `/native` paths in AASA (instead of the bare
+            // callback paths) is what prevents iOS from hijacking normal
+            // mobile-Safari logins on antalmanac.com into the app —
+            // nothing legitimately navigates to a `/native` path except
+            // ASW's callback, which we're capturing here.
+            if components.path.hasSuffix("/native") {
+                components.path = String(components.path.dropLast("/native".count))
             }
 
             if let redirectURL = components.url {
