@@ -1,7 +1,7 @@
 import { db } from '@packages/db';
 import { z } from 'zod';
 
-import { RDS } from '../lib/rds';
+import { RDS } from '../lib/rds/rds';
 import { procedure, router } from '../trpc';
 
 const authRouter = router({

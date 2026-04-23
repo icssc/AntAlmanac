@@ -1,7 +1,7 @@
 import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { ALLOWED_REDIRECT_URIS, isAllowedRedirectUri, oauthClientForRedirectUri } from '$src/backend/lib/auth/oauth';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
-import { RDS } from '$src/backend/lib/rds';
+import { RDS } from '$src/backend/lib/rds/rds';
 import { type User, ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
