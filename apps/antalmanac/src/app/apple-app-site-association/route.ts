@@ -75,12 +75,10 @@ const aasa = {
     },
 } as const;
 
-export const runtime = 'edge';
-
 export function GET() {
     // Defensive: if someone nukes the values above, serve 404 instead of a
     // malformed AASA that Apple will aggressively cache.
-    if (TEAM_ID.startsWith('REPLACE_WITH_') || appIDs.length === 0) {
+    if (TEAM_ID.length === 0 || appIDs.length === 0) {
         return new NextResponse('Not Found', { status: 404 });
     }
 
