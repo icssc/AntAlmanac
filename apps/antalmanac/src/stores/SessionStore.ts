@@ -1,10 +1,9 @@
-import type { Roadmap } from '@packages/antalmanac-types';
-import { create } from 'zustand';
-
 import trpc from '$lib/api/trpc';
 import { getLocalStorageSessionId, removeLocalStorageSessionId, setLocalStorageSessionId } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 import { useNotificationStore } from '$stores/NotificationStore';
+import type { Roadmap } from '@packages/antalmanac-types';
+import { create } from 'zustand';
 
 interface SessionState {
     session: string | null;
@@ -20,11 +19,13 @@ interface SessionState {
     userTakenCourses: Set<string>;
 
     plannerRoadmaps: Roadmap[];
+    isPlannerLoading: boolean;
 
     setGoogleId: (id: string) => void;
     setFilterTakenCourses: (value: boolean) => void;
     setUserTakenCourses: (courses: Set<string>) => void;
     setPlannerRoadmaps: (roadmaps: Roadmap[]) => void;
+    setIsPlannerLoading: (isPlannerLoading: boolean) => void;
 }
 
 export const useSessionStore = create<SessionState>((set) => {
@@ -39,6 +40,7 @@ export const useSessionStore = create<SessionState>((set) => {
         filterTakenCourses: false,
         userTakenCourses: new Set(),
         plannerRoadmaps: [],
+        isPlannerLoading: false,
         updateSession: async (session) => {
             if (session) {
                 const sessionIsValid: boolean = await trpc.auth.validateSession.query({
@@ -95,6 +97,7 @@ export const useSessionStore = create<SessionState>((set) => {
                     filterTakenCourses: false,
                     userTakenCourses: new Set(),
                     plannerRoadmaps: [],
+                    isPlannerLoading: false,
                 });
                 window.location.reload();
             }
@@ -103,5 +106,6 @@ export const useSessionStore = create<SessionState>((set) => {
         setFilterTakenCourses: (value) => set({ filterTakenCourses: value }),
         setUserTakenCourses: (courses) => set({ userTakenCourses: courses }),
         setPlannerRoadmaps: (roadmaps) => set({ plannerRoadmaps: roadmaps }),
+        setIsPlannerLoading: (isPlannerLoading) => set({ isPlannerLoading }),
     };
 });

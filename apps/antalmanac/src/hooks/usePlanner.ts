@@ -53,6 +53,7 @@ export function usePlannerRoadmaps() {
     const setFilterTakenCourses = useSessionStore((s) => s.setFilterTakenCourses);
     const roadmaps = useSessionStore((s) => s.plannerRoadmaps);
     const setPlannerRoadmaps = useSessionStore((s) => s.setPlannerRoadmaps);
+    const setIsPlannerLoading = useSessionStore((s) => s.setIsPlannerLoading);
     const [selectedRoadmapId, setSelectedRoadmapId] = useState(
         () => RightPaneStore.getFormData().excludeRoadmapCourses
     );
@@ -76,6 +77,7 @@ export function usePlannerRoadmaps() {
                 return;
             }
             try {
+                setIsPlannerLoading(true);
                 const data = await trpc.roadmap.fetchUserPlannerRoadmaps.query({
                     userId: googleId,
                 });
@@ -83,6 +85,7 @@ export function usePlannerRoadmaps() {
             } catch (e) {
                 console.error('Failed to fetch Planner roadmaps:', e);
             }
+            setIsPlannerLoading(false);
         }
         loadRoadmaps();
         return () => {

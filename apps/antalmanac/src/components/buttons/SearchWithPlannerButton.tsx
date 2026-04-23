@@ -9,6 +9,7 @@ import { openSnackbar } from '$stores/SnackbarStore';
 import { Autocomplete, AutocompleteRenderGroupParams, MenuItem, TextField, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
 import { useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 enum RoadmapGroup {
     IncludesTerm = 'includes',
@@ -19,7 +20,9 @@ const SearchWithPlannerButton = () => {
     const [termRoadmapIds, setTermRoadmapIds] = useState<Set<string>>(() => new Set());
     const [isLoading, setIsLoading] = useState(false);
 
-    const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
+    const { sessionIsValid, isPlannerLoading } = useSessionStore(
+        useShallow((state) => ({ sessionIsValid: state.sessionIsValid, isPlannerLoading: state.isPlannerLoading }))
+    );
 
     const displaySections = useCoursePaneStore((state) => state.displaySections);
 
@@ -109,6 +112,8 @@ const SearchWithPlannerButton = () => {
             options={sortedRoadmaps}
             disabled={!sessionIsValid}
             getOptionLabel={(roadmap) => roadmap.name.toString()}
+            loading={isPlannerLoading}
+            loadingText="Loading planner..."
             groupBy={groupBy}
             renderGroup={renderGroup}
             sx={{ minWidth: '30%' }}
