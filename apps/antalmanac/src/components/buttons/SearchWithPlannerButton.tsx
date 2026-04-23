@@ -1,8 +1,8 @@
 import RightDivider from '$components/RightDivider';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { useDepartments } from '$hooks/useDepartments';
 import { usePlannerRoadmaps } from '$hooks/usePlanner';
-import { doesRoadmapIncludeTerm, getQuarterPlan, parsePlannerCourseId } from '$lib/plannerHelpers';
+import trpc from '$lib/api/trpc';
+import { doesRoadmapIncludeTerm, getQuarterPlan } from '$lib/plannerHelpers';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
@@ -17,15 +17,13 @@ enum RoadmapGroup {
 
 const SearchWithPlannerButton = () => {
     const [termRoadmapIds, setTermRoadmapIds] = useState<Set<string>>(() => new Set());
+    const [isLoading, setIsLoading] = useState(false);
 
     const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
 
     const displaySections = useCoursePaneStore((state) => state.displaySections);
 
     const { roadmaps } = usePlannerRoadmaps();
-
-    // Load departments
-    useDepartments();
 
     const sortedRoadmaps = useMemo(
         () =>
@@ -35,7 +33,7 @@ const SearchWithPlannerButton = () => {
         [roadmaps, termRoadmapIds]
     );
 
-    const search = (roadmapId: Roadmap['id']) => {
+    const search = async (roadmapId: Roadmap['id']) => {
         const roadmap = roadmaps.find((roadmap) => roadmap.id === roadmapId);
         if (!roadmap) {
             openSnackbar('error', "Couldn't find selected roadmap!");
@@ -49,10 +47,11 @@ const SearchWithPlannerButton = () => {
             return;
         }
         try {
-            const searchData = quarterPlan.courses.map(({ courseId }) => {
-                const { department, courseNumber } = parsePlannerCourseId(courseId);
-                return { deptValue: department, courseNumber };
+            setIsLoading(true);
+            const courses = await trpc.course.getMultiple.query({
+                courseIds: quarterPlan.courses.map((coursePlan) => coursePlan.courseId),
             });
+            const searchData = courses.map(({ department, courseNumber }) => ({ deptValue: department, courseNumber }));
 
             RightPaneStore.setMultiSearchData(searchData);
             displaySections();
@@ -60,6 +59,7 @@ const SearchWithPlannerButton = () => {
             console.error('Something went wrong while searching with planner:', error);
             openSnackbar('error', 'Something went wrong while searching with planner.');
         }
+        setIsLoading(false);
     };
 
     const groupBy = (option: Roadmap) => {
@@ -113,7 +113,14 @@ const SearchWithPlannerButton = () => {
             renderGroup={renderGroup}
             sx={{ minWidth: '30%' }}
             renderInput={(props) => {
-                return <TextField {...props} variant="outlined" size="small" placeholder="Search with planner" />;
+                return (
+                    <TextField
+                        {...props}
+                        variant="outlined"
+                        size="small"
+                        placeholder={isLoading ? 'Loading...' : 'Search with planner'}
+                    />
+                );
             }}
             renderOption={(props, option) => {
                 return (

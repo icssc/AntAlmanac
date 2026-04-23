@@ -1,4 +1,3 @@
-import { useDepartmentsStore } from '$stores/DepartmentsStore';
 import { Roadmap } from '@packages/antalmanac-types';
 
 export function getQuarterPlan(roadmap: Roadmap, year: string, quarter: string) {
@@ -12,24 +11,4 @@ export function getQuarterPlan(roadmap: Roadmap, year: string, quarter: string) 
 
 export function doesRoadmapIncludeTerm(roadmap: Roadmap, year: string, quarter: string): boolean {
     return getQuarterPlan(roadmap, year, quarter) !== null;
-}
-
-/**
- * Planner course IDs combine departments and course numbers without spaces, so we have to search.
- * For example, I&C SCI 31 is passed as I&CSCI31.
- */
-export function parsePlannerCourseId(courseId: string): { department: string; courseNumber: string } {
-    const departments = useDepartmentsStore.getState().departments;
-    if (!departments) {
-        throw new Error(`Could not parse planner course id: ${courseId}`);
-    }
-
-    for (const department of Object.keys(departments)) {
-        const departmentWithoutSpaces = department.replace(' ', '');
-        if (courseId.startsWith(departmentWithoutSpaces)) {
-            const courseNumber = courseId.slice(departmentWithoutSpaces.length);
-            return { department: department, courseNumber: courseNumber };
-        }
-    }
-    throw new Error(`Could not parse planner course id: ${courseId}`);
 }
