@@ -63,6 +63,14 @@ export default $config({
                 NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY,
                 PLANNER_CLIENT_API_KEY: process.env.PLANNER_CLIENT_API_KEY,
                 STAGE: $app.stage,
+                // Consumed by apps/antalmanac/src/app/apple-app-site-association/route.ts
+                // to build the AASA file for Universal Links + passkey web
+                // credentials. Set both to non-empty values once the iOS app
+                // is provisioned, otherwise the AASA endpoint returns 404 and
+                // Universal-Link auth callbacks will fall back to a plain
+                // WKWebView load (still functional but no AASA binding).
+                APPLE_TEAM_ID: process.env.APPLE_TEAM_ID ?? '',
+                APPLE_BUNDLE_IDS: process.env.APPLE_BUNDLE_IDS ?? '',
             },
         });
 

@@ -24,19 +24,17 @@
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
+	<!--
+	    Intentionally no custom CFBundleURLSchemes. Auth callbacks are
+	    delivered via the Universal Link https://antalmanac.com/auth/native
+	    through the AASA association (see
+	    apps/pwa/src/AntAlmanac/Entitlements/Entitlements.plist `applinks:antalmanac.com`
+	    and the AASA file served at antalmanac.com). Custom URL schemes
+	    can be claimed by any app on the device and should not be used
+	    for OAuth redirects on iOS.
+	-->
 	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>com.icssc.antalmanac.auth</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>antalmanac</string>
-			</array>
-		</dict>
-	</array>
+	<array/>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>

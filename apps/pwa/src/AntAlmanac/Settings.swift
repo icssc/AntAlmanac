@@ -14,10 +14,13 @@ let rootUrl = URL(string: "https://antalmanac.com")!
 // This should also appear in Info.plist
 let allowedOrigins: [String] = ["antalmanac.com"]
 
-// auth origins will open in modal and show toolbar for back into the main origin.
-// These should also appear in Info.plist
-let authOrigins: [String] = ["auth.icssc.club","accounts.google.com","shib.service.uci.edu","duosecurity.com","google.com"]
-// allowedOrigins + authOrigins <= 10
+// Hosts whose top-level navigations get handed off to ASWebAuthenticationSession
+// instead of loading inside the WKWebView. Only the FIRST outbound redirect
+// matters here; everything downstream (e.g. accounts.google.com, myaccount.google.com,
+// shib.service.uci.edu, duosecurity.com, Google session-sync hops) happens inside
+// the Safari-backed ASW session and never reaches WKNavigationDelegate, so those
+// hosts don't need to be listed.
+let authOrigins: [String] = ["auth.icssc.club"]
 
 let platformCookie = Cookie(name: "app-platform", value: "iOS App Store")
 

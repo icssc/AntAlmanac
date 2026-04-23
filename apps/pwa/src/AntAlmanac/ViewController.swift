@@ -248,32 +248,48 @@ extension ViewController: WKScriptMessageHandler {
 
 // MARK: - ASWebAuthenticationSession handoff
 //
-// Auth origins (auth.icssc.club, accounts.google.com, shib.service.uci.edu,
-// duosecurity.com, google.com) can't run inside the WKWebView:
-//   1. Google rejects embedded-webview OAuth with `disallowed_useragent` since
-//      2021-09-30 (Google Developers Blog).
+// When the WKWebView tries to navigate to auth.icssc.club (the ICSSC OIDC
+// issuer), we cancel the navigation and re-run the flow inside an
+// ASWebAuthenticationSession. Reasons:
+//   1. Google rejects OAuth inside embedded webviews with `disallowed_useragent`
+//      since 2021-09-30 (Google Developers Blog).
 //   2. Passkeys / WebAuthn bound to a third-party RP ID (e.g. google.com) only
 //      work in top-level Safari context, not in a WKWebView owned by our app
 //      (passkeys.dev, Apple docs on passkey use in web browsers).
 //
-// We intercept navigation to those hosts in `decidePolicyFor`, cancel the
-// WKWebView navigation, and hand the URL to an ASWebAuthenticationSession.
-// The OIDC provider (auth.icssc.club) is configured to redirect to
-// `antalmanac://auth?code=...&state=...`. We rewrite that callback to
-// `https://antalmanac.com/auth?...` and load it in the WKWebView; the
-// existing AuthPage.tsx route completes the PKCE exchange via tRPC. The
-// oauth_state / oauth_code_verifier cookies set when the WKWebView called
-// getGoogleAuthUrl are still present in the WKWebView's cookie jar, so the
-// exchange works without any further native involvement.
+// The callback uses a Universal Link (`https://antalmanac.com/auth/native`)
+// instead of a custom URL scheme. Apple's iOS 17.4+ ASWebAuthenticationSession
+// HTTPS-callback initializer matches the callback via the AASA file served at
+// `https://antalmanac.com/.well-known/apple-app-site-association`, so the
+// callback can only be delivered to our AASA-verified app binary. A malicious
+// app registering a lookalike custom URL scheme cannot intercept it, and
+// cannot initiate an OAuth flow that redirects to our app (the system would
+// route the Universal Link to the real AntAlmanac, which has no matching
+// PKCE code_verifier cookie and would reject the exchange).
+//
+// On callback, we rewrite the URL path from /auth/native to /auth and load it
+// in the WKWebView. The oauth_state / oauth_code_verifier / oauth_redirect_uri
+// cookies set when the WKWebView originally called getGoogleAuthUrl are still
+// present in the WKWebView's cookie jar, so AuthPage.tsx + the tRPC exchange
+// work without any further native involvement.
 extension ViewController: ASWebAuthenticationPresentationContextProviding {
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
         return view.window ?? ASPresentationAnchor()
     }
 
     func startAuthSession(url: URL, webView: WKWebView) {
+        // Universal Link callback: only apps listed in the AASA file for
+        // antalmanac.com can receive this URL. Must match the redirect URI
+        // registered on auth.icssc.club for the AntAlmanac OAuth client and
+        // the value of NATIVE_IOS_REDIRECT_URI in apps/antalmanac/src/lib/platform.ts.
+        let callback: ASWebAuthenticationSession.Callback = .https(
+            host: "antalmanac.com",
+            path: "/auth/native"
+        )
+
         let session = ASWebAuthenticationSession(
             url: url,
-            callbackURLScheme: "antalmanac"
+            callback: callback
         ) { [weak self, weak webView] callbackURL, error in
             self?.currentAuthSession = nil
 
@@ -293,15 +309,13 @@ extension ViewController: ASWebAuthenticationPresentationContextProviding {
                 return
             }
 
-            // Rewrite antalmanac://auth?... -> https://antalmanac.com/auth?...
-            components.scheme = "https"
-            components.host = "antalmanac.com"
-            if components.path.isEmpty || components.path == "/" {
-                components.path = "/auth"
-            }
+            // Rewrite /auth/native?... -> /auth?... so the existing AuthPage route
+            // in the WKWebView picks up the exchange; /auth/native itself is only
+            // a callback sink for ASW and doesn't need a rich web handler.
+            components.path = "/auth"
 
-            if let httpsURL = components.url {
-                webView?.load(URLRequest(url: httpsURL))
+            if let redirectURL = components.url {
+                webView?.load(URLRequest(url: redirectURL))
             }
         }
         session.presentationContextProvider = self

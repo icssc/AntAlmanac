@@ -10,15 +10,17 @@ export const oauth = new OAuth2Client(OIDC_CLIENT_ID, null, GOOGLE_REDIRECT_URI)
  *
  * - The default (`GOOGLE_REDIRECT_URI`, e.g. `https://antalmanac.com/auth`) is
  *   used by the browser flow.
- * - `antalmanac://auth` is used by the native iOS wrapper, where the OAuth
- *   flow runs inside `ASWebAuthenticationSession` and the callback is
- *   delivered to the app via a registered custom URL scheme.
+ * - `https://antalmanac.com/auth/native` is used by the native iOS wrapper,
+ *   where the OAuth flow runs inside `ASWebAuthenticationSession` (iOS 17.4+)
+ *   with an HTTPS Universal Link callback. The AASA file at
+ *   `/.well-known/apple-app-site-association` binds this path to the AA iOS
+ *   binary, so callbacks cannot be intercepted by other apps.
  *
- * The matching redirect URI must be registered on the OIDC provider
+ * The matching redirect URIs must be registered on the OIDC provider
  * (auth.icssc.club) for the AntAlmanac client, otherwise the provider will
  * reject the authorize request.
  */
-export const ALLOWED_REDIRECT_URIS = [GOOGLE_REDIRECT_URI, 'antalmanac://auth'] as const;
+export const ALLOWED_REDIRECT_URIS = [GOOGLE_REDIRECT_URI, 'https://antalmanac.com/auth/native'] as const;
 export type AllowedRedirectUri = (typeof ALLOWED_REDIRECT_URIS)[number];
 
 export function isAllowedRedirectUri(value: string): value is AllowedRedirectUri {
