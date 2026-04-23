@@ -6,11 +6,13 @@ import { SectionActionMenu } from '$components/RightPane/SectionTable/SectionTab
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
-import type { Term } from '$lib/termData';
+import { Term } from '$lib/termData';
 import AppStore from '$stores/AppStore';
+import { useHiddenCoursesStore } from '$stores/HiddenCoursesStore';
 import { useNotificationStore } from '$stores/NotificationStore';
-import { Box, CircularProgress, IconButton } from '@mui/material';
-import type { AASection, CourseDetails } from '@packages/antalmanac-types';
+import { Visibility, VisibilityOff, VisibilityOutlined } from '@mui/icons-material';
+import { Box, CircularProgress, IconButton, Tooltip } from '@mui/material';
+import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -30,6 +32,10 @@ function getSectionColor(sectionCode: string, term: string): string {
 export const ActionCell = memo(
     ({ section, term, courseDetails, scheduleConflict, addedCourse, scheduleNames }: ActionCellProps) => {
         const initialized = useNotificationStore(useShallow((state) => state.initialized));
+        const cycleVisibility = useHiddenCoursesStore((state) => state.cycleVisibility);
+        const classVisibility = useHiddenCoursesStore((state) =>
+            state.getVisibility(AppStore.getCurrentScheduleId(), section.sectionCode)
+        );
         const isMobile = useIsMobile();
 
         const [sectionColor, setSectionColor] = useState(() => getSectionColor(section.sectionCode, term));
@@ -50,6 +56,10 @@ export const ActionCell = memo(
             };
         }, [updateColor]);
 
+        const handleVisibilityToggle = useCallback(() => {
+            cycleVisibility(AppStore.getCurrentScheduleId(), section.sectionCode);
+        }, [section.sectionCode, cycleVisibility]);
+
         return (
             <TableBodyCellContainer sx={{ paddingX: isMobile ? 0.5 : 1 }}>
                 <Box
@@ -67,6 +77,30 @@ export const ActionCell = memo(
                             term={term}
                             scheduleConflict={scheduleConflict}
                         />
+                    )}
+
+                    {!isMobile && addedCourse && (
+                        <Tooltip
+                            title={
+                                classVisibility === 'visible'
+                                    ? 'Outline class in calendar'
+                                    : classVisibility === 'outlined'
+                                      ? 'Hide class in calendar'
+                                      : 'Show class in calendar'
+                            }
+                            arrow
+                            disableInteractive
+                        >
+                            <IconButton onClick={handleVisibilityToggle} size="small" sx={{ p: 0.5 }}>
+                                {classVisibility === 'visible' ? (
+                                    <Visibility fontSize="small" />
+                                ) : classVisibility === 'outlined' ? (
+                                    <VisibilityOutlined fontSize="small" />
+                                ) : (
+                                    <VisibilityOff fontSize="small" />
+                                )}
+                            </IconButton>
+                        </Tooltip>
                     )}
 
                     {initialized ? (

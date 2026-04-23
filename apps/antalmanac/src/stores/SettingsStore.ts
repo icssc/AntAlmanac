@@ -1,6 +1,3 @@
-import { PostHog } from 'posthog-js/react';
-import { create } from 'zustand';
-
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import {
     getLocalStorageAutoSave,
@@ -14,6 +11,8 @@ import {
     setLocalStorageShow24HourTime,
     setLocalStorageTheme,
 } from '$lib/localStorage';
+import { PostHog } from 'posthog-js/react';
+import { create } from 'zustand';
 
 export type ThemeSetting = 'light' | 'dark' | 'system';
 
