@@ -10,5 +10,6 @@ export function getQuarterPlan(roadmap: Roadmap, year: string, quarter: string) 
 }
 
 export function doesRoadmapIncludeTerm(roadmap: Roadmap, year: string, quarter: string): boolean {
-    return getQuarterPlan(roadmap, year, quarter) !== null;
+    const quarterPlan = getQuarterPlan(roadmap, year, quarter);
+    return quarterPlan !== null && quarterPlan.courses.length > 0;
 }
