@@ -114,6 +114,7 @@ const SearchWithPlannerButton = () => {
             getOptionLabel={(roadmap) => roadmap.name.toString()}
             loading={isPlannerLoading}
             loadingText="Loading planner..."
+            noOptionsText="No roadmaps found"
             groupBy={groupBy}
             renderGroup={renderGroup}
             sx={{ minWidth: '30%' }}
