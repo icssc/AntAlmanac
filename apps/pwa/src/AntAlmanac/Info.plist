@@ -99,11 +99,6 @@
 	<key>WKAppBoundDomains</key>
 	<array>
 		<string>antalmanac.com</string>
-		<!--
-		RP-initiated OIDC /logout (post_logout_redirect_uri) must load in the WKWebView
-		when not using ASWebAuthenticationSession. Required because limitsNavigationsToAppBoundDomains
-		(WebView.swift) only permits listed hosts.
-		-->
 		<string>auth.icssc.club</string>
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>

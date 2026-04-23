@@ -1,8 +1,3 @@
-# iOS 17.4 is required for ASWebAuthenticationSession's `.https(host:path:)`
-# Universal-Link callback, which we use for OAuth redirect. Custom URL schemes
-# (antalmanac://) are spoofable across apps; Universal Links are bound to an
-# app via the AASA file on antalmanac.com so callbacks can only be delivered
-# to the AASA-verified AntAlmanac binary.
 platform :ios, '17.4'
 
 target 'AntAlmanac' do
