@@ -6,10 +6,12 @@ import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$li
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import { Autocomplete, AutocompleteRenderGroupParams, MenuItem, TextField, Tooltip, Typography } from '@mui/material';
+import { Autocomplete, MenuItem, TextField, Tooltip, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
-import { useEffect, useMemo, useState } from 'react';
+import { ComponentProps, HTMLAttributes, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+
+type AutocompleteProps = ComponentProps<typeof Autocomplete>;
 
 type TermRoadmapIdMapping = Record<RoadmapTermRelation, Set<string>>;
 
@@ -77,7 +79,7 @@ const SearchWithPlannerButton = () => {
         return doesRoadmapIncludeTerm(option.id) ? RoadmapTermRelation.IncludesTerm : RoadmapTermRelation.ExcludesTerm;
     };
 
-    const renderGroup = (params: AutocompleteRenderGroupParams) => {
+    const renderGroup: AutocompleteProps['renderGroup'] = (params) => {
         const term = RightPaneStore.getFormData().term;
         const includesTerm = params.group === RoadmapTermRelation.IncludesTerm;
         const keyword = includesTerm ? 'Includes' : 'Excludes';
@@ -92,6 +94,38 @@ const SearchWithPlannerButton = () => {
                 {params.children}
             </>
         );
+    };
+
+    const renderInput: AutocompleteProps['renderInput'] = (props) => {
+        return (
+            <TextField
+                {...props}
+                variant="outlined"
+                size="small"
+                placeholder={isLoading ? 'Loading...' : 'Search with planner'}
+            />
+        );
+    };
+
+    const renderOption = (props: HTMLAttributes<HTMLLIElement>, roadmap: Roadmap) => {
+        const menuItem = (
+            <MenuItem
+                {...props}
+                key={roadmap.id}
+                onClick={() => search(roadmap.id)}
+                disabled={!doesRoadmapIncludeTerm(roadmap.id)}
+            >
+                <Typography sx={{ marginLeft: 1 }}>{roadmap.name}</Typography>
+            </MenuItem>
+        );
+        if (termRoadmapIdMapping[RoadmapTermRelation.NoCourses].has(roadmap.id.toString())) {
+            return (
+                <Tooltip title="This roadmap doesn't have any courses for this term">
+                    <span>{menuItem}</span>
+                </Tooltip>
+            );
+        }
+        return menuItem;
     };
 
     useEffect(() => {
@@ -124,37 +158,9 @@ const SearchWithPlannerButton = () => {
             noOptionsText="No roadmaps found"
             groupBy={groupBy}
             renderGroup={renderGroup}
+            renderInput={renderInput}
+            renderOption={renderOption}
             sx={{ minWidth: '30%' }}
-            renderInput={(props) => {
-                return (
-                    <TextField
-                        {...props}
-                        variant="outlined"
-                        size="small"
-                        placeholder={isLoading ? 'Loading...' : 'Search with planner'}
-                    />
-                );
-            }}
-            renderOption={(props, roadmap) => {
-                const menuItem = (
-                    <MenuItem
-                        {...props}
-                        key={roadmap.id}
-                        onClick={() => search(roadmap.id)}
-                        disabled={!doesRoadmapIncludeTerm(roadmap.id)}
-                    >
-                        <Typography sx={{ marginLeft: 1 }}>{roadmap.name}</Typography>
-                    </MenuItem>
-                );
-                if (termRoadmapIdMapping[RoadmapTermRelation.NoCourses].has(roadmap.id.toString())) {
-                    return (
-                        <Tooltip title="This roadmap doesn't have any courses for this term">
-                            <span>{menuItem}</span>
-                        </Tooltip>
-                    );
-                }
-                return menuItem;
-            }}
         />
     );
 };
