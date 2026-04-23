@@ -278,13 +278,33 @@ extension ViewController: ASWebAuthenticationPresentationContextProviding {
     }
 
     func startAuthSession(url: URL, webView: WKWebView) {
-        // Universal Link callback: only apps listed in the AASA file for
-        // antalmanac.com can receive this URL. Must match the redirect URI
-        // registered on auth.icssc.club for the AntAlmanac OAuth client and
-        // the value of NATIVE_IOS_REDIRECT_URI in apps/antalmanac/src/lib/platform.ts.
+        // Derive the ASW callback from the redirect_uri embedded in the OIDC
+        // authorize URL. Each ICSSC app (AntAlmanac, peterportal-client planner)
+        // registers its own redirect_uri with auth.icssc.club and includes it as
+        // a query param on /authorize, so we can route ASW's termination to the
+        // correct Universal Link path without hard-coding per-app knowledge here.
+        //
+        // Every registered callback must also be listed in the AASA file
+        // (apps/antalmanac/src/app/apple-app-site-association/route.ts) — ASW's
+        // .https(host:path:) requires AASA verification on iOS 17.4+. If a new
+        // ICSSC app is added with its own OAuth callback on antalmanac.com,
+        // append the path there.
+        let authComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        let redirectUri = authComponents?
+            .queryItems?
+            .first(where: { $0.name == "redirect_uri" })?
+            .value
+            .flatMap { URL(string: $0) }
+
+        // Fall back to the AntAlmanac default if redirect_uri is missing or
+        // unparseable. Shouldn't happen in practice since auth.icssc.club
+        // always includes it.
+        let callbackHost = redirectUri?.host ?? "antalmanac.com"
+        let callbackPath = redirectUri?.path ?? "/auth/native"
+
         let callback: ASWebAuthenticationSession.Callback = .https(
-            host: "antalmanac.com",
-            path: "/auth/native"
+            host: callbackHost,
+            path: callbackPath
         )
 
         let session = ASWebAuthenticationSession(
@@ -309,10 +329,20 @@ extension ViewController: ASWebAuthenticationPresentationContextProviding {
                 return
             }
 
-            // Rewrite /auth/native?... -> /auth?... so the existing AuthPage route
-            // in the WKWebView picks up the exchange; /auth/native itself is only
-            // a callback sink for ASW and doesn't need a rich web handler.
-            components.path = "/auth"
+            // AntAlmanac-specific: /auth/native is only a Universal-Link sink
+            // for ASW; the real callback page is /auth. Rewrite so AuthPage.tsx
+            // runs and completes the PKCE exchange using the oauth_state /
+            // oauth_code_verifier cookies that are already in the WKWebView jar.
+            //
+            // Planner callbacks (/planner/api/users/auth/google/callback) are
+            // loaded verbatim — peterportal's Express handler expects exactly
+            // that path and the WKWebView already carries its connect.sid
+            // session cookie from the authorize step, so the code+state
+            // validation and token exchange complete server-side without
+            // any further native involvement.
+            if components.path == "/auth/native" {
+                components.path = "/auth"
+            }
 
             if let redirectURL = components.url {
                 webView?.load(URLRequest(url: redirectURL))

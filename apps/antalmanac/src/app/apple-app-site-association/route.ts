@@ -66,6 +66,10 @@ const aasa = {
                         '/': '/auth/native',
                         comment: 'AntAlmanac iOS OAuth callback (ASWebAuthenticationSession)',
                     },
+                    {
+                        '/': '/planner/api/users/auth/google/callback',
+                        comment: 'Planner iOS OAuth callback',
+                    },
                 ],
             },
         ],

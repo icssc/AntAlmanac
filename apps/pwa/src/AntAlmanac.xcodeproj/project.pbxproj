@@ -25,21 +25,21 @@
 /* Begin PBXFileReference section */
 		25D3517E267A48E0002E5DC0 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "AntAlmanac/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		4C1C2162A8048FDF52B2A9D0 /* Pods-AntAlmanac.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AntAlmanac.release.xcconfig"; path = "Target Support Files/Pods-AntAlmanac/Pods-AntAlmanac.release.xcconfig"; sourceTree = "<group>"; };
-		59333BAA25CFF706003392A4 /* AntAlmanac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AntAlmanac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		595F239A25CEFBFD0053416C /* Settings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Settings.swift; path = "AntAlmanac/Settings.swift"; sourceTree = "<group>"; };
-		595F239B25CEFBFD0053416C /* Entitlements */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Entitlements; path = "AntAlmanac/Entitlements"; sourceTree = "<group>"; };
-		595F239C25CEFBFD0053416C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = "AntAlmanac/Assets.xcassets"; sourceTree = "<group>"; };
-		595F239D25CEFBFD0053416C /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = "AntAlmanac/SceneDelegate.swift"; sourceTree = "<group>"; };
-		595F239F25CEFBFE0053416C /* PushNotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PushNotifications.swift; path = "AntAlmanac/PushNotifications.swift"; sourceTree = "<group>"; };
-		595F23A025CEFBFE0053416C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = "AntAlmanac/Info.plist"; sourceTree = "<group>"; };
-		595F23A125CEFBFE0053416C /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = "AntAlmanac/ViewController.swift"; sourceTree = "<group>"; };
-		595F23A225CEFBFE0053416C /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = "AntAlmanac/AppDelegate.swift"; sourceTree = "<group>"; };
-		595F23A325CEFBFE0053416C /* Printer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Printer.swift; path = "AntAlmanac/Printer.swift"; sourceTree = "<group>"; };
-		595F23A425CEFBFE0053416C /* WebView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WebView.swift; path = "AntAlmanac/WebView.swift"; sourceTree = "<group>"; };
-		BE9D7FFB2FBE6EEBCA807B6A /* Pods_AntAlmanac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "Pods_AntAlmanac.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		59333BAA25CFF706003392A4 /* AntAlmanac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AntAlmanac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		595F239A25CEFBFD0053416C /* Settings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Settings.swift; path = AntAlmanac/Settings.swift; sourceTree = "<group>"; };
+		595F239B25CEFBFD0053416C /* Entitlements */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Entitlements; path = AntAlmanac/Entitlements; sourceTree = "<group>"; };
+		595F239C25CEFBFD0053416C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = AntAlmanac/Assets.xcassets; sourceTree = "<group>"; };
+		595F239D25CEFBFD0053416C /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = AntAlmanac/SceneDelegate.swift; sourceTree = "<group>"; };
+		595F239F25CEFBFE0053416C /* PushNotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PushNotifications.swift; path = AntAlmanac/PushNotifications.swift; sourceTree = "<group>"; };
+		595F23A025CEFBFE0053416C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = AntAlmanac/Info.plist; sourceTree = "<group>"; };
+		595F23A125CEFBFE0053416C /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = AntAlmanac/ViewController.swift; sourceTree = "<group>"; };
+		595F23A225CEFBFE0053416C /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = AntAlmanac/AppDelegate.swift; sourceTree = "<group>"; };
+		595F23A325CEFBFE0053416C /* Printer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Printer.swift; path = AntAlmanac/Printer.swift; sourceTree = "<group>"; };
+		595F23A425CEFBFE0053416C /* WebView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = WebView.swift; path = AntAlmanac/WebView.swift; sourceTree = "<group>"; };
+		BE9D7FFB2FBE6EEBCA807B6A /* Pods_AntAlmanac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AntAlmanac.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BEE8E5C625AE96C07F8AADED /* Pods-AntAlmanac.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AntAlmanac.debug.xcconfig"; path = "Target Support Files/Pods-AntAlmanac/Pods-AntAlmanac.debug.xcconfig"; sourceTree = "<group>"; };
-		CDC0FE262388222B002C8D56 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = "AntAlmanac/Base.lproj/Main.storyboard"; sourceTree = "<group>"; };
-		CDC0FE282388222B002C8D56 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = "AntAlmanac/Base.lproj/LaunchScreen.storyboard"; sourceTree = "<group>"; };
+		CDC0FE262388222B002C8D56 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = AntAlmanac/Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		CDC0FE282388222B002C8D56 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = AntAlmanac/Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,8 +110,8 @@
 			);
 			dependencies = (
 			);
-			name = "AntAlmanac";
-			productName = "AntAlmanac";
+			name = AntAlmanac;
+			productName = AntAlmanac;
 			productReference = 59333BAA25CFF706003392A4 /* AntAlmanac.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -369,21 +369,20 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = NO;
-				CODE_SIGN_ENTITLEMENTS = "AntAlmanac/Entitlements/Entitlements.plist";
+				CODE_SIGN_ENTITLEMENTS = AntAlmanac/Entitlements/Entitlements.plist;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				INFOPLIST_FILE = "AntAlmanac/Info.plist";
+				DEVELOPMENT_TEAM = 66682RDDDK;
+				INFOPLIST_FILE = AntAlmanac/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1;
-				CURRENT_PROJECT_VERSION = 1;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.antalmanac.testflight1127";
-				PRODUCT_NAME = "AntAlmanac";
+				PRODUCT_BUNDLE_IDENTIFIER = com.antalmanac.testflight1127;
+				PRODUCT_NAME = AntAlmanac;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTS_MACCATALYST = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -398,20 +397,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = NO;
-				CODE_SIGN_ENTITLEMENTS = "AntAlmanac/Entitlements/Entitlements.plist";
+				CODE_SIGN_ENTITLEMENTS = AntAlmanac/Entitlements/Entitlements.plist;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
-				INFOPLIST_FILE = "AntAlmanac/Info.plist";
+				DEVELOPMENT_TEAM = 66682RDDDK;
+				INFOPLIST_FILE = AntAlmanac/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1;
-				CURRENT_PROJECT_VERSION = 1;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.antalmanac.testflight1127";
-				PRODUCT_NAME = "AntAlmanac";
+				PRODUCT_BUNDLE_IDENTIFIER = com.antalmanac.testflight1127;
+				PRODUCT_NAME = AntAlmanac;
 				SUPPORTS_MACCATALYST = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Osize";
 				SWIFT_VERSION = 5.0;
