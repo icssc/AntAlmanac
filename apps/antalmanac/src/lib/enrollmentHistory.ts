@@ -1,6 +1,6 @@
-import { termData } from './termData';
-
 import trpc from '$lib/api/trpc';
+
+import { termData } from './termData';
 
 // This represents the enrollment history of a course section during one quarter
 export interface EnrollmentHistoryGraphQL {
@@ -56,9 +56,8 @@ export class DepartmentEnrollmentHistory {
 
     async find(courseNumber: string): Promise<EnrollmentHistory[] | null> {
         const cacheKey = this.department + courseNumber;
-        return (DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey] ??= await this.queryEnrollmentHistory(
-            courseNumber
-        ));
+        return (DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey] ??=
+            await this.queryEnrollmentHistory(courseNumber));
     }
 
     async queryEnrollmentHistory(courseNumber: string): Promise<EnrollmentHistory[] | null> {

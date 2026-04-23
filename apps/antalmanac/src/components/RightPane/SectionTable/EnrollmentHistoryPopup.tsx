@@ -1,3 +1,6 @@
+import { useIsMobile } from '$hooks/useIsMobile';
+import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
+import { useThemeStore } from '$stores/SettingsStore';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
 import { Box, IconButton, Typography, Skeleton, Tooltip } from '@mui/material';
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -11,10 +14,6 @@ import {
     Tooltip as RechartsTooltip,
     Legend,
 } from 'recharts';
-
-import { useIsMobile } from '$hooks/useIsMobile';
-import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
-import { useThemeStore } from '$stores/SettingsStore';
 
 type PopupHeaderCallback = () => void;
 

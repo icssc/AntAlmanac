@@ -1,15 +1,14 @@
 import { readFile } from 'fs/promises';
 import { join } from 'node:path';
 
+// eslint-disable-next-line import/no-unresolved
+import * as searchData from '$generated/searchData';
 import uFuzzy from '@leeoniya/ufuzzy';
 import type { GESearchResult, SearchResult, SectionSearchResult } from '@packages/antalmanac-types';
 import * as fuzzysort from 'fuzzysort';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
-
-// eslint-disable-next-line import/no-unresolved
-import * as searchData from '$generated/searchData';
 
 const MAX_AUTOCOMPLETE_RESULTS = 12;
 

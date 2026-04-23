@@ -1,8 +1,7 @@
-import type { Schedule, RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { describe, test, expect } from 'vitest';
-
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
+import type { Schedule, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { describe, test, expect } from 'vitest';
 
 describe('calendarize-helpers', () => {
     const courses: Schedule['courses'] = [

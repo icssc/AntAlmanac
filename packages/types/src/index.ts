@@ -10,5 +10,15 @@ export * from './notification';
 export * from '@packages/anteater-api-types/src/calendar';
 export * from '@packages/anteater-api-types/src/courses';
 export * from '@packages/anteater-api-types/src/enrollHist';
-export * from '@packages/anteater-api-types/src/grades';
+export type {
+    GE,
+    Division,
+    AggregateGrades,
+    AggregateGradesAPIResult,
+    AggregateGradesByOffering,
+    AggregateGradesByOfferingAPIResult,
+    RawGrades,
+    RawGradesAPIResult,
+    RawGradeSection,
+} from '@packages/anteater-api-types/src/grades';
 export * from '@packages/anteater-api-types/src/websoc';
