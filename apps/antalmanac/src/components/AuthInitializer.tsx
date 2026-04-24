@@ -91,14 +91,6 @@ const AuthInitializer = () => {
         }
     });
 
-    const loadScheduleAndSetLoadingAuth = useEffectEvent(async () => {
-        if (!sessionData) {
-            return;
-        }
-
-        await loadScheduleWithSessionToken();
-    });
-
     useEffect(() => {
         if (isInitializingRef.current || hasInitializedRef.current) {
             return;
@@ -122,7 +114,7 @@ const AuthInitializer = () => {
                     setSsoCookie();
                     await loadUnsavedChanges();
 
-                    await loadScheduleAndSetLoadingAuth();
+                    await loadScheduleWithSessionToken();
 
                     setAreSchedulesLoaded(true);
 
