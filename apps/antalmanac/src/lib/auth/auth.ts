@@ -68,6 +68,10 @@ export const auth = betterAuth({
             token: 'refreshToken',
             expiresAt: 'expires',
         },
+        cookieCache: {
+            enabled: true,
+            maxAge: 5 * 60, // 5 minutes
+        },
     },
 });
 
