@@ -2,7 +2,8 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { getSignInUrl } from '$lib/auth/authActions';
 import { warnMultipleTerms } from '$lib/helpers';
-import { setLocalStorageDataCache, setLocalStorageUserId } from '$lib/localStorage';
+import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
 import AppStore from '$stores/AppStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -379,7 +380,11 @@ const cacheSchedule = () => {
  */
 export const loginUser = async ({ silent = false, signInUrl = '' } = {}) => {
     try {
-        const url = signInUrl !== '' ? signInUrl : (await getSignInUrl()).url;
+        const url =
+            signInUrl !== ''
+                ? signInUrl
+                : (await getSignInUrl({ redirectUrl: isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined })).url;
+
         if (url) {
             cacheSchedule();
             window.location.href = url.toString();

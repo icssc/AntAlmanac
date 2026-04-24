@@ -3,7 +3,12 @@
 import { auth, AuthorizationUrlParams } from '$lib/auth/auth';
 import { AUTH_PROVIDER_ID } from '$lib/constants';
 
-export async function getSignInUrl(authorizationUrlParams?: AuthorizationUrlParams) {
+interface GetSignInUrlOptions {
+    authorizationUrlParams?: AuthorizationUrlParams;
+    redirectUrl?: string;
+}
+
+export async function getSignInUrl({ authorizationUrlParams, redirectUrl }: GetSignInUrlOptions = {}) {
     // TODO: Remove this hack once better-auth supports dynamic prompts/config
     auth.options.plugins[0].options.config[0].authorizationUrlParams = authorizationUrlParams;
 
@@ -11,6 +16,7 @@ export async function getSignInUrl(authorizationUrlParams?: AuthorizationUrlPara
         body: {
             providerId: AUTH_PROVIDER_ID,
             newUserCallbackURL: '/welcome',
+            callbackURL: redirectUrl,
         },
     });
 }

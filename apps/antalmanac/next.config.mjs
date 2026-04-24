@@ -21,6 +21,18 @@ const nextConfig = {
             },
         ];
     },
+    async rewrites() {
+        return [
+            // Apple's Associated Domains verifier fetches the AASA from this
+            // exact path (no extension). Route the request to the Next.js
+            // handler at src/app/apple-app-site-association/route.ts, which
+            // emits the file with Content-Type: application/json.
+            {
+                source: '/.well-known/apple-app-site-association',
+                destination: '/apple-app-site-association',
+            },
+        ];
+    },
 };
 
 export default withPWA({

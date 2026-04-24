@@ -4,7 +4,7 @@ import { getLocalStorageUserId } from '$lib/localStorage';
 import appStore from '$stores/AppStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { usePreviewStore, useAutoSaveStore } from '$stores/SettingsStore';
+import { usePreviewStore, useAutoSaveStore, useDevModeStore } from '$stores/SettingsStore';
 import { Help } from '@mui/icons-material';
 import { Stack, Box, Typography, Tooltip, Switch } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
@@ -20,6 +20,7 @@ export function ExperimentalMenu() {
         }))
     );
     const setOpenAutoSaveWarning = useScheduleComponentsToggleStore((state) => state.setOpenAutoSaveWarning);
+    const [devMode, setDevMode] = useDevModeStore((store) => [store.devMode, store.setDevMode]);
 
     const postHog = usePostHog();
 
@@ -89,6 +90,22 @@ export function ExperimentalMenu() {
                     </Tooltip>
                 </Box>
                 <Switch checked={autoSave} onChange={handleAutoSaveChange} color="primary" />
+            </Box>
+            <Box style={{ display: 'flex', justifyContent: 'space-between', width: '1' }}>
+                <Box style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', alignContent: 'center' }}>
+                        Dev Mode
+                    </Typography>
+                    <Tooltip title={<Typography>Enable developer features</Typography>}>
+                        <Help />
+                    </Tooltip>
+                </Box>
+                <Switch
+                    color={'primary'}
+                    value={devMode}
+                    checked={devMode}
+                    onChange={(event) => setDevMode(event.target.checked)}
+                />
             </Box>
         </Stack>
     );

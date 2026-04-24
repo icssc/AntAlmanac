@@ -3,6 +3,8 @@ name: Deploy - Staging Shared
 on:
     push:
         branches: [scheduler, staging-shared]
+        paths-ignore:
+            - 'apps/pwa/**'
     repository_dispatch:
         types: [deploy-command]
 
