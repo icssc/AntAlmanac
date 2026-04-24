@@ -59,6 +59,8 @@ const analyticsEnum: AnalyticsEnum = {
             CLICK_ZOTISTICS: 'Click "Zotistics"',
             CLICK_REVIEWS: 'Click "Reviews"',
             CLICK_PAST_ENROLLMENT: 'Click "Past Enrollment"',
+            CLICK_SYLLABI: 'Click "Syllabi"',
+            CLICK_SYLLABI_CELL: 'Click syllabus cell history',
             ADD_SPECIFIC: 'Add Course to Specific Schedule',
             COPY_COURSE_CODE: 'Copy Section Code',
             REFRESH: 'Refresh Results',
