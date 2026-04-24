@@ -6,7 +6,7 @@ import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$li
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import { Autocomplete, MenuItem, TextField, Tooltip, Typography } from '@mui/material';
+import { Autocomplete, Box, CircularProgress, MenuItem, TextField, Tooltip, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
 import { ComponentProps, HTMLAttributes, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -26,7 +26,7 @@ function getDefaultTermRoadmapIdMapping(): TermRoadmapIdMapping {
 const SearchWithPlanner = () => {
     const [termRoadmapIdMapping, setTermRoadmapIdMapping] =
         useState<TermRoadmapIdMapping>(getDefaultTermRoadmapIdMapping);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingSearch, setIsLoadingSearch] = useState(false);
 
     const { sessionIsValid, isPlannerLoading } = useSessionStore(
         useShallow((state) => ({ sessionIsValid: state.sessionIsValid, isPlannerLoading: state.isPlannerLoading }))
@@ -60,7 +60,7 @@ const SearchWithPlanner = () => {
             return;
         }
         try {
-            setIsLoading(true);
+            setIsLoadingSearch(true);
             const courses = await trpc.course.getMultiple.query({
                 courseIds: quarterPlan.courses.map((coursePlan) => coursePlan.courseId),
             });
@@ -72,7 +72,7 @@ const SearchWithPlanner = () => {
             console.error('Something went wrong while searching with planner:', error);
             openSnackbar('error', 'Something went wrong while searching with planner.');
         }
-        setIsLoading(false);
+        setIsLoadingSearch(false);
     };
 
     const groupBy = (option: Roadmap) => {
@@ -97,14 +97,7 @@ const SearchWithPlanner = () => {
     };
 
     const renderInput: AutocompleteProps['renderInput'] = (props) => {
-        return (
-            <TextField
-                {...props}
-                variant="outlined"
-                size="small"
-                placeholder={isLoading ? 'Loading...' : 'Search with planner'}
-            />
-        );
+        return <TextField {...props} variant="outlined" size="small" placeholder={'Search with planner'} />;
     };
 
     const renderOption = (props: HTMLAttributes<HTMLLIElement>, roadmap: Roadmap) => {
@@ -149,19 +142,26 @@ const SearchWithPlanner = () => {
     }, [roadmaps]);
 
     return (
-        <Autocomplete
-            options={sortedRoadmaps}
-            disabled={!sessionIsValid}
-            getOptionLabel={(roadmap) => roadmap.name.toString()}
-            loading={isPlannerLoading}
-            loadingText="Loading planner..."
-            noOptionsText="No roadmaps found"
-            groupBy={groupBy}
-            renderGroup={renderGroup}
-            renderInput={renderInput}
-            renderOption={renderOption}
-            sx={{ minWidth: '25%' }}
-        />
+        <Box sx={{ minWidth: '25%' }}>
+            {isLoadingSearch ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    <CircularProgress size="2rem" />
+                </Box>
+            ) : (
+                <Autocomplete
+                    options={sortedRoadmaps}
+                    disabled={!sessionIsValid}
+                    getOptionLabel={(roadmap) => roadmap.name.toString()}
+                    loading={isPlannerLoading}
+                    loadingText="Loading planner..."
+                    noOptionsText="No roadmaps found"
+                    groupBy={groupBy}
+                    renderGroup={renderGroup}
+                    renderInput={renderInput}
+                    renderOption={renderOption}
+                />
+            )}
+        </Box>
     );
 };
 export default SearchWithPlanner;
