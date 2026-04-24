@@ -107,6 +107,7 @@ const AuthInitializer = () => {
         if (sessionData) {
             (async () => {
                 if (sessionData.session.expiresAt < new Date()) {
+                    setOpenalert(true);
                     await signOut();
                     return;
                 }
