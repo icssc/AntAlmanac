@@ -22,7 +22,7 @@ if (typeof window !== 'undefined') {
 
 export default function AppPostHogProvider(props: Props) {
     if (!POSTHOG_KEY) {
-        return <>{props.children}</>;
+        return props.children;
     }
 
     return <PostHogProvider client={posthog}>{props.children}</PostHogProvider>;

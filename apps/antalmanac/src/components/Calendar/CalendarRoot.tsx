@@ -60,6 +60,53 @@ const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
 const BASE_DATE = new Date(2018, 0, 1);
 const CALENDAR_MAX_DATE = new Date(2018, 0, 1, 23);
 
+interface SkeletonBlueprint {
+    dayOffset: number;
+    startHour: number;
+    startMinute: number;
+    endHour: number;
+    endMinute: number;
+}
+
+function blueprintToSkeletonEvent(blueprint: SkeletonBlueprint): SkeletonEvent {
+    const start = new Date(BASE_DATE);
+    start.setDate(start.getDate() + blueprint.dayOffset);
+    start.setHours(blueprint.startHour, blueprint.startMinute, 0, 0);
+
+    const end = new Date(start);
+    end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
+
+    return {
+        color: '#6d6d6d',
+        start,
+        end,
+        title: '',
+        isSkeletonEvent: true,
+    } as SkeletonEvent;
+}
+
+function createSkeletonEvents(): SkeletonEvent[] {
+    const savedDataString = getLocalStorageSkeletonBlueprint();
+
+    let skeletonBlueprints: SkeletonBlueprint[] | null = null;
+
+    if (savedDataString) {
+        const parsedData = JSON.parse(savedDataString);
+        if (Array.isArray(parsedData) && parsedData.length > 0) {
+            skeletonBlueprints = parsedData;
+        }
+    }
+
+    if (skeletonBlueprints) {
+        return skeletonBlueprints.map(blueprintToSkeletonEvent);
+    }
+
+    const randomIndex = Math.floor(Math.random() * skeletonBlueprintVariations.length);
+    const fallbackBlueprints = skeletonBlueprintVariations[randomIndex];
+
+    return fallbackBlueprints.map(blueprintToSkeletonEvent);
+}
+
 export const ScheduleCalendar = memo(() => {
     const [showFinalsSchedule, setShowFinalsSchedule] = useState(false);
     const [eventsInCalendar, setEventsInCalendar] = useState(() => AppStore.getEventsInCalendar());
@@ -127,63 +174,9 @@ export const ScheduleCalendar = memo(() => {
         }
     }, [eventsInCalendar, loadingSchedule]);
 
-    const blueprintToSkeletonEvent = useCallback(
-        (blueprint: {
-            dayOffset: number;
-            startHour: number;
-            startMinute: number;
-            endHour: number;
-            endMinute: number;
-        }): SkeletonEvent => {
-            const start = new Date(BASE_DATE);
-            start.setDate(start.getDate() + blueprint.dayOffset);
-            start.setHours(blueprint.startHour, blueprint.startMinute, 0, 0);
-
-            const end = new Date(start);
-            end.setHours(blueprint.endHour, blueprint.endMinute, 0, 0);
-
-            return {
-                color: '#6d6d6d',
-                start,
-                end,
-                title: '',
-                isSkeletonEvent: true,
-            } as SkeletonEvent;
-        },
-        []
-    );
-
-    const createSkeletonEvents = useCallback((): SkeletonEvent[] => {
-        const savedDataString = getLocalStorageSkeletonBlueprint();
-
-        let skeletonBlueprints: Array<{
-            dayOffset: number;
-            startHour: number;
-            startMinute: number;
-            endHour: number;
-            endMinute: number;
-        }> | null = null;
-
-        if (savedDataString) {
-            const parsedData = JSON.parse(savedDataString);
-            if (Array.isArray(parsedData) && parsedData.length > 0) {
-                skeletonBlueprints = parsedData;
-            }
-        }
-
-        if (skeletonBlueprints) {
-            return skeletonBlueprints.map(blueprintToSkeletonEvent);
-        }
-
-        const randomIndex = Math.floor(Math.random() * skeletonBlueprintVariations.length);
-        const fallbackBlueprints = skeletonBlueprintVariations[randomIndex];
-
-        return fallbackBlueprints.map(blueprintToSkeletonEvent);
-    }, [blueprintToSkeletonEvent]);
-
     const events = useMemo(
         () => (loadingSchedule ? createSkeletonEvents() : getEventsForCalendar()),
-        [loadingSchedule, createSkeletonEvents, getEventsForCalendar]
+        [loadingSchedule, getEventsForCalendar]
     );
 
     const toggleDisplayFinalsSchedule = useCallback(() => {
