@@ -16,7 +16,7 @@ import { useNotificationStore } from '$stores/NotificationStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 const AuthInitializer = () => {
@@ -36,9 +36,9 @@ const AuthInitializer = () => {
 
     const loadNotifications = useNotificationStore((state) => state.loadNotifications);
 
-    const { data: sessionData, isPending } = authClient.useSession();
+    const { data: sessionData, isPending: isSessionPending } = authClient.useSession();
 
-    const handleUnsavedChanges = useCallback(async () => {
+    const loadUnsavedChanges = useEffectEvent(async () => {
         if (!sessionData) {
             return;
         }
@@ -89,15 +89,15 @@ const AuthInitializer = () => {
 
             openSnackbar('success', `Unsaved changes have been saved to your account!`);
         }
-    }, [sessionData, googleId]);
+    });
 
-    const loadScheduleAndSetLoadingAuth = useCallback(async () => {
+    const loadScheduleAndSetLoadingAuth = useEffectEvent(async () => {
         if (!sessionData) {
             return;
         }
 
         await loadScheduleWithSessionToken();
-    }, [sessionData, setOpenLoadingSchedule]);
+    });
 
     useEffect(() => {
         if (isInitializingRef.current || hasInitializedRef.current) {
@@ -121,7 +121,7 @@ const AuthInitializer = () => {
                         return;
                     }
                     setSsoCookie();
-                    await handleUnsavedChanges();
+                    await loadUnsavedChanges();
 
                     await loadScheduleAndSetLoadingAuth();
 
@@ -138,17 +138,10 @@ const AuthInitializer = () => {
                 isInitializingRef.current = false;
                 setOpenLoadingSchedule(false);
             })();
-        } else if (!isPending) {
+        } else if (!isSessionPending) {
             loadNotifications();
         }
-    }, [
-        sessionData,
-        updateSession,
-        handleUnsavedChanges,
-        loadScheduleAndSetLoadingAuth,
-        setAreSchedulesLoaded,
-        isPending,
-    ]);
+    }, [sessionData, isSessionPending, updateSession, setAreSchedulesLoaded]);
 
     return (
         <SignInAlertDialog
