@@ -7,6 +7,7 @@ import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseE
 import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
 import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
 import { skeletonBlueprintVariations } from '$components/Calendar/skeletonBlueprintVariations';
+import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
@@ -346,6 +347,7 @@ export const ScheduleCalendar = memo(() => {
                 scheduleNames={scheduleNames}
             />
             <Box id="screenshot" height="0" flexGrow={1} position="relative">
+                <TbaCalendarCard />
                 <CalendarEventPopover />
 
                 {showEmptyState && (

@@ -1,6 +1,6 @@
 import { SESSION_COOKIE_NAME } from '$src/backend/context';
 import { oidcOAuthEnvSchema } from '$src/backend/env';
-import { oauth } from '$src/backend/lib/auth/oauth';
+import { ALLOWED_REDIRECT_URIS, isAllowedRedirectUri, oauthClientForRedirectUri } from '$src/backend/lib/auth/oauth';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
 import { RDS } from '$src/backend/lib/rds';
 import { procedure, protectedProcedure, router } from '$src/backend/trpc';
@@ -68,12 +68,22 @@ const userDataRouter = router({
      * Retrieves Google auth url to login/sign up
      */
     getGoogleAuthUrl: procedure
-        .input(z.object({ prompt: z.enum(['none', 'consent']).optional() }).optional())
+        .input(
+            z
+                .object({
+                    prompt: z.enum(['none', 'consent']).optional(),
+                    redirectUri: z.enum(ALLOWED_REDIRECT_URIS).optional(),
+                })
+                .optional()
+        )
         .query(async ({ input, ctx }) => {
             const state = generateState();
             const codeVerifier = generateCodeVerifier();
 
-            const url = oauth.createAuthorizationURLWithPKCE(
+            const redirectUri = input?.redirectUri ?? ALLOWED_REDIRECT_URIS[0];
+            const client = oauthClientForRedirectUri(redirectUri);
+
+            const url = client.createAuthorizationURLWithPKCE(
                 'https://auth.icssc.club/authorize',
                 state,
                 CodeChallengeMethod.S256,
@@ -98,6 +108,7 @@ const userDataRouter = router({
             // Set cookies via response headers (Next.js cookies() doesn't work in TRPC)
             ctx.resHeaders?.append('Set-Cookie', `oauth_state=${state}; ${cookieOptions}`);
             ctx.resHeaders?.append('Set-Cookie', `oauth_code_verifier=${codeVerifier}; ${cookieOptions}`);
+            ctx.resHeaders?.append('Set-Cookie', `oauth_redirect_uri=${redirectUri}; ${cookieOptions}`);
 
             const referer = ctx.req.headers.get('referer');
             if (referer) {
@@ -128,6 +139,7 @@ const userDataRouter = router({
 
             const storedState = cookies['oauth_state'] ?? null;
             const codeVerifier = cookies['oauth_code_verifier'] ?? null;
+            const pinnedRedirectUri = cookies['oauth_redirect_uri'] ?? null;
             const redirectUrl = decodeURIComponent(cookies['auth_redirect_url'] ?? '/');
 
             // Delete cookies via response headers
@@ -137,6 +149,7 @@ const userDataRouter = router({
             }; Max-Age=0`;
             ctx.resHeaders?.append('Set-Cookie', `oauth_state=; ${deleteCookieOptions}`);
             ctx.resHeaders?.append('Set-Cookie', `oauth_code_verifier=; ${deleteCookieOptions}`);
+            ctx.resHeaders?.append('Set-Cookie', `oauth_redirect_uri=; ${deleteCookieOptions}`);
             ctx.resHeaders?.append('Set-Cookie', `auth_redirect_url=; ${deleteCookieOptions}`);
 
             if (!input.code || !input.state || !storedState || !codeVerifier) {
@@ -163,9 +176,15 @@ const userDataRouter = router({
                 });
             }
 
+            const resolvedRedirectUri =
+                pinnedRedirectUri && isAllowedRedirectUri(pinnedRedirectUri)
+                    ? pinnedRedirectUri
+                    : ALLOWED_REDIRECT_URIS[0];
+            const tokenClient = oauthClientForRedirectUri(resolvedRedirectUri);
+
             let tokens: OAuth2Tokens;
             try {
-                tokens = await oauth.validateAuthorizationCode(
+                tokens = await tokenClient.validateAuthorizationCode(
                     'https://auth.icssc.club/token',
                     input.code,
                     codeVerifier
