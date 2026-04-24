@@ -8,7 +8,7 @@ import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Autocomplete, Box, CircularProgress, MenuItem, TextField, Tooltip, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
-import { ComponentProps, HTMLAttributes, useEffect, useMemo, useState } from 'react';
+import { ComponentProps, Fragment, HTMLAttributes, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 type AutocompleteProps = ComponentProps<typeof Autocomplete>;
@@ -87,14 +87,14 @@ const SearchWithPlanner = () => {
         const keyword = includesTerm ? 'Includes' : 'Excludes';
 
         return (
-            <>
-                <RightDivider key={keyword}>
+            <Fragment key={keyword}>
+                <RightDivider>
                     <Typography>
                         {keyword} {term}
                     </Typography>
                 </RightDivider>
                 {params.children}
-            </>
+            </Fragment>
         );
     };
 
