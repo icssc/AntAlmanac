@@ -1,6 +1,6 @@
 import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId } from '$lib/localStorage';
 import { hasSsoCookie } from '$lib/ssoCookie';
+import { useSessionStore } from '$stores/SessionStore';
 import { useEffect, useRef } from 'react';
 
 /**
@@ -33,7 +33,12 @@ export function AutoSignIn() {
                 return;
             }
 
-            if (getLocalStorageSessionId()) {
+            if (useSessionStore.getState().sessionIsValid) {
+                return;
+            }
+
+            const loaded = await useSessionStore.getState().loadSession();
+            if (loaded) {
                 return;
             }
 

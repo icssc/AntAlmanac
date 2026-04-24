@@ -1,15 +1,15 @@
+import { SESSION_COOKIE_NAME } from '$src/backend/context';
 import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { ALLOWED_REDIRECT_URIS, isAllowedRedirectUri, oauthClientForRedirectUri } from '$src/backend/lib/auth/oauth';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
 import { RDS } from '$src/backend/lib/rds';
-import { type User, ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
+import { procedure, protectedProcedure, router } from '$src/backend/trpc';
+import { type User, type ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
-import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState, OAuth2Tokens } from 'arctic';
+import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState, type OAuth2Tokens } from 'arctic';
 import { type } from 'arktype';
 import { z } from 'zod';
-
-import { procedure, router } from '../trpc';
 
 const { OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
 const NODE_ENV = process.env.NODE_ENV;
@@ -37,13 +37,8 @@ const saveGoogleSchema = type({
 });
 
 const userDataRouter = router({
-    /**
-     * Loads schedule data for a user that's logged in.
-     * @param input - An object containing the session token.
-     * @returns The account and user data associated with the session token.
-     */
-    getUserAndAccountBySessionToken: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
-        return await RDS.getUserAndAccountBySessionToken(db, input.token);
+    getUserAndAccountBySessionToken: protectedProcedure.query(async ({ ctx }) => {
+        return await RDS.getUserAndAccountBySessionToken(db, ctx.sessionToken);
     }),
 
     /**
@@ -67,8 +62,8 @@ const userDataRouter = router({
      * @param input - An object containing the user ID.
      * @returns The user's google ID associated with the user ID.
      */
-    getGoogleIdByUserId: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
-        return await RDS.getGoogleIdByUserId(db, input.userId);
+    getGoogleIdByUserId: protectedProcedure.query(async ({ ctx }) => {
+        return await RDS.getGoogleIdByUserId(db, ctx.userId);
     }),
 
     /**
@@ -86,15 +81,8 @@ const userDataRouter = router({
             });
         }
     }),
-    getUserDataWithSession: procedure.input(z.object({ refreshToken: z.string() })).query(async ({ input }) => {
-        if ('refreshToken' in input) {
-            return await RDS.fetchUserDataWithSession(db, input.refreshToken);
-        } else {
-            throw new TRPCError({
-                code: 'BAD_REQUEST',
-                message: 'Invalid input: userId is required',
-            });
-        }
+    getUserDataWithSession: protectedProcedure.query(async ({ ctx }) => {
+        return await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
     }),
 
     getGuestAccountAndUserByName: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
@@ -290,8 +278,22 @@ const userDataRouter = router({
                 // Create session with OIDC and Google tokens
                 const session = await RDS.upsertSession(db, userId, oidcRefreshToken ?? '');
 
+                if (!session?.refreshToken) {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: 'Failed to create session',
+                    });
+                }
+
+                const sessionCookieOptions = `Path=/; HttpOnly; ${
+                    isProduction ? 'Secure; SameSite=Lax' : 'SameSite=Lax'
+                }; Max-Age=2592000`;
+                ctx.resHeaders?.append(
+                    'Set-Cookie',
+                    `${SESSION_COOKIE_NAME}=${session.refreshToken}; ${sessionCookieOptions}`
+                );
+
                 return {
-                    sessionToken: session?.refreshToken,
                     userId: userId,
                     providerId: oauthUserId,
                     newUser: account.newUser,
@@ -345,24 +347,33 @@ const userDataRouter = router({
     /**
      * Logs out a user by invalidating their session and redirecting to OIDC logout
      */
-    logout: procedure
-        .input(z.object({ sessionToken: z.string(), redirectUrl: z.string().optional() }))
-        .mutation(async ({ input }) => {
-            // Invalidate the local session
-            const session = await RDS.getCurrentSession(db, input.sessionToken);
-            if (session) {
-                await RDS.removeSession(db, session.userId, session.refreshToken);
+    logout: procedure.input(z.object({ redirectUrl: z.string().optional() })).mutation(async ({ input, ctx }) => {
+        const isProduction = NODE_ENV === 'production';
+        ctx.resHeaders?.append(
+            'Set-Cookie',
+            `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; ${isProduction ? 'Secure; SameSite=Lax' : 'SameSite=Lax'}; Max-Age=0`
+        );
+
+        if (ctx.sessionToken) {
+            try {
+                const session = await RDS.getCurrentSession(db, ctx.sessionToken);
+                if (session) {
+                    await RDS.removeSession(db, session.userId, session.refreshToken);
+                }
+            } catch (error) {
+                console.error('Failed to remove session from RDS during logout:', error);
             }
+        }
 
-            // Build OIDC logout URL
-            const oidcLogoutUrl = new URL(`${OIDC_ISSUER_URL}/logout`);
-            const redirectTo = input.redirectUrl || GOOGLE_REDIRECT_URI.replace('/auth', '');
-            oidcLogoutUrl.searchParams.set('post_logout_redirect_uri', redirectTo);
+        // Build OIDC logout URL
+        const oidcLogoutUrl = new URL(`${OIDC_ISSUER_URL}/logout`);
+        const redirectTo = input.redirectUrl || GOOGLE_REDIRECT_URI.replace('/auth', '');
+        oidcLogoutUrl.searchParams.set('post_logout_redirect_uri', redirectTo);
 
-            return {
-                logoutUrl: oidcLogoutUrl.toString(),
-            };
-        }),
+        return {
+            logoutUrl: oidcLogoutUrl.toString(),
+        };
+    }),
 
     /**
      * Exports schedule data for a user as JSON.
