@@ -5,6 +5,7 @@ export * from './user';
 export * from './legacy';
 export * from './search';
 export * from './websoc';
+export * from './syllabi';
 export * from './planner';
 export * from './notification';
 export * from '@packages/anteater-api-types/src/calendar';
