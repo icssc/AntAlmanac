@@ -6,12 +6,13 @@ import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/Enrol
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import type { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
+import { SyllabiPopup } from '$components/RightPane/SectionTable/SyllabiPopup';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
-import { Assessment, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
+import { Assessment, MenuBook, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
 import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useMemo } from 'react';
 
@@ -130,6 +131,20 @@ function SectionTable(props: SectionTableProps) {
                         <EnrollmentHistoryPopup
                             department={courseDetails.deptCode}
                             courseNumber={courseDetails.courseNumber}
+                        />
+                    }
+                />
+
+                <CourseInfoButton
+                    analyticsCategory={analyticsCategory}
+                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_SYLLABI}
+                    text="Syllabi"
+                    icon={<MenuBook />}
+                    popupContent={
+                        <SyllabiPopup
+                            deptCode={courseDetails.deptCode}
+                            courseNumber={courseDetails.courseNumber}
+                            term={term}
                         />
                     }
                 />
