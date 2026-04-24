@@ -3,6 +3,7 @@ import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { usePlannerRoadmaps } from '$hooks/usePlanner';
 import trpc from '$lib/api/trpc';
 import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$lib/plannerHelpers';
+import { PLANNER_LINK } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
@@ -141,6 +142,14 @@ const SearchWithPlanner = () => {
         };
     }, [roadmaps]);
 
+    if (isLoadingSearch) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <CircularProgress size="2rem" />
+            </Box>
+        );
+    }
+
     const searchComponent = (
         <Autocomplete
             options={sortedRoadmaps}
@@ -153,6 +162,19 @@ const SearchWithPlanner = () => {
             renderGroup={renderGroup}
             renderInput={renderInput}
             renderOption={renderOption}
+            {...(roadmaps.length === 0 && {
+                slotProps: { popper: { sx: { '& .MuiAutocomplete-noOptions': { padding: 0 } } } },
+                noOptionsText: (
+                    <MenuItem
+                        component="a"
+                        href={PLANNER_LINK}
+                        target="_blank"
+                        sx={(theme) => ({ color: theme.palette.text.primary, paddingTop: 1.5, paddingBottom: 1.5 })}
+                    >
+                        Create a roadmap!
+                    </MenuItem>
+                ),
+            })}
         />
     );
 
@@ -161,13 +183,6 @@ const SearchWithPlanner = () => {
             <Tooltip title="Sign in to search with planner">
                 <span>{searchComponent}</span>
             </Tooltip>
-        );
-    }
-    if (isLoadingSearch) {
-        return (
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <CircularProgress size="2rem" />
-            </Box>
         );
     }
 
