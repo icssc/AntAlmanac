@@ -96,11 +96,7 @@ const AuthInitializer = () => {
             return;
         }
 
-        setOpenLoadingSchedule(true);
-
         await loadScheduleWithSessionToken();
-
-        setOpenLoadingSchedule(false);
     }, [sessionData, setOpenLoadingSchedule]);
 
     useEffect(() => {
@@ -117,6 +113,7 @@ const AuthInitializer = () => {
                     return;
                 }
                 try {
+                    setOpenLoadingSchedule(true);
                     const isSessionValid = await updateSession(sessionData);
                     if (!isSessionValid) {
                         setOpenalert(true);
@@ -136,12 +133,13 @@ const AuthInitializer = () => {
                     console.error('Error during authentication:', error);
                     signOut();
                 }
+
+                isInitializingRef.current = false;
+                setOpenLoadingSchedule(false);
             })();
         } else if (!isPending) {
             loadNotifications();
         }
-
-        isInitializingRef.current = false;
     }, [
         sessionData,
         updateSession,
