@@ -1,6 +1,5 @@
 import RightDivider from '$components/RightDivider';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { usePlannerRoadmaps } from '$hooks/usePlanner';
 import trpc from '$lib/api/trpc';
 import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$lib/plannerHelpers';
 import { PLANNER_LINK } from '$src/globals';
@@ -29,26 +28,28 @@ const SearchWithPlanner = () => {
         useState<TermRoadmapIdMapping>(getDefaultTermRoadmapIdMapping);
     const [isLoadingSearch, setIsLoadingSearch] = useState(false);
 
-    const { sessionIsValid, isPlannerLoading } = useSessionStore(
-        useShallow((state) => ({ sessionIsValid: state.sessionIsValid, isPlannerLoading: state.isPlannerLoading }))
+    const { sessionIsValid, isPlannerLoading, plannerRoadmaps } = useSessionStore(
+        useShallow((state) => ({
+            sessionIsValid: state.sessionIsValid,
+            isPlannerLoading: state.isPlannerLoading,
+            plannerRoadmaps: state.plannerRoadmaps,
+        }))
     );
 
     const displaySections = useCoursePaneStore((state) => state.displaySections);
-
-    const { roadmaps } = usePlannerRoadmaps();
 
     const doesRoadmapIncludeTerm = (roadmapId: Roadmap['id']) => {
         return termRoadmapIdMapping[RoadmapTermRelation.IncludesTerm].has(roadmapId.toString());
     };
 
     const sortedRoadmaps = useMemo(() => {
-        return roadmaps.toSorted((a, _b) => {
+        return plannerRoadmaps.toSorted((a, _b) => {
             return doesRoadmapIncludeTerm(a.id) ? -1 : 1;
         });
-    }, [roadmaps, termRoadmapIdMapping]);
+    }, [plannerRoadmaps, termRoadmapIdMapping]);
 
     const search = async (roadmapId: Roadmap['id']) => {
-        const roadmap = roadmaps.find((roadmap) => roadmap.id === roadmapId);
+        const roadmap = plannerRoadmaps.find((roadmap) => roadmap.id === roadmapId);
         if (!roadmap) {
             openSnackbar('error', "Couldn't find selected roadmap!");
             return;
@@ -126,7 +127,7 @@ const SearchWithPlanner = () => {
         const updateTermRoadmaps = () => {
             const { year, quarter } = RightPaneStore.getTermParts();
             const roadmapsWithTerm: typeof termRoadmapIdMapping = getDefaultTermRoadmapIdMapping();
-            for (const roadmap of roadmaps) {
+            for (const roadmap of plannerRoadmaps) {
                 const roadmapTermRelation = getRoadmapTermRelation(roadmap, year, quarter);
                 roadmapsWithTerm[roadmapTermRelation].add(roadmap.id.toString());
             }
@@ -140,7 +141,7 @@ const SearchWithPlanner = () => {
         return () => {
             RightPaneStore.removeListener('formDataChange', updateTermRoadmaps);
         };
-    }, [roadmaps]);
+    }, [plannerRoadmaps]);
 
     if (isLoadingSearch) {
         return (
@@ -162,7 +163,7 @@ const SearchWithPlanner = () => {
             renderGroup={renderGroup}
             renderInput={renderInput}
             renderOption={renderOption}
-            {...(roadmaps.length === 0 && {
+            {...(plannerRoadmaps.length === 0 && {
                 slotProps: { popper: { sx: { '& .MuiAutocomplete-noOptions': { padding: 0 } } } },
                 noOptionsText: (
                     <MenuItem
