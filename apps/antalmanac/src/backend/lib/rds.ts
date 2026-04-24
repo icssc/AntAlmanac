@@ -348,47 +348,45 @@ export class RDS {
         db: DatabaseOrTransaction,
         username: string
     ): Promise<{ user: { imported: boolean }; userData: User['userData'] } | null> {
-        return db.transaction(async (tx) => {
-            const row = await tx
-                .select()
-                .from(accounts)
-                .innerJoin(users, eq(accounts.userId, users.id))
-                .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.providerAccountId, username)))
-                .limit(1)
-                .then((res) => res[0] ?? null);
+        const row = await db
+            .select()
+            .from(accounts)
+            .innerJoin(users, eq(accounts.userId, users.id))
+            .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.providerAccountId, username)))
+            .limit(1)
+            .then((res) => res[0] ?? null);
 
-            if (!row) {
-                return null;
-            }
+        if (!row) {
+            return null;
+        }
 
-            const userId = row.users.id;
+        const userId = row.users.id;
 
-            const sectionResults = await tx
-                .select()
-                .from(schedules)
-                .where(eq(schedules.userId, userId))
-                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+        const sectionResults = await db
+            .select()
+            .from(schedules)
+            .where(eq(schedules.userId, userId))
+            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
 
-            const customEventResults = await tx
-                .select()
-                .from(schedules)
-                .where(eq(schedules.userId, userId))
-                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+        const customEventResults = await db
+            .select()
+            .from(schedules)
+            .where(eq(schedules.userId, userId))
+            .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
 
-            const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+        const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
 
-            const scheduleIndex = row.users.currentScheduleId
-                ? userSchedules.findIndex((s) => s.id === row.users.currentScheduleId)
-                : userSchedules.length;
+        const scheduleIndex = row.users.currentScheduleId
+            ? userSchedules.findIndex((s) => s.id === row.users.currentScheduleId)
+            : userSchedules.length;
 
-            return {
-                user: { imported: row.users.imported ?? false },
-                userData: {
-                    schedules: userSchedules,
-                    scheduleIndex,
-                },
-            };
-        });
+        return {
+            user: { imported: row.users.imported ?? false },
+            userData: {
+                schedules: userSchedules,
+                scheduleIndex,
+            },
+        };
     }
 
     /**
@@ -527,8 +525,8 @@ export class RDS {
         });
     }
 
-    private static async getUserDataWithSession(tx: Transaction, refreshToken: string) {
-        return tx
+    private static async getUserDataWithSession(db: DatabaseOrTransaction, refreshToken: string) {
+        return db
             .select()
             .from(users)
             .leftJoin(sessions, eq(users.id, sessions.userId))
@@ -539,9 +537,9 @@ export class RDS {
     /**
      * Fetches user data associated with a valid session using a refresh token.
      *
-     * This function initiates a database transaction to retrieve user information
-     * based on the provided refresh token. If a user is found, it gathers the user's
-     * schedules and custom events, aggregates them, and determines the current schedule index.
+     * Retrieves user information based on the provided refresh token. If a user is
+     * found, gathers the user's schedules and custom events, aggregates them, and
+     * determines the current schedule index.
      *
      * @param db - The database or transaction object to perform the operation.
      * @param refreshToken - The refresh token used to identify the session.
@@ -549,37 +547,36 @@ export class RDS {
      *          including schedules and the current schedule index, or null if no user is found.
      */
     static async fetchUserDataWithSession(db: DatabaseOrTransaction, refreshToken: string) {
-        return db.transaction(async (tx) => {
-            const user = await this.getUserDataWithSession(tx, refreshToken);
+        const user = await this.getUserDataWithSession(db, refreshToken);
 
-            if (user) {
-                const sectionResults = await tx
-                    .select()
-                    .from(schedules)
-                    .where(eq(schedules.userId, user.id))
-                    .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
-
-                const customEventResults = await tx
-                    .select()
-                    .from(schedules)
-                    .where(eq(schedules.userId, user.id))
-                    .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
-
-                const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
-
-                const scheduleIndex = user.currentScheduleId
-                    ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
-                    : userSchedules.length;
-                return {
-                    id: user.id,
-                    userData: {
-                        schedules: userSchedules,
-                        scheduleIndex,
-                    },
-                };
-            }
+        if (!user) {
             return null;
-        });
+        }
+
+        const sectionResults = await db
+            .select()
+            .from(schedules)
+            .where(eq(schedules.userId, user.id))
+            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+
+        const customEventResults = await db
+            .select()
+            .from(schedules)
+            .where(eq(schedules.userId, user.id))
+            .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+
+        const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+
+        const scheduleIndex = user.currentScheduleId
+            ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
+            : userSchedules.length;
+        return {
+            id: user.id,
+            userData: {
+                schedules: userSchedules,
+                scheduleIndex,
+            },
+        };
     }
 
     static async getUserAndAccountBySessionToken(db: DatabaseOrTransaction, refreshToken: string) {
