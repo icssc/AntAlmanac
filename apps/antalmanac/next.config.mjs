@@ -17,7 +17,7 @@ const nextConfig = {
             {
                 source: '/auth',
                 destination: '/api/auth/oauth2/callback/icssc',
-                permanent: true,
+                permanent: false,
             },
         ];
     },
