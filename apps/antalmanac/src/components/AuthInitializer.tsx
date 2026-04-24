@@ -112,9 +112,9 @@ const AuthInitializer = () => {
                         return;
                     }
                     setSsoCookie();
-                    await loadUnsavedChanges();
 
                     await loadScheduleWithSessionToken();
+                    await loadUnsavedChanges();
 
                     setAreSchedulesLoaded(true);
 
