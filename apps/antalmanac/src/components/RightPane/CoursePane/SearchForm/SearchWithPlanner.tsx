@@ -141,27 +141,36 @@ const SearchWithPlanner = () => {
         };
     }, [roadmaps]);
 
-    return (
-        <Box sx={{ minWidth: '25%' }}>
-            {isLoadingSearch ? (
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <CircularProgress size="2rem" />
-                </Box>
-            ) : (
-                <Autocomplete
-                    options={sortedRoadmaps}
-                    disabled={!sessionIsValid}
-                    getOptionLabel={(roadmap) => roadmap.name.toString()}
-                    loading={isPlannerLoading}
-                    loadingText="Loading planner..."
-                    noOptionsText="No roadmaps found"
-                    groupBy={groupBy}
-                    renderGroup={renderGroup}
-                    renderInput={renderInput}
-                    renderOption={renderOption}
-                />
-            )}
-        </Box>
+    const searchComponent = (
+        <Autocomplete
+            options={sortedRoadmaps}
+            disabled={!sessionIsValid}
+            getOptionLabel={(roadmap) => roadmap.name.toString()}
+            loading={isPlannerLoading}
+            loadingText="Loading planner..."
+            noOptionsText="No roadmaps found"
+            groupBy={groupBy}
+            renderGroup={renderGroup}
+            renderInput={renderInput}
+            renderOption={renderOption}
+        />
     );
+
+    if (!sessionIsValid) {
+        return (
+            <Tooltip title="Sign in to search with planner">
+                <span>{searchComponent}</span>
+            </Tooltip>
+        );
+    }
+    if (isLoadingSearch) {
+        return (
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <CircularProgress size="2rem" />
+            </Box>
+        );
+    }
+
+    return searchComponent;
 };
 export default SearchWithPlanner;

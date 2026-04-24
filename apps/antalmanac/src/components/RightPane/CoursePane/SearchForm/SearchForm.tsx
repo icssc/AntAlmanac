@@ -81,7 +81,9 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                                 labelProps={{ sx: QUICKSEARCH_LABEL_SX }}
                             />
                             <Typography>or</Typography>
-                            <SearchWithPlanner />
+                            <Box sx={{ minWidth: '25%' }}>
+                                <SearchWithPlanner />
+                            </Box>
                         </Stack>
                     ) : (
                         <ManualSearch
