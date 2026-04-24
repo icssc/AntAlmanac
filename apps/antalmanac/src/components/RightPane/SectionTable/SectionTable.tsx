@@ -15,6 +15,7 @@ import { useTabStore } from '$stores/TabStore';
 import { Assessment, ExpandLess, ExpandMore, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
 import { Box, Collapse, IconButton, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useMemo, useState } from 'react';
+import { forceCheck } from 'react-lazyload';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -50,6 +51,11 @@ function SectionTable(props: SectionTableProps) {
     const handleToggleExpand = () => {
         setOpenContent(!openContent);
     };
+
+    const handleCollapseExit = () => {
+        forceCheck();
+    };
+
     const actionColumnWidth = isMobile ? 54 : 85;
 
     const courseId = useMemo(() => {
@@ -152,7 +158,7 @@ function SectionTable(props: SectionTableProps) {
             {missingSections?.length > 0 && (
                 <WarningAlert>Missing required sections: {missingSections.join(', ')}</WarningAlert>
             )}
-            <Collapse in={openContent}>
+            <Collapse in={openContent} onExited={handleCollapseExit}>
                 <TableContainer
                     component={Paper}
                     sx={{ margin: '8px 0px 8px 0px', width: '100%' }}
