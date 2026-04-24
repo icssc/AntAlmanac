@@ -16,11 +16,14 @@ import { useNotificationStore } from '$stores/NotificationStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 const AuthInitializer = () => {
     const [openAlert, setOpenalert] = useState(false);
+
+    const isInitializingRef = useRef(false);
+    const hasInitializedRef = useRef(false);
 
     const setOpenLoadingSchedule = useScheduleComponentsToggleStore((state) => state.setOpenLoadingSchedule);
     const { updateSession, setAreSchedulesLoaded, googleId } = useSessionStore(
@@ -101,7 +104,12 @@ const AuthInitializer = () => {
     }, [sessionData, setOpenLoadingSchedule]);
 
     useEffect(() => {
+        if (isInitializingRef.current || hasInitializedRef.current) {
+            return;
+        }
+
         if (sessionData) {
+            isInitializingRef.current = true;
             (async () => {
                 if (sessionData.session.expiresAt < new Date()) {
                     console.log('Session expired, logging out');
@@ -122,6 +130,8 @@ const AuthInitializer = () => {
                     setAreSchedulesLoaded(true);
 
                     loadNotifications();
+
+                    hasInitializedRef.current = true;
                 } catch (error) {
                     console.error('Error during authentication:', error);
                     signOut();
@@ -130,6 +140,8 @@ const AuthInitializer = () => {
         } else if (!isPending) {
             loadNotifications();
         }
+
+        isInitializingRef.current = false;
     }, [
         sessionData,
         updateSession,
