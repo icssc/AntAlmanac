@@ -105,14 +105,12 @@ const AuthInitializer = () => {
         }
 
         if (sessionData) {
-            isInitializingRef.current = true;
             (async () => {
                 if (sessionData.session.expiresAt < new Date()) {
-                    console.log('Session expired, logging out');
-                    signOut();
-                    isInitializingRef.current = false;
+                    await signOut();
                     return;
                 }
+                isInitializingRef.current = true;
                 try {
                     setOpenLoadingSchedule(true);
                     const isSessionValid = await updateSession(sessionData);
