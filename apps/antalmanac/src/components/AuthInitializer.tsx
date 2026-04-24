@@ -110,6 +110,7 @@ const AuthInitializer = () => {
                 if (sessionData.session.expiresAt < new Date()) {
                     console.log('Session expired, logging out');
                     signOut();
+                    isInitializingRef.current = false;
                     return;
                 }
                 try {
