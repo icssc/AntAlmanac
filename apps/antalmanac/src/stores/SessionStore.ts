@@ -77,7 +77,6 @@ export const useSessionStore = create<SessionState>((set, get) => {
             if (currentSession) {
                 clearSsoCookie();
                 set({ ...initState });
-                window.location.reload();
             }
         },
         setIsNewUser: (isNewUser) => set({ isNewUser: isNewUser }),

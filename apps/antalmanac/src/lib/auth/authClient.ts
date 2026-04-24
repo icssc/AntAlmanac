@@ -15,6 +15,7 @@ export async function signOut(onLogoutComplete?: () => void) {
     if (!session) {
         onLogoutComplete?.();
         await useSessionStore.getState().clearSession();
+        window.location.reload();
         return;
     }
 
