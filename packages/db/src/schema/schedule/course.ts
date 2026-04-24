@@ -32,7 +32,12 @@ export const coursesInSchedule = pgTable(
          */
         color: text('color').notNull(),
 
-        lastUpdated: timestamp('last_updated', { withTimezone: true }).defaultNow(),
+        createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+
+        lastUpdated: timestamp('last_updated', { withTimezone: true })
+            .defaultNow()
+            .notNull()
+            .$onUpdate(() => new Date()),
     },
     (table) => [
         primaryKey({

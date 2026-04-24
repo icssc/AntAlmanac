@@ -31,7 +31,12 @@ export const schedules = pgTable('schedules', {
      */
     index: integer('index').notNull(),
 
-    lastUpdated: timestamp('last_updated', { withTimezone: true }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+
+    lastUpdated: timestamp('last_updated', { withTimezone: true })
+        .defaultNow()
+        .notNull()
+        .$onUpdate(() => new Date()),
 });
 
 export type Schedule = typeof schedules.$inferSelect;

@@ -1,9 +1,9 @@
+import AppStore from '$stores/AppStore';
 import { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { createId } from '@paralleldrive/cuid2';
 
 import trpc from './api/trpc';
 import { QueryZotcourseError } from './customErrors';
-
-import AppStore from '$stores/AppStore';
 
 export interface ZotcourseResponse {
     codes: string[];
@@ -27,7 +27,7 @@ export async function queryZotcourse(schedule_name: string) {
                 end: event.end,
                 days: days.map((_, index) => event.dow.includes(index)),
                 scheduleIndices: [AppStore.getCurrentScheduleIndex()],
-                customEventID: Date.now(),
+                customEventID: createId(),
                 color: '#551a8b',
             };
         }) as RepeatingCustomEvent[];

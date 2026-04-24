@@ -1,7 +1,7 @@
 import { WebsocSectionType } from '@packages/anteater-api-types';
 import { type, arrayOf } from 'arktype';
 
-import { RepeatingCustomEvent, RepeatingCustomEventSchema } from './customevent';
+import { RepeatingCustomEvent, RepeatingCustomEventSchema } from './customEvent';
 import { AASection } from './websoc';
 
 export type ScheduleCourse = {

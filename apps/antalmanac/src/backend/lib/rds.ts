@@ -16,7 +16,9 @@ import {
     Session,
     subscriptions,
 } from '@packages/db/src/schema';
-import { and, eq, ExtractTablesWithRelations, gt } from 'drizzle-orm';
+import { buildConflictUpdateSet } from '@packages/db/src/utils';
+import { createId } from '@paralleldrive/cuid2';
+import { and, eq, ExtractTablesWithRelations, gt, not, notInArray, or } from 'drizzle-orm';
 import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
@@ -146,13 +148,6 @@ export class RDS {
         );
     }
 
-    /**
-     * Creates a new user and an associated account with the specified provider ID.
-     *
-     * @param db - The database or transaction object.
-     * @param providerId - The provider account ID for the new account.
-     * @returns A promise that resolves to the newly created account object.
-     */
     static async registerUserAccount(
         db: DatabaseOrTransaction,
         accountType: Account['accountType'],
@@ -161,61 +156,59 @@ export class RDS {
         email?: string,
         avatar?: string
     ) {
-        // ! TODO @KevinWu098
-        // ! Auth uses hardcoded migration logic to handle cases in which stale userIDs
-        // ! still contain non OIDC google ids. This is not correct and needs to be fixed.
-        // ! Auth and operations upon users and accounts should not depend on localStorage. This is a hack.
-        const oidcProviderId = providerId.startsWith('google_') ? providerId : `google_${providerId}`;
         if (accountType !== 'OIDC') {
             throw new Error('Invalid account type. Must be OIDC.');
         }
 
-        // First check if an account with OIDC providerId already exists
-        const existingAccount = await this.getAccountByProviderId(db, accountType, oidcProviderId);
-        if (existingAccount && accountType === 'OIDC') {
-            return { ...existingAccount, newUser: false };
-        }
+        const oidcProviderId = providerId.startsWith('google_') ? providerId : `google_${providerId}`;
 
-        const existingUser = email ? await this.getUserByEmail(db, email) : null;
+        return db.transaction(async (tx) => {
+            const existingAccount = await this.getAccountByProviderId(tx, accountType, oidcProviderId);
 
-        if (!existingUser) {
-            const result = await db
-                .insert(users)
-                .values({
-                    avatar: avatar ?? '',
-                    name: name,
-                    email: email ?? '',
-                })
-                .returning({ userId: users.id })
-                .then((res) => res[0]);
-            const newUserId = result.userId;
+            if (existingAccount) {
+                return { ...existingAccount, newUser: false };
+            }
 
-            const account = await db
+            const existingUser = email ? await this.getUserByEmail(tx, email) : null;
+
+            let userId: string;
+            let newUser: boolean;
+
+            if (existingUser) {
+                await tx
+                    .update(users)
+                    .set({ name, email: email ?? '', avatar: avatar ?? existingUser.avatar })
+                    .where(eq(users.id, existingUser.id));
+                userId = existingUser.id;
+                newUser = false;
+            } else {
+                const inserted = await tx
+                    .insert(users)
+                    .values({ name, email: email ?? '', avatar: avatar ?? '' })
+                    .returning({ id: users.id })
+                    .then((res) => res[0]);
+                userId = inserted.id;
+                newUser = true;
+            }
+
+            const account = await tx
                 .insert(accounts)
-                .values({ userId: newUserId, providerAccountId: oidcProviderId, accountType })
+                .values({ userId, accountType, providerAccountId: oidcProviderId })
+                .onConflictDoUpdate({
+                    target: [accounts.userId, accounts.accountType],
+                    set: buildConflictUpdateSet(accounts, {
+                        userId: 'keep',
+                        accountType: 'keep',
+                        providerAccountId: 'update',
+                        createdAt: 'keep',
+                        updatedAt: 'update',
+                    }),
+                })
                 .returning()
                 .then((res) => res[0]);
 
-            return { ...account, newUser: true };
-        }
-
-        await db
-            .update(users)
-            .set({
-                name: name,
-                email: email ?? '',
-                avatar: avatar ?? existingUser.avatar,
-                lastUpdated: new Date(),
-            })
-            .where(eq(users.id, existingUser.id));
-
-        const newAccount = await db
-            .insert(accounts)
-            .values({ userId: existingUser.id, providerAccountId: oidcProviderId, accountType })
-            .returning()
-            .then((res) => res[0]);
-
-        return { ...newAccount, newUser: false };
+            return { ...account, newUser };
+        });
     }
 
     /**
@@ -263,128 +256,117 @@ export class RDS {
         });
     }
 
-    /**
-     * Inserts a schedule and syncs its courses and custom events.
-     *
-     * If `schedule.id` is a known DB ID belonging to this user, it is reused so
-     * the row retains the same ID after the surrounding delete-then-reinsert.
-     * Otherwise a fresh ID is generated by the column default.
-     *
-     * @returns The schedule's DB ID
-     */
-    private static async insertScheduleAndContents(
-        tx: Transaction,
-        userId: string,
-        schedule: ShortCourseSchedule,
-        index: number,
-        existingIds: Set<string>
-    ): Promise<{ frontendId: string | undefined; dbId: string }> {
-        // Reuse the existing DB ID if this schedule was previously saved by this
-        // user. An unrecognized or foreign ID must not be trusted — generate fresh.
-        const safeId = schedule.id && existingIds.has(schedule.id) ? schedule.id : undefined;
-
-        const result = await tx
-            .insert(schedules)
-            .values({
-                id: safeId,
-                userId,
-                name: schedule.scheduleName,
-                notes: schedule.scheduleNote,
-                index,
-                lastUpdated: new Date(),
-            })
-            .returning({ id: schedules.id });
-
-        const dbId = result[0].id;
-
-        await Promise.all([
-            this.upsertCourses(tx, dbId, schedule.courses).catch((error) => {
-                throw new Error(`Failed to upsert courses for ${schedule.scheduleName}: ${error}`);
-            }),
-            this.upsertCustomEvents(tx, dbId, schedule.customEvents).catch((error) => {
-                throw new Error(`Failed to upsert custom events for ${schedule.scheduleName}: ${error}`);
-            }),
-        ]);
-
-        return { frontendId: schedule.id, dbId };
-    }
-
-    /**
-     * Syncs a user's schedules to match the provided array.
-     *
-     * Deletes all existing schedules first (courses/events cascade), then
-     * re-inserts — this avoids any transient uniqueness conflicts on
-     * (user_id, name) or (user_id, index) without requiring deferred
-     * constraints. Known DB IDs are reused via safeId so foreign key
-     * references (e.g. users.currentScheduleId) survive the round-trip.
-     *
-     * Returns a map of frontend CUID → DB ID so callers can key results
-     * by schedule identity rather than array position.
-     */
     private static async upsertSchedulesAndContents(
         tx: Transaction,
         userId: string,
         scheduleArray: ShortCourseSchedule[]
     ): Promise<Record<string, string>> {
-        // Snapshot existing IDs before deleting so we can validate safeIds below.
-        const existingSchedules = await tx
-            .select({ id: schedules.id })
-            .from(schedules)
-            .where(eq(schedules.userId, userId));
-        const existingIds = new Set(existingSchedules.map((s) => s.id));
+        const existingRows = await tx.select({ id: schedules.id }).from(schedules).where(eq(schedules.userId, userId));
+        const existingIds = new Set(existingRows.map((s) => s.id));
 
-        // Delete all schedules up-front. Courses and custom events cascade.
-        // users.currentScheduleId is set null on delete and updated at the end
-        // of upsertUserData, so no FK violation occurs.
-        await tx.delete(schedules).where(eq(schedules.userId, userId));
+        const prepared = scheduleArray.map((schedule, index) => ({
+            schedule,
+            index,
+            dbId: schedule.id && existingIds.has(schedule.id) ? schedule.id : createId(),
+        }));
 
-        const results = await Promise.all(
-            scheduleArray.map((schedule, index) =>
-                this.insertScheduleAndContents(tx, userId, schedule, index, existingIds)
-            )
+        const keepIds = prepared.map((p) => p.dbId);
+        await tx
+            .delete(schedules)
+            .where(
+                keepIds.length === 0
+                    ? eq(schedules.userId, userId)
+                    : and(eq(schedules.userId, userId), notInArray(schedules.id, keepIds))
+            );
+
+        if (prepared.length > 0) {
+            await tx
+                .insert(schedules)
+                .values(
+                    prepared.map(({ schedule, index, dbId }) => ({
+                        id: dbId,
+                        userId,
+                        name: schedule.scheduleName,
+                        notes: schedule.scheduleNote,
+                        index,
+                    }))
+                )
+                .onConflictDoUpdate({
+                    target: schedules.id,
+                    set: buildConflictUpdateSet(schedules, {
+                        id: 'keep',
+                        userId: 'keep',
+                        name: 'update',
+                        notes: 'update',
+                        index: 'update',
+                        createdAt: 'keep',
+                        lastUpdated: 'update',
+                    }),
+                });
+        }
+
+        await Promise.all(
+            prepared.flatMap(({ schedule, dbId }) => [
+                this.upsertCourses(tx, dbId, schedule.courses).catch((error) => {
+                    throw new Error(`Failed to upsert courses for ${schedule.scheduleName}: ${error}`);
+                }),
+                this.upsertCustomEvents(tx, dbId, schedule.customEvents).catch((error) => {
+                    throw new Error(`Failed to upsert custom events for ${schedule.scheduleName}: ${error}`);
+                }),
+            ])
         );
 
         const scheduleIdMap: Record<string, string> = {};
-        for (const { frontendId, dbId } of results) {
-            if (frontendId !== undefined) {
-                scheduleIdMap[frontendId] = dbId;
+        for (const { schedule, dbId } of prepared) {
+            if (schedule.id !== undefined) {
+                scheduleIdMap[schedule.id] = dbId;
             }
         }
 
         return scheduleIdMap;
     }
 
-    /**
-     * Drops all courses in the schedule and re-add them,
-     * deduplicating by section code and term.
-     * */
     private static async upsertCourses(tx: Transaction, scheduleId: string, courses: ShortCourse[]) {
-        await tx.delete(coursesInSchedule).where(eq(coursesInSchedule.scheduleId, scheduleId));
+        const uniqueByKey = new Map<string, { sectionCode: number; term: string; color: string }>();
+        for (const course of courses) {
+            const sectionCode = parseInt(course.sectionCode);
+            const key = `${sectionCode}-${course.term}`;
+            if (!uniqueByKey.has(key)) {
+                uniqueByKey.set(key, { sectionCode, term: course.term, color: course.color });
+            }
+        }
+        const incoming = [...uniqueByKey.values()];
 
-        if (courses.length === 0) {
+        const incomingCourses = incoming.map((course) =>
+            and(eq(coursesInSchedule.sectionCode, course.sectionCode), eq(coursesInSchedule.term, course.term))
+        );
+
+        await tx
+            .delete(coursesInSchedule)
+            .where(
+                incomingCourses.length === 0
+                    ? eq(coursesInSchedule.scheduleId, scheduleId)
+                    : and(eq(coursesInSchedule.scheduleId, scheduleId), not(or(...incomingCourses)!))
+            );
+
+        if (incoming.length === 0) {
             return;
         }
 
-        const coursesUnique: Set<string> = new Set();
-
-        const dbCourses = courses.map((course) => ({
-            scheduleId,
-            sectionCode: parseInt(course.sectionCode),
-            term: course.term,
-            color: course.color,
-            lastUpdated: new Date(),
-        }));
-
-        const dbCoursesUnique = dbCourses.filter((course) => {
-            const key = `${course.sectionCode}-${course.term}`;
-            if (coursesUnique.has(key)) {
-                return false;
-            }
-            coursesUnique.add(key);
-            return true;
-        });
-
-        await tx.insert(coursesInSchedule).values(dbCoursesUnique);
+        await tx
+            .insert(coursesInSchedule)
+            .values(incoming.map((course) => ({ scheduleId, ...course })))
+            .onConflictDoUpdate({
+                target: [coursesInSchedule.scheduleId, coursesInSchedule.sectionCode, coursesInSchedule.term],
+                set: buildConflictUpdateSet(coursesInSchedule, {
+                    scheduleId: 'keep',
+                    sectionCode: 'keep',
+                    term: 'keep',
+                    color: 'update',
+                    createdAt: 'keep',
+                    lastUpdated: 'update',
+                }),
+            });
     }
 
     private static async upsertCustomEvents(
@@ -392,24 +374,49 @@ export class RDS {
         scheduleId: string,
         repeatingCustomEvents: RepeatingCustomEvent[]
     ) {
-        await tx.delete(customEvents).where(eq(customEvents.scheduleId, scheduleId));
+        const incomingIds = repeatingCustomEvents.map((event) => event.customEventID);
+
+        await tx
+            .delete(customEvents)
+            .where(
+                incomingIds.length === 0
+                    ? eq(customEvents.scheduleId, scheduleId)
+                    : and(eq(customEvents.scheduleId, scheduleId), notInArray(customEvents.id, incomingIds))
+            );
 
         if (repeatingCustomEvents.length === 0) {
             return;
         }
 
-        const dbCustomEvents = repeatingCustomEvents.map((event) => ({
-            scheduleId,
-            title: event.title,
-            start: event.start,
-            end: event.end,
-            days: event.days.map((day) => (day ? '1' : '0')).join(''),
-            color: event.color,
-            building: event.building,
-            lastUpdated: new Date(),
-        }));
-
-        await tx.insert(customEvents).values(dbCustomEvents);
+        await tx
+            .insert(customEvents)
+            .values(
+                repeatingCustomEvents.map((event) => ({
+                    id: event.customEventID,
+                    scheduleId,
+                    title: event.title,
+                    start: event.start,
+                    end: event.end,
+                    days: event.days.map((day) => (day ? '1' : '0')).join(''),
+                    color: event.color,
+                    building: event.building,
+                }))
+            )
+            .onConflictDoUpdate({
+                target: [customEvents.scheduleId, customEvents.id],
+                set: buildConflictUpdateSet(customEvents, {
+                    id: 'keep',
+                    scheduleId: 'keep',
+                    title: 'update',
+                    start: 'update',
+                    end: 'update',
+                    days: 'update',
+                    color: 'update',
+                    building: 'update',
+                    createdAt: 'keep',
+                    lastUpdated: 'update',
+                }),
+            });
     }
 
     /**
@@ -529,7 +536,7 @@ export class RDS {
                     start: customEvent.start,
                     end: customEvent.end,
                     days: customEvent.days.split('').map((day) => day === '1'),
-                    color: customEvent.color ?? undefined,
+                    color: customEvent.color ?? '#551a8b',
                     building: customEvent.building ?? undefined,
                 });
             }
@@ -769,14 +776,21 @@ export class RDS {
                         subscriptions.quarter,
                         subscriptions.environment,
                     ],
-                    set: {
-                        notifyOnOpen: notification.notifyOn.notifyOnOpen,
-                        notifyOnWaitlist: notification.notifyOn.notifyOnWaitlist,
-                        notifyOnFull: notification.notifyOn.notifyOnFull,
-                        notifyOnRestriction: notification.notifyOn.notifyOnRestriction,
-                        lastUpdatedStatus: notification.lastUpdatedStatus,
-                        lastCodes: notification.lastCodes,
-                    },
+                    set: buildConflictUpdateSet(subscriptions, {
+                        userId: 'keep',
+                        sectionCode: 'keep',
+                        year: 'keep',
+                        quarter: 'keep',
+                        environment: 'keep',
+                        notifyOnOpen: 'update',
+                        notifyOnWaitlist: 'update',
+                        notifyOnFull: 'update',
+                        notifyOnRestriction: 'update',
+                        lastUpdatedStatus: 'update',
+                        lastCodes: 'update',
+                        createdAt: 'keep',
+                        updatedAt: 'update',
+                    }),
                 })
         );
     }
