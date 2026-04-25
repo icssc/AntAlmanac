@@ -313,6 +313,7 @@ export default function CourseRenderPane(props: { id?: number }) {
     const loadCourses = useCallback(async () => {
         setLoading(true);
         setError(false);
+        setUnofferedCourses([]);
 
         try {
             const formData = RightPaneStore.getFormData();
