@@ -43,8 +43,13 @@ const SearchWithPlanner = () => {
     };
 
     const sortedRoadmaps = useMemo(() => {
-        return plannerRoadmaps.toSorted((a, _b) => {
-            return doesRoadmapIncludeTerm(a.id) ? -1 : 1;
+        return plannerRoadmaps.toSorted((a, b) => {
+            const aIncludesTerm = doesRoadmapIncludeTerm(a.id);
+            const bIncludesTerm = doesRoadmapIncludeTerm(b.id);
+            if (aIncludesTerm === bIncludesTerm) {
+                return 0;
+            }
+            return aIncludesTerm ? -1 : 1;
         });
     }, [plannerRoadmaps, termRoadmapIdMapping]);
 
