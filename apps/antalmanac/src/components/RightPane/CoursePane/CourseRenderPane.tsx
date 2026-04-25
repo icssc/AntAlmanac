@@ -409,7 +409,7 @@ export default function CourseRenderPane(props: { id?: number }) {
 
             {unofferedCourses.map((course) => {
                 return (
-                    <WarningAlert closable>
+                    <WarningAlert closable key={`${course.deptValue}${course.courseNumber}`}>
                         {course.deptValue} {course.courseNumber} is not offered in {searchedTerm}.
                     </WarningAlert>
                 );
