@@ -158,7 +158,6 @@ function GradesPopup(props: GradesPopupProps) {
                                 paddingX: 1,
                                 paddingY: 0.25,
                                 fontSize: '0.75rem',
-                                minHeight: '24px',
                             }}
                         >
                             {instructor}
@@ -170,7 +169,6 @@ function GradesPopup(props: GradesPopupProps) {
                                 paddingX: 1,
                                 paddingY: 0.25,
                                 fontSize: '0.75rem',
-                                minHeight: '24px',
                             }}
                         >
                             Overall
