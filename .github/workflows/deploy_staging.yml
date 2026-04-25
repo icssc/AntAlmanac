@@ -3,6 +3,8 @@ name: Deploy - Staging
 on:
     pull_request:
         types: [opened, synchronize, reopened]
+        paths-ignore:
+            - 'apps/pwa/**'
     repository_dispatch:
         types: [deploy-command]
 

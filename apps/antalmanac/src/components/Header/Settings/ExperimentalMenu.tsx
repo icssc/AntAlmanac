@@ -12,7 +12,7 @@ import { usePostHog } from 'posthog-js/react';
 export function ExperimentalMenu() {
     const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
     const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
-    const { sessionIsValid, session } = useSessionStore();
+    const { sessionIsValid } = useSessionStore();
     const { setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
     const [devMode, setDevMode] = useDevModeStore((store) => [store.devMode, store.setDevMode]);
 
@@ -29,7 +29,7 @@ export function ExperimentalMenu() {
             return;
         }
 
-        if (!sessionIsValid || !session) {
+        if (!sessionIsValid) {
             setOpenAutoSaveWarning(true);
             return;
         }

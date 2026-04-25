@@ -1,9 +1,8 @@
+import { plannerEnvSchema } from '$src/backend/env';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { z } from 'zod';
 
-import { plannerEnvSchema } from '../env';
-
-export type { Quarter, RoadmapContent, Roadmap, PlannerAPIResponse } from '@packages/antalmanac-types';
+export type { PlannerAPIResponse, Quarter, Roadmap, RoadmapContent } from '@packages/antalmanac-types';
 
 export const PLANNER_API_URL = 'https://antalmanac.com/planner/api/trpc/external.roadmaps.getByGoogleID';
 
@@ -30,12 +29,12 @@ export const roadmapSchema = z.object({
     content: z.array(roadmapContentSchema),
 });
 
-export async function fetchUserPlannerRoadmaps(userId: string): Promise<Roadmap[]> {
+export async function fetchUserPlannerRoadmaps(googleUserId: string): Promise<Roadmap[]> {
     const env = plannerEnvSchema.parse(process.env);
     const apiKey = env.PLANNER_CLIENT_API_KEY;
 
     const searchParams = new URLSearchParams();
-    searchParams.set('input', JSON.stringify({ googleUserId: userId }));
+    searchParams.set('input', JSON.stringify({ googleUserId: googleUserId }));
     const url = `${PLANNER_API_URL}?${searchParams}`;
 
     try {

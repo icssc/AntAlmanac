@@ -78,9 +78,7 @@ export function usePlannerRoadmaps() {
             }
             try {
                 setIsPlannerLoading(true);
-                const data = await trpc.roadmap.fetchUserPlannerRoadmaps.query({
-                    userId: googleId,
-                });
+                const data = await trpc.roadmap.fetchUserPlannerRoadmaps.query();
                 if (active) setPlannerRoadmaps(data ?? []);
             } catch (e) {
                 console.error('Failed to fetch Planner roadmaps:', e);
