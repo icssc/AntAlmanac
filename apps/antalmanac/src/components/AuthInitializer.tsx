@@ -21,7 +21,7 @@ import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 const AuthInitializer = () => {
-    const [openAlert, setOpenalert] = useState(false);
+    const [openAlert, setOpenAlert] = useState(false);
 
     const isInitializingRef = useRef(false);
     const hasInitializedRef = useRef(false);
@@ -102,9 +102,8 @@ const AuthInitializer = () => {
 
         if (sessionData) {
             (async () => {
-                if (sessionData.session.expiresAt < new Date() || getWasLoggedIn()) {
-                    setOpenalert(true);
-                    await signOut();
+                if (sessionData.session.expiresAt < new Date()) {
+                    setOpenAlert(true);
                     return;
                 }
                 isInitializingRef.current = true;
@@ -112,7 +111,7 @@ const AuthInitializer = () => {
                     setOpenLoadingSchedule(true);
                     const isSessionValid = await updateSession(sessionData);
                     if (!isSessionValid) {
-                        setOpenalert(true);
+                        setOpenAlert(true);
                         return;
                     }
                     setSsoCookie();
@@ -134,6 +133,9 @@ const AuthInitializer = () => {
                 setOpenLoadingSchedule(false);
             })();
         } else if (!isSessionPending) {
+            if (getWasLoggedIn()) {
+                setOpenAlert(true);
+            }
             loadNotifications();
         }
     }, [sessionData, isSessionPending, updateSession, setAreSchedulesLoaded]);
@@ -142,7 +144,7 @@ const AuthInitializer = () => {
         <SignInAlertDialog
             open={openAlert}
             title="Your session has expired. Please sign in again."
-            onClose={() => setOpenalert(false)}
+            onClose={() => setOpenAlert(false)}
         />
     );
 };
