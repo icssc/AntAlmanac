@@ -1,4 +1,5 @@
 import { getGoogleAccount, SessionData } from '$lib/auth/authClient';
+import { setWasLoggedIn } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { create } from 'zustand';
@@ -52,6 +53,9 @@ const initState: Pick<
 };
 
 export const useSessionStore = create<SessionState>((set, get) => {
+    // Clean up stale localStorage token from before the cookie migration
+    window.localStorage.removeItem('sessionId');
+
     return {
         ...initState,
         updateSession: async (sessionData: SessionData) => {
@@ -70,14 +74,29 @@ export const useSessionStore = create<SessionState>((set, get) => {
                 googleId: accountInfo.userId,
                 email: sessionData.user.email,
             });
+            setWasLoggedIn(true);
             return true;
         },
+
         clearSession: async () => {
             const currentSession = get().sessionId;
             if (currentSession) {
                 clearSsoCookie();
                 set({ ...initState });
             }
+
+            setWasLoggedIn(false);
+            clearSsoCookie();
+            set({
+                userId: null,
+                sessionIsValid: false,
+                isGoogleUser: false,
+                email: null,
+                googleId: null,
+                filterTakenCourses: false,
+                userTakenCourses: new Set(),
+                plannerRoadmaps: [],
+            });
         },
         setIsNewUser: (isNewUser) => set({ isNewUser: isNewUser }),
         setAreSchedulesLoaded: (areSchedulesLoaded) => set({ areSchedulesLoaded: areSchedulesLoaded }),

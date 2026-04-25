@@ -1,12 +1,15 @@
 import { removeGoogleIdPrefix } from '$lib/auth/authUtils';
-import { z } from 'zod';
+import { protectedProcedure, router } from '$src/backend/trpc';
 
 import { fetchUserPlannerRoadmaps } from '../lib/planner';
-import { procedure, router } from '../trpc';
 
 const roadmapRouter = router({
-    fetchUserPlannerRoadmaps: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
-        return await fetchUserPlannerRoadmaps(removeGoogleIdPrefix(input.userId));
+    fetchUserPlannerRoadmaps: protectedProcedure.query(async ({ ctx }) => {
+        if (!ctx.googleId) {
+            return [];
+        }
+
+        return await fetchUserPlannerRoadmaps(removeGoogleIdPrefix(ctx.googleId));
     }),
 });
 

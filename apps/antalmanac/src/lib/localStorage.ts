@@ -17,6 +17,9 @@ enum LocalStorageKeys {
     helpBoxDismissalTime = 'helpBoxDismissalTime',
     columnToggles = 'columnToggles',
     pwaDismissalTime = 'pwaDismissalTime',
+    /** @deprecated Session token is now stored in an HttpOnly cookie (aa_session). */
+    sessionId = 'sessionId',
+    wasLoggedIn = 'wasLoggedIn',
     dataCache = 'dataCache',
     importedUser = 'importedUser',
     tempSaveData = 'tempSaveData',
@@ -59,6 +62,18 @@ export function getLocalStorageUserId() {
 
 export function removeLocalStorageUserId() {
     window.localStorage.removeItem(LSK.userId);
+}
+
+export function getWasLoggedIn(): boolean {
+    return window.localStorage.getItem(LSK.wasLoggedIn) === 'true';
+}
+
+export function setWasLoggedIn(value: boolean) {
+    if (value) {
+        window.localStorage.setItem(LSK.wasLoggedIn, 'true');
+    } else {
+        window.localStorage.removeItem(LSK.wasLoggedIn);
+    }
 }
 
 // Helper functions for patchNotesKey

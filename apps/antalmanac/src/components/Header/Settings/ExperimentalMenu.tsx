@@ -8,18 +8,12 @@ import { usePreviewStore, useAutoSaveStore, useDevModeStore } from '$stores/Sett
 import { Help } from '@mui/icons-material';
 import { Stack, Box, Typography, Tooltip, Switch } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useShallow } from 'zustand/react/shallow';
 
 export function ExperimentalMenu() {
     const [previewMode, setPreviewMode] = usePreviewStore((store) => [store.previewMode, store.setPreviewMode]);
     const [autoSave, setAutoSave] = useAutoSaveStore((store) => [store.autoSave, store.setAutoSave]);
-    const { sessionIsValid, sessionId } = useSessionStore(
-        useShallow((state) => ({
-            sessionIsValid: state.sessionIsValid,
-            sessionId: state.sessionId,
-        }))
-    );
-    const setOpenAutoSaveWarning = useScheduleComponentsToggleStore((state) => state.setOpenAutoSaveWarning);
+    const { sessionIsValid } = useSessionStore();
+    const { setOpenAutoSaveWarning } = useScheduleComponentsToggleStore();
     const [devMode, setDevMode] = useDevModeStore((store) => [store.devMode, store.setDevMode]);
 
     const postHog = usePostHog();
@@ -35,7 +29,7 @@ export function ExperimentalMenu() {
             return;
         }
 
-        if (!sessionIsValid || !sessionId) {
+        if (!sessionIsValid) {
             setOpenAutoSaveWarning(true);
             return;
         }

@@ -105,15 +105,11 @@ export type ActionType =
     | UndoRedoAction;
 
 class ActionTypesStore extends EventEmitter {
-    constructor() {
-        super();
-    }
-
     async autoSaveSchedule(_action: ActionType) {
         const sessionStore = useSessionStore.getState();
-        const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() == 'true';
+        const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() === 'true';
 
-        if (!sessionStore.sessionIsValid || !sessionStore.session?.token) {
+        if (!sessionStore.sessionIsValid || !sessionStore.userId) {
             if (autoSave) {
                 useScheduleComponentsToggleStore.getState().setOpenAutoSaveWarning(true);
             }

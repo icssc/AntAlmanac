@@ -10,18 +10,12 @@ import { useIsMobile } from '$src/hooks/useIsMobile';
 import { useSessionStore } from '$stores/SessionStore';
 import { AppBar, Box, Stack } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useShallow } from 'zustand/react/shallow';
 
 export function Header() {
     const [openSuccessfulSaved, setOpenSuccessfulSaved] = useState(false);
     const [openSignoutDialog, setOpenSignoutDialog] = useState(false);
     const importedUser = getLocalStorageImportedUser() ?? '';
-    const { sessionId, sessionIsValid } = useSessionStore(
-        useShallow((state) => ({
-            sessionId: state.sessionId,
-            sessionIsValid: state.sessionIsValid,
-        }))
-    );
+    const { sessionIsValid } = useSessionStore();
     const isMobile = useIsMobile();
 
     const clearStorage = () => {
@@ -43,10 +37,10 @@ export function Header() {
     };
 
     useEffect(() => {
-        if (importedUser !== '' && sessionId) {
+        if (importedUser !== '' && sessionIsValid) {
             setOpenSuccessfulSaved(true);
         }
-    }, [importedUser, sessionId]);
+    }, [importedUser, sessionIsValid]);
 
     return (
         <Box

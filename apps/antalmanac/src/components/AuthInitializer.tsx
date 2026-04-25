@@ -5,6 +5,7 @@ import { authClient, signOut } from '$lib/auth/authClient';
 import {
     getLocalStorageDataCache,
     getLocalStorageUserId,
+    getWasLoggedIn,
     removeLocalStorageDataCache,
     removeLocalStorageImportedUser,
     removeLocalStorageUserId,
@@ -98,7 +99,7 @@ const AuthInitializer = () => {
 
         if (sessionData) {
             (async () => {
-                if (sessionData.session.expiresAt < new Date()) {
+                if (sessionData.session.expiresAt < new Date() || getWasLoggedIn()) {
                     setOpenalert(true);
                     await signOut();
                     return;

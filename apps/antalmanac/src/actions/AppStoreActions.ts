@@ -213,9 +213,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
         return { imported: true, error: null };
     }
 
-    const userAndAccount = await trpc.userData.getUserAndAccountBySessionToken.query({
-        token: sessionStore.session.token ?? '',
-    });
+    const userAndAccount = await trpc.userData.getUserAndAccountBySessionToken.query();
     const { accounts } = userAndAccount;
 
     const incomingData: User | null = await trpc.userData.getUserData.query({ userId: incomingUser.id });
@@ -339,9 +337,7 @@ export const loadScheduleWithSessionToken = async () => {
     //     value: rememberMe ? 1 : 0,
     // });
     try {
-        const userDataResponse = await trpc.userData.getUserDataWithSession.query({
-            refreshToken: useSessionStore.getState().session?.token ?? '',
-        });
+        const userDataResponse = await trpc.userData.getUserDataWithSession.query();
         const scheduleSaveState = userDataResponse?.userData;
         if (scheduleSaveState !== undefined && isEmptySchedule(scheduleSaveState.schedules)) {
             return true;

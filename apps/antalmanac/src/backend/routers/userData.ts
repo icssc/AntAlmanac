@@ -1,13 +1,12 @@
 import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
 import { RDS } from '$src/backend/lib/rds';
-import { type User, ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
+import { procedure, protectedProcedure, router } from '$src/backend/trpc';
+import { type User, type ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
 import { type } from 'arktype';
 import { z } from 'zod';
-
-import { procedure, router } from '../trpc';
 
 const { OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
 
@@ -29,13 +28,8 @@ const saveInputSchema = z.object({
 });
 
 const userDataRouter = router({
-    /**
-     * Loads schedule data for a user that's logged in.
-     * @param input - An object containing the session token.
-     * @returns The account and user data associated with the session token.
-     */
-    getUserAndAccountBySessionToken: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
-        return await RDS.getUserAndAccountBySessionToken(db, input.token);
+    getUserAndAccountBySessionToken: protectedProcedure.query(async ({ ctx }) => {
+        return await RDS.getUserAndAccountBySessionToken(db, ctx.sessionToken);
     }),
     /**
      * Retrieves user data by user ID.
@@ -52,15 +46,8 @@ const userDataRouter = router({
             });
         }
     }),
-    getUserDataWithSession: procedure.input(z.object({ refreshToken: z.string() })).query(async ({ input }) => {
-        if ('refreshToken' in input) {
-            return await RDS.fetchUserDataWithSession(db, input.refreshToken);
-        } else {
-            throw new TRPCError({
-                code: 'BAD_REQUEST',
-                message: 'Invalid input: userId is required',
-            });
-        }
+    getUserDataWithSession: protectedProcedure.query(async ({ ctx }) => {
+        return await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
     }),
 
     getGuestAccountAndUserByName: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
