@@ -304,7 +304,7 @@ export default function CourseRenderPane(props: { id?: number }) {
 
     const queryGrades = useCallback(async (gradesQueryParams: Parameters<typeof Grades.populateGradesCache>[0]) => {
         // Catch the error here so that the course pane still loads even if the grades cache fails to populate
-        Grades.populateGradesCache(gradesQueryParams).catch((error) => {
+        await Grades.populateGradesCache(gradesQueryParams).catch((error) => {
             console.error(error);
             openSnackbar('error', 'Error loading grades information');
         });
