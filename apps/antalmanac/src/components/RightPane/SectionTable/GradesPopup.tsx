@@ -80,9 +80,10 @@ function GradesPopup(props: GradesPopupProps) {
             return `${deptCode} ${courseNumber}${instructorLabel}`;
         }
         // GPA is `null` if the class is pass/no-pass only.
-        return `${deptCode} ${courseNumber}${instructorLabel} | Average GPA: ${
-            activeData.courseGrades.averageGPA?.toFixed(2) ?? 'n/a'
-        }`;
+        const courseLabel = `${deptCode} ${courseNumber}${instructorLabel}`;
+        const instructorGPA = activeData.courseGrades.averageGPA?.toFixed(2) ?? 'n/a';
+
+        return `${courseLabel} | Average GPA: ${instructorGPA}`;
     }, [activeData, view, deptCode, courseNumber, instructor]);
 
     useEffect(() => {
