@@ -53,9 +53,6 @@ const initState: Pick<
 };
 
 export const useSessionStore = create<SessionState>((set, get) => {
-    // Clean up stale localStorage token from before the cookie migration
-    window.localStorage.removeItem('sessionId');
-
     return {
         ...initState,
         updateSession: async (sessionData: SessionData) => {

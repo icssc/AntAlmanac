@@ -97,6 +97,9 @@ const AuthInitializer = () => {
             return;
         }
 
+        // Clean up stale localStorage token from before the cookie migration
+        window.localStorage.removeItem('sessionId');
+
         if (sessionData) {
             (async () => {
                 if (sessionData.session.expiresAt < new Date() || getWasLoggedIn()) {
