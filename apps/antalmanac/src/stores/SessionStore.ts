@@ -1,5 +1,4 @@
 import { getGoogleAccount, SessionData } from '$lib/auth/authClient';
-import { setWasLoggedIn } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { create } from 'zustand';
@@ -71,7 +70,6 @@ export const useSessionStore = create<SessionState>((set, get) => {
                 googleId: accountInfo.userId,
                 email: sessionData.user.email,
             });
-            setWasLoggedIn(true);
             return true;
         },
 
@@ -82,7 +80,6 @@ export const useSessionStore = create<SessionState>((set, get) => {
                 set({ ...initState });
             }
 
-            setWasLoggedIn(false);
             clearSsoCookie();
             set({
                 userId: null,

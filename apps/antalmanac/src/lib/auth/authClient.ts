@@ -1,4 +1,5 @@
 import trpc from '$lib/api/trpc';
+import { setWasLoggedIn } from '$lib/localStorage';
 import type { auth } from '$src/lib/auth/auth';
 import { useSessionStore } from '$stores/SessionStore';
 import { genericOAuthClient, inferAdditionalFields } from 'better-auth/client/plugins';
@@ -14,6 +15,7 @@ export async function signOut(onLogoutComplete?: () => void) {
     const session = useSessionStore.getState().session;
     if (!session) {
         onLogoutComplete?.();
+        setWasLoggedIn(false);
         await useSessionStore.getState().clearSession();
         window.location.reload();
         return;
@@ -27,6 +29,7 @@ export async function signOut(onLogoutComplete?: () => void) {
 
     try {
         onLogoutComplete?.();
+        setWasLoggedIn(false);
         await useSessionStore.getState().clearSession();
 
         const { logoutUrl } = await trpc.userData.getLogoutUrl.query({

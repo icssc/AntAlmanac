@@ -10,6 +10,7 @@ import {
     removeLocalStorageImportedUser,
     removeLocalStorageUserId,
     setLocalStorageImportedUser,
+    setWasLoggedIn,
 } from '$lib/localStorage';
 import { setSsoCookie } from '$lib/ssoCookie';
 import AppStore from '$stores/AppStore';
@@ -120,6 +121,8 @@ const AuthInitializer = () => {
                     await loadUnsavedChanges();
 
                     setAreSchedulesLoaded(true);
+
+                    setWasLoggedIn(true);
 
                     loadNotifications();
 
