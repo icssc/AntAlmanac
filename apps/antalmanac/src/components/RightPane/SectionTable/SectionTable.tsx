@@ -147,6 +147,7 @@ function SectionTable(props: SectionTableProps) {
                 />
 
                 <IconButton
+                    title={`${openContent ? 'Collapse' : 'Expand'} courses`}
                     onClick={handleToggleExpand}
                     size="small"
                     sx={{ padding: '4px', marginLeft: 'auto', marginRight: 0.5 }}
