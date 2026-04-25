@@ -21,6 +21,8 @@ env:
     OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
     GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
     PLANNER_CLIENT_API_KEY: ${{ secrets.PLANNER_CLIENT_API_KEY }}
+    BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+    BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
 
 jobs:
     delete-staging:

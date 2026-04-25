@@ -11,18 +11,12 @@ import RightPaneStore from '$components/RightPane/RightPaneStore';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
-import {
-    getLocalStorageDataCache,
-    getLocalStorageOnFirstSignin,
-    getLocalStorageUserId,
-    removeLocalStorageOnFirstSignin,
-    removeLocalStorageUserId,
-} from '$lib/localStorage';
+import { getLocalStorageDataCache, getLocalStorageUserId, removeLocalStorageUserId } from '$lib/localStorage';
 import { WebSOC } from '$lib/websoc';
 import { ZotcourseResponse, queryZotcourse } from '$lib/zotcourse';
 import { BLUE, LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useDevModeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
@@ -55,6 +49,7 @@ import { CourseInfo, ShortCourseSchedule } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useShallow } from 'zustand/react/shallow';
 
 enum ImportSource {
     ZOT_COURSE_IMPORT = 'zotcourse',
@@ -77,8 +72,20 @@ export function Import() {
 
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
 
-    const { sessionIsValid } = useSessionStore();
-    const { openImportDialog, setOpenImportDialog } = scheduleComponentsToggleStore();
+    const { sessionIsValid, isNewUser, setIsNewUser, areSchedulesLoaded } = useSessionStore(
+        useShallow((state) => ({
+            sessionIsValid: state.sessionIsValid,
+            isNewUser: state.isNewUser,
+            setIsNewUser: state.setIsNewUser,
+            areSchedulesLoaded: state.areSchedulesLoaded,
+        }))
+    );
+    const { openImportDialog, setOpenImportDialog } = useScheduleComponentsToggleStore(
+        useShallow((state) => ({
+            openImportDialog: state.openImportDialog,
+            setOpenImportDialog: state.setOpenImportDialog,
+        }))
+    );
     const devMode = useDevModeStore((store) => store.devMode);
 
     const theme = useTheme();
@@ -615,16 +622,15 @@ export function Import() {
     );
 
     const handleFirstTimeSignin = useCallback(async () => {
-        const newUserFlag = getLocalStorageOnFirstSignin() ?? '';
-        if (newUserFlag !== '') {
+        if (areSchedulesLoaded && isNewUser) {
             const savedUserId = getLocalStorageUserId();
             if (savedUserId) setAAUsername(savedUserId);
             handleOpen();
-            removeLocalStorageOnFirstSignin();
+            setIsNewUser(false);
             removeLocalStorageUserId();
             setImportSource(ImportSource.AA_USERNAME_IMPORT);
         }
-    }, [handleOpen]);
+    }, [handleOpen, isNewUser, setIsNewUser, areSchedulesLoaded]);
 
     useEffect(() => {
         const handleSkeletonModeChange = () => {

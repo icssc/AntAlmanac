@@ -1,22 +1,32 @@
 import actionTypesStore from '$actions/ActionTypesStore';
 import { saveSchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import trpc from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Close, Save as SaveIcon } from '@mui/icons-material';
 import { Stack, Snackbar, Alert, Link, IconButton, Button } from '@mui/material';
 import { useState, useEffect } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 export const Save = () => {
     const isDark = useThemeStore((store) => store.isDark);
-    const { sessionIsValid } = useSessionStore();
+    const { sessionIsValid, user } = useSessionStore(
+        useShallow((state) => ({
+            sessionIsValid: state.sessionIsValid,
+            user: state.user,
+        }))
+    );
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
-    const { openAutoSaveWarning, setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
+    const { openAutoSaveWarning, setOpenAutoSaveWarning } = useScheduleComponentsToggleStore(
+        useShallow((state) => ({
+            openAutoSaveWarning: state.openAutoSaveWarning,
+            setOpenAutoSaveWarning: state.setOpenAutoSaveWarning,
+        }))
+    );
 
     const handleClickSignIn = () => {
         setOpenSignInDialog(!openSignInDialog);
@@ -39,10 +49,9 @@ export const Save = () => {
     }, []);
 
     const saveScheduleData = async () => {
-        if (sessionIsValid) {
-            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query();
+        if (sessionIsValid && user) {
             setSaving(true);
-            await saveSchedule(accounts.providerAccountId, true, users);
+            await saveSchedule(user.id, true);
             setSaving(false);
         }
     };

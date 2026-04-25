@@ -1,10 +1,9 @@
 import { EventEmitter } from 'events';
 
 import { autoSaveSchedule } from '$actions/AppStoreActions';
-import trpc from '$lib/api/trpc';
 import { getLocalStorageAutoSave } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import type { CustomEventId, RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
 
@@ -112,17 +111,15 @@ class ActionTypesStore extends EventEmitter {
 
         if (!sessionStore.sessionIsValid || !sessionStore.userId) {
             if (autoSave) {
-                scheduleComponentsToggleStore.getState().setOpenAutoSaveWarning(true);
+                useScheduleComponentsToggleStore.getState().setOpenAutoSaveWarning(true);
             }
             return;
         }
 
         if (autoSave) {
-            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query();
-
-            if (accounts.providerAccountId) {
+            if (sessionStore?.user?.id) {
                 this.emit('autoSaveStart');
-                await autoSaveSchedule(accounts.providerAccountId, { userInfo: users });
+                await autoSaveSchedule(sessionStore.user.id);
                 AppStore.unsavedChanges = false;
                 this.emit('autoSaveEnd');
             }

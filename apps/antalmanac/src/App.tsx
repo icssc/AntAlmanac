@@ -4,10 +4,10 @@ import { AutoSignIn } from '$components/AutoSignIn';
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
 import AppPostHogProvider from '$providers/PostHog';
 import AppQueryProvider from '$providers/Query';
-import { AuthPage } from '$routes/AuthPage';
 import { ErrorPage } from '$routes/ErrorPage';
 import Feedback from '$routes/Feedback';
 import Home from '$routes/Home';
+import NewUserPage from '$routes/NewUserPage';
 import { OutagePage } from '$routes/OutagePage';
 import { Unsubscribe } from '$routes/UnsubscribePage';
 import AppThemeProvider from '$src/app/Theme';
@@ -58,21 +58,8 @@ const BROWSER_ROUTER = createBrowserRouter([
                 errorElement: <ErrorPage />,
             },
             {
-                path: '/auth',
-                element: <AuthPage />,
-                errorElement: <ErrorPage />,
-            },
-            {
-                // OAuth callback sink for the native iOS wrapper. In the happy
-                // path ASWebAuthenticationSession intercepts this URL via the
-                // AASA association and never actually loads it in any web view.
-                // This route exists as defense-in-depth: if the URL is ever
-                // navigated to directly (e.g. Universal Link delivered to the
-                // WKWebView via SceneDelegate, or a browser that hits this URL
-                // outside any native flow), AuthPage still completes the PKCE
-                // exchange using the cookies set on antalmanac.com.
-                path: '/auth/native',
-                element: <AuthPage />,
+                path: '/welcome',
+                element: <NewUserPage />,
                 errorElement: <ErrorPage />,
             },
             {

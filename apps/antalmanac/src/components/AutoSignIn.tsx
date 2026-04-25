@@ -1,6 +1,7 @@
-import trpc from '$lib/api/trpc';
+import { loginUser } from '$actions/AppStoreActions';
+import { getSignInUrl } from '$lib/auth/authActions';
+import { authClient } from '$lib/auth/authClient';
 import { hasSsoCookie } from '$lib/ssoCookie';
-import { useSessionStore } from '$stores/SessionStore';
 import { useEffect, useRef } from 'react';
 
 /**
@@ -14,44 +15,29 @@ import { useEffect, useRef } from 'react';
  */
 export function AutoSignIn() {
     const hasChecked = useRef(false);
+    const { data, isPending } = authClient.useSession();
 
     useEffect(() => {
-        if (hasChecked.current) {
+        if (hasChecked.current || isPending) {
             return;
         }
         hasChecked.current = true;
 
         const checkAndSignIn = async () => {
-            // Don't interfere when AuthPage is already handling an OAuth callback.
-            // Calling getGoogleAuthUrl here would overwrite the oauth_state /
-            // oauth_code_verifier cookies that AuthPage needs to finish the exchange.
-            if (window.location.pathname === '/auth' || window.location.pathname === '/auth/native') {
-                return;
-            }
-
-            if (!hasSsoCookie()) {
-                return;
-            }
-
-            if (useSessionStore.getState().sessionIsValid) {
-                return;
-            }
-
-            const loaded = await useSessionStore.getState().loadSession();
-            if (loaded) {
+            if (!hasSsoCookie() || data?.session) {
                 return;
             }
 
             try {
-                const authUrl = await trpc.userData.getGoogleAuthUrl.query({ prompt: 'none' });
-                window.location.href = authUrl.toString();
+                const { url } = await getSignInUrl({ authorizationUrlParams: { prompt: 'none' } });
+                loginUser({ silent: true, signInUrl: url });
             } catch {
                 // Silent SSO failed (e.g. backend unavailable). Don't retry.
             }
         };
 
         checkAndSignIn();
-    }, []);
+    }, [isPending, data]);
 
     return null;
 }

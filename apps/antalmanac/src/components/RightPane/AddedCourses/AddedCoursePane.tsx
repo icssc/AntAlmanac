@@ -11,7 +11,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import { LIGHT_BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useTabStore } from '$stores/TabStore';
 import { MenuBook } from '@mui/icons-material';
 import { Box, Chip, Paper, SxProps, TextField, Tooltip, Typography, useTheme } from '@mui/material';
@@ -373,7 +373,7 @@ function AddedSectionsGrid() {
                         }}
                         secondaryAction={{
                             label: 'Import Schedule',
-                            onClick: () => scheduleComponentsToggleStore.getState().setOpenImportDialog(true),
+                            onClick: () => useScheduleComponentsToggleStore.getState().setOpenImportDialog(true),
                         }}
                     />
                 )}

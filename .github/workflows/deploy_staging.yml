@@ -24,6 +24,8 @@ env:
     GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
     NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY }}
     PLANNER_CLIENT_API_KEY: ${{ secrets.PLANNER_CLIENT_API_KEY }}
+    BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+    BETTER_AUTH_URL: ${{ secrets.BETTER_AUTH_URL }}
 
 jobs:
     deploy-staging:
@@ -72,7 +74,7 @@ jobs:
             - name: Generate termData
               uses: ./.github/actions/cache-generated-data
               with:
-                api-key: ${{ secrets.ANTEATER_API_KEY }}
+                  api-key: ${{ secrets.ANTEATER_API_KEY }}
 
             - name: Deploy SST (staging)
               id: deploy

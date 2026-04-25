@@ -1,3 +1,5 @@
+import { AUTH_PROVIDER_ID } from '$lib/constants';
+import { getSsoResponseCookieAttributes, SSO_COOKIE_NAME } from '$lib/ssoCookie';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -50,7 +52,17 @@ export function proxy(request: NextRequest) {
         });
     }
 
-    const response = NextResponse.next();
+    let response = NextResponse.next();
+
+    if (request.nextUrl.pathname === `/api/auth/oauth2/callback/${AUTH_PROVIDER_ID}`) {
+        if (request.nextUrl.searchParams.get('error') === 'login_required') {
+            response = NextResponse.redirect(new URL('/', request.url));
+            response.cookies.set(SSO_COOKIE_NAME, '', {
+                ...getSsoResponseCookieAttributes(request.nextUrl),
+                maxAge: 0,
+            });
+        }
+    }
 
     if (isOriginAllowed(origin)) {
         response.headers.set('Access-Control-Allow-Origin', origin || '*');

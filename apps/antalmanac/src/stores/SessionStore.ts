@@ -1,92 +1,85 @@
-import trpc from '$lib/api/trpc';
-import { setWasLoggedIn } from '$lib/localStorage';
+import { getGoogleAccount, SessionData } from '$lib/auth/authClient';
 import { clearSsoCookie } from '$lib/ssoCookie';
-import { useNotificationStore } from '$stores/NotificationStore';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { create } from 'zustand';
 
 interface SessionState {
+    session: SessionData['session'] | null;
+    sessionId: string | null;
+    user: SessionData['user'] | null;
     userId: string | null;
     isGoogleUser: boolean;
     email: string | null;
     sessionIsValid: boolean;
-    loadSession: () => Promise<boolean>;
-    clearSession: () => Promise<string | null>;
+    updateSession: (session: SessionData) => Promise<boolean>;
+    clearSession: () => Promise<void>;
 
     googleId: string | null;
+
+    isNewUser: boolean;
+    setIsNewUser: (isNewUser: boolean) => void;
+
+    areSchedulesLoaded: boolean;
+    setAreSchedulesLoaded: (areSchedulesLoaded: boolean) => void;
+
     filterTakenCourses: boolean;
     userTakenCourses: Set<string>;
 
     plannerRoadmaps: Roadmap[];
 
-    setGoogleId: (id: string) => void;
     setFilterTakenCourses: (value: boolean) => void;
     setUserTakenCourses: (courses: Set<string>) => void;
     setPlannerRoadmaps: (roadmaps: Roadmap[]) => void;
 }
 
-export const useSessionStore = create<SessionState>((set) => {
-    // Clean up stale localStorage token from before the cookie migration
-    window.localStorage.removeItem('sessionId');
+const initState: Pick<
+    SessionState,
+    { [K in keyof SessionState]: SessionState[K] extends Function ? never : K }[keyof SessionState]
+> = {
+    session: null,
+    sessionId: null,
+    user: null,
+    userId: null,
+    isGoogleUser: false,
+    email: null,
+    sessionIsValid: false,
+    googleId: null,
+    isNewUser: false,
+    areSchedulesLoaded: false,
+    filterTakenCourses: false,
+    userTakenCourses: new Set(),
+    plannerRoadmaps: [],
+};
 
+export const useSessionStore = create<SessionState>((set, get) => {
     return {
-        userId: null,
-        isGoogleUser: false,
-        email: null,
-        sessionIsValid: false,
-        googleId: null,
-        filterTakenCourses: false,
-        userTakenCourses: new Set(),
-        plannerRoadmaps: [],
-
-        loadSession: async () => {
-            try {
-                const sessionIsValid = await trpc.auth.validateSession.query();
-                if (!sessionIsValid) {
-                    set({ sessionIsValid: false, userId: null, isGoogleUser: false, email: null, googleId: null });
-                    useNotificationStore.getState().loadNotifications();
-                    return false;
-                }
-
-                set({ sessionIsValid: true });
-
-                const { users } = await trpc.userData.getUserAndAccountBySessionToken.query();
-
-                let googleId = await trpc.userData.getGoogleIdByUserId.query();
-                if (googleId?.startsWith('google_')) {
-                    googleId = googleId.slice('google_'.length);
-                }
-                const isGoogleUser = Boolean(users.email);
-                set({
-                    userId: users.id,
-                    isGoogleUser,
-                    email: users.email ?? null,
-                    googleId,
-                });
-
-                setWasLoggedIn(true);
-                useNotificationStore.getState().loadNotifications();
-                return true;
-            } catch (error) {
-                console.error('Failed to load session:', error);
-                set({ sessionIsValid: false, userId: null, isGoogleUser: false, email: null, googleId: null });
-                useNotificationStore.getState().loadNotifications();
+        ...initState,
+        updateSession: async (sessionData: SessionData) => {
+            const accountInfo = await getGoogleAccount();
+            if (!accountInfo) {
                 return false;
             }
+
+            set({
+                session: sessionData.session,
+                sessionId: sessionData.session.id,
+                sessionIsValid: true,
+                user: sessionData.user,
+                userId: sessionData.user.id,
+                isGoogleUser: true,
+                googleId: accountInfo.userId,
+                email: sessionData.user.email,
+            });
+            return true;
         },
 
         clearSession: async () => {
-            let logoutUrl: string | null = null;
-            try {
-                const result = await trpc.userData.logout.mutate({
-                    redirectUrl: window.location.origin,
-                });
-                logoutUrl = result.logoutUrl;
-            } catch (error) {
-                console.error('Error during logout:', error);
+            const currentSession = get().sessionId;
+            if (currentSession) {
+                clearSsoCookie();
+                set({ ...initState });
             }
 
-            setWasLoggedIn(false);
             clearSsoCookie();
             set({
                 userId: null,
@@ -98,11 +91,9 @@ export const useSessionStore = create<SessionState>((set) => {
                 userTakenCourses: new Set(),
                 plannerRoadmaps: [],
             });
-
-            return logoutUrl;
         },
-
-        setGoogleId: (id) => set({ googleId: id }),
+        setIsNewUser: (isNewUser) => set({ isNewUser: isNewUser }),
+        setAreSchedulesLoaded: (areSchedulesLoaded) => set({ areSchedulesLoaded: areSchedulesLoaded }),
         setFilterTakenCourses: (value) => set({ filterTakenCourses: value }),
         setUserTakenCourses: (courses) => set({ userTakenCourses: courses }),
         setPlannerRoadmaps: (roadmaps) => set({ plannerRoadmaps: roadmaps }),

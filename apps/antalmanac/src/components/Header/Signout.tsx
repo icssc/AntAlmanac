@@ -1,13 +1,12 @@
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import trpc from '$lib/api/trpc';
+import { signOut } from '$lib/auth/authClient';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from '@mui/material';
-import type { User } from '@packages/antalmanac-types';
-import { type MouseEvent, useCallback, useEffect, useState } from 'react';
+import { ListItemIcon, ListItemText, MenuItem, Popover, Divider } from '@mui/material';
+import { useState, type MouseEvent } from 'react';
 
 interface SignoutProps {
     onLogoutComplete?: () => void;
@@ -15,8 +14,7 @@ interface SignoutProps {
 
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [user, setUser] = useState<Pick<User, 'name' | 'avatar' | 'email'> | null>(null);
-    const { sessionIsValid, clearSession } = useSessionStore();
+    const user = useSessionStore((state) => state.user);
     const isDark = useThemeStore((store) => store.isDark);
 
     const open = Boolean(anchorEl);
@@ -27,35 +25,8 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
     const handleLogout = async () => {
         setAnchorEl(null);
 
-        try {
-            const logoutUrl = await clearSession();
-            onLogoutComplete?.();
-
-            if (logoutUrl) {
-                window.location.href = logoutUrl;
-            }
-        } catch (error) {
-            console.error('Error during logout', error);
-            onLogoutComplete?.();
-        }
+        signOut(onLogoutComplete);
     };
-
-    const handleAuthChange = useCallback(async () => {
-        if (sessionIsValid) {
-            const userData = await trpc.userData.getUserAndAccountBySessionToken.query().then((res) => res.users);
-            setUser({
-                name: userData.name ?? undefined,
-                avatar: userData.avatar ?? undefined,
-                email: userData.email ?? undefined,
-            });
-        }
-    }, [sessionIsValid]);
-
-    useEffect(() => {
-        if (sessionIsValid) {
-            handleAuthChange();
-        }
-    }, [handleAuthChange, sessionIsValid]);
 
     return (
         <div id="load-save-container">

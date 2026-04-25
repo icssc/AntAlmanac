@@ -13,6 +13,14 @@ export const oidcOAuthEnvSchema = z.object({
 });
 
 /**
+ * Environment variables required for better-auth
+ */
+export const betterAuthEnvSchema = z.object({
+    BETTER_AUTH_SECRET: z.string(),
+    BETTER_AUTH_URL: z.string(),
+});
+
+/**
  * Environment variables required by the backend to connect to the RDS instance.
  */
 export const rdsEnvSchema = z.object({
@@ -55,6 +63,7 @@ export const backendEnvSchema = z
     .object({})
     .merge(stagingEnvSchema)
     .merge(oidcOAuthEnvSchema)
+    .merge(betterAuthEnvSchema)
     .merge(rdsEnvSchema)
     .merge(mapboxEnvSchema)
     .merge(aapiEnvSchema)
