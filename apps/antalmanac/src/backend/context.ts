@@ -1,28 +1,19 @@
-import { RDS } from '$src/backend/lib/rds';
-import { db } from '@packages/db';
+import { auth } from '$lib/auth/auth';
+import { fetchGoogleAccount } from '$lib/auth/authActions';
 import type { inferAsyncReturnType } from '@trpc/server';
 import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch';
-
-export const SESSION_COOKIE_NAME = 'aa_session';
+import { headers } from 'next/headers';
 
 export const createContext = async (opts: FetchCreateContextFnOptions) => {
-    const cookieHeader = opts.req.headers.get('cookie') ?? '';
-    const match = cookieHeader.match(new RegExp(`(?:^|;\\s*)${SESSION_COOKIE_NAME}=([^;]*)`));
-    const sessionToken = match?.[1] || null;
-
-    let userId: string | null = null;
-    if (sessionToken) {
-        const session = await RDS.getCurrentSession(db, sessionToken);
-        if (session && session.expires > new Date()) {
-            userId = session.userId;
-        }
-    }
+    const sessionData = await auth.api.getSession({ headers: await headers() });
+    const googleAccount = await fetchGoogleAccount();
 
     return {
         req: opts.req,
         resHeaders: opts.resHeaders,
-        userId,
-        sessionToken,
+        userId: sessionData?.user.id,
+        sessionToken: sessionData?.session?.token,
+        googleId: googleAccount?.userId,
     };
 };
 
