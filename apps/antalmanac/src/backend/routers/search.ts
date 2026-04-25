@@ -18,7 +18,12 @@ const geCategoryKeys = ['ge1a', 'ge1b', 'ge2', 'ge3', 'ge4', 'ge5a', 'ge5b', 'ge
 
 type GECategoryKey = (typeof geCategoryKeys)[number];
 
-type BareCourse = Pick<SectionSearchResult, 'department' | 'courseNumber'>;
+const bareCourseSchema = z.object({
+    department: z.string(),
+    courseNumber: z.string(),
+});
+
+type BareCourse = z.infer<typeof bareCourseSchema>;
 
 const geCategories: Record<GECategoryKey, GESearchResult> = {
     ge1a: { type: 'GE_CATEGORY', name: 'Lower Division Writing' },
@@ -137,12 +142,12 @@ const searchRouter = router({
     filterOfferedCourses: procedure
         .input(
             z.object({
-                courses: z.array(z.custom<BareCourse>()),
+                courses: z.array(bareCourseSchema),
                 year: z.string(),
                 quarter: z.string(),
             })
         )
-        .query(async ({ input }): Promise<Record<string, Set<string>>> => {
+        .query(async ({ input }): Promise<Record<BareCourse['department'], Set<BareCourse['courseNumber']>>> => {
             const { courses, year, quarter } = input;
             const termSectionCodes = await getTermSectionCodes(year, quarter);
             const offeredCourseSet = getOfferedCourses(termSectionCodes);
