@@ -1,16 +1,14 @@
 import { Footer } from '$components/RightPane/CoursePane/SearchForm/Footer';
-import FuzzySearch from '$components/RightPane/CoursePane/SearchForm/FuzzySearch';
 import { ManualSearch } from '$components/RightPane/CoursePane/SearchForm/ManualSearch';
 import { PrivacyPolicyBanner } from '$components/RightPane/CoursePane/SearchForm/PrivacyPolicyBanner';
-import SearchWithPlanner from '$components/RightPane/CoursePane/SearchForm/SearchWithPlanner';
+import QuickSearch from '$components/RightPane/CoursePane/SearchForm/QuickSearch';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
-import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { LIGHT_BLUE } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useThemeStore } from '$stores/SettingsStore';
-import { alpha, Box, Stack, SxProps, Theme, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { alpha, Box, Stack, SxProps, Theme, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, type FormEvent } from 'react';
 
@@ -25,7 +23,6 @@ const QUICKSEARCH_LABEL_SX: SxProps<Theme> = {
 export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
     const { manualSearchEnabled, toggleManualSearch } = useCoursePaneStore();
     const isDark = useThemeStore((store) => store.isDark);
-    const isMobile = useIsMobile();
     const postHog = usePostHog();
 
     const onFormSubmit = useCallback(
@@ -76,28 +73,7 @@ export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
                     </Box>
 
                     {!manualSearchEnabled ? (
-                        isMobile ? (
-                            <>
-                                <FuzzySearch
-                                    toggleSearch={toggleSearch}
-                                    postHog={postHog}
-                                    labelProps={{ sx: QUICKSEARCH_LABEL_SX }}
-                                />
-                                <SearchWithPlanner />
-                            </>
-                        ) : (
-                            <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-                                <FuzzySearch
-                                    toggleSearch={toggleSearch}
-                                    postHog={postHog}
-                                    labelProps={{ sx: QUICKSEARCH_LABEL_SX }}
-                                />
-                                <Typography>or</Typography>
-                                <Box sx={{ minWidth: '25%' }}>
-                                    <SearchWithPlanner />
-                                </Box>
-                            </Stack>
-                        )
+                        <QuickSearch toggleSearch={toggleSearch} labelProps={{ sx: QUICKSEARCH_LABEL_SX }} />
                     ) : (
                         <ManualSearch
                             onSubmit={() => {
