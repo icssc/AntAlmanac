@@ -1,4 +1,5 @@
 import RightDivider from '$components/RightDivider';
+import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import trpc from '$lib/api/trpc';
 import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$lib/plannerHelpers';
@@ -8,6 +9,7 @@ import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { Autocomplete, Box, CircularProgress, MenuItem, TextField, Tooltip, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
+import { useSearchParams } from 'next/navigation';
 import { ComponentProps, HTMLAttributes, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -36,7 +38,15 @@ const SearchWithPlanner = () => {
         }))
     );
 
-    const displaySections = useCoursePaneStore((state) => state.displaySections);
+    const { displaySections, hasSearchedWithUrlParams, setHasSearchedWithUrlParams } = useCoursePaneStore(
+        useShallow((state) => ({
+            displaySections: state.displaySections,
+            hasSearchedWithUrlParams: state.hasSearchedWithUrlParams,
+            setHasSearchedWithUrlParams: state.setHasSearchedWithUrlParams,
+        }))
+    );
+
+    const searchParams = useSearchParams();
 
     const doesRoadmapIncludeTerm = (roadmapId: Roadmap['id']) => {
         return termRoadmapIdMapping[RoadmapTermRelation.IncludesTerm].has(roadmapId.toString());
@@ -53,18 +63,18 @@ const SearchWithPlanner = () => {
         });
     }, [plannerRoadmaps, termRoadmapIdMapping]);
 
-    const search = async (roadmapId: Roadmap['id']) => {
-        const roadmap = plannerRoadmaps.find((roadmap) => roadmap.id === roadmapId);
+    const search = async (roadmapId: Roadmap['id']): Promise<boolean> => {
+        const roadmap = plannerRoadmaps.find((roadmap) => roadmap.id.toString() === roadmapId.toString());
         if (!roadmap) {
             openSnackbar('error', "Couldn't find selected roadmap!");
-            return;
+            return false;
         }
 
         const { year, quarter } = RightPaneStore.getTermParts();
         const quarterPlan = getQuarterPlan(roadmap, year, quarter);
         if (!quarterPlan) {
-            openSnackbar('error', "Couldn't find selected roadmap!");
-            return;
+            openSnackbar('error', `The provided roadmap does not contain ${year} ${quarter}`);
+            return false;
         }
         try {
             setIsLoadingSearch(true);
@@ -78,8 +88,11 @@ const SearchWithPlanner = () => {
         } catch (error) {
             console.error('Something went wrong while searching with planner:', error);
             openSnackbar('error', 'Something went wrong while searching with planner.');
+            return false;
+        } finally {
+            setIsLoadingSearch(false);
         }
-        setIsLoadingSearch(false);
+        return true;
     };
 
     const groupBy = (option: Roadmap) => {
@@ -147,6 +160,22 @@ const SearchWithPlanner = () => {
             RightPaneStore.removeListener('formDataChange', updateTermRoadmaps);
         };
     }, [plannerRoadmaps]);
+
+    useEffect(() => {
+        if (plannerRoadmaps.length === 0 || hasSearchedWithUrlParams) {
+            return;
+        }
+
+        const roadmapId = searchParams.get(PLANNER_SEARCH_PARAM);
+        if (roadmapId) {
+            (async () => {
+                const success = await search(roadmapId);
+                if (success) {
+                    setHasSearchedWithUrlParams(true);
+                }
+            })();
+        }
+    }, [searchParams, plannerRoadmaps, hasSearchedWithUrlParams, setHasSearchedWithUrlParams]);
 
     if (isLoadingSearch) {
         return (

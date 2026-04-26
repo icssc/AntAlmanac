@@ -27,3 +27,5 @@ export const MANUAL_SEARCH_PARAMS = [
 ] as const;
 
 export type ManualSearchParam = (typeof MANUAL_SEARCH_PARAMS)[number];
+
+export const PLANNER_SEARCH_PARAM = 'importRoadmap';

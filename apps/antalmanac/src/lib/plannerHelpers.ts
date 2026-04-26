@@ -1,3 +1,4 @@
+import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
 import { Roadmap } from '@packages/antalmanac-types';
 
 export enum RoadmapTermRelation {
@@ -24,4 +25,9 @@ export function getRoadmapTermRelation(roadmap: Roadmap, year: string, quarter: 
         return RoadmapTermRelation.IncludesTerm;
     }
     return RoadmapTermRelation.NoCourses;
+}
+
+export function shouldSearchPlannerFromParams() {
+    const searchParams = new URLSearchParams(window.location.search);
+    return searchParams.get(PLANNER_SEARCH_PARAM) !== null;
 }
