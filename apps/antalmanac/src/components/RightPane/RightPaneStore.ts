@@ -1,9 +1,18 @@
 import { EventEmitter } from 'events';
 
-import { AdvancedSearchParam, ManualSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
+import {
+    AdvancedSearchParam,
+    BasicSearchParam,
+    ManualSearchParam,
+} from '$components/RightPane/CoursePane/SearchForm/constants';
 import { getDefaultTerm } from '$lib/termData';
 
-const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {
+const defaultBasicSearchValues: Record<BasicSearchParam, string> = {
+    term: getDefaultTerm().shortName,
+};
+
+const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> & typeof defaultBasicSearchValues = {
+    ...defaultBasicSearchValues,
     instructor: '',
     units: '',
     endTime: '',
@@ -17,16 +26,16 @@ const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {
     days: '',
 };
 
-const defaultFormValues: Record<ManualSearchParam, string> = {
+const defaultFormValues: Record<ManualSearchParam, string> & typeof defaultAdvancedSearchValues = {
     deptValue: 'ALL',
     ge: 'ANY',
-    term: getDefaultTerm().shortName,
     courseNumber: '',
     sectionCode: '',
     ...defaultAdvancedSearchValues,
 };
 
-export type CourseSearchParams = Record<ManualSearchParam, string>;
+export type CourseSearchParams = typeof defaultFormValues;
+export type CourseSearchParamKey = keyof CourseSearchParams;
 
 export interface BuildingFocusInfo {
     location: string; // E.g., ICS 174
@@ -35,7 +44,7 @@ export interface BuildingFocusInfo {
 
 class RightPaneStore extends EventEmitter {
     private formData: CourseSearchParams;
-    private prevFormData?: Record<ManualSearchParam, string>;
+    private prevFormData?: CourseSearchParams;
     private multiSearchData: CourseSearchParams[];
     private urlSectionCodeValue: string;
     private urlTermValue: string;
@@ -59,7 +68,7 @@ class RightPaneStore extends EventEmitter {
     }
 
     updateFormDataFromURL = (search: URLSearchParams) => {
-        const formFields = Object.keys(defaultFormValues) as ManualSearchParam[];
+        const formFields = Object.keys(defaultFormValues) as CourseSearchParamKey[];
 
         formFields.forEach((field) => {
             const paramValue = search.get(field) || search.get(field.toUpperCase());
@@ -88,7 +97,7 @@ class RightPaneStore extends EventEmitter {
     getUrlCourseNumValue = () => this.urlCourseNumValue;
     getUrlDeptValue = () => this.urlDeptValue;
 
-    updateFormValue = (field: ManualSearchParam, value: string) => {
+    updateFormValue = (field: CourseSearchParamKey, value: string) => {
         this.formData[field] = value;
         this.emit('formDataChange');
     };
