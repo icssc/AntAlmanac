@@ -15,9 +15,10 @@ import { useShallow } from 'zustand/react/shallow';
 
 type AutocompleteProps = ComponentProps<typeof Autocomplete>;
 
-type TermRoadmapIdMapping = Record<RoadmapTermRelation, Set<string>>;
+// Maps relation types to roadmap IDs
+type TermRoadmapGrouping = Record<RoadmapTermRelation, Set<string>>;
 
-function getDefaultTermRoadmapIdMapping(): TermRoadmapIdMapping {
+function getDefaultTermRoadmapGrouping(): TermRoadmapGrouping {
     return {
         [RoadmapTermRelation.IncludesTerm]: new Set(),
         [RoadmapTermRelation.ExcludesTerm]: new Set(),
@@ -26,8 +27,7 @@ function getDefaultTermRoadmapIdMapping(): TermRoadmapIdMapping {
 }
 
 const SearchWithPlanner = () => {
-    const [termRoadmapIdMapping, setTermRoadmapIdMapping] =
-        useState<TermRoadmapIdMapping>(getDefaultTermRoadmapIdMapping);
+    const [termRoadmapGrouping, setTermRoadmapGrouping] = useState<TermRoadmapGrouping>(getDefaultTermRoadmapGrouping);
     const [isLoadingSearch, setIsLoadingSearch] = useState(false);
 
     const { sessionIsValid, isPlannerLoading, plannerRoadmaps } = useSessionStore(
@@ -49,7 +49,7 @@ const SearchWithPlanner = () => {
     const searchParams = useSearchParams();
 
     const doesRoadmapIncludeTerm = (roadmapId: Roadmap['id']) => {
-        return termRoadmapIdMapping[RoadmapTermRelation.IncludesTerm].has(roadmapId.toString());
+        return termRoadmapGrouping[RoadmapTermRelation.IncludesTerm].has(roadmapId.toString());
     };
 
     const sortedRoadmaps = useMemo(() => {
@@ -61,7 +61,7 @@ const SearchWithPlanner = () => {
             }
             return aIncludesTerm ? -1 : 1;
         });
-    }, [plannerRoadmaps, termRoadmapIdMapping]);
+    }, [plannerRoadmaps, termRoadmapGrouping]);
 
     const search = async (roadmapId: Roadmap['id']): Promise<boolean> => {
         const roadmap = plannerRoadmaps.find((roadmap) => roadmap.id.toString() === roadmapId.toString());
@@ -131,7 +131,7 @@ const SearchWithPlanner = () => {
                 <Typography sx={{ marginLeft: 1 }}>{roadmap.name}</Typography>
             </MenuItem>
         );
-        if (termRoadmapIdMapping[RoadmapTermRelation.NoCourses].has(roadmap.id.toString())) {
+        if (termRoadmapGrouping[RoadmapTermRelation.NoCourses].has(roadmap.id.toString())) {
             return (
                 <Tooltip title="This roadmap has no courses for this term">
                     <span>{menuItem}</span>
@@ -144,12 +144,12 @@ const SearchWithPlanner = () => {
     useEffect(() => {
         const updateTermRoadmaps = () => {
             const { year, quarter } = RightPaneStore.getTermParts();
-            const roadmapsWithTerm: typeof termRoadmapIdMapping = getDefaultTermRoadmapIdMapping();
+            const roadmapsWithTerm: typeof termRoadmapGrouping = getDefaultTermRoadmapGrouping();
             for (const roadmap of plannerRoadmaps) {
                 const roadmapTermRelation = getRoadmapTermRelation(roadmap, year, quarter);
                 roadmapsWithTerm[roadmapTermRelation].add(roadmap.id.toString());
             }
-            setTermRoadmapIdMapping(roadmapsWithTerm);
+            setTermRoadmapGrouping(roadmapsWithTerm);
         };
 
         updateTermRoadmaps();
