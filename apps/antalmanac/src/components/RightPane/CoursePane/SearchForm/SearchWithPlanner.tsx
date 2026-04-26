@@ -10,7 +10,7 @@ import { openSnackbar } from '$stores/SnackbarStore';
 import { Autocomplete, Box, CircularProgress, MenuItem, TextField, Tooltip, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
 import { useSearchParams } from 'next/navigation';
-import { ComponentProps, HTMLAttributes, useEffect, useMemo, useState } from 'react';
+import { ComponentProps, HTMLAttributes, useCallback, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 type AutocompleteProps = ComponentProps<typeof Autocomplete>;
@@ -48,9 +48,12 @@ const SearchWithPlanner = () => {
 
     const searchParams = useSearchParams();
 
-    const doesRoadmapIncludeTerm = (roadmapId: Roadmap['id']) => {
-        return termRoadmapGrouping[RoadmapTermRelation.IncludesTerm].has(roadmapId.toString());
-    };
+    const doesRoadmapIncludeTerm = useCallback(
+        (roadmapId: Roadmap['id']) => {
+            return termRoadmapGrouping[RoadmapTermRelation.IncludesTerm].has(roadmapId.toString());
+        },
+        [termRoadmapGrouping]
+    );
 
     const sortedRoadmaps = useMemo(() => {
         return plannerRoadmaps.toSorted((a, b) => {
@@ -61,7 +64,7 @@ const SearchWithPlanner = () => {
             }
             return aIncludesTerm ? -1 : 1;
         });
-    }, [plannerRoadmaps, termRoadmapGrouping]);
+    }, [plannerRoadmaps, doesRoadmapIncludeTerm]);
 
     const search = async (roadmapId: Roadmap['id']): Promise<boolean> => {
         const roadmap = plannerRoadmaps.find((roadmap) => roadmap.id.toString() === roadmapId.toString());
@@ -175,7 +178,7 @@ const SearchWithPlanner = () => {
                 }
             })();
         }
-    }, [searchParams, plannerRoadmaps, hasSearchedWithUrlParams, setHasSearchedWithUrlParams]);
+    }, [searchParams, plannerRoadmaps, hasSearchedWithUrlParams]);
 
     if (isLoadingSearch) {
         return (
