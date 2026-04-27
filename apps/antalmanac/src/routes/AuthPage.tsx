@@ -47,7 +47,7 @@ export function AuthPage() {
 
             isAuthenticatingRef.current = true;
 
-            const { providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
+            const { userId, providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
                 code: code,
                 state: state,
             });
