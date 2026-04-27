@@ -53,18 +53,23 @@ export function AuthPage() {
             return;
         }
 
+        // Compute (and immediately clear) the return path at the top so that
+        // every exit — success, error, or early-return — uses the same value
+        // and never leaves a stale authReturnPath in localStorage.
+        const returnPath = getSafeReturnPath();
+
         try {
             // Silent SSO returned an error — the auth server has no session.
             if (searchParams.get('error') === 'login_required') {
                 clearSsoCookie();
-                window.location.href = '/';
+                window.location.href = returnPath;
                 return;
             }
 
             const code = searchParams.get('code');
             const state = searchParams.get('state');
             if (!code || !state) {
-                window.location.href = '/';
+                window.location.href = returnPath;
                 return;
             }
 
@@ -78,7 +83,6 @@ export function AuthPage() {
             const fromLoading = getLocalStorageFromLoading() ?? '';
             const savedUserId = getLocalStorageUserId() ?? '';
             const savedData = getLocalStorageDataCache() ?? '';
-            const returnPath = getSafeReturnPath();
 
             if (newUser) {
                 setLocalStorageOnFirstSignin('true');
@@ -87,7 +91,7 @@ export function AuthPage() {
             }
 
             if (!providerId) {
-                window.location.href = '/';
+                window.location.href = returnPath;
                 return;
             }
 
@@ -151,7 +155,7 @@ export function AuthPage() {
         } catch (error) {
             console.error('Error during authentication', error);
             clearSsoCookie();
-            window.location.href = '/';
+            window.location.href = returnPath;
         }
     }, [searchParams]);
 
