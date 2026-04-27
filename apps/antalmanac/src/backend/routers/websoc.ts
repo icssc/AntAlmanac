@@ -1,3 +1,4 @@
+import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
 import type {
     WebsocAPIResponse,
     WebsocAPIResult,
@@ -10,8 +11,6 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 import { procedure, router } from '../trpc';
-
-import { fetchAnteaterAPI } from '$src/backend/lib/helpers';
 
 const DEPARTMENT_YEAR_RANGE = 10;
 
@@ -74,10 +73,8 @@ function sortWebsocResponse(response: WebsocAPIResponse) {
 
 const queryWebSoc = async ({ input }: { input: Record<string, string> }) => {
     const url = `https://anteaterapi.com/v2/rest/websoc?${new URLSearchParams(sanitizeSearchParams(input))}`;
-    console.log('queryWebSoc', url);
 
     const data = await fetchAnteaterAPI<WebsocAPIResult>(url, { errorType: 'trpc' });
-    console.log('queryWebSoc', data);
 
     if (!data?.data) {
         throw new TRPCError({

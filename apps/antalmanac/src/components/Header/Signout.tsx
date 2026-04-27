@@ -1,14 +1,13 @@
-import LogoutIcon from '@mui/icons-material/Logout';
-import { ListItemIcon, ListItemText, MenuItem, Popover, Divider } from '@mui/material';
-import { User } from '@packages/antalmanac-types';
-import { useEffect, useState, useCallback, type MouseEvent } from 'react';
-
+import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import trpc from '$lib/api/trpc';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from '@mui/material';
+import type { User } from '@packages/antalmanac-types';
+import { type MouseEvent, useCallback, useEffect, useState } from 'react';
 
 interface SignoutProps {
     onLogoutComplete?: () => void;
@@ -17,7 +16,7 @@ interface SignoutProps {
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<Pick<User, 'name' | 'avatar' | 'email'> | null>(null);
-    const { session, sessionIsValid, clearSession } = useSessionStore();
+    const { sessionIsValid, clearSession } = useSessionStore();
     const isDark = useThemeStore((store) => store.isDark);
 
     const open = Boolean(anchorEl);
@@ -27,19 +26,9 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
 
     const handleLogout = async () => {
         setAnchorEl(null);
-        if (!session) {
-            await clearSession();
-            onLogoutComplete?.();
-            return;
-        }
 
         try {
-            const { logoutUrl } = await trpc.userData.logout.mutate({
-                sessionToken: session,
-                redirectUrl: window.location.origin,
-            });
-
-            await clearSession();
+            const logoutUrl = await clearSession();
             onLogoutComplete?.();
 
             if (logoutUrl) {
@@ -47,24 +36,20 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
             }
         } catch (error) {
             console.error('Error during logout', error);
-            // Even on error, clear session and show dialog
-            await clearSession();
             onLogoutComplete?.();
         }
     };
 
     const handleAuthChange = useCallback(async () => {
         if (sessionIsValid) {
-            const userData = await trpc.userData.getUserAndAccountBySessionToken
-                .query({ token: session ?? '' })
-                .then((res) => res.users);
+            const userData = await trpc.userData.getUserAndAccountBySessionToken.query().then((res) => res.users);
             setUser({
                 name: userData.name ?? undefined,
                 avatar: userData.avatar ?? undefined,
                 email: userData.email ?? undefined,
             });
         }
-    }, [session, sessionIsValid, setUser]);
+    }, [sessionIsValid]);
 
     useEffect(() => {
         if (sessionIsValid) {

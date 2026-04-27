@@ -1,3 +1,13 @@
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import trpc from '$lib/api/trpc';
+import { warnMultipleTerms } from '$lib/helpers';
+import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
+import AppStore from '$stores/AppStore';
+import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
+import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useSessionStore } from '$stores/SessionStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import type {
     CourseDetails,
     CustomEventId,
@@ -10,16 +20,6 @@ import type {
 import { TRPCClientError } from '@trpc/client';
 import { TRPCError } from '@trpc/server';
 import { PostHog } from 'posthog-js/react';
-
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
-import { warnMultipleTerms } from '$lib/helpers';
-import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
-import AppStore from '$stores/AppStore';
-import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { openSnackbar } from '$stores/SnackbarStore';
-import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
     onError: (scheduleName: string) => unknown;
@@ -158,7 +158,7 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
     });
     if (providerID == null) return;
     providerID = providerID.replace(/\s+/g, '');
-    if (providerID.length < 0) return;
+    if (providerID.length <= 0) return;
 
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
     try {
@@ -224,9 +224,7 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
         return { imported: true, error: null };
     }
 
-    const userAndAccount = await trpc.userData.getUserAndAccountBySessionToken.query({
-        token: session.session ?? '',
-    });
+    const userAndAccount = await trpc.userData.getUserAndAccountBySessionToken.query();
     const { users, accounts } = userAndAccount;
 
     const incomingData: User | null = await trpc.userData.getUserData.query({ userId: incomingUser.id });
@@ -350,9 +348,7 @@ export const loadScheduleWithSessionToken = async () => {
     //     value: rememberMe ? 1 : 0,
     // });
     try {
-        const userDataResponse = await trpc.userData.getUserDataWithSession.query({
-            refreshToken: useSessionStore.getState().session ?? '',
-        });
+        const userDataResponse = await trpc.userData.getUserDataWithSession.query();
         const scheduleSaveState = userDataResponse?.userData;
         if (scheduleSaveState !== undefined && isEmptySchedule(scheduleSaveState.schedules)) {
             return true;
@@ -388,7 +384,9 @@ const cacheSchedule = () => {
 
 export const loginUser = async () => {
     try {
-        const authUrl = await trpc.userData.getGoogleAuthUrl.query();
+        const redirectUri = isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined;
+
+        const authUrl = await trpc.userData.getGoogleAuthUrl.query(redirectUri ? { redirectUri } : undefined);
         if (authUrl) {
             cacheSchedule();
             window.location.href = authUrl.toString();
@@ -461,7 +459,7 @@ export const copySchedule = (
     try {
         AppStore.copySchedule(scheduleIndex, newScheduleName);
         options?.onSuccess(newScheduleName);
-    } catch (error) {
+    } catch {
         options?.onError(newScheduleName);
     }
 };
