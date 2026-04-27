@@ -72,7 +72,7 @@ export const Save = () => {
                 startIcon={<SaveIcon />}
                 loadingPosition="start"
                 onClick={sessionIsValid ? saveScheduleData : handleClickSignIn}
-                sx={{ fontSize: 'inherit' }}
+                sx={{ fontSize: 'inherit', '&.Mui-disabled': { color: 'rgba(255,255,255,0.3)' } }}
                 disabled={disabled}
                 loading={saving}
             >

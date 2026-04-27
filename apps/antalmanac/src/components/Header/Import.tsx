@@ -664,7 +664,7 @@ export function Import() {
                 <Button
                     onClick={handleOpen}
                     color="inherit"
-                    sx={{ fontSize: 'inherit' }}
+                    sx={{ fontSize: 'inherit', '&.Mui-disabled': { color: 'rgba(255,255,255,0.3)' } }}
                     startIcon={<ContentPasteGo />}
                     disabled={skeletonMode || isReadonlyView}
                     id="import-button"
