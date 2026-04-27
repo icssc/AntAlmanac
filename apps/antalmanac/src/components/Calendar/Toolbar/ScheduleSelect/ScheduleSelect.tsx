@@ -1,21 +1,20 @@
-import { ArrowDropDown as ArrowDropDownIcon, Visibility, VisibilityOff } from '@mui/icons-material';
-import { Box, Button, IconButton, Popover, Tooltip, Typography, useTheme } from '@mui/material';
-import { PostHog, usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-
 import { changeCurrentSchedule } from '$actions/AppStoreActions';
+import { CopyScheduleButton } from '$components/buttons/Copy';
 import { SortableList } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableList';
 import { AddScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton';
 import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/DeleteScheduleButton';
 import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
 import { ShareScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/ShareScheduleButton';
-import { CopyScheduleButton } from '$components/buttons/Copy';
 import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
+import { ArrowDropDown as ArrowDropDownIcon, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Box, Button, IconButton, Popover, Tooltip, Typography, useTheme } from '@mui/material';
+import { PostHog, usePostHog } from 'posthog-js/react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type EventContext = {
     triggeredBy?: string;
@@ -71,7 +70,6 @@ export function SelectSchedulePopover() {
     const anchorElementRef = useRef(null);
 
     const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
-    const session = useSessionStore((state) => state.session);
 
     const postHog = usePostHog();
 
@@ -80,11 +78,9 @@ export function SelectSchedulePopover() {
     const maxWidth = useMemo(() => 150, []);
 
     const fetchSharingStatuses = useCallback(async () => {
-        if (!sessionIsValid || !session) return;
+        if (!sessionIsValid) return;
         try {
-            const statuses = await trpc.friends.getScheduleSharingStatuses.query({
-                sessionToken: session,
-            });
+            const statuses = await trpc.friends.getScheduleSharingStatuses.query();
             // Map DB results back to local schedule indices by matching IDs
             const map: Record<number, boolean> = {};
             for (const { id, sharedWithFriends } of statuses) {
@@ -100,11 +96,11 @@ export function SelectSchedulePopover() {
         } catch {
             // Silently fail — sharing status is non-critical
         }
-    }, [sessionIsValid, session]);
+    }, [sessionIsValid]);
 
     const handleToggleSharing = useCallback(
         async (scheduleIndex: number) => {
-            if (!sessionIsValid || !session) return;
+            if (!sessionIsValid) return;
 
             // Always update the icon immediately, regardless of whether the schedule has a DB ID
             const currentValue = sharingStatuses[scheduleIndex] ?? true;
@@ -116,7 +112,6 @@ export function SelectSchedulePopover() {
 
             try {
                 const result = await trpc.friends.toggleScheduleSharing.mutate({
-                    sessionToken: session,
                     scheduleId,
                 });
                 setSharingStatuses((prev) => ({ ...prev, [scheduleIndex]: result.sharedWithFriends }));
@@ -124,7 +119,7 @@ export function SelectSchedulePopover() {
                 setSharingStatuses((prev) => ({ ...prev, [scheduleIndex]: currentValue }));
             }
         },
-        [sessionIsValid, session, sharingStatuses]
+        [sessionIsValid, sharingStatuses]
     );
 
     const handleClick = useCallback(() => {

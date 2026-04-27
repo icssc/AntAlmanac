@@ -36,8 +36,7 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
     const friendName = friendNameFromState ?? fetchedFriendName ?? 'Friend';
 
     const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
-    const session = useSessionStore((state) => state.session);
-    const updateSession = useSessionStore((state) => state.updateSession);
+    const loadSession = useSessionStore((state) => state.loadSession);
     const setOpenLoadingSchedule = scheduleComponentsToggleStore((state) => state.setOpenLoadingSchedule);
     const postHog = usePostHog();
 
@@ -107,28 +106,21 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
         }
 
         const loadContent = async () => {
-            // Validate stored session so direct visits (e.g. pasted URL) recognize the user as logged in
-            const currentSession = useSessionStore.getState().session;
-            if (currentSession) {
-                await updateSession(currentSession);
-            }
+            // Validate stored session so direct visits (e.g. pasted URL) recognize the user as logged in.
+            // loadSession is idempotent — safe to call even if already valid.
+            await loadSession();
 
             if (friendUserId) {
                 hasAttemptedLoadRef.current = true;
                 try {
                     beginLoadingSchedule();
-                    const sessionAfterValidation = useSessionStore.getState().session;
-                    if (!sessionAfterValidation) {
+                    const { sessionIsValid: validAfterLoad, userId: currentUserId } = useSessionStore.getState();
+                    if (!validAfterLoad || !currentUserId) {
                         setError("You're not allowed to see this schedule.");
                         setOpenLoadingSchedule(false);
                         return;
                     }
-                    const { users: currentUser } = await trpc.userData.getUserAndAccountBySessionToken.query({
-                        token: sessionAfterValidation,
-                    });
                     const allowed = await trpc.friends.areFriends.query({
-                        sessionToken: sessionAfterValidation,
-                        viewerId: currentUser.id,
                         targetUserId: friendUserId,
                     });
                     if (!allowed) {
@@ -198,16 +190,11 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
                 setScheduleName(sharedSchedule.scheduleName);
                 setScheduleOwnerId(sharedSchedule.userId);
 
-                const sessionAfterValidation = useSessionStore.getState().session;
-                if (sessionAfterValidation) {
+                const { sessionIsValid: validAfterLoad, userId: currentUserId } = useSessionStore.getState();
+                if (validAfterLoad && currentUserId) {
                     try {
-                        const { users: currentUser } = await trpc.userData.getUserAndAccountBySessionToken.query({
-                            token: sessionAfterValidation,
-                        });
-                        if (currentUser.id !== sharedSchedule.userId) {
+                        if (currentUserId !== sharedSchedule.userId) {
                             const alreadyFriends = await trpc.friends.areFriends.query({
-                                sessionToken: sessionAfterValidation,
-                                viewerId: currentUser.id,
                                 targetUserId: sharedSchedule.userId,
                             });
                             setIsAlreadyFriend(alreadyFriends);
@@ -234,27 +221,19 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
         friendUserId,
         scheduleId,
         friendNameFromState,
-        session,
         setOpenLoadingSchedule,
         setError,
         beginLoadingSchedule,
         loadFriendSchedules,
         postHog,
-        updateSession,
+        loadSession,
     ]);
 
-    const handleLoadSchedule = useCallback(async (sessionToken: string | null) => {
-        if (sessionToken) {
-            const userDataResponse = await trpc.userData.getUserDataWithSession.query({
-                refreshToken: sessionToken,
-            });
-
-            if (userDataResponse) {
-                const scheduleSaveState: ScheduleSaveState = userDataResponse.userData;
-
-                if (scheduleSaveState) {
-                    await AppStore.loadSchedule(scheduleSaveState);
-                }
+    const loadSessionSchedule = useCallback(async () => {
+        if (sessionIsValid) {
+            const userDataResponse = await trpc.userData.getUserDataWithSession.query();
+            if (userDataResponse?.userData) {
+                await AppStore.loadSchedule(userDataResponse.userData);
             }
         } else {
             const emptyScheduleData = createEmptyShortCourseSchedule();
@@ -264,30 +243,19 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
             };
             await AppStore.loadSchedule(emptySchedule);
         }
-    }, []);
-
-    const loadSessionSchedule = useCallback(async () => {
-        const sessionToken = useSessionStore.getState().session;
-        if (!sessionToken) {
-            throw new Error('No session token available');
-        }
-
-        await handleLoadSchedule(sessionToken);
-    }, [handleLoadSchedule]);
+    }, [sessionIsValid]);
 
     const handleExitSharedSchedule = useCallback(async () => {
         try {
             beginLoadingSchedule();
-
-            const sessionToken = useSessionStore.getState().session;
-            await handleLoadSchedule(sessionIsValid ? sessionToken : null);
+            await loadSessionSchedule();
         } catch (err) {
             console.error('Error exiting shared schedule:', err);
         }
 
         setOpenLoadingSchedule(false);
         navigate('/');
-    }, [navigate, setOpenLoadingSchedule, beginLoadingSchedule, handleLoadSchedule, sessionIsValid]);
+    }, [navigate, setOpenLoadingSchedule, beginLoadingSchedule, loadSessionSchedule]);
 
     const handleAddToMySchedules = useCallback(async () => {
         const idToImport = friendUserId ? AppStore.getScheduleId(AppStore.getCurrentScheduleIndex()) : scheduleId;
@@ -301,15 +269,9 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
             const sharedSchedule = await trpc.userData.getSharedSchedule.query({ scheduleId: idToImport });
 
             if (sessionIsValid) {
-                const sessionToken = useSessionStore.getState().session;
-                if (sessionToken) {
-                    const userDataResponse = await trpc.userData.getUserDataWithSession.query({
-                        refreshToken: sessionToken,
-                    });
-
-                    if (userDataResponse?.userData) {
-                        await AppStore.loadSchedule(userDataResponse.userData);
-                    }
+                const userDataResponse = await trpc.userData.getUserDataWithSession.query();
+                if (userDataResponse?.userData) {
+                    await AppStore.loadSchedule(userDataResponse.userData);
                 }
 
                 await importSharedScheduleById(idToImport, friendUserId ? friendName : undefined);
@@ -370,10 +332,9 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
     }, [navigate, setOpenLoadingSchedule, beginLoadingSchedule, loadSessionSchedule]);
 
     const handleAddFriend = useCallback(async () => {
-        if (!session || !scheduleOwnerId) return;
+        if (!scheduleOwnerId) return;
         try {
             await trpc.friends.sendFriendRequest.mutate({
-                sessionToken: session,
                 addresseeId: scheduleOwnerId,
             });
             setAddFriendSent(true);
@@ -382,7 +343,7 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
             console.error('Error sending friend request:', err);
             openSnackbar('error', 'Failed to send friend request.');
         }
-    }, [session, scheduleOwnerId]);
+    }, [scheduleOwnerId]);
 
     if (warning) {
         return (

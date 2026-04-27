@@ -14,34 +14,27 @@ export function FriendsButton() {
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const open = Boolean(anchorEl);
 
-    const session = useSessionStore((store) => store.session);
+    const userId = useSessionStore((store) => store.userId);
     const sessionIsValid = useSessionStore((store) => store.sessionIsValid);
     const isDark = useThemeStore((store) => store.isDark);
 
-    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
     const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
     const [friends, setFriends] = useState<Friend[]>([]);
     const [blockedFriends, setBlockedFriends] = useState<Friend[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [dataLoaded, setDataLoaded] = useState(false);
 
     const loadFriendsData = useCallback(async () => {
-        if (!sessionIsValid || !session) {
+        if (!sessionIsValid || !userId) {
             return;
         }
 
         setIsLoading(true);
         try {
-            const { users } = await trpc.userData.getUserAndAccountBySessionToken.query({
-                token: session,
-            });
-
-            const userId = users.id;
-            setCurrentUserId(userId);
-
             const [friendsResult, pendingResult, blockedResult] = await Promise.all([
-                trpc.friends.getFriends.query({ sessionToken: session, userId }),
-                trpc.friends.getPendingRequests.query({ sessionToken: session, userId }),
-                trpc.friends.getBlockedUsers.query({ sessionToken: session, userId }),
+                trpc.friends.getFriends.query(),
+                trpc.friends.getPendingRequests.query(),
+                trpc.friends.getBlockedUsers.query(),
             ]);
 
             setFriends(
@@ -67,40 +60,40 @@ export function FriendsButton() {
                     email: user.email ?? '',
                 }))
             );
+
+            setDataLoaded(true);
         } catch (error) {
             console.error('Failed to load friends data:', error);
             openSnackbar('error', 'Failed to load friends data.');
         } finally {
             setIsLoading(false);
         }
-    }, [session, sessionIsValid]);
+    }, [userId, sessionIsValid]);
 
     useEffect(() => {
-        if (!sessionIsValid || !session) {
-            setCurrentUserId(null);
+        if (!sessionIsValid || !userId) {
             setFriendRequests([]);
             setFriends([]);
             setBlockedFriends([]);
             setIsLoading(false);
-        } else {
-            setCurrentUserId(null);
+            setDataLoaded(false);
         }
-    }, [sessionIsValid, session]);
+    }, [sessionIsValid, userId]);
 
     useEffect(() => {
-        if (open && sessionIsValid && session && currentUserId === null) {
+        if (open && sessionIsValid && userId && !dataLoaded) {
             void loadFriendsData();
         }
-    }, [open, sessionIsValid, session, currentUserId, loadFriendsData]);
+    }, [open, sessionIsValid, userId, dataLoaded, loadFriendsData]);
 
     useEffect(() => {
-        if (!open || !sessionIsValid || !session || !currentUserId) return;
+        if (!open || !sessionIsValid || !userId) return;
         let cancelled = false;
         const id = setInterval(async () => {
             try {
                 const [friendsResult, pendingResult] = await Promise.all([
-                    trpc.friends.getFriends.query({ sessionToken: session, userId: currentUserId }),
-                    trpc.friends.getPendingRequests.query({ sessionToken: session, userId: currentUserId }),
+                    trpc.friends.getFriends.query(),
+                    trpc.friends.getPendingRequests.query(),
                 ]);
                 if (cancelled) return;
                 setFriends(friendsResult.map((f) => ({ id: f.id, name: f.name ?? undefined, email: f.email ?? '' })));
@@ -115,10 +108,10 @@ export function FriendsButton() {
             cancelled = true;
             clearInterval(id);
         };
-    }, [open, sessionIsValid, session, currentUserId]);
+    }, [open, sessionIsValid, userId]);
 
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-        if (sessionIsValid && session) {
+        if (sessionIsValid && userId) {
             setAnchorEl(event.currentTarget);
         } else {
             setOpenSignInDialog(true);
@@ -129,7 +122,7 @@ export function FriendsButton() {
         setAnchorEl(null);
     };
 
-    const showLoadingSkeleton = Boolean(open && sessionIsValid && session && isLoading);
+    const showLoadingSkeleton = Boolean(open && sessionIsValid && userId && isLoading);
 
     return (
         <>
@@ -172,8 +165,6 @@ export function FriendsButton() {
                 }}
             >
                 <FriendsMenu
-                    currentUserId={currentUserId}
-                    sessionToken={session}
                     friendRequests={friendRequests}
                     friends={friends}
                     blockedFriends={blockedFriends}

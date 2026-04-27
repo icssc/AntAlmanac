@@ -3,22 +3,7 @@ import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
 import { RDS } from '../lib/rds';
-import { procedure, router } from '../trpc';
-
-async function resolveSessionToUserId(sessionToken: string): Promise<string> {
-    const userId = await RDS.getUserIdBySessionToken(db, sessionToken);
-    if (!userId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Invalid or expired session.' });
-    }
-    return userId;
-}
-
-async function assertSessionMatchesUser(sessionToken: string, claimedUserId: string): Promise<void> {
-    const authenticatedId = await resolveSessionToUserId(sessionToken);
-    if (authenticatedId !== claimedUserId) {
-        throw new TRPCError({ code: 'FORBIDDEN', message: 'Access denied.' });
-    }
-}
+import { protectedProcedure, router } from '../trpc';
 
 async function validateAndSendFriendRequest(requesterId: string, addresseeId: string) {
     const existing = await RDS.getFriendshipBetween(db, requesterId, addresseeId);
@@ -44,18 +29,16 @@ async function validateAndSendFriendRequest(requesterId: string, addresseeId: st
  * Router for handling friend-related operations, including sending and accepting friend requests,
  * retrieving friends and pending requests, removing or blocking users, and managing
  * per-schedule sharing visibility with friends.
+ *
+ * All procedures are protected — identity is resolved from the session cookie via ctx.userId.
  */
 const friendsRouter = router({
     /**
      * Sends a friend request to a user identified by their email address.
-     * Validates the session token, ensures the requester is not friending themselves,
-     * and checks for existing pending or accepted friendships before inserting.
      */
-    sendFriendRequestByEmail: procedure
-        .input(z.object({ sessionToken: z.string(), email: z.string().email() }))
-        .mutation(async ({ input }) => {
-            const requesterId = await resolveSessionToUserId(input.sessionToken);
-
+    sendFriendRequestByEmail: protectedProcedure
+        .input(z.object({ email: z.string().email() }))
+        .mutation(async ({ input, ctx }) => {
             const addressee = await RDS.getUserByEmail(db, input.email);
 
             if (!addressee) {
@@ -65,142 +48,104 @@ const friendsRouter = router({
                 });
             }
 
-            if (addressee.id === requesterId) {
+            if (addressee.id === ctx.userId) {
                 throw new TRPCError({
                     code: 'BAD_REQUEST',
                     message: 'You cannot friend yourself.',
                 });
             }
 
-            return validateAndSendFriendRequest(requesterId, addressee.id);
+            return validateAndSendFriendRequest(ctx.userId, addressee.id);
         }),
 
     /**
      * Sends a friend request to a user identified by their user ID.
-     * Validates the session token, ensures the requester is not friending themselves,
-     * and checks for existing pending or accepted friendships before inserting.
      */
-    sendFriendRequest: procedure
-        .input(z.object({ sessionToken: z.string(), addresseeId: z.string() }))
-        .mutation(async ({ input }) => {
-            const requesterId = await resolveSessionToUserId(input.sessionToken);
-
-            if (requesterId === input.addresseeId) {
+    sendFriendRequest: protectedProcedure
+        .input(z.object({ addresseeId: z.string() }))
+        .mutation(async ({ input, ctx }) => {
+            if (ctx.userId === input.addresseeId) {
                 throw new TRPCError({
                     code: 'BAD_REQUEST',
                     message: 'You cannot friend yourself.',
                 });
             }
 
-            return validateAndSendFriendRequest(requesterId, input.addresseeId);
+            return validateAndSendFriendRequest(ctx.userId, input.addresseeId);
         }),
 
     /**
      * Accepts a pending friend request from the given requester.
-     * Validates the session token to identify the addressee, then updates the
-     * friendship status from PENDING to ACCEPTED.
      */
-    acceptFriendRequest: procedure
-        .input(z.object({ sessionToken: z.string(), requesterId: z.string() }))
-        .mutation(async ({ input }) => {
-            const addresseeId = await resolveSessionToUserId(input.sessionToken);
-            return RDS.acceptFriendRequest(db, input.requesterId, addresseeId);
+    acceptFriendRequest: protectedProcedure
+        .input(z.object({ requesterId: z.string() }))
+        .mutation(async ({ input, ctx }) => {
+            return RDS.acceptFriendRequest(db, input.requesterId, ctx.userId);
         }),
 
     /**
-     * Returns all accepted friends for the given user as an array of user objects (id, name, email).
-     * Unions friendships where the user is either the requester or the addressee.
-     * Requires a valid session token matching the requested userId.
+     * Returns all accepted friends for the authenticated user.
      */
-    getFriends: procedure.input(z.object({ sessionToken: z.string(), userId: z.string() })).query(async ({ input }) => {
-        await assertSessionMatchesUser(input.sessionToken, input.userId);
-        return RDS.getFriends(db, input.userId);
+    getFriends: protectedProcedure.query(async ({ ctx }) => {
+        return RDS.getFriends(db, ctx.userId);
     }),
 
     /**
-     * Returns true if an ACCEPTED friendship exists between the viewer and the target user
-     * in either direction (viewer → target or target → viewer).
-     * Requires a valid session token matching the viewerId.
+     * Returns true if an ACCEPTED friendship exists between the viewer and the target user.
      */
-    areFriends: procedure
-        .input(z.object({ sessionToken: z.string(), viewerId: z.string(), targetUserId: z.string() }))
-        .query(async ({ input }) => {
-            await assertSessionMatchesUser(input.sessionToken, input.viewerId);
-            return RDS.areFriends(db, input.viewerId, input.targetUserId);
-        }),
+    areFriends: protectedProcedure.input(z.object({ targetUserId: z.string() })).query(async ({ input, ctx }) => {
+        return RDS.areFriends(db, ctx.userId, input.targetUserId);
+    }),
 
     /**
-     * Returns all pending friend requests received by the given user,
-     * including the requester's id, name, and email.
-     * Requires a valid session token matching the requested userId.
+     * Returns all pending friend requests received by the authenticated user.
      */
-    getPendingRequests: procedure
-        .input(z.object({ sessionToken: z.string(), userId: z.string() }))
-        .query(async ({ input }) => {
-            await assertSessionMatchesUser(input.sessionToken, input.userId);
-            return RDS.getPendingFriendRequests(db, input.userId);
-        }),
+    getPendingRequests: protectedProcedure.query(async ({ ctx }) => {
+        return RDS.getPendingFriendRequests(db, ctx.userId);
+    }),
 
     /**
      * Removes an existing friendship or declines a pending friend request.
-     * Validates the session token to identify the caller, then deletes the friendship
-     * row regardless of which side initiated it.
      */
-    removeFriend: procedure
-        .input(z.object({ sessionToken: z.string(), friendId: z.string() }))
-        .mutation(async ({ input }) => {
-            const userId = await resolveSessionToUserId(input.sessionToken);
-            return RDS.deleteFriendship(db, userId, input.friendId);
-        }),
+    removeFriend: protectedProcedure.input(z.object({ friendId: z.string() })).mutation(async ({ input, ctx }) => {
+        return RDS.deleteFriendship(db, ctx.userId, input.friendId);
+    }),
 
     /**
      * Blocks a user by removing any existing friendship and inserting a BLOCKED record.
-     * Validates the session token to identify the caller before modifying the friendship table.
      */
-    blockUser: procedure
-        .input(z.object({ sessionToken: z.string(), blockId: z.string() }))
-        .mutation(async ({ input }) => {
-            const userId = await resolveSessionToUserId(input.sessionToken);
-            return RDS.blockUser(db, userId, input.blockId);
-        }),
+    blockUser: protectedProcedure.input(z.object({ blockId: z.string() })).mutation(async ({ input, ctx }) => {
+        return RDS.blockUser(db, ctx.userId, input.blockId);
+    }),
 
     /**
-     * Get all blocked users for a user.
-     * Requires a valid session token matching the requested userId.
+     * Returns all blocked users for the authenticated user.
      */
-    getBlockedUsers: procedure
-        .input(z.object({ sessionToken: z.string(), userId: z.string() }))
-        .query(async ({ input }) => {
-            await assertSessionMatchesUser(input.sessionToken, input.userId);
-            return RDS.getBlockedUsers(db, input.userId);
-        }),
+    getBlockedUsers: protectedProcedure.query(async ({ ctx }) => {
+        return RDS.getBlockedUsers(db, ctx.userId);
+    }),
 
     /**
-     * Unblock a user.
+     * Unblocks a user.
      */
-    unblockUser: procedure
-        .input(z.object({ sessionToken: z.string(), blockId: z.string() }))
-        .mutation(async ({ input }) => {
-            const userId = await resolveSessionToUserId(input.sessionToken);
-            return RDS.unblockUser(db, userId, input.blockId);
-        }),
+    unblockUser: protectedProcedure.input(z.object({ blockId: z.string() })).mutation(async ({ input, ctx }) => {
+        return RDS.unblockUser(db, ctx.userId, input.blockId);
+    }),
 
     /**
-     * Get the sharing status (sharedWithFriends) for all schedules owned by the user.
+     * Get the sharing status (sharedWithFriends) for all schedules owned by the authenticated user.
      */
-    getScheduleSharingStatuses: procedure.input(z.object({ sessionToken: z.string() })).query(async ({ input }) => {
-        const userId = await resolveSessionToUserId(input.sessionToken);
-        return RDS.getScheduleSharingStatuses(db, userId);
+    getScheduleSharingStatuses: protectedProcedure.query(async ({ ctx }) => {
+        return RDS.getScheduleSharingStatuses(db, ctx.userId);
     }),
 
     /**
      * Toggle whether a schedule is shared with friends.
      */
-    toggleScheduleSharing: procedure
-        .input(z.object({ sessionToken: z.string(), scheduleId: z.string() }))
-        .mutation(async ({ input }) => {
-            const userId = await resolveSessionToUserId(input.sessionToken);
-            const result = await RDS.toggleScheduleSharing(db, userId, input.scheduleId);
+    toggleScheduleSharing: protectedProcedure
+        .input(z.object({ scheduleId: z.string() }))
+        .mutation(async ({ input, ctx }) => {
+            const result = await RDS.toggleScheduleSharing(db, ctx.userId, input.scheduleId);
             if (!result) {
                 throw new TRPCError({ code: 'NOT_FOUND', message: 'Schedule not found.' });
             }

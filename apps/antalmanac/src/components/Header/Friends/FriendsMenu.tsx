@@ -1,3 +1,6 @@
+import trpc from '$lib/api/trpc';
+import { useThemeStore } from '$stores/SettingsStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import { PersonAdd, PersonRemove, Block, MoreVert, ExpandMore, ExpandLess } from '@mui/icons-material';
 import {
     Box,
@@ -22,10 +25,6 @@ import {
 import type { SxProps, Theme } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-import trpc from '$lib/api/trpc';
-import { useThemeStore } from '$stores/SettingsStore';
-import { openSnackbar } from '$stores/SnackbarStore';
 
 const friendCardSx: SxProps<Theme> = {
     display: 'flex',
@@ -105,8 +104,6 @@ function FriendsListSkeleton() {
 }
 
 export interface FriendsMenuProps {
-    currentUserId: string | null;
-    sessionToken: string | null;
     friendRequests: FriendRequest[];
     friends: Friend[];
     blockedFriends: Friend[];
@@ -115,7 +112,6 @@ export interface FriendsMenuProps {
 }
 
 export function FriendsMenu({
-    sessionToken,
     friendRequests,
     friends,
     blockedFriends,
@@ -134,14 +130,8 @@ export function FriendsMenu({
     const navigate = useNavigate();
 
     const handleAddFriend = async () => {
-        if (!sessionToken) {
-            openSnackbar('warning', 'You must be signed in to add friends.');
-            return;
-        }
-
         try {
             await trpc.friends.sendFriendRequestByEmail.mutate({
-                sessionToken,
                 email: email.trim(),
             });
 
@@ -161,13 +151,8 @@ export function FriendsMenu({
     };
 
     const handleAccept = async (requesterId: string) => {
-        if (!sessionToken) {
-            return;
-        }
-
         try {
             await trpc.friends.acceptFriendRequest.mutate({
-                sessionToken,
                 requesterId,
             });
             openSnackbar('success', 'Friend request accepted.');
@@ -179,13 +164,8 @@ export function FriendsMenu({
     };
 
     const handleDecline = async (requesterId: string) => {
-        if (!sessionToken) {
-            return;
-        }
-
         try {
             await trpc.friends.removeFriend.mutate({
-                sessionToken,
                 friendId: requesterId,
             });
             openSnackbar('info', 'Friend request declined.');
@@ -213,13 +193,12 @@ export function FriendsMenu({
     };
 
     const handleConfirmBlock = async () => {
-        if (!sessionToken || !userToBlock) {
+        if (!userToBlock) {
             return;
         }
 
         try {
             await trpc.friends.blockUser.mutate({
-                sessionToken,
                 blockId: userToBlock,
             });
             openSnackbar('info', 'User blocked.');
@@ -252,13 +231,12 @@ export function FriendsMenu({
     };
 
     const handleUnfriend = async () => {
-        if (!sessionToken || !friendMenuAnchor) {
+        if (!friendMenuAnchor) {
             return;
         }
 
         try {
             await trpc.friends.removeFriend.mutate({
-                sessionToken,
                 friendId: friendMenuAnchor.friendId,
             });
             openSnackbar('info', 'Friend removed.');
@@ -275,13 +253,8 @@ export function FriendsMenu({
     };
 
     const handleUnblock = async (blockedId: string) => {
-        if (!sessionToken) {
-            return;
-        }
-
         try {
             await trpc.friends.unblockUser.mutate({
-                sessionToken,
                 blockId: blockedId,
             });
             openSnackbar('info', 'User unblocked.');
