@@ -1,0 +1,33 @@
+apps/antalmanac/src/components/Header/Settings/ExperimentalMenu.tsx
+  3ac92169d06328d1 37
+apps/antalmanac/src/components/Header/Signout.tsx
+  3ac92169d06328d1 45
+apps/antalmanac/src/actions/ActionTypesStore.ts
+  3ac92169d06328d1 120-123
+apps/antalmanac/src/components/Header/Signin.tsx
+  3ac92169d06328d1 1,80-81,95,108,114
+apps/antalmanac/src/routes/AuthPage.tsx
+  3ac92169d06328d1 48,89,93,111
+apps/antalmanac/src/stores/SessionStore.ts
+  3ac92169d06328d1 53,55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "db4070b18cea4989179738321cba61e6eaaa6db4",
+  "prompts": {
+    "3ac92169d06328d1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "333ea1c0-df07-44c0-848f-6ca436f1fa52",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 19,
+      "total_deletions": 43,
+      "accepted_lines": 32,
+      "overriden_lines": 0
+    }
+  }
+}
