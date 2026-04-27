@@ -56,19 +56,19 @@ export function FriendsMenu({
     const navigate = useNavigate();
 
     const handleAddFriend = async () => {
+        const trimmed = email.trim();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+            openSnackbar('error', 'Please enter a valid email address.');
+            return;
+        }
         try {
-            await trpc.friends.sendFriendRequestByEmail.mutate({ email: email.trim() });
+            await trpc.friends.sendFriendRequestByEmail.mutate({ email: trimmed });
             openSnackbar('success', 'Friend request sent.');
             setEmail('');
             await loadFriendsData();
         } catch (error) {
             console.error('Error sending friend request:', error);
-            const message =
-                error instanceof Error && error.message.includes('Invalid email')
-                    ? 'Invalid email.'
-                    : error instanceof Error
-                      ? error.message
-                      : 'Failed to send friend request.';
+            const message = error instanceof Error ? error.message : 'Failed to send friend request.';
             openSnackbar('error', message);
         }
     };
