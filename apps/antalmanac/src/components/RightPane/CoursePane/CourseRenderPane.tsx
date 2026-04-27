@@ -1,3 +1,22 @@
+import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
+import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
+import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
+import darkNoNothing from '$components/RightPane/CoursePane/static/dark-no_results.png';
+import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
+import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
+import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
+import analyticsEnum from '$lib/analytics/analytics';
+import { Grades } from '$lib/grades';
+import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
+import { getMultiGeCourseKey, isMultiGeSelection, queryManualSearchCourses } from '$lib/multiGeSearch';
+import { BLUE, PROJECTS_LINK } from '$src/globals';
+import AppStore from '$stores/AppStore';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { useHoveredStore } from '$stores/HoveredStore';
+import { useSessionStore } from '$stores/SessionStore';
+import { useThemeStore } from '$stores/SettingsStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import { Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, Link, useTheme } from '@mui/material';
 import {
@@ -12,27 +31,6 @@ import {
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
-
-import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
-import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
-import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
-import darkNoNothing from '$components/RightPane/CoursePane/static/dark-no_results.png';
-import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
-import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
-import analyticsEnum from '$lib/analytics/analytics';
-import { Grades } from '$lib/grades';
-import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
-import { getMultiGeCourseKey, isMultiGeSelection, queryManualSearchCourses } from '$lib/multiGeSearch';
-import { WebSOC } from '$lib/websoc';
-import { BLUE, PROJECTS_LINK } from '$src/globals';
-import AppStore from '$stores/AppStore';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
-import { useHoveredStore } from '$stores/HoveredStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
-import { openSnackbar } from '$stores/SnackbarStore';
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
