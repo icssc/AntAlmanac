@@ -6,14 +6,27 @@ import { RDS } from '../lib/rds';
 import { protectedProcedure, router } from '../trpc';
 
 async function validateAndSendFriendRequest(requesterId: string, addresseeId: string) {
-    const existing = await RDS.getFriendshipBetween(db, requesterId, addresseeId);
+    const rows = await RDS.getFriendshipsBetween(db, requesterId, addresseeId);
 
-    if (existing?.status === 'ACCEPTED') {
+    if (rows.some((r) => r.status === 'ACCEPTED')) {
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'You are already friends with this user.' });
     }
 
-    if (existing?.status === 'BLOCKED' || existing?.status === 'PENDING') {
-        const theyRequestedYou = existing.requesterId === addresseeId && existing.addresseeId === requesterId;
+    // BLOCKED takes priority — must be checked across all rows, not just the first one returned.
+    const blockedRow = rows.find((r) => r.status === 'BLOCKED');
+    if (blockedRow) {
+        const youBlockedThem = blockedRow.requesterId === requesterId && blockedRow.addresseeId === addresseeId;
+        throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: youBlockedThem
+                ? 'You have blocked this user. Unblock them before sending a friend request.'
+                : 'Unable to send friend request.',
+        });
+    }
+
+    const pendingRow = rows.find((r) => r.status === 'PENDING');
+    if (pendingRow) {
+        const theyRequestedYou = pendingRow.requesterId === addresseeId && pendingRow.addresseeId === requesterId;
         throw new TRPCError({
             code: 'BAD_REQUEST',
             message: theyRequestedYou

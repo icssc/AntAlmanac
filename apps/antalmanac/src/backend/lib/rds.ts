@@ -551,6 +551,9 @@ export class RDS {
 
             return {
                 id: userId,
+                name: user.name ?? undefined,
+                email: user.email ?? undefined,
+                avatar: user.avatar ?? undefined,
                 userData: {
                     schedules: userSchedules,
                     scheduleIndex: 0,
@@ -801,10 +804,11 @@ export class RDS {
     }
 
     /**
-     * Returns the existing friendship row between two users regardless of direction, or undefined if none exists.
+     * Returns all friendship rows between two users regardless of direction.
+     * There can be up to two rows (e.g. DECLINED + BLOCKED after a block).
      */
-    static async getFriendshipBetween(db: DatabaseOrTransaction, userIdA: string, userIdB: string) {
-        const [row] = await db
+    static async getFriendshipsBetween(db: DatabaseOrTransaction, userIdA: string, userIdB: string) {
+        return db
             .select()
             .from(friendships)
             .where(
@@ -812,9 +816,7 @@ export class RDS {
                     and(eq(friendships.requesterId, userIdA), eq(friendships.addresseeId, userIdB)),
                     and(eq(friendships.requesterId, userIdB), eq(friendships.addresseeId, userIdA))
                 )
-            )
-            .limit(1);
-        return row;
+            );
     }
 
     /**

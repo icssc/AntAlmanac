@@ -41,7 +41,11 @@ const userDataRouter = router({
      * @param input - An object containing the friend's user ID.
      * @returns The friend's shared schedule data.
      */
-    getFriendUserData: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
+    getFriendUserData: protectedProcedure.input(z.object({ userId: z.string() })).query(async ({ input, ctx }) => {
+        const allowed = await RDS.areFriends(db, ctx.userId, input.userId);
+        if (!allowed) {
+            throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not friends with this user.' });
+        }
         return await RDS.getUserFriendDataByUid(db, input.userId);
     }),
 

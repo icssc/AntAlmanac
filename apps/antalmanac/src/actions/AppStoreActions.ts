@@ -258,6 +258,7 @@ export const importSharedScheduleById = async (scheduleId: string, friendName?: 
     if (session.sessionIsValid) {
         try {
             await autoSaveSchedule({});
+            openSnackbar('success', `Shared schedule "${incomingSchedule.scheduleName}" added to your account!`);
         } catch {
             openSnackbar(
                 'error',
@@ -267,8 +268,6 @@ export const importSharedScheduleById = async (scheduleId: string, friendName?: 
     } else {
         openSnackbar('warning', 'Schedule added to current session. Sign in to save permanently.');
     }
-
-    openSnackbar('success', `Shared schedule "${incomingSchedule.scheduleName}" added to your account!`);
 
     scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
 
