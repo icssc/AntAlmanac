@@ -819,17 +819,14 @@ export class RDS {
 
     /**
      * Inserts a PENDING friend request from requesterId to addresseeId.
-     * If a DECLINED row already exists (blocked sender re-requesting), updates it back to PENDING.
+     * Does nothing on conflict — a DECLINED row (blocked sender's preserved card) must not be
+     * overwritten back to PENDING by the sender re-requesting.
      */
     static async insertFriendRequest(db: DatabaseOrTransaction, requesterId: string, addresseeId: string) {
         return db
             .insert(friendships)
             .values({ requesterId, addresseeId, status: 'PENDING' })
-            .onConflictDoUpdate({
-                target: [friendships.requesterId, friendships.addresseeId],
-                set: { status: 'PENDING', updatedAt: new Date() },
-                setWhere: eq(friendships.status, 'DECLINED'),
-            })
+            .onConflictDoNothing()
             .returning();
     }
 
