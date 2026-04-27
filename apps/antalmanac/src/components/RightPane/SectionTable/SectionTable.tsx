@@ -1,70 +1,39 @@
-import { Assessment, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
-import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
-
 import { CourseInfoBar } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoBar';
 import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoButton';
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
 import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
 import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/EnrollmentHistoryPopup';
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
-import { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
+import type { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
-import { useColumnStore, SECTION_TABLE_COLUMNS, type SectionTableColumn } from '$stores/ColumnStore';
+import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
+import { Assessment, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
+import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
 interface TableHeaderColumnDetails {
     label: string;
-    width?: string;
+    weight: number;
 }
 
 const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHeaderColumnDetails> = {
-    sectionCode: {
-        label: 'Code',
-        width: '8%',
-    },
-    sectionDetails: {
-        label: 'Type',
-        width: '8%',
-    },
-    instructors: {
-        label: 'Instructors',
-        width: '15%',
-    },
-    gpa: {
-        label: 'GPA',
-        width: '5%',
-    },
-    dayAndTime: {
-        label: 'Times',
-        width: '15%',
-    },
-    location: {
-        label: 'Places',
-        width: '8%',
-    },
-    sectionEnrollment: {
-        label: 'Enrollment',
-        width: '9%',
-    },
-    restrictions: {
-        label: 'Restr',
-        width: '8%',
-    },
-    status: {
-        label: 'Status',
-        width: '8%',
-    },
-    syllabus: {
-        label: 'Syllabus',
-        width: '8%',
-    },
+    sectionCode: { label: 'Code', weight: 5 },
+    sectionDetails: { label: 'Type', weight: 5 },
+    instructors: { label: 'Instructors', weight: 7 },
+    gpa: { label: 'GPA', weight: 5 },
+    dayAndTime: { label: 'Times', weight: 12 },
+    location: { label: 'Places', weight: 7 },
+    sectionEnrollment: { label: 'Enrollment', weight: 7 },
+    status: { label: 'Status', weight: 5 },
+    restrictions: { label: 'Restr', weight: 5 },
+    syllabus: { label: 'Syllabus', weight: 5 },
 };
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
@@ -78,19 +47,29 @@ function SectionTable(props: SectionTableProps) {
     const sharedSchedulePage = location.pathname.startsWith('/share/');
     const isMobile = useIsMobile();
 
+    const actionColumnWidth = isMobile ? 54 : 85;
+
     const courseId = useMemo(() => {
         return courseDetails.deptCode.replaceAll(' ', '') + courseDetails.courseNumber;
     }, [courseDetails.deptCode, courseDetails.courseNumber]);
 
     const formattedTime = useMemo(() => {
-        if (!courseDetails.updatedAt) return null;
+        if (!courseDetails.updatedAt) {
+            return null;
+        }
+
         const date = new Date(courseDetails.updatedAt);
-        if (isNaN(date.getTime())) return null;
+
+        if (Number.isNaN(date.getTime())) {
+            return null;
+        }
+
         const timeString = date.toLocaleTimeString(undefined, {
             hour: '2-digit',
             minute: '2-digit',
             hour12: !isMilitaryTime,
         });
+
         return timeString.replace(/^0(\d)/, '$1');
     }, [courseDetails.updatedAt, isMilitaryTime]);
 
@@ -191,25 +170,24 @@ function SectionTable(props: SectionTableProps) {
                 >
                     <TableHead>
                         <TableRow>
-                            <TableCell
-                                sx={{
-                                    padding: 0,
-                                    width: isMobile ? '6%' : '8%',
-                                }}
-                            />
-                            {tableHeaderColumnEntries
-                                .filter(([column]) => activeColumns.includes(column as SectionTableColumn))
-                                .map(([column, { label, width }]) => (
+                            <TableCell sx={{ padding: 0, width: `${actionColumnWidth}px` }} />
+                            {(() => {
+                                const visible = tableHeaderColumnEntries.filter(([column]) =>
+                                    activeColumns.includes(column as SectionTableColumn)
+                                );
+                                const totalWeight = visible.reduce((sum, [, { weight }]) => sum + weight, 0);
+                                return visible.map(([column, { label, weight }]) => (
                                     <TableCell
                                         key={column}
                                         sx={{
-                                            width: width,
+                                            width: `${(weight / totalWeight) * 100}%`,
                                             padding: 0,
                                         }}
                                     >
                                         {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
                                     </TableCell>
-                                ))}
+                                ));
+                            })()}
                         </TableRow>
                     </TableHead>
 

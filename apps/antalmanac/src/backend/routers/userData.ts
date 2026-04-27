@@ -1,15 +1,15 @@
+import { SESSION_COOKIE_NAME } from '$src/backend/context';
 import { oidcOAuthEnvSchema } from '$src/backend/env';
-import { oauth } from '$src/backend/lib/auth/oauth';
+import { ALLOWED_REDIRECT_URIS, isAllowedRedirectUri, oauthClientForRedirectUri } from '$src/backend/lib/auth/oauth';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
 import { RDS } from '$src/backend/lib/rds';
-import { type User } from '@packages/antalmanac-types';
+import { procedure, protectedProcedure, router } from '$src/backend/trpc';
+import { type User, type ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
-import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState, OAuth2Tokens } from 'arctic';
+import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState, type OAuth2Tokens } from 'arctic';
 import { type } from 'arktype';
 import { z } from 'zod';
-
-import { procedure, router } from '../trpc';
 
 const { OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
 const NODE_ENV = process.env.NODE_ENV;
@@ -37,13 +37,8 @@ const saveGoogleSchema = type({
 });
 
 const userDataRouter = router({
-    /**
-     * Loads schedule data for a user that's logged in.
-     * @param input - An object containing the session token.
-     * @returns The account and user data associated with the session token.
-     */
-    getUserAndAccountBySessionToken: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
-        return await RDS.getUserAndAccountBySessionToken(db, input.token);
+    getUserAndAccountBySessionToken: protectedProcedure.query(async ({ ctx }) => {
+        return await RDS.getUserAndAccountBySessionToken(db, ctx.sessionToken);
     }),
 
     /**
@@ -67,8 +62,8 @@ const userDataRouter = router({
      * @param input - An object containing the user ID.
      * @returns The user's google ID associated with the user ID.
      */
-    getGoogleIdByUserId: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
-        return await RDS.getGoogleIdByUserId(db, input.userId);
+    getGoogleIdByUserId: protectedProcedure.query(async ({ ctx }) => {
+        return await RDS.getGoogleIdByUserId(db, ctx.userId);
     }),
 
     /**
@@ -86,7 +81,6 @@ const userDataRouter = router({
             });
         }
     }),
-
     /**
      * Retrieves a friend's user data filtered to only schedules shared with friends.
      * @param input - An object containing the friend's user ID.
@@ -95,15 +89,8 @@ const userDataRouter = router({
     getFriendUserData: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
         return await RDS.getUserFriendDataByUid(db, input.userId);
     }),
-    getUserDataWithSession: procedure.input(z.object({ refreshToken: z.string() })).query(async ({ input }) => {
-        if ('refreshToken' in input) {
-            return await RDS.fetchUserDataWithSession(db, input.refreshToken);
-        } else {
-            throw new TRPCError({
-                code: 'BAD_REQUEST',
-                message: 'Invalid input: userId is required',
-            });
-        }
+    getUserDataWithSession: protectedProcedure.query(async ({ ctx }) => {
+        return await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
     }),
 
     getGuestAccountAndUserByName: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
@@ -134,12 +121,22 @@ const userDataRouter = router({
      * Retrieves Google auth url to login/sign up
      */
     getGoogleAuthUrl: procedure
-        .input(z.object({ prompt: z.enum(['none', 'consent']).optional() }).optional())
+        .input(
+            z
+                .object({
+                    prompt: z.enum(['none', 'consent']).optional(),
+                    redirectUri: z.enum(ALLOWED_REDIRECT_URIS).optional(),
+                })
+                .optional()
+        )
         .query(async ({ input, ctx }) => {
             const state = generateState();
             const codeVerifier = generateCodeVerifier();
 
-            const url = oauth.createAuthorizationURLWithPKCE(
+            const redirectUri = input?.redirectUri ?? ALLOWED_REDIRECT_URIS[0];
+            const client = oauthClientForRedirectUri(redirectUri);
+
+            const url = client.createAuthorizationURLWithPKCE(
                 'https://auth.icssc.club/authorize',
                 state,
                 CodeChallengeMethod.S256,
@@ -164,6 +161,7 @@ const userDataRouter = router({
             // Set cookies via response headers (Next.js cookies() doesn't work in TRPC)
             ctx.resHeaders?.append('Set-Cookie', `oauth_state=${state}; ${cookieOptions}`);
             ctx.resHeaders?.append('Set-Cookie', `oauth_code_verifier=${codeVerifier}; ${cookieOptions}`);
+            ctx.resHeaders?.append('Set-Cookie', `oauth_redirect_uri=${redirectUri}; ${cookieOptions}`);
 
             const referer = ctx.req.headers.get('referer');
             if (referer) {
@@ -194,6 +192,7 @@ const userDataRouter = router({
 
             const storedState = cookies['oauth_state'] ?? null;
             const codeVerifier = cookies['oauth_code_verifier'] ?? null;
+            const pinnedRedirectUri = cookies['oauth_redirect_uri'] ?? null;
             const redirectUrl = decodeURIComponent(cookies['auth_redirect_url'] ?? '/');
 
             // Delete cookies via response headers
@@ -203,6 +202,7 @@ const userDataRouter = router({
             }; Max-Age=0`;
             ctx.resHeaders?.append('Set-Cookie', `oauth_state=; ${deleteCookieOptions}`);
             ctx.resHeaders?.append('Set-Cookie', `oauth_code_verifier=; ${deleteCookieOptions}`);
+            ctx.resHeaders?.append('Set-Cookie', `oauth_redirect_uri=; ${deleteCookieOptions}`);
             ctx.resHeaders?.append('Set-Cookie', `auth_redirect_url=; ${deleteCookieOptions}`);
 
             if (!input.code || !input.state || !storedState || !codeVerifier) {
@@ -229,9 +229,15 @@ const userDataRouter = router({
                 });
             }
 
+            const resolvedRedirectUri =
+                pinnedRedirectUri && isAllowedRedirectUri(pinnedRedirectUri)
+                    ? pinnedRedirectUri
+                    : ALLOWED_REDIRECT_URIS[0];
+            const tokenClient = oauthClientForRedirectUri(resolvedRedirectUri);
+
             let tokens: OAuth2Tokens;
             try {
-                tokens = await oauth.validateAuthorizationCode(
+                tokens = await tokenClient.validateAuthorizationCode(
                     'https://auth.icssc.club/token',
                     input.code,
                     codeVerifier
@@ -280,8 +286,22 @@ const userDataRouter = router({
                 // Create session with OIDC and Google tokens
                 const session = await RDS.upsertSession(db, userId, oidcRefreshToken ?? '');
 
+                if (!session?.refreshToken) {
+                    throw new TRPCError({
+                        code: 'INTERNAL_SERVER_ERROR',
+                        message: 'Failed to create session',
+                    });
+                }
+
+                const sessionCookieOptions = `Path=/; HttpOnly; ${
+                    isProduction ? 'Secure; SameSite=Lax' : 'SameSite=Lax'
+                }; Max-Age=2592000`;
+                ctx.resHeaders?.append(
+                    'Set-Cookie',
+                    `${SESSION_COOKIE_NAME}=${session.refreshToken}; ${sessionCookieOptions}`
+                );
+
                 return {
-                    sessionToken: session?.refreshToken,
                     userId: userId,
                     providerId: oauthUserId,
                     newUser: account.newUser,
@@ -370,23 +390,139 @@ const userDataRouter = router({
     /**
      * Logs out a user by invalidating their session and redirecting to OIDC logout
      */
-    logout: procedure
-        .input(z.object({ sessionToken: z.string(), redirectUrl: z.string().optional() }))
+    logout: procedure.input(z.object({ redirectUrl: z.string().optional() })).mutation(async ({ input, ctx }) => {
+        const isProduction = NODE_ENV === 'production';
+        ctx.resHeaders?.append(
+            'Set-Cookie',
+            `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; ${isProduction ? 'Secure; SameSite=Lax' : 'SameSite=Lax'}; Max-Age=0`
+        );
+
+        if (ctx.sessionToken) {
+            try {
+                const session = await RDS.getCurrentSession(db, ctx.sessionToken);
+                if (session) {
+                    await RDS.removeSession(db, session.userId, session.refreshToken);
+                }
+            } catch (error) {
+                console.error('Failed to remove session from RDS during logout:', error);
+            }
+        }
+
+        // Build OIDC logout URL
+        const oidcLogoutUrl = new URL(`${OIDC_ISSUER_URL}/logout`);
+        const redirectTo = input.redirectUrl || GOOGLE_REDIRECT_URI.replace('/auth', '');
+        oidcLogoutUrl.searchParams.set('post_logout_redirect_uri', redirectTo);
+
+        return {
+            logoutUrl: oidcLogoutUrl.toString(),
+        };
+    }),
+
+    /**
+     * Exports schedule data for a user as JSON.
+     * This allows users to export their schedule data to transfer between environments (prod/staging).
+     * @param input - An object containing the user ID.
+     * @returns The schedule data in JSON format.
+     */
+    exportScheduleData: procedure.input(userInputSchema.assert).query(async ({ input }) => {
+        if ('userId' in input) {
+            const userData = await RDS.getUserDataByUid(db, input.userId);
+            if (!userData) {
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                    message: 'User not found',
+                });
+            }
+            return userData.userData;
+        } else {
+            throw new TRPCError({
+                code: 'BAD_REQUEST',
+                message: 'Invalid input: userId is required',
+            });
+        }
+    }),
+
+    /**
+     * Imports schedule data from JSON.
+     * Validates the imported data before saving to prevent invalid data from being stored.
+     * @param input - An object containing the user ID and the schedule data to import.
+     * @returns Success status.
+     */
+    importScheduleData: procedure
+        .input(
+            z.object({
+                userId: z.string(),
+                scheduleData: z.unknown(),
+            })
+        )
         .mutation(async ({ input }) => {
-            // Invalidate the local session
-            const session = await RDS.getCurrentSession(db, input.sessionToken);
-            if (session) {
-                await RDS.removeSession(db, session.userId, session.refreshToken);
+            let validatedScheduleData: ScheduleSaveState;
+            try {
+                validatedScheduleData = ScheduleSaveStateSchema.assert(input.scheduleData);
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'Unknown validation error';
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: `Invalid schedule data format: ${errorMessage}`,
+                });
             }
 
-            // Build OIDC logout URL
-            const oidcLogoutUrl = new URL(`${OIDC_ISSUER_URL}/logout`);
-            const redirectTo = input.redirectUrl || GOOGLE_REDIRECT_URI.replace('/auth', '');
-            oidcLogoutUrl.searchParams.set('post_logout_redirect_uri', redirectTo);
+            if (
+                validatedScheduleData.scheduleIndex < 0 ||
+                validatedScheduleData.scheduleIndex >= validatedScheduleData.schedules.length
+            ) {
+                validatedScheduleData.scheduleIndex =
+                    validatedScheduleData.schedules.length > 0 ? validatedScheduleData.schedules.length - 1 : 0;
+            }
 
-            return {
-                logoutUrl: oidcLogoutUrl.toString(),
+            for (const schedule of validatedScheduleData.schedules) {
+                for (const course of schedule.courses) {
+                    if (typeof course.sectionCode !== 'string' || isNaN(parseInt(course.sectionCode))) {
+                        throw new TRPCError({
+                            code: 'BAD_REQUEST',
+                            message: `Invalid section code: ${course.sectionCode}`,
+                        });
+                    }
+                    if (typeof course.term !== 'string' || course.term.length === 0) {
+                        throw new TRPCError({
+                            code: 'BAD_REQUEST',
+                            message: `Invalid term: ${course.term}`,
+                        });
+                    }
+                    if (typeof course.color !== 'string') {
+                        throw new TRPCError({
+                            code: 'BAD_REQUEST',
+                            message: `Invalid color: ${course.color}`,
+                        });
+                    }
+                }
+
+                for (const event of schedule.customEvents) {
+                    if (event.days.length !== 7) {
+                        throw new TRPCError({
+                            code: 'BAD_REQUEST',
+                            message: 'Invalid custom event days: must be an array of 7 booleans',
+                        });
+                    }
+                }
+            }
+
+            validatedScheduleData.schedules = mangleDuplicateScheduleNames(validatedScheduleData.schedules);
+
+            const userData: User = {
+                id: input.userId,
+                userData: validatedScheduleData,
             };
+
+            await RDS.upsertUserData(db, userData).catch((error) => {
+                console.error('RDS Failed to import user data:', error);
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Failed to import schedule data',
+                });
+            });
+
+            return { success: true };
         }),
 });
 

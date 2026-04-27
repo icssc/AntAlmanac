@@ -1,3 +1,13 @@
+import { redoAction, undoDelete } from '$actions/AppStoreActions';
+import { ClearScheduleButton } from '$components/buttons/Clear';
+import DownloadButton from '$components/buttons/Download';
+import ScreenshotButton from '$components/buttons/Screenshot';
+import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
+import { useIsMobile } from '$hooks/useIsMobile';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import AppStore from '$stores/AppStore';
 import {
     Undo as UndoIcon,
     Redo as RedoIcon,
@@ -24,17 +34,6 @@ import {
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { useState, useCallback, useEffect, memo, useRef } from 'react';
 
-import { redoAction, undoDelete } from '$actions/AppStoreActions';
-import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import { SelectSchedulePopover } from '$components/Calendar/Toolbar/ScheduleSelect/ScheduleSelect';
-import { ClearScheduleButton } from '$components/buttons/Clear';
-import DownloadButton from '$components/buttons/Download';
-import ScreenshotButton from '$components/buttons/Screenshot';
-import { useIsMobile } from '$hooks/useIsMobile';
-import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import AppStore from '$stores/AppStore';
-
 function handleUndo(postHog?: PostHog) {
     return () => {
         logAnalytics(postHog, {
@@ -60,6 +59,7 @@ export interface CalendarPaneToolbarProps {
     currentScheduleIndex: number;
     showFinalsSchedule: boolean;
     toggleDisplayFinalsSchedule: () => void;
+    onScreenshot?: () => void;
 }
 
 /**
@@ -291,7 +291,7 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                 }}
             >
                 <Box display="flex" flexWrap="wrap" alignItems="center" gap={0.5}>
-                    <ScreenshotButton />
+                    <ScreenshotButton onScreenshot={props.onScreenshot} />
 
                     <DownloadButton />
 

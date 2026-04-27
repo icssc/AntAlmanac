@@ -75,19 +75,26 @@
         {
             "idx": 10,
             "version": "7",
+            "when": 1772937828000,
+            "tag": "0010_handy_prima",
+            "breakpoints": true
+        },
+        {
+            "idx": 11,
+            "version": "7",
             "when": 1771441341810,
             "tag": "0010_old_misty_knight",
             "breakpoints": true
         },
         {
-            "idx": 11,
+            "idx": 12,
             "version": "7",
             "when": 1771441441810,
             "tag": "0011_friendships_no_self_friend",
             "breakpoints": true
         },
         {
-            "idx": 12,
+            "idx": 13,
             "version": "7",
             "when": 1771441541810,
             "tag": "0012_schedule_shared_with_friends",

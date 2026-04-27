@@ -440,7 +440,8 @@
                     "name": "environment",
                     "type": "text",
                     "primaryKey": false,
-                    "notNull": false
+                    "notNull": true,
+                    "default": "'production'"
                 }
             },
             "indexes": {},
@@ -456,9 +457,9 @@
                 }
             },
             "compositePrimaryKeys": {
-                "subscriptions_userId_sectionCode_year_quarter_pk": {
-                    "name": "subscriptions_userId_sectionCode_year_quarter_pk",
-                    "columns": ["userId", "sectionCode", "year", "quarter"]
+                "subscriptions_userId_sectionCode_year_quarter_environment_pk": {
+                    "name": "subscriptions_userId_sectionCode_year_quarter_environment_pk",
+                    "columns": ["userId", "sectionCode", "year", "quarter", "environment"]
                 }
             },
             "uniqueConstraints": {},

@@ -1,3 +1,22 @@
+import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
+import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
+import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
+import darkNoNothing from '$components/RightPane/CoursePane/static/dark-no_results.png';
+import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
+import RightPaneStore from '$components/RightPane/RightPaneStore';
+import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
+import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
+import analyticsEnum from '$lib/analytics/analytics';
+import { Grades } from '$lib/grades';
+import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
+import { WebSOC } from '$lib/websoc';
+import { BLUE, PROJECTS_LINK } from '$src/globals';
+import AppStore from '$stores/AppStore';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { useHoveredStore } from '$stores/HoveredStore';
+import { useSessionStore } from '$stores/SessionStore';
+import { useThemeStore } from '$stores/SettingsStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import { Close } from '@mui/icons-material';
 import { Alert, Box, IconButton, Link, useTheme } from '@mui/material';
 import {
@@ -12,27 +31,6 @@ import {
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import LazyLoad from 'react-lazyload';
-
-import { SchoolDeptCard } from '$components/RightPane/CoursePane/SchoolDeptCard';
-import darkModeLoadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/dark-loading.gif';
-import loadingGif from '$components/RightPane/CoursePane/SearchForm/Gifs/loading.gif';
-import darkNoNothing from '$components/RightPane/CoursePane/static/dark-no_results.png';
-import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
-import RightPaneStore from '$components/RightPane/RightPaneStore';
-import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
-import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
-import { useIsMobile } from '$hooks/useIsMobile';
-import analyticsEnum from '$lib/analytics/analytics';
-import { Grades } from '$lib/grades';
-import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
-import { WebSOC } from '$lib/websoc';
-import { BLUE } from '$src/globals';
-import AppStore from '$stores/AppStore';
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
-import { useHoveredStore } from '$stores/HoveredStore';
-import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
-import { openSnackbar } from '$stores/SnackbarStore';
 
 function getColors() {
     const currentCourses = AppStore.schedule.getCurrentCourses();
@@ -98,7 +96,6 @@ function getFilteredCourses(
 
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
-    const isMobile = useIsMobile();
     const theme = useTheme();
 
     // Display recruitment banner if more than 11 weeks (in ms) has passed since last dismissal
@@ -106,10 +103,10 @@ const RecruitmentBanner = () => {
     const dismissedRecently =
         recruitmentDismissalTime !== null &&
         Date.now() - parseInt(recruitmentDismissalTime) < 11 * 7 * 24 * 3600 * 1000;
-    const isSearchCS = ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS'].includes(
+    const isRelevantDept = ['COMPSCI', 'IN4MATX', 'I&C SCI', 'STATS', 'CSE', 'EECS', 'SWE', 'GDIM', 'COGS'].includes(
         RightPaneStore.getFormData().deptValue.toUpperCase()
     );
-    const displayRecruitmentBanner = bannerVisibility && !dismissedRecently && isSearchCS;
+    const displayRecruitmentBanner = bannerVisibility && !dismissedRecently && isRelevantDept;
 
     const handleClick = () => {
         setLocalStorageRecruitmentDismissalTime(Date.now().toString());
@@ -121,7 +118,7 @@ const RecruitmentBanner = () => {
             sx={(theme) => ({
                 position: 'fixed',
                 bottom: 5,
-                right: isMobile ? 5 : 75,
+                right: 5,
                 zIndex: theme.zIndex.snackbar,
             })}
         >
@@ -140,13 +137,13 @@ const RecruitmentBanner = () => {
                         </IconButton>
                     }
                 >
-                    Interested in web development?
+                    Interested in software development?
                     <br />
-                    <a href="https://forms.gle/v32Cx65vwhnmxGPv8" target="__blank" rel="noopener noreferrer">
+                    We have opportunities for developers and designers of all skill levels.
+                    <br />
+                    <a href={PROJECTS_LINK} target="_blank" rel="noopener noreferrer">
                         Join ICSSC and work on AntAlmanac and other projects!
                     </a>
-                    <br />
-                    We have opportunities for experienced devs and those with zero experience!
                 </Alert>
             ) : null}
         </Box>
