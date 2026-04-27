@@ -60,7 +60,7 @@ const userDataRouter = router({
         return result;
     }),
 
-    getUserDataWithSession: protectedProcedure.query(async ({ ctx }) => {
+    getUserData: protectedProcedure.query(async ({ ctx }) => {
         return await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
     }),
     /**

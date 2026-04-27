@@ -283,7 +283,7 @@ export const loadSchedule = async () => {
     //     value: rememberMe ? 1 : 0,
     // });
     try {
-        const userDataResponse = await trpc.userData.getUserDataWithSession.query();
+        const userDataResponse = await trpc.userData.getUserData.query();
         const scheduleSaveState = userDataResponse?.userData;
         if (scheduleSaveState !== undefined && isEmptySchedule(scheduleSaveState.schedules)) {
             return true;
