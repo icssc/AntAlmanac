@@ -61,6 +61,7 @@ export function SortableList<T extends BaseItem>({
             }}
             onDragCancel={() => {
                 setActive(null);
+                document.body.style.cursor = '';
             }}
         >
             <SortableContext items={items} strategy={sortingStrategy}>
