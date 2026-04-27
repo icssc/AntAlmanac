@@ -36,6 +36,44 @@ const saveGoogleSchema = type({
     state: 'string',
 });
 
+const getSafeAuthRedirectPath = (redirectUrl: string | null | undefined, requestUrl: string): string => {
+    if (!redirectUrl) {
+        return '/';
+    }
+
+    let requestOrigin: string;
+    try {
+        requestOrigin = new URL(requestUrl).origin;
+    } catch {
+        requestOrigin = new URL(GOOGLE_REDIRECT_URI).origin;
+    }
+
+    const candidates: string[] = [];
+    try {
+        const decodedRedirectUrl = decodeURIComponent(redirectUrl);
+        candidates.push(decodedRedirectUrl);
+    } catch {
+        // Ignore malformed encoding and continue with the raw value.
+    }
+
+    if (!candidates.includes(redirectUrl)) {
+        candidates.push(redirectUrl);
+    }
+
+    for (const candidate of candidates) {
+        try {
+            const parsedRedirectUrl = new URL(candidate, requestOrigin);
+            if (parsedRedirectUrl.origin === requestOrigin) {
+                return `${parsedRedirectUrl.pathname}${parsedRedirectUrl.search}${parsedRedirectUrl.hash}`;
+            }
+        } catch {
+            // Ignore malformed candidate and try next.
+        }
+    }
+
+    return '/';
+};
+
 const userDataRouter = router({
     getUserAndAccountBySessionToken: protectedProcedure.query(async ({ ctx }) => {
         return await RDS.getUserAndAccountBySessionToken(db, ctx.sessionToken);
@@ -118,6 +156,7 @@ const userDataRouter = router({
                 .object({
                     prompt: z.enum(['none', 'consent']).optional(),
                     redirectUri: z.enum(ALLOWED_REDIRECT_URIS).optional(),
+                    returnTo: z.string().optional(),
                 })
                 .optional()
         )
@@ -156,12 +195,11 @@ const userDataRouter = router({
             ctx.resHeaders?.append('Set-Cookie', `oauth_redirect_uri=${redirectUri}; ${cookieOptions}`);
 
             const referer = ctx.req.headers.get('referer');
-            if (referer) {
-                ctx.resHeaders?.append(
-                    'Set-Cookie',
-                    `auth_redirect_url=${encodeURIComponent(referer)}; ${cookieOptions}`
-                );
-            }
+            const redirectUrl = getSafeAuthRedirectPath(input?.returnTo ?? referer, ctx.req.url);
+            ctx.resHeaders?.append(
+                'Set-Cookie',
+                `auth_redirect_url=${encodeURIComponent(redirectUrl)}; ${cookieOptions}`
+            );
 
             return url;
         }),
@@ -185,7 +223,7 @@ const userDataRouter = router({
             const storedState = cookies['oauth_state'] ?? null;
             const codeVerifier = cookies['oauth_code_verifier'] ?? null;
             const pinnedRedirectUri = cookies['oauth_redirect_uri'] ?? null;
-            const redirectUrl = decodeURIComponent(cookies['auth_redirect_url'] ?? '/');
+            const redirectUrl = getSafeAuthRedirectPath(cookies['auth_redirect_url'], ctx.req.url);
 
             // Delete cookies via response headers
             const isProduction = NODE_ENV === 'production';

@@ -2,12 +2,10 @@ import { isEmptySchedule, mergeShortCourseSchedules } from '$actions/AppStoreAct
 import { LoadingScreen } from '$components/LoadingScreen';
 import trpc from '$lib/api/trpc';
 import {
-    getLocalStorageAuthReturnPath,
     getLocalStorageDataCache,
     getLocalStorageFromLoading,
     setLocalStorageImportedUser,
     getLocalStorageUserId,
-    removeLocalStorageAuthReturnPath,
     removeLocalStorageUserId,
     removeLocalStorageImportedUser,
     removeLocalStorageDataCache,
@@ -19,30 +17,6 @@ import AppStore from '$stores/AppStore';
 import { useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-function getSafeReturnPath() {
-    const candidate = getLocalStorageAuthReturnPath();
-    removeLocalStorageAuthReturnPath();
-
-    if (!candidate) {
-        return '/';
-    }
-
-    if (candidate.startsWith('/') && !candidate.startsWith('//')) {
-        return candidate;
-    }
-
-    try {
-        const url = new URL(candidate, window.location.origin);
-        if (url.origin === window.location.origin) {
-            return `${url.pathname}${url.search}${url.hash}`;
-        }
-    } catch {
-        // Ignore malformed candidate and fallback to root.
-    }
-
-    return '/';
-}
-
 export function AuthPage() {
     const [searchParams] = useSearchParams();
     const isAuthenticatingRef = useRef(false);
@@ -53,29 +27,24 @@ export function AuthPage() {
             return;
         }
 
-        // Compute (and immediately clear) the return path at the top so that
-        // every exit — success, error, or early-return — uses the same value
-        // and never leaves a stale authReturnPath in localStorage.
-        const returnPath = getSafeReturnPath();
-
         try {
             // Silent SSO returned an error — the auth server has no session.
             if (searchParams.get('error') === 'login_required') {
                 clearSsoCookie();
-                window.location.href = returnPath;
+                window.location.href = '/';
                 return;
             }
 
             const code = searchParams.get('code');
             const state = searchParams.get('state');
             if (!code || !state) {
-                window.location.href = returnPath;
+                window.location.href = '/';
                 return;
             }
 
             isAuthenticatingRef.current = true;
 
-            const { userId, providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
+            const { userId, providerId, newUser, redirectUrl } = await trpc.userData.handleGoogleCallback.mutate({
                 code: code,
                 state: state,
             });
@@ -91,7 +60,7 @@ export function AuthPage() {
             }
 
             if (!providerId) {
-                window.location.href = returnPath;
+                window.location.href = redirectUrl || '/';
                 return;
             }
 
@@ -102,7 +71,7 @@ export function AuthPage() {
                 removeLocalStorageFromLoading();
                 removeLocalStorageDataCache();
                 removeLocalStorageImportedUser();
-                window.location.href = returnPath;
+                window.location.href = redirectUrl || '/';
                 return;
             }
 
@@ -110,7 +79,7 @@ export function AuthPage() {
             if (savedUserId === '' && savedData === '') {
                 removeLocalStorageDataCache();
                 removeLocalStorageImportedUser();
-                window.location.href = returnPath;
+                window.location.href = redirectUrl || '/';
                 return;
             }
 
@@ -151,11 +120,11 @@ export function AuthPage() {
                     },
                 });
             }
-            window.location.href = returnPath;
+            window.location.href = redirectUrl || '/';
         } catch (error) {
             console.error('Error during authentication', error);
             clearSsoCookie();
-            window.location.href = returnPath;
+            window.location.href = '/';
         }
     }, [searchParams]);
 
