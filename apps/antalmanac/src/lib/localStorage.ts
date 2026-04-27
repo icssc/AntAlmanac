@@ -24,6 +24,7 @@ enum LocalStorageKeys {
     newUser = 'newUser',
     importedUser = 'importedUser',
     fromLoading = 'fromLoading',
+    authReturnPath = 'authReturnPath',
     tempSaveData = 'tempSaveData',
     skeletonBlueprint = 'skeletonBlueprint',
 }
@@ -40,6 +41,18 @@ export function getLocalStorageFromLoading() {
 
 export function removeLocalStorageFromLoading() {
     window.localStorage.removeItem(LSK.fromLoading);
+}
+
+export function setLocalStorageAuthReturnPath(value: string) {
+    window.localStorage.setItem(LSK.authReturnPath, value);
+}
+
+export function getLocalStorageAuthReturnPath() {
+    return window.localStorage.getItem(LSK.authReturnPath);
+}
+
+export function removeLocalStorageAuthReturnPath() {
+    window.localStorage.removeItem(LSK.authReturnPath);
 }
 
 export function setLocalStorageImportedUser(value: string) {

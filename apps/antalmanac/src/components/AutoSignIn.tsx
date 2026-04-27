@@ -1,4 +1,5 @@
 import trpc from '$lib/api/trpc';
+import { setLocalStorageAuthReturnPath } from '$lib/localStorage';
 import { hasSsoCookie } from '$lib/ssoCookie';
 import { useSessionStore } from '$stores/SessionStore';
 import { useEffect, useRef } from 'react';
@@ -43,6 +44,7 @@ export function AutoSignIn() {
             }
 
             try {
+                setLocalStorageAuthReturnPath(window.location.pathname + window.location.search + window.location.hash);
                 const authUrl = await trpc.userData.getGoogleAuthUrl.query({ prompt: 'none' });
                 window.location.href = authUrl.toString();
             } catch {

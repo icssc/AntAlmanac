@@ -2,10 +2,12 @@ import { isEmptySchedule, mergeShortCourseSchedules } from '$actions/AppStoreAct
 import { LoadingScreen } from '$components/LoadingScreen';
 import trpc from '$lib/api/trpc';
 import {
+    getLocalStorageAuthReturnPath,
     getLocalStorageDataCache,
     getLocalStorageFromLoading,
     setLocalStorageImportedUser,
     getLocalStorageUserId,
+    removeLocalStorageAuthReturnPath,
     removeLocalStorageUserId,
     removeLocalStorageImportedUser,
     removeLocalStorageDataCache,
@@ -16,6 +18,30 @@ import { clearSsoCookie, setSsoCookie } from '$lib/ssoCookie';
 import AppStore from '$stores/AppStore';
 import { useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
+
+function getSafeReturnPath() {
+    const candidate = getLocalStorageAuthReturnPath();
+    removeLocalStorageAuthReturnPath();
+
+    if (!candidate) {
+        return '/';
+    }
+
+    if (candidate.startsWith('/') && !candidate.startsWith('//')) {
+        return candidate;
+    }
+
+    try {
+        const url = new URL(candidate, window.location.origin);
+        if (url.origin === window.location.origin) {
+            return `${url.pathname}${url.search}${url.hash}`;
+        }
+    } catch {
+        // Ignore malformed candidate and fallback to root.
+    }
+
+    return '/';
+}
 
 export function AuthPage() {
     const [searchParams] = useSearchParams();
@@ -52,6 +78,7 @@ export function AuthPage() {
             const fromLoading = getLocalStorageFromLoading() ?? '';
             const savedUserId = getLocalStorageUserId() ?? '';
             const savedData = getLocalStorageDataCache() ?? '';
+            const returnPath = getSafeReturnPath();
 
             if (newUser) {
                 setLocalStorageOnFirstSignin('true');
@@ -71,7 +98,7 @@ export function AuthPage() {
                 removeLocalStorageFromLoading();
                 removeLocalStorageDataCache();
                 removeLocalStorageImportedUser();
-                window.location.href = '/';
+                window.location.href = returnPath;
                 return;
             }
 
@@ -79,7 +106,7 @@ export function AuthPage() {
             if (savedUserId === '' && savedData === '') {
                 removeLocalStorageDataCache();
                 removeLocalStorageImportedUser();
-                window.location.href = '/';
+                window.location.href = returnPath;
                 return;
             }
 
@@ -120,7 +147,7 @@ export function AuthPage() {
                     },
                 });
             }
-            window.location.href = '/';
+            window.location.href = returnPath;
         } catch (error) {
             console.error('Error during authentication', error);
             clearSsoCookie();
