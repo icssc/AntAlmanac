@@ -74,6 +74,10 @@ function GradesPopup(props: GradesPopupProps) {
 
     const activeData = view === 'instructor' ? instructorData : overallData;
 
+    const hasData = useMemo(() => {
+        return activeData?.grades.some((g) => g.all > 0);
+    }, [activeData]);
+
     const graphTitle = useMemo(() => {
         const instructorLabel = view === 'instructor' && instructor ? ` — ${instructor}` : '';
         if (!activeData) {
@@ -177,7 +181,7 @@ function GradesPopup(props: GradesPopupProps) {
                     </ToggleButtonGroup>
                 </Box>
             )}
-            {activeData ? (
+            {activeData && hasData ? (
                 <Link
                     href={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
                     target="_blank"
