@@ -1,8 +1,14 @@
+import { SignInDialog } from '$components/dialogs/SignInDialog';
 import RightDivider from '$components/RightDivider';
 import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import trpc from '$lib/api/trpc';
-import { getQuarterPlan, getRoadmapTermRelation, RoadmapTermRelation } from '$lib/plannerHelpers';
+import {
+    getQuarterPlan,
+    getRoadmapTermRelation,
+    RoadmapTermRelation,
+    shouldSearchPlannerFromParams,
+} from '$lib/plannerHelpers';
 import { PLANNER_LINK } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -29,6 +35,7 @@ function getDefaultTermRoadmapGrouping(): TermRoadmapGrouping {
 const SearchWithPlanner = () => {
     const [termRoadmapGrouping, setTermRoadmapGrouping] = useState<TermRoadmapGrouping>(getDefaultTermRoadmapGrouping);
     const [isLoadingSearch, setIsLoadingSearch] = useState(false);
+    const [openSignInDialog, setOpenSignInDialog] = useState(false);
 
     const { sessionIsValid, isPlannerLoading, plannerRoadmaps } = useSessionStore(
         useShallow((state) => ({
@@ -180,6 +187,12 @@ const SearchWithPlanner = () => {
         }
     }, [searchParams, plannerRoadmaps, hasSearchedWithUrlParams]);
 
+    useEffect(() => {
+        if (!sessionIsValid && shouldSearchPlannerFromParams()) {
+            setOpenSignInDialog(true);
+        }
+    }, [sessionIsValid]);
+
     if (isLoadingSearch) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -218,9 +231,17 @@ const SearchWithPlanner = () => {
 
     if (!sessionIsValid) {
         return (
-            <Tooltip title="Sign in to search with planner">
-                <span>{searchComponent}</span>
-            </Tooltip>
+            <>
+                <Tooltip title="Sign in to search with planner">
+                    <span>{searchComponent}</span>
+                </Tooltip>
+
+                <SignInDialog
+                    open={openSignInDialog}
+                    onClose={() => setOpenSignInDialog(false)}
+                    feature="PlannerSearch"
+                />
+            </>
         );
     }
 

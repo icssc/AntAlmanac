@@ -5,8 +5,7 @@ import { Button, Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/m
 
 interface SignInDialogProps {
     open: boolean;
-    isDark: boolean;
-    feature: 'Load' | 'Save' | 'Notification' | 'Planner';
+    feature: 'Load' | 'Save' | 'Notification' | 'Planner' | 'PlannerSearch';
     onClose: () => void;
 }
 
@@ -24,6 +23,8 @@ export function SignInDialog(props: SignInDialogProps) {
                 return 'Sign in to Use Notifications';
             case 'Planner':
                 return 'Sign in to Use Filter by Planner';
+            case 'PlannerSearch':
+                return 'Sign in to search with planner';
             case 'Save':
             default:
                 return 'Save';
