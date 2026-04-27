@@ -1,20 +1,20 @@
+import { useIsMobile } from '$hooks/useIsMobile';
+import type { EnrollmentHistory } from '$lib/enrollmentHistory';
 import { ArrowBack, ArrowForward } from '@mui/icons-material';
-import { Box, IconButton, Typography, Skeleton, Tooltip } from '@mui/material';
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Box, IconButton, Skeleton, Tooltip, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import type { WebsocSectionType } from '@packages/antalmanac-types';
+import { useCallback, useMemo, useState } from 'react';
 import {
-    LineChart,
-    Line,
     CartesianGrid,
+    Legend,
+    Line,
+    LineChart,
+    Tooltip as RechartsTooltip,
     ResponsiveContainer,
     XAxis,
     YAxis,
-    Tooltip as RechartsTooltip,
-    Legend,
 } from 'recharts';
-
-import { useIsMobile } from '$hooks/useIsMobile';
-import { DepartmentEnrollmentHistory, EnrollmentHistory } from '$lib/enrollmentHistory';
-import { useThemeStore } from '$stores/SettingsStore';
 
 type PopupHeaderCallback = () => void;
 
@@ -24,7 +24,7 @@ interface PopupHeaderProps {
     handleForward: PopupHeaderCallback;
     handleBack: PopupHeaderCallback;
     popupTitle: string;
-    enrollmentHistory: EnrollmentHistory[];
+    historyCount: number;
 }
 
 function PopupHeader({
@@ -33,10 +33,8 @@ function PopupHeader({
     handleForward,
     handleBack,
     popupTitle,
-    enrollmentHistory,
+    historyCount,
 }: PopupHeaderProps) {
-    const isMobile = useIsMobile();
-
     return (
         <Box
             sx={{
@@ -54,12 +52,17 @@ function PopupHeader({
                     </IconButton>
                 </span>
             </Tooltip>
-            <Typography sx={{ fontWeight: 500, fontSize: isMobile ? '0.8rem' : '1rem', textAlign: 'center' }}>
+            <Typography
+                sx={{
+                    fontWeight: 500,
+                    textAlign: 'center',
+                }}
+            >
                 {popupTitle}
             </Typography>
             <Tooltip title="Newer Graph">
                 <span>
-                    <IconButton onClick={handleForward} disabled={graphIndex === enrollmentHistory.length - 1}>
+                    <IconButton onClick={handleForward} disabled={graphIndex === historyCount - 1}>
                         <ArrowForward />
                     </IconButton>
                 </span>
@@ -69,58 +72,76 @@ function PopupHeader({
 }
 
 interface EnrollmentHistoryPopupProps {
+    sectionType: WebsocSectionType;
     department: string;
     courseNumber: string;
+    enrollmentHistory: EnrollmentHistory[] | undefined;
+    loading?: boolean;
 }
 
-export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentHistoryPopupProps) {
-    const [loading, setLoading] = useState(true);
-    const [enrollmentHistory, setEnrollmentHistory] = useState<EnrollmentHistory[]>();
-    const [graphIndex, setGraphIndex] = useState(0);
+function graphKey(enrollment: EnrollmentHistory) {
+    return `${enrollment.year}-${enrollment.quarter}-${enrollment.instructors.join('|')}`;
+}
 
+export function EnrollmentHistoryPopup({
+    sectionType,
+    department,
+    courseNumber,
+    enrollmentHistory,
+    loading = false,
+}: EnrollmentHistoryPopupProps) {
+    const [selectedGraphKey, setSelectedGraphKey] = useState<string>();
+
+    const theme = useTheme();
     const isMobile = useIsMobile();
-
-    const deptEnrollmentHistory = useMemo(() => new DepartmentEnrollmentHistory(department), [department]);
 
     const graphWidth = useMemo(() => (isMobile ? 250 : 450), [isMobile]);
     const graphHeight = useMemo(() => (isMobile ? 175 : 250), [isMobile]);
+    const activeGraphIndex = useMemo(() => {
+        if (!enrollmentHistory?.length) {
+            return 0;
+        }
+
+        if (selectedGraphKey) {
+            const selectedIndex = enrollmentHistory.findIndex(
+                (enrollment) => graphKey(enrollment) === selectedGraphKey
+            );
+
+            if (selectedIndex >= 0) {
+                return selectedIndex;
+            }
+        }
+        return enrollmentHistory.length - 1;
+    }, [enrollmentHistory, selectedGraphKey]);
+
     const popupTitle = useMemo(() => {
-        if (enrollmentHistory == null) {
+        const currEnrollmentHistory = enrollmentHistory?.at(activeGraphIndex);
+
+        if (!currEnrollmentHistory) {
             return 'No past enrollment data found for this course';
         }
 
-        const currEnrollmentHistory = enrollmentHistory[graphIndex];
-        return `${department} ${courseNumber} | ${currEnrollmentHistory.year} ${
-            currEnrollmentHistory.quarter
-        } | ${currEnrollmentHistory.instructors.join(', ')}`;
-    }, [courseNumber, department, enrollmentHistory, graphIndex]);
-    const isDark = useThemeStore((state) => state.isDark);
-    const axisColor = isDark ? '#fff' : '#111';
-    const tooltipDateColor = '#111';
+        const instructor = currEnrollmentHistory.instructors.at(0) ?? 'Unknown instructor';
+        const term = `${currEnrollmentHistory.year} ${currEnrollmentHistory.quarter}`;
+
+        return `${department} ${courseNumber} — ${instructor} | ${sectionType} | ${term}`;
+    }, [activeGraphIndex, courseNumber, department, enrollmentHistory, sectionType]);
+
+    const chartColors = theme.palette.enrollmentStatus;
 
     const handleBack = useCallback(() => {
-        setGraphIndex((prev) => prev - 1);
-    }, []);
-
-    const handleForward = useCallback(() => {
-        setGraphIndex((prev) => prev + 1);
-    }, []);
-
-    useEffect(() => {
-        if (!loading) {
+        if (!enrollmentHistory?.length || activeGraphIndex === 0) {
             return;
         }
+        setSelectedGraphKey(graphKey(enrollmentHistory[activeGraphIndex - 1]));
+    }, [activeGraphIndex, enrollmentHistory]);
 
-        deptEnrollmentHistory.find(courseNumber).then((data) => {
-            if (data) {
-                setEnrollmentHistory(data);
-                // The graph index is the last past enrollment graph since we want to show
-                // the most recent quarter's graph
-                setGraphIndex(data.length - 1);
-            }
-            setLoading(false);
-        });
-    }, [loading, deptEnrollmentHistory, courseNumber]);
+    const handleForward = useCallback(() => {
+        if (!enrollmentHistory?.length || activeGraphIndex === enrollmentHistory.length - 1) {
+            return;
+        }
+        setSelectedGraphKey(graphKey(enrollmentHistory[activeGraphIndex + 1]));
+    }, [activeGraphIndex, enrollmentHistory]);
 
     if (loading) {
         return (
@@ -130,7 +151,7 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
         );
     }
 
-    if (enrollmentHistory == null) {
+    if (enrollmentHistory == null || !enrollmentHistory.length) {
         return (
             <Box padding={1}>
                 <Typography variant="body1" align="center">
@@ -140,29 +161,65 @@ export function EnrollmentHistoryPopup({ department, courseNumber }: EnrollmentH
         );
     }
 
-    const lineChartData = enrollmentHistory[graphIndex].days;
+    const lineChartData = enrollmentHistory[activeGraphIndex].days;
 
     return (
         <Box sx={{ padding: 0.5 }}>
             <PopupHeader
                 graphWidth={graphWidth}
-                graphIndex={graphIndex}
+                graphIndex={activeGraphIndex}
                 handleForward={handleForward}
                 handleBack={handleBack}
                 popupTitle={popupTitle}
-                enrollmentHistory={enrollmentHistory}
+                historyCount={enrollmentHistory.length}
             />
+
             <Box sx={{ display: 'flex', height: graphHeight, width: graphWidth }}>
                 <ResponsiveContainer width="95%" height="95%">
-                    <LineChart data={lineChartData} style={{ cursor: 'pointer' }}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" tick={{ fontSize: 12, fill: axisColor }} />
-                        <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} />
-                        <RechartsTooltip labelStyle={{ color: tooltipDateColor }} />
-                        <Legend />
-                        <Line type="monotone" dataKey="totalEnrolled" stroke="#8884d8" name="Enrolled" dot={{ r: 2 }} />
-                        <Line type="monotone" dataKey="maxCapacity" stroke="#82ca9d" name="Max" dot={{ r: 2 }} />
-                        <Line type="monotone" dataKey="waitlist" stroke="#ffc658" name="Waitlist" dot={{ r: 2 }} />
+                    <LineChart
+                        data={lineChartData}
+                        style={{ cursor: 'pointer' }}
+                        margin={{ top: 8, right: 16, left: 4 }}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <RechartsTooltip contentStyle={{ backgroundColor: theme.palette.background.paper }} />
+                        <Legend wrapperStyle={{ left: 0, width: '100%' }} />
+
+                        <XAxis dataKey="date" tick={{ fontSize: 12, fill: theme.palette.text.primary }} />
+                        <YAxis tick={{ fontSize: 12, fill: theme.palette.text.primary }} width={48} />
+
+                        <Line
+                            type="monotone"
+                            dataKey="totalEnrolled"
+                            stroke={chartColors.open}
+                            name="Enrolled"
+                            strokeWidth={2}
+                            dot={false}
+                            activeDot={{ r: 4 }}
+                            isAnimationActive={false}
+                        />
+                        <Line
+                            type="monotone"
+                            dataKey="maxCapacity"
+                            stroke={chartColors.full}
+                            name="Capacity"
+                            strokeWidth={2}
+                            strokeDasharray="16 24"
+                            dot={false}
+                            activeDot={{ r: 3 }}
+                            isAnimationActive={false}
+                        />
+                        <Line
+                            type="monotone"
+                            dataKey="waitlist"
+                            stroke={chartColors.waitlist}
+                            name="Waitlist"
+                            strokeWidth={2}
+                            dot={false}
+                            connectNulls
+                            activeDot={{ r: 3 }}
+                            isAnimationActive={false}
+                        />
                     </LineChart>
                 </ResponsiveContainer>
             </Box>
