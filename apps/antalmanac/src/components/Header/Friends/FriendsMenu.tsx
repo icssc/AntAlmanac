@@ -176,12 +176,16 @@ export function FriendsMenu({
                     onChange={(_, v) => setActiveTab(v)}
                     variant="fullWidth"
                     textColor="inherit"
-                    sx={{
+                    sx={(theme) => ({
                         mb: 1,
                         '& .MuiTab-root': { color: 'text.secondary' },
-                        '& .MuiTab-root.Mui-selected': { color: '#90B3FA' },
-                        '& .MuiTabs-indicator': { bgcolor: '#90B3FA' },
-                    }}
+                        '& .MuiTab-root.Mui-selected': {
+                            color: theme.palette.mode === 'dark' ? '#90B3FA' : theme.palette.primary.main,
+                        },
+                        '& .MuiTabs-indicator': {
+                            bgcolor: theme.palette.mode === 'dark' ? '#90B3FA' : theme.palette.primary.main,
+                        },
+                    })}
                 >
                     <Tab label="Friends" value="friends" />
                     <Tab

@@ -36,7 +36,7 @@ export function FriendSearchDropdown({
             <Paper
                 elevation={8}
                 onMouseDown={(e) => e.preventDefault()}
-                sx={{
+                sx={(theme) => ({
                     mt: -0.5,
                     maxHeight: 280,
                     overflowY: 'auto',
@@ -45,9 +45,9 @@ export function FriendSearchDropdown({
                     '&::-webkit-scrollbar': { width: 6 },
                     '&::-webkit-scrollbar-track': { background: 'none' },
                     '&::-webkit-scrollbar-thumb': { borderRadius: 3, bgcolor: 'action.disabled' },
-                    bgcolor: '#424242',
+                    bgcolor: theme.palette.mode === 'dark' ? '#424242' : theme.palette.background.paper,
                     boxShadow: '0px 4px 4px 0px rgba(0,0,0,0.25)',
-                }}
+                })}
             >
                 {filtered.length === 0 ? (
                     <Typography variant="body2" color="text.secondary" sx={{ py: 1, px: 0.5, fontSize: '0.9rem' }}>

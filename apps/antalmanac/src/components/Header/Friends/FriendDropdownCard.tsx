@@ -13,17 +13,17 @@ interface FriendDropdownCardProps {
 export function FriendDropdownCard({ friend, onView, onOpenMenu }: FriendDropdownCardProps) {
     return (
         <Box
-            sx={{
+            sx={(theme) => ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 px: 1,
                 py: 0.75,
                 borderRadius: 1,
-                bgcolor: '#424242',
+                bgcolor: theme.palette.mode === 'dark' ? '#424242' : theme.palette.grey[100],
                 '&:hover': { bgcolor: 'action.hover' },
                 transition: 'background-color 0.15s ease',
-            }}
+            })}
         >
             <FriendIdentity name={friend.name} email={friend.email} avatar={friend.avatar} />
             <Stack direction="row" spacing={0.5} alignItems="center">
