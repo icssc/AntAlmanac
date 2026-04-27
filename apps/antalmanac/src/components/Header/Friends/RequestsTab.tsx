@@ -1,8 +1,10 @@
-import { PersonAdd, ExpandMore, ExpandLess } from '@mui/icons-material';
-import { Box, Button, Collapse, IconButton, Stack, TextField, Typography } from '@mui/material';
+import { PersonAdd } from '@mui/icons-material';
+import { Box, Button, IconButton, Stack, TextField, Typography } from '@mui/material';
+import { useState } from 'react';
 
 import { BlockedUserCard } from './BlockedUserCard';
 import { RequestCard } from './RequestCard';
+import { SentRequestCard } from './SentRequestCard';
 import { textFieldSx } from './styles';
 import type { Friend, FriendRequest } from './types';
 
@@ -12,11 +14,11 @@ interface RequestsTabProps {
     onAddFriend: () => void;
     isDark: boolean;
     friendRequests: FriendRequest[];
+    sentRequests: FriendRequest[];
     blockedFriends: Friend[];
-    blockedOpen: boolean;
-    onToggleBlocked: () => void;
     onAccept: (id: string) => void;
     onDecline: (id: string) => void;
+    onCancelRequest: (id: string) => void;
     onOpenBlockMenu: (e: React.MouseEvent<HTMLElement>, id: string) => void;
     onUnblock: (id: string) => void;
 }
@@ -27,14 +29,16 @@ export function RequestsTab({
     onAddFriend,
     isDark,
     friendRequests,
+    sentRequests,
     blockedFriends,
-    blockedOpen,
-    onToggleBlocked,
     onAccept,
     onDecline,
+    onCancelRequest,
     onOpenBlockMenu,
     onUnblock,
 }: RequestsTabProps) {
+    const [subTab, setSubTab] = useState<'received' | 'sent' | 'blocked'>('received');
+
     return (
         <>
             <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 1 }}>
@@ -42,6 +46,7 @@ export function RequestsTab({
                     variant="standard"
                     size="small"
                     placeholder="Search friend by name or email"
+                    autoComplete="off"
                     value={email}
                     onChange={(e) => onEmailChange(e.target.value)}
                     onKeyDown={(e) => {
@@ -57,58 +62,105 @@ export function RequestsTab({
                     onClick={onAddFriend}
                     disabled={!email.trim()}
                     color="primary"
+                    size="small"
                     sx={{
                         bgcolor: isDark ? 'primary.dark' : 'primary.main',
                         color: 'white',
+                        p: 0.75,
                         '&:hover': { bgcolor: isDark ? 'primary.main' : 'primary.dark' },
                         '&.Mui-disabled': { bgcolor: 'action.disabledBackground', color: 'action.disabled' },
                     }}
                 >
-                    <PersonAdd />
+                    <PersonAdd fontSize="small" />
                 </IconButton>
             </Stack>
 
-            <Box sx={{ mb: 2, mt: 1 }}>
-                {friendRequests.length === 0 ? (
-                    <Typography variant="body2" color="text.secondary" sx={{ py: 2, pl: 0.5, fontSize: '1rem' }}>
-                        No pending requests
-                    </Typography>
-                ) : (
-                    friendRequests.map((request) => (
-                        <RequestCard
-                            key={request.id}
-                            request={request}
-                            onAccept={onAccept}
-                            onDecline={onDecline}
-                            onOpenBlockMenu={onOpenBlockMenu}
-                        />
-                    ))
+            <Stack direction="row" sx={{ mt: 1.5 }} gap={1}>
+                {(
+                    [
+                        { value: 'received', label: 'Received', count: friendRequests.length },
+                        { value: 'sent', label: 'Sent', count: sentRequests.length },
+                        { value: 'blocked', label: 'Blocked', count: blockedFriends.length },
+                    ] as const
+                ).map(({ value, label, count }) => (
+                    <Button
+                        key={value}
+                        size="small"
+                        onClick={() => setSubTab(value)}
+                        sx={{
+                            minWidth: 0,
+                            px: 1,
+                            borderRadius: 999,
+                            textTransform: 'none',
+                            fontSize: '0.875rem',
+                            py: 0.4,
+                            bgcolor: subTab === value ? '#0000003B' : 'transparent',
+                            color: subTab === value ? 'text.primary' : 'text.secondary',
+                            '&:hover': { bgcolor: subTab === value ? '#00000055' : 'action.hover' },
+                        }}
+                    >
+                        {count > 0 ? `${label} (${count})` : label}
+                    </Button>
+                ))}
+            </Stack>
+
+            <Box
+                sx={{
+                    mt: 1,
+                    maxHeight: 260,
+                    overflowY: 'auto',
+                    '&::-webkit-scrollbar': { width: 6 },
+                    '&::-webkit-scrollbar-track': { background: 'none' },
+                    '&::-webkit-scrollbar-thumb': { borderRadius: 3, bgcolor: 'action.disabled' },
+                }}
+            >
+                {subTab === 'received' && (
+                    <>
+                        {friendRequests.length === 0 ? (
+                            <Typography variant="body2" color="text.secondary" sx={{ py: 2, pl: 0.5 }}>
+                                No pending requests
+                            </Typography>
+                        ) : (
+                            friendRequests.map((request) => (
+                                <RequestCard
+                                    key={request.id}
+                                    request={request}
+                                    onAccept={onAccept}
+                                    onDecline={onDecline}
+                                    onOpenBlockMenu={onOpenBlockMenu}
+                                />
+                            ))
+                        )}
+                    </>
                 )}
 
-                <Box>
-                    <Button
-                        variant="text"
-                        size="small"
-                        onClick={onToggleBlocked}
-                        endIcon={blockedOpen ? <ExpandLess /> : <ExpandMore />}
-                        sx={{ color: 'text.secondary', textTransform: 'none', fontSize: '0.8rem', px: 0.5 }}
-                    >
-                        Blocked{blockedFriends.length > 0 ? ` (${blockedFriends.length})` : ''}
-                    </Button>
-                    <Collapse in={blockedOpen}>
-                        <Box sx={{ mt: 1 }}>
-                            {blockedFriends.length === 0 ? (
-                                <Typography variant="body2" color="text.secondary" sx={{ py: 1, fontSize: '0.875rem' }}>
-                                    No blocked users
-                                </Typography>
-                            ) : (
-                                blockedFriends.map((user) => (
-                                    <BlockedUserCard key={user.id} user={user} onUnblock={onUnblock} />
-                                ))
-                            )}
-                        </Box>
-                    </Collapse>
-                </Box>
+                {subTab === 'sent' && (
+                    <>
+                        {sentRequests.length === 0 ? (
+                            <Typography variant="body2" color="text.secondary" sx={{ py: 2, pl: 0.5 }}>
+                                No sent requests
+                            </Typography>
+                        ) : (
+                            sentRequests.map((request) => (
+                                <SentRequestCard key={request.id} request={request} onCancel={onCancelRequest} />
+                            ))
+                        )}
+                    </>
+                )}
+
+                {subTab === 'blocked' && (
+                    <>
+                        {blockedFriends.length === 0 ? (
+                            <Typography variant="body2" color="text.secondary" sx={{ py: 2, pl: 0.5 }}>
+                                No blocked users
+                            </Typography>
+                        ) : (
+                            blockedFriends.map((user) => (
+                                <BlockedUserCard key={user.id} user={user} onUnblock={onUnblock} />
+                            ))
+                        )}
+                    </>
+                )}
             </Box>
         </>
     );

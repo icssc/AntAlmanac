@@ -20,10 +20,18 @@ export function FriendsButton() {
     const isDark = useThemeStore((store) => store.isDark);
 
     const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
+    const [sentRequests, setSentRequests] = useState<FriendRequest[]>([]);
     const [friends, setFriends] = useState<Friend[]>([]);
     const [blockedFriends, setBlockedFriends] = useState<Friend[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [dataLoaded, setDataLoaded] = useState(false);
+
+    const mapUser = (u: { id: string; name: string | null; email: string | null; avatar: string | null }) => ({
+        id: u.id,
+        name: u.name ?? undefined,
+        email: u.email ?? '',
+        avatar: u.avatar ?? undefined,
+    });
 
     const loadFriendsData = useCallback(async () => {
         if (!sessionIsValid || !userId) {
@@ -32,39 +40,20 @@ export function FriendsButton() {
 
         setIsLoading(true);
         try {
-            const [friendsResult, pendingResult, blockedResult] = await Promise.all([
+            const [friendsResult, pendingResult, sentResult, blockedResult] = await Promise.all([
                 trpc.friends.getFriends.query(),
                 trpc.friends.getPendingRequests.query(),
+                trpc.friends.getSentRequests.query(),
                 trpc.friends.getBlockedUsers.query(),
             ]);
 
-            setFriends(
-                friendsResult.map((friend) => ({
-                    id: friend.id,
-                    name: friend.name ?? undefined,
-                    email: friend.email ?? '',
-                    avatar: friend.avatar ?? undefined,
-                }))
-            );
-
-            setFriendRequests(
-                pendingResult.map((request) => ({
-                    id: request.id,
-                    name: request.name ?? undefined,
-                    email: request.email ?? '',
-                    avatar: request.avatar ?? undefined,
-                }))
-            );
-
+            setFriends(friendsResult.map(mapUser));
+            setFriendRequests(pendingResult.map(mapUser));
+            setSentRequests(sentResult.map(mapUser));
             setBlockedFriends(
                 (
                     blockedResult as { id: string; name: string | null; email: string | null; avatar: string | null }[]
-                ).map((user) => ({
-                    id: user.id,
-                    name: user.name ?? undefined,
-                    email: user.email ?? '',
-                    avatar: user.avatar ?? undefined,
-                }))
+                ).map(mapUser)
             );
 
             setDataLoaded(true);
@@ -79,6 +68,7 @@ export function FriendsButton() {
     useEffect(() => {
         if (!sessionIsValid || !userId) {
             setFriendRequests([]);
+            setSentRequests([]);
             setFriends([]);
             setBlockedFriends([]);
             setIsLoading(false);
@@ -97,27 +87,15 @@ export function FriendsButton() {
         let cancelled = false;
         const id = setInterval(async () => {
             try {
-                const [friendsResult, pendingResult] = await Promise.all([
+                const [friendsResult, pendingResult, sentResult] = await Promise.all([
                     trpc.friends.getFriends.query(),
                     trpc.friends.getPendingRequests.query(),
+                    trpc.friends.getSentRequests.query(),
                 ]);
                 if (cancelled) return;
-                setFriends(
-                    friendsResult.map((f) => ({
-                        id: f.id,
-                        name: f.name ?? undefined,
-                        email: f.email ?? '',
-                        avatar: f.avatar ?? undefined,
-                    }))
-                );
-                setFriendRequests(
-                    pendingResult.map((r) => ({
-                        id: r.id,
-                        name: r.name ?? undefined,
-                        email: r.email ?? '',
-                        avatar: r.avatar ?? undefined,
-                    }))
-                );
+                setFriends(friendsResult.map(mapUser));
+                setFriendRequests(pendingResult.map(mapUser));
+                setSentRequests(sentResult.map(mapUser));
             } catch {
                 // Silently skip failed polls
             }
@@ -185,6 +163,7 @@ export function FriendsButton() {
             >
                 <FriendsMenu
                     friendRequests={friendRequests}
+                    sentRequests={sentRequests}
                     friends={friends}
                     blockedFriends={blockedFriends}
                     isLoading={showLoadingSkeleton}

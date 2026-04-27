@@ -28,6 +28,7 @@ export type { Friend, FriendRequest };
 
 export interface FriendsMenuProps {
     friendRequests: FriendRequest[];
+    sentRequests: FriendRequest[];
     friends: Friend[];
     blockedFriends: Friend[];
     isLoading: boolean;
@@ -36,6 +37,7 @@ export interface FriendsMenuProps {
 
 export function FriendsMenu({
     friendRequests,
+    sentRequests,
     friends,
     blockedFriends,
     isLoading,
@@ -43,7 +45,6 @@ export function FriendsMenu({
 }: FriendsMenuProps) {
     const isDark = useThemeStore((store) => store.isDark);
     const [activeTab, setActiveTab] = useState<'friends' | 'requests'>('friends');
-    const [blockedOpen, setBlockedOpen] = useState(false);
     const [email, setEmail] = useState('');
     const [friendSearch, setFriendSearch] = useState('');
     const [friendDropdownOpen, setFriendDropdownOpen] = useState(false);
@@ -209,13 +210,13 @@ export function FriendsMenu({
                         onAddFriend={handleAddFriend}
                         isDark={isDark}
                         friendRequests={friendRequests}
+                        sentRequests={sentRequests}
                         blockedFriends={blockedFriends}
-                        blockedOpen={blockedOpen}
-                        onToggleBlocked={() => setBlockedOpen((p) => !p)}
                         onAccept={handleAccept}
                         onDecline={handleDecline}
                         onOpenBlockMenu={handleOpenBlockMenu}
                         onUnblock={handleUnblock}
+                        onCancelRequest={handleDecline}
                     />
                 )}
             </Box>

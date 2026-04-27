@@ -105,6 +105,13 @@ const friendsRouter = router({
     }),
 
     /**
+     * Returns all pending friend requests sent by the authenticated user.
+     */
+    getSentRequests: protectedProcedure.query(async ({ ctx }) => {
+        return RDS.getSentPendingRequests(db, ctx.userId);
+    }),
+
+    /**
      * Removes an existing friendship or declines a pending friend request.
      */
     removeFriend: protectedProcedure.input(z.object({ friendId: z.string() })).mutation(async ({ input, ctx }) => {

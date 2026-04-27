@@ -1,6 +1,7 @@
 import { MoreVert } from '@mui/icons-material';
-import { Box, Button, IconButton, Stack, Typography } from '@mui/material';
+import { Box, Button, IconButton, Stack } from '@mui/material';
 
+import { FriendIdentity } from './FriendIdentity';
 import { friendCardSx } from './styles';
 import type { FriendRequest } from './types';
 
@@ -14,16 +15,7 @@ interface RequestCardProps {
 export function RequestCard({ request, onAccept, onDecline, onOpenBlockMenu }: RequestCardProps) {
     return (
         <Box sx={friendCardSx}>
-            <Stack direction="row" alignItems="center" flex={1} overflow="hidden">
-                <Box sx={{ minWidth: 0, ml: 0.5 }}>
-                    <Typography variant="body2" fontWeight={600} noWrap>
-                        {request.name || request.email}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary" noWrap display="block">
-                        {request.email}
-                    </Typography>
-                </Box>
-            </Stack>
+            <FriendIdentity name={request.name} email={request.email} avatar={request.avatar} />
             <Stack direction="row" spacing={0.5} alignItems="center">
                 <Button
                     size="small"

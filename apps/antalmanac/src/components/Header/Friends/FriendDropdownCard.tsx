@@ -1,6 +1,7 @@
-import { AccountCircle, MoreVert } from '@mui/icons-material';
-import { Avatar, Box, Button, IconButton, Stack, Typography } from '@mui/material';
+import { MoreVert } from '@mui/icons-material';
+import { Box, Button, IconButton, Stack } from '@mui/material';
 
+import { FriendIdentity } from './FriendIdentity';
 import type { Friend } from './types';
 
 interface FriendDropdownCardProps {
@@ -24,19 +25,7 @@ export function FriendDropdownCard({ friend, onView, onOpenMenu }: FriendDropdow
                 transition: 'background-color 0.15s ease',
             }}
         >
-            <Stack direction="row" alignItems="center" spacing={1.5} flex={1} overflow="hidden">
-                <Avatar src={friend.avatar ?? undefined} sx={{ bgcolor: 'grey.700', width: 30, height: 30 }}>
-                    {!friend.avatar && <AccountCircle sx={{ fontSize: 20 }} />}
-                </Avatar>
-                <Box sx={{ minWidth: 0 }}>
-                    <Typography variant="body2" fontWeight={600} noWrap>
-                        {friend.name || friend.email}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary" noWrap display="block">
-                        {friend.email}
-                    </Typography>
-                </Box>
-            </Stack>
+            <FriendIdentity name={friend.name} email={friend.email} avatar={friend.avatar} />
             <Stack direction="row" spacing={0.5} alignItems="center">
                 <Button
                     size="small"

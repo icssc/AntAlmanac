@@ -933,6 +933,17 @@ export class RDS {
     }
 
     /**
+     * Returns all pending friend requests sent by the given user (id, name, email of addressee).
+     */
+    static async getSentPendingRequests(db: DatabaseOrTransaction, userId: string) {
+        return db
+            .select({ id: users.id, name: users.name, email: users.email, avatar: users.avatar })
+            .from(friendships)
+            .innerJoin(users, eq(friendships.addresseeId, users.id))
+            .where(and(eq(friendships.requesterId, userId), eq(friendships.status, 'PENDING')));
+    }
+
+    /**
      * Deletes the friendship row between two users regardless of direction.
      */
     static async deleteFriendship(db: DatabaseOrTransaction, userIdA: string, userIdB: string) {
