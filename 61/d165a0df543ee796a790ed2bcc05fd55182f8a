@@ -1,0 +1,29 @@
+apps/antalmanac/src/backend/routers/userData.ts
+  3ac92169d06328d1 44-48
+apps/antalmanac/src/actions/AppStoreActions.ts
+  3ac92169d06328d1 261
+apps/antalmanac/src/backend/lib/rds.ts
+  3ac92169d06328d1 554-556,807-808,810-811,819
+apps/antalmanac/src/backend/routers/friends.ts
+  3ac92169d06328d1 9,11,15-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "61d165a0df543ee796a790ed2bcc05fd55182f8a",
+  "prompts": {
+    "3ac92169d06328d1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "333ea1c0-df07-44c0-848f-6ca436f1fa52",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 41,
+      "total_deletions": 23,
+      "accepted_lines": 495,
+      "overriden_lines": 1
+    }
+  }
+}
