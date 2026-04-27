@@ -103,6 +103,37 @@ const getLazyLoadHeight = (item: WebsocSchool | WebsocDepartment | AACourse) => 
     return 200;
 };
 
+const getAndResultCounts = (
+    flattenedCourseData: (WebsocSchool | WebsocDepartment | AACourse)[],
+    sharedCourseKeys: Set<string>
+) => {
+    let andCourseCount = 0;
+    let currentSchoolName = '';
+    const andSchoolNames = new Set<string>();
+
+    for (const item of flattenedCourseData) {
+        if ('departments' in item) {
+            currentSchoolName = item.schoolName;
+            continue;
+        }
+
+        if (!('sections' in item)) {
+            continue;
+        }
+
+        if (!sharedCourseKeys.has(getMultiGeCourseKey(item.deptCode, item.courseNumber))) {
+            continue;
+        }
+
+        andCourseCount += 1;
+        if (currentSchoolName) {
+            andSchoolNames.add(currentSchoolName);
+        }
+    }
+
+    return { andCourseCount, andSchoolCount: andSchoolNames.size };
+};
+
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
     const isMobile = useIsMobile();
@@ -313,13 +344,7 @@ export default function CourseRenderPane(props: { id?: number }) {
 
         try {
             // Query websoc for course information and populate gradescache
-            const [
-                {
-                    response: websocJsonResp,
-                    sharedCourseKeys: fetchedSharedCourseKeys,
-                    andSchoolCount: fetchedAndSchoolCount,
-                },
-            ] = await Promise.all([
+            const [{ response: websocJsonResp, sharedCourseKeys: fetchedSharedCourseKeys }] = await Promise.all([
                 queryManualSearchCourses(websocQueryParams),
                 // Catch the error here so that the course pane still loads even if the grades cache fails to populate
                 Grades.populateGradesCache(gradesQueryParams).catch((error) => {
@@ -331,16 +356,11 @@ export default function CourseRenderPane(props: { id?: number }) {
             setError(false);
             setWebsocResp(websocJsonResp);
             const allCourses = getFilteredCourses(flattenSOCObject(websocJsonResp));
+            const andCounts = getAndResultCounts(allCourses, fetchedSharedCourseKeys);
             setCourseData(allCourses);
             setSharedCourseKeys(fetchedSharedCourseKeys);
-            setAndSchoolCount(fetchedAndSchoolCount);
-            setAndCourseCount(
-                allCourses.filter(
-                    (item) =>
-                        'sections' in item &&
-                        fetchedSharedCourseKeys.has(getMultiGeCourseKey(item.deptCode, item.courseNumber))
-                ).length
-            );
+            setAndSchoolCount(andCounts.andSchoolCount);
+            setAndCourseCount(andCounts.andCourseCount);
         } catch (error) {
             console.error(error);
             setError(true);
@@ -361,14 +381,10 @@ export default function CourseRenderPane(props: { id?: number }) {
             }
             const flattened = flattenSOCObject(websocResp);
             const filteredCourses = getFilteredCourses(flattened);
+            const andCounts = getAndResultCounts(filteredCourses, sharedCourseKeys);
             setCourseData(filteredCourses);
-            setAndCourseCount(
-                filteredCourses.filter(
-                    (item) =>
-                        'sections' in item &&
-                        sharedCourseKeys.has(getMultiGeCourseKey(item.deptCode, item.courseNumber))
-                ).length
-            );
+            setAndSchoolCount(andCounts.andSchoolCount);
+            setAndCourseCount(andCounts.andCourseCount);
         };
 
         AppStore.on('currentScheduleIndexChange', changeColors);
@@ -400,15 +416,15 @@ export default function CourseRenderPane(props: { id?: number }) {
 
     const currGeSelection = RightPaneStore.getFormData().ge;
     const isMultiGeSearch = currGeSelection !== 'ANY' && currGeSelection.includes(',');
+    const showNoIntersection = isMultiGeSearch && andCourseCount === 0;
     let orBannerIndex = -1;
-    if (isMultiGeSearch) {
+    if (isMultiGeSearch && !showNoIntersection) {
         let schoolCount = 0;
         orBannerIndex = courseData.findIndex((item) => {
             if (!('departments' in item)) return false;
             return schoolCount++ === andSchoolCount;
         });
     }
-    const showNoIntersection = isMultiGeSearch && andCourseCount === 0;
 
     return (
         <>

@@ -136,6 +136,7 @@ export function AdvancedSearchTextFields() {
         }
 
         if (name === 'online') {
+            const stateObj = { url: 'url' };
             const url = new URL(window.location.href);
             const urlParam = new URLSearchParams(url.search);
             const checked = (event as ChangeEvent<HTMLInputElement>).target.value === 'true';
@@ -154,6 +155,9 @@ export function AdvancedSearchTextFields() {
                 urlParam.delete('building');
                 urlParam.delete('room');
             }
+            const param = urlParam.toString();
+            const newUrl = `${param.trim() ? '?' : ''}${param}`;
+            history.replaceState(stateObj, 'url', '/' + newUrl);
             return;
         }
 
