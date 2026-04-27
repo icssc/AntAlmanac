@@ -15,7 +15,7 @@ export function SentRequestCard({ request, onCancel }: SentRequestCardProps) {
             <FriendIdentity name={request.name} email={request.email} avatar={request.avatar} />
             <Button
                 size="small"
-                variant="outlined"
+                variant="contained"
                 onClick={() => onCancel(request.id)}
                 sx={{
                     fontSize: '0.8rem',
@@ -24,12 +24,12 @@ export function SentRequestCard({ request, onCancel }: SentRequestCardProps) {
                     minWidth: 'auto',
                     px: 1.5,
                     py: 0.5,
-                    borderColor: 'error.main',
-                    color: 'error.main',
-                    '&:hover': { bgcolor: 'error.main', color: 'white', borderColor: 'error.main' },
+                    bgcolor: '#EF5350',
+                    color: 'white',
+                    '&:hover': { bgcolor: '#d32f2f' },
                 }}
             >
-                Cancel
+                Unrequest
             </Button>
         </Box>
     );

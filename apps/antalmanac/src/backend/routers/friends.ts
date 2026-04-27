@@ -80,7 +80,14 @@ const friendsRouter = router({
     acceptFriendRequest: protectedProcedure
         .input(z.object({ requesterId: z.string() }))
         .mutation(async ({ input, ctx }) => {
-            return RDS.acceptFriendRequest(db, input.requesterId, ctx.userId);
+            const result = await RDS.acceptFriendRequest(db, input.requesterId, ctx.userId);
+            if (result.length === 0) {
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                    message: 'This friend request no longer exists.',
+                });
+            }
+            return result;
         }),
 
     /**

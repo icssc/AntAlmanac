@@ -80,7 +80,12 @@ export function FriendsMenu({
             await loadFriendsData();
         } catch (error) {
             console.error('Error accepting friend request:', error);
-            openSnackbar('error', 'Failed to accept friend request.');
+            const message =
+                error instanceof Error && error.message.includes('no longer exists')
+                    ? 'This friend request is no longer available.'
+                    : 'Failed to accept friend request.';
+            openSnackbar('error', message);
+            await loadFriendsData();
         }
     };
 
