@@ -275,10 +275,8 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
     }
 };
 
-export type UserDataWithSessionResponse = Awaited<ReturnType<typeof trpc.userData.getUserData.query>>;
-
 interface LoadScheduleOptions {
-    prefetched: UserDataWithSessionResponse | null;
+    prefetched: Awaited<ReturnType<typeof trpc.userData.getUserData.query>> | null;
 }
 
 export const loadSchedule = async ({ prefetched }: LoadScheduleOptions) => {
