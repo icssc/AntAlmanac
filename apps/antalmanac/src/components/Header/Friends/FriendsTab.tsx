@@ -46,7 +46,7 @@ export function FriendsTab({
                     }}
                     onBlur={() => setTimeout(onDropdownClose, 150)}
                     fullWidth
-                    sx={{ mb: 0.5, ...textFieldSx }}
+                    sx={[{ mb: 0.5 }, textFieldSx]}
                 />
             </Box>
 
