@@ -4,7 +4,6 @@ import { SortableList } from '$components/Calendar/Toolbar/ScheduleSelect/drag-a
 import { AddScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton';
 import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/DeleteScheduleButton';
 import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
-import { ShareScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/ShareScheduleButton';
 import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
@@ -294,7 +293,6 @@ export function SelectSchedulePopover() {
                                         <Box display="flex" alignItems="center" gap={0.5}>
                                             <CopyScheduleButton index={index} disabled={disableActionButtons} />
                                             <RenameScheduleButton index={index} disabled={disableActionButtons} />
-                                            <ShareScheduleButton index={index} disabled={disableActionButtons} />
                                             {sessionIsValid &&
                                                 !disableActionButtons &&
                                                 (() => {
