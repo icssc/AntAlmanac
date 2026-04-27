@@ -1,13 +1,12 @@
 'use client';
 
+import { BLUE, DARK_PAPER_BG, LIGHT_BLUE } from '$src/globals';
+import { useThemeStore } from '$stores/SettingsStore';
 import { CssBaseline, type PaletteOptions } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Roboto } from 'next/font/google';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useMemo } from 'react';
-
-import { BLUE, DARK_PAPER_BG, LIGHT_BLUE } from '$src/globals';
-import { useThemeStore } from '$stores/SettingsStore';
 
 const roboto = Roboto({
     weight: ['300', '400', '500', '700'],
@@ -34,6 +33,11 @@ const lightTheme: PaletteOptions = {
     },
     error: {
         main: '#ce0000',
+    },
+    enrollmentStatus: {
+        open: '#00c853',
+        waitlist: '#ff9800',
+        full: '#e53935',
     },
 };
 
@@ -63,6 +67,11 @@ const darkTheme: PaletteOptions = {
     error: {
         main: '#ff3333',
     },
+    enrollmentStatus: {
+        open: '#00c853',
+        waitlist: '#f5c518',
+        full: '#e53935',
+    },
 };
 
 interface Props {
@@ -85,6 +94,11 @@ declare module '@mui/material/styles' {
             background: string;
             hoverBackground: string;
         };
+        enrollmentStatus: {
+            open: string;
+            waitlist: string;
+            full: string;
+        };
     }
 
     interface PaletteOptions {
@@ -92,6 +106,11 @@ declare module '@mui/material/styles' {
             border: string;
             background: string;
             hoverBackground: string;
+        };
+        enrollmentStatus?: {
+            open: string;
+            waitlist: string;
+            full: string;
         };
     }
 }

@@ -1,17 +1,18 @@
-import { PostHog } from 'posthog-js/react';
-import { create } from 'zustand';
-
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import {
     getLocalStorageAutoSave,
+    getLocalStorageDevMode,
     getLocalStoragePreviewMode,
     getLocalStorageShow24HourTime,
     getLocalStorageTheme,
     setLocalStorageAutoSave,
+    setLocalStorageDevMode,
     setLocalStoragePreviewMode,
     setLocalStorageShow24HourTime,
     setLocalStorageTheme,
 } from '$lib/localStorage';
+import { PostHog } from 'posthog-js/react';
+import { create } from 'zustand';
 
 export type ThemeSetting = 'light' | 'dark' | 'system';
 
@@ -113,6 +114,27 @@ export const useAutoSaveStore = create<AutoSaveStore>((set) => {
                 setLocalStorageAutoSave(autoSave.toString());
             }
             set({ autoSave });
+        },
+    };
+});
+
+export interface DevModeStore {
+    devMode: boolean;
+    setDevMode: (devMode: boolean) => void;
+}
+
+export const useDevModeStore = create<DevModeStore>((set) => {
+    const stored = typeof Storage !== 'undefined' ? getLocalStorageDevMode() : null;
+    const isLocalDev = process.env.NODE_ENV === 'development';
+    const devMode = stored === null ? isLocalDev : stored === 'true';
+
+    return {
+        devMode,
+        setDevMode: (devMode: boolean) => {
+            if (typeof Storage !== 'undefined') {
+                setLocalStorageDevMode(devMode.toString());
+            }
+            set({ devMode });
         },
     };
 });

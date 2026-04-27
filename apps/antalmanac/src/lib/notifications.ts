@@ -14,24 +14,18 @@ function _transformNotificationToApiFormat(notification: Notification) {
     };
 }
 
-function getUserId(): string | null {
-    return useSessionStore.getState().userId;
-}
-
 class NotificationsClient {
     async getNotifications() {
-        const userId = getUserId();
-        if (userId) {
-            return await trpc.notifications.get.query({ userId });
+        if (useSessionStore.getState().sessionIsValid) {
+            return await trpc.notifications.get.query();
         }
         return [];
     }
 
     async setNotifications(notifications: Notification[]) {
-        const userId = getUserId();
-        if (userId) {
+        if (useSessionStore.getState().sessionIsValid) {
             const transformedNotifications = notifications.map(_transformNotificationToApiFormat);
-            return await trpc.notifications.set.mutate({ userId, notifications: transformedNotifications });
+            return await trpc.notifications.set.mutate({ notifications: transformedNotifications });
         }
         console.error('No session found to set notifications successfully.');
     }
@@ -42,7 +36,7 @@ class NotificationsClient {
     }
 
     async deleteNotification(notification: Notification) {
-        const userId = getUserId();
+        const userId = useSessionStore.getState().userId;
         if (userId) {
             const transformedNotification = _transformNotificationToApiFormat(notification);
             return await trpc.notifications.deleteNotification.mutate({

@@ -2,20 +2,13 @@
 
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './calendar.css';
-
-import { CalendarMonth } from '@mui/icons-material';
-import { Box, Backdrop, useTheme } from '@mui/material';
-import moment from 'moment';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Calendar, Components, DateLocalizer, momentLocalizer, Views, ViewsProps } from 'react-big-calendar';
-import { useShallow } from 'zustand/react/shallow';
-
 import { CalendarCourseEvent } from '$components/Calendar/CalendarCourseEvent';
 import { CalendarCourseEventWrapper } from '$components/Calendar/CalendarCourseEventWrapper';
 import { CalendarEventPopover } from '$components/Calendar/CalendarEventPopover';
 import type { CalendarEvent, CourseEvent, SkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
-import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { skeletonBlueprintVariations } from '$components/Calendar/skeletonBlueprintVariations';
+import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
+import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
 import {
@@ -29,31 +22,28 @@ import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
+import { CalendarMonth } from '@mui/icons-material';
+import { Box, Backdrop, useTheme } from '@mui/material';
+import { differenceInCalendarDays, format, getDay, startOfWeek, type Locale } from 'date-fns';
+import { enUS } from 'date-fns/locale';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Calendar, Components, DateLocalizer, dateFnsLocalizer, Views, ViewsProps } from 'react-big-calendar';
+import { useShallow } from 'zustand/react/shallow';
 
 /*
-//  * Always start week on Saturday for finals potentially on weekends.
-//  * CALENDAR_VIEWS will set the correct day range
  * Start week on Sunday so Saturday appears after Friday.
  * This ensures the standard week layout: Su, M, Tu, W, Th, F, Sa
  * Normal schedules: Su ... Sa (Sa rightmost)
+ *
+ * Finals locale: week starts Saturday (Sa ... Fr)
  */
-// eslint-disable-next-line import/no-named-as-default-member
-moment.defineLocale('en-us', {
-    parentLocale: 'en',
-    week: {
-        dow: 0, // Sunday = 0, Monday = 1, ..., Saturday = 6
-    },
-});
+const enUSSunday: Locale = { ...enUS, options: { ...enUS.options, weekStartsOn: 0 } };
+const enUSFinals: Locale = { ...enUS, options: { ...enUS.options, weekStartsOn: 6 } };
 
-// Finals locale: week starts Saturday (Sa ... Fr)
-// eslint-disable-next-line import/no-named-as-default-member
-moment.defineLocale('en-us-finals', {
-    parentLocale: 'en-us',
-    week: { dow: 6 },
-});
-
-// eslint-disable-next-line import/no-named-as-default-member
-moment.locale('en-us');
+const locales: Record<string, Locale> = {
+    'en-us': enUSSunday,
+    'en-us-finals': enUSFinals,
+};
 const CALENDAR_VIEWS: ViewsProps<CalendarEvent, object> = [Views.WEEK, Views.WORK_WEEK];
 const CALENDAR_COMPONENTS: Components<CalendarEvent, object> = {
     event: CalendarCourseEvent,
@@ -108,7 +98,7 @@ export const ScheduleCalendar = memo(() => {
                 hasHadEventsRef.current = true;
                 const skeletonBlueprint = eventsInCalendar
                     .map((event) => {
-                        const dayOffset = event.start.getDate() - BASE_DATE.getDate();
+                        const dayOffset = differenceInCalendarDays(event.start, BASE_DATE);
                         return {
                             dayOffset,
                             startHour: event.start.getHours(),
@@ -117,7 +107,7 @@ export const ScheduleCalendar = memo(() => {
                             endMinute: event.end.getMinutes(),
                         };
                     })
-                    .filter((blueprint) => blueprint.dayOffset >= 0 && blueprint.dayOffset <= 6);
+                    .filter((blueprint) => blueprint.dayOffset >= -1 && blueprint.dayOffset <= 5);
 
                 if (skeletonBlueprint.length > 0) {
                     setLocalStorageSkeletonBlueprint(JSON.stringify(skeletonBlueprint));
@@ -259,8 +249,8 @@ export const ScheduleCalendar = memo(() => {
     );
 
     const hasWeekendCourse = events.some((event) => event.start.getDay() === 0 || event.start.getDay() === 6);
-    const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm A';
-    const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h A';
+    const calendarTimeFormat = isMilitaryTime ? 'HH:mm' : 'h:mm a';
+    const calendarGutterTimeFormat = isMilitaryTime ? 'HH:mm' : 'h a';
 
     const finalsDate = hoveredCalendarizedFinal
         ? getFinalsStartDateForTerm(hoveredCalendarizedFinal.term)
@@ -272,11 +262,7 @@ export const ScheduleCalendar = memo(() => {
 
     const culture = finalsStartsOnSaturday ? 'en-us-finals' : 'en-us';
 
-    const calendarLocalizer = useMemo(() => {
-        // eslint-disable-next-line import/no-named-as-default-member
-        moment.locale(culture);
-        return momentLocalizer(moment);
-    }, [culture]);
+    const calendarLocalizer = useMemo(() => dateFnsLocalizer({ format, getDay, startOfWeek, locales }), []);
 
     // Check if there are any finals on weekends (else only display M-F)
     const hasWeekendFinals =
@@ -288,14 +274,14 @@ export const ScheduleCalendar = memo(() => {
     const shouldShowWeekView = showFinalsSchedule ? hasWeekendFinals : hasWeekendCourse;
     const calendarView = shouldShowWeekView ? Views.WEEK : Views.WORK_WEEK;
 
-    const finalsDateFormat = isMobile ? 'M/DD' : 'ddd M/DD';
+    const finalsDateFormat = isMobile ? 'M/dd' : 'eee M/dd';
     const date = showFinalsSchedule ? finalsDate : new Date(2018, 0, 1);
 
     const formats = useMemo(
         () => ({
             timeGutterFormat: (date: Date, culture?: string, localizer?: DateLocalizer) =>
                 date.getMinutes() > 0 || !localizer ? '' : localizer.format(date, calendarGutterTimeFormat, culture),
-            dayFormat: showFinalsSchedule ? finalsDateFormat : 'ddd',
+            dayFormat: showFinalsSchedule ? finalsDateFormat : 'eee',
             eventTimeRangeFormat: (range: { start: Date; end: Date }, culture?: string, localizer?: DateLocalizer) =>
                 localizer
                     ? `${localizer.format(range.start, calendarTimeFormat, culture)} - ${localizer.format(
@@ -361,6 +347,7 @@ export const ScheduleCalendar = memo(() => {
                 scheduleNames={scheduleNames}
             />
             <Box id="screenshot" height="0" flexGrow={1} position="relative">
+                <TbaCalendarCard />
                 <CalendarEventPopover />
 
                 {showEmptyState && (
@@ -412,6 +399,7 @@ export const ScheduleCalendar = memo(() => {
                     }}
                     min={getStartTime()}
                     max={CALENDAR_MAX_DATE}
+                    scrollToTime={getStartTime()}
                     events={events}
                     eventPropGetter={eventStyleGetter}
                     dayPropGetter={dayStyleGetter}

@@ -1,10 +1,4 @@
 import './App.css';
-
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
-import { TourProvider } from '@reactour/tour';
-import { useEffect } from 'react';
-import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
-
 import { undoDelete, redoDelete } from '$actions/AppStoreActions';
 import { AutoSignIn } from '$components/AutoSignIn';
 import PosthogPageviewTracker from '$lib/analytics/PostHogPageviewTracker';
@@ -17,6 +11,10 @@ import Home from '$routes/Home';
 import { OutagePage } from '$routes/OutagePage';
 import { Unsubscribe } from '$routes/UnsubscribePage';
 import AppThemeProvider from '$src/app/Theme';
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import { TourProvider } from '@reactour/tour';
+import { useEffect } from 'react';
+import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 
 /**
  * Do not edit this unless you know what you're doing.
@@ -61,6 +59,19 @@ const BROWSER_ROUTER = createBrowserRouter([
             },
             {
                 path: '/auth',
+                element: <AuthPage />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                // OAuth callback sink for the native iOS wrapper. In the happy
+                // path ASWebAuthenticationSession intercepts this URL via the
+                // AASA association and never actually loads it in any web view.
+                // This route exists as defense-in-depth: if the URL is ever
+                // navigated to directly (e.g. Universal Link delivered to the
+                // WKWebView via SceneDelegate, or a browser that hits this URL
+                // outside any native flow), AuthPage still completes the PKCE
+                // exchange using the cookies set on antalmanac.com.
+                path: '/auth/native',
                 element: <AuthPage />,
                 errorElement: <ErrorPage />,
             },
