@@ -21,7 +21,9 @@ export function FriendDropdownCard({ friend, onView, onOpenMenu }: FriendDropdow
                 py: 0.75,
                 borderRadius: 1,
                 bgcolor: theme.palette.mode === 'dark' ? '#424242' : theme.palette.grey[100],
-                '&:hover': { bgcolor: 'action.hover' },
+                '&:hover': {
+                    bgcolor: theme.palette.mode === 'dark' ? 'action.hover' : theme.palette.grey[200],
+                },
                 transition: 'background-color 0.15s ease',
             })}
         >
