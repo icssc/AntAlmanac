@@ -40,12 +40,11 @@ export const NotificationSnackbar = () => {
                 severity={severity}
                 variant="filled"
                 onClose={handleClose}
-                sx={(theme) => ({
+                sx={{
                     width: '100%',
-                    color: theme.palette.text.primary,
                     display: 'flex',
                     alignItems: 'center',
-                })}
+                }}
             >
                 {message}
             </Alert>
