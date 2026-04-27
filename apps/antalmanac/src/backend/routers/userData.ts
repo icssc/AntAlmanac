@@ -2,7 +2,7 @@ import { SESSION_COOKIE_NAME } from '$src/backend/context';
 import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { ALLOWED_REDIRECT_URIS, isAllowedRedirectUri, oauthClientForRedirectUri } from '$src/backend/lib/auth/oauth';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
-import { getCookiesFromHeader } from '$src/backend/lib/helpers';
+import { getCookiesFromHeader, getSafeAuthRedirectPath } from '$src/backend/lib/helpers';
 import { RDS } from '$src/backend/lib/rds';
 import { procedure, protectedProcedure, router } from '$src/backend/trpc';
 import { type User, type ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
@@ -36,44 +36,6 @@ const saveGoogleSchema = type({
     code: 'string',
     state: 'string',
 });
-
-const getSafeAuthRedirectPath = (redirectUrl: string | null | undefined, requestUrl: string): string => {
-    if (!redirectUrl) {
-        return '/';
-    }
-
-    let requestOrigin: string;
-    try {
-        requestOrigin = new URL(requestUrl).origin;
-    } catch {
-        requestOrigin = new URL(GOOGLE_REDIRECT_URI).origin;
-    }
-
-    const candidates: string[] = [];
-    try {
-        const decodedRedirectUrl = decodeURIComponent(redirectUrl);
-        candidates.push(decodedRedirectUrl);
-    } catch {
-        // Ignore malformed encoding and continue with the raw value.
-    }
-
-    if (!candidates.includes(redirectUrl)) {
-        candidates.push(redirectUrl);
-    }
-
-    for (const candidate of candidates) {
-        try {
-            const parsedRedirectUrl = new URL(candidate, requestOrigin);
-            if (parsedRedirectUrl.origin === requestOrigin) {
-                return `${parsedRedirectUrl.pathname}${parsedRedirectUrl.search}${parsedRedirectUrl.hash}`;
-            }
-        } catch {
-            // Ignore malformed candidate and try next.
-        }
-    }
-
-    return '/';
-};
 
 const userDataRouter = router({
     getUserAndAccountBySessionToken: protectedProcedure.query(async ({ ctx }) => {
