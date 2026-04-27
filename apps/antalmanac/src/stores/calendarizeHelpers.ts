@@ -1,3 +1,6 @@
+import type { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
+import { getFinalsStartDateForTerm } from '$lib/termData';
+import { notNull, getReferencesOccurring } from '$lib/utils';
 import type {
     ScheduleCourse,
     RepeatingCustomEvent,
@@ -5,9 +8,8 @@ import type {
     WebsocSectionFinalExam,
 } from '@packages/antalmanac-types';
 
-import type { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
-import { getFinalsStartDateForTerm } from '$lib/termData';
-import { notNull, getReferencesOccurring } from '$lib/utils';
+import { getColorForNewSection } from './scheduleHelpers';
+import { SectionColorSetting, useSectionColorStore } from './SettingsStore';
 
 export const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 
@@ -18,8 +20,21 @@ export function getLocation(location: string): Location {
     return { building, room };
 }
 
-export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): CourseEvent[] => {
-    return currentCourses.flatMap((course) => {
+export const calendarizeCourseEvents = (
+    currentCourses: ScheduleCourse[] = [],
+    sectionColor?: SectionColorSetting
+): CourseEvent[] => {
+    const resolvedColor = sectionColor ?? useSectionColorStore.getState().sectionColor;
+    const themedCourses: ScheduleCourse[] = [];
+
+    for (const course of currentCourses) {
+        if (resolvedColor !== 'custom') {
+            course.section.color = getColorForNewSection(course, themedCourses, resolvedColor);
+        }
+        themedCourses.push(course);
+    }
+
+    return themedCourses.flatMap((course) => {
         return course.section.meetings
             .filter((meeting) => !meeting.timeIsTBA)
             .flatMap((meeting) => {
@@ -120,8 +135,8 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
             const locationsWithNoDays = bldg
                 ? bldg.map(getLocation)
                 : !course.section.meetings[0].timeIsTBA
-                ? course.section.meetings[0].bldg.map(getLocation)
-                : [];
+                  ? course.section.meetings[0].bldg.map(getLocation)
+                  : [];
 
             /**
              * Fallback to January 2018 if no finals start date is available.

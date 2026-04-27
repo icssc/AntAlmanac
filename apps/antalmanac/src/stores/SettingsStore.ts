@@ -1,19 +1,23 @@
-import { PostHog } from 'posthog-js/react';
-import { create } from 'zustand';
-
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import {
     getLocalStorageAutoSave,
     getLocalStorageDevMode,
     getLocalStoragePreviewMode,
+    getLocalStorageSectionColor,
     getLocalStorageShow24HourTime,
     getLocalStorageTheme,
     setLocalStorageAutoSave,
     setLocalStorageDevMode,
     setLocalStoragePreviewMode,
+    setLocalStorageSectionColor,
     setLocalStorageShow24HourTime,
     setLocalStorageTheme,
 } from '$lib/localStorage';
+import { isSectionColorSetting, type SectionColorSetting } from '$lib/themes';
+import { PostHog } from 'posthog-js/react';
+import { create } from 'zustand';
+
+export type { SectionColorSetting };
 
 export type ThemeSetting = 'light' | 'dark' | 'system';
 
@@ -57,6 +61,31 @@ export const useThemeStore = create<ThemeStore>((set) => {
                 category: analyticsEnum.nav,
                 action: analyticsEnum.nav.actions.CHANGE_THEME,
                 label: themeSetting,
+            });
+        },
+    };
+});
+
+export interface SectionColorStore {
+    sectionColor: SectionColorSetting;
+    setSectionColor: (sectionColorSetting: SectionColorSetting, postHog?: PostHog) => void;
+}
+
+export const useSectionColorStore = create<SectionColorStore>((set) => {
+    const stored = getLocalStorageSectionColor();
+    const storedSectionColor: SectionColorSetting = isSectionColorSetting(stored) ? stored : 'custom';
+    return {
+        sectionColor: storedSectionColor,
+
+        setSectionColor: (sectionColor, postHog) => {
+            setLocalStorageSectionColor(sectionColor);
+
+            set({ sectionColor });
+
+            logAnalytics(postHog, {
+                category: analyticsEnum.nav,
+                action: analyticsEnum.nav.actions.CHANGE_SECTION_COLOR,
+                label: sectionColor,
             });
         },
     };
