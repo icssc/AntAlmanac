@@ -166,7 +166,7 @@ export function FriendsMenu({
 
     return (
         <>
-            <Box sx={{ minHeight: '210px', minWidth: '300px' }}>
+            <Box sx={{ minWidth: '300px' }}>
                 <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 700, mb: 1, letterSpacing: '0.5px' }}>
                     Manage Friends
                 </Typography>
