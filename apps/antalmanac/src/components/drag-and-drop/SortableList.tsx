@@ -1,3 +1,6 @@
+import { DragHandle } from '$components/drag-and-drop/DragHandle';
+import { SortableItem } from '$components/drag-and-drop/SortableItem';
+import { SortableOverlay } from '$components/drag-and-drop/SortableOverlay';
 import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { Active, UniqueIdentifier } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
@@ -6,10 +9,6 @@ import { List, SxProps } from '@mui/material';
 import { mergeSx } from '@mui/x-date-pickers/internals';
 import type { ReactNode } from 'react';
 import { Fragment, useMemo, useState } from 'react';
-
-import { DragHandle } from '$components/drag-and-drop/DragHandle';
-import { SortableItem } from '$components/drag-and-drop/SortableItem';
-import { SortableOverlay } from '$components/drag-and-drop/SortableOverlay';
 
 interface BaseItem {
     id: UniqueIdentifier;
@@ -49,6 +48,7 @@ export function SortableList<T extends BaseItem>({
             autoScroll={{ threshold: { x: disableHorizontalScroll ? 0 : 0.2, y: 0.2 } }}
             onDragStart={({ active }) => {
                 setActive(active);
+                document.body.style.cursor = 'grab';
             }}
             onDragEnd={({ active, over }) => {
                 if (over && active.id !== over?.id) {
@@ -57,6 +57,7 @@ export function SortableList<T extends BaseItem>({
                     onChange(arrayMove(items, activeIndex, overIndex), activeIndex, overIndex);
                 }
                 setActive(null);
+                document.body.style.cursor = '';
             }}
             onDragCancel={() => {
                 setActive(null);

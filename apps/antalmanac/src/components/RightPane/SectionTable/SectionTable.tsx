@@ -98,7 +98,11 @@ function SectionTable({
                 }}
             >
                 {sortable ? (
-                    <Button variant="contained" color="secondary" sx={{ padding: 0, minWidth: 0, minHeight: 0 }}>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        sx={{ padding: 0, minWidth: 0, minHeight: 0, cursor: 'inherit' }}
+                    >
                         <SortableList.DragHandle iconSx={{ color: 'inherit' }} />
                     </Button>
                 ) : null}
