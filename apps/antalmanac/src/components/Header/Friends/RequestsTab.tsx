@@ -43,7 +43,7 @@ export function RequestsTab({
                 <TextField
                     variant="standard"
                     size="small"
-                    placeholder="Search friend by name or email"
+                    placeholder="Add friend by name or email"
                     autoComplete="off"
                     value={email}
                     onChange={(e) => onEmailChange(e.target.value)}
