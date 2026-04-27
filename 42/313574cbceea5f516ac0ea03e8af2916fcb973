@@ -1,0 +1,25 @@
+apps/antalmanac/src/actions/AppStoreActions.ts
+  3ac92169d06328d1 309,311
+apps/antalmanac/src/components/Header/Friends/styles.ts
+  3ac92169d06328d1 2-3,5,23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "42313574cbceea5f516ac0ea03e8af2916fcb973",
+  "prompts": {
+    "3ac92169d06328d1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "333ea1c0-df07-44c0-848f-6ca436f1fa52",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 6,
+      "total_deletions": 7,
+      "accepted_lines": 18,
+      "overriden_lines": 0
+    }
+  }
+}
