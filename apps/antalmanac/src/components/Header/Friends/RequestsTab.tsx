@@ -12,7 +12,6 @@ interface RequestsTabProps {
     email: string;
     onEmailChange: (v: string) => void;
     onAddFriend: () => void;
-    isDark: boolean;
     friendRequests: FriendRequest[];
     sentRequests: FriendRequest[];
     blockedFriends: Friend[];
@@ -27,7 +26,6 @@ export function RequestsTab({
     email,
     onEmailChange,
     onAddFriend,
-    isDark,
     friendRequests,
     sentRequests,
     blockedFriends,
@@ -41,7 +39,7 @@ export function RequestsTab({
 
     return (
         <>
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 1 }}>
+            <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 2 }}>
                 <TextField
                     variant="standard"
                     size="small"
@@ -64,10 +62,10 @@ export function RequestsTab({
                     color="primary"
                     size="small"
                     sx={{
-                        bgcolor: isDark ? 'primary.dark' : 'primary.main',
+                        bgcolor: 'primary.main',
                         color: 'white',
                         p: 0.75,
-                        '&:hover': { bgcolor: isDark ? 'primary.main' : 'primary.dark' },
+                        '&:hover': { bgcolor: 'primary.dark' },
                         '&.Mui-disabled': { bgcolor: 'action.disabledBackground', color: 'action.disabled' },
                     }}
                 >

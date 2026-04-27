@@ -175,9 +175,13 @@ export function FriendsMenu({
                     value={activeTab}
                     onChange={(_, v) => setActiveTab(v)}
                     variant="fullWidth"
-                    textColor="primary"
-                    indicatorColor="primary"
-                    sx={{ mb: 1 }}
+                    textColor="inherit"
+                    sx={{
+                        mb: 1,
+                        '& .MuiTab-root': { color: 'text.secondary' },
+                        '& .MuiTab-root.Mui-selected': { color: '#90B3FA' },
+                        '& .MuiTabs-indicator': { bgcolor: '#90B3FA' },
+                    }}
                 >
                     <Tab label="Friends" value="friends" />
                     <Tab
@@ -213,7 +217,6 @@ export function FriendsMenu({
                         email={email}
                         onEmailChange={setEmail}
                         onAddFriend={handleAddFriend}
-                        isDark={isDark}
                         friendRequests={friendRequests}
                         sentRequests={sentRequests}
                         blockedFriends={blockedFriends}

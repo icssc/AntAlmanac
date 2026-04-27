@@ -30,7 +30,7 @@ export function FriendsTab({
 }: FriendsTabProps) {
     return (
         <Box sx={{ mt: 1 }}>
-            <Box ref={searchRef}>
+            <Box ref={searchRef} sx={{ mt: 2 }}>
                 <TextField
                     variant="standard"
                     size="small"
