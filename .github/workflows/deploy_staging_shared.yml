@@ -60,6 +60,11 @@ jobs:
                   DB_URL: ${{ secrets.DEV_DB_URL }}
               run: pnpm db:migrate
 
+            - name: Generate termData
+              uses: ./.github/actions/cache-generated-data
+              with:
+                  api-key: ${{ secrets.ANTEATER_API_KEY }}
+
             - name: Deploy SST (staging)
               id: deploy
               run: |
