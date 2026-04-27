@@ -1,17 +1,17 @@
-import { Delete } from '@mui/icons-material';
-import { useTheme, useMediaQuery, Box, IconButton, CircularProgress } from '@mui/material';
-import { AASection, Course, CourseDetails } from '@packages/antalmanac-types';
-import { usePostHog } from 'posthog-js/react';
-import { memo, useCallback } from 'react';
-import { useShallow } from 'zustand/react/shallow';
-
 import { deleteCourse } from '$actions/AppStoreActions';
 import { NotificationsMenu } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/action-cell/NotificationsMenu';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { Term } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { useNotificationStore } from '$stores/NotificationStore';
+import { Delete } from '@mui/icons-material';
+import { Box, IconButton, CircularProgress } from '@mui/material';
+import { AASection, Course, CourseDetails } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
+import { memo, useCallback } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 interface DeleteAndNotificationsProps {
     courseTitle: Course['title'];
@@ -27,8 +27,7 @@ interface DeleteAndNotificationsProps {
  */
 export const DeleteAndNotifications = memo(({ ...props }: DeleteAndNotificationsProps) => {
     const initialized = useNotificationStore(useShallow((state) => state.initialized));
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMobile = useIsMobile();
     const flexDirection = isMobile ? 'column' : undefined;
     const postHog = usePostHog();
     const isReadonlyView = useIsReadonlyView();
