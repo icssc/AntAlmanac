@@ -25,6 +25,14 @@ export const Save = () => {
         setOpenAutoSaveWarning(false);
     };
 
+    const saveScheduleData = async () => {
+        if (sessionIsValid) {
+            setSaving(true);
+            await saveSchedule({ rememberMe: true });
+            setSaving(false);
+        }
+    };
+
     useEffect(() => {
         const handleSkeletonModeChange = () => {
             setSkeletonMode(AppStore.getSkeletonMode());
@@ -37,13 +45,6 @@ export const Save = () => {
         };
     }, []);
 
-    const saveScheduleData = async () => {
-        if (sessionIsValid) {
-            setSaving(true);
-            await saveSchedule({ rememberMe: true });
-            setSaving(false);
-        }
-    };
     useEffect(() => {
         const handleAutoSaveStart = () => setSaving(true);
         const handleAutoSaveEnd = () => setSaving(false);
@@ -56,6 +57,7 @@ export const Save = () => {
             actionTypesStore.off('autoSaveEnd', handleAutoSaveEnd);
         };
     }, []);
+
     return (
         <Stack direction="row">
             <Button

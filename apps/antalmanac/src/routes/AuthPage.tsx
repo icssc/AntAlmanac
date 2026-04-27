@@ -85,7 +85,7 @@ export function AuthPage() {
 
             // handle unsaved changes
             if (savedData !== '') {
-                const userData = await trpc.userData.getUserDataWithSession.query();
+                const userData = await trpc.userData.getUserData.query();
                 const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
                 if (savedUserId !== '') {

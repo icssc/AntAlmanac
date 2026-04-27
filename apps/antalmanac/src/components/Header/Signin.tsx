@@ -102,7 +102,7 @@ export const Signin = () => {
 
             const [validSession, prefetchedUserData] = await Promise.all([
                 loadSession(),
-                trpc.userData.getUserDataWithSession.query().catch(() => null),
+                trpc.userData.getUserData.query().catch(() => null),
             ]);
 
             if (validSession) {
