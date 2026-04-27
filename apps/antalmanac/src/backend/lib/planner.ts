@@ -6,9 +6,14 @@ export type { PlannerAPIResponse, Quarter, Roadmap, RoadmapContent } from '@pack
 
 export const PLANNER_API_URL = 'https://antalmanac.com/planner/api/trpc/external.roadmaps.getByGoogleID';
 
+const courseSchema = z.object({
+    courseId: z.string(),
+    userChosenUnits: z.number().optional(),
+});
+
 export const quarterSchema = z.object({
     name: z.string(),
-    courses: z.array(z.string()),
+    courses: z.array(courseSchema),
 });
 
 export const roadmapContentSchema = z.object({
@@ -45,7 +50,7 @@ export async function fetchUserPlannerRoadmaps(googleUserId: string): Promise<Ro
             throw new Error(`Failed to fetch: ${response.statusText}`);
         }
         const data = await response.json();
-        const validRoadmaps = z.array(roadmapSchema).parse(data.result?.data ?? []);
+        const validRoadmaps = z.array(roadmapSchema).parse(data.result.data);
 
         return validRoadmaps;
     } catch (e) {

@@ -4,6 +4,7 @@ import { getCurrentTerm } from '$lib/termData';
 import { useSessionStore } from '$stores/SessionStore';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { useEffect, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 const QUARTER_ORDER: Record<string, number> = {
     Winter: 0,
@@ -40,9 +41,7 @@ function getTakenRoadmapCourses(roadmap: Roadmap): string[] {
                 quarter.year < current.year ||
                 (quarter.year === current.year && QUARTER_ORDER[quarter.quarter] < QUARTER_ORDER[current.quarter])
             ) {
-                q.courses.forEach((c) => {
-                    courses.add(c);
-                });
+                q.courses.forEach((c) => courses.add(c.courseId));
             }
         }
     }
@@ -55,6 +54,9 @@ export function usePlannerRoadmaps() {
     const setFilterTakenCourses = useSessionStore((s) => s.setFilterTakenCourses);
     const roadmaps = useSessionStore((s) => s.plannerRoadmaps);
     const setPlannerRoadmaps = useSessionStore((s) => s.setPlannerRoadmaps);
+    const { isPlannerLoading, setIsPlannerLoading } = useSessionStore(
+        useShallow((s) => ({ setIsPlannerLoading: s.setIsPlannerLoading, isPlannerLoading: s.isPlannerLoading }))
+    );
     const [selectedRoadmapId, setSelectedRoadmapId] = useState(
         () => RightPaneStore.getFormData().excludeRoadmapCourses
     );
@@ -71,6 +73,9 @@ export function usePlannerRoadmaps() {
     }, []);
 
     useEffect(() => {
+        if (isPlannerLoading) {
+            return;
+        }
         let active = true;
         async function loadRoadmaps() {
             if (!googleId) {
@@ -78,11 +83,13 @@ export function usePlannerRoadmaps() {
                 return;
             }
             try {
+                setIsPlannerLoading(true);
                 const data = await trpc.roadmap.fetchUserPlannerRoadmaps.query();
                 if (active) setPlannerRoadmaps(data ?? []);
             } catch (e) {
                 console.error('Failed to fetch Planner roadmaps:', e);
             }
+            setIsPlannerLoading(false);
         }
         loadRoadmaps();
         return () => {

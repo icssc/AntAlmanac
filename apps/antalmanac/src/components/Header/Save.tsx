@@ -4,13 +4,11 @@ import { SignInDialog } from '$components/dialogs/SignInDialog';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
 import { Close, Save as SaveIcon } from '@mui/icons-material';
 import { Stack, Snackbar, Alert, Link, IconButton, Button } from '@mui/material';
 import { useState, useEffect } from 'react';
 
 export const Save = () => {
-    const isDark = useThemeStore((store) => store.isDark);
     const { sessionIsValid } = useSessionStore();
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -116,7 +114,7 @@ export const Save = () => {
                 </Alert>
             </Snackbar>
 
-            <SignInDialog isDark={isDark} open={openSignInDialog} onClose={handleClickSignIn} feature="Save" />
+            <SignInDialog open={openSignInDialog} onClose={handleClickSignIn} feature="Save" />
         </Stack>
     );
 };

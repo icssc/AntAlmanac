@@ -6,14 +6,16 @@ import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/Enrol
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import type { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
+import WarningAlert from '$components/WarningAlert';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
-import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
+import { SECTION_TABLE_COLUMNS, useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
-import { Assessment, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
-import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { useMemo } from 'react';
+import { Assessment, ExpandLess, ExpandMore, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
+import { Box, Collapse, IconButton, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { useMemo, useState } from 'react';
+import { forceCheck } from 'react-lazyload';
 
 const TOTAL_NUM_COLUMNS = SECTION_TABLE_COLUMNS.length;
 
@@ -37,12 +39,22 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
 
 function SectionTable(props: SectionTableProps) {
+    const [openContent, setOpenContent] = useState(true);
+
     const { courseDetails, term, allowHighlight, scheduleNames, analyticsCategory, missingSections = [] } = props;
     const { isMilitaryTime } = useTimeFormatStore();
 
     const [activeColumns] = useColumnStore((store) => [store.activeColumns]);
     const [activeTab] = useTabStore((store) => [store.activeTab]);
     const isMobile = useIsMobile();
+
+    const handleToggleExpand = () => {
+        setOpenContent(!openContent);
+    };
+
+    const handleCollapseExit = () => {
+        forceCheck();
+    };
 
     const actionColumnWidth = isMobile ? 54 : 85;
 
@@ -133,69 +145,69 @@ function SectionTable(props: SectionTableProps) {
                         />
                     }
                 />
+
+                <IconButton
+                    title={`${openContent ? 'Collapse' : 'Expand'} courses`}
+                    onClick={handleToggleExpand}
+                    size="small"
+                    sx={{ padding: '4px', marginLeft: 'auto', marginRight: 0.5 }}
+                >
+                    {openContent ? <ExpandLess /> : <ExpandMore />}
+                </IconButton>
             </Box>
 
             {missingSections?.length > 0 && (
-                <Alert
-                    severity="warning"
-                    sx={{
-                        mb: 1,
-                        '& .MuiAlert-message': {
-                            display: 'flex',
-                            alignItems: 'center',
-                        },
-                    }}
-                >
-                    Missing required sections: {missingSections.join(', ')}
-                </Alert>
+                <WarningAlert>Missing required sections: {missingSections.join(', ')}</WarningAlert>
             )}
-            <TableContainer
-                component={Paper}
-                sx={{ margin: '8px 0px 8px 0px', width: '100%' }}
-                elevation={0}
-                variant="outlined"
-            >
-                <Table
-                    size="small"
-                    sx={{
-                        minWidth: `${tableMinWidth}px`,
-                        width: '100%',
-                        tableLayout: 'fixed',
-                    }}
+            <Collapse in={openContent} onExited={handleCollapseExit}>
+                <TableContainer
+                    component={Paper}
+                    sx={{ margin: '8px 0px 8px 0px', width: '100%' }}
+                    elevation={0}
+                    variant="outlined"
                 >
-                    <TableHead>
-                        <TableRow>
-                            <TableCell sx={{ padding: 0, width: `${actionColumnWidth}px` }} />
-                            {(() => {
-                                const visible = tableHeaderColumnEntries.filter(([column]) =>
-                                    activeColumns.includes(column as SectionTableColumn)
-                                );
-                                const totalWeight = visible.reduce((sum, [, { weight }]) => sum + weight, 0);
-                                return visible.map(([column, { label, weight }]) => (
-                                    <TableCell
-                                        key={column}
-                                        sx={{
-                                            width: `${(weight / totalWeight) * 100}%`,
-                                            padding: 0,
-                                        }}
-                                    >
-                                        {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
-                                    </TableCell>
-                                ));
-                            })()}
-                        </TableRow>
-                    </TableHead>
+                    <Table
+                        size="small"
+                        sx={{
+                            minWidth: `${tableMinWidth}px`,
+                            width: '100%',
+                            tableLayout: 'fixed',
+                        }}
+                    >
+                        <TableHead>
+                            <TableRow>
+                                <TableCell sx={{ padding: 0, width: `${actionColumnWidth}px` }} />
+                                {(() => {
+                                    const visible = tableHeaderColumnEntries.filter(([column]) =>
+                                        activeColumns.includes(column as SectionTableColumn)
+                                    );
+                                    const totalWeight = visible.reduce((sum, [, { weight }]) => sum + weight, 0);
+                                    return visible.map(([column, { label, weight }]) => (
+                                        <TableCell
+                                            key={column}
+                                            sx={{
+                                                width: `${(weight / totalWeight) * 100}%`,
+                                                padding: 0,
+                                            }}
+                                        >
+                                            {label === 'Enrollment' ? <EnrollmentColumnHeader label={label} /> : label}
+                                        </TableCell>
+                                    ));
+                                })()}
+                            </TableRow>
+                        </TableHead>
 
-                    <SectionTableBody
-                        courseDetails={courseDetails}
-                        term={term}
-                        allowHighlight={allowHighlight}
-                        scheduleNames={scheduleNames}
-                        analyticsCategory={analyticsCategory}
-                        formattedTime={formattedTime}
-                    />
-                </Table>
-            </TableContainer>
+                        <SectionTableBody
+                            courseDetails={courseDetails}
+                            term={term}
+                            allowHighlight={allowHighlight}
+                            scheduleNames={scheduleNames}
+                            analyticsCategory={analyticsCategory}
+                            formattedTime={formattedTime}
+                        />
+                    </Table>
+                </TableContainer>
+            </Collapse>
         </>
     );
 }

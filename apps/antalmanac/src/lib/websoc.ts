@@ -1,6 +1,5 @@
-import { WebsocAPIResponse } from '@packages/antalmanac-types';
-
 import trpc from '$lib/api/trpc';
+import { WebsocAPIResponse } from '@packages/antalmanac-types';
 
 type CacheEntry = WebsocAPIResponse & {
     timestamp: number;
@@ -33,8 +32,12 @@ class _WebSOC {
         return response;
     }
 
-    async queryMultiple(params: { [key: string]: string }, fieldName: string) {
-        return await trpc.websoc.getMany.query({ params, fieldName });
+    async queryMultipleOfField(params: { [key: string]: string }, fieldName: string) {
+        return await trpc.websoc.getManyOfField.query({ params, fieldName });
+    }
+
+    async queryMultiple(params: Record<string, string>[]) {
+        return await trpc.websoc.getMultiple.query({ params });
     }
 
     async getCourseInfo(params: Record<string, string>) {
