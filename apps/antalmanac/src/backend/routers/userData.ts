@@ -158,7 +158,7 @@ const userDataRouter = router({
             ctx.resHeaders?.append('Set-Cookie', `oauth_redirect_uri=${redirectUri}; ${cookieOptions}`);
 
             const referer = ctx.req.headers.get('referer');
-            const redirectUrl = getSafeAuthRedirectPath(input?.returnTo ?? referer, ctx.req.url);
+            const redirectUrl = getSafeAuthRedirectPath(input?.returnTo ?? referer, ctx.req.url, GOOGLE_REDIRECT_URI);
             ctx.resHeaders?.append(
                 'Set-Cookie',
                 `auth_redirect_url=${encodeURIComponent(redirectUrl)}; ${cookieOptions}`
@@ -305,7 +305,7 @@ const userDataRouter = router({
 
     getAuthReturnUrl: procedure.query(async ({ ctx }) => {
         const cookies = getCookiesFromHeader(ctx.req.headers);
-        const redirectUrl = getSafeAuthRedirectPath(cookies['auth_redirect_url'], ctx.req.url);
+        const redirectUrl = getSafeAuthRedirectPath(cookies['auth_redirect_url'], ctx.req.url, GOOGLE_REDIRECT_URI);
         return redirectUrl || '/';
     }),
 

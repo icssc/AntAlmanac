@@ -1,7 +1,4 @@
-import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { TRPCError } from '@trpc/server';
-
-const { GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
 
 interface FetchAAPIOptions {
     isApiKeyRequired?: boolean;
@@ -134,7 +131,11 @@ export const getCookiesFromHeader = (headers: Headers) => {
     return cookies;
 };
 
-export const getSafeAuthRedirectPath = (redirectUrl: string | null | undefined, requestUrl: string): string => {
+export const getSafeAuthRedirectPath = (
+    redirectUrl: string | null | undefined,
+    requestUrl: string,
+    fallbackRequestUrl: string
+): string => {
     if (!redirectUrl) {
         return '/';
     }
@@ -143,7 +144,7 @@ export const getSafeAuthRedirectPath = (redirectUrl: string | null | undefined, 
     try {
         requestOrigin = new URL(requestUrl).origin;
     } catch {
-        requestOrigin = new URL(GOOGLE_REDIRECT_URI).origin;
+        requestOrigin = new URL(fallbackRequestUrl).origin;
     }
 
     const candidates: string[] = [];
