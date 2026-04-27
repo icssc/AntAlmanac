@@ -44,7 +44,7 @@ export function AuthPage() {
 
             isAuthenticatingRef.current = true;
 
-            const { userId, providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
+            const { userId, providerId, newUser, redirectUrl } = await trpc.userData.handleGoogleCallback.mutate({
                 code: code,
                 state: state,
             });
@@ -60,7 +60,7 @@ export function AuthPage() {
             }
 
             if (!providerId) {
-                window.location.href = '/';
+                window.location.href = redirectUrl || '/';
                 return;
             }
 
@@ -71,7 +71,7 @@ export function AuthPage() {
                 removeLocalStorageFromLoading();
                 removeLocalStorageDataCache();
                 removeLocalStorageImportedUser();
-                window.location.href = '/';
+                window.location.href = redirectUrl || '/';
                 return;
             }
 
@@ -79,7 +79,7 @@ export function AuthPage() {
             if (savedUserId === '' && savedData === '') {
                 removeLocalStorageDataCache();
                 removeLocalStorageImportedUser();
-                window.location.href = '/';
+                window.location.href = redirectUrl || '/';
                 return;
             }
 
@@ -120,7 +120,7 @@ export function AuthPage() {
                     },
                 });
             }
-            window.location.href = '/';
+            window.location.href = redirectUrl || '/';
         } catch (error) {
             console.error('Error during authentication', error);
             clearSsoCookie();

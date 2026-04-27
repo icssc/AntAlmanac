@@ -385,8 +385,11 @@ const cacheSchedule = () => {
 export const loginUser = async () => {
     try {
         const redirectUri = isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined;
-
-        const authUrl = await trpc.userData.getGoogleAuthUrl.query(redirectUri ? { redirectUri } : undefined);
+        const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+        const authUrl = await trpc.userData.getGoogleAuthUrl.query({
+            ...(redirectUri ? { redirectUri } : {}),
+            returnTo,
+        });
         if (authUrl) {
             cacheSchedule();
             window.location.href = authUrl.toString();
