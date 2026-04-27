@@ -94,13 +94,6 @@ function getFilteredCourses(
     return allCourses;
 }
 
-const getLazyLoadHeight = (item: WebsocSchool | WebsocDepartment | AACourse) => {
-    if ('sections' in item) {
-        return item.sections.length * 60 + 20 + 40;
-    }
-    return 200;
-};
-
 const getFilteredAndCourseCount = (
     flattenedCourseData: (WebsocSchool | WebsocDepartment | AACourse)[],
     sharedCourseKeys: Set<string>
@@ -430,29 +423,34 @@ export default function CourseRenderPane(props: { id?: number }) {
                                 No courses match all selected GEs. The results below match at least one selected GE.
                             </Alert>
                         )}
-                        {courseData.map((item, index) => (
-                            <LazyLoad once key={index} overflow height={getLazyLoadHeight(item)} offset={1000}>
-                                {index === orBannerIndex && (
-                                    <Alert
-                                        severity="warning"
-                                        sx={{
-                                            mb: 1,
-                                            fontSize: '1rem',
-                                            '& .MuiAlert-message': {
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                            },
-                                        }}
-                                    >
-                                        The courses below include at least ONE GE selected.
-                                    </Alert>
-                                )}
-                                {SectionTableWrapped(index, {
-                                    courseData: courseData,
-                                    scheduleNames: scheduleNames,
-                                })}
-                            </LazyLoad>
-                        ))}
+                        {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
+                            let heightEstimate = 200;
+                            if ((courseData[index] as AACourse).sections !== undefined)
+                                heightEstimate = (courseData[index] as AACourse).sections.length * 60 + 20 + 40;
+                            return (
+                                <LazyLoad once key={index} overflow height={heightEstimate} offset={1000}>
+                                    {index === orBannerIndex && (
+                                        <Alert
+                                            severity="warning"
+                                            sx={{
+                                                mb: 1,
+                                                fontSize: '1rem',
+                                                '& .MuiAlert-message': {
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                },
+                                            }}
+                                        >
+                                            The courses below include at least ONE GE selected.
+                                        </Alert>
+                                    )}
+                                    {SectionTableWrapped(index, {
+                                        courseData: courseData,
+                                        scheduleNames: scheduleNames,
+                                    })}
+                                </LazyLoad>
+                            );
+                        })}
                     </Box>
                 </>
             )}
