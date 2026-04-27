@@ -1,18 +1,18 @@
-import { Stack } from '@mui/material';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
-import { useCallback, useEffect, useRef } from 'react';
-import Split from 'react-split';
-
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { Header } from '$components/Header/Header';
 import InstallPWABanner from '$components/InstallPWABanner';
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
+import { ReviewPrompt } from '$components/ReviewPrompt/ReviewPrompt';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { BLUE } from '$src/globals';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
+import { Stack } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
+import { useCallback, useEffect, useRef } from 'react';
+import Split from 'react-split';
 
 function MobileHome() {
     return <ScheduleManagement />;
@@ -87,6 +87,7 @@ export default function Home() {
             </Stack>
 
             <NotificationSnackbar />
+            <ReviewPrompt />
         </LocalizationProvider>
     );
 }
