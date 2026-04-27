@@ -28,6 +28,7 @@ import type { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
 type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;
 
+// biome-ignore lint/complexity/noStaticOnlyClass: todo
 export class RDS {
     /**
      * If a guest user with the specified name exists, return their ID, otherwise return null.
