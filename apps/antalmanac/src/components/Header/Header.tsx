@@ -89,9 +89,9 @@ export function Header() {
                     </Stack>
 
                     <Stack direction="row" alignItems="center">
+                        <FriendsButton />
                         <Import key="studylist" />
                         <Save />
-                        <FriendsButton />
                         {sessionIsValid ? <Signout onLogoutComplete={handleLogoutComplete} /> : <Signin />}
                     </Stack>
 
