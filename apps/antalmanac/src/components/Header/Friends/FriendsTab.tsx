@@ -35,6 +35,7 @@ export function FriendsTab({
                     variant="standard"
                     size="small"
                     placeholder="Search friend by name or email"
+                    autoComplete="off"
                     value={friendSearch}
                     onChange={(e) => {
                         onSearchChange(e.target.value);
