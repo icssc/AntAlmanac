@@ -157,7 +157,7 @@ export function AdvancedSearchTextFields() {
             }
             const param = urlParam.toString();
             const newUrl = `${param.trim() ? '?' : ''}${param}`;
-            history.replaceState(stateObj, 'url', '/' + newUrl);
+            history.replaceState(stateObj, 'url', `${url.pathname}${newUrl}`);
             return;
         }
 
