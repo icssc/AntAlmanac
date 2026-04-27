@@ -1,11 +1,49 @@
 import { TableBody } from '@mui/material';
 import { AACourse, AASection } from '@packages/antalmanac-types';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 
+import { getGpaData } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/GpaCell';
 import { SectionTableBodyRow } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyRow';
 import { AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
+import { type SortOption, useSectionFilterStore } from '$stores/SectionFilterStore';
 import { normalizeTime, parseDaysString } from '$stores/calendarizeHelpers';
+
+export type GpaEntry = { gpa: string; instructor: string };
+export type GpaMap = Map<string, GpaEntry>;
+
+function getMeetingStartMinutes(section: AASection): number {
+    const meeting = section.meetings[0];
+    if (!meeting || meeting.timeIsTBA) return Infinity;
+    return meeting.startTime.hour * 60 + meeting.startTime.minute;
+}
+
+const STATUS_ORDER: Record<string, number> = { OPEN: 0, NewOnly: 1, Waitl: 2, FULL: 3, '': 4 };
+
+function sortSections(sections: AASection[], sortBy: SortOption, gpaMap: GpaMap): AASection[] {
+    if (sortBy === 'default') return sections;
+
+    return [...sections].sort((a, b) => {
+        switch (sortBy) {
+            case 'status':
+                return (STATUS_ORDER[a.status] ?? 4) - (STATUS_ORDER[b.status] ?? 4);
+
+            case 'time_asc':
+                return getMeetingStartMinutes(a) - getMeetingStartMinutes(b);
+
+            case 'gpa_descending': {
+                const aGpa = parseFloat(gpaMap.get(a.sectionCode)?.gpa ?? '');
+                const bGpa = parseFloat(gpaMap.get(b.sectionCode)?.gpa ?? '');
+                const aValue = Number.isNaN(aGpa) ? -Infinity : aGpa;
+                const bValue = Number.isNaN(bGpa) ? -Infinity : bGpa;
+                return bValue - aValue;
+            }
+
+            default:
+                return 0;
+        }
+    });
+}
 
 interface SectionTableBodyProps {
     courseDetails: AACourse;
@@ -25,6 +63,39 @@ export function SectionTableBody({
     formattedTime,
 }: SectionTableBodyProps) {
     const [calendarEvents, setCalendarEvents] = useState(() => AppStore.getCourseEventsInCalendar());
+    const [gpaMap, setGpaMap] = useState<GpaMap>(() => new Map());
+    const sortBy = useSectionFilterStore((state) => state.sortBy);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        Promise.all(
+            courseDetails.sections.map(async (section) => {
+                try {
+                    const data = await getGpaData(
+                        courseDetails.deptCode,
+                        courseDetails.courseNumber,
+                        section.instructors
+                    );
+                    return [section.sectionCode, data] as const;
+                } catch (error) {
+                    console.error(`Failed to load GPA for ${section.sectionCode}`, error);
+                    return [section.sectionCode, null] as const;
+                }
+            })
+        ).then((entries) => {
+            if (cancelled) return;
+            const next: GpaMap = new Map();
+            for (const [code, data] of entries) {
+                if (data) next.set(code, data);
+            }
+            setGpaMap(next);
+        });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [courseDetails]);
 
     /**
      * Additional information about the current section being rendered.
@@ -82,10 +153,16 @@ export function SectionTableBody({
         };
     }, [updateCalendarEvents]);
 
+    const sortedSections = useMemo(
+        () => sortSections(courseDetails.sections, sortBy, gpaMap),
+        [courseDetails.sections, sortBy, gpaMap]
+    );
+
     return (
         <TableBody>
-            {courseDetails.sections.map((section) => {
+            {sortedSections.map((section) => {
                 const conflict = scheduleConflict(section);
+                const gpaEntry = gpaMap.get(section.sectionCode);
 
                 return (
                     <SectionTableBodyRow
@@ -98,6 +175,8 @@ export function SectionTableBody({
                         scheduleConflict={conflict}
                         analyticsCategory={analyticsCategory}
                         formattedTime={formattedTime}
+                        gpa={gpaEntry?.gpa}
+                        gpaInstructor={gpaEntry?.instructor}
                     />
                 );
             })}

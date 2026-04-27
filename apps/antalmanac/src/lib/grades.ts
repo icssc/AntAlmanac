@@ -24,14 +24,19 @@ class _Grades {
     // We need this because gradesCache destructures the data and doesn't retain whether we looked at one course or a whole department/GE
     cachedQueries: Set<string>;
 
+    // Deduplicates concurrent queryGrades calls for the same key so N parallel callers share one network request.
+    pendingQueries: Map<string, Promise<GradesProps | null>>;
+
     constructor() {
         this.gradesCache = {};
         this.cachedQueries = new Set<string>();
+        this.pendingQueries = new Map();
     }
 
     clearCache() {
         Object.keys(this.gradesCache).forEach((key) => delete this.gradesCache[key]); //https://stackoverflow.com/a/19316873/14587004
         this.cachedQueries = new Set<string>();
+        this.pendingQueries.clear();
     }
 
     /*
@@ -115,13 +120,25 @@ class _Grades {
 
         if (cacheOnly) return null;
 
-        const resp = await trpc.grades.aggregateGrades
-            .query({ department, courseNumber, instructor })
-            .then((x) => x?.gradeDistribution ?? null);
+        const inFlight = this.pendingQueries.get(cacheKey);
+        if (inFlight) return inFlight;
 
-        if (resp) this.gradesCache[cacheKey] = resp;
+        const promise = (async () => {
+            try {
+                const resp = await trpc.grades.aggregateGrades
+                    .query({ department, courseNumber, instructor })
+                    .then((x) => x?.gradeDistribution ?? null);
 
-        return resp;
+                if (resp) this.gradesCache[cacheKey] = resp;
+
+                return resp;
+            } finally {
+                this.pendingQueries.delete(cacheKey);
+            }
+        })();
+
+        this.pendingQueries.set(cacheKey, promise);
+        return promise;
     };
 }
 
