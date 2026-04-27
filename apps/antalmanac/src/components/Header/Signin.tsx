@@ -3,7 +3,7 @@ import { AlertDialog } from '$components/AlertDialog';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
-import { useIsSharedSchedulePage } from '$hooks/useIsSharedSchedulePage';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageUserId, getWasLoggedIn, setLocalStorageFromLoading } from '$lib/localStorage';
 import { useNotificationStore } from '$stores/NotificationStore';
@@ -47,7 +47,7 @@ export const Signin = () => {
     const isDark = useThemeStore((store) => store.isDark);
     const { loadSession } = useSessionStore();
     const { openLoadingSchedule: loadingSchedule, setOpenLoadingSchedule } = scheduleComponentsToggleStore();
-    const isSharedSchedulePage = useIsSharedSchedulePage();
+    const isSharedSchedulePage = useIsReadonlyView();
 
     const [openAlert, setOpenalert] = useState(false);
     const [settingsAnchorEl, setSettingsAnchorEl] = useState<null | HTMLElement>(null);
