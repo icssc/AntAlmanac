@@ -1,7 +1,7 @@
+import { loginUser } from '$actions/AppStoreActions';
+import { useThemeStore } from '$stores/SettingsStore';
 import GoogleIcon from '@mui/icons-material/Google';
 import { Button, Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
-
-import { loginUser } from '$actions/AppStoreActions';
 
 interface SignInDialogProps {
     open: boolean;
@@ -11,7 +11,8 @@ interface SignInDialogProps {
 }
 
 export function SignInDialog(props: SignInDialogProps) {
-    const { onClose, open, isDark } = props;
+    const { onClose, open } = props;
+    const isDark = useThemeStore((store) => store.isDark);
 
     const handleClose = () => {
         onClose();
