@@ -1,11 +1,18 @@
-import { z } from 'zod';
+import { RDS } from '$src/backend/lib/rds';
+import { protectedProcedure, router } from '$src/backend/trpc';
+import { db } from '@packages/db';
 
 import { fetchUserPlannerRoadmaps } from '../lib/planner';
-import { procedure, router } from '../trpc';
 
 const roadmapRouter = router({
-    fetchUserPlannerRoadmaps: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
-        return await fetchUserPlannerRoadmaps(input.userId);
+    fetchUserPlannerRoadmaps: protectedProcedure.query(async ({ ctx }) => {
+        const googleId = await RDS.getGoogleIdByUserId(db, ctx.userId);
+
+        if (!googleId) {
+            return [];
+        }
+
+        return await fetchUserPlannerRoadmaps(googleId);
     }),
 });
 
