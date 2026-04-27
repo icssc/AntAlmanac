@@ -1,15 +1,15 @@
-import { type } from 'arktype';
+import { z } from 'zod';
 
-export const RepeatingCustomEventSchema = type({
-    title: 'string',
-    start: 'string',
-    end: 'string',
-    days: 'boolean[]',
-    customEventID: 'string | number', // Unique only within the schedule.
-    'color?': 'string',
-    'building?': 'string | undefined',
+export const RepeatingCustomEventSchema = z.object({
+    title: z.string(),
+    start: z.string(),
+    end: z.string(),
+    days: z.array(z.boolean()),
+    customEventID: z.union([z.string(), z.number()]), // Unique only within the schedule.
+    color: z.string().optional(),
+    building: z.string().optional(),
 });
 
-export type RepeatingCustomEvent = typeof RepeatingCustomEventSchema.infer;
+export type RepeatingCustomEvent = z.infer<typeof RepeatingCustomEventSchema>;
 
-export type CustomEventId = typeof RepeatingCustomEventSchema.infer.customEventID;
+export type CustomEventId = RepeatingCustomEvent['customEventID'];

@@ -1,32 +1,32 @@
-import { scope } from 'arktype';
+import { z } from 'zod';
 
-const types = scope({
-    legacyCourse: {
-        color: 'string',
-        term: 'string',
-        sectionCode: 'string',
-        scheduleIndices: 'number[]',
-    },
-    legacyCustomEvent: {
-        customEventID: 'string',
-        color: 'string',
-        title: 'string',
-        days: 'boolean[]',
-        scheduleIndices: 'number[]',
-        start: 'string',
-        end: 'string',
-    },
-    legacyUserData: {
-        addedCourses: 'legacyCourse[]',
-        scheduleNames: 'string[]',
-        customEvents: 'legacyCustomEvent[]',
-    },
-    legacyUser: {
-        _id: 'string',
-        userData: 'legacyUserData',
-    },
-}).compile();
+export const LegacyCourseSchema = z.object({
+    color: z.string(),
+    term: z.string(),
+    sectionCode: z.string(),
+    scheduleIndices: z.array(z.number()),
+});
 
-export const LegacyUserSchema = types.legacyUser;
-export type LegacyUserData = typeof types.legacyUserData.infer;
-export type LegacyUser = typeof types.legacyUser.infer;
+export const LegacyCustomEventSchema = z.object({
+    customEventID: z.string(),
+    color: z.string(),
+    title: z.string(),
+    days: z.array(z.boolean()),
+    scheduleIndices: z.array(z.number()),
+    start: z.string(),
+    end: z.string(),
+});
+
+export const LegacyUserDataSchema = z.object({
+    addedCourses: z.array(LegacyCourseSchema),
+    scheduleNames: z.array(z.string()),
+    customEvents: z.array(LegacyCustomEventSchema),
+});
+
+export const LegacyUserSchema = z.object({
+    _id: z.string(),
+    userData: LegacyUserDataSchema,
+});
+
+export type LegacyUserData = z.infer<typeof LegacyUserDataSchema>;
+export type LegacyUser = z.infer<typeof LegacyUserSchema>;

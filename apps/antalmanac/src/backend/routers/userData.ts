@@ -339,7 +339,7 @@ const userDataRouter = router({
         .mutation(async ({ input, ctx }) => {
             let validatedScheduleData: ScheduleSaveState;
             try {
-                validatedScheduleData = ScheduleSaveStateSchema.assert(input.scheduleData);
+                validatedScheduleData = ScheduleSaveStateSchema.parse(input.scheduleData);
             } catch (error) {
                 const errorMessage = error instanceof Error ? error.message : 'Unknown validation error';
                 throw new TRPCError({
