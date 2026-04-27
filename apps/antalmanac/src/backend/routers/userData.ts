@@ -27,7 +27,7 @@ const saveGoogleSchema = type({
 });
 
 const userDataRouter = router({
-    getUserAndAccountBySessionToken: protectedProcedure.query(async ({ ctx }) => {
+    getUserAndAccount: protectedProcedure.query(async ({ ctx }) => {
         return await RDS.getUserAndAccountBySessionToken(db, ctx.sessionToken);
     }),
 
@@ -45,7 +45,7 @@ const userDataRouter = router({
      * @param input - An object containing the user ID.
      * @returns The user's google ID associated with the user ID.
      */
-    getGoogleIdByUserId: protectedProcedure.query(async ({ ctx }) => {
+    getGoogleId: protectedProcedure.query(async ({ ctx }) => {
         return await RDS.getGoogleIdByUserId(db, ctx.userId);
     }),
 
@@ -292,18 +292,22 @@ const userDataRouter = router({
      * Logs out a user by invalidating their session and redirecting to OIDC logout
      */
     logout: procedure.input(z.object({ redirectUrl: z.string().optional() })).mutation(async ({ input, ctx }) => {
-        if (ctx.sessionToken) {
-            const session = await RDS.getCurrentSession(db, ctx.sessionToken);
-            if (session) {
-                await RDS.removeSession(db, session.userId, session.refreshToken);
-            }
-        }
-
         const isProduction = NODE_ENV === 'production';
         ctx.resHeaders?.append(
             'Set-Cookie',
             `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; ${isProduction ? 'Secure; SameSite=Lax' : 'SameSite=Lax'}; Max-Age=0`
         );
+
+        if (ctx.sessionToken) {
+            try {
+                const session = await RDS.getCurrentSession(db, ctx.sessionToken);
+                if (session) {
+                    await RDS.removeSession(db, session.userId, session.refreshToken);
+                }
+            } catch (error) {
+                console.error('Failed to remove session during logout:', error);
+            }
+        }
 
         // Build OIDC logout URL
         const oidcLogoutUrl = new URL(`${OIDC_ISSUER_URL}/logout`);

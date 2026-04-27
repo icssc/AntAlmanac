@@ -50,9 +50,9 @@ export const useSessionStore = create<SessionState>((set) => {
 
                 set({ sessionIsValid: true });
 
-                const { users } = await trpc.userData.getUserAndAccountBySessionToken.query();
+                const { users } = await trpc.userData.getUserAndAccount.query();
 
-                let googleId = await trpc.userData.getGoogleIdByUserId.query();
+                let googleId = await trpc.userData.getGoogleId.query();
                 if (googleId?.startsWith('google_')) {
                     googleId = googleId.slice('google_'.length);
                 }
