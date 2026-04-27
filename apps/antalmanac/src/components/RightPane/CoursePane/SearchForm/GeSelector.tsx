@@ -23,7 +23,13 @@ const getLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.la
 
 export function GeSelector() {
     const [ge, setGe] = useState(() => RightPaneStore.getFormData().ge);
-    const selectedGEs = ge && ge !== ANY_GE ? ge.split(',').filter(Boolean) : [];
+    const selectedGEs =
+        ge && ge !== ANY_GE
+            ? ge
+                  .split(',')
+                  .map((value) => value.trim())
+                  .filter(Boolean)
+            : [];
 
     const handleChange = (event: SelectChangeEvent<string[]>) => {
         const value = event.target.value;

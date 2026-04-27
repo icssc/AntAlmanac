@@ -25,7 +25,7 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
-import { WebSOC } from '$lib/websoc';
+import { getMultiGeCourseKey, queryManualSearchCourses } from '$lib/multiGeSearch';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -79,109 +79,6 @@ const flattenSOCObject = (SOCObject: WebsocAPIResponse): (WebsocSchool | WebsocD
     }, []);
 };
 
-const getCourseKey = (deptCode: string, courseNumber: string) => `${deptCode}::${courseNumber}`.replace(/\s+/g, '');
-const getSelectedGEs = (ge: string) => {
-    if (!ge || ge === 'ANY') return [];
-    return ge.split(',').filter(Boolean);
-};
-const getResponseCourseKeys = (response: WebsocAPIResponse) =>
-    new Set(
-        response.schools.flatMap((school) =>
-            school.departments.flatMap((department) =>
-                department.courses.map((course) => getCourseKey(course.deptCode, course.courseNumber))
-            )
-        )
-    );
-
-const queryManualSearchCourses = async (params: Record<string, string>) => {
-    const selectedGEs = getSelectedGEs(params.ge);
-    const queryWebsoc = (queryParams: Record<string, string>) => {
-        return queryParams.units.includes(',') ? WebSOC.queryMultiple(queryParams, 'units') : WebSOC.query(queryParams);
-    };
-
-    if (selectedGEs.length <= 1) {
-        return queryWebsoc(params);
-    }
-
-    const responses = await Promise.all(
-        selectedGEs.map((ge) =>
-            queryWebsoc({
-                ...params,
-                ge,
-            })
-        )
-    );
-
-    const [firstResponse, ...restResponses] = responses;
-    let sharedCourseKeys = getResponseCourseKeys(firstResponse);
-    for (const response of restResponses) {
-        const keys = getResponseCourseKeys(response);
-        sharedCourseKeys = new Set([...sharedCourseKeys].filter((key) => keys.has(key)));
-    }
-
-    const resultSchools = firstResponse.schools
-        .map((school) => ({
-            ...school,
-            departments: school.departments
-                .map((department) => ({
-                    ...department,
-                    courses: department.courses.filter((course) =>
-                        sharedCourseKeys.has(getCourseKey(course.deptCode, course.courseNumber))
-                    ),
-                }))
-                .filter((department) => department.courses.length > 0),
-        }))
-        .filter((school) => school.departments.length > 0);
-
-    const appendedKeys = new Set(sharedCourseKeys);
-    const schoolMap = new Map<string, WebsocSchool>();
-    const deptMap = new Map<string, WebsocDepartment>();
-
-    resultSchools.forEach((school) => {
-        schoolMap.set(school.schoolName, school);
-        school.departments.forEach((department) => {
-            deptMap.set(`${school.schoolName}::${department.deptCode}`, department);
-        });
-    });
-
-    for (const response of responses) {
-        for (const school of response.schools) {
-            for (const department of school.departments) {
-                for (const course of department.courses) {
-                    const courseKey = getCourseKey(course.deptCode, course.courseNumber);
-                    if (appendedKeys.has(courseKey)) {
-                        continue;
-                    }
-
-                    appendedKeys.add(courseKey);
-
-                    let resultSchool = schoolMap.get(school.schoolName);
-                    if (!resultSchool) {
-                        resultSchool = { ...school, departments: [] };
-                        resultSchools.push(resultSchool);
-                        schoolMap.set(school.schoolName, resultSchool);
-                    }
-
-                    const deptKey = `${school.schoolName}::${department.deptCode}`;
-                    let resultDepartment = deptMap.get(deptKey);
-                    if (!resultDepartment) {
-                        resultDepartment = { ...department, courses: [] };
-                        resultSchool.departments.push(resultDepartment);
-                        deptMap.set(deptKey, resultDepartment);
-                    }
-
-                    resultDepartment.courses.push(course);
-                }
-            }
-        }
-    }
-
-    return {
-        ...firstResponse,
-        schools: resultSchools,
-    };
-};
-
 function getFilteredCourses(
     allCourses: (WebsocSchool | WebsocDepartment | AACourse)[]
 ): (WebsocSchool | WebsocDepartment | AACourse)[] {
@@ -198,6 +95,13 @@ function getFilteredCourses(
     }
     return allCourses;
 }
+
+const getLazyLoadHeight = (item: WebsocSchool | WebsocDepartment | AACourse) => {
+    if ('sections' in item) {
+        return item.sections.length * 60 + 20 + 40;
+    }
+    return 200;
+};
 
 const RecruitmentBanner = () => {
     const [bannerVisibility, setBannerVisibility] = useState(true);
@@ -368,6 +272,8 @@ const ErrorMessage = () => {
 export default function CourseRenderPane(props: { id?: number }) {
     const [websocResp, setWebsocResp] = useState<WebsocAPIResponse>();
     const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
+    const [sharedCourseKeys, setSharedCourseKeys] = useState<Set<string>>(new Set<string>());
+    const [andCourseCount, setAndCourseCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
@@ -406,7 +312,7 @@ export default function CourseRenderPane(props: { id?: number }) {
 
         try {
             // Query websoc for course information and populate gradescache
-            const [websocJsonResp] = await Promise.all([
+            const [{ response: websocJsonResp, sharedCourseKeys: fetchedSharedCourseKeys }] = await Promise.all([
                 queryManualSearchCourses(websocQueryParams),
                 // Catch the error here so that the course pane still loads even if the grades cache fails to populate
                 Grades.populateGradesCache(gradesQueryParams).catch((error) => {
@@ -417,8 +323,16 @@ export default function CourseRenderPane(props: { id?: number }) {
 
             setError(false);
             setWebsocResp(websocJsonResp);
-            const allCourses = flattenSOCObject(websocJsonResp);
-            setCourseData(getFilteredCourses(allCourses));
+            const allCourses = getFilteredCourses(flattenSOCObject(websocJsonResp));
+            setCourseData(allCourses);
+            setSharedCourseKeys(fetchedSharedCourseKeys);
+            setAndCourseCount(
+                allCourses.filter(
+                    (item) =>
+                        'sections' in item &&
+                        fetchedSharedCourseKeys.has(getMultiGeCourseKey(item.deptCode, item.courseNumber))
+                ).length
+            );
         } catch (error) {
             console.error(error);
             setError(true);
@@ -438,7 +352,15 @@ export default function CourseRenderPane(props: { id?: number }) {
                 return;
             }
             const flattened = flattenSOCObject(websocResp);
-            setCourseData(getFilteredCourses(flattened));
+            const filteredCourses = getFilteredCourses(flattened);
+            setCourseData(filteredCourses);
+            setAndCourseCount(
+                filteredCourses.filter(
+                    (item) =>
+                        'sections' in item &&
+                        sharedCourseKeys.has(getMultiGeCourseKey(item.deptCode, item.courseNumber))
+                ).length
+            );
         };
 
         AppStore.on('currentScheduleIndexChange', changeColors);
@@ -446,7 +368,7 @@ export default function CourseRenderPane(props: { id?: number }) {
         return () => {
             AppStore.off('currentScheduleIndexChange', changeColors);
         };
-    }, [websocResp]);
+    }, [sharedCourseKeys, websocResp]);
 
     useEffect(() => {
         loadCourses();
@@ -468,6 +390,15 @@ export default function CourseRenderPane(props: { id?: number }) {
         };
     }, [setHoveredEvent]);
 
+    let courseCount = 0;
+    let orBannerIndex = -1;
+    if (andCourseCount > 0) {
+        orBannerIndex = courseData.findIndex((item) => {
+            if (!('sections' in item)) return false;
+            return courseCount++ === andCourseCount;
+        });
+    }
+
     return (
         <>
             <Box sx={{ height: '56px' }} />
@@ -480,19 +411,29 @@ export default function CourseRenderPane(props: { id?: number }) {
                 <>
                     <RecruitmentBanner />
                     <Box>
-                        {courseData.map((_: WebsocSchool | WebsocDepartment | AACourse, index: number) => {
-                            let heightEstimate = 200;
-                            if ((courseData[index] as AACourse).sections !== undefined)
-                                heightEstimate = (courseData[index] as AACourse).sections.length * 60 + 20 + 40;
-                            return (
-                                <LazyLoad once key={index} overflow height={heightEstimate} offset={1000}>
-                                    {SectionTableWrapped(index, {
-                                        courseData: courseData,
-                                        scheduleNames: scheduleNames,
-                                    })}
-                                </LazyLoad>
-                            );
-                        })}
+                        {courseData.map((item, index) => (
+                            <LazyLoad once key={index} overflow height={getLazyLoadHeight(item)} offset={1000}>
+                                {index === orBannerIndex && (
+                                    <Alert
+                                        severity="warning"
+                                        sx={{
+                                            mb: 1,
+                                            fontSize: '1rem',
+                                            '& .MuiAlert-message': {
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                            },
+                                        }}
+                                    >
+                                        The courses below include at least ONE GE selected.
+                                    </Alert>
+                                )}
+                                {SectionTableWrapped(index, {
+                                    courseData: courseData,
+                                    scheduleNames: scheduleNames,
+                                })}
+                            </LazyLoad>
+                        ))}
                     </Box>
                 </>
             )}
