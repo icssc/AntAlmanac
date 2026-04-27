@@ -1,17 +1,16 @@
+import { deleteCustomEvent } from '$actions/AppStoreActions';
+import { MapLink } from '$components/buttons/MapLink';
+import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
+import ColorPicker from '$components/ColorPicker';
+import analyticsEnum from '$lib/analytics/analytics';
+import buildingCatalogue from '$lib/locations/buildingCatalogue';
+import AppStore from '$stores/AppStore';
+import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete } from '@mui/icons-material';
 import { Box, Card, CardActions, CardHeader, IconButton, Tooltip } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { format, set } from 'date-fns';
 import { useEffect, useState } from 'react';
-
-import { deleteCustomEvent } from '$actions/AppStoreActions';
-import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
-import ColorPicker from '$components/ColorPicker';
-import { MapLink } from '$components/buttons/MapLink';
-import analyticsEnum from '$lib/analytics/analytics';
-import buildingCatalogue from '$lib/locations/buildingCatalogue';
-import AppStore from '$stores/AppStore';
-import { useTimeFormatStore } from '$stores/SettingsStore';
 
 interface CustomEventDetailViewProps {
     scheduleNames: string[];

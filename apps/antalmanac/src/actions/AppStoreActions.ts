@@ -275,7 +275,11 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
     }
 };
 
-export const loadSchedule = async () => {
+interface LoadScheduleOptions {
+    prefetched: Awaited<ReturnType<typeof trpc.userData.getUserData.query>> | null;
+}
+
+export const loadSchedule = async ({ prefetched }: LoadScheduleOptions) => {
     // logAnalytics({
     //     category: analyticsEnum.nav.title,
     //     action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
@@ -283,7 +287,7 @@ export const loadSchedule = async () => {
     //     value: rememberMe ? 1 : 0,
     // });
     try {
-        const userDataResponse = await trpc.userData.getUserData.query();
+        const userDataResponse = prefetched ?? (await trpc.userData.getUserData.query());
         const scheduleSaveState = userDataResponse?.userData;
         if (scheduleSaveState !== undefined && isEmptySchedule(scheduleSaveState.schedules)) {
             return true;
