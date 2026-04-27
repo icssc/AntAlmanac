@@ -24,7 +24,7 @@ export function SignInDialog(props: SignInDialogProps) {
             case 'Planner':
                 return 'Sign in to Use Filter by Planner';
             case 'PlannerSearch':
-                return 'Sign in to search with planner';
+                return 'Sign in to search with Planner';
             case 'Save':
             default:
                 return 'Save';

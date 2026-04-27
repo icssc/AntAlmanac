@@ -96,8 +96,8 @@ const SearchWithPlanner = () => {
             RightPaneStore.setMultiSearchData(searchData);
             displaySections();
         } catch (error) {
-            console.error('Something went wrong while searching with planner:', error);
-            openSnackbar('error', 'Something went wrong while searching with planner.');
+            console.error('Something went wrong while searching with Planner:', error);
+            openSnackbar('error', 'Something went wrong while searching with Planner.');
             return false;
         } finally {
             setIsLoadingSearch(false);
@@ -127,7 +127,7 @@ const SearchWithPlanner = () => {
     };
 
     const renderInput: AutocompleteProps['renderInput'] = (props) => {
-        return <TextField {...props} variant="outlined" size="small" placeholder={'Search with planner'} />;
+        return <TextField {...props} variant="outlined" size="small" placeholder={'Search with Planner'} />;
     };
 
     const renderOption = (props: HTMLAttributes<HTMLLIElement>, roadmap: Roadmap) => {
@@ -207,7 +207,7 @@ const SearchWithPlanner = () => {
             disabled={!sessionIsValid}
             getOptionLabel={(roadmap) => roadmap.name.toString()}
             loading={isPlannerLoading}
-            loadingText="Loading planner..."
+            loadingText="Loading Planner..."
             noOptionsText="No roadmaps found"
             groupBy={groupBy}
             renderGroup={renderGroup}
@@ -232,7 +232,7 @@ const SearchWithPlanner = () => {
     if (!sessionIsValid) {
         return (
             <>
-                <Tooltip title="Sign in to search with planner">
+                <Tooltip title="Sign in to search with Planner">
                     <span>{searchComponent}</span>
                 </Tooltip>
 
