@@ -194,7 +194,7 @@ export function FriendsMenu({
                         searchRef={searchRef}
                         friendSearch={friendSearch}
                         onSearchChange={setFriendSearch}
-                        dropdownOpen={friendDropdownOpen}
+                        dropdownOpen={friendDropdownOpen || Boolean(friendMenuAnchor)}
                         onDropdownOpen={() => setFriendDropdownOpen(true)}
                         onDropdownClose={() => setFriendDropdownOpen(false)}
                         onView={handleViewSchedule}
@@ -236,9 +236,14 @@ export function FriendsMenu({
             <Menu
                 anchorEl={friendMenuAnchor?.element}
                 open={Boolean(friendMenuAnchor)}
-                onClose={() => setFriendMenuAnchor(null)}
+                onClose={() => {
+                    setFriendMenuAnchor(null);
+                    setFriendDropdownOpen(false);
+                }}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                slotProps={{ paper: { sx: { zIndex: 10000 } } }}
+                style={{ zIndex: 10000 }}
             >
                 <MenuItem onClick={handleUnfriend} sx={{ color: 'error.main' }}>
                     <PersonRemove sx={{ mr: 1, fontSize: '1.25rem' }} />
