@@ -2,6 +2,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
 import AppStore from '$stores/AppStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -13,19 +14,17 @@ import type {
     RepeatingCustomEvent,
     ScheduleCourse,
     ShortCourseSchedule,
-    User,
     WebsocSection,
 } from '@packages/antalmanac-types';
 import { TRPCClientError } from '@trpc/client';
-import { TRPCError } from '@trpc/server';
-import { PostHog } from 'posthog-js/react';
+import type { PostHog } from 'posthog-js/react';
+
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
     onError: (scheduleName: string) => unknown;
 }
 
 interface AutoSaveScheduleOptions {
-    userInfo?: { email?: string | null; name?: string | null; avatar?: string | null };
     postHog?: PostHog;
 }
 
@@ -79,97 +78,56 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
     return true;
 }
 
-export const saveSchedule = async (
-    providerId: string,
-    rememberMe: boolean,
-    userInfo?: { email?: string | null; name?: string | null; avatar?: string | null },
-    postHog?: PostHog
-) => {
+export const saveSchedule = async ({ rememberMe, postHog }: { rememberMe: boolean; postHog?: PostHog }) => {
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
-        label: providerId,
         value: rememberMe ? 1 : 0,
     });
 
-    if (providerId != null) {
-        providerId = providerId.replace(/\s+/g, '');
+    const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
-        if (providerId.length > 0) {
-            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+    if (
+        isEmptySchedule(scheduleSaveState.schedules) &&
+        !confirm(
+            "You are attempting to save empty schedule(s). If this is unintentional, this may overwrite your existing schedules that haven't loaded yet!"
+        )
+    ) {
+        return;
+    }
 
-            if (
-                isEmptySchedule(scheduleSaveState.schedules) &&
-                !confirm(
-                    "You are attempting to save empty schedule(s). If this is unintentional, this may overwrite your existing schedules that haven't loaded yet!"
-                )
-            ) {
-                return;
-            }
+    try {
+        const result = await trpc.userData.saveUserData.mutate({
+            userData: scheduleSaveState,
+        });
 
-            try {
-                const result = await trpc.userData.saveUserData.mutate({
-                    id: providerId,
-                    data: {
-                        id: providerId,
-                        email: userInfo?.email ?? undefined,
-                        name: userInfo?.name ?? undefined,
-                        avatar: userInfo?.avatar ?? undefined,
-                        userData: scheduleSaveState,
-                    },
-                });
+        if (result?.scheduleIdMap) {
+            AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
+        }
 
-                if (result?.scheduleIdMap) {
-                    AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
-                }
-
-                if (useSessionStore.getState().sessionIsValid) {
-                    openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
-                } else {
-                    openSnackbar(
-                        'success',
-                        `Schedule saved under username "${providerId}". Don't forget to sign up for classes on WebReg!`
-                    );
-                }
-                deleteTempSaveData();
-                AppStore.saveSchedule();
-            } catch (e) {
-                if (e instanceof TRPCError) {
-                    if (useSessionStore.getState().sessionIsValid) {
-                        openSnackbar('error', `Schedule could not be saved`);
-                    } else {
-                        openSnackbar('error', `Schedule could not be saved under username "${providerId}`);
-                    }
-                } else {
-                    openSnackbar('error', 'Network error or server is down.');
-                }
-            }
+        openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
+        deleteTempSaveData();
+        AppStore.saveSchedule();
+    } catch (e) {
+        if (e instanceof TRPCClientError) {
+            openSnackbar('error', `Schedule could not be saved`);
+        } else {
+            openSnackbar('error', 'Network error or server is down.');
         }
     }
 };
 
-export async function autoSaveSchedule(providerID: string, options: AutoSaveScheduleOptions) {
-    const { userInfo, postHog } = options;
+export async function autoSaveSchedule(options: AutoSaveScheduleOptions) {
+    const { postHog } = options;
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.SAVE_SCHEDULE,
-        label: providerID,
     });
-    if (providerID == null) return;
-    providerID = providerID.replace(/\s+/g, '');
-    if (providerID.length < 0) return;
 
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
     try {
         const result = await trpc.userData.saveUserData.mutate({
-            id: providerID,
-            data: {
-                id: providerID,
-                email: userInfo?.email ?? undefined,
-                name: userInfo?.name ?? undefined,
-                avatar: userInfo?.avatar ?? undefined,
-                userData: scheduleSaveState,
-            },
+            userData: scheduleSaveState,
         });
 
         if (result?.scheduleIdMap) {
@@ -179,8 +137,8 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
         deleteTempSaveData();
         AppStore.saveSchedule();
     } catch (e) {
-        if (e instanceof TRPCError) {
-            openSnackbar('error', `Schedule could not be auto-saved under username "${providerID}`);
+        if (e instanceof TRPCClientError) {
+            openSnackbar('error', 'Schedule could not be auto-saved');
         } else {
             openSnackbar('error', 'Network error or server is down.');
         }
@@ -196,7 +154,7 @@ export const mergeShortCourseSchedules = (
     const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
         let scheduleName = schedule.scheduleName;
         if (existingScheduleNames.has(schedule.scheduleName)) {
-            scheduleName = scheduleName + '(1)';
+            scheduleName = `${scheduleName}(1)`;
         }
         return {
             ...schedule,
@@ -212,25 +170,15 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
         throw new Error("Invalid session: User isn't logged in.");
     }
 
-    const incomingUser = await trpc.userData.getGuestAccountAndUserByName
-        .query({ name: username })
-        .then((res) => res?.users)
-        .catch(() => {
-            throw new Error(`Oops! Schedule "${username}" doesn't seem to exist.`);
-        });
+    const incoming = await trpc.userData.getGuestScheduleByUsername.query({ username }).catch(() => {
+        throw new Error(`Oops! Schedule "${username}" doesn't seem to exist.`);
+    });
 
-    if (!skipImportedCheck && incomingUser.imported) {
+    if (!skipImportedCheck && incoming.user.imported) {
         return { imported: true, error: null };
     }
 
-    const userAndAccount = await trpc.userData.getUserAndAccountBySessionToken.query({
-        token: session.session ?? '',
-    });
-    const { users, accounts } = userAndAccount;
-
-    const incomingData: User | null = await trpc.userData.getUserData.query({ userId: incomingUser.id });
-    const scheduleSaveState =
-        incomingData !== null && 'userData' in incomingData ? incomingData.userData : incomingData;
+    const scheduleSaveState = incoming.userData;
 
     const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
 
@@ -246,10 +194,10 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
 
             scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
 
-            await saveSchedule(accounts.providerAccountId, true, users);
+            await saveSchedule({ rememberMe: true });
 
             await trpc.userData.flagImportedSchedule.mutate({
-                providerId: username,
+                username,
             });
         }
     }
@@ -273,55 +221,41 @@ export const importScheduleWithUsername = async (username: string) => {
     }
 };
 
-export const loadSchedule = async (
-    providerId: string,
-    rememberMe: boolean,
-    accountType: 'OIDC' | 'GOOGLE' | 'GUEST',
-    postHog?: PostHog
-) => {
+export const loadGuestSchedule = async (username: string, rememberMe: boolean, postHog?: PostHog) => {
     logAnalytics(postHog, {
         category: analyticsEnum.nav,
         action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
-        label: providerId,
+        label: username,
         value: rememberMe ? 1 : 0,
     });
     if (
-        providerId != null &&
+        username != null &&
         (!AppStore.hasUnsavedChanges() ||
             window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
     ) {
-        providerId = providerId.replace(/\s+/g, '');
-        if (providerId.length > 0) {
+        username = username.replace(/\s+/g, '');
+        if (username?.length) {
             if (rememberMe) {
-                setLocalStorageUserId(providerId);
+                setLocalStorageUserId(username);
             }
 
             try {
-                const account = await trpc.userData.getAccountByProviderId.query({
-                    accountType,
-                    providerId,
-                });
-
-                const userDataResponse = await trpc.userData.getUserData.query({ userId: account.userId });
-                const scheduleSaveState = userDataResponse?.userData;
+                const result = await trpc.userData.getGuestScheduleByUsername.query({ username });
+                const scheduleSaveState = result.userData;
 
                 let error = false;
 
-                if (scheduleSaveState !== undefined) {
-                    if (await AppStore.loadSchedule(scheduleSaveState)) {
-                        openSnackbar('success', `Schedule loaded.`);
-                    } else {
-                        AppStore.loadSkeletonSchedule(scheduleSaveState);
-                        error = true;
-                    }
+                if (await AppStore.loadSchedule(scheduleSaveState)) {
+                    openSnackbar('success', `Schedule loaded.`);
                 } else {
+                    AppStore.loadSkeletonSchedule(scheduleSaveState);
                     error = true;
                 }
 
                 if (error) {
                     openSnackbar(
                         'error',
-                        `Network error loading course information for "${providerId}". 	              
+                        `Network error loading course information for "${username}". 	              
                         If this continues to happen, please submit a feedback form.`
                     );
                 }
@@ -341,7 +275,11 @@ export const loadSchedule = async (
     }
 };
 
-export const loadScheduleWithSessionToken = async () => {
+interface LoadScheduleOptions {
+    prefetched: Awaited<ReturnType<typeof trpc.userData.getUserData.query>> | null;
+}
+
+export const loadSchedule = async ({ prefetched }: LoadScheduleOptions) => {
     // logAnalytics({
     //     category: analyticsEnum.nav.title,
     //     action: analyticsEnum.nav.actions.LOAD_SCHEDULE,
@@ -349,9 +287,7 @@ export const loadScheduleWithSessionToken = async () => {
     //     value: rememberMe ? 1 : 0,
     // });
     try {
-        const userDataResponse = await trpc.userData.getUserDataWithSession.query({
-            refreshToken: useSessionStore.getState().session ?? '',
-        });
+        const userDataResponse = prefetched ?? (await trpc.userData.getUserData.query());
         const scheduleSaveState = userDataResponse?.userData;
         if (scheduleSaveState !== undefined && isEmptySchedule(scheduleSaveState.schedules)) {
             return true;
@@ -372,7 +308,7 @@ export const loadScheduleWithSessionToken = async () => {
         }
         return false;
     } catch (e) {
-        console.error('Error in loadScheduleWithSessionToken:', e);
+        console.error('Error in loadSchedule:', e);
         openSnackbar('error', `Failed to load schedules. If this continues to happen, please submit a feedback form.`);
         return false;
     }
@@ -387,7 +323,9 @@ const cacheSchedule = () => {
 
 export const loginUser = async () => {
     try {
-        const authUrl = await trpc.userData.getGoogleAuthUrl.query();
+        const redirectUri = isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined;
+
+        const authUrl = await trpc.userData.getGoogleAuthUrl.query(redirectUri ? { redirectUri } : undefined);
         if (authUrl) {
             cacheSchedule();
             window.location.href = authUrl.toString();

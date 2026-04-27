@@ -1,8 +1,7 @@
-import { useEffect, useRef } from 'react';
-
 import trpc from '$lib/api/trpc';
-import { getLocalStorageSessionId } from '$lib/localStorage';
 import { hasSsoCookie } from '$lib/ssoCookie';
+import { useSessionStore } from '$stores/SessionStore';
+import { useEffect, useRef } from 'react';
 
 /**
  * Automatically signs in users who authenticated via another app on antalmanac.com
@@ -11,6 +10,7 @@ import { hasSsoCookie } from '$lib/ssoCookie';
  * Uses a shared first-party cookie (`icssc_logged_in`) as a hint, then performs
  * a redirect-based silent auth through auth.icssc.club with prompt=none.
  * Unlike the previous iframe approach this avoids third-party cookie issues.
+
  */
 export function AutoSignIn() {
     const hasChecked = useRef(false);
@@ -25,7 +25,7 @@ export function AutoSignIn() {
             // Don't interfere when AuthPage is already handling an OAuth callback.
             // Calling getGoogleAuthUrl here would overwrite the oauth_state /
             // oauth_code_verifier cookies that AuthPage needs to finish the exchange.
-            if (window.location.pathname === '/auth') {
+            if (window.location.pathname === '/auth' || window.location.pathname === '/auth/native') {
                 return;
             }
 
@@ -33,7 +33,12 @@ export function AutoSignIn() {
                 return;
             }
 
-            if (getLocalStorageSessionId()) {
+            if (useSessionStore.getState().sessionIsValid) {
+                return;
+            }
+
+            const loaded = await useSessionStore.getState().loadSession();
+            if (loaded) {
                 return;
             }
 

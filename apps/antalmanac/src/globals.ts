@@ -7,7 +7,7 @@ export const DARK_PAPER_BG = '#2a2a2a';
 
 export const FEEDBACK_LINK = 'https://form.asana.com/?k=VRhMN_PtqQVRZrixgbYIZA&d=1208267282546207';
 export const DONATION_LINK = 'https://venmo.com/u/ICSSC';
-export const PROJECTS_LINK = 'https://studentcouncil.ics.uci.edu/projects';
+export const PROJECTS_LINK = 'https://www.icssc.club/projects';
 export const GITHUB_LINK = 'https://github.com/icssc/AntAlmanac';
 
 export const PLANNER_LINK = '/planner';

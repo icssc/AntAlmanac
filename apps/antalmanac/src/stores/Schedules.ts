@@ -418,7 +418,7 @@ export class Schedules {
         for (const scheduleIndex of scheduleIndices) {
             const customEvents = this.schedules[scheduleIndex].customEvents;
             const index = customEvents.findIndex((customEvent) => customEvent.customEventID === customEventId);
-            if (index !== undefined) {
+            if (index !== -1) {
                 customEvents.splice(index, 1);
             }
         }

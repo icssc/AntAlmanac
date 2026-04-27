@@ -1,27 +1,34 @@
-import { ShortCourse, ShortCourseSchedule, User, RepeatingCustomEvent, Notification } from '@packages/antalmanac-types';
-import { db } from '@packages/db';
-import * as schema from '@packages/db/src/schema';
+import type {
+    ShortCourse,
+    ShortCourseSchedule,
+    User,
+    RepeatingCustomEvent,
+    Notification,
+    ScheduleSaveState,
+} from '@packages/antalmanac-types';
+import type { db } from '@packages/db';
+import type * as schema from '@packages/db/src/schema';
 import {
     schedules,
     users,
     accounts,
     coursesInSchedule,
     customEvents,
-    AccountType,
-    Schedule,
-    CourseInSchedule,
-    CustomEvent,
+    type Schedule,
+    type CourseInSchedule,
+    type CustomEvent,
     sessions,
-    Account,
-    Session,
+    type Account,
+    type Session,
     subscriptions,
 } from '@packages/db/src/schema';
-import { and, eq, ExtractTablesWithRelations, gt } from 'drizzle-orm';
-import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
+import { and, eq, type ExtractTablesWithRelations, gt } from 'drizzle-orm';
+import type { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
 type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;
 
+// biome-ignore lint/complexity/noStaticOnlyClass: todo
 export class RDS {
     /**
      * If a guest user with the specified name exists, return their ID, otherwise return null.
@@ -84,20 +91,6 @@ export class RDS {
                 .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerId)))
                 .limit(1)
                 .then((res) => res[0] ?? null)
-        );
-    }
-
-    static async getGuestAccountAndUserByName(db: DatabaseOrTransaction, name: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(accounts)
-                .innerJoin(users, eq(accounts.userId, users.id))
-                .where(and(eq(users.name, name), eq(accounts.accountType, 'GUEST')))
-                .execute()
-                .then((res) => {
-                    return { users: res[0].users, accounts: res[0].accounts };
-                })
         );
     }
 
@@ -219,44 +212,29 @@ export class RDS {
     }
 
     /**
-     * Does the same thing as `insertGuestUserData`, but also updates the user's schedules and courses if they exist.
+     * Upserts the given user's schedules and selected schedule index.
      *
      * @param db The Drizzle client or transaction object
-     * @param userData The object of data containing the user's schedules and courses
-     * @returns The user's ID
+     * @param userId The internal user ID whose data is being saved
+     * @param saveState The schedules and selected index to persist
      */
     static async upsertUserData(
         db: DatabaseOrTransaction,
-        userData: User
+        userId: string,
+        saveState: ScheduleSaveState
     ): Promise<{ userId: string; scheduleIdMap: Record<string, string> }> {
         return db.transaction(async (tx) => {
-            const account = await this.registerUserAccount(
-                tx,
-                'OIDC',
-                userData.id,
-                userData.name,
-                userData.email,
-                userData.avatar
-            );
-            const userId = account.userId;
-            if (!account) {
-                throw new Error(`Failed to create user`);
-            }
+            const scheduleIdMap = await this.upsertSchedulesAndContents(tx, userId, saveState.schedules);
 
-            // Add schedules and courses
-            const scheduleIdMap = await this.upsertSchedulesAndContents(tx, userId, userData.userData.schedules);
-
-            // Update user's current schedule index
-            const scheduleIndex = userData.userData.scheduleIndex;
             const scheduleDbIds = Object.values(scheduleIdMap);
-
+            const scheduleIndex = saveState.scheduleIndex;
             const currentScheduleId =
                 scheduleIndex === undefined || scheduleIndex >= scheduleDbIds.length
                     ? null
                     : scheduleDbIds[scheduleIndex];
 
             if (currentScheduleId !== null) {
-                await tx.update(users).set({ currentScheduleId: currentScheduleId }).where(eq(users.id, userId));
+                await tx.update(users).set({ currentScheduleId }).where(eq(users.id, userId));
             }
 
             return { userId, scheduleIdMap };
@@ -413,23 +391,27 @@ export class RDS {
     }
 
     /**
-     * Retrieves user data by user ID, including schedules and custom events.
-     *
-     * @param db - The database or transaction object to use for the query.
-     * @param userId - The unique identifier of the user.
-     * @returns A promise that resolves to a User object containing user data and schedules, or null if the user is not found.
+     * Retrieves a guest user's publicly-shareable schedule data by their
+     * guest username.
      */
-    static async getUserDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
+    static async getGuestScheduleByUsername(
+        db: DatabaseOrTransaction,
+        username: string
+    ): Promise<{ user: { imported: boolean }; userData: User['userData'] } | null> {
         return db.transaction(async (tx) => {
-            const user = await tx
+            const row = await tx
                 .select()
-                .from(users)
-                .where(eq(users.id, userId))
-                .then((res) => res[0]);
+                .from(accounts)
+                .innerJoin(users, eq(accounts.userId, users.id))
+                .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.providerAccountId, username)))
+                .limit(1)
+                .then((res) => res[0] ?? null);
 
-            if (!user) {
+            if (!row) {
                 return null;
             }
+
+            const userId = row.users.id;
 
             const sectionResults = await tx
                 .select()
@@ -445,37 +427,18 @@ export class RDS {
 
             const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
 
-            const scheduleIndex = user.currentScheduleId
-                ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
+            const scheduleIndex = row.users.currentScheduleId
+                ? userSchedules.findIndex((s) => s.id === row.users.currentScheduleId)
                 : userSchedules.length;
 
             return {
-                id: userId,
+                user: { imported: row.users.imported ?? false },
                 userData: {
                     schedules: userSchedules,
                     scheduleIndex,
                 },
             };
         });
-    }
-
-    private static async getUserAndAccount(
-        db: DatabaseOrTransaction,
-        accountType: AccountType,
-        providerAccountId: string
-    ) {
-        const res = await db
-            .select()
-            .from(accounts)
-            .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerAccountId)))
-            .leftJoin(users, eq(accounts.userId, users.id))
-            .limit(1);
-
-        if (res.length === 0 || res[0].users === null || res[0].accounts === null) {
-            return null;
-        }
-
-        return { user: res[0].users, account: res[0].accounts };
     }
 
     /**
@@ -687,41 +650,46 @@ export class RDS {
     }
 
     /**
-     * Flags a user as imported based on the provided provider ID.
+     * Flags the guest user with the given username as imported, so the
+     * "import by username" flow doesn't re-run for the same legacy schedule.
      *
-     * This function checks if a user associated with the given provider ID has already been flagged as imported.
-     * If not, it updates the user's record to set the imported flag to true.
-     *
-     * @param db The database or transaction object used to perform the operation.
-     * @param providerId The provider ID used to identify the user.
-     * @returns A promise that resolves to true if the user was successfully flagged as imported, or false if the user
-     *          was already flagged or if an error occurred during the operation.
+     * @returns true if the user was successfully flagged as imported,
+     *          false if they were already flagged or no matching guest exists.
      */
-    static async flagImportedUser(db: DatabaseOrTransaction, providerId: string) {
-        try {
-            const { users: user, accounts } = await this.getGuestAccountAndUserByName(db, providerId);
-            if (user.imported) {
+    static async flagImportedUser(db: DatabaseOrTransaction, username: string) {
+        return db.transaction(async (tx) => {
+            const row = await tx
+                .select({ userId: users.id, imported: users.imported })
+                .from(accounts)
+                .innerJoin(users, eq(accounts.userId, users.id))
+                .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.providerAccountId, username)))
+                .limit(1)
+                .then((res) => res[0] ?? null);
+
+            if (!row || row.imported) {
                 return false;
             }
 
-            await db.transaction((tx) =>
-                tx.update(users).set({ imported: true }).where(eq(users.id, accounts.userId)).execute()
-            );
+            await tx.update(users).set({ imported: true }).where(eq(users.id, row.userId)).execute();
             return true;
-        } catch {
-            return false;
-        }
+        });
     }
 
     /**
-     * Retrieves notifications associated with a specified user
+     * Retrieves notifications associated with a specified user and environment.
      *
      * @param db - The database or transaction object to use for the operation.
      * @param userId - The ID of the user for whom we're retrieving notifications.
+     * @param environment - The deployment environment to filter by (e.g. "production", "staging-1337").
      * @returns A promise that resolves to the notifications associated with a userId, or an empty array if not found.
      */
-    static async retrieveNotifications(db: DatabaseOrTransaction, userId: string) {
-        return db.transaction((tx) => tx.select().from(subscriptions).where(eq(subscriptions.userId, userId)));
+    static async retrieveNotifications(db: DatabaseOrTransaction, userId: string, environment: string) {
+        return db.transaction((tx) =>
+            tx
+                .select()
+                .from(subscriptions)
+                .where(and(eq(subscriptions.userId, userId), eq(subscriptions.environment, environment)))
+        );
     }
 
     /**
@@ -737,9 +705,8 @@ export class RDS {
         db: DatabaseOrTransaction,
         userId: string,
         notification: Notification,
-        environmentValue?: string | null
+        environment: string
     ) {
-        const environment = environmentValue ?? '';
         return db.transaction((tx) =>
             tx
                 .insert(subscriptions)
@@ -754,7 +721,7 @@ export class RDS {
                     notifyOnRestriction: notification.notifyOn.notifyOnRestriction,
                     lastUpdatedStatus: notification.lastUpdatedStatus,
                     lastCodes: notification.lastCodes,
-                    environment: environment,
+                    environment,
                 })
                 .onConflictDoUpdate({
                     target: [
@@ -762,6 +729,7 @@ export class RDS {
                         subscriptions.sectionCode,
                         subscriptions.year,
                         subscriptions.quarter,
+                        subscriptions.environment,
                     ],
                     set: {
                         notifyOnOpen: notification.notifyOn.notifyOnOpen,
@@ -770,20 +738,20 @@ export class RDS {
                         notifyOnRestriction: notification.notifyOn.notifyOnRestriction,
                         lastUpdatedStatus: notification.lastUpdatedStatus,
                         lastCodes: notification.lastCodes,
-                        environment: environment,
                     },
                 })
         );
     }
 
     /**
-     * Updates lastUpdatedStatus and lastCodes of ALL notifications with a shared sectionCode, year, and quarter
+     * Updates lastUpdatedStatus and lastCodes of ALL notifications with a shared sectionCode, year, quarter, and environment.
      *
      * @param db - The database or transaction object to use for the operation.
      * @param notification - The notification object type we are updating.
-     * @returns A promise that updates ALL notifications with a shared sectionCode, year, and quarter.
+     * @param environment - The deployment environment to filter by (e.g. "production", "staging-1337").
+     * @returns A promise that updates ALL notifications with a shared sectionCode, year, quarter, and environment.
      */
-    static async updateAllNotifications(db: DatabaseOrTransaction, notification: Notification) {
+    static async updateAllNotifications(db: DatabaseOrTransaction, notification: Notification, environment: string) {
         return db.transaction((tx) =>
             tx
                 .update(subscriptions)
@@ -795,21 +763,28 @@ export class RDS {
                     and(
                         eq(subscriptions.sectionCode, notification.sectionCode),
                         eq(subscriptions.year, notification.term.split(' ')[0]),
-                        eq(subscriptions.quarter, notification.term.split(' ')[1])
+                        eq(subscriptions.quarter, notification.term.split(' ')[1]),
+                        eq(subscriptions.environment, environment)
                     )
                 )
         );
     }
 
     /**
-     * Deletes a notification for a specified user
+     * Deletes a notification for a specified user and environment.
      *
      * @param db - The database or transaction object to use for the operation.
      * @param notification - The notification object type we are deleting.
      * @param userId - The ID of the user for whom we're deleting a notification.
+     * @param environment - The deployment environment to filter by (e.g. "production", "staging-1337").
      * @returns A promise that deletes a user's notification.
      */
-    static async deleteNotification(db: DatabaseOrTransaction, notification: Notification, userId: string) {
+    static async deleteNotification(
+        db: DatabaseOrTransaction,
+        notification: Notification,
+        userId: string,
+        environment: string
+    ) {
         return db.transaction((tx) =>
             tx
                 .delete(subscriptions)
@@ -818,20 +793,26 @@ export class RDS {
                         eq(subscriptions.userId, userId),
                         eq(subscriptions.sectionCode, notification.sectionCode),
                         eq(subscriptions.year, notification.term.split(' ')[0]),
-                        eq(subscriptions.quarter, notification.term.split(' ')[1])
+                        eq(subscriptions.quarter, notification.term.split(' ')[1]),
+                        eq(subscriptions.environment, environment)
                     )
                 )
         );
     }
 
     /**
-     * Deletes ALL notifications for a specified user
+     * Deletes ALL notifications for a specified user and environment.
      *
      * @param db - The database or transaction object to use for the operation.
      * @param userId - The ID of the user for whom we're deleting all notifications.
+     * @param environment - The deployment environment to filter by (e.g. "production", "staging-1337").
      * @returns A promise that deletes all of a user's notifications.
      */
-    static async deleteAllNotifications(db: DatabaseOrTransaction, userId: string) {
-        return db.transaction((tx) => tx.delete(subscriptions).where(eq(subscriptions.userId, userId)));
+    static async deleteAllNotifications(db: DatabaseOrTransaction, userId: string, environment: string) {
+        return db.transaction((tx) =>
+            tx
+                .delete(subscriptions)
+                .where(and(eq(subscriptions.userId, userId), eq(subscriptions.environment, environment)))
+        );
     }
 }
