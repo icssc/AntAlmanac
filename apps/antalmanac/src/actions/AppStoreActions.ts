@@ -306,11 +306,9 @@ export const importSharedScheduleById = async (scheduleId: string, friendName?: 
     }
 
     const session = useSessionStore.getState();
-    if (session.sessionIsValid && session.session) {
+    if (session.sessionIsValid) {
         try {
-            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
-                token: session.session,
-            });
+            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query();
 
             await autoSaveSchedule(accounts.providerAccountId, {
                 userInfo: {

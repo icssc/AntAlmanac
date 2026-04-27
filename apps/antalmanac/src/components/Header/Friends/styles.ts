@@ -1,7 +1,8 @@
 import { DARK_SURFACE } from '$src/globals';
-import type { SxProps, Theme } from '@mui/material';
+import type { Theme } from '@mui/material';
+import type { SystemStyleObject } from '@mui/system';
 
-export const friendCardSx: SxProps<Theme> = (theme: Theme) => ({
+export const friendCardSx = (theme: Theme): SystemStyleObject<Theme> => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -19,7 +20,7 @@ export const friendCardSx: SxProps<Theme> = (theme: Theme) => ({
     transition: 'all 0.2s ease',
 });
 
-export const textFieldSx: SxProps<Theme> = (theme: Theme) => ({
+export const textFieldSx = (theme: Theme): SystemStyleObject<Theme> => ({
     '& .MuiInput-root': { fontSize: '1rem' },
     '& .MuiInput-underline:before': {
         borderBottomColor: theme.palette.mode === 'dark' ? '#FFFFFF6B' : theme.palette.divider,
