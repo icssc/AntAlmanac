@@ -107,6 +107,7 @@ export async function queryManualSearchCourses(params: Record<string, string>) {
         return {
             response: await queryWebsoc(params),
             sharedCourseKeys: new Set<string>(),
+            andSchoolCount: 0,
         };
     }
 
@@ -122,6 +123,7 @@ export async function queryManualSearchCourses(params: Record<string, string>) {
             schools: [...andSchools, ...orSchools],
         },
         sharedCourseKeys,
+        andSchoolCount: andSchools.length,
     };
 }
 

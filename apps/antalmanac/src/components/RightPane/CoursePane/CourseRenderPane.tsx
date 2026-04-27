@@ -274,6 +274,7 @@ export default function CourseRenderPane(props: { id?: number }) {
     const [courseData, setCourseData] = useState<(WebsocSchool | WebsocDepartment | AACourse)[]>([]);
     const [sharedCourseKeys, setSharedCourseKeys] = useState<Set<string>>(new Set<string>());
     const [andCourseCount, setAndCourseCount] = useState(0);
+    const [andSchoolCount, setAndSchoolCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [scheduleNames, setScheduleNames] = useState(AppStore.getScheduleNames());
@@ -312,7 +313,13 @@ export default function CourseRenderPane(props: { id?: number }) {
 
         try {
             // Query websoc for course information and populate gradescache
-            const [{ response: websocJsonResp, sharedCourseKeys: fetchedSharedCourseKeys }] = await Promise.all([
+            const [
+                {
+                    response: websocJsonResp,
+                    sharedCourseKeys: fetchedSharedCourseKeys,
+                    andSchoolCount: fetchedAndSchoolCount,
+                },
+            ] = await Promise.all([
                 queryManualSearchCourses(websocQueryParams),
                 // Catch the error here so that the course pane still loads even if the grades cache fails to populate
                 Grades.populateGradesCache(gradesQueryParams).catch((error) => {
@@ -326,6 +333,7 @@ export default function CourseRenderPane(props: { id?: number }) {
             const allCourses = getFilteredCourses(flattenSOCObject(websocJsonResp));
             setCourseData(allCourses);
             setSharedCourseKeys(fetchedSharedCourseKeys);
+            setAndSchoolCount(fetchedAndSchoolCount);
             setAndCourseCount(
                 allCourses.filter(
                     (item) =>
@@ -390,16 +398,16 @@ export default function CourseRenderPane(props: { id?: number }) {
         };
     }, [setHoveredEvent]);
 
-    let courseCount = 0;
-    let orBannerIndex = -1;
-    if (andCourseCount > 0) {
-        orBannerIndex = courseData.findIndex((item) => {
-            if (!('sections' in item)) return false;
-            return courseCount++ === andCourseCount;
-        });
-    }
     const currGeSelection = RightPaneStore.getFormData().ge;
     const isMultiGeSearch = currGeSelection !== 'ANY' && currGeSelection.includes(',');
+    let orBannerIndex = -1;
+    if (isMultiGeSearch) {
+        let schoolCount = 0;
+        orBannerIndex = courseData.findIndex((item) => {
+            if (!('departments' in item)) return false;
+            return schoolCount++ === andSchoolCount;
+        });
+    }
     const showNoIntersection = isMultiGeSearch && andCourseCount === 0;
 
     return (
