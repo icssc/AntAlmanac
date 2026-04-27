@@ -197,7 +197,7 @@ export class RDS {
             .set({
                 name: name,
                 email: email ?? '',
-                avatar: avatar ?? existingUser.avatar,
+                avatar: avatar || existingUser.avatar,
                 lastUpdated: new Date(),
             })
             .where(eq(users.id, existingUser.id));
