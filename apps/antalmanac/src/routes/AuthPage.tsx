@@ -1,5 +1,6 @@
 import { isEmptySchedule, mergeShortCourseSchedules } from '$actions/AppStoreActions';
 import { LoadingScreen } from '$components/LoadingScreen';
+import { analyticsIdentifyUser } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import {
     getLocalStorageDataCache,
@@ -14,12 +15,14 @@ import {
 } from '$lib/localStorage';
 import { clearSsoCookie, setSsoCookie } from '$lib/ssoCookie';
 import AppStore from '$stores/AppStore';
+import { usePostHog } from 'posthog-js/react';
 import { useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 export function AuthPage() {
     const [searchParams] = useSearchParams();
     const isAuthenticatingRef = useRef(false);
+    const postHog = usePostHog();
 
     const handleSearchParamsChange = useCallback(async () => {
         // Prevent race condition: only allow one authentication attempt at a time
@@ -44,10 +47,12 @@ export function AuthPage() {
 
             isAuthenticatingRef.current = true;
 
-            const { providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
+            const { userId, providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
                 code: code,
                 state: state,
             });
+
+            analyticsIdentifyUser(postHog, userId);
 
             const fromLoading = getLocalStorageFromLoading() ?? '';
             const savedUserId = getLocalStorageUserId() ?? '';
@@ -116,7 +121,7 @@ export function AuthPage() {
             clearSsoCookie();
             window.location.href = '/';
         }
-    }, [searchParams]);
+    }, [searchParams, postHog]);
 
     useEffect(() => {
         handleSearchParamsChange();

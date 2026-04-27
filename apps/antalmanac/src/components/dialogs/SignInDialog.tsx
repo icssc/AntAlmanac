@@ -1,5 +1,6 @@
 import GoogleIcon from '@mui/icons-material/Google';
 import { Button, Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 
 import { loginUser } from '$actions/AppStoreActions';
 
@@ -12,11 +13,12 @@ interface SignInDialogProps {
 
 export function SignInDialog(props: SignInDialogProps) {
     const { onClose, open, isDark } = props;
+    const postHog = usePostHog();
 
     const handleClose = () => {
         onClose();
     };
-
+    
     const getTitle = () => {
         switch (props.feature) {
             case 'Notification':
@@ -53,7 +55,7 @@ export function SignInDialog(props: SignInDialogProps) {
                         </Alert>
                     )}
                     <Button
-                        onClick={loginUser}
+                        onClick={() => loginUser(postHog)}
                         startIcon={<GoogleIcon />}
                         color="primary"
                         variant="contained"
