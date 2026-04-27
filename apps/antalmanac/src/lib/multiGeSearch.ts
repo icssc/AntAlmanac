@@ -16,6 +16,13 @@ const parseSelectedGEs = (ge: string) => {
     return validGEs.length === 0 || validGEs.includes(ANY_GE) ? [] : [...new Set(validGEs)];
 };
 
+export const getSelectedGEs = (ge: string) => parseSelectedGEs(ge);
+export const normalizeGeSelection = (ge: string) => {
+    const selectedGEs = parseSelectedGEs(ge);
+    return selectedGEs.length > 0 ? selectedGEs.join(',') : ANY_GE;
+};
+export const isMultiGeSelection = (ge: string) => parseSelectedGEs(ge).length > 1;
+
 const getCourseKeys = (response: WebsocAPIResponse) =>
     new Set(
         response.schools.flatMap((school) =>
@@ -40,7 +47,7 @@ const getSharedCourseKeys = (responses: WebsocAPIResponse[]) => {
     return sharedCourseKeys;
 };
 
-const buildAndBlock = (firstResponse: WebsocAPIResponse, sharedCourseKeys: Set<string>) =>
+const buildAnd = (firstResponse: WebsocAPIResponse, sharedCourseKeys: Set<string>) =>
     firstResponse.schools
         .map((school) => ({
             ...school,
@@ -55,7 +62,7 @@ const buildAndBlock = (firstResponse: WebsocAPIResponse, sharedCourseKeys: Set<s
         }))
         .filter((school) => school.departments.length > 0);
 
-const buildOrBlock = (responses: WebsocAPIResponse[], sharedCourseKeys: Set<string>) => {
+const buildOr = (responses: WebsocAPIResponse[], sharedCourseKeys: Set<string>) => {
     const seenCourseKeys = new Set(sharedCourseKeys);
     const orBlock: WebsocSchool[] = [];
     const schoolMap = new Map<string, WebsocSchool>();
@@ -95,7 +102,7 @@ const buildOrBlock = (responses: WebsocAPIResponse[], sharedCourseKeys: Set<stri
 };
 
 export async function queryManualSearchCourses(params: Record<string, string>) {
-    const selectedGEs = parseSelectedGEs(params.ge);
+    const selectedGEs = getSelectedGEs(params.ge);
 
     if (selectedGEs.length <= 1) {
         return {
@@ -108,16 +115,16 @@ export async function queryManualSearchCourses(params: Record<string, string>) {
     const responses = await Promise.all(selectedGEs.map((ge) => queryWebsoc({ ...params, ge })));
     const [firstResponse] = responses;
     const sharedCourseKeys = getSharedCourseKeys(responses);
-    const andBlock = buildAndBlock(firstResponse, sharedCourseKeys);
-    const orBlock = buildOrBlock(responses, sharedCourseKeys);
+    const andCourses = buildAnd(firstResponse, sharedCourseKeys);
+    const orCourses = buildOr(responses, sharedCourseKeys);
 
     return {
         response: {
             ...firstResponse,
-            schools: [...andBlock, ...orBlock],
+            schools: [...andCourses, ...orCourses],
         },
         sharedCourseKeys,
-        andSchoolCount: andBlock.length,
+        andSchoolCount: andCourses.length,
     };
 }
 

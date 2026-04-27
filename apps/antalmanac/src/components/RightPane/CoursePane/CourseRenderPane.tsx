@@ -25,7 +25,7 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
-import { getMultiGeCourseKey, queryManualSearchCourses } from '$lib/multiGeSearch';
+import { getMultiGeCourseKey, isMultiGeSelection, queryManualSearchCourses } from '$lib/multiGeSearch';
 import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
@@ -415,7 +415,7 @@ export default function CourseRenderPane(props: { id?: number }) {
     }, [setHoveredEvent]);
 
     const currGeSelection = RightPaneStore.getFormData().ge;
-    const isMultiGeSearch = currGeSelection !== 'ANY' && currGeSelection.includes(',');
+    const isMultiGeSearch = isMultiGeSelection(currGeSelection);
     const showNoIntersection = isMultiGeSearch && andCourseCount === 0;
     let orBannerIndex = -1;
     if (isMultiGeSearch && !showNoIntersection) {

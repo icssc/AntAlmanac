@@ -3,6 +3,7 @@ import { useEffect, useCallback, useState } from 'react';
 
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { getSelectedGEs, normalizeGeSelection } from '$lib/multiGeSearch';
 
 const GE_LIST = [
     { value: 'ANY', label: "All: Don't filter for GE" },
@@ -23,19 +24,13 @@ const getLabel = (value: string) => GE_LIST.find((ge) => ge.value === value)?.la
 
 export function GeSelector() {
     const [ge, setGe] = useState(() => RightPaneStore.getFormData().ge);
-    const selectedGEs =
-        ge && ge !== ANY_GE
-            ? ge
-                  .split(',')
-                  .map((value) => value.trim())
-                  .filter(Boolean)
-            : [];
+    const selectedGEs = getSelectedGEs(ge);
 
     const handleChange = (event: SelectChangeEvent<string[]>) => {
         const value = event.target.value;
         const values = (typeof value === 'string' ? value.split(',') : value).filter(Boolean);
         const selectedValues = values.includes(ANY_GE) ? [] : values.filter((currentValue) => currentValue !== ANY_GE);
-        const searchValue = selectedValues.length === 0 ? ANY_GE : selectedValues.join(',');
+        const searchValue = normalizeGeSelection(selectedValues.join(','));
 
         setGe(searchValue);
         RightPaneStore.updateFormValue('ge', searchValue);
@@ -56,7 +51,7 @@ export function GeSelector() {
     };
 
     const resetField = useCallback(() => {
-        setGe(RightPaneStore.getFormData().ge);
+        setGe(normalizeGeSelection(RightPaneStore.getFormData().ge));
     }, []);
 
     useEffect(() => {

@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 
 import { AdvancedSearchParam, ManualSearchParam } from '$components/RightPane/CoursePane/SearchForm/constants';
+import { normalizeGeSelection } from '$lib/multiGeSearch';
 import { getDefaultTerm } from '$lib/termData';
 
 const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {
@@ -26,16 +27,6 @@ const defaultFormValues: Record<ManualSearchParam, string> = {
     ...defaultAdvancedSearchValues,
 };
 
-const VALID_GES = new Set(['GE-1A', 'GE-1B', 'GE-2', 'GE-3', 'GE-4', 'GE-5A', 'GE-5B', 'GE-6', 'GE-7', 'GE-8']);
-const normalizeGeFromURL = (value: string) => {
-    const normalized = value
-        .split(',')
-        .map((ge) => ge.trim().toUpperCase())
-        .filter((ge) => VALID_GES.has(ge));
-
-    return normalized.length > 0 ? [...new Set(normalized)].join(',') : 'ANY';
-};
-
 export interface BuildingFocusInfo {
     location: string; // E.g., ICS 174
     courseName: string;
@@ -56,7 +47,7 @@ class RightPaneStore extends EventEmitter {
             return;
         }
 
-        const normalizedGe = normalizeGeFromURL(rawGeValue);
+        const normalizedGe = normalizeGeSelection(rawGeValue);
         const currentGe = search.get('ge');
         const hadUppercaseGeParam = search.has('GE');
 
@@ -99,7 +90,7 @@ class RightPaneStore extends EventEmitter {
             const paramValue = search.get(field) || search.get(field.toUpperCase());
 
             if (paramValue !== null) {
-                this.formData[field] = field === 'ge' ? normalizeGeFromURL(paramValue) : paramValue;
+                this.formData[field] = field === 'ge' ? normalizeGeSelection(paramValue) : paramValue;
             }
         });
 
