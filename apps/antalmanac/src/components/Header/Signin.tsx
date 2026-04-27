@@ -172,14 +172,10 @@ export const Signin = () => {
 
     useEffect(() => {
         if (typeof Storage !== 'undefined') {
-            const savedUserID = getLocalStorageUserId();
-
             if (isSharedSchedulePage) {
                 useNotificationStore.getState().loadNotifications();
-            } else if (savedUserID != null || getWasLoggedIn()) {
-                void loadScheduleAndSetLoadingAuth(savedUserID ?? '', true);
             } else {
-                useNotificationStore.getState().loadNotifications();
+                void loadScheduleAndSetLoadingAuth(getLocalStorageUserId() ?? '', true);
             }
         }
     }, [loadScheduleAndSetLoadingAuth, isSharedSchedulePage]);
