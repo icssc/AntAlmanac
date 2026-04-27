@@ -42,7 +42,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
 
     const handleAuthChange = useCallback(async () => {
         if (sessionIsValid) {
-            const userData = await trpc.userData.getUserAndAccountBySessionToken.query().then((res) => res.users);
+            const userData = await trpc.userData.getUserAndAccount.query().then((res) => res.users);
             setUser({
                 name: userData.name ?? undefined,
                 avatar: userData.avatar ?? undefined,
