@@ -2,6 +2,7 @@ import { SESSION_COOKIE_NAME } from '$src/backend/context';
 import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { ALLOWED_REDIRECT_URIS, isAllowedRedirectUri, oauthClientForRedirectUri } from '$src/backend/lib/auth/oauth';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
+import { getCookiesFromHeader } from '$src/backend/lib/helpers';
 import { RDS } from '$src/backend/lib/rds';
 import { procedure, protectedProcedure, router } from '$src/backend/trpc';
 import { type User, type ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
@@ -208,22 +209,11 @@ const userDataRouter = router({
      */
     handleGoogleCallback: procedure.input(saveGoogleSchema.assert).mutation(async ({ input, ctx }) => {
         try {
-            // Parse cookies from request headers
-            const cookieHeader = ctx.req.headers.get('cookie') ?? '';
-            const cookies = Object.fromEntries(
-                cookieHeader
-                    .split('; ')
-                    .filter((c) => c.includes('='))
-                    .map((c) => {
-                        const [key, ...v] = c.split('=');
-                        return [key, v.join('=')];
-                    })
-            );
+            const cookies = getCookiesFromHeader(ctx.req.headers);
 
             const storedState = cookies['oauth_state'] ?? null;
             const codeVerifier = cookies['oauth_code_verifier'] ?? null;
             const pinnedRedirectUri = cookies['oauth_redirect_uri'] ?? null;
-            const redirectUrl = getSafeAuthRedirectPath(cookies['auth_redirect_url'], ctx.req.url);
 
             // Delete cookies via response headers
             const isProduction = NODE_ENV === 'production';
@@ -335,7 +325,6 @@ const userDataRouter = router({
                     userId: userId,
                     providerId: oauthUserId,
                     newUser: account.newUser,
-                    redirectUrl,
                 };
             }
 
@@ -350,6 +339,12 @@ const userDataRouter = router({
                 message: 'Failed to handle OAuth callback',
             });
         }
+    }),
+
+    getAuthReturnUrl: procedure.query(async ({ ctx }) => {
+        const cookies = getCookiesFromHeader(ctx.req.headers);
+        const redirectUrl = getSafeAuthRedirectPath(cookies['auth_redirect_url'], ctx.req.url);
+        return redirectUrl || '/';
     }),
 
     /**
