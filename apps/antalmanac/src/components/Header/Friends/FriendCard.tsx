@@ -1,5 +1,5 @@
-import { MoreVert } from '@mui/icons-material';
-import { Box, Button, IconButton, Stack, Typography } from '@mui/material';
+import { AccountCircle, MoreVert } from '@mui/icons-material';
+import { Avatar, Box, Button, IconButton, Stack, Typography } from '@mui/material';
 
 import { friendCardSx } from './styles';
 import type { Friend } from './types';
@@ -15,8 +15,11 @@ export function FriendCard({ friend, onView, onOpenMenu, preventBlur }: FriendCa
     const md = preventBlur ? (e: React.MouseEvent) => e.preventDefault() : undefined;
     return (
         <Box sx={friendCardSx}>
-            <Stack direction="row" alignItems="center" flex={1} overflow="hidden">
-                <Box sx={{ minWidth: 0, ml: 0.5 }}>
+            <Stack direction="row" alignItems="center" spacing={1.5} flex={1} overflow="hidden">
+                <Avatar src={friend.avatar ?? undefined} sx={{ bgcolor: 'grey.700', width: 30, height: 30 }}>
+                    {!friend.avatar && <AccountCircle sx={{ fontSize: 20 }} />}
+                </Avatar>
+                <Box sx={{ minWidth: 0 }}>
                     <Typography variant="body2" fontWeight={600} noWrap>
                         {friend.name || friend.email}
                     </Typography>
