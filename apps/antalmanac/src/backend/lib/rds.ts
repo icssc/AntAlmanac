@@ -23,7 +23,7 @@ import {
     friendships,
     subscriptions,
 } from '@packages/db/src/schema';
-import { and, eq, ExtractTablesWithRelations, gt, or } from 'drizzle-orm';
+import { and, eq, ExtractTablesWithRelations, gt, ne, or } from 'drizzle-orm';
 import { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
@@ -819,13 +819,17 @@ export class RDS {
 
     /**
      * Inserts a PENDING friend request from requesterId to addresseeId.
-     * Does nothing on conflict.
+     * If a DECLINED row already exists (blocked sender re-requesting), updates it back to PENDING.
      */
     static async insertFriendRequest(db: DatabaseOrTransaction, requesterId: string, addresseeId: string) {
         return db
             .insert(friendships)
             .values({ requesterId, addresseeId, status: 'PENDING' })
-            .onConflictDoNothing()
+            .onConflictDoUpdate({
+                target: [friendships.requesterId, friendships.addresseeId],
+                set: { status: 'PENDING', updatedAt: new Date() },
+                setWhere: eq(friendships.status, 'DECLINED'),
+            })
             .returning();
     }
 
@@ -911,14 +915,20 @@ export class RDS {
     }
 
     /**
-     * Returns all pending friend requests sent by the given user (id, name, email of addressee).
+     * Returns all pending or declined (blocked) friend requests sent by the given user.
+     * DECLINED means the addressee blocked the requester — we still show the card to the sender.
      */
     static async getSentPendingRequests(db: DatabaseOrTransaction, userId: string) {
         return db
             .select({ id: users.id, name: users.name, email: users.email, avatar: users.avatar })
             .from(friendships)
             .innerJoin(users, eq(friendships.addresseeId, users.id))
-            .where(and(eq(friendships.requesterId, userId), eq(friendships.status, 'PENDING')));
+            .where(
+                and(
+                    eq(friendships.requesterId, userId),
+                    or(eq(friendships.status, 'PENDING'), eq(friendships.status, 'DECLINED'))
+                )
+            );
     }
 
     /**
@@ -936,11 +946,38 @@ export class RDS {
     }
 
     /**
-     * Blocks a user by removing any existing friendship and inserting a BLOCKED record.
+     * Blocks a user. If the blockId had sent a PENDING request to userId, that row is updated to
+     * DECLINED (so the sender's card stays visible). All other rows between the pair are deleted,
+     * then the (userId→blockId, BLOCKED) row is inserted.
      */
     static async blockUser(db: DatabaseOrTransaction, userId: string, blockId: string) {
         return db.transaction(async (tx) => {
-            await this.deleteFriendship(tx, userId, blockId);
+            // Preserve the incoming request row as DECLINED so the sender can still see it
+            await tx
+                .update(friendships)
+                .set({ status: 'DECLINED', updatedAt: new Date() })
+                .where(
+                    and(
+                        eq(friendships.requesterId, blockId),
+                        eq(friendships.addresseeId, userId),
+                        eq(friendships.status, 'PENDING')
+                    )
+                );
+
+            // Delete everything else between the pair except the row we just updated
+            await tx
+                .delete(friendships)
+                .where(
+                    or(
+                        and(eq(friendships.requesterId, userId), eq(friendships.addresseeId, blockId)),
+                        and(
+                            eq(friendships.requesterId, blockId),
+                            eq(friendships.addresseeId, userId),
+                            ne(friendships.status, 'DECLINED')
+                        )
+                    )
+                );
+
             return tx
                 .insert(friendships)
                 .values({ requesterId: userId, addresseeId: blockId, status: 'BLOCKED', updatedAt: new Date() })
