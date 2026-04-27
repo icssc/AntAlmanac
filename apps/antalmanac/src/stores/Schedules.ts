@@ -1,4 +1,5 @@
 import { getDefaultTerm } from '$lib/termData';
+import { getNextScheduleName } from '$lib/utils';
 import { WebSOC } from '$lib/websoc';
 import { getColorForNewSection, getCourseId, groupCourseSections } from '$stores/scheduleHelpers';
 import type {
@@ -14,7 +15,6 @@ import type {
 import { createId } from '@paralleldrive/cuid2';
 
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from './calendarizeHelpers';
-
 /**
  * Manages state of schedules. Only one instance is really needed for the app.
  */
@@ -58,17 +58,14 @@ export class Schedules {
     getNextScheduleName(scheduleIndex: number, newScheduleName: string) {
         const scheduleNames = this.getScheduleNames();
         scheduleNames.splice(scheduleIndex, 1);
-        let nextScheduleName = newScheduleName;
-        let counter = 1;
-
-        while (scheduleNames.includes(nextScheduleName)) {
-            nextScheduleName = `${newScheduleName}(${counter++})`;
-        }
-        return nextScheduleName;
+        return getNextScheduleName(newScheduleName, new Set(scheduleNames));
     }
 
-    getDefaultScheduleName() {
-        return getDefaultTerm().shortName.replaceAll(' ', '-');
+    /**
+     * Get the backend schedule ID for a schedule, if available.
+     */
+    getScheduleId(scheduleIndex: number) {
+        return this.schedules[scheduleIndex]?.id;
     }
 
     getCurrentScheduleIndex() {
@@ -657,6 +654,7 @@ export class Schedules {
                 }
 
                 this.schedules.push({
+                    id: shortCourseSchedule.id,
                     scheduleName: shortCourseSchedule.scheduleName,
                     courses: groupedCourses,
                     customEvents: shortCourseSchedule.customEvents,
@@ -687,11 +685,25 @@ export class Schedules {
     }
 
     getCurrentSkeletonSchedule(): ShortCourseSchedule {
-        return this.skeletonSchedules[this.currentScheduleIndex];
+        const schedule = this.skeletonSchedules[this.currentScheduleIndex];
+        if (!schedule) {
+            return {
+                id: undefined,
+                scheduleName: '',
+                courses: [],
+                customEvents: [],
+                scheduleNote: '',
+            };
+        }
+        return schedule;
     }
 
     getSkeletonScheduleNames(): string[] {
         return this.skeletonSchedules.map((schedule) => schedule.scheduleName);
+    }
+
+    getSchedules(): Schedule[] {
+        return this.schedules;
     }
 
     setSkeletonSchedules(skeletonSchedules: ShortCourseSchedule[]) {

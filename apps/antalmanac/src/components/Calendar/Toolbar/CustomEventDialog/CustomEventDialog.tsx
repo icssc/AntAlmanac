@@ -1,3 +1,10 @@
+import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
+import { DaySelector } from '$components/Calendar/Toolbar/CustomEventDialog/DaySelector';
+import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog/ScheduleSelector';
+import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import AppStore from '$stores/AppStore';
 import { Add, Edit } from '@mui/icons-material';
 import {
     Button,
@@ -13,13 +20,6 @@ import {
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useState } from 'react';
-
-import { addCustomEvent, editCustomEvent } from '$actions/AppStoreActions';
-import { DaySelector } from '$components/Calendar/Toolbar/CustomEventDialog/DaySelector';
-import { ScheduleSelector } from '$components/Calendar/Toolbar/CustomEventDialog/ScheduleSelector';
-import { BuildingSelect, ExtendedBuilding } from '$components/inputs/BuildingSelect';
-import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import AppStore from '$stores/AppStore';
 
 interface CustomEventDialogProps {
     customEvent?: RepeatingCustomEvent;
@@ -51,6 +51,8 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
 
     const postHog = usePostHog();
 
+    const isReadonlyView = useIsReadonlyView();
+
     const resetForm = () => {
         setStart(defaultCustomEventValues.start);
         setEnd(defaultCustomEventValues.end);
@@ -60,7 +62,7 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
         setScheduleIndices([]);
     };
 
-    const disabled = !(scheduleIndices.length && days.includes(true));
+    const disableSubmit = !(scheduleIndices.length && days.includes(true));
 
     const handleSubmit = () => {
         handleClose();
@@ -149,19 +151,25 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
         };
     }, []);
 
+    const disableButton = isReadonlyView || skeletonMode;
+
     return (
         <>
             {props.customEvent ? (
                 <Tooltip title="Edit">
-                    <IconButton onClick={handleOpen}>
-                        <Edit fontSize="small" />
-                    </IconButton>
+                    <span>
+                        <IconButton onClick={handleOpen} disabled={disableButton}>
+                            <Edit fontSize="small" />
+                        </IconButton>
+                    </span>
                 </Tooltip>
             ) : (
                 <Tooltip title="Add custom events">
-                    <IconButton onClick={handleOpen} size="medium" disabled={skeletonMode}>
-                        <Add fontSize="small" />
-                    </IconButton>
+                    <span>
+                        <IconButton onClick={handleOpen} size="medium" disabled={disableButton}>
+                            <Add fontSize="small" />
+                        </IconButton>
+                    </span>
                 </Tooltip>
             )}
             <Dialog open={open} onClose={handleClose} maxWidth={'xs'}>
@@ -224,8 +232,8 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
                     <Button onClick={handleClose} color="inherit">
                         Cancel
                     </Button>
-                    <Button onClick={handleSubmit} variant="contained" color="primary" disabled={disabled}>
-                        {disabled ? 'Specify schedule and day' : props.customEvent ? 'Save Changes' : 'Add Event'}
+                    <Button onClick={handleSubmit} variant="contained" color="primary" disabled={disableSubmit}>
+                        {disableSubmit ? 'Specify schedule and day' : props.customEvent ? 'Save Changes' : 'Add Event'}
                     </Button>
                 </DialogActions>
             </Dialog>

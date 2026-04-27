@@ -3,6 +3,8 @@ import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
 import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
+import { getNextScheduleName } from '$lib/utils';
+import { IMPORTED_SCHEDULE_PREFIX, SHARED_SCHEDULE_PREFIX } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -152,13 +154,14 @@ export const mergeShortCourseSchedules = (
 ) => {
     const existingScheduleNames = new Set(currentSchedules.map((s: ShortCourseSchedule) => s.scheduleName));
     const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
-        let scheduleName = schedule.scheduleName;
-        if (existingScheduleNames.has(schedule.scheduleName)) {
-            scheduleName = `${scheduleName}(1)`;
-        }
+        const baseName = `${importMessage}${schedule.scheduleName}`;
+        const scheduleName = getNextScheduleName(baseName, existingScheduleNames);
+
+        existingScheduleNames.add(scheduleName);
+
         return {
             ...schedule,
-            scheduleName: `${importMessage}${scheduleName}`,
+            scheduleName: scheduleName,
         };
     });
     currentSchedules.push(...cacheSchedule);
@@ -183,23 +186,27 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false)
     const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
 
     if (scheduleSaveState?.schedules) {
-        mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, '(import)-');
+        mergeShortCourseSchedules(currentSchedules.schedules, scheduleSaveState.schedules, IMPORTED_SCHEDULE_PREFIX);
         currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
 
         scheduleComponentsToggleStore.setState({ openImportDialog: false, openLoadingSchedule: true });
 
         const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
-        if (isScheduleLoaded) {
-            openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
 
-            scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
-
-            await saveSchedule({ rememberMe: true });
-
-            await trpc.userData.flagImportedSchedule.mutate({
-                username,
-            });
+        if (!isScheduleLoaded) {
+            scheduleComponentsToggleStore.setState({ openLoadingSchedule: false });
+            return { imported: false, error: new Error('Failed to load imported schedule') };
         }
+
+        openSnackbar('success', `Schedule with name "${username}" imported successfully!`);
+
+        scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
+
+        await saveSchedule({ rememberMe: true });
+
+        await trpc.userData.flagImportedSchedule.mutate({
+            username,
+        });
     }
 
     return { imported: false, error: null };
@@ -219,6 +226,54 @@ export const importScheduleWithUsername = async (username: string) => {
     } catch (e) {
         return { imported: false, error: e };
     }
+};
+
+export const importSharedScheduleById = async (scheduleId: string, friendName?: string) => {
+    const sharedSchedule = await trpc.userData.getSharedSchedule.query({ scheduleId });
+
+    const incomingSchedule: ShortCourseSchedule = {
+        id: undefined,
+        scheduleName: sharedSchedule.scheduleName,
+        scheduleNote: sharedSchedule.scheduleNote || '',
+        courses: sharedSchedule.courses,
+        customEvents: sharedSchedule.customEvents,
+    };
+
+    const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
+    const prefix = friendName ? `(${friendName})-` : SHARED_SCHEDULE_PREFIX;
+
+    mergeShortCourseSchedules(currentSchedules.schedules, [incomingSchedule], prefix);
+    currentSchedules.scheduleIndex = currentSchedules.schedules.length - 1;
+
+    scheduleComponentsToggleStore.setState({ openLoadingSchedule: true });
+
+    const isScheduleLoaded = await AppStore.loadSchedule(currentSchedules);
+
+    if (!isScheduleLoaded) {
+        scheduleComponentsToggleStore.setState({ openLoadingSchedule: false });
+        return { imported: false, error: new Error('Failed to load shared schedule') };
+    }
+
+    const session = useSessionStore.getState();
+    if (session.sessionIsValid) {
+        try {
+            await autoSaveSchedule({});
+            openSnackbar('success', `Shared schedule "${incomingSchedule.scheduleName}" added to your account!`);
+        } catch {
+            openSnackbar(
+                'error',
+                'Failed to load schedules. If this continues to happen, please submit a feedback form.'
+            );
+        }
+    } else {
+        openSnackbar('warning', 'Schedule added to current session. Sign in to save permanently.');
+    }
+
+    scheduleComponentsToggleStore.setState({ openScheduleSelect: true, openLoadingSchedule: false });
+
+    changeCurrentSchedule(currentSchedules.scheduleIndex);
+
+    return { imported: true, error: null };
 };
 
 export const loadGuestSchedule = async (username: string, rememberMe: boolean, postHog?: PostHog) => {
@@ -268,7 +323,7 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
                 }
                 openSnackbar(
                     'error',
-                    '`Failed to load schedules. If this continues to happen, please submit a feedback form.`'
+                    'Failed to load schedules. If this continues to happen, please submit a feedback form.'
                 );
             }
         }

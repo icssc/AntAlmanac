@@ -1,17 +1,19 @@
-import { ArrowDropDown as ArrowDropDownIcon } from '@mui/icons-material';
-import { Box, Button, Popover, Typography, useTheme, Tooltip } from '@mui/material';
-import { PostHog, usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-
 import { changeCurrentSchedule } from '$actions/AppStoreActions';
+import { CopyScheduleButton } from '$components/buttons/Copy';
 import { SortableList } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableList';
 import { AddScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/AddScheduleButton';
 import { DeleteScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/DeleteScheduleButton';
 import { RenameScheduleButton } from '$components/Calendar/Toolbar/ScheduleSelect/schedule-select-buttons/RenameScheduleButton';
-import { CopyScheduleButton } from '$components/buttons/Copy';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import trpc from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
+import { useSessionStore } from '$stores/SessionStore';
+import { ArrowDropDown as ArrowDropDownIcon, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Box, Button, IconButton, Popover, Tooltip, Typography, useTheme } from '@mui/material';
+import { PostHog, usePostHog } from 'posthog-js/react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type EventContext = {
     triggeredBy?: string;
@@ -51,22 +53,73 @@ function createScheduleSelector(index: number, postHog?: PostHog) {
  */
 export function SelectSchedulePopover() {
     const theme = useTheme();
+    const isReadonlyView = useIsReadonlyView();
     const { openScheduleSelect, setOpenScheduleSelect } = scheduleComponentsToggleStore();
 
+    const [anchorElement, setAnchorElement] = useState(null);
     const [currentScheduleIndex, setCurrentScheduleIndex] = useState(AppStore.getCurrentScheduleIndex());
     const [scheduleMapping, setScheduleMapping] = useState(getScheduleItems());
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const [skeletonScheduleMapping, setSkeletonScheduleMapping] = useState(
         getScheduleItems(AppStore.getSkeletonScheduleNames())
     );
+    // Map from schedule index to sharedWithFriends boolean (works even for unsaved schedules)
+    const [sharingStatuses, setSharingStatuses] = useState<Record<number, boolean>>({});
 
     const anchorElementRef = useRef(null);
+
+    const sessionIsValid = useSessionStore((state) => state.sessionIsValid);
 
     const postHog = usePostHog();
 
     // TODO: maybe these widths should be dynamic based on i.e. the viewport width?
     const minWidth = useMemo(() => 100, []);
     const maxWidth = useMemo(() => 150, []);
+
+    const fetchSharingStatuses = useCallback(async () => {
+        if (!sessionIsValid) return;
+        try {
+            const statuses = await trpc.friends.getScheduleSharingStatuses.query();
+            // Map DB results back to local schedule indices by matching IDs
+            const map: Record<number, boolean> = {};
+            for (const { id, sharedWithFriends } of statuses) {
+                const scheduleNames = AppStore.getScheduleNames();
+                for (let i = 0; i < scheduleNames.length; i++) {
+                    if (AppStore.getScheduleId(i) === id) {
+                        map[i] = sharedWithFriends;
+                        break;
+                    }
+                }
+            }
+            setSharingStatuses(map);
+        } catch {
+            // Silently fail — sharing status is non-critical
+        }
+    }, [sessionIsValid]);
+
+    const handleToggleSharing = useCallback(
+        async (scheduleIndex: number) => {
+            if (!sessionIsValid) return;
+
+            // Always update the icon immediately, regardless of whether the schedule has a DB ID
+            const currentValue = sharingStatuses[scheduleIndex] ?? true;
+            const newValue = !currentValue;
+            setSharingStatuses((prev) => ({ ...prev, [scheduleIndex]: newValue }));
+
+            const scheduleId = AppStore.getScheduleId(scheduleIndex);
+            if (!scheduleId) return; // Schedule not saved yet — keep local change, skip DB update
+
+            try {
+                const result = await trpc.friends.toggleScheduleSharing.mutate({
+                    scheduleId,
+                });
+                setSharingStatuses((prev) => ({ ...prev, [scheduleIndex]: result.sharedWithFriends }));
+            } catch {
+                setSharingStatuses((prev) => ({ ...prev, [scheduleIndex]: currentValue }));
+            }
+        },
+        [sessionIsValid, sharingStatuses]
+    );
 
     const handleClick = useCallback(() => {
         setOpenScheduleSelect(true);
@@ -79,6 +132,16 @@ export function SelectSchedulePopover() {
     const handleScheduleIndexChange = useCallback(() => {
         setCurrentScheduleIndex(AppStore.getCurrentScheduleIndex());
     }, []);
+
+    useEffect(() => {
+        setAnchorElement(anchorElementRef.current);
+    }, [anchorElementRef]);
+
+    useEffect(() => {
+        if (openScheduleSelect && sessionIsValid && !skeletonMode && !isReadonlyView) {
+            void fetchSharingStatuses();
+        }
+    }, [openScheduleSelect, sessionIsValid, skeletonMode, isReadonlyView, fetchSharingStatuses]);
 
     useEffect(() => {
         AppStore.on('addedCoursesChange', handleScheduleIndexChange);
@@ -116,11 +179,16 @@ export function SelectSchedulePopover() {
     }, []);
 
     const scheduleMappingToUse = skeletonMode ? skeletonScheduleMapping : scheduleMapping;
+    const displayName = isReadonlyView
+        ? AppStore.getScheduleNames()[currentScheduleIndex] || scheduleMappingToUse[currentScheduleIndex]?.name
+        : scheduleMappingToUse[currentScheduleIndex]?.name;
+
+    const disableActionButtons = skeletonMode || isReadonlyView;
 
     return (
         <Box>
             <Tooltip
-                title={scheduleMappingToUse[currentScheduleIndex]?.name}
+                title={displayName || ''}
                 enterDelay={200}
                 slotProps={{
                     popper: {
@@ -146,7 +214,7 @@ export function SelectSchedulePopover() {
                     sx={{ minWidth, maxWidth, justifyContent: 'space-between' }}
                 >
                     <Typography whiteSpace="nowrap" textOverflow="ellipsis" overflow="hidden" textTransform="none">
-                        {scheduleMappingToUse[currentScheduleIndex]?.name || null}
+                        {displayName || null}
                     </Typography>
                     <ArrowDropDownIcon />
                 </Button>
@@ -154,7 +222,7 @@ export function SelectSchedulePopover() {
 
             <Popover
                 open={openScheduleSelect}
-                anchorEl={anchorElementRef.current}
+                anchorEl={anchorElement}
                 onClose={handleClose}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >
@@ -175,7 +243,7 @@ export function SelectSchedulePopover() {
                                             flexGrow: 1,
                                         }}
                                     >
-                                        <SortableList.DragHandle disabled={skeletonMode} />
+                                        <SortableList.DragHandle disabled={skeletonMode || isReadonlyView} />
                                         <Box flexGrow={1}>
                                             <Tooltip
                                                 title={item.name}
@@ -223,9 +291,35 @@ export function SelectSchedulePopover() {
                                         </Box>
 
                                         <Box display="flex" alignItems="center" gap={0.5}>
-                                            <CopyScheduleButton index={index} disabled={skeletonMode} />
-                                            <RenameScheduleButton index={index} disabled={skeletonMode} />
-                                            <DeleteScheduleButton index={index} disabled={skeletonMode} />
+                                            <CopyScheduleButton index={index} disabled={disableActionButtons} />
+                                            <RenameScheduleButton index={index} disabled={disableActionButtons} />
+                                            {sessionIsValid &&
+                                                !disableActionButtons &&
+                                                (() => {
+                                                    const isShared = sharingStatuses[index] ?? true;
+                                                    return (
+                                                        <Tooltip
+                                                            title={
+                                                                isShared
+                                                                    ? 'Visible to friends — click to hide'
+                                                                    : 'Hidden from friends — click to share'
+                                                            }
+                                                            disableInteractive
+                                                        >
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => void handleToggleSharing(index)}
+                                                            >
+                                                                {isShared ? (
+                                                                    <Visibility fontSize="small" />
+                                                                ) : (
+                                                                    <VisibilityOff fontSize="small" />
+                                                                )}
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    );
+                                                })()}
+                                            <DeleteScheduleButton index={index} disabled={disableActionButtons} />
                                         </Box>
                                     </Box>
                                 </SortableList.Item>
@@ -233,7 +327,7 @@ export function SelectSchedulePopover() {
                         }}
                     />
                     <Box marginY={1} />
-                    <AddScheduleButton disabled={skeletonMode} />
+                    <AddScheduleButton disabled={disableActionButtons} />
                 </Box>
             </Popover>
         </Box>

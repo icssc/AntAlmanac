@@ -1,6 +1,7 @@
 import actionTypesStore from '$actions/ActionTypesStore';
 import { saveSchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -16,6 +17,8 @@ export const Save = () => {
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const { openAutoSaveWarning, setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
+
+    const isReadonlyView = useIsReadonlyView();
 
     const handleClickSignIn = () => {
         setOpenSignInDialog(!openSignInDialog);
@@ -58,6 +61,8 @@ export const Save = () => {
         };
     }, []);
 
+    const disabled = skeletonMode || saving || isReadonlyView;
+
     return (
         <Stack direction="row">
             <Button
@@ -66,8 +71,8 @@ export const Save = () => {
                 startIcon={<SaveIcon />}
                 loadingPosition="start"
                 onClick={sessionIsValid ? saveScheduleData : handleClickSignIn}
-                sx={{ fontSize: 'inherit' }}
-                disabled={skeletonMode || saving}
+                sx={{ fontSize: 'inherit', '&.Mui-disabled': { color: 'rgba(255,255,255,0.3)' } }}
+                disabled={disabled}
                 loading={saving}
             >
                 Save

@@ -1,14 +1,14 @@
+import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
+import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
+import AppStore from '$stores/AppStore';
+import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, PopoverProps, Tooltip } from '@mui/material';
 import { CustomEventId } from '@packages/antalmanac-types';
 import { PostHog, usePostHog } from 'posthog-js/react';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { SketchPicker } from 'react-color';
-
-import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActions';
-import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
-import AppStore from '$stores/AppStore';
-import { colorPickerPresetColors } from '$stores/scheduleHelpers';
 
 interface ColorPickerProps {
     color: string;
@@ -35,6 +35,8 @@ const ColorPicker = memo(function ColorPicker({
     const [currColor, setCurrColor] = useState(color);
 
     const postHog = usePostHog();
+
+    const isReadonlyView = useIsReadonlyView();
 
     const updateColor = useCallback(
         (newColor: string) => {
@@ -83,10 +85,11 @@ const ColorPicker = memo(function ColorPicker({
         <>
             <Tooltip title="Change Color">
                 <IconButton
-                    sx={{ color: currColor, padding: 0.5 }}
+                    sx={{ color: currColor, padding: 1 }}
                     onClick={(e) => {
                         handleClick(e, postHog);
                     }}
+                    disabled={isReadonlyView}
                 >
                     <ColorLens fontSize="small" />
                 </IconButton>

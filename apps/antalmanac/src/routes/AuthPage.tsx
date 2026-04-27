@@ -13,6 +13,7 @@ import {
     setLocalStorageOnFirstSignin,
 } from '$lib/localStorage';
 import { clearSsoCookie, setSsoCookie } from '$lib/ssoCookie';
+import { IMPORTED_SCHEDULE_PREFIX } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -100,7 +101,7 @@ export function AuthPage() {
                 } else {
                     const saveState = userData && 'userData' in userData ? userData.userData : userData;
                     if (saveState !== null) {
-                        mergeShortCourseSchedules(saveState.schedules, data, '(import)-');
+                        mergeShortCourseSchedules(saveState.schedules, data, IMPORTED_SCHEDULE_PREFIX);
                         scheduleSaveState.schedules = saveState.schedules;
                         scheduleSaveState.scheduleIndex = saveState.schedules.length - 1;
                     }

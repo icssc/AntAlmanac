@@ -8,6 +8,7 @@ import {
 import { AlertDialog } from '$components/AlertDialog';
 import { TermSelector } from '$components/RightPane/CoursePane/SearchForm/TermSelector';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { QueryZotcourseError } from '$lib/customErrors';
 import { warnMultipleTerms } from '$lib/helpers';
@@ -82,6 +83,8 @@ export function Import() {
     const devMode = useDevModeStore((store) => store.devMode);
 
     const theme = useTheme();
+
+    const isReadonlyView = useIsReadonlyView();
 
     const postHog = usePostHog();
 
@@ -661,9 +664,9 @@ export function Import() {
                 <Button
                     onClick={handleOpen}
                     color="inherit"
-                    sx={{ fontSize: 'inherit' }}
+                    sx={{ fontSize: 'inherit', '&.Mui-disabled': { color: 'rgba(255,255,255,0.3)' } }}
                     startIcon={<ContentPasteGo />}
-                    disabled={skeletonMode}
+                    disabled={skeletonMode || isReadonlyView}
                     id="import-button"
                 >
                     {devMode ? 'Import/Export' : 'Import'}
