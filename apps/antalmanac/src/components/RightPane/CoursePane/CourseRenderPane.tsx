@@ -398,6 +398,9 @@ export default function CourseRenderPane(props: { id?: number }) {
             return courseCount++ === andCourseCount;
         });
     }
+    const currGeSelection = RightPaneStore.getFormData().ge;
+    const isMultiGeSearch = currGeSelection !== 'ANY' && currGeSelection.includes(',');
+    const showNoIntersection = isMultiGeSearch && andCourseCount === 0;
 
     return (
         <>
@@ -411,6 +414,21 @@ export default function CourseRenderPane(props: { id?: number }) {
                 <>
                     <RecruitmentBanner />
                     <Box>
+                        {showNoIntersection && (
+                            <Alert
+                                severity="warning"
+                                sx={{
+                                    mb: 1,
+                                    fontSize: '1rem',
+                                    '& .MuiAlert-message': {
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                    },
+                                }}
+                            >
+                                No courses match all selected GEs. The results below match at least one selected GE.
+                            </Alert>
+                        )}
                         {courseData.map((item, index) => (
                             <LazyLoad once key={index} overflow height={getLazyLoadHeight(item)} offset={1000}>
                                 {index === orBannerIndex && (
