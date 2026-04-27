@@ -1,5 +1,4 @@
 import { router } from '../trpc';
-import authRouter from './auth';
 import courseRouter from './course';
 import enrollHistRouter from './enrollHist';
 import gradesRouter from './grades';
@@ -18,7 +17,6 @@ const appRouter = router({
     notifications: notificationsRouter,
     review: reviewRouter,
     search: searchRouter,
-    auth: authRouter,
     userData: userDataRouter,
     websoc: websocRouter,
     zotcourse: zotcourseRouter,

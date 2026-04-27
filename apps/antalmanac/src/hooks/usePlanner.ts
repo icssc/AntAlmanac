@@ -1,10 +1,9 @@
-import type { Roadmap } from '@packages/antalmanac-types';
-import { useEffect, useState } from 'react';
-
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import trpc from '$lib/api/trpc';
 import { getCurrentTerm } from '$lib/termData';
 import { useSessionStore } from '$stores/SessionStore';
+import type { Roadmap } from '@packages/antalmanac-types';
+import { useEffect, useState } from 'react';
 
 const QUARTER_ORDER: Record<string, number> = {
     Winter: 0,
@@ -41,7 +40,9 @@ function getTakenRoadmapCourses(roadmap: Roadmap): string[] {
                 quarter.year < current.year ||
                 (quarter.year === current.year && QUARTER_ORDER[quarter.quarter] < QUARTER_ORDER[current.quarter])
             ) {
-                q.courses.forEach((c) => courses.add(c));
+                q.courses.forEach((c) => {
+                    courses.add(c);
+                });
             }
         }
     }
@@ -77,9 +78,7 @@ export function usePlannerRoadmaps() {
                 return;
             }
             try {
-                const data = await trpc.roadmap.fetchUserPlannerRoadmaps.query({
-                    userId: googleId,
-                });
+                const data = await trpc.roadmap.fetchUserPlannerRoadmaps.query();
                 if (active) setPlannerRoadmaps(data ?? []);
             } catch (e) {
                 console.error('Failed to fetch Planner roadmaps:', e);
