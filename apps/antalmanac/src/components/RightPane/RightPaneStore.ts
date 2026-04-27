@@ -12,7 +12,6 @@ const defaultBasicSearchValues: Record<BasicSearchParam, string> = {
 };
 
 const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {
-    ...defaultBasicSearchValues,
     instructor: '',
     units: '',
     endTime: '',
@@ -31,6 +30,7 @@ const defaultFormValues: Record<ManualSearchParam, string> = {
     ge: 'ANY',
     courseNumber: '',
     sectionCode: '',
+    ...defaultBasicSearchValues,
     ...defaultAdvancedSearchValues,
 };
 

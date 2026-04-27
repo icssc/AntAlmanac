@@ -14,7 +14,6 @@ export const ADVANCED_SEARCH_PARAMS = [
     'excludeRoadmapCourses',
     'excludeRestrictionCodes',
     'days',
-    ...BASIC_SEARCH_PARAMS,
 ] as const;
 
 export type AdvancedSearchParam = (typeof ADVANCED_SEARCH_PARAMS)[number];
@@ -24,6 +23,7 @@ export const MANUAL_SEARCH_PARAMS = [
     'ge',
     'courseNumber',
     'sectionCode',
+    ...BASIC_SEARCH_PARAMS,
     ...ADVANCED_SEARCH_PARAMS,
 ] as const;
 
