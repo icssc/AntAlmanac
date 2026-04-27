@@ -873,7 +873,7 @@ export class RDS {
      */
     static async getFriendshipsSent(db: DatabaseOrTransaction, userId: string) {
         return db
-            .select({ id: users.id, name: users.name, email: users.email })
+            .select({ id: users.id, name: users.name, email: users.email, avatar: users.avatar })
             .from(friendships)
             .innerJoin(users, eq(friendships.addresseeId, users.id))
             .where(and(eq(friendships.requesterId, userId), eq(friendships.status, 'ACCEPTED')));
@@ -884,7 +884,7 @@ export class RDS {
      */
     static async getFriendshipsReceived(db: DatabaseOrTransaction, userId: string) {
         return db
-            .select({ id: users.id, name: users.name, email: users.email })
+            .select({ id: users.id, name: users.name, email: users.email, avatar: users.avatar })
             .from(friendships)
             .innerJoin(users, eq(friendships.requesterId, users.id))
             .where(and(eq(friendships.addresseeId, userId), eq(friendships.status, 'ACCEPTED')));
@@ -926,7 +926,7 @@ export class RDS {
      */
     static async getPendingFriendRequests(db: DatabaseOrTransaction, userId: string) {
         return db
-            .select({ id: users.id, name: users.name, email: users.email })
+            .select({ id: users.id, name: users.name, email: users.email, avatar: users.avatar })
             .from(friendships)
             .innerJoin(users, eq(friendships.requesterId, users.id))
             .where(and(eq(friendships.addresseeId, userId), eq(friendships.status, 'PENDING')));
@@ -964,7 +964,7 @@ export class RDS {
      */
     static async getBlockedUsers(db: DatabaseOrTransaction, userId: string) {
         return db
-            .select({ id: users.id, name: users.name, email: users.email })
+            .select({ id: users.id, name: users.name, email: users.email, avatar: users.avatar })
             .from(friendships)
             .innerJoin(users, eq(friendships.addresseeId, users.id))
             .where(and(eq(friendships.requesterId, userId), eq(friendships.status, 'BLOCKED')));

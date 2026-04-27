@@ -43,6 +43,7 @@ export function FriendsButton() {
                     id: friend.id,
                     name: friend.name ?? undefined,
                     email: friend.email ?? '',
+                    avatar: friend.avatar ?? undefined,
                 }))
             );
 
@@ -51,14 +52,18 @@ export function FriendsButton() {
                     id: request.id,
                     name: request.name ?? undefined,
                     email: request.email ?? '',
+                    avatar: request.avatar ?? undefined,
                 }))
             );
 
             setBlockedFriends(
-                (blockedResult as { id: string; name: string | null; email: string | null }[]).map((user) => ({
+                (
+                    blockedResult as { id: string; name: string | null; email: string | null; avatar: string | null }[]
+                ).map((user) => ({
                     id: user.id,
                     name: user.name ?? undefined,
                     email: user.email ?? '',
+                    avatar: user.avatar ?? undefined,
                 }))
             );
 
@@ -97,9 +102,21 @@ export function FriendsButton() {
                     trpc.friends.getPendingRequests.query(),
                 ]);
                 if (cancelled) return;
-                setFriends(friendsResult.map((f) => ({ id: f.id, name: f.name ?? undefined, email: f.email ?? '' })));
+                setFriends(
+                    friendsResult.map((f) => ({
+                        id: f.id,
+                        name: f.name ?? undefined,
+                        email: f.email ?? '',
+                        avatar: f.avatar ?? undefined,
+                    }))
+                );
                 setFriendRequests(
-                    pendingResult.map((r) => ({ id: r.id, name: r.name ?? undefined, email: r.email ?? '' }))
+                    pendingResult.map((r) => ({
+                        id: r.id,
+                        name: r.name ?? undefined,
+                        email: r.email ?? '',
+                        avatar: r.avatar ?? undefined,
+                    }))
                 );
             } catch {
                 // Silently skip failed polls

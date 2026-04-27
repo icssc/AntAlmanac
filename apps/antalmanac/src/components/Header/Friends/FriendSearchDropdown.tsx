@@ -1,4 +1,3 @@
-import { DARK_SURFACE } from '$src/globals';
 import { Paper, Popper, Typography } from '@mui/material';
 
 import { FriendDropdownCard } from './FriendDropdownCard';
@@ -36,16 +35,18 @@ export function FriendSearchDropdown({
         >
             <Paper
                 elevation={8}
+                onMouseDown={(e) => e.preventDefault()}
                 sx={{
-                    mt: 0.5,
+                    mt: -0.5,
                     maxHeight: 280,
                     overflowY: 'auto',
-                    borderRadius: 2,
+                    borderRadius: '0 0 8px 8px',
                     p: 1,
                     '&::-webkit-scrollbar': { width: 6 },
                     '&::-webkit-scrollbar-track': { background: 'none' },
                     '&::-webkit-scrollbar-thumb': { borderRadius: 3, bgcolor: 'action.disabled' },
-                    bgcolor: DARK_SURFACE,
+                    bgcolor: '#424242',
+                    boxShadow: '0px 4px 4px 0px rgba(0,0,0,0.25)',
                 }}
             >
                 {filtered.length === 0 ? (
