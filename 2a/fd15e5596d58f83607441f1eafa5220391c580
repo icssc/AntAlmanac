@@ -1,0 +1,44 @@
+apps/antalmanac/src/backend/lib/rds.ts
+  3ac92169d06328d1 876,887,929,967
+apps/antalmanac/src/components/Header/Friends/types.ts
+  3ac92169d06328d1 5,12
+apps/antalmanac/src/components/Header/Friends/FriendSearchDropdown.tsx
+  3ac92169d06328d1 38,40,43,48-49
+apps/antalmanac/src/components/Header/Friends/FriendDropdownCard.tsx
+  739fb6764c9d64dc 29
+apps/antalmanac/src/components/Header/Friends/FriendsButton.tsx
+  3ac92169d06328d1 46,55,60-62,66,105-109,111-112,114-117,119
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "2afd15e5596d58f83607441f1eafa5220391c580",
+  "prompts": {
+    "3ac92169d06328d1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "333ea1c0-df07-44c0-848f-6ca436f1fa52",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 4,
+      "total_deletions": 2,
+      "accepted_lines": 98,
+      "overriden_lines": 4
+    },
+    "739fb6764c9d64dc": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "2b0d9780-4374-4ad7-90a0-dc1a66417b25",
+        "model": "claude-4.6-sonnet-medium-thinking"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 2,
+      "total_deletions": 2,
+      "accepted_lines": 1,
+      "overriden_lines": 1
+    }
+  }
+}
