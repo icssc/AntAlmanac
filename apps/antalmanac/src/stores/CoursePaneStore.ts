@@ -1,5 +1,6 @@
 import { MANUAL_SEARCH_PARAMS } from '$components/RightPane/CoursePane/SearchForm/constants';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { shouldSearchPlannerFromParams } from '$lib/plannerHelpers';
 import { create } from 'zustand';
 
 interface CoursePaneStore {
@@ -44,7 +45,7 @@ export const useCoursePaneStore = create<CoursePaneStore>((set) => {
     return {
         searchFormIsDisplayed: !requiredParamsAreInURL() || !RightPaneStore.formDataIsValid(),
 
-        manualSearchEnabled: paramsAreInURL(),
+        manualSearchEnabled: paramsAreInURL() && !shouldSearchPlannerFromParams(),
         enableManualSearch: () => set({ manualSearchEnabled: true }),
         disableManualSearch: () => set({ manualSearchEnabled: false }),
         toggleManualSearch: () => set((state) => ({ manualSearchEnabled: !state.manualSearchEnabled })),

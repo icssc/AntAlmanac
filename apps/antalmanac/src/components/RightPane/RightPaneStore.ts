@@ -11,7 +11,7 @@ const defaultBasicSearchValues: Record<BasicSearchParam, string> = {
     term: getDefaultTerm().shortName,
 };
 
-const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> & typeof defaultBasicSearchValues = {
+const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> = {
     ...defaultBasicSearchValues,
     instructor: '',
     units: '',
@@ -26,7 +26,7 @@ const defaultAdvancedSearchValues: Record<AdvancedSearchParam, string> & typeof 
     days: '',
 };
 
-const defaultFormValues: Record<ManualSearchParam, string> & typeof defaultAdvancedSearchValues = {
+const defaultFormValues: Record<ManualSearchParam, string> = {
     deptValue: 'ALL',
     ge: 'ANY',
     courseNumber: '',
