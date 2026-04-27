@@ -20,11 +20,10 @@ async function getGpaData(deptCode: string, courseNumber: string, instructors: s
         }
     }
 
-    if (namedInstructors.length > 0) {
-        return { gpa: '', instructor: namedInstructors[0] };
-    }
-
-    return undefined;
+    return {
+        gpa: '',
+        instructor: namedInstructors[0] || '',
+    };
 }
 
 interface GpaCellProps {
@@ -66,7 +65,7 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
                 sx={{ fontFamily: 'inherit', fontSize: 'unset', color: secondaryColor, fontWeight: 700 }}
                 onClick={handleClick}
             >
-                {gpa || (instructor ? 'GPA' : '')}
+                {gpa || 'GPA'}
             </ButtonBase>
 
             <Popover
