@@ -28,17 +28,19 @@ export function AuthPage() {
         }
 
         try {
+            const returnUrl = await trpc.userData.getAuthReturnUrl.query();
+
             // Silent SSO returned an error — the auth server has no session.
             if (searchParams.get('error') === 'login_required') {
                 clearSsoCookie();
-                window.location.href = '/';
+                window.location.href = returnUrl;
                 return;
             }
 
             const code = searchParams.get('code');
             const state = searchParams.get('state');
             if (!code || !state) {
-                window.location.href = '/';
+                window.location.href = returnUrl;
                 return;
             }
 
@@ -60,7 +62,7 @@ export function AuthPage() {
             }
 
             if (!providerId) {
-                window.location.href = '/';
+                window.location.href = returnUrl;
                 return;
             }
 
@@ -71,7 +73,7 @@ export function AuthPage() {
                 removeLocalStorageFromLoading();
                 removeLocalStorageDataCache();
                 removeLocalStorageImportedUser();
-                window.location.href = '/';
+                window.location.href = returnUrl;
                 return;
             }
 
@@ -79,7 +81,7 @@ export function AuthPage() {
             if (savedUserId === '' && savedData === '') {
                 removeLocalStorageDataCache();
                 removeLocalStorageImportedUser();
-                window.location.href = '/';
+                window.location.href = returnUrl;
                 return;
             }
 
@@ -120,7 +122,7 @@ export function AuthPage() {
                     },
                 });
             }
-            window.location.href = '/';
+            window.location.href = returnUrl;
         } catch (error) {
             console.error('Error during authentication', error);
             clearSsoCookie();
