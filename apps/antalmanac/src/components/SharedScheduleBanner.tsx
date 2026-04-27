@@ -129,7 +129,7 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
                         return;
                     }
                     if (!friendNameFromState) {
-                        const friendUser = await trpc.userData.getUserByUid.query({ userId: friendUserId });
+                        const friendUser = await trpc.userData.getFriendUserData.query({ userId: friendUserId });
                         setFetchedFriendName(friendUser?.name ?? friendUser?.email ?? 'Friend');
                     }
                 } catch {
@@ -231,7 +231,7 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
 
     const loadSessionSchedule = useCallback(async () => {
         if (sessionIsValid) {
-            const userDataResponse = await trpc.userData.getUserDataWithSession.query();
+            const userDataResponse = await trpc.userData.getUserData.query();
             if (userDataResponse?.userData) {
                 await AppStore.loadSchedule(userDataResponse.userData);
             }
@@ -269,7 +269,7 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
             const sharedSchedule = await trpc.userData.getSharedSchedule.query({ scheduleId: idToImport });
 
             if (sessionIsValid) {
-                const userDataResponse = await trpc.userData.getUserDataWithSession.query();
+                const userDataResponse = await trpc.userData.getUserData.query();
                 if (userDataResponse?.userData) {
                     await AppStore.loadSchedule(userDataResponse.userData);
                 }

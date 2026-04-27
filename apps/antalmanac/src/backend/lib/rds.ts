@@ -1000,15 +1000,29 @@ export class RDS {
      * Removes a block placed by userId on blockId.
      */
     static async unblockUser(db: DatabaseOrTransaction, userId: string, blockId: string) {
-        return db
-            .delete(friendships)
-            .where(
-                and(
-                    eq(friendships.requesterId, userId),
-                    eq(friendships.addresseeId, blockId),
-                    eq(friendships.status, 'BLOCKED')
-                )
-            );
+        return db.transaction(async (tx) => {
+            await tx
+                .delete(friendships)
+                .where(
+                    and(
+                        eq(friendships.requesterId, userId),
+                        eq(friendships.addresseeId, blockId),
+                        eq(friendships.status, 'BLOCKED')
+                    )
+                );
+
+            // Restore the original request so it reappears in the blocker's received-requests tab
+            await tx
+                .update(friendships)
+                .set({ status: 'PENDING', updatedAt: new Date() })
+                .where(
+                    and(
+                        eq(friendships.requesterId, blockId),
+                        eq(friendships.addresseeId, userId),
+                        eq(friendships.status, 'DECLINED')
+                    )
+                );
+        });
     }
 
     /**
