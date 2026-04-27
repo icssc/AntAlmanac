@@ -100,9 +100,13 @@ export const Signin = () => {
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
 
-            const validSession = await loadSession();
+            const [validSession, prefetchedUserData] = await Promise.all([
+                loadSession(),
+                trpc.userData.getUserData.query().catch(() => null),
+            ]);
+
             if (validSession) {
-                await loadSchedule();
+                await loadSchedule({ prefetched: prefetchedUserData });
             } else if (getWasLoggedIn()) {
                 setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
                 setOpenalert(true);
