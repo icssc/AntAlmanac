@@ -78,11 +78,11 @@ export function RequestsTab({
             <Stack direction="row" sx={{ mt: 1.5 }} gap={1}>
                 {(
                     [
-                        { value: 'received', label: 'Received', count: friendRequests.length },
-                        { value: 'sent', label: 'Sent', count: sentRequests.length },
-                        { value: 'blocked', label: 'Blocked', count: blockedFriends.length },
+                        { value: 'received', label: 'Received' },
+                        { value: 'sent', label: 'Sent' },
+                        { value: 'blocked', label: 'Blocked' },
                     ] as const
-                ).map(({ value, label, count }) => (
+                ).map(({ value, label }) => (
                     <Button
                         key={value}
                         size="small"
@@ -99,7 +99,7 @@ export function RequestsTab({
                             '&:hover': { bgcolor: subTab === value ? '#00000055' : 'action.hover' },
                         }}
                     >
-                        {count > 0 ? `${label} (${count})` : label}
+                        {label}
                     </Button>
                 ))}
             </Stack>
