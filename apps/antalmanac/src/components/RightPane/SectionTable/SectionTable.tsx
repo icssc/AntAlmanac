@@ -84,6 +84,7 @@ function SectionTable(props: SectionTableProps) {
             <Box
                 sx={{
                     display: 'flex',
+                    alignItems: 'center',
                     gap: '4px',
                     marginBottom: '8px',
                     marginTop: '4px',
