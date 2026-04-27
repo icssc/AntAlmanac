@@ -1,22 +1,16 @@
+import { RDS } from '$src/backend/lib/rds';
+import { procedure, protectedProcedure, router } from '$src/backend/trpc';
 import { db } from '@packages/db';
-import { z } from 'zod';
-
-import { RDS } from '../lib/rds';
-import { procedure, router } from '../trpc';
 
 const authRouter = router({
-    validateSession: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
-        if (input.token === '') return false;
-        const session = await RDS.getCurrentSession(db, input.token);
-
-        return session !== null && session.expires > new Date();
+    validateSession: procedure.query(({ ctx }) => {
+        return ctx.sessionToken !== null && ctx.userId !== null;
     }),
-    /**
-     * Removes a session from the database
-     */
-    invalidateSession: procedure.input(z.object({ token: z.string() })).mutation(async ({ input }) => {
-        const session = await RDS.getCurrentSession(db, input.token);
-        if (!session) return false;
+    invalidateSession: protectedProcedure.mutation(async ({ ctx }) => {
+        const session = await RDS.getCurrentSession(db, ctx.sessionToken);
+        if (!session) {
+            return false;
+        }
 
         try {
             await RDS.removeSession(db, session.userId, session.refreshToken);
@@ -26,12 +20,10 @@ const authRouter = router({
         }
     }),
     /**
-     * Returns the user id associated with a given session
+     * Returns the user id associated with the current session
      */
-    getSessionUserId: procedure.input(z.object({ token: z.string() })).query(async ({ input }) => {
-        if (input.token === '') return '';
-        const session = await RDS.getCurrentSession(db, input.token);
-        return session?.userId ?? '';
+    getSessionUserId: procedure.query(({ ctx }) => {
+        return ctx.userId ?? '';
     }),
 });
 

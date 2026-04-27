@@ -2,6 +2,7 @@ import analyticsEnum, { analyticsIdentifyUser, logAnalytics } from '$lib/analyti
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
 import { getErrorMessage } from '$lib/utils';
 import AppStore from '$stores/AppStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
@@ -14,12 +15,10 @@ import type {
     RepeatingCustomEvent,
     ScheduleCourse,
     ShortCourseSchedule,
-    User,
     WebsocSection,
 } from '@packages/antalmanac-types';
 import { TRPCClientError } from '@trpc/client';
-import { TRPCError } from '@trpc/server';
-import { PostHog } from 'posthog-js/react';
+import type { PostHog } from 'posthog-js/react';
 
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
@@ -27,7 +26,6 @@ export interface CopyScheduleOptions {
 }
 
 interface AutoSaveScheduleOptions {
-    userInfo?: { email?: string | null; name?: string | null; avatar?: string | null };
     postHog?: PostHog;
 }
 
@@ -84,100 +82,61 @@ export function isEmptySchedule(schedules: ShortCourseSchedule[]) {
     return true;
 }
 
-export const saveSchedule = async (
-    providerId: string,
-    rememberMe: boolean,
-    userInfo?: { email?: string | null; name?: string | null; avatar?: string | null },
-    postHog?: PostHog
-) => {
-    if (providerId != null) {
-        providerId = providerId.replace(/\s+/g, '');
+export const saveSchedule = async ({ postHog }: { postHog?: PostHog }) => {
+    const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
-        if (providerId.length > 0) {
-            const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
+    if (
+        isEmptySchedule(scheduleSaveState.schedules) &&
+        !confirm(
+            "You are attempting to save empty schedule(s). If this is unintentional, this may overwrite your existing schedules that haven't loaded yet!"
+        )
+    ) {
+        return;
+    }
 
-            if (
-                isEmptySchedule(scheduleSaveState.schedules) &&
-                !confirm(
-                    "You are attempting to save empty schedule(s). If this is unintentional, this may overwrite your existing schedules that haven't loaded yet!"
-                )
-            ) {
-                return;
-            }
+    try {
+        const result = await trpc.userData.saveUserData.mutate({
+            userData: scheduleSaveState,
+        });
 
-            try {
-                const result = await trpc.userData.saveUserData.mutate({
-                    id: providerId,
-                    data: {
-                        id: providerId,
-                        email: userInfo?.email ?? undefined,
-                        name: userInfo?.name ?? undefined,
-                        avatar: userInfo?.avatar ?? undefined,
-                        userData: scheduleSaveState,
-                    },
-                });
-
-                if (result?.scheduleIdMap) {
-                    AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
-                }
-
-                if (useSessionStore.getState().sessionIsValid) {
-                    openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
-                } else {
-                    openSnackbar(
-                        'success',
-                        `Schedule saved under username "${providerId}". Don't forget to sign up for classes on WebReg!`
-                    );
-                }
-                deleteTempSaveData();
-                logAnalytics(postHog, {
-                    category: analyticsEnum.auth,
-                    action: analyticsEnum.auth.actions.SAVE_SCHEDULE,
-                    customProps: {
-                        autoSave: false,
-                    },
-                });
-                AppStore.saveSchedule();
-            } catch (e) {
-                if (e instanceof TRPCError) {
-                    if (useSessionStore.getState().sessionIsValid) {
-                        openSnackbar('error', `Schedule could not be saved`);
-                    } else {
-                        openSnackbar('error', `Schedule could not be saved under username "${providerId}"`);
-                    }
-                } else {
-                    openSnackbar('error', 'Network error or server is down.');
-                }
-                logAnalytics(postHog, {
-                    category: analyticsEnum.auth,
-                    action: analyticsEnum.auth.actions.SAVE_SCHEDULE_FAIL,
-                    error: getErrorMessage(e),
-                    customProps: {
-                        autoSave: false,
-                    },
-                });
-            }
+        if (result?.scheduleIdMap) {
+            AppStore.schedule.updateScheduleIds(result.scheduleIdMap);
         }
+
+        openSnackbar('success', `Schedule saved. Don't forget to sign up for classes on WebReg!`);
+        deleteTempSaveData();
+        logAnalytics(postHog, {
+            category: analyticsEnum.auth,
+            action: analyticsEnum.auth.actions.SAVE_SCHEDULE,
+            customProps: {
+                autoSave: false,
+            },
+        });
+        AppStore.saveSchedule();
+    } catch (e) {
+        if (e instanceof TRPCClientError) {
+            openSnackbar('error', `Schedule could not be saved`);
+        } else {
+            openSnackbar('error', 'Network error or server is down.');
+        }
+        logAnalytics(postHog, {
+            category: analyticsEnum.auth,
+            action: analyticsEnum.auth.actions.SAVE_SCHEDULE_FAIL,
+            error: getErrorMessage(e),
+            customProps: {
+                autoSave: false,
+            },
+        });
     }
 };
 
-export async function autoSaveSchedule(providerID: string, options: AutoSaveScheduleOptions) {
-    const { userInfo, postHog } = options;
-    if (providerID == null) return;
-    providerID = providerID.replace(/\s+/g, '');
-    if (providerID.length === 0) return;
+export async function autoSaveSchedule(options: AutoSaveScheduleOptions) {
+    const { postHog } = options;
 
     const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
     try {
         const result = await trpc.userData.saveUserData.mutate({
-            id: providerID,
-            data: {
-                id: providerID,
-                email: userInfo?.email ?? undefined,
-                name: userInfo?.name ?? undefined,
-                avatar: userInfo?.avatar ?? undefined,
-                userData: scheduleSaveState,
-            },
+            userData: scheduleSaveState,
         });
 
         if (result?.scheduleIdMap) {
@@ -194,8 +153,8 @@ export async function autoSaveSchedule(providerID: string, options: AutoSaveSche
             },
         });
     } catch (e) {
-        if (e instanceof TRPCError) {
-            openSnackbar('error', `Schedule could not be auto-saved under username "${providerID}"`);
+        if (e instanceof TRPCClientError) {
+            openSnackbar('error', 'Schedule could not be auto-saved');
         } else {
             openSnackbar('error', 'Network error or server is down.');
         }
@@ -219,7 +178,7 @@ export const mergeShortCourseSchedules = (
     const cacheSchedule = incomingSchedule.map((schedule: ShortCourseSchedule) => {
         let scheduleName = schedule.scheduleName;
         if (existingScheduleNames.has(schedule.scheduleName)) {
-            scheduleName = scheduleName + '(1)';
+            scheduleName = `${scheduleName}(1)`;
         }
         return {
             ...schedule,
@@ -235,27 +194,15 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
         throw new Error("Invalid session: User isn't logged in.");
     }
 
-    const incomingUser = await trpc.userData.getGuestAccountAndUserByName
-        .query({ name: username })
-        .then((res) => res?.users)
-        .catch(() => {
-            throw new Error(`Oops! Schedule "${username}" doesn't seem to exist.`);
-        });
+    const incoming = await trpc.userData.getGuestScheduleByUsername.query({ username }).catch(() => {
+        throw new Error(`Oops! Schedule "${username}" doesn't seem to exist.`);
+    });
 
-    if (!skipImportedCheck && incomingUser.imported) {
+    if (!skipImportedCheck && incoming.user.imported) {
         return { imported: true, error: null };
     }
 
-    const userAndAccount = await trpc.userData.getUserAndAccountBySessionToken.query({
-        token: session.session ?? '',
-    });
-    const { users, accounts } = userAndAccount;
-
-    const incomingData: User | null = await trpc.userData.getUserData.query({
-        userId: incomingUser.id,
-    });
-    const scheduleSaveState =
-        incomingData !== null && 'userData' in incomingData ? incomingData.userData : incomingData;
+    const scheduleSaveState = incoming.userData;
 
     const currentSchedules = AppStore.schedule.getScheduleAsSaveState();
 
@@ -282,10 +229,10 @@ const handleScheduleImport = async (username: string, skipImportedCheck = false,
                 openLoadingSchedule: false,
             });
 
-            await saveSchedule(accounts.providerAccountId, true, users, postHog);
+            await saveSchedule({ postHog });
 
             await trpc.userData.flagImportedSchedule.mutate({
-                providerId: username,
+                username,
             });
         }
     }
@@ -309,85 +256,56 @@ export const importScheduleWithUsername = async (username: string, postHog?: Pos
     }
 };
 
-export const loadSchedule = async (
-    providerId: string,
-    rememberMe: boolean,
-    accountType: 'OIDC' | 'GOOGLE' | 'GUEST',
-    postHog?: PostHog
-) => {
+export const loadGuestSchedule = async (username: string, rememberMe: boolean, postHog?: PostHog) => {
     if (
-        providerId != null &&
+        username != null &&
         (!AppStore.hasUnsavedChanges() ||
             window.confirm(`Are you sure you want to load a different schedule? You have unsaved changes!`))
     ) {
-        providerId = providerId.replace(/\s+/g, '');
-        if (providerId.length > 0) {
+        username = username.replace(/\s+/g, '');
+        if (username?.length) {
             if (rememberMe) {
-                setLocalStorageUserId(providerId);
+                setLocalStorageUserId(username);
             }
 
             try {
-                const account = await trpc.userData.getAccountByProviderId.query({
-                    accountType,
-                    providerId,
-                });
-
-                const userDataResponse = await trpc.userData.getUserData.query({
-                    userId: account.userId,
-                });
-                const scheduleSaveState = userDataResponse?.userData;
+                const result = await trpc.userData.getGuestScheduleByUsername.query({ username });
+                const scheduleSaveState = result.userData;
 
                 let error = false;
 
-                if (scheduleSaveState !== undefined) {
-                    if (await AppStore.loadSchedule(scheduleSaveState)) {
-                        openSnackbar('success', `Schedule loaded.`);
-                    } else {
-                        AppStore.loadSkeletonSchedule(scheduleSaveState);
-                        error = true;
-                    }
+                if (await AppStore.loadSchedule(scheduleSaveState)) {
+                    openSnackbar('success', `Schedule loaded.`);
                 } else {
+                    AppStore.loadSkeletonSchedule(scheduleSaveState);
                     error = true;
                 }
 
                 if (error) {
                     logAnalytics(postHog, {
                         category: analyticsEnum.auth,
-                        action:
-                            accountType === 'GOOGLE'
-                                ? analyticsEnum.auth.actions.LOAD_SCHEDULE_FAIL
-                                : analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY_FAIL,
+                        action: analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY_FAIL,
                         error: 'Load schedule error',
-                        ...(accountType !== 'GOOGLE' && {
-                            customProps: { providerId, rememberMe },
-                        }),
+                        customProps: { providerId: username, rememberMe },
                     });
                     openSnackbar(
                         'error',
-                        `Network error loading course information for "${providerId}". 	              
+                        `Network error loading course information for "${username}". 	              
                         If this continues to happen, please submit a feedback form.`
                     );
                 } else {
                     logAnalytics(postHog, {
                         category: analyticsEnum.auth,
-                        action:
-                            accountType === 'GOOGLE'
-                                ? analyticsEnum.auth.actions.LOAD_SCHEDULE
-                                : analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY,
-                        ...(accountType !== 'GOOGLE' && {
-                            customProps: { providerId, rememberMe },
-                        }),
+                        action: analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY,
+                        customProps: { providerId: username, rememberMe },
                     });
                 }
             } catch (e) {
                 logAnalytics(postHog, {
                     category: analyticsEnum.auth,
-                    action:
-                        accountType === 'GOOGLE'
-                            ? analyticsEnum.auth.actions.LOAD_SCHEDULE_FAIL
-                            : analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY_FAIL,
+                    action: analyticsEnum.auth.actions.LOAD_SCHEDULE_LEGACY_FAIL,
                     error: getErrorMessage(e),
-                    ...(accountType !== 'GOOGLE' && { customProps: { providerId, rememberMe } }),
+                    customProps: { providerId: username, rememberMe },
                 });
                 if (e instanceof TRPCClientError) {
                     if (e.data.httpStatus === 404) {
@@ -404,12 +322,10 @@ export const loadSchedule = async (
     }
 };
 
-export const loadScheduleWithSessionToken = async (postHog?: PostHog) => {
+export const loadSchedule = async (postHog?: PostHog) => {
     try {
         let analyticsErrorMessage = '';
-        const userDataResponse = await trpc.userData.getUserDataWithSession.query({
-            refreshToken: useSessionStore.getState().session ?? '',
-        });
+        const userDataResponse = await trpc.userData.getUserData.query();
         const scheduleSaveState = userDataResponse?.userData;
         const userId = userDataResponse?.id;
 
@@ -454,7 +370,7 @@ export const loadScheduleWithSessionToken = async (postHog?: PostHog) => {
             action: analyticsEnum.auth.actions.LOAD_SCHEDULE_FAIL,
             error: getErrorMessage(e),
         });
-        console.error('Error in loadScheduleWithSessionToken:', e);
+        console.error('Error in loadSchedule:', e);
         openSnackbar('error', `Failed to load schedules. If this continues to happen, please submit a feedback form.`);
         return false;
     }
@@ -469,7 +385,9 @@ const cacheSchedule = () => {
 
 export const loginUser = async (postHog?: PostHog) => {
     try {
-        const authUrl = await trpc.userData.getGoogleAuthUrl.query();
+        const redirectUri = isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined;
+
+        const authUrl = await trpc.userData.getGoogleAuthUrl.query(redirectUri ? { redirectUri } : undefined);
         if (authUrl) {
             logAnalytics(postHog, {
                 category: analyticsEnum.auth,
