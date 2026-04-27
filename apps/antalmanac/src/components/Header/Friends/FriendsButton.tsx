@@ -1,5 +1,6 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import trpc from '$lib/api/trpc';
+import { DARK_SURFACE } from '$src/globals';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
@@ -160,6 +161,7 @@ export function FriendsButton() {
                             borderRadius: 2,
                             border: '1px solid',
                             borderColor: 'background.default',
+                            bgcolor: DARK_SURFACE,
                         },
                     },
                 }}

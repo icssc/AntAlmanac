@@ -5,6 +5,9 @@ export const LIGHT_BLUE = '#90B3F9';
 /** Dark-mode elevated surface (dialogs, popovers, menus). */
 export const DARK_PAPER_BG = '#2a2a2a';
 
+/** Dark-mode secondary surface (cards, list items). */
+export const DARK_SURFACE = '#3B3B3B';
+
 export const FEEDBACK_LINK = 'https://form.asana.com/?k=VRhMN_PtqQVRZrixgbYIZA&d=1208267282546207';
 export const DONATION_LINK = 'https://venmo.com/u/ICSSC';
 export const PROJECTS_LINK = 'https://www.icssc.club/projects';

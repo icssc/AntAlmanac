@@ -1,107 +1,30 @@
 import trpc from '$lib/api/trpc';
 import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import { PersonAdd, PersonRemove, Block, MoreVert, ExpandMore, ExpandLess } from '@mui/icons-material';
+import { PersonRemove, Block } from '@mui/icons-material';
 import {
     Box,
     Button,
-    Collapse,
-    Divider,
-    IconButton,
-    Menu,
-    MenuItem,
-    Skeleton,
-    Stack,
-    Tab,
-    Tabs,
-    TextField,
-    Typography,
     Dialog,
-    DialogTitle,
+    DialogActions,
     DialogContent,
     DialogContentText,
-    DialogActions,
+    DialogTitle,
+    Menu,
+    MenuItem,
+    Tab,
+    Tabs,
+    Typography,
 } from '@mui/material';
-import type { SxProps, Theme } from '@mui/material';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const friendCardSx: SxProps<Theme> = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    p: 1.5,
-    mb: 1,
-    borderRadius: 2,
-    bgcolor: 'background.paper',
-    border: '1px solid',
-    borderColor: 'divider',
-    boxShadow: 'none',
-    '&:hover': {
-        bgcolor: 'action.hover',
-        borderColor: 'text.secondary',
-    },
-    transition: 'all 0.2s ease',
-};
+import { FriendsListSkeleton } from './FriendsListSkeleton';
+import { FriendsTab } from './FriendsTab';
+import { RequestsTab } from './RequestsTab';
+import type { Friend, FriendRequest } from './types';
 
-export interface FriendRequest {
-    id: string;
-    name?: string;
-    email: string;
-}
-
-export interface Friend {
-    id: string;
-    name?: string;
-    email: string;
-}
-
-function FriendsListSkeleton() {
-    return (
-        <Box>
-            <Box sx={{ mb: 2 }}>
-                <Skeleton variant="text" width={100} height={24} sx={{ mb: 1 }} />
-                <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 1 }}>
-                    <Skeleton variant="rounded" height={40} sx={{ flex: 1 }} />
-                    <Skeleton variant="circular" width={40} height={40} />
-                </Stack>
-            </Box>
-            <Divider sx={{ my: 2 }} />
-            <Tabs value="friends" variant="fullWidth" sx={{ mb: 1 }}>
-                <Tab label="Requests" value="requests" disabled />
-                <Tab label="Friends" value="friends" disabled />
-            </Tabs>
-            <Box sx={{ mt: 1 }}>
-                {[1, 2, 3].map((i) => (
-                    <Box
-                        key={i}
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            p: 1.5,
-                            mb: 1,
-                            borderRadius: 2,
-                            border: '1px solid',
-                            borderColor: 'divider',
-                        }}
-                    >
-                        <Stack direction="row" alignItems="center" flex={1} spacing={1}>
-                            <Box sx={{ minWidth: 0, flex: 1 }}>
-                                <Skeleton variant="text" width="70%" height={20} />
-                                <Skeleton variant="text" width="50%" height={16} sx={{ mt: 0.5 }} />
-                            </Box>
-                        </Stack>
-                        <Stack direction="row" spacing={0.5} alignItems="center">
-                            <Skeleton variant="rounded" width={100} height={32} />
-                            <Skeleton variant="circular" width={32} height={32} sx={{ ml: 0.5 }} />
-                        </Stack>
-                    </Box>
-                ))}
-            </Box>
-        </Box>
-    );
-}
+export type { Friend, FriendRequest };
 
 export interface FriendsMenuProps {
     friendRequests: FriendRequest[];
@@ -119,10 +42,12 @@ export function FriendsMenu({
     onRefresh: loadFriendsData,
 }: FriendsMenuProps) {
     const isDark = useThemeStore((store) => store.isDark);
-    const hasPendingRequests = friendRequests.length > 0;
-    const [activeTab, setActiveTab] = useState<'requests' | 'friends'>('friends');
+    const [activeTab, setActiveTab] = useState<'friends' | 'requests'>('friends');
     const [blockedOpen, setBlockedOpen] = useState(false);
     const [email, setEmail] = useState('');
+    const [friendSearch, setFriendSearch] = useState('');
+    const [friendDropdownOpen, setFriendDropdownOpen] = useState(false);
+    const searchRef = useRef<HTMLDivElement>(null);
     const [blockMenuAnchor, setBlockMenuAnchor] = useState<{ element: HTMLElement; requestId: string } | null>(null);
     const [blockDialogOpen, setBlockDialogOpen] = useState(false);
     const [userToBlock, setUserToBlock] = useState<string | null>(null);
@@ -131,10 +56,7 @@ export function FriendsMenu({
 
     const handleAddFriend = async () => {
         try {
-            await trpc.friends.sendFriendRequestByEmail.mutate({
-                email: email.trim(),
-            });
-
+            await trpc.friends.sendFriendRequestByEmail.mutate({ email: email.trim() });
             openSnackbar('success', 'Friend request sent.');
             setEmail('');
             await loadFriendsData();
@@ -152,9 +74,7 @@ export function FriendsMenu({
 
     const handleAccept = async (requesterId: string) => {
         try {
-            await trpc.friends.acceptFriendRequest.mutate({
-                requesterId,
-            });
+            await trpc.friends.acceptFriendRequest.mutate({ requesterId });
             openSnackbar('success', 'Friend request accepted.');
             await loadFriendsData();
         } catch (error) {
@@ -165,9 +85,7 @@ export function FriendsMenu({
 
     const handleDecline = async (requesterId: string) => {
         try {
-            await trpc.friends.removeFriend.mutate({
-                friendId: requesterId,
-            });
+            await trpc.friends.removeFriend.mutate({ friendId: requesterId });
             openSnackbar('info', 'Friend request declined.');
             await loadFriendsData();
         } catch (error) {
@@ -180,27 +98,18 @@ export function FriendsMenu({
         setBlockMenuAnchor({ element: event.currentTarget, requestId });
     };
 
-    const handleCloseBlockMenu = () => {
-        setBlockMenuAnchor(null);
-    };
-
     const handleBlockClick = () => {
         if (blockMenuAnchor) {
             setUserToBlock(blockMenuAnchor.requestId);
             setBlockDialogOpen(true);
-            handleCloseBlockMenu();
+            setBlockMenuAnchor(null);
         }
     };
 
     const handleConfirmBlock = async () => {
-        if (!userToBlock) {
-            return;
-        }
-
+        if (!userToBlock) return;
         try {
-            await trpc.friends.blockUser.mutate({
-                blockId: userToBlock,
-            });
+            await trpc.friends.blockUser.mutate({ blockId: userToBlock });
             openSnackbar('info', 'User blocked.');
             setUserToBlock(null);
             setBlockDialogOpen(false);
@@ -209,11 +118,6 @@ export function FriendsMenu({
             console.error('Error blocking user:', error);
             openSnackbar('error', 'Failed to block user.');
         }
-    };
-
-    const handleCancelBlock = () => {
-        setUserToBlock(null);
-        setBlockDialogOpen(false);
     };
 
     const handleViewSchedule = (friend: Friend) => {
@@ -226,19 +130,10 @@ export function FriendsMenu({
         setFriendMenuAnchor({ element: event.currentTarget, friendId });
     };
 
-    const handleCloseFriendMenu = () => {
-        setFriendMenuAnchor(null);
-    };
-
     const handleUnfriend = async () => {
-        if (!friendMenuAnchor) {
-            return;
-        }
-
+        if (!friendMenuAnchor) return;
         try {
-            await trpc.friends.removeFriend.mutate({
-                friendId: friendMenuAnchor.friendId,
-            });
+            await trpc.friends.removeFriend.mutate({ friendId: friendMenuAnchor.friendId });
             openSnackbar('info', 'Friend removed.');
             setFriendMenuAnchor(null);
             await loadFriendsData();
@@ -248,15 +143,9 @@ export function FriendsMenu({
         }
     };
 
-    const handleChangeTab = (_: React.SyntheticEvent, value: 'requests' | 'friends') => {
-        setActiveTab(value);
-    };
-
     const handleUnblock = async (blockedId: string) => {
         try {
-            await trpc.friends.unblockUser.mutate({
-                blockId: blockedId,
-            });
+            await trpc.friends.unblockUser.mutate({ blockId: blockedId });
             openSnackbar('info', 'User unblocked.');
             await loadFriendsData();
         } catch (error) {
@@ -272,338 +161,71 @@ export function FriendsMenu({
     return (
         <>
             <Box>
-                {/* Section 1: Add Friends */}
-                <Box sx={{ mb: 2 }}>
-                    <Typography
-                        variant="h6"
-                        sx={{
-                            fontSize: '1rem',
-                            fontWeight: 700,
-                            mb: 1,
-                            letterSpacing: '0.5px',
-                        }}
-                    >
-                        Add Friends
-                    </Typography>
-                    <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 1 }}>
-                        <TextField
-                            size="small"
-                            placeholder="Enter email address"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    if (email.trim()) void handleAddFriend();
-                                }
-                            }}
-                            fullWidth
-                            sx={{
-                                '& .MuiOutlinedInput-root': {
-                                    fontSize: '1rem',
-                                },
-                            }}
-                        />
-                        <IconButton
-                            onClick={handleAddFriend}
-                            disabled={!email.trim()}
-                            color="primary"
-                            sx={{
-                                bgcolor: isDark ? 'primary.dark' : 'primary.main',
-                                color: 'white',
-                                '&:hover': {
-                                    bgcolor: isDark ? 'primary.main' : 'primary.dark',
-                                },
-                                '&.Mui-disabled': {
-                                    bgcolor: 'action.disabledBackground',
-                                    color: 'action.disabled',
-                                },
-                            }}
-                        >
-                            <PersonAdd />
-                        </IconButton>
-                    </Stack>
-                </Box>
-
-                <Divider sx={{ my: 2 }} />
+                <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 700, mb: 1, letterSpacing: '0.5px' }}>
+                    Manage Friends
+                </Typography>
 
                 <Tabs
                     value={activeTab}
-                    onChange={handleChangeTab}
+                    onChange={(_, v) => setActiveTab(v)}
                     variant="fullWidth"
                     textColor="primary"
                     indicatorColor="primary"
                     sx={{ mb: 1 }}
                 >
+                    <Tab label="Friends" value="friends" />
                     <Tab
                         label={
-                            hasPendingRequests ? (
-                                <Box>
-                                    <Typography component="span" sx={{ fontSize: '0.875rem', fontWeight: 500 }}>
-                                        Requests {friendRequests.length > 0 && `(${friendRequests.length})`}
-                                    </Typography>
-                                </Box>
+                            friendRequests.length > 0 ? (
+                                <Typography component="span" sx={{ fontSize: '0.875rem', fontWeight: 500 }}>
+                                    Requests ({friendRequests.length})
+                                </Typography>
                             ) : (
                                 'Requests'
                             )
                         }
                         value="requests"
                     />
-                    <Tab label="Friends" value="friends" />
                 </Tabs>
 
-                {activeTab === 'requests' && (
-                    <Box sx={{ mb: 2, mt: 1 }}>
-                        {friendRequests.length === 0 ? (
-                            <Typography
-                                variant="body2"
-                                color="text.secondary"
-                                sx={{ py: 2, pl: 0.5, fontSize: '1rem' }}
-                            >
-                                No pending requests
-                            </Typography>
-                        ) : (
-                            friendRequests.map((request) => (
-                                <Box key={request.id} sx={friendCardSx}>
-                                    <Stack direction="row" alignItems="center" flex={1} overflow="hidden">
-                                        <Box sx={{ minWidth: 0, ml: 0.5 }}>
-                                            <Typography variant="body2" fontWeight={600} noWrap>
-                                                {request.name || request.email}
-                                            </Typography>
-                                            <Typography variant="caption" color="text.secondary" noWrap display="block">
-                                                {request.email}
-                                            </Typography>
-                                        </Box>
-                                    </Stack>
-
-                                    <Stack direction="row" spacing={0.5} alignItems="center">
-                                        <Button
-                                            size="small"
-                                            variant="contained"
-                                            onClick={() => handleAccept(request.id)}
-                                            sx={{
-                                                bgcolor: '#4caf50',
-                                                color: 'white',
-                                                fontSize: '0.8rem',
-                                                fontWeight: 600,
-                                                textTransform: 'none',
-                                                minWidth: 'auto',
-                                                px: 1.5,
-                                                py: 0.5,
-                                                boxShadow: 1,
-                                                '&:hover': {
-                                                    bgcolor: '#388e3c',
-                                                    boxShadow: 2,
-                                                },
-                                            }}
-                                        >
-                                            Accept
-                                        </Button>
-                                        <Button
-                                            size="small"
-                                            variant="contained"
-                                            onClick={() => handleDecline(request.id)}
-                                            sx={{
-                                                bgcolor: '#ef5350',
-                                                color: 'white',
-                                                fontSize: '0.8rem',
-                                                fontWeight: 600,
-                                                textTransform: 'none',
-                                                minWidth: 'auto',
-                                                px: 1.5,
-                                                py: 0.5,
-                                                boxShadow: 1,
-                                                '&:hover': {
-                                                    bgcolor: '#d32f2f',
-                                                    boxShadow: 2,
-                                                },
-                                            }}
-                                        >
-                                            Reject
-                                        </Button>
-                                        <IconButton
-                                            size="small"
-                                            onClick={(e) => handleOpenBlockMenu(e, request.id)}
-                                            sx={{
-                                                color: 'text.secondary',
-                                                ml: 0.5,
-                                                '&:hover': {
-                                                    bgcolor: 'action.hover',
-                                                    color: 'text.primary',
-                                                },
-                                            }}
-                                        >
-                                            <MoreVert fontSize="small" />
-                                        </IconButton>
-                                    </Stack>
-                                </Box>
-                            ))
-                        )}
-
-                        {/* Blocked users accordion */}
-                        <Box sx={{ mt: 0 }}>
-                            <Button
-                                variant="text"
-                                size="small"
-                                onClick={() => setBlockedOpen((prev) => !prev)}
-                                endIcon={blockedOpen ? <ExpandLess /> : <ExpandMore />}
-                                sx={{
-                                    color: 'text.secondary',
-                                    textTransform: 'none',
-                                    fontSize: '0.8rem',
-                                    px: 0.5,
-                                }}
-                            >
-                                Blocked{blockedFriends.length > 0 ? ` (${blockedFriends.length})` : ''}
-                            </Button>
-                            <Collapse in={blockedOpen}>
-                                <Box sx={{ mt: 1 }}>
-                                    {blockedFriends.length === 0 ? (
-                                        <Typography
-                                            variant="body2"
-                                            color="text.secondary"
-                                            sx={{ py: 1, fontSize: '0.875rem' }}
-                                        >
-                                            No blocked users
-                                        </Typography>
-                                    ) : (
-                                        blockedFriends.map((user) => (
-                                            <Box key={user.id} sx={friendCardSx}>
-                                                <Stack direction="row" alignItems="center" flex={1} overflow="hidden">
-                                                    <Box sx={{ minWidth: 0, ml: 0.5 }}>
-                                                        <Typography variant="body2" fontWeight={600} noWrap>
-                                                            {user.name || user.email}
-                                                        </Typography>
-                                                        <Typography
-                                                            variant="caption"
-                                                            color="text.secondary"
-                                                            noWrap
-                                                            display="block"
-                                                        >
-                                                            {user.email}
-                                                        </Typography>
-                                                    </Box>
-                                                </Stack>
-                                                <Button
-                                                    size="small"
-                                                    variant="contained"
-                                                    onClick={() => handleUnblock(user.id)}
-                                                    sx={{
-                                                        bgcolor: '#4caf50',
-                                                        color: 'white',
-                                                        fontSize: '0.8rem',
-                                                        fontWeight: 600,
-                                                        textTransform: 'none',
-                                                        minWidth: 'auto',
-                                                        px: 1.5,
-                                                        py: 0.5,
-                                                        boxShadow: 1,
-                                                        '&:hover': {
-                                                            bgcolor: '#388e3c',
-                                                            boxShadow: 2,
-                                                        },
-                                                    }}
-                                                >
-                                                    Unblock
-                                                </Button>
-                                            </Box>
-                                        ))
-                                    )}
-                                </Box>
-                            </Collapse>
-                        </Box>
-                    </Box>
+                {activeTab === 'friends' && (
+                    <FriendsTab
+                        friends={friends}
+                        searchRef={searchRef}
+                        friendSearch={friendSearch}
+                        onSearchChange={setFriendSearch}
+                        dropdownOpen={friendDropdownOpen}
+                        onDropdownOpen={() => setFriendDropdownOpen(true)}
+                        onDropdownClose={() => setFriendDropdownOpen(false)}
+                        onView={handleViewSchedule}
+                        onOpenMenu={handleOpenFriendMenu}
+                    />
                 )}
 
-                {activeTab === 'friends' && (
-                    <Box
-                        sx={{
-                            mt: 1,
-                            maxHeight: 320,
-                            overflowY: 'auto',
-                            '&::-webkit-scrollbar': { width: 6 },
-                            '&::-webkit-scrollbar-track': { background: 'none', boxShadow: 'none', border: 'none' },
-                            '&::-webkit-scrollbar-thumb': { borderRadius: 3, bgcolor: 'action.disabled' },
-                        }}
-                    >
-                        {friends.length === 0 ? (
-                            <Typography
-                                variant="body2"
-                                color="text.secondary"
-                                sx={{ py: 2, pl: 0.5, fontSize: '1rem' }}
-                            >
-                                No friends yet
-                            </Typography>
-                        ) : (
-                            friends.map((friend) => (
-                                <Box key={friend.id} sx={friendCardSx}>
-                                    <Stack direction="row" alignItems="center" flex={1} overflow="hidden">
-                                        <Box sx={{ minWidth: 0, ml: 0.5 }}>
-                                            <Typography variant="body2" fontWeight={600} noWrap>
-                                                {friend.name || friend.email}
-                                            </Typography>
-                                            <Typography variant="caption" color="text.secondary" noWrap display="block">
-                                                {friend.email}
-                                            </Typography>
-                                        </Box>
-                                    </Stack>
-
-                                    <Stack direction="row" spacing={0.5} alignItems="center">
-                                        <Button
-                                            size="small"
-                                            variant="contained"
-                                            onClick={() => handleViewSchedule(friend)}
-                                            sx={{
-                                                fontSize: '1rem',
-                                                fontWeight: 600,
-                                                textTransform: 'none',
-                                                py: 0.5,
-                                                px: 1.5,
-                                                boxShadow: 2,
-                                                ml: 1,
-                                                whiteSpace: 'nowrap',
-                                                '&:hover': {
-                                                    boxShadow: 3,
-                                                },
-                                            }}
-                                        >
-                                            View
-                                        </Button>
-                                        <IconButton
-                                            size="small"
-                                            onClick={(e) => handleOpenFriendMenu(e, friend.id)}
-                                            sx={{
-                                                color: 'text.secondary',
-                                                ml: 0.5,
-                                                '&:hover': {
-                                                    bgcolor: 'action.hover',
-                                                    color: 'text.primary',
-                                                },
-                                            }}
-                                        >
-                                            <MoreVert fontSize="small" />
-                                        </IconButton>
-                                    </Stack>
-                                </Box>
-                            ))
-                        )}
-                    </Box>
+                {activeTab === 'requests' && (
+                    <RequestsTab
+                        email={email}
+                        onEmailChange={setEmail}
+                        onAddFriend={handleAddFriend}
+                        isDark={isDark}
+                        friendRequests={friendRequests}
+                        blockedFriends={blockedFriends}
+                        blockedOpen={blockedOpen}
+                        onToggleBlocked={() => setBlockedOpen((p) => !p)}
+                        onAccept={handleAccept}
+                        onDecline={handleDecline}
+                        onOpenBlockMenu={handleOpenBlockMenu}
+                        onUnblock={handleUnblock}
+                    />
                 )}
             </Box>
 
-            {/* Block Menu */}
             <Menu
                 anchorEl={blockMenuAnchor?.element}
                 open={Boolean(blockMenuAnchor)}
-                onClose={handleCloseBlockMenu}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                }}
+                onClose={() => setBlockMenuAnchor(null)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
                 <MenuItem onClick={handleBlockClick} sx={{ color: 'error.main' }}>
                     <Block sx={{ mr: 1, fontSize: '1.25rem' }} />
@@ -611,19 +233,12 @@ export function FriendsMenu({
                 </MenuItem>
             </Menu>
 
-            {/* Friend Menu */}
             <Menu
                 anchorEl={friendMenuAnchor?.element}
                 open={Boolean(friendMenuAnchor)}
-                onClose={handleCloseFriendMenu}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                }}
+                onClose={() => setFriendMenuAnchor(null)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
                 <MenuItem onClick={handleUnfriend} sx={{ color: 'error.main' }}>
                     <PersonRemove sx={{ mr: 1, fontSize: '1.25rem' }} />
@@ -634,7 +249,7 @@ export function FriendsMenu({
                         if (friendMenuAnchor) {
                             setUserToBlock(friendMenuAnchor.friendId);
                             setBlockDialogOpen(true);
-                            handleCloseFriendMenu();
+                            setFriendMenuAnchor(null);
                         }
                     }}
                     sx={{ color: 'error.main' }}
@@ -644,8 +259,7 @@ export function FriendsMenu({
                 </MenuItem>
             </Menu>
 
-            {/* Block Confirmation Dialog */}
-            <Dialog open={blockDialogOpen} onClose={handleCancelBlock}>
+            <Dialog open={blockDialogOpen} onClose={() => setBlockDialogOpen(false)}>
                 <DialogTitle>Block User?</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -654,7 +268,13 @@ export function FriendsMenu({
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCancelBlock} color={isDark ? 'secondary' : 'primary'}>
+                    <Button
+                        onClick={() => {
+                            setUserToBlock(null);
+                            setBlockDialogOpen(false);
+                        }}
+                        color={isDark ? 'secondary' : 'primary'}
+                    >
                         Cancel
                     </Button>
                     <Button onClick={handleConfirmBlock} color="error" variant="contained">
