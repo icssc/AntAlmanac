@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
+
 import './globals.css';
 
 const ANTALMANAC_DESCRIPTION = 'A schedule planning and course exploration tool for UCI students.';
@@ -21,14 +22,14 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         title: 'AntAlmanac',
         description: ANTALMANAC_DESCRIPTION,
-        images: '/logo.png',
+        images: '/og-image.png',
     },
     openGraph: {
         title: 'AntAlmanac',
         description: ANTALMANAC_DESCRIPTION,
         url: 'https://antalmanac.com',
         siteName: 'AntAlmanac',
-        images: '/logo.png',
+        images: '/og-image.png',
     },
     appleWebApp: {
         title: 'AntAlmanac',

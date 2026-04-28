@@ -44,6 +44,8 @@ export default $config({
 
         new sst.aws.Nextjs('Website', {
             path: 'apps/antalmanac',
+            // TODO (@KevinWu098): Unpin once https://github.com/opennextjs/opennextjs-aws/issues/1133 is fixed
+            openNextVersion: '3.6.6',
             router: {
                 instance: router,
                 path: '/',
