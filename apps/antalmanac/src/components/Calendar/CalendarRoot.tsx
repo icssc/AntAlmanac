@@ -177,8 +177,9 @@ export const ScheduleCalendar = memo(() => {
 
     /**
      * Finds the earliest start time and returns that or 7AM, whichever is earlier
+     * @returns A date with the earliest time or 7AM
      */
-    const startTime = useMemo(() => {
+    const getStartTime = useCallback(() => {
         const eventStartHours = events.map((event) => event.start.getHours());
         return new Date(2018, 0, 1, Math.min(7, Math.min(...eventStartHours)));
     }, [events]);
@@ -392,8 +393,9 @@ export const ScheduleCalendar = memo(() => {
                     onNavigate={() => {
                         return;
                     }}
-                    min={startTime}
+                    min={getStartTime()}
                     max={CALENDAR_MAX_DATE}
+                    scrollToTime={getStartTime()}
                     events={events}
                     eventPropGetter={eventStyleGetter}
                     dayPropGetter={dayStyleGetter}
