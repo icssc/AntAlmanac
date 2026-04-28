@@ -34,7 +34,7 @@ const ColorPicker = memo(function ColorPicker({
     const [anchorEl, setAnchorEl] = useState<PopoverProps['anchorEl']>(null);
     const [currColor, setCurrColor] = useState(color);
     const sectionColorSetting = useSectionColorStore((store) => store.sectionColor);
-    const showColorPicker = isCustomEvent || sectionColorSetting === 'custom';
+    const showColorPicker = sectionColorSetting === 'custom';
 
     const postHog = usePostHog();
 

@@ -1,5 +1,6 @@
 import type { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { getFinalsStartDateForTerm } from '$lib/termData';
+import { resolveSectionColorPalette } from '$lib/themes';
 import { notNull, getReferencesOccurring } from '$lib/utils';
 import type {
     ScheduleCourse,
@@ -9,7 +10,7 @@ import type {
 } from '@packages/antalmanac-types';
 
 import { getColorForNewSection } from './scheduleHelpers';
-import { SectionColorSetting, useSectionColorStore } from './SettingsStore';
+import { SectionColorSetting, useSectionColorStore, useThemeStore } from './SettingsStore';
 
 export const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 
@@ -182,8 +183,33 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
         });
 }
 
-export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[] = []): CustomEvent[] {
+function getColorForThemedCustomEvent(usedColors: string[], sectionColor: SectionColorSetting): string {
+    const palette = resolveSectionColorPalette(sectionColor, useThemeStore.getState().isDark);
+    const defaultColors = Object.values(palette).map((variants) => variants[0]);
+    const lastUsedDefaultColor = usedColors.findLast((color) => defaultColors.includes(color));
+    const nextAfterLastUsed =
+        lastUsedDefaultColor === undefined
+            ? 0
+            : (defaultColors.indexOf(lastUsedDefaultColor) + 1) % defaultColors.length;
+
+    return defaultColors.find((color) => !usedColors.includes(color)) || defaultColors[nextAfterLastUsed];
+}
+
+export function calendarizeCustomEvents(
+    currentCustomEvents: RepeatingCustomEvent[] = [],
+    sectionColor?: SectionColorSetting,
+    existingColors: string[] = []
+): CustomEvent[] {
+    const resolvedColor = sectionColor ?? useSectionColorStore.getState().sectionColor;
+    const usedColors = [...existingColors];
+
     return currentCustomEvents.flatMap((customEvent) => {
+        const color =
+            resolvedColor === 'custom'
+                ? (customEvent.color ?? '#000000')
+                : getColorForThemedCustomEvent(usedColors, resolvedColor);
+        usedColors.push(color);
+
         const dayIndicesOccurring = customEvent.days.map((day, index) => (day ? index : undefined)).filter(notNull);
         /**
          * Only include the day strings that the custom event occurs.
@@ -199,7 +225,7 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
 
             return {
                 customEventID: customEvent.customEventID,
-                color: customEvent.color ?? '#000000',
+                color,
                 start: new Date(2018, 0, dayIndex, startHour, startMin),
                 isCustomEvent: true,
                 end: new Date(2018, 0, dayIndex, endHour, endMin),
