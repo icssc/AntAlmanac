@@ -693,8 +693,7 @@ export class RDS {
                     createdAt: 'keep',
                     updatedAt: 'update',
                 }),
-            })
-        );
+            });
     }
 
     /**
