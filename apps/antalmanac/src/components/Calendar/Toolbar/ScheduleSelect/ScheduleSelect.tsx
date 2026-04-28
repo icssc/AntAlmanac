@@ -301,8 +301,8 @@ export function SelectSchedulePopover() {
                                                         <Tooltip
                                                             title={
                                                                 isShared
-                                                                    ? 'Visible to friends — click to hide'
-                                                                    : 'Hidden from friends — click to share'
+                                                                    ? 'Hide Schedule From Friends'
+                                                                    : 'Show Schedule to Friends'
                                                             }
                                                             disableInteractive
                                                         >
