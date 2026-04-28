@@ -42,7 +42,15 @@ type DismissedEntry = { courseId: string; professorId: string };
 
 function loadDismissed(): DismissedEntry[] {
     try {
-        return JSON.parse(localStorage.getItem(DISMISSED_KEY) ?? '[]');
+        const parsed: unknown = JSON.parse(localStorage.getItem(DISMISSED_KEY) ?? '[]');
+        if (!Array.isArray(parsed)) return [];
+        return parsed.filter(
+            (item): item is DismissedEntry =>
+                typeof item === 'object' &&
+                item !== null &&
+                typeof item.courseId === 'string' &&
+                typeof item.professorId === 'string'
+        );
     } catch {
         return [];
     }
