@@ -125,7 +125,17 @@ export function FriendsMenu({
         }
     };
 
-    const handleViewSchedule = (friend: Friend) => {
+    const handleViewSchedule = async (friend: Friend) => {
+        try {
+            const data = await trpc.userData.getFriendUserData.query({ userId: friend.id });
+            if (!data?.userData?.schedules?.length) {
+                openSnackbar('warning', "This friend hasn't shared any schedules with you.");
+                return;
+            }
+        } catch {
+            openSnackbar('error', "Couldn't load this friend's schedules.");
+            return;
+        }
         navigate('/share/friend/' + encodeURIComponent(friend.id), {
             state: { friendName: friend.name ?? friend.email },
         });
