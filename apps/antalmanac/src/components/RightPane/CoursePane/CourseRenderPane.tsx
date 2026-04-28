@@ -5,7 +5,7 @@ import darkNoNothing from '$components/RightPane/CoursePane/static/dark-no_resul
 import noNothing from '$components/RightPane/CoursePane/static/no_results.png';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import GeDataFetchProvider from '$components/RightPane/SectionTable/GEDataFetchProvider';
-import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
+import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum from '$lib/analytics/analytics';
 import { Grades } from '$lib/grades';
 import { getLocalStorageRecruitmentDismissalTime, setLocalStorageRecruitmentDismissalTime } from '$lib/localStorage';
@@ -191,7 +191,7 @@ const SectionTableWrapped = (
     } else {
         const course = courseData[index] as AACourse;
         component = (
-            <SectionTableLazyWrapper
+            <SectionTable
                 term={formData.term}
                 courseDetails={course}
                 allowHighlight={true}

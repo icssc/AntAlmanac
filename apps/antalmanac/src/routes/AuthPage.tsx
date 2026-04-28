@@ -44,7 +44,7 @@ export function AuthPage() {
 
             isAuthenticatingRef.current = true;
 
-            const { userId, providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
+            const { providerId, newUser } = await trpc.userData.handleGoogleCallback.mutate({
                 code: code,
                 state: state,
             });
@@ -85,11 +85,11 @@ export function AuthPage() {
 
             // handle unsaved changes
             if (savedData !== '') {
-                const userData = await trpc.userData.getUserData.query({ userId: userId });
+                const userData = await trpc.userData.getUserData.query();
                 const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
                 if (savedUserId !== '') {
-                    await trpc.userData.flagImportedSchedule.mutate({ providerId: savedUserId });
+                    await trpc.userData.flagImportedSchedule.mutate({ username: savedUserId });
                     setLocalStorageImportedUser(savedUserId);
                 }
 
@@ -106,18 +106,8 @@ export function AuthPage() {
                     }
                 }
 
-                // Fetch user info to enable proper account migration
-                const userInfo = await trpc.userData.getUserByUid.query({ userId });
-
                 await trpc.userData.saveUserData.mutate({
-                    id: providerId,
-                    data: {
-                        id: providerId,
-                        email: userInfo?.email ?? undefined,
-                        name: userInfo?.name ?? undefined,
-                        avatar: userInfo?.avatar ?? undefined,
-                        userData: scheduleSaveState,
-                    },
+                    userData: scheduleSaveState,
                 });
             }
             window.location.href = '/';
