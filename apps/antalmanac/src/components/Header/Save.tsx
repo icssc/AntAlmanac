@@ -1,19 +1,17 @@
-import { Close, Save as SaveIcon } from '@mui/icons-material';
-import { Stack, Snackbar, Alert, Link, IconButton, Button } from '@mui/material';
-import { useState, useEffect } from 'react';
-
 import actionTypesStore from '$actions/ActionTypesStore';
 import { saveSchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
-import trpc from '$lib/api/trpc';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
+import { Close, Save as SaveIcon } from '@mui/icons-material';
+import { Stack, Snackbar, Alert, Link, IconButton, Button } from '@mui/material';
+import { useState, useEffect } from 'react';
 
 export const Save = () => {
     const isDark = useThemeStore((store) => store.isDark);
-    const { session, sessionIsValid: validSession } = useSessionStore();
+    const { sessionIsValid } = useSessionStore();
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
@@ -25,6 +23,14 @@ export const Save = () => {
 
     const handleCloseAutoSaveWarning = () => {
         setOpenAutoSaveWarning(false);
+    };
+
+    const saveScheduleData = async () => {
+        if (sessionIsValid) {
+            setSaving(true);
+            await saveSchedule({ rememberMe: true });
+            setSaving(false);
+        }
     };
 
     useEffect(() => {
@@ -39,16 +45,6 @@ export const Save = () => {
         };
     }, []);
 
-    const saveScheduleData = async () => {
-        if (validSession && session) {
-            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
-                token: session,
-            });
-            setSaving(true);
-            await saveSchedule(accounts.providerAccountId, true, users);
-            setSaving(false);
-        }
-    };
     useEffect(() => {
         const handleAutoSaveStart = () => setSaving(true);
         const handleAutoSaveEnd = () => setSaving(false);
@@ -61,6 +57,7 @@ export const Save = () => {
             actionTypesStore.off('autoSaveEnd', handleAutoSaveEnd);
         };
     }, []);
+
     return (
         <Stack direction="row">
             <Button
@@ -68,7 +65,7 @@ export const Save = () => {
                 color="inherit"
                 startIcon={<SaveIcon />}
                 loadingPosition="start"
-                onClick={validSession ? saveScheduleData : handleClickSignIn}
+                onClick={sessionIsValid ? saveScheduleData : handleClickSignIn}
                 sx={{ fontSize: 'inherit' }}
                 disabled={skeletonMode || saving}
                 loading={saving}

@@ -1,25 +1,24 @@
+import { SignInDialog } from '$components/dialogs/SignInDialog';
+import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
+import { NotificationsTabs } from '$components/RightPane/AddedCourses/Notifications/NotificationsTabs';
+import { LIGHT_BLUE } from '$src/globals';
+import { useSessionStore } from '$stores/SessionStore';
+import { useThemeStore } from '$stores/SettingsStore';
 import { Notifications } from '@mui/icons-material';
 import {
+    Box,
+    Button,
     Dialog,
+    DialogActions,
     DialogContent,
     DialogTitle,
-    DialogActions,
-    Button,
     IconButton,
-    SxProps,
+    type SxProps,
     Tooltip,
-    Box,
     useTheme,
 } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-
-import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
-import { NotificationsTabs } from '$components/RightPane/AddedCourses/Notifications/NotificationsTabs';
-import { SignInDialog } from '$components/dialogs/SignInDialog';
-import { LIGHT_BLUE } from '$src/globals';
-import { useSessionStore } from '$stores/SessionStore';
-import { useThemeStore } from '$stores/SettingsStore';
 
 interface NotificationsDialogProps {
     disabled?: boolean;
@@ -32,9 +31,8 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
     const [signInOpen, setSignInOpen] = useState<boolean>(false);
     const isDark = useThemeStore((store) => store.isDark);
 
-    const { session, isGoogleUser } = useSessionStore(
+    const { isGoogleUser } = useSessionStore(
         useShallow((state) => ({
-            session: state.session,
             isGoogleUser: state.isGoogleUser,
         }))
     );
@@ -71,11 +69,11 @@ export function NotificationsDialog({ disabled, buttonSx }: NotificationsDialogP
                 </IconButton>
             </Tooltip>
 
-            <Dialog open={open} onClose={handleClose} fullWidth>
+            <Dialog open={open} onClose={handleClose} fullWidth maxWidth="lg">
                 <DialogTitle>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                         Manage Notifications
-                        <NotificationEmailTooltip sessionToken={session} />
+                        <NotificationEmailTooltip />
                     </Box>
                 </DialogTitle>
                 <DialogContent

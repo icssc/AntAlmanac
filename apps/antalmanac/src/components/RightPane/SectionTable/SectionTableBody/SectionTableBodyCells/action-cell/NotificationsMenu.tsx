@@ -1,6 +1,6 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import { NotificationEmailTooltip } from '$components/RightPane/AddedCourses/Notifications/NotificationEmailTooltip';
-import { canTermEnrollmentChange, Term } from '$lib/termData';
+import { canTermEnrollmentChange, type Term } from '$lib/termData';
 import { type NotifyOn, useNotificationStore } from '$stores/NotificationStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -36,9 +36,8 @@ export const NotificationsMenu = memo(
         const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
         const [signInOpen, setSignInOpen] = useState(false);
 
-        const { session, isGoogleUser } = useSessionStore(
+        const { isGoogleUser } = useSessionStore(
             useShallow((state) => ({
-                session: state.session,
                 isGoogleUser: state.isGoogleUser,
             }))
         );
@@ -159,7 +158,7 @@ export const NotificationsMenu = memo(
                                     e.stopPropagation();
                                 }}
                             >
-                                <NotificationEmailTooltip sessionToken={session} />
+                                <NotificationEmailTooltip />
                             </Box>
                         </Box>
                     </MenuItem>
