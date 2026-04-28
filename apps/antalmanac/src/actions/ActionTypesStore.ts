@@ -1,13 +1,11 @@
 import { EventEmitter } from 'events';
 
-import type { CustomEventId, RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
-
 import { autoSaveSchedule } from '$actions/AppStoreActions';
-import trpc from '$lib/api/trpc';
 import { getLocalStorageAutoSave } from '$lib/localStorage';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
+import type { CustomEventId, RepeatingCustomEvent, ScheduleCourse } from '@packages/antalmanac-types';
 
 export interface UndoRedoAction {
     type: 'undoRedoAction';
@@ -107,15 +105,11 @@ export type ActionType =
     | UndoRedoAction;
 
 class ActionTypesStore extends EventEmitter {
-    constructor() {
-        super();
-    }
-
     async autoSaveSchedule(_action: ActionType) {
         const sessionStore = useSessionStore.getState();
-        const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() == 'true';
+        const autoSave = typeof Storage !== 'undefined' && getLocalStorageAutoSave() === 'true';
 
-        if (!sessionStore.sessionIsValid || !sessionStore.session) {
+        if (!sessionStore.sessionIsValid || !sessionStore.userId) {
             if (autoSave) {
                 scheduleComponentsToggleStore.getState().setOpenAutoSaveWarning(true);
             }
@@ -123,14 +117,14 @@ class ActionTypesStore extends EventEmitter {
         }
 
         if (autoSave) {
-            const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query({
-                token: sessionStore.session,
-            });
+            this.emit('autoSaveStart');
 
-            if (accounts.providerAccountId) {
-                this.emit('autoSaveStart');
-                await autoSaveSchedule(accounts.providerAccountId, { userInfo: users });
+            try {
+                await autoSaveSchedule({});
                 AppStore.unsavedChanges = false;
+            } catch (error) {
+                console.error('Auto-save failed:', error);
+            } finally {
                 this.emit('autoSaveEnd');
             }
         }
