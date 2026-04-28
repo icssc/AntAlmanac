@@ -36,7 +36,7 @@ export function EnrollmentConfirmStep({
                 sx={{ pb: 0 }}
             />
             <CardContent sx={{ pt: 1 }}>
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body1" color="text.secondary">
                     Did you take{' '}
                     <Box component="span" fontWeight={600} color="text.primary">
                         {courseId}

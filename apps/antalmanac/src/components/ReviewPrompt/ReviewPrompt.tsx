@@ -2,7 +2,7 @@
 
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';
 import { useSessionStore } from '$stores/SessionStore';
-import { Card, Fade } from '@mui/material';
+import { Paper, Snackbar } from '@mui/material';
 import { useEffect, useRef } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -37,22 +37,12 @@ export function ReviewPrompt() {
         };
     }, [sessionIsValid, userId, initPrompt]);
 
-    if (step === 'hidden' || !candidate) return null;
+    const open = step !== 'hidden' && !!candidate;
 
     return (
-        <Fade in timeout={400}>
-            <Card
-                elevation={6}
-                sx={{
-                    position: 'fixed',
-                    bottom: 24,
-                    right: 24,
-                    width: 340,
-                    zIndex: 1300,
-                    borderRadius: 2,
-                }}
-            >
-                {step === 'enrollment-confirm' && (
+        <Snackbar open={open} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+            <Paper elevation={6} sx={{ width: 340, borderRadius: 2 }}>
+                {step === 'enrollment-confirm' && candidate && (
                     <EnrollmentConfirmStep
                         courseId={candidate.courseId}
                         courseTitle={candidate.courseTitle}
@@ -63,7 +53,7 @@ export function ReviewPrompt() {
                     />
                 )}
 
-                {step === 'review' && (
+                {step === 'review' && candidate && (
                     <ReviewStep
                         courseId={candidate.courseId}
                         professorId={candidate.professorId}
@@ -75,7 +65,7 @@ export function ReviewPrompt() {
                         onDismiss={dismiss}
                     />
                 )}
-            </Card>
-        </Fade>
+            </Paper>
+        </Snackbar>
     );
 }
