@@ -394,7 +394,6 @@ export const ScheduleCalendar = memo(() => {
                     }}
                     min={startTime}
                     max={CALENDAR_MAX_DATE}
-                    scrollToTime={getStartTime()}
                     events={events}
                     eventPropGetter={eventStyleGetter}
                     dayPropGetter={dayStyleGetter}
