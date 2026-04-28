@@ -4,17 +4,17 @@ import trpc from '$lib/api/trpc';
 import {
     getLocalStorageDataCache,
     getLocalStorageFromLoading,
-    setLocalStorageImportedUser,
     getLocalStorageUserId,
-    removeLocalStorageUserId,
-    removeLocalStorageImportedUser,
     removeLocalStorageDataCache,
     removeLocalStorageFromLoading,
+    removeLocalStorageImportedUser,
+    removeLocalStorageUserId,
+    setLocalStorageImportedUser,
     setLocalStorageOnFirstSignin,
 } from '$lib/localStorage';
 import { clearSsoCookie, setSsoCookie } from '$lib/ssoCookie';
 import AppStore from '$stores/AppStore';
-import { useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 export function AuthPage() {

@@ -1,7 +1,6 @@
+import { LabeledInput } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledInput';
 import { Select, SelectProps } from '@mui/material';
 import { ReactNode, useId } from 'react';
-
-import { LabeledInput } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledInput';
 
 interface LabeledSelectProps<T = string | string[]> {
     label: ReactNode;

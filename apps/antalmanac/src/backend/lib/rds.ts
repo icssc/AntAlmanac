@@ -1,29 +1,29 @@
 import type {
+    Notification,
+    RepeatingCustomEvent,
+    ScheduleSaveState,
     ShortCourse,
     ShortCourseSchedule,
     User,
-    RepeatingCustomEvent,
-    Notification,
-    ScheduleSaveState,
 } from '@packages/antalmanac-types';
 import type { db } from '@packages/db';
 import type * as schema from '@packages/db/src/schema';
 import {
-    schedules,
-    users,
+    type Account,
+    type CourseInSchedule,
+    type CustomEvent,
+    type Schedule,
+    type Session,
     accounts,
     coursesInSchedule,
     customEvents,
-    type Schedule,
-    type CourseInSchedule,
-    type CustomEvent,
+    schedules,
     sessions,
-    type Account,
-    type Session,
     subscriptions,
+    users,
 } from '@packages/db/src/schema';
-import { and, eq, type ExtractTablesWithRelations, gt } from 'drizzle-orm';
-import type { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
+import { type ExtractTablesWithRelations, and, eq, gt } from 'drizzle-orm';
+import type { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
 type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;

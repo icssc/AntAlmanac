@@ -1,7 +1,7 @@
 import { Grades, type GradesProps } from '$lib/grades';
 import { useThemeStore } from '$stores/SettingsStore';
-import { Box, Link, ToggleButton, ToggleButtonGroup, Typography, Skeleton } from '@mui/material';
-import { useState, useEffect, useMemo } from 'react';
+import { Box, Link, Skeleton, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { useEffect, useMemo, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 type GradeView = 'instructor' | 'overall';

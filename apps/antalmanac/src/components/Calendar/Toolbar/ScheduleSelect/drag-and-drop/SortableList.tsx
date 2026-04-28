@@ -1,3 +1,7 @@
+import { DragHandle } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/DragHandle';
+import { SortableItem } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableItem';
+import { SortableOverlay } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableOverlay';
+import AppStore from '$stores/AppStore';
 import { DndContext, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import type { Active, UniqueIdentifier } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
@@ -5,11 +9,6 @@ import { SortableContext, arrayMove, sortableKeyboardCoordinates } from '@dnd-ki
 import { List } from '@mui/material';
 import type { ReactNode } from 'react';
 import { Fragment, useMemo, useState } from 'react';
-
-import { DragHandle } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/DragHandle';
-import { SortableItem } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableItem';
-import { SortableOverlay } from '$components/Calendar/Toolbar/ScheduleSelect/drag-and-drop/SortableOverlay';
-import AppStore from '$stores/AppStore';
 
 interface BaseItem {
     id: UniqueIdentifier;

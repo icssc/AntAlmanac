@@ -1,6 +1,5 @@
-import { ScheduleCourse, HourMinute, WebsocSectionFinalExam, WebsocSectionMeeting } from '@packages/antalmanac-types';
-
 import AppStore from '$stores/AppStore';
+import { HourMinute, ScheduleCourse, WebsocSectionFinalExam, WebsocSectionMeeting } from '@packages/antalmanac-types';
 
 const CURRENT_TERM = '2024 Winter'; // TODO: Check the current term when that PR's in
 let sampleClassesSectionCodes: Array<string> = [];

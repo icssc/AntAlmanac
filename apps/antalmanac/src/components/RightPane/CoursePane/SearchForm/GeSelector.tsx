@@ -1,8 +1,7 @@
-import { MenuItem, type SelectChangeEvent } from '@mui/material';
-import { useEffect, useCallback, useState } from 'react';
-
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { MenuItem, type SelectChangeEvent } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
 
 const GE_LIST = [
     { value: 'ANY', label: "All: Don't filter for GE" },

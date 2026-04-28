@@ -2,13 +2,13 @@
     "name": "antalmanac",
     "version": "1.0.0",
     "private": true,
-    "type": "module",
-    "homepage": "https://antalmanac.com",
     "description": "A course exploration and scheduling tool for UCI Anteaters",
+    "homepage": "https://antalmanac.com",
     "bugs": {
         "url": "https://antalmanac.com/feedback"
     },
     "repository": "github:icssc/antalmanac",
+    "type": "module",
     "scripts": {
         "start": "next start",
         "dev": "next dev ",

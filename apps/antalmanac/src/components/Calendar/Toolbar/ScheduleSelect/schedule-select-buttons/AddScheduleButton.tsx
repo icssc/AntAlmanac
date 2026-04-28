@@ -1,8 +1,7 @@
+import AddScheduleDialog from '$components/dialogs/AddSchedule';
 import { Add as AddIcon } from '@mui/icons-material';
 import { Box, Button, Typography } from '@mui/material';
 import { useCallback, useState } from 'react';
-
-import AddScheduleDialog from '$components/dialogs/AddSchedule';
 
 interface AddScheduleButtonProps {
     disabled: boolean;

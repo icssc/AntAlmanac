@@ -1,5 +1,5 @@
 import { WebsocSectionType } from '@packages/anteater-api-types';
-import { type, arrayOf } from 'arktype';
+import { arrayOf, type } from 'arktype';
 
 import { RepeatingCustomEvent, RepeatingCustomEventSchema } from './customevent';
 import { AASection } from './websoc';

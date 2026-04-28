@@ -3,7 +3,7 @@ import { BLUE } from '$src/globals';
 import AppStore from '$stores/AppStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Close, InfoOutlined } from '@mui/icons-material';
-import { IconButton, Alert, AlertTitle, Box, Typography, Fade, useTheme } from '@mui/material';
+import { Alert, AlertTitle, Box, Fade, IconButton, Typography, useTheme } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 interface TbaSection {

@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
-
 import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { termData } from '$lib/termData';
+import { useCallback, useEffect, useState } from 'react';
 
 export function TermSelector() {
     const [term, setTerm] = useState<string>(() => RightPaneStore.getFormData().term);

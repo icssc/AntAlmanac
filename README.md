@@ -4,10 +4,10 @@
 
 AntAlmanac is a schedule planner website for classes at UC Irvine. These are some of its features:
 
--   **_Search bar_** to easily find classes by department (e.g COMPSCI), section code (e.g. 36040), and keywords (e.g. artificial intelligence).
--   **_Integrated calendar_** to preview class times.
--   **_Quick links_** to professor reviews, prerequisites, grade distributions, and past enrollment data.
--   **_Interactive map_** with markers for your class locations.
+- **_Search bar_** to easily find classes by department (e.g COMPSCI), section code (e.g. 36040), and keywords (e.g. artificial intelligence).
+- **_Integrated calendar_** to preview class times.
+- **_Quick links_** to professor reviews, prerequisites, grade distributions, and past enrollment data.
+- **_Interactive map_** with markers for your class locations.
 
 ![project screenshot](https://github.com/user-attachments/assets/e1f8d3ce-8188-41ab-817a-850e51e6bd1a)
 
@@ -18,26 +18,26 @@ A summary of the libraries we use are listed below.
 
 ### Frontend
 
--   [Next.js](https://nextjs.org) - React framework with server-side rendering.
--   [MUI](https://mui.com) - React UI library.
--   [React Big Calendar](https://github.com/jquense/react-big-calendar) - React calendar component.
--   [Recharts](https://recharts.org/en-US) - React chart component.
--   [Leaflet](https://leafletjs.com) - Interactive JS maps.
--   [Zustand](https://docs.pmnd.rs/zustand/getting-started/introduction) - State management.
+- [Next.js](https://nextjs.org) - React framework with server-side rendering.
+- [MUI](https://mui.com) - React UI library.
+- [React Big Calendar](https://github.com/jquense/react-big-calendar) - React calendar component.
+- [Recharts](https://recharts.org/en-US) - React chart component.
+- [Leaflet](https://leafletjs.com) - Interactive JS maps.
+- [Zustand](https://docs.pmnd.rs/zustand/getting-started/introduction) - State management.
 
 ### Backend
 
--   [tRPC](https://trpc.io) - type-safe API access layer for the AntAlmanac API.
--   [Anteater API](https://docs.icssc.club/docs/about/anteaterapi) - API maintained by ICSSC for retrieving UCI data.
--   [Drizzle ORM](https://orm.drizzle.team/) - [high-performance](https://orm.drizzle.team/benchmarks) type-safe SQL-like access layer compatible with all major SQL dialects.
--   [PostgreSQL](https://www.postgresql.org) - Relational database for storing user data and schedules.
+- [tRPC](https://trpc.io) - type-safe API access layer for the AntAlmanac API.
+- [Anteater API](https://docs.icssc.club/docs/about/anteaterapi) - API maintained by ICSSC for retrieving UCI data.
+- [Drizzle ORM](https://orm.drizzle.team/) - [high-performance](https://orm.drizzle.team/benchmarks) type-safe SQL-like access layer compatible with all major SQL dialects.
+- [PostgreSQL](https://www.postgresql.org) - Relational database for storing user data and schedules.
 
 ### Tooling
 
--   [SST](https://sst.dev) - Infrastructure as code framework for AWS deployment.
--   [Docker](https://www.docker.com) - Containerization for local database development.
--   [Vitest](https://vitest.dev) - Test runner.
--   [TypeScript](https://www.typescriptlang.org) - JavaScript with type-checking.
+- [SST](https://sst.dev) - Infrastructure as code framework for AWS deployment.
+- [Docker](https://www.docker.com) - Containerization for local database development.
+- [Vitest](https://vitest.dev) - Test runner.
+- [TypeScript](https://www.typescriptlang.org) - JavaScript with type-checking.
 
 ## History
 
@@ -98,7 +98,6 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
    This is best done with a version manager that allows you to easily switch between
    Node.js versions based on the requirements of different projects.
    Try using any of the following.
-
     - [nvm](https://github.com/nvm-sh/nvm) - Node-Version-Manager.
     - [fnm](https://github.com/Schniz/fnm) - Fast-Node-Manager.
     - [nvm-windows](https://github.com/coreybutler/nvm-windows)
@@ -165,26 +164,26 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
 
 ### Additional Commands
 
--   **Database Studio**: Open Drizzle Studio to view and manage your local database.
+- **Database Studio**: Open Drizzle Studio to view and manage your local database.
 
     ```bash
     pnpm db:studio
     ```
 
--   **Generate Database Migrations**: After modifying the database schema, generate a new migration.
+- **Generate Database Migrations**: After modifying the database schema, generate a new migration.
 
     ```bash
     pnpm db:generate
     ```
 
--   **Run Tests**: Execute the test suite.
+- **Run Tests**: Execute the test suite.
     ```bash
     pnpm test
     ```
 
 ### Notes
 
--   For more detailed information, see the [frontend README](/apps/antalmanac/README.md).
+- For more detailed information, see the [frontend README](/apps/antalmanac/README.md).
 
 ## Testing
 
@@ -196,8 +195,8 @@ AntAlmanac is deployed to AWS using [SST (Serverless Stack)](https://sst.dev). T
 
 ### Deployment Environments
 
--   **Production**: Deployed to `sst.antalmanac.com`
--   **Staging**: Deployed to `staging-{PR_NUMBER}.antalmanac.com` for pull request previews
+- **Production**: Deployed to `sst.antalmanac.com`
+- **Staging**: Deployed to `staging-{PR_NUMBER}.antalmanac.com` for pull request previews
 
 ### Deploying to Production
 
@@ -219,13 +218,13 @@ This command runs `sst deploy --stage production` which:
 
 The following environment variables are required for deployment and should be configured in your AWS environment or CI/CD pipeline:
 
--   `DB_URL` - Database connection string 
--   `MAPBOX_ACCESS_TOKEN` - Mapbox API token for map features
--   `NEXT_PUBLIC_TILES_ENDPOINT` - Endpoint for map tiles
--   `ANTEATER_API_KEY` - API key for Anteater API
--   `OIDC_CLIENT_ID` - OAuth client ID for Google authentication
--   `OIDC_ISSUER_URL` - OAuth issuer URL
--   `GOOGLE_REDIRECT_URI` - OAuth redirect URI (automatically set based on stage)
+- `DB_URL` - Database connection string
+- `MAPBOX_ACCESS_TOKEN` - Mapbox API token for map features
+- `NEXT_PUBLIC_TILES_ENDPOINT` - Endpoint for map tiles
+- `ANTEATER_API_KEY` - API key for Anteater API
+- `OIDC_CLIENT_ID` - OAuth client ID for Google authentication
+- `OIDC_ISSUER_URL` - OAuth issuer URL
+- `GOOGLE_REDIRECT_URI` - OAuth redirect URI (automatically set based on stage)
 
 # Troubleshooting
 
@@ -237,9 +236,9 @@ into a globally accessible location like `/bin`, which needs admin permissions t
 The best way to resolve this is to install Node via any version manager to properly handle
 these sorts of permissions. Here are the different version managers again.
 
--   [nvm](https://github.com/nvm-sh/nvm) - Node-Version-Manager.
--   [fnm](https://github.com/Schniz/fnm) - Fast-Node-Manager.
--   [nvm-windows](https://github.com/coreybutler/nvm-windows)
+- [nvm](https://github.com/nvm-sh/nvm) - Node-Version-Manager.
+- [fnm](https://github.com/Schniz/fnm) - Fast-Node-Manager.
+- [nvm-windows](https://github.com/coreybutler/nvm-windows)
 
 A more convenient, but less secure way to resolve this is to run the command with admin privileges, e.g with `sudo`.
 

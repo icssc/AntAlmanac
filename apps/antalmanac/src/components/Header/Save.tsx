@@ -6,8 +6,8 @@ import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleS
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import { Close, Save as SaveIcon } from '@mui/icons-material';
-import { Stack, Snackbar, Alert, Link, IconButton, Button } from '@mui/material';
-import { useState, useEffect } from 'react';
+import { Alert, Button, IconButton, Link, Snackbar, Stack } from '@mui/material';
+import { useEffect, useState } from 'react';
 
 export const Save = () => {
     const isDark = useThemeStore((store) => store.isDark);

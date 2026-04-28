@@ -1,7 +1,6 @@
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
-
 import { LabeledTextField } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledTextField';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
 const updateSectionCodeAndGetFormData = () => {
     RightPaneStore.updateFormValue('sectionCode', RightPaneStore.getUrlSectionCodeValue());
