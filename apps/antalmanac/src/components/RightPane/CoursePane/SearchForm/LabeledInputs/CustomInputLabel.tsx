@@ -1,7 +1,6 @@
+import { useThemeStore } from '$stores/SettingsStore';
 import { InputLabel } from '@mui/material';
 import { grey } from '@mui/material/colors';
-
-import { useThemeStore } from '$stores/SettingsStore';
 
 interface CustomInputLabelProps {
     label: React.ReactNode;

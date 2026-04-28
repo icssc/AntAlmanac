@@ -23,11 +23,11 @@ import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleS
 import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import { CalendarMonth } from '@mui/icons-material';
-import { Box, Backdrop, useTheme } from '@mui/material';
-import { differenceInCalendarDays, format, getDay, startOfWeek, type Locale } from 'date-fns';
+import { Backdrop, Box, useTheme } from '@mui/material';
+import { type Locale, differenceInCalendarDays, format, getDay, startOfWeek } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Calendar, Components, DateLocalizer, dateFnsLocalizer, Views, ViewsProps } from 'react-big-calendar';
+import { Calendar, Components, DateLocalizer, Views, ViewsProps, dateFnsLocalizer } from 'react-big-calendar';
 import { useShallow } from 'zustand/react/shallow';
 
 /*

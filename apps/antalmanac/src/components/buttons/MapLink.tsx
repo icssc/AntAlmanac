@@ -1,7 +1,6 @@
+import { useTabStore } from '$stores/TabStore';
 import { useCallback } from 'react';
 import { Link } from 'react-router-dom';
-
-import { useTabStore } from '$stores/TabStore';
 
 interface MapLinkProps {
     buildingId: number;

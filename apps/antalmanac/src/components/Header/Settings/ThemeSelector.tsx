@@ -1,10 +1,9 @@
-import { LightMode, SettingsBrightness, DarkMode } from '@mui/icons-material';
+import { useCoursePaneStore } from '$stores/CoursePaneStore';
+import { useThemeStore } from '$stores/SettingsStore';
+import { DarkMode, LightMode, SettingsBrightness } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { usePostHog } from 'posthog-js/react';
-
-import { useCoursePaneStore } from '$stores/CoursePaneStore';
-import { useThemeStore } from '$stores/SettingsStore';
 
 const THEME_OPTIONS = [
     { value: 'light', label: 'Light', icon: <LightMode fontSize="medium" /> },

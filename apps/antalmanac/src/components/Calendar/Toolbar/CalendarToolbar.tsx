@@ -8,30 +8,30 @@ import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import {
-    Undo as UndoIcon,
-    Redo as RedoIcon,
+    DeleteOutline,
     Description as DescriptionIcon,
     DescriptionOutlined as DescriptionOutlinedIcon,
+    Download,
     MoreVert as MoreVertIcon,
     Panorama,
-    Download,
-    DeleteOutline,
+    Redo as RedoIcon,
+    Undo as UndoIcon,
 } from '@mui/icons-material';
 import {
-    useTheme,
-    useMediaQuery,
     Box,
     Button,
     IconButton,
-    Paper,
-    Tooltip,
-    Menu,
-    MenuItem,
     ListItemIcon,
     ListItemText,
+    Menu,
+    MenuItem,
+    Paper,
+    Tooltip,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
 import { usePostHog } from 'posthog-js/react';
-import { useState, useCallback, useEffect, memo, useRef } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 export interface CalendarPaneToolbarProps {
     scheduleNames: string[];

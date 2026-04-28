@@ -2,11 +2,11 @@
     "name": "antalmanac",
     "version": "1.0.0",
     "private": true,
-    "type": "module",
     "repository": {
         "type": "git",
         "url": "https://github.com/icssc/Antalmanac"
     },
+    "type": "module",
     "scripts": {
         "prepare": "husky install",
         "dev": "pnpm --filter antalmanac dev",
@@ -31,11 +31,11 @@
         "tsx": "^4.19.2",
         "vitest": "^0.34.4"
     },
-    "packageManager": "pnpm@10.22.0",
     "engines": {
         "node": ">=22",
         "pnpm": "^10.0.0"
     },
+    "packageManager": "pnpm@10.22.0",
     "pnpm": {
         "overrides": {
             "@types/react": "19.2.7",

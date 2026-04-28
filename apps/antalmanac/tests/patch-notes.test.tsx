@@ -1,11 +1,11 @@
-import PatchNotes, { closeButtonTestId, dialogTestId, backdropTestId } from '$components/PatchNotes';
+import PatchNotes, { backdropTestId, closeButtonTestId, dialogTestId } from '$components/PatchNotes';
 import {
     getLocalStoragePatchNotesKey,
     setLocalStoragePatchNotesKey,
     setLocalStorageTourHasRun,
 } from '$lib/localStorage';
 import { LATEST_PATCH_NOTES_UPDATE, shouldShowPatchNotes, usePatchNotesStore } from '$stores/PatchNotesStore';
-import { render, screen, act } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import { describe, expect, test } from 'vitest';
 
 describe('patch notes', () => {

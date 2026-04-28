@@ -7,7 +7,7 @@ import { procedure, protectedProcedure, router } from '$src/backend/trpc';
 import { type ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
-import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState, type OAuth2Tokens } from 'arctic';
+import { CodeChallengeMethod, type OAuth2Tokens, decodeIdToken, generateCodeVerifier, generateState } from 'arctic';
 import { z } from 'zod';
 
 const { OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);

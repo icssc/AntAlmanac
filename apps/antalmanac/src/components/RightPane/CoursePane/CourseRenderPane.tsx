@@ -22,11 +22,11 @@ import { Alert, Box, IconButton, Link, useTheme } from '@mui/material';
 import {
     AACourse,
     AASection,
+    GE,
+    WebsocAPIResponse,
     WebsocDepartment,
     WebsocSchool,
-    WebsocAPIResponse,
     WebsocSectionType,
-    GE,
 } from '@packages/antalmanac-types';
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';

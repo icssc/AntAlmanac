@@ -9,12 +9,12 @@ import type {
 import type { CourseDetails } from './helpers/notificationDispatch';
 import { batchCourseCodes, sendNotification } from './helpers/notificationDispatch';
 import {
+    type SubscriptionWithUser,
     filterUsersToNotify,
     getLastUpdatedStatus,
     getSubscriptionSectionCodes,
     getSubscriptionsForSections,
     getUpdatedClasses,
-    type SubscriptionWithUser,
     updateSubscriptionStatus,
 } from './helpers/subscriptionData';
 

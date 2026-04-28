@@ -1,8 +1,8 @@
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
-import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
-import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
+import { setLocalStorageDataCache, setLocalStorageUserId } from '$lib/localStorage';
+import { NATIVE_IOS_REDIRECT_URI, isNativeIosApp } from '$lib/platform';
 import AppStore from '$stores/AppStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
