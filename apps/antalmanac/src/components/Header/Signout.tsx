@@ -17,7 +17,6 @@ interface SignoutProps {
 
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [user, setUser] = useState<Pick<User, 'name' | 'avatar' | 'email'> | null>(null);
     const { sessionIsValid, clearSession, name, avatar, email } = useSessionStore();
     const postHog = usePostHog();
     const isDark = useThemeStore((store) => store.isDark);
