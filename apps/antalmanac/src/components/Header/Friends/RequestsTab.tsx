@@ -63,12 +63,14 @@ export function RequestsTab({
                     sx={{
                         bgcolor: 'primary.main',
                         color: 'white',
-                        p: 0.75,
+                        width: 24,
+                        height: 24,
+                        p: 0,
                         '&:hover': { bgcolor: 'primary.dark' },
                         '&.Mui-disabled': { bgcolor: 'action.disabledBackground', color: 'action.disabled' },
                     }}
                 >
-                    <PersonAdd fontSize="small" />
+                    <PersonAdd sx={{ fontSize: 14 }} />
                 </IconButton>
             </Stack>
 
