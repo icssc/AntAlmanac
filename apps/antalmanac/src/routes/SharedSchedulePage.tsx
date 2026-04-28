@@ -9,9 +9,8 @@ export function SharedSchedulePage() {
     const isMobileScreen = useIsMobile();
 
     const [error, setError] = useState<string | null>(null);
-    const [warning, setWarning] = useState<string | null>(null);
 
-    const isBlocked = !!(error || warning);
+    const isBlocked = !!error;
 
     return (
         <HomeLayout hideHeader={isBlocked}>
@@ -22,7 +21,7 @@ export function SharedSchedulePage() {
                 spacing={2}
                 sx={isBlocked ? { minHeight: '100dvh' } : undefined}
             >
-                <SharedScheduleBanner error={error} setError={setError} warning={warning} setWarning={setWarning} />
+                <SharedScheduleBanner error={error} setError={setError} />
                 {!isBlocked && (isMobileScreen ? <MobileHome /> : <DesktopHome />)}
             </Stack>
         </HomeLayout>

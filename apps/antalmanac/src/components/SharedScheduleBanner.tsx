@@ -19,11 +19,9 @@ import { useLocation, useMatch, useNavigate, useParams } from 'react-router-dom'
 interface Props {
     error: string | null;
     setError: (error: string | null) => void;
-    warning: string | null;
-    setWarning: (warning: string | null) => void;
 }
 
-const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) => {
+const SharedScheduleBanner = ({ error, setError }: Props) => {
     const navigate = useNavigate();
     const location = useLocation();
     const friendMatch = useMatch('/share/friend/:userId');
@@ -67,7 +65,7 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
                 const userData = await trpc.userData.getFriendUserData.query({ userId });
 
                 if (!userData?.userData?.schedules?.length) {
-                    setWarning("This friend hasn't shared any schedules with you.");
+                    openSnackbar('warning', "This friend hasn't shared any schedules with you.");
                     return;
                 }
 
@@ -88,7 +86,7 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
                 setOpenLoadingSchedule(false);
             }
         },
-        [beginLoadingSchedule, setError, setWarning, setOpenLoadingSchedule]
+        [beginLoadingSchedule, setError, setOpenLoadingSchedule]
     );
 
     useEffect(() => {
@@ -344,24 +342,6 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
             openSnackbar('error', 'Failed to send friend request.');
         }
     }, [scheduleOwnerId]);
-
-    if (warning) {
-        return (
-            <>
-                <Alert severity="warning" variant="outlined">
-                    {warning}
-                </Alert>
-                <Stack direction="row" spacing={1}>
-                    <Button variant="outlined" onClick={() => navigate(-1)}>
-                        Go Back
-                    </Button>
-                    <Button variant="contained" onClick={handleGoHome}>
-                        Go Home
-                    </Button>
-                </Stack>
-            </>
-        );
-    }
 
     if (error) {
         return (
