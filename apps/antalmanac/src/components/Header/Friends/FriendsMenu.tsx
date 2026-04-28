@@ -3,7 +3,6 @@ import { FriendsTab } from '$components/Header/Friends/FriendsTab';
 import { RequestsTab } from '$components/Header/Friends/RequestsTab';
 import type { Friend, FriendRequest } from '$components/Header/Friends/types';
 import trpc from '$lib/api/trpc';
-import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
 import { PersonRemove, Block } from '@mui/icons-material';
 import {
@@ -42,7 +41,6 @@ export function FriendsMenu({
     isLoading,
     onRefresh: loadFriendsData,
 }: FriendsMenuProps) {
-    const isDark = useThemeStore((store) => store.isDark);
     const [activeTab, setActiveTab] = useState<'friends' | 'requests'>('friends');
     const [email, setEmail] = useState('');
     const [friendSearch, setFriendSearch] = useState('');
@@ -52,6 +50,8 @@ export function FriendsMenu({
     const [blockDialogOpen, setBlockDialogOpen] = useState(false);
     const [userToBlock, setUserToBlock] = useState<string | null>(null);
     const [friendMenuAnchor, setFriendMenuAnchor] = useState<{ element: HTMLElement; friendId: string } | null>(null);
+    const [unfriendDialogOpen, setUnfriendDialogOpen] = useState(false);
+    const [userToUnfriend, setUserToUnfriend] = useState<string | null>(null);
     const navigate = useNavigate();
 
     const handleAddFriend = async () => {
@@ -145,12 +145,20 @@ export function FriendsMenu({
         setFriendMenuAnchor({ element: event.currentTarget, friendId });
     };
 
-    const handleUnfriend = async () => {
+    const handleUnfriendClick = () => {
         if (!friendMenuAnchor) return;
+        setUserToUnfriend(friendMenuAnchor.friendId);
+        setUnfriendDialogOpen(true);
+        setFriendMenuAnchor(null);
+    };
+
+    const handleConfirmUnfriend = async () => {
+        if (!userToUnfriend) return;
         try {
-            await trpc.friends.removeFriend.mutate({ friendId: friendMenuAnchor.friendId });
+            await trpc.friends.removeFriend.mutate({ friendId: userToUnfriend });
             openSnackbar('info', 'Friend removed.');
-            setFriendMenuAnchor(null);
+            setUserToUnfriend(null);
+            setUnfriendDialogOpen(false);
             await loadFriendsData();
         } catch (error) {
             console.error('Error removing friend:', error);
@@ -267,7 +275,7 @@ export function FriendsMenu({
                 slotProps={{ paper: { sx: { zIndex: 10000 } } }}
                 style={{ zIndex: 10000 }}
             >
-                <MenuItem onClick={handleUnfriend} sx={{ color: 'error.main' }}>
+                <MenuItem onClick={handleUnfriendClick} sx={{ color: 'error.main' }}>
                     <PersonRemove sx={{ mr: 1, fontSize: '1.25rem' }} />
                     Unfriend
                 </MenuItem>
@@ -286,6 +294,27 @@ export function FriendsMenu({
                 </MenuItem>
             </Menu>
 
+            <Dialog open={unfriendDialogOpen} onClose={() => setUnfriendDialogOpen(false)}>
+                <DialogTitle>Remove Friend?</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>Are you sure you want to remove this friend?</DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={() => {
+                            setUserToUnfriend(null);
+                            setUnfriendDialogOpen(false);
+                        }}
+                        color="inherit"
+                    >
+                        Cancel
+                    </Button>
+                    <Button onClick={handleConfirmUnfriend} color="primary" variant="contained">
+                        Remove
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
             <Dialog open={blockDialogOpen} onClose={() => setBlockDialogOpen(false)}>
                 <DialogTitle>Block User?</DialogTitle>
                 <DialogContent>
@@ -300,11 +329,11 @@ export function FriendsMenu({
                             setUserToBlock(null);
                             setBlockDialogOpen(false);
                         }}
-                        color={isDark ? 'secondary' : 'primary'}
+                        color="inherit"
                     >
                         Cancel
                     </Button>
-                    <Button onClick={handleConfirmBlock} color="error" variant="contained">
+                    <Button onClick={handleConfirmBlock} color="primary" variant="contained">
                         Block
                     </Button>
                 </DialogActions>
