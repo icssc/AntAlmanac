@@ -119,7 +119,8 @@ declare module '@mui/material/styles' {
  * sets and provides the MUI theme for the app
  */
 export default function AppThemeProvider(props: Props) {
-    const [appTheme, setAppTheme] = useThemeStore((store) => [store.appTheme, store.setAppTheme]);
+    const appTheme = useThemeStore((store) => store.appTheme);
+    const setAppTheme = useThemeStore((store) => store.setAppTheme);
     const postHog = usePostHog();
 
     useEffect(() => {

@@ -30,28 +30,8 @@ import {
     ListItemIcon,
     ListItemText,
 } from '@mui/material';
-import { PostHog, usePostHog } from 'posthog-js/react';
+import { usePostHog } from 'posthog-js/react';
 import { useState, useCallback, useEffect, memo, useRef } from 'react';
-
-function handleUndo(postHog?: PostHog) {
-    return () => {
-        logAnalytics(postHog, {
-            category: analyticsEnum.calendar,
-            action: analyticsEnum.calendar.actions.UNDO,
-        });
-        undoDelete(null);
-    };
-}
-
-function handleRedo(postHog?: PostHog) {
-    return () => {
-        logAnalytics(postHog, {
-            category: analyticsEnum.calendar,
-            action: analyticsEnum.calendar.actions.REDO,
-        });
-        redoAction();
-    };
-}
 
 export interface CalendarPaneToolbarProps {
     scheduleNames: string[];
@@ -89,6 +69,22 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
         }
         toggleDisplayFinalsSchedule();
     }, [toggleDisplayFinalsSchedule, postHog, showFinalsSchedule]);
+
+    const handleUndo = useCallback(() => {
+        logAnalytics(postHog, {
+            category: analyticsEnum.calendar,
+            action: analyticsEnum.calendar.actions.UNDO,
+        });
+        undoDelete(null);
+    }, [postHog]);
+
+    const handleRedo = useCallback(() => {
+        logAnalytics(postHog, {
+            category: analyticsEnum.calendar,
+            action: analyticsEnum.calendar.actions.REDO,
+        });
+        redoAction();
+    }, [postHog]);
 
     useEffect(() => {
         const handleSkeletonModeChange = () => {
@@ -204,10 +200,10 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
             >
                 <Box display="flex" flexDirection="row" gap={0.5}>
                     <Box display="flex" flexWrap="nowrap" alignItems="center" gap={0.5}>
-                        <IconButton onClick={handleUndo(postHog)} disabled={skeletonMode}>
+                        <IconButton onClick={handleUndo} disabled={skeletonMode}>
                             <UndoIcon fontSize="small" />
                         </IconButton>
-                        <IconButton onClick={handleRedo(postHog)} disabled={skeletonMode}>
+                        <IconButton onClick={handleRedo} disabled={skeletonMode}>
                             <RedoIcon fontSize="small" />
                         </IconButton>
                         <CustomEventDialog key="custom" scheduleNames={AppStore.getScheduleNames()} />
@@ -289,12 +285,12 @@ export const CalendarToolbar = memo((props: CalendarPaneToolbarProps) => {
                     <DownloadButton />
 
                     <Tooltip title="Undo last action">
-                        <IconButton onClick={handleUndo(postHog)} size="medium" disabled={skeletonMode}>
+                        <IconButton onClick={handleUndo} size="medium" disabled={skeletonMode}>
                             <UndoIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="Redo last action">
-                        <IconButton onClick={handleRedo(postHog)} size="medium" disabled={skeletonMode}>
+                        <IconButton onClick={handleRedo} size="medium" disabled={skeletonMode}>
                             <RedoIcon fontSize="small" />
                         </IconButton>
                     </Tooltip>
