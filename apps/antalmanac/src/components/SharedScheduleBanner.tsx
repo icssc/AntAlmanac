@@ -441,11 +441,11 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
                             onClick={handleAddToMySchedules}
                             size="small"
                             sx={{
-                                backgroundColor: 'primary.dark',
+                                backgroundColor: 'primary.main',
                                 color: 'white',
                                 borderRadius: 2,
                                 '&:hover': {
-                                    backgroundColor: 'primary.main',
+                                    backgroundColor: 'primary.dark',
                                 },
                             }}
                         >
