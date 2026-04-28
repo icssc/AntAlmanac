@@ -22,7 +22,11 @@ import {
     type Session,
     subscriptions,
 } from '@packages/db/src/schema';
-import { buildConflictUpdateSet } from '@packages/db/src/utils';
+import {
+    buildConflictUpdateSet,
+    buildConflictUpdateWhereChanged,
+    type ConflictUpdatePolicy,
+} from '@packages/db/src/utils';
 import { createId } from '@paralleldrive/cuid2';
 import { and, eq, ExtractTablesWithRelations, gt, not, notInArray, or } from 'drizzle-orm';
 import type { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
@@ -208,6 +212,16 @@ export class RDS {
             );
 
         if (prepared.length > 0) {
+            const scheduleUpdatePolicy = {
+                id: 'keep',
+                userId: 'keep',
+                name: 'update',
+                notes: 'update',
+                index: 'update',
+                createdAt: 'keep',
+                lastUpdated: 'update',
+            } satisfies ConflictUpdatePolicy<typeof schedules>;
+
             await tx
                 .insert(schedules)
                 .values(
@@ -221,15 +235,8 @@ export class RDS {
                 )
                 .onConflictDoUpdate({
                     target: schedules.id,
-                    set: buildConflictUpdateSet(schedules, {
-                        id: 'keep',
-                        userId: 'keep',
-                        name: 'update',
-                        notes: 'update',
-                        index: 'update',
-                        createdAt: 'keep',
-                        lastUpdated: 'update',
-                    }),
+                    set: buildConflictUpdateSet(schedules, scheduleUpdatePolicy),
+                    where: buildConflictUpdateWhereChanged(schedules, scheduleUpdatePolicy, ['name', 'notes', 'index']),
                 });
         }
 
@@ -281,19 +288,22 @@ export class RDS {
             return;
         }
 
+        const courseUpdatePolicy = {
+            scheduleId: 'keep',
+            sectionCode: 'keep',
+            term: 'keep',
+            color: 'update',
+            createdAt: 'keep',
+            lastUpdated: 'update',
+        } satisfies ConflictUpdatePolicy<typeof coursesInSchedule>;
+
         await tx
             .insert(coursesInSchedule)
             .values(incoming.map((course) => ({ scheduleId, ...course })))
             .onConflictDoUpdate({
                 target: [coursesInSchedule.scheduleId, coursesInSchedule.sectionCode, coursesInSchedule.term],
-                set: buildConflictUpdateSet(coursesInSchedule, {
-                    scheduleId: 'keep',
-                    sectionCode: 'keep',
-                    term: 'keep',
-                    color: 'update',
-                    createdAt: 'keep',
-                    lastUpdated: 'update',
-                }),
+                set: buildConflictUpdateSet(coursesInSchedule, courseUpdatePolicy),
+                where: buildConflictUpdateWhereChanged(coursesInSchedule, courseUpdatePolicy, ['color']),
             });
     }
 
@@ -316,6 +326,19 @@ export class RDS {
             return;
         }
 
+        const customEventUpdatePolicy = {
+            id: 'keep',
+            scheduleId: 'keep',
+            title: 'update',
+            start: 'update',
+            end: 'update',
+            days: 'update',
+            color: 'update',
+            building: 'update',
+            createdAt: 'keep',
+            lastUpdated: 'update',
+        } satisfies ConflictUpdatePolicy<typeof customEvents>;
+
         await tx
             .insert(customEvents)
             .values(
@@ -332,18 +355,15 @@ export class RDS {
             )
             .onConflictDoUpdate({
                 target: [customEvents.scheduleId, customEvents.id],
-                set: buildConflictUpdateSet(customEvents, {
-                    id: 'keep',
-                    scheduleId: 'keep',
-                    title: 'update',
-                    start: 'update',
-                    end: 'update',
-                    days: 'update',
-                    color: 'update',
-                    building: 'update',
-                    createdAt: 'keep',
-                    lastUpdated: 'update',
-                }),
+                set: buildConflictUpdateSet(customEvents, customEventUpdatePolicy),
+                where: buildConflictUpdateWhereChanged(customEvents, customEventUpdatePolicy, [
+                    'title',
+                    'start',
+                    'end',
+                    'days',
+                    'color',
+                    'building',
+                ]),
             });
     }
 
