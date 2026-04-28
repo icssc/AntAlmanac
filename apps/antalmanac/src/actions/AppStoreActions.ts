@@ -2,6 +2,7 @@ import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { warnMultipleTerms } from '$lib/helpers';
 import { setLocalStorageUserId, setLocalStorageDataCache } from '$lib/localStorage';
+import { isNativeIosApp, NATIVE_IOS_REDIRECT_URI } from '$lib/platform';
 import AppStore from '$stores/AppStore';
 import { deleteTempSaveData } from '$stores/localTempSaveDataHelpers';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
@@ -274,10 +275,8 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
     }
 };
 
-export type UserDataWithSessionResponse = Awaited<ReturnType<typeof trpc.userData.getUserDataWithSession.query>>;
-
 interface LoadScheduleOptions {
-    prefetched: UserDataWithSessionResponse | null;
+    prefetched: Awaited<ReturnType<typeof trpc.userData.getUserData.query>> | null;
 }
 
 export const loadSchedule = async ({ prefetched }: LoadScheduleOptions) => {
@@ -288,7 +287,7 @@ export const loadSchedule = async ({ prefetched }: LoadScheduleOptions) => {
     //     value: rememberMe ? 1 : 0,
     // });
     try {
-        const userDataResponse = prefetched ?? (await trpc.userData.getUserDataWithSession.query());
+        const userDataResponse = prefetched ?? (await trpc.userData.getUserData.query());
         const scheduleSaveState = userDataResponse?.userData;
         if (scheduleSaveState !== undefined && isEmptySchedule(scheduleSaveState.schedules)) {
             return true;
@@ -324,7 +323,9 @@ const cacheSchedule = () => {
 
 export const loginUser = async () => {
     try {
-        const authUrl = await trpc.userData.getGoogleAuthUrl.query();
+        const redirectUri = isNativeIosApp() ? NATIVE_IOS_REDIRECT_URI : undefined;
+
+        const authUrl = await trpc.userData.getGoogleAuthUrl.query(redirectUri ? { redirectUri } : undefined);
         if (authUrl) {
             cacheSchedule();
             window.location.href = authUrl.toString();

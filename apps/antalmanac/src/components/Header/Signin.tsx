@@ -5,7 +5,6 @@ import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageUserId, getWasLoggedIn, setLocalStorageFromLoading } from '$lib/localStorage';
-import { useNotificationStore } from '$stores/NotificationStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -103,7 +102,7 @@ export const Signin = () => {
 
             const [validSession, prefetchedUserData] = await Promise.all([
                 loadSession(),
-                trpc.userData.getUserDataWithSession.query().catch(() => null),
+                trpc.userData.getUserData.query().catch(() => null),
             ]);
 
             if (validSession) {

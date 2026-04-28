@@ -1,5 +1,6 @@
 import { Section, Text } from '@react-email/components';
 
+import { BLUE } from '../theme';
 import { StatusPill } from './StatusPill';
 
 export interface StatusChange {
@@ -22,7 +23,7 @@ export function WhatChangedBox({ statusChange, restrictionCodesChange }: WhatCha
                 borderRadius: '6px',
                 padding: '16px',
                 margin: '0 0 24px',
-                borderLeft: '4px solid #0066cc',
+                borderLeft: `4px solid ${BLUE}`,
             }}
         >
             <Text

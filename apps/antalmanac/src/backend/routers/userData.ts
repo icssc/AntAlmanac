@@ -1,33 +1,20 @@
 import { SESSION_COOKIE_NAME } from '$src/backend/context';
 import { oidcOAuthEnvSchema } from '$src/backend/env';
-import { oauth } from '$src/backend/lib/auth/oauth';
+import { ALLOWED_REDIRECT_URIS, isAllowedRedirectUri, oauthClientForRedirectUri } from '$src/backend/lib/auth/oauth';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
 import { RDS } from '$src/backend/lib/rds';
 import { procedure, protectedProcedure, router } from '$src/backend/trpc';
-import type { ScheduleSaveState } from '@packages/antalmanac-types';
+import { type ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
 import { CodeChallengeMethod, decodeIdToken, generateCodeVerifier, generateState, type OAuth2Tokens } from 'arctic';
-import { type } from 'arktype';
 import { z } from 'zod';
 
 const { OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
 const NODE_ENV = process.env.NODE_ENV;
 
-const saveInputSchema = z.object({
-    /**
-     * Schedule data being saved
-     */
-    userData: z.custom<ScheduleSaveState>(),
-});
-
-const saveGoogleSchema = type({
-    code: 'string',
-    state: 'string',
-});
-
 const userDataRouter = router({
-    getUserAndAccountBySessionToken: protectedProcedure.query(async ({ ctx }) => {
+    getUserAndAccount: protectedProcedure.query(async ({ ctx }) => {
         return await RDS.getUserAndAccountBySessionToken(db, ctx.sessionToken);
     }),
 
@@ -40,12 +27,7 @@ const userDataRouter = router({
         return await RDS.getUserById(db, ctx.userId);
     }),
 
-    /**
-     * Retrieves google ID by user ID.
-     * @param input - An object containing the user ID.
-     * @returns The user's google ID associated with the user ID.
-     */
-    getGoogleIdByUserId: protectedProcedure.query(async ({ ctx }) => {
+    getGoogleId: protectedProcedure.query(async ({ ctx }) => {
         return await RDS.getGoogleIdByUserId(db, ctx.userId);
     }),
 
@@ -60,20 +42,31 @@ const userDataRouter = router({
         return result;
     }),
 
-    getUserDataWithSession: protectedProcedure.query(async ({ ctx }) => {
+    getUserData: protectedProcedure.query(async ({ ctx }) => {
         return await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
     }),
+
     /**
      * Retrieves Google authentication URL for login/sign up.
      * Retrieves Google auth url to login/sign up
      */
     getGoogleAuthUrl: procedure
-        .input(z.object({ prompt: z.enum(['none', 'consent']).optional() }).optional())
+        .input(
+            z
+                .object({
+                    prompt: z.enum(['none', 'consent']).optional(),
+                    redirectUri: z.enum(ALLOWED_REDIRECT_URIS).optional(),
+                })
+                .optional()
+        )
         .query(async ({ input, ctx }) => {
             const state = generateState();
             const codeVerifier = generateCodeVerifier();
 
-            const url = oauth.createAuthorizationURLWithPKCE(
+            const redirectUri = input?.redirectUri ?? ALLOWED_REDIRECT_URIS[0];
+            const client = oauthClientForRedirectUri(redirectUri);
+
+            const url = client.createAuthorizationURLWithPKCE(
                 'https://auth.icssc.club/authorize',
                 state,
                 CodeChallengeMethod.S256,
@@ -98,6 +91,7 @@ const userDataRouter = router({
             // Set cookies via response headers (Next.js cookies() doesn't work in TRPC)
             ctx.resHeaders?.append('Set-Cookie', `oauth_state=${state}; ${cookieOptions}`);
             ctx.resHeaders?.append('Set-Cookie', `oauth_code_verifier=${codeVerifier}; ${cookieOptions}`);
+            ctx.resHeaders?.append('Set-Cookie', `oauth_redirect_uri=${redirectUri}; ${cookieOptions}`);
 
             const referer = ctx.req.headers.get('referer');
             if (referer) {
@@ -112,158 +106,170 @@ const userDataRouter = router({
     /**
      * Logs in or signs up a user and creates user's session
      */
-    handleGoogleCallback: procedure.input(saveGoogleSchema.assert).mutation(async ({ input, ctx }) => {
-        try {
-            // Parse cookies from request headers
-            const cookieHeader = ctx.req.headers.get('cookie') ?? '';
-            const cookies = Object.fromEntries(
-                cookieHeader
-                    .split('; ')
-                    .filter((c) => c.includes('='))
-                    .map((c) => {
-                        const [key, ...v] = c.split('=');
-                        return [key, v.join('=')];
-                    })
-            );
-
-            const storedState = cookies['oauth_state'] ?? null;
-            const codeVerifier = cookies['oauth_code_verifier'] ?? null;
-            const redirectUrl = decodeURIComponent(cookies['auth_redirect_url'] ?? '/');
-
-            // Delete cookies via response headers
-            const isProduction = NODE_ENV === 'production';
-            const deleteCookieOptions = `Path=/; HttpOnly; ${
-                isProduction ? 'Secure; SameSite=None' : 'SameSite=Lax'
-            }; Max-Age=0`;
-            ctx.resHeaders?.append('Set-Cookie', `oauth_state=; ${deleteCookieOptions}`);
-            ctx.resHeaders?.append('Set-Cookie', `oauth_code_verifier=; ${deleteCookieOptions}`);
-            ctx.resHeaders?.append('Set-Cookie', `auth_redirect_url=; ${deleteCookieOptions}`);
-
-            if (!input.code || !input.state || !storedState || !codeVerifier) {
-                console.error('[OAuth Callback] Missing parameters:', {
-                    hasCode: !!input.code,
-                    hasState: !!input.state,
-                    hasStoredState: !!storedState,
-                    hasCodeVerifier: !!codeVerifier,
-                });
-                throw new TRPCError({
-                    code: 'BAD_REQUEST',
-                    message: 'Missing required OAuth parameters',
-                });
-            }
-
-            if (input.state !== storedState) {
-                console.error('[OAuth Callback] State mismatch:', {
-                    received: input.state,
-                    stored: storedState,
-                });
-                throw new TRPCError({
-                    code: 'BAD_REQUEST',
-                    message: 'State mismatch',
-                });
-            }
-
-            let tokens: OAuth2Tokens;
+    handleGoogleCallback: procedure
+        .input(z.object({ code: z.string(), state: z.string() }))
+        .mutation(async ({ input, ctx }) => {
             try {
-                tokens = await oauth.validateAuthorizationCode(
-                    'https://auth.icssc.club/token',
-                    input.code,
-                    codeVerifier
+                // Parse cookies from request headers
+                const cookieHeader = ctx.req.headers.get('cookie') ?? '';
+                const cookies = Object.fromEntries(
+                    cookieHeader
+                        .split('; ')
+                        .filter((c) => c.includes('='))
+                        .map((c) => {
+                            const [key, ...v] = c.split('=');
+                            return [key, v.join('=')];
+                        })
                 );
-            } catch (error) {
-                console.error('OAuth Callback - Invalid credentials:', error);
-                throw new TRPCError({
-                    code: 'UNAUTHORIZED',
-                    message: 'Invalid authorization code',
-                });
-            }
 
-            const claims = decodeIdToken(tokens.idToken()) as {
-                sub: string;
-                name: string;
-                email: string;
-                picture?: string;
-            };
+                const storedState = cookies['oauth_state'] ?? null;
+                const codeVerifier = cookies['oauth_code_verifier'] ?? null;
+                const pinnedRedirectUri = cookies['oauth_redirect_uri'] ?? null;
+                const redirectUrl = decodeURIComponent(cookies['auth_redirect_url'] ?? '/');
 
-            const oidcRefreshToken = tokens.refreshToken();
-            if (!oidcRefreshToken) {
-                console.error('OAuth Callback - Missing OIDC refresh token in response');
-            }
+                // Delete cookies via response headers
+                const isProduction = NODE_ENV === 'production';
+                const deleteCookieOptions = `Path=/; HttpOnly; ${
+                    isProduction ? 'Secure; SameSite=None' : 'SameSite=Lax'
+                }; Max-Age=0`;
+                ctx.resHeaders?.append('Set-Cookie', `oauth_state=; ${deleteCookieOptions}`);
+                ctx.resHeaders?.append('Set-Cookie', `oauth_code_verifier=; ${deleteCookieOptions}`);
+                ctx.resHeaders?.append('Set-Cookie', `oauth_redirect_uri=; ${deleteCookieOptions}`);
+                ctx.resHeaders?.append('Set-Cookie', `auth_redirect_url=; ${deleteCookieOptions}`);
 
-            const tokenData = tokens.data as {
-                google_access_token?: string;
-                google_refresh_token?: string;
-                google_token_expiry?: number;
-            };
-            const googleAccessToken = tokenData.google_access_token;
-            const googleRefreshToken = tokenData.google_refresh_token;
-            if (!googleAccessToken || !googleRefreshToken) {
-                console.error('OAuth Callback - Missing Google tokens in OIDC response:', tokenData);
-            }
-
-            const oauthUserId = claims.sub;
-            const username = claims.name;
-            const email = claims.email;
-            const picture = claims.picture;
-
-            const account = await RDS.registerUserAccount(db, 'OIDC', oauthUserId, username, email, picture ?? '');
-
-            const userId: string = account.userId;
-
-            if (userId.length > 0) {
-                // Create session with OIDC and Google tokens
-                const session = await RDS.upsertSession(db, userId, oidcRefreshToken ?? '');
-
-                if (!session?.refreshToken) {
+                if (!input.code || !input.state || !storedState || !codeVerifier) {
+                    console.error('[OAuth Callback] Missing parameters:', {
+                        hasCode: !!input.code,
+                        hasState: !!input.state,
+                        hasStoredState: !!storedState,
+                        hasCodeVerifier: !!codeVerifier,
+                    });
                     throw new TRPCError({
-                        code: 'INTERNAL_SERVER_ERROR',
-                        message: 'Failed to create session',
+                        code: 'BAD_REQUEST',
+                        message: 'Missing required OAuth parameters',
                     });
                 }
 
-                const sessionCookieOptions = `Path=/; HttpOnly; ${
-                    isProduction ? 'Secure; SameSite=Lax' : 'SameSite=Lax'
-                }; Max-Age=2592000`;
-                ctx.resHeaders?.append(
-                    'Set-Cookie',
-                    `${SESSION_COOKIE_NAME}=${session.refreshToken}; ${sessionCookieOptions}`
-                );
+                if (input.state !== storedState) {
+                    console.error('[OAuth Callback] State mismatch:', {
+                        received: input.state,
+                        stored: storedState,
+                    });
+                    throw new TRPCError({
+                        code: 'BAD_REQUEST',
+                        message: 'State mismatch',
+                    });
+                }
 
-                return {
-                    userId: userId,
-                    providerId: oauthUserId,
-                    newUser: account.newUser,
-                    redirectUrl,
+                const resolvedRedirectUri =
+                    pinnedRedirectUri && isAllowedRedirectUri(pinnedRedirectUri)
+                        ? pinnedRedirectUri
+                        : ALLOWED_REDIRECT_URIS[0];
+                const tokenClient = oauthClientForRedirectUri(resolvedRedirectUri);
+
+                let tokens: OAuth2Tokens;
+                try {
+                    tokens = await tokenClient.validateAuthorizationCode(
+                        'https://auth.icssc.club/token',
+                        input.code,
+                        codeVerifier
+                    );
+                } catch (error) {
+                    console.error('OAuth Callback - Invalid credentials:', error);
+                    throw new TRPCError({
+                        code: 'UNAUTHORIZED',
+                        message: 'Invalid authorization code',
+                    });
+                }
+
+                const claims = decodeIdToken(tokens.idToken()) as {
+                    sub: string;
+                    name: string;
+                    email: string;
+                    picture?: string;
                 };
+
+                const oidcRefreshToken = tokens.refreshToken();
+                if (!oidcRefreshToken) {
+                    console.error('OAuth Callback - Missing OIDC refresh token in response');
+                }
+
+                const tokenData = tokens.data as {
+                    google_access_token?: string;
+                    google_refresh_token?: string;
+                    google_token_expiry?: number;
+                };
+                const googleAccessToken = tokenData.google_access_token;
+                const googleRefreshToken = tokenData.google_refresh_token;
+                if (!googleAccessToken || !googleRefreshToken) {
+                    console.error('OAuth Callback - Missing Google tokens in OIDC response:', tokenData);
+                }
+
+                const oauthUserId = claims.sub;
+                const username = claims.name;
+                const email = claims.email;
+                const picture = claims.picture;
+
+                const account = await RDS.registerUserAccount(db, 'OIDC', oauthUserId, username, email, picture ?? '');
+
+                const userId: string = account.userId;
+
+                if (userId.length > 0) {
+                    // Create session with OIDC and Google tokens
+                    const session = await RDS.upsertSession(db, userId, oidcRefreshToken ?? '');
+
+                    if (!session?.refreshToken) {
+                        throw new TRPCError({
+                            code: 'INTERNAL_SERVER_ERROR',
+                            message: 'Failed to create session',
+                        });
+                    }
+
+                    const sessionCookieOptions = `Path=/; HttpOnly; ${
+                        isProduction ? 'Secure; SameSite=Lax' : 'SameSite=Lax'
+                    }; Max-Age=2592000`;
+                    ctx.resHeaders?.append(
+                        'Set-Cookie',
+                        `${SESSION_COOKIE_NAME}=${session.refreshToken}; ${sessionCookieOptions}`
+                    );
+
+                    return {
+                        userId: userId,
+                        providerId: oauthUserId,
+                        newUser: account.newUser,
+                        redirectUrl,
+                    };
+                }
+
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Failed to create user session',
+                });
+            } catch (error) {
+                console.error('OAuth Callback - Error:', error);
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Failed to handle OAuth callback',
+                });
             }
+        }),
 
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: 'Failed to create user session',
-            });
-        } catch (error) {
-            console.error('OAuth Callback - Error:', error);
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: 'Failed to handle OAuth callback',
-            });
-        }
-    }),
+    saveUserData: protectedProcedure
+        .input(z.object({ userData: z.custom<ScheduleSaveState>() }))
+        .mutation(async ({ input, ctx }) => {
+            const userData = input.userData;
+            userData.schedules = mangleDuplicateScheduleNames(userData.schedules);
 
-    saveUserData: protectedProcedure.input(saveInputSchema).mutation(async ({ input, ctx }) => {
-        const userData = input.userData;
-        userData.schedules = mangleDuplicateScheduleNames(userData.schedules);
-
-        try {
-            return await RDS.upsertUserData(db, ctx.userId, userData);
-        } catch (error) {
-            console.error('RDS Failed to upsert user data:', error);
-            throw new TRPCError({
-                code: 'INTERNAL_SERVER_ERROR',
-                message: 'Failed to save user data',
-            });
-        }
-    }),
+            try {
+                return await RDS.upsertUserData(db, ctx.userId, userData);
+            } catch (error) {
+                console.error('RDS Failed to upsert user data:', error);
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Failed to save user data',
+                });
+            }
+        }),
 
     flagImportedSchedule: protectedProcedure.input(z.object({ username: z.string() })).mutation(async ({ input }) => {
         return await RDS.flagImportedUser(db, input.username);
@@ -273,18 +279,22 @@ const userDataRouter = router({
      * Logs out a user by invalidating their session and redirecting to OIDC logout
      */
     logout: procedure.input(z.object({ redirectUrl: z.string().optional() })).mutation(async ({ input, ctx }) => {
-        if (ctx.sessionToken) {
-            const session = await RDS.getCurrentSession(db, ctx.sessionToken);
-            if (session) {
-                await RDS.removeSession(db, session.userId, session.refreshToken);
-            }
-        }
-
         const isProduction = NODE_ENV === 'production';
         ctx.resHeaders?.append(
             'Set-Cookie',
             `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; ${isProduction ? 'Secure; SameSite=Lax' : 'SameSite=Lax'}; Max-Age=0`
         );
+
+        if (ctx.sessionToken) {
+            try {
+                const session = await RDS.getCurrentSession(db, ctx.sessionToken);
+                if (session) {
+                    await RDS.removeSession(db, session.userId, session.refreshToken);
+                }
+            } catch (error) {
+                console.error('Failed to remove session during logout:', error);
+            }
+        }
 
         // Build OIDC logout URL
         const oidcLogoutUrl = new URL(`${OIDC_ISSUER_URL}/logout`);
@@ -295,6 +305,97 @@ const userDataRouter = router({
             logoutUrl: oidcLogoutUrl.toString(),
         };
     }),
+
+    /**
+     * Exports schedule data for a user as JSON.
+     * This allows users to export their schedule data to transfer between environments (prod/staging).
+     * @param input - An object containing the user ID.
+     * @returns The schedule data in JSON format.
+     */
+    exportScheduleData: protectedProcedure.query(async ({ ctx }) => {
+        const userData = await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
+        if (!userData) {
+            throw new TRPCError({
+                code: 'NOT_FOUND',
+                message: 'User not found',
+            });
+        }
+
+        return userData.userData;
+    }),
+
+    /**
+     * Imports schedule data from JSON.
+     * Validates the imported data before saving to prevent invalid data from being stored.
+     * @param input - An object containing the user ID and the schedule data to import.
+     * @returns Success status.
+     */
+    importScheduleData: protectedProcedure
+        .input(z.object({ scheduleData: z.unknown() }))
+        .mutation(async ({ input, ctx }) => {
+            let validatedScheduleData: ScheduleSaveState;
+            try {
+                validatedScheduleData = ScheduleSaveStateSchema.assert(input.scheduleData);
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'Unknown validation error';
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: `Invalid schedule data format: ${errorMessage}`,
+                });
+            }
+
+            if (
+                validatedScheduleData.scheduleIndex < 0 ||
+                validatedScheduleData.scheduleIndex >= validatedScheduleData.schedules.length
+            ) {
+                validatedScheduleData.scheduleIndex =
+                    validatedScheduleData.schedules.length > 0 ? validatedScheduleData.schedules.length - 1 : 0;
+            }
+
+            for (const schedule of validatedScheduleData.schedules) {
+                for (const course of schedule.courses) {
+                    if (typeof course.sectionCode !== 'string' || isNaN(parseInt(course.sectionCode))) {
+                        throw new TRPCError({
+                            code: 'BAD_REQUEST',
+                            message: `Invalid section code: ${course.sectionCode}`,
+                        });
+                    }
+                    if (typeof course.term !== 'string' || course.term.length === 0) {
+                        throw new TRPCError({
+                            code: 'BAD_REQUEST',
+                            message: `Invalid term: ${course.term}`,
+                        });
+                    }
+                    if (typeof course.color !== 'string') {
+                        throw new TRPCError({
+                            code: 'BAD_REQUEST',
+                            message: `Invalid color: ${course.color}`,
+                        });
+                    }
+                }
+
+                for (const event of schedule.customEvents) {
+                    if (event.days.length !== 7) {
+                        throw new TRPCError({
+                            code: 'BAD_REQUEST',
+                            message: 'Invalid custom event days: must be an array of 7 booleans',
+                        });
+                    }
+                }
+            }
+
+            validatedScheduleData.schedules = mangleDuplicateScheduleNames(validatedScheduleData.schedules);
+
+            await RDS.upsertUserData(db, ctx.userId, validatedScheduleData).catch((error) => {
+                console.error('RDS Failed to import user data:', error);
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Failed to import schedule data',
+                });
+            });
+
+            return { success: true };
+        }),
 });
 
 export default userDataRouter;

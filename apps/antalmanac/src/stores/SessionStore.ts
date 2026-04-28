@@ -45,7 +45,7 @@ export const useSessionStore = create<SessionState>((set) => {
 
         loadSession: async () => {
             try {
-                const { users, accounts } = await trpc.userData.getUserAndAccountBySessionToken.query();
+                const { users, accounts } = await trpc.userData.getUserAndAccount.query();
 
                 let googleId = accounts?.providerAccountId ?? null;
                 if (googleId?.startsWith('google_')) {
