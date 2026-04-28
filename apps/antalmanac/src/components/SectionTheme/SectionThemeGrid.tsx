@@ -71,6 +71,7 @@ interface CustomThemeCardProps {
 
 function CustomThemeCard({ isSelected, isDark, compact, selectionAccent, onSelect }: CustomThemeCardProps) {
     const pad = compact ? '12px' : '14px';
+    const secondaryTextColor = isDark ? 'white' : 'text.secondary';
 
     return (
         <Box
@@ -119,7 +120,7 @@ function CustomThemeCard({ isSelected, isDark, compact, selectionAccent, onSelec
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, pr: 3.5 }}>
                 <Box
                     sx={{
-                        color: isSelected ? selectionAccent : 'text.secondary',
+                        color: isSelected ? selectionAccent : secondaryTextColor,
                         display: 'inline-flex',
                         flexShrink: 0,
                         alignItems: 'center',
@@ -149,7 +150,7 @@ function CustomThemeCard({ isSelected, isDark, compact, selectionAccent, onSelec
             <Typography
                 variant="body2"
                 sx={{
-                    color: 'text.secondary',
+                    color: secondaryTextColor,
                     lineHeight: 1.55,
                     fontSize: compact ? '0.875rem' : '0.9375rem',
                 }}
@@ -171,6 +172,8 @@ interface ThemeCardProps {
 
 function ThemeCard({ option, isSelected, isDark, compact, selectionAccent, onSelect }: ThemeCardProps) {
     const pad = compact ? '12px' : '14px';
+    const primaryTextColor = isDark ? 'white' : 'text.primary';
+    const secondaryTextColor = isDark ? 'white' : 'text.secondary';
 
     return (
         <Box
@@ -219,7 +222,7 @@ function ThemeCard({ option, isSelected, isDark, compact, selectionAccent, onSel
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, pr: 3.5 }}>
                 <Box
                     sx={{
-                        color: isSelected ? selectionAccent : 'text.secondary',
+                        color: isSelected ? selectionAccent : secondaryTextColor,
                         display: 'inline-flex',
                         flexShrink: 0,
                         alignItems: 'center',
@@ -249,7 +252,7 @@ function ThemeCard({ option, isSelected, isDark, compact, selectionAccent, onSel
             <Typography
                 variant="body2"
                 sx={{
-                    color: 'text.secondary',
+                    color: secondaryTextColor,
                     lineHeight: 1.55,
                     fontSize: compact ? '0.875rem' : '0.9375rem',
                 }}
@@ -262,7 +265,7 @@ function ThemeCard({ option, isSelected, isDark, compact, selectionAccent, onSel
                     component="div"
                     variant="overline"
                     sx={{
-                        color: 'text.secondary',
+                        color: secondaryTextColor,
                         fontWeight: 600,
                         letterSpacing: '0.06em',
                         fontSize: '0.75rem',
@@ -275,7 +278,7 @@ function ThemeCard({ option, isSelected, isDark, compact, selectionAccent, onSel
                 <Typography
                     variant="body2"
                     sx={{
-                        color: 'text.primary',
+                        color: primaryTextColor,
                         fontWeight: 500,
                         mt: 0.5,
                         lineHeight: 1.45,

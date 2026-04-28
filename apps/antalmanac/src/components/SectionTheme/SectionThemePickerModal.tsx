@@ -46,6 +46,7 @@ export function SectionThemePickerModal({
     }, [onApply, onClose, pending]);
 
     const applyThemeLabel = pending === 'custom' ? 'Custom' : (options.find((o) => o.value === pending)?.label ?? '');
+    const secondaryTextColor = isDark ? 'white' : 'text.secondary';
 
     return (
         <Dialog
@@ -80,7 +81,10 @@ export function SectionThemePickerModal({
             {description ? (
                 <DialogContent sx={{ pt: 0, pb: 1.5, flexShrink: 0, px: 3 }}>
                     {typeof description === 'string' ? (
-                        <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.55, fontSize: '1rem' }}>
+                        <Typography
+                            variant="body1"
+                            sx={{ color: secondaryTextColor, lineHeight: 1.55, fontSize: '1rem' }}
+                        >
                             {description}
                         </Typography>
                     ) : (
@@ -108,7 +112,7 @@ export function SectionThemePickerModal({
             </DialogContent>
 
             <DialogActions sx={{ px: 3, pb: 2, gap: 1, flexShrink: 0 }}>
-                <Button onClick={onClose} variant="text" color="inherit" sx={{ color: 'text.secondary' }}>
+                <Button onClick={onClose} variant="text" color="inherit" sx={{ color: secondaryTextColor }}>
                     Cancel
                 </Button>
                 <Button
