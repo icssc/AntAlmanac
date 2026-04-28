@@ -1,4 +1,4 @@
-import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
+import { GradesPopup } from '$components/RightPane/SectionTable/GradesPopup';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSecondaryColor } from '$hooks/useSecondaryColor';
@@ -36,6 +36,7 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
     const isMobile = useIsMobile();
     const secondaryColor = useSecondaryColor();
 
+    const [loading, setLoading] = useState(true);
     const [gpa, setGpa] = useState('');
     const [instructor, setInstructor] = useState('');
     const [anchorEl, setAnchorEl] = useState<Element>();
@@ -54,7 +55,8 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
                 setGpa(data?.gpa);
                 setInstructor(data?.instructor);
             })
-            .catch(console.log);
+            .catch(console.log)
+            .finally(() => setLoading(false));
     }, [deptCode, courseNumber, instructors]);
 
     return (
@@ -63,14 +65,15 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
                 sx={{ fontFamily: 'inherit', fontSize: 'unset', color: secondaryColor, fontWeight: 700 }}
                 onClick={handleClick}
             >
-                {gpa || 'GPA'}
+                {loading ? null : gpa || 'GPA'}
             </ButtonBase>
 
             <Popover
                 open={Boolean(anchorEl)}
                 onClose={hideDistribution}
                 anchorEl={anchorEl}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                transformOrigin={{ vertical: 'bottom', horizontal: 'left' }}
             >
                 <GradesPopup
                     deptCode={deptCode}
