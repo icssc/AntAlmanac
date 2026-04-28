@@ -105,7 +105,7 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
             return;
         }
 
-        const loadContent = async () => {
+        const loadFriendsData = async () => {
             // Validate stored session so direct visits (e.g. pasted URL) recognize the user as logged in.
             // loadSession is idempotent — safe to call even if already valid.
             await loadSession();
@@ -212,7 +212,7 @@ const SharedScheduleBanner = ({ error, setError, warning, setWarning }: Props) =
             setOpenLoadingSchedule(false);
         };
 
-        loadContent();
+        loadFriendsData();
 
         return () => {
             setOpenLoadingSchedule(false);
