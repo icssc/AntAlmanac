@@ -7,6 +7,7 @@ import {
     TableCell,
     TableBody,
     TablePagination,
+    useTheme,
 } from '@mui/material';
 import { memo, useCallback, useState } from 'react';
 
@@ -17,6 +18,7 @@ interface NotificationsTableProps {
 }
 
 export const NotificationsTable = memo(({ keys }: NotificationsTableProps) => {
+    const theme = useTheme();
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -40,10 +42,22 @@ export const NotificationsTable = memo(({ keys }: NotificationsTableProps) => {
             <TableContainer
                 component={Paper}
                 sx={{
-                    maxHeight: 400,
+                    maxHeight: { xs: 360, md: 560 },
                 }}
             >
-                <Table stickyHeader sx={{ minWidth: 650 }} size="small">
+                <Table
+                    stickyHeader
+                    sx={{
+                        minWidth: 650,
+                        [theme.breakpoints.up('md')]: {
+                            '& .MuiTableCell-root': {
+                                fontSize: '0.875rem',
+                                py: 1.25,
+                            },
+                        },
+                    }}
+                    size="small"
+                >
                     <TableHead>
                         <TableRow>
                             <TableCell></TableCell>

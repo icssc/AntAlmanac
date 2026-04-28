@@ -1,11 +1,10 @@
-import { Button, Popover } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
-
 import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { Grades } from '$lib/grades';
+import { ButtonBase, Popover } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
 
 async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
     const namedInstructors = instructors.filter((instructor) => instructor !== 'STAFF');
@@ -21,7 +20,10 @@ async function getGpaData(deptCode: string, courseNumber: string, instructors: s
         }
     }
 
-    return undefined;
+    return {
+        gpa: '',
+        instructor: namedInstructors[0] || '',
+    };
 }
 
 interface GpaCellProps {
@@ -49,30 +51,21 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
     useEffect(() => {
         getGpaData(deptCode, courseNumber, instructors)
             .then((data) => {
-                if (data) {
-                    setGpa(data.gpa);
-                    setInstructor(data.instructor);
-                }
+                setGpa(data?.gpa);
+                setInstructor(data?.instructor);
             })
             .catch(console.log);
     }, [deptCode, courseNumber, instructors]);
 
     return (
         <TableBodyCellContainer>
-            <Button
-                sx={{
-                    paddingX: 0,
-                    paddingY: 0,
-                    minWidth: 0,
-                    fontWeight: 400,
-                    fontSize: '1rem',
-                    color: secondaryColor,
-                }}
+            <ButtonBase
+                sx={{ fontFamily: 'inherit', fontSize: 'unset', color: secondaryColor, fontWeight: 700 }}
                 onClick={handleClick}
-                variant="text"
             >
-                {gpa}
-            </Button>
+                {gpa || 'GPA'}
+            </ButtonBase>
+
             <Popover
                 open={Boolean(anchorEl)}
                 onClose={hideDistribution}
