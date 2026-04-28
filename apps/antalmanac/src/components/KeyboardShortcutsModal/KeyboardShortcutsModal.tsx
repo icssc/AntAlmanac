@@ -93,11 +93,11 @@ function ShortcutRow({ description, keys, isLast }: { description: string; keys:
         <Box
             sx={{
                 display: 'flex',
-                flexDirection: { xs: 'column', sm: 'row' },
-                alignItems: { xs: 'flex-start', sm: 'center' },
+                flexDirection: 'row',
+                alignItems: 'center',
                 justifyContent: 'space-between',
-                gap: { xs: 0.75, sm: 1.5 },
-                py: { xs: 1, md: 1.25 },
+                gap: 1.5,
+                py: 1,
                 borderBottom: isLast ? 'none' : '1px solid',
                 borderColor: 'divider',
             }}
@@ -118,10 +118,9 @@ function ShortcutRow({ description, keys, isLast }: { description: string; keys:
             <Box
                 sx={{
                     flexShrink: 0,
-                    width: { xs: '100%', sm: 'auto' },
-                    alignSelf: { xs: 'stretch', sm: 'center' },
+                    alignSelf: 'center',
                     display: 'flex',
-                    justifyContent: { xs: 'flex-start', sm: 'flex-end' },
+                    justifyContent: 'flex-end',
                 }}
             >
                 <KeyCombo keys={keys} />
@@ -142,7 +141,7 @@ function SectionBlock({
     const accent = useShortcutsAccentColor();
 
     return (
-        <Box sx={{ mb: { xs: 2, md: 2.5 }, '&:last-child': { mb: 0 } }}>
+        <Box sx={{ mb: 2, '&:last-child': { mb: 0 } }}>
             <Stack
                 direction="row"
                 alignItems="center"
@@ -184,7 +183,6 @@ export interface KeyboardShortcutsModalProps {
 export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModalProps) {
     const theme = useTheme();
     const isFullScreenLayout = useMediaQuery(theme.breakpoints.down('md'));
-    const isCompactPadding = useMediaQuery(theme.breakpoints.down('sm'));
     const mac = isMacPlatform();
     const accent = theme.palette.mode === 'dark' ? theme.palette.secondary.main : theme.palette.primary.main;
 
@@ -229,7 +227,7 @@ export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModal
                               }
                             : {
                                   maxWidth: { md: 880 },
-                                  maxHeight: { xs: 'min(420px, 80vh)', md: 'min(640px, 88vh)' },
+                                  maxHeight: 'min(640px, 88vh)',
                               }),
                         minHeight: 0,
                         overflow: 'hidden',
@@ -250,8 +248,8 @@ export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModal
             <Box
                 sx={{
                     flexShrink: 0,
-                    px: isCompactPadding ? 2 : 3,
-                    py: isCompactPadding ? 1.5 : 2,
+                    px: 3,
+                    py: 2,
                     borderBottom: '1px solid',
                     borderColor: 'divider',
                 }}
@@ -353,8 +351,8 @@ export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModal
                     minHeight: 0,
                     overflowY: 'auto',
                     WebkitOverflowScrolling: 'touch',
-                    px: isCompactPadding ? 2 : 3,
-                    pt: { xs: 1.5, md: 2 },
+                    px: 3,
+                    pt: 2,
                     pb: isFullScreenLayout
                         ? `calc(${theme.spacing(2.5)} + env(safe-area-inset-bottom, 0px))`
                         : theme.spacing(2.5),
