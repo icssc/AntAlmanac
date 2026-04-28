@@ -1,22 +1,21 @@
-import { Delete, Search } from '@mui/icons-material';
-import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
-import { CustomEventId, WebsocSectionFinalExam } from '@packages/antalmanac-types';
-import { usePostHog } from 'posthog-js/react';
-import { useEffect, useRef } from 'react';
-import { Event } from 'react-big-calendar';
-
 import { deleteCourse, deleteCustomEvent } from '$actions/AppStoreActions';
+import { MapLink } from '$components/buttons/MapLink';
 import { CustomEventDialog } from '$components/Calendar/Toolbar/CustomEventDialog/CustomEventDialog';
 import ColorPicker from '$components/ColorPicker';
-import { MapLink } from '$components/buttons/MapLink';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import locationIds from '$lib/locations/locations';
 import { useQuickSearch } from '$src/hooks/useQuickSearch';
 import AppStore from '$stores/AppStore';
-import { useTimeFormatStore } from '$stores/SettingsStore';
 import { formatTimes } from '$stores/calendarizeHelpers';
+import { useSectionColorStore, useTimeFormatStore } from '$stores/SettingsStore';
+import { Delete, Search } from '@mui/icons-material';
+import { Chip, IconButton, Paper, Tooltip, Button, Box } from '@mui/material';
+import { CustomEventId, WebsocSectionFinalExam } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
+import { useEffect, useRef } from 'react';
+import { Event } from 'react-big-calendar';
 
 interface CommonCalendarEvent extends Event {
     color: string;
@@ -93,6 +92,7 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
     const paperRef = useRef<HTMLDivElement>(null);
     const quickSearch = useQuickSearch();
     const { isMilitaryTime } = useTimeFormatStore();
+    const sectionColorSetting = useSectionColorStore((store) => store.sectionColor);
 
     const postHog = usePostHog();
 
@@ -214,18 +214,20 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                             <td>Final</td>
                             <td style={{ textAlign: 'right' }}>{finalExamString}</td>
                         </tr>
-                        <tr>
-                            <td>Color</td>
-                            <td style={{ textAlign: 'right' }}>
-                                <ColorPicker
-                                    color={selectedEvent.color}
-                                    isCustomEvent={selectedEvent.isCustomEvent}
-                                    sectionCode={selectedEvent.sectionCode}
-                                    term={selectedEvent.term}
-                                    analyticsCategory={analyticsEnum.calendar}
-                                />
-                            </td>
-                        </tr>
+                        {sectionColorSetting === 'custom' ? (
+                            <tr>
+                                <td>Color</td>
+                                <td style={{ textAlign: 'right' }}>
+                                    <ColorPicker
+                                        color={selectedEvent.color}
+                                        isCustomEvent={selectedEvent.isCustomEvent}
+                                        sectionCode={selectedEvent.sectionCode}
+                                        term={selectedEvent.term}
+                                        analyticsCategory={analyticsEnum.calendar}
+                                    />
+                                </td>
+                            </tr>
+                        ) : null}
                     </tbody>
                 </table>
             </Paper>
