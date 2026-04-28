@@ -75,7 +75,7 @@ export const useReviewPromptStore = create(
          * Find a candidate course from the user's schedule history and surface the prompt.
          * Should be called once after the session is confirmed valid.
          */
-        initPrompt: async (userId: string | null) => {
+        initPrompt: async () => {
             const today = new Date();
 
             // Collect past terms within the window (termData is ordered newest-first
@@ -124,13 +124,11 @@ export const useReviewPromptStore = create(
 
             // Filter out already-reviewed combos (DB).
             let reviewedSet = new Set<string>();
-            if (userId) {
-                try {
-                    const reviewed = await trpc.review.getReviewedCombos.query({ userId });
-                    reviewedSet = new Set(reviewed.map((r) => `${r.courseId}::${r.professorId}`));
-                } catch {
-                    // Non-fatal — proceed without DB filter.
-                }
+            try {
+                const reviewed = await trpc.review.getReviewedCombos.query();
+                reviewedSet = new Set(reviewed.map((r) => `${r.courseId}::${r.professorId}`));
+            } catch {
+                // Non-fatal — proceed without DB filter.
             }
 
             const eligible = candidates.filter((c) => {
@@ -170,13 +168,12 @@ export const useReviewPromptStore = create(
         },
 
         /** Submit the review and hide the prompt on success. */
-        submitReview: async (userId: string) => {
+        submitReview: async () => {
             const { candidate, rating, selectedTags } = get();
             if (!candidate || rating === 0) return;
 
             try {
                 await trpc.review.submitReview.mutate({
-                    userId,
                     professorId: candidate.professorId,
                     courseId: candidate.courseId,
                     quarter: candidate.term,

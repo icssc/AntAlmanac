@@ -41,7 +41,7 @@ export function ReviewPrompt() {
         promptInitialized.current = true;
 
         timerRef.current = setTimeout(() => {
-            initPrompt(userId);
+            initPrompt();
         }, PROMPT_DELAY_MS);
 
         return () => {
@@ -52,7 +52,7 @@ export function ReviewPrompt() {
     if (step === 'hidden' || !candidate) return null;
 
     const handleSubmit = () => {
-        if (userId) submitReview(userId);
+        submitReview();
     };
 
     return (

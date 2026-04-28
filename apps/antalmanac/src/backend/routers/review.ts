@@ -4,7 +4,7 @@ import { TRPCError } from '@trpc/server';
 import { and, eq } from 'drizzle-orm';
 import { z } from 'zod';
 
-import { procedure, router } from '../trpc';
+import { protectedProcedure, router } from '../trpc';
 
 const reviewTagsEnum = z.enum([
     'Textbook Required',
@@ -17,7 +17,6 @@ const reviewTagsEnum = z.enum([
 ]);
 
 const submitReviewInput = z.object({
-    userId: z.string(),
     /** Raw WebSOC instructor name, e.g. "PATTIS, R." */
     professorId: z.string(),
     /** Course string, e.g. "ICS 31" */
@@ -35,13 +34,13 @@ const reviewRouter = router({
      * Submit a quick review for a course/professor from a user's schedule.
      * Enforces one review per (userId, professorId, courseId) combination.
      */
-    submitReview: procedure.input(submitReviewInput).mutation(async ({ input }) => {
+    submitReview: protectedProcedure.input(submitReviewInput).mutation(async ({ ctx, input }) => {
         const existing = await db
             .select({ id: instructorReviews.id })
             .from(instructorReviews)
             .where(
                 and(
-                    eq(instructorReviews.userId, input.userId),
+                    eq(instructorReviews.userId, ctx.userId),
                     eq(instructorReviews.professorId, input.professorId),
                     eq(instructorReviews.courseId, input.courseId)
                 )
@@ -58,7 +57,7 @@ const reviewRouter = router({
         const [inserted] = await db
             .insert(instructorReviews)
             .values({
-                userId: input.userId,
+                userId: ctx.userId,
                 professorId: input.professorId,
                 courseId: input.courseId,
                 quarter: input.quarter,
@@ -75,14 +74,14 @@ const reviewRouter = router({
      * Returns all (professorId, courseId) combos already reviewed by this user.
      * Used on the client to filter out candidates that don't need a prompt.
      */
-    getReviewedCombos: procedure.input(z.object({ userId: z.string() })).query(async ({ input }) => {
+    getReviewedCombos: protectedProcedure.query(async ({ ctx }) => {
         return db
             .select({
                 professorId: instructorReviews.professorId,
                 courseId: instructorReviews.courseId,
             })
             .from(instructorReviews)
-            .where(eq(instructorReviews.userId, input.userId));
+            .where(eq(instructorReviews.userId, ctx.userId));
     }),
 });
 
