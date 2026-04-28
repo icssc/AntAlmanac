@@ -11,6 +11,7 @@ import { TbaCalendarCard } from '$components/Calendar/TbaCalendarCard';
 import { CalendarToolbar } from '$components/Calendar/Toolbar/CalendarToolbar';
 import { EmptyState } from '$components/EmptyState';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { colorContrastSufficient } from '$lib/calendarEventTextColor';
 import {
     getLocalStorageSkeletonBlueprint,
     removeLocalStorageSkeletonBlueprint,
@@ -20,7 +21,7 @@ import { getDefaultFinalsStartDate, getFinalsStartDateForTerm } from '$lib/termD
 import AppStore from '$stores/AppStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
-import { useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
+import { useSectionColorStore, useThemeStore, useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import { CalendarMonth } from '@mui/icons-material';
 import { Box, Backdrop, useTheme } from '@mui/material';
@@ -107,6 +108,7 @@ export const ScheduleCalendar = memo(() => {
     const [scheduleNames, setScheduleNames] = useState(() => AppStore.getScheduleNames());
 
     const theme = useTheme();
+    const sectionColor = useSectionColorStore((s) => s.sectionColor);
     const { isMilitaryTime } = useTimeFormatStore();
     const [hoveredCalendarizedCourses, hoveredCalendarizedFinal] = useHoveredStore(
         useShallow((state) => [state.hoveredCalendarizedCourses, state.hoveredCalendarizedFinal])
@@ -215,29 +217,6 @@ export const ScheduleCalendar = memo(() => {
         [isDark, theme]
     );
 
-    const colorContrastSufficient = (bg: string) => {
-        // This equation is taken from w3c, does not use the colour difference part
-        const minBrightnessDiff = 125;
-
-        const backgroundRegexResult = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(
-            bg.slice(0, 7)
-        ) as RegExpExecArray; // returns {hex, r, g, b}
-        const backgroundRGB = {
-            r: parseInt(backgroundRegexResult[1], 16),
-            g: parseInt(backgroundRegexResult[2], 16),
-            b: parseInt(backgroundRegexResult[3], 16),
-        } as const;
-        const textRgb = { r: 255, g: 255, b: 255 }; // white text
-
-        const getBrightness = (color: typeof backgroundRGB) => {
-            return (color.r * 299 + color.g * 587 + color.b * 114) / 1000;
-        };
-
-        const bgBrightness = getBrightness(backgroundRGB);
-        const textBrightness = getBrightness(textRgb);
-        return Math.abs(bgBrightness - textBrightness) > minBrightnessDiff;
-    };
-
     const showEmptyState = useMemo(
         () => !loadingSchedule && !showFinalsSchedule && eventsInCalendar.length === 0 && !hoveredCalendarizedCourses,
         [loadingSchedule, showFinalsSchedule, eventsInCalendar.length, hoveredCalendarizedCourses]
@@ -314,6 +293,11 @@ export const ScheduleCalendar = memo(() => {
             AppStore.off('scheduleNamesChange', updateScheduleNames);
         };
     }, []);
+
+    useEffect(() => {
+        setEventsInCalendar(AppStore.getEventsInCalendar());
+        setFinalEventsInCalendar(AppStore.getFinalEventsInCalendar());
+    }, [sectionColor]);
 
     return (
         <Box

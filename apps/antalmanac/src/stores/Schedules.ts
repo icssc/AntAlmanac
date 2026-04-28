@@ -451,10 +451,10 @@ export class Schedules {
      * Convert courses and custom events into calendar friendly format.
      */
     getCalendarizedEvents() {
-        return [
-            ...calendarizeCourseEvents(this.getCurrentCourses()),
-            ...calendarizeCustomEvents(this.getCurrentCustomEvents()),
-        ];
+        const currentCourses = this.getCurrentCourses();
+        const courseEvents = calendarizeCourseEvents(currentCourses);
+        const courseColors = Array.from(new Set(courseEvents.map((event) => event.color)));
+        return [...courseEvents, ...calendarizeCustomEvents(this.getCurrentCustomEvents(), undefined, courseColors)];
     }
 
     /**

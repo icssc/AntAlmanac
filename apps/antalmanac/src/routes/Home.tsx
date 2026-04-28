@@ -11,6 +11,7 @@ import { KeyboardShortcutsModal } from '$components/KeyboardShortcutsModal/Keybo
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
+import { SectionThemeOnboarding } from '$components/SectionThemeOnboarding';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
 import { BLUE } from '$src/globals';
@@ -82,6 +83,7 @@ export default function Home() {
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <PatchNotes />
+            <SectionThemeOnboarding />
             <InstallPWABanner />
 
             <Stack component="main" height="calc(100svh + env(safe-area-inset-top))">

@@ -1,3 +1,7 @@
+import type { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
+import { getFinalsStartDateForTerm } from '$lib/termData';
+import { resolveSectionColorPalette } from '$lib/themes';
+import { notNull, getReferencesOccurring } from '$lib/utils';
 import type {
     ScheduleCourse,
     RepeatingCustomEvent,
@@ -5,9 +9,8 @@ import type {
     WebsocSectionFinalExam,
 } from '@packages/antalmanac-types';
 
-import type { CourseEvent, CustomEvent, Location } from '$components/Calendar/CourseCalendarEvent';
-import { getFinalsStartDateForTerm } from '$lib/termData';
-import { notNull, getReferencesOccurring } from '$lib/utils';
+import { getColorForNewSection } from './scheduleHelpers';
+import { SectionColorSetting, useSectionColorStore, useThemeStore } from './SettingsStore';
 
 export const COURSE_WEEK_DAYS = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 
@@ -18,8 +21,38 @@ export function getLocation(location: string): Location {
     return { building, room };
 }
 
-export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): CourseEvent[] => {
-    return currentCourses.flatMap((course) => {
+function getCoursesWithDisplayColors(
+    currentCourses: ScheduleCourse[],
+    sectionColor: SectionColorSetting
+): ScheduleCourse[] {
+    if (sectionColor === 'custom') {
+        return currentCourses;
+    }
+
+    const themedCourses: ScheduleCourse[] = [];
+
+    for (const course of currentCourses) {
+        const themedCourse = {
+            ...course,
+            section: {
+                ...course.section,
+                color: getColorForNewSection(course, themedCourses, sectionColor),
+            },
+        };
+        themedCourses.push(themedCourse);
+    }
+
+    return themedCourses;
+}
+
+export const calendarizeCourseEvents = (
+    currentCourses: ScheduleCourse[] = [],
+    sectionColor?: SectionColorSetting
+): CourseEvent[] => {
+    const resolvedColor = sectionColor ?? useSectionColorStore.getState().sectionColor;
+    const coursesWithDisplayColors = getCoursesWithDisplayColors(currentCourses, resolvedColor);
+
+    return coursesWithDisplayColors.flatMap((course) => {
         return course.section.meetings
             .filter((meeting) => !meeting.timeIsTBA)
             .flatMap((meeting) => {
@@ -84,8 +117,14 @@ export const calendarizeCourseEvents = (currentCourses: ScheduleCourse[] = []): 
     });
 };
 
-export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
-    return currentCourses
+export function calendarizeFinals(
+    currentCourses: ScheduleCourse[] = [],
+    sectionColor?: SectionColorSetting
+): CourseEvent[] {
+    const resolvedColor = sectionColor ?? useSectionColorStore.getState().sectionColor;
+    const coursesWithDisplayColors = getCoursesWithDisplayColors(currentCourses, resolvedColor);
+
+    return coursesWithDisplayColors
         .filter((course) => course.section.finalExam.examStatus === 'SCHEDULED_FINAL')
         .flatMap((course) => {
             // This assertion is only necessary because the filter above is not actually a type guard for the finalExam object.
@@ -120,8 +159,8 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
             const locationsWithNoDays = bldg
                 ? bldg.map(getLocation)
                 : !course.section.meetings[0].timeIsTBA
-                ? course.section.meetings[0].bldg.map(getLocation)
-                : [];
+                  ? course.section.meetings[0].bldg.map(getLocation)
+                  : [];
 
             /**
              * Fallback to January 2018 if no finals start date is available.
@@ -167,8 +206,33 @@ export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): Course
         });
 }
 
-export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEvent[] = []): CustomEvent[] {
+function getColorForThemedCustomEvent(usedColors: string[], sectionColor: SectionColorSetting): string {
+    const palette = resolveSectionColorPalette(sectionColor, useThemeStore.getState().isDark);
+    const defaultColors = Object.values(palette).map((variants) => variants[0]);
+    const lastUsedDefaultColor = usedColors.findLast((color) => defaultColors.includes(color));
+    const nextAfterLastUsed =
+        lastUsedDefaultColor === undefined
+            ? 0
+            : (defaultColors.indexOf(lastUsedDefaultColor) + 1) % defaultColors.length;
+
+    return defaultColors.find((color) => !usedColors.includes(color)) || defaultColors[nextAfterLastUsed];
+}
+
+export function calendarizeCustomEvents(
+    currentCustomEvents: RepeatingCustomEvent[] = [],
+    sectionColor?: SectionColorSetting,
+    existingColors: string[] = []
+): CustomEvent[] {
+    const resolvedColor = sectionColor ?? useSectionColorStore.getState().sectionColor;
+    const usedColors = [...existingColors];
+
     return currentCustomEvents.flatMap((customEvent) => {
+        const color =
+            resolvedColor === 'custom'
+                ? (customEvent.color ?? '#000000')
+                : getColorForThemedCustomEvent(usedColors, resolvedColor);
+        usedColors.push(color);
+
         const dayIndicesOccurring = customEvent.days.map((day, index) => (day ? index : undefined)).filter(notNull);
         /**
          * Only include the day strings that the custom event occurs.
@@ -184,7 +248,7 @@ export function calendarizeCustomEvents(currentCustomEvents: RepeatingCustomEven
 
             return {
                 customEventID: customEvent.customEventID,
-                color: customEvent.color ?? '#000000',
+                color,
                 start: new Date(2018, 0, dayIndex, startHour, startMin),
                 isCustomEvent: true,
                 end: new Date(2018, 0, dayIndex, endHour, endMin),

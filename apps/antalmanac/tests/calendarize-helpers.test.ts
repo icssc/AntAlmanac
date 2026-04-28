@@ -1,8 +1,7 @@
-import type { Schedule, RepeatingCustomEvent } from '@packages/antalmanac-types';
-import { describe, test, expect } from 'vitest';
-
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { calendarizeCourseEvents, calendarizeCustomEvents, calendarizeFinals } from '$stores/calendarizeHelpers';
+import type { Schedule, RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { describe, test, expect } from 'vitest';
 
 describe('calendarize-helpers', () => {
     const courses: Schedule['courses'] = [
@@ -71,7 +70,7 @@ describe('calendarize-helpers', () => {
     const calendarizedCourses: CourseEvent[] = [
         {
             locations: [],
-            color: 'placeholderColor',
+            color: '#2196f3',
             term: '2024 Winter',
             title: 'placeholderDeptCode placeholderCourseNumber',
             courseTitle: 'placeholderCourseTitle',
@@ -102,7 +101,7 @@ describe('calendarize-helpers', () => {
         },
         {
             locations: [],
-            color: 'placeholderColor',
+            color: '#2196f3',
             term: '2024 Winter',
             title: 'placeholderDeptCode placeholderCourseNumber',
             courseTitle: 'placeholderCourseTitle',
@@ -133,7 +132,7 @@ describe('calendarize-helpers', () => {
         },
         {
             locations: [],
-            color: 'placeholderColor',
+            color: '#2196f3',
             term: '2024 Winter',
             title: 'placeholderDeptCode placeholderCourseNumber',
             courseTitle: 'placeholderCourseTitle',
@@ -167,7 +166,7 @@ describe('calendarize-helpers', () => {
     const calendarizedCourseFinals: CourseEvent[] = [
         {
             locations: [],
-            color: 'placeholderColor',
+            color: '#2196f3',
             term: '2024 Winter',
             title: 'placeholderDeptCode placeholderCourseNumber',
             courseNumber: 'placeholderCourseNumber',
@@ -253,17 +252,17 @@ describe('calendarize-helpers', () => {
     ];
 
     test('calendarizeCourseEvents', () => {
-        const result = calendarizeCourseEvents(courses);
+        const result = calendarizeCourseEvents(courses, 'legacy');
         expect(result).toStrictEqual(calendarizedCourses);
     });
 
     test('calendarizeFinals', () => {
-        const result = calendarizeFinals(courses);
+        const result = calendarizeFinals(courses, 'legacy');
         expect(result).toStrictEqual(calendarizedCourseFinals);
     });
 
     test('calendarizeCustomEvents', () => {
-        const result = calendarizeCustomEvents(customEvents);
+        const result = calendarizeCustomEvents(customEvents, 'custom');
         expect(result).toStrictEqual(calendarizedCustomEvents);
     });
 });

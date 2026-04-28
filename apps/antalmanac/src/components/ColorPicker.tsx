@@ -2,6 +2,7 @@ import { changeCourseColor, changeCustomEventColor } from '$actions/AppStoreActi
 import { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { colorPickerPresetColors } from '$stores/scheduleHelpers';
+import { useSectionColorStore } from '$stores/SettingsStore';
 import { ColorLens } from '@mui/icons-material';
 import { IconButton, Popover, PopoverProps, Tooltip } from '@mui/material';
 import { CustomEventId } from '@packages/antalmanac-types';
@@ -32,6 +33,8 @@ const ColorPicker = memo(function ColorPicker({
 }: ColorPickerProps) {
     const [anchorEl, setAnchorEl] = useState<PopoverProps['anchorEl']>(null);
     const [currColor, setCurrColor] = useState(color);
+    const sectionColorSetting = useSectionColorStore((store) => store.sectionColor);
+    const showColorPicker = sectionColorSetting === 'custom';
 
     const postHog = usePostHog();
 
@@ -45,6 +48,10 @@ const ColorPicker = memo(function ColorPicker({
     );
 
     useEffect(() => {
+        if (!showColorPicker) {
+            return;
+        }
+
         let colorPickerId;
         if (isCustomEvent && customEventID) colorPickerId = customEventID.toString();
         else if (sectionCode) colorPickerId = sectionCode;
@@ -54,7 +61,7 @@ const ColorPicker = memo(function ColorPicker({
         return () => {
             AppStore.unregisterColorPicker(colorPickerId, updateColor);
         };
-    }, [isCustomEvent, customEventID, sectionCode, updateColor]);
+    }, [isCustomEvent, customEventID, sectionCode, showColorPicker, updateColor]);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>, postHog?: PostHog) => {
         event.stopPropagation();
@@ -77,6 +84,10 @@ const ColorPicker = memo(function ColorPicker({
         if (isCustomEvent && customEventID) changeCustomEventColor(customEventID, newColor.hex);
         else if (sectionCode && term) changeCourseColor(sectionCode, term, newColor.hex);
     };
+
+    if (!showColorPicker) {
+        return null;
+    }
 
     return (
         <>
