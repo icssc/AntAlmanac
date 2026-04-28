@@ -1,4 +1,4 @@
-import { isEmptySchedule, loadScheduleWithSessionToken, mergeShortCourseSchedules } from '$actions/AppStoreActions';
+import { isEmptySchedule, loadSchedule, mergeShortCourseSchedules, UserData } from '$actions/AppStoreActions';
 import SignInAlertDialog from '$components/SignInAlertDialog';
 import trpc from '$lib/api/trpc';
 import { authClient, signOut } from '$lib/auth/authClient';
@@ -40,7 +40,7 @@ const AuthInitializer = () => {
 
     const { data: sessionData, isPending: isSessionPending } = authClient.useSession();
 
-    const loadUnsavedChanges = useEffectEvent(async () => {
+    const loadUnsavedChanges = useEffectEvent(async (userData: UserData) => {
         if (!sessionData) {
             return;
         }
@@ -58,11 +58,10 @@ const AuthInitializer = () => {
         }
 
         if (savedData && googleId) {
-            const userData = await trpc.userData.getUserData.query({ userId: sessionData.user.id });
             const scheduleSaveState = AppStore.schedule.getScheduleAsSaveState();
 
             if (savedUserId) {
-                await trpc.userData.flagImportedSchedule.mutate({ providerAccountId: savedUserId });
+                await trpc.userData.flagImportedSchedule.mutate({ username: savedUserId });
                 setLocalStorageImportedUser(savedUserId);
             }
 
@@ -80,11 +79,7 @@ const AuthInitializer = () => {
             }
 
             await trpc.userData.saveUserData.mutate({
-                id: googleId,
-                data: {
-                    id: googleId,
-                    userData: scheduleSaveState,
-                },
+                userData: scheduleSaveState,
             });
 
             removeLocalStorageDataCache();
@@ -117,8 +112,10 @@ const AuthInitializer = () => {
                     }
                     setSsoCookie();
 
-                    await loadScheduleWithSessionToken();
-                    await loadUnsavedChanges();
+                    const userData = await trpc.userData.getUserData.query();
+
+                    await loadSchedule({ prefetched: userData });
+                    await loadUnsavedChanges(userData);
 
                     setAreSchedulesLoaded(true);
 

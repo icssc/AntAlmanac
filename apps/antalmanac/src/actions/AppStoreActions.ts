@@ -20,6 +20,8 @@ import type {
 import { TRPCClientError } from '@trpc/client';
 import type { PostHog } from 'posthog-js/react';
 
+export type UserData = Awaited<ReturnType<typeof trpc.userData.getUserData.query>>;
+
 export interface CopyScheduleOptions {
     onSuccess: (scheduleName: string) => unknown;
     onError: (scheduleName: string) => unknown;
@@ -27,6 +29,10 @@ export interface CopyScheduleOptions {
 
 interface AutoSaveScheduleOptions {
     postHog?: PostHog;
+}
+
+interface LoadScheduleOptions {
+    prefetched: UserData | null;
 }
 
 export const addCourse = (
@@ -274,10 +280,6 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
         }
     }
 };
-
-interface LoadScheduleOptions {
-    prefetched: Awaited<ReturnType<typeof trpc.userData.getUserData.query>> | null;
-}
 
 export const loadSchedule = async ({ prefetched }: LoadScheduleOptions) => {
     // logAnalytics({
