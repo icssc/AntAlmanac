@@ -170,16 +170,12 @@ export function GradesPopup(props: GradesPopupProps) {
                                 <YAxis tick={{ fontSize: 12, fill: theme.palette.text.primary }} unit="%" width={35} />
                                 <RechartsTooltip
                                     contentStyle={{
-                                        backgroundColor: accentBlue,
+                                        backgroundColor: theme.palette.background.paper,
                                         border: 'none',
                                         borderRadius: 4,
                                     }}
-                                    labelStyle={{
-                                        color: theme.palette.mode === 'dark' ? '#212529' : '#fff',
-                                    }}
-                                    itemStyle={{
-                                        color: theme.palette.mode === 'dark' ? '#212529' : '#fff',
-                                    }}
+                                    labelStyle={{ color: accentBlue }}
+                                    itemStyle={{ color: accentBlue }}
                                 />
                                 <Bar dataKey="all" fill={accentBlue} />
                             </BarChart>
