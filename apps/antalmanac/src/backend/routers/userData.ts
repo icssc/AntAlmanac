@@ -27,11 +27,6 @@ const userDataRouter = router({
         return await RDS.getUserById(db, ctx.userId);
     }),
 
-    /**
-     * Retrieves google ID by user ID.
-     * @param input - An object containing the user ID.
-     * @returns The user's google ID associated with the user ID.
-     */
     getGoogleId: protectedProcedure.query(async ({ ctx }) => {
         return await RDS.getGoogleIdByUserId(db, ctx.userId);
     }),
@@ -50,6 +45,7 @@ const userDataRouter = router({
     getUserData: protectedProcedure.query(async ({ ctx }) => {
         return await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
     }),
+
     /**
      * Retrieves Google authentication URL for login/sign up.
      * Retrieves Google auth url to login/sign up

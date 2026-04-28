@@ -16,6 +16,7 @@ jobs:
                       unlock
                       remove
                       deploy
+                      deploy-shared
                   dispatch-type: repository
                   issue-type: pull-request
                   permission: write
