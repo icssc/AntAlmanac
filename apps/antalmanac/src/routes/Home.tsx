@@ -1,11 +1,13 @@
 import { ScheduleCalendar } from '$components/Calendar/CalendarRoot';
 import { Header } from '$components/Header/Header';
 import InstallPWABanner from '$components/InstallPWABanner';
+import { KeyboardShortcutsModal } from '$components/KeyboardShortcutsModal/KeyboardShortcutsModal';
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
 import { ReviewPrompt } from '$components/ReviewPrompt/ReviewPrompt';
 import { ScheduleManagement } from '$components/ScheduleManagement/ScheduleManagement';
 import { useIsMobile } from '$hooks/useIsMobile';
+import { useKeyboardShortcutsModal } from '$hooks/useKeyboardShortcutsModal';
 import { BLUE } from '$src/globals';
 import { useScheduleManagementStore } from '$stores/ScheduleManagementStore';
 import { Stack } from '@mui/material';
@@ -75,6 +77,7 @@ function DesktopHome() {
 
 export default function Home() {
     const isMobile = useIsMobile();
+    const { open: shortcutsOpen, closeModal: closeShortcutsModal } = useKeyboardShortcutsModal();
 
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -88,6 +91,7 @@ export default function Home() {
 
             <NotificationSnackbar />
             <ReviewPrompt />
+            <KeyboardShortcutsModal open={shortcutsOpen} onClose={closeShortcutsModal} />
         </LocalizationProvider>
     );
 }

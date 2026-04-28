@@ -84,7 +84,18 @@ export function NotificationsTabs() {
                     square
                     sx={{ bgcolor: theme.palette.background.elevated, borderColor: 'divider' }}
                 >
-                    <TabList onChange={handleTabChange} indicatorColor="primary" variant="fullWidth" centered>
+                    <TabList
+                        onChange={handleTabChange}
+                        indicatorColor="primary"
+                        variant="fullWidth"
+                        centered
+                        sx={{
+                            '& .MuiTab-root': {
+                                minHeight: { xs: 40, md: 48 },
+                                fontSize: { xs: '0.8125rem', md: '0.9375rem' },
+                            },
+                        }}
+                    >
                         {sortedTerms.map((term) => (
                             <Tab label={term} key={term} value={term} />
                         ))}
