@@ -54,7 +54,7 @@ export function ScheduleManagement() {
         }
 
         if (isReadonlyView) {
-            setActiveTab('added');
+            setActiveTab(isMobile ? 'calendar' : 'added');
             return;
         }
 
