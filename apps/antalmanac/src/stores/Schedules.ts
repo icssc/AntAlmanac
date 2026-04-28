@@ -453,14 +453,8 @@ export class Schedules {
     getCalendarizedEvents() {
         const currentCourses = this.getCurrentCourses();
         const courseEvents = calendarizeCourseEvents(currentCourses);
-        return [
-            ...courseEvents,
-            ...calendarizeCustomEvents(
-                this.getCurrentCustomEvents(),
-                undefined,
-                currentCourses.map((course) => course.section.color)
-            ),
-        ];
+        const courseColors = Array.from(new Set(courseEvents.map((event) => event.color)));
+        return [...courseEvents, ...calendarizeCustomEvents(this.getCurrentCustomEvents(), undefined, courseColors)];
     }
 
     /**

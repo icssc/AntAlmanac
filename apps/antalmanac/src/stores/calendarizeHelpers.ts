@@ -21,21 +21,38 @@ export function getLocation(location: string): Location {
     return { building, room };
 }
 
+function getCoursesWithDisplayColors(
+    currentCourses: ScheduleCourse[],
+    sectionColor: SectionColorSetting
+): ScheduleCourse[] {
+    if (sectionColor === 'custom') {
+        return currentCourses;
+    }
+
+    const themedCourses: ScheduleCourse[] = [];
+
+    for (const course of currentCourses) {
+        const themedCourse = {
+            ...course,
+            section: {
+                ...course.section,
+                color: getColorForNewSection(course, themedCourses, sectionColor),
+            },
+        };
+        themedCourses.push(themedCourse);
+    }
+
+    return themedCourses;
+}
+
 export const calendarizeCourseEvents = (
     currentCourses: ScheduleCourse[] = [],
     sectionColor?: SectionColorSetting
 ): CourseEvent[] => {
     const resolvedColor = sectionColor ?? useSectionColorStore.getState().sectionColor;
-    const themedCourses: ScheduleCourse[] = [];
+    const coursesWithDisplayColors = getCoursesWithDisplayColors(currentCourses, resolvedColor);
 
-    for (const course of currentCourses) {
-        if (resolvedColor !== 'custom') {
-            course.section.color = getColorForNewSection(course, themedCourses, resolvedColor);
-        }
-        themedCourses.push(course);
-    }
-
-    return themedCourses.flatMap((course) => {
+    return coursesWithDisplayColors.flatMap((course) => {
         return course.section.meetings
             .filter((meeting) => !meeting.timeIsTBA)
             .flatMap((meeting) => {
@@ -100,8 +117,14 @@ export const calendarizeCourseEvents = (
     });
 };
 
-export function calendarizeFinals(currentCourses: ScheduleCourse[] = []): CourseEvent[] {
-    return currentCourses
+export function calendarizeFinals(
+    currentCourses: ScheduleCourse[] = [],
+    sectionColor?: SectionColorSetting
+): CourseEvent[] {
+    const resolvedColor = sectionColor ?? useSectionColorStore.getState().sectionColor;
+    const coursesWithDisplayColors = getCoursesWithDisplayColors(currentCourses, resolvedColor);
+
+    return coursesWithDisplayColors
         .filter((course) => course.section.finalExam.examStatus === 'SCHEDULED_FINAL')
         .flatMap((course) => {
             // This assertion is only necessary because the filter above is not actually a type guard for the finalExam object.
