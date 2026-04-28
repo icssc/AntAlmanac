@@ -44,6 +44,8 @@ export const NotificationSnackbar = () => {
                     width: '100%',
                     display: 'flex',
                     alignItems: 'center',
+                    color: 'white',
+                    '& .MuiAlert-icon': { color: 'white' },
                 }}
             >
                 {message}
