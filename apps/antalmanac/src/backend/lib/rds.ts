@@ -236,7 +236,7 @@ export class RDS {
                 .onConflictDoUpdate({
                     target: schedules.id,
                     set: buildConflictUpdateSet(schedules, scheduleUpdatePolicy),
-                    where: buildConflictUpdateWhereChanged(schedules, scheduleUpdatePolicy, ['name', 'notes', 'index']),
+                    where: buildConflictUpdateWhereChanged(schedules, scheduleUpdatePolicy, ['lastUpdated']),
                 });
         }
 
@@ -303,7 +303,7 @@ export class RDS {
             .onConflictDoUpdate({
                 target: [coursesInSchedule.scheduleId, coursesInSchedule.sectionCode, coursesInSchedule.term],
                 set: buildConflictUpdateSet(coursesInSchedule, courseUpdatePolicy),
-                where: buildConflictUpdateWhereChanged(coursesInSchedule, courseUpdatePolicy, ['color']),
+                where: buildConflictUpdateWhereChanged(coursesInSchedule, courseUpdatePolicy, ['lastUpdated']),
             });
     }
 
@@ -356,14 +356,7 @@ export class RDS {
             .onConflictDoUpdate({
                 target: [customEvents.scheduleId, customEvents.id],
                 set: buildConflictUpdateSet(customEvents, customEventUpdatePolicy),
-                where: buildConflictUpdateWhereChanged(customEvents, customEventUpdatePolicy, [
-                    'title',
-                    'start',
-                    'end',
-                    'days',
-                    'color',
-                    'building',
-                ]),
+                where: buildConflictUpdateWhereChanged(customEvents, customEventUpdatePolicy, ['lastUpdated']),
             });
     }
 

@@ -5,12 +5,6 @@ export type ConflictUpdatePolicy<T extends PgTable> = {
     [K in keyof T['_']['columns']]: 'update' | 'keep';
 };
 
-type UpdateKeys<T extends Record<PropertyKey, unknown>> = {
-    [K in keyof T]: T[K] extends 'update' ? K : never;
-}[keyof T];
-
-type NonEmptyArray<T> = readonly [T, ...T[]];
-
 const excludedColumn = (columnName: string) => sql.raw(`excluded."${columnName.replace(/"/g, '""')}"`);
 
 /**
@@ -62,12 +56,20 @@ export function buildConflictUpdateSet<T extends PgTable>(
  * Builds a `where` clause for `onConflictDoUpdate` that skips the update
  * unless at least one updated column differs from the inserted row.
  */
-export function buildConflictUpdateWhereChanged<T extends PgTable, const P extends ConflictUpdatePolicy<T>>(
+export function buildConflictUpdateWhereChanged<T extends PgTable>(
     table: T,
-    _policy: P,
-    keys: NonEmptyArray<UpdateKeys<P>>
-): SQL {
+    policy: ConflictUpdatePolicy<T>,
+    excludeKeys: (keyof T['_']['columns'])[] = []
+): SQL | undefined {
     const columns = getTableColumns(table);
+    const excluded = new Set(excludeKeys);
+    const keys = Object.keys(policy).filter(
+        (key) => policy[key as keyof typeof policy] === 'update' && !excluded.has(key as keyof T['_']['columns'])
+    );
+
+    if (keys.length === 0) {
+        return undefined;
+    }
 
     const changedComparisons = keys.map((key) => {
         const column = columns[key as keyof typeof columns];
