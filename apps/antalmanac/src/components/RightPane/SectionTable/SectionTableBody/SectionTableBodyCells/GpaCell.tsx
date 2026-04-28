@@ -50,6 +50,8 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
     }, []);
 
     useEffect(() => {
+        setLoading(true);
+
         getGpaData(deptCode, courseNumber, instructors)
             .then((data) => {
                 setGpa(data?.gpa);
