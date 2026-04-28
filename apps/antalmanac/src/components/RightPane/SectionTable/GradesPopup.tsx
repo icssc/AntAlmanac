@@ -1,3 +1,4 @@
+import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { Grades, type GradesProps } from '$lib/grades';
 import {
     Box,
@@ -69,6 +70,7 @@ export interface GradesPopupProps {
 
 export function GradesPopup(props: GradesPopupProps) {
     const theme = useTheme();
+    const secondaryColor = useSecondaryColor();
 
     const { deptCode, courseNumber, instructor = '', isMobile } = props;
 
@@ -166,7 +168,20 @@ export function GradesPopup(props: GradesPopupProps) {
                                     height={20}
                                 />
                                 <YAxis tick={{ fontSize: 12, fill: theme.palette.text.primary }} unit="%" width={35} />
-                                <RechartsTooltip contentStyle={{ backgroundColor: theme.palette.background.paper }} />
+                                <RechartsTooltip
+                                    contentStyle={{
+                                        backgroundColor: theme.palette.background.paper,
+                                        border: 0,
+                                    }}
+                                    labelStyle={{ color: secondaryColor }}
+                                    itemStyle={{ color: secondaryColor }}
+                                    labelFormatter={(gradeLabel) => `Grade ${gradeLabel}`}
+                                    formatter={(value) => {
+                                        const n = typeof value === 'number' ? value : Number(value);
+                                        const pct = Number.isFinite(n) ? n.toFixed(1) : String(value);
+                                        return [`${pct}%`];
+                                    }}
+                                />
                                 <Bar dataKey="all" fill={theme.palette.primary.main} />
                             </BarChart>
                         </ResponsiveContainer>
