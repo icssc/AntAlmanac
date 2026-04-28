@@ -11,8 +11,8 @@ interface FriendIdentityProps {
 export function FriendIdentity({ name, email, avatar, avatarSize = 30 }: FriendIdentityProps) {
     return (
         <Stack direction="row" alignItems="center" spacing={1.5} flex={1} overflow="hidden">
-            <Avatar src={avatar ?? undefined} sx={{ bgcolor: 'grey.700', width: avatarSize, height: avatarSize }}>
-                {!avatar && <AccountCircle sx={{ fontSize: avatarSize * 0.67 }} />}
+            <Avatar src={avatar || undefined} sx={{ bgcolor: 'grey.700', width: avatarSize, height: avatarSize }}>
+                <AccountCircle sx={{ fontSize: avatarSize * 0.67 }} />
             </Avatar>
             <Box sx={{ minWidth: 0, userSelect: 'none', cursor: 'default' }}>
                 <Typography variant="body2" fontWeight={600} noWrap>
