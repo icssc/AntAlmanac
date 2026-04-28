@@ -7,15 +7,17 @@ const ANTALMANAC_DESCRIPTION = 'A schedule planning and course exploration tool 
 
 const THEME_INITIALIZER_SCRIPT = `
 (function () {
-    try {
-        var storedTheme = window.localStorage.getItem('theme') || 'system';
-        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        var appTheme = storedTheme === 'dark' || (storedTheme === 'system' && prefersDark) ? 'dark' : 'light';
+    var storedTheme = 'system';
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-        document.documentElement.dataset.appTheme = appTheme;
+    try {
+        storedTheme = window.localStorage.getItem('theme') || 'system';
     } catch (_) {
-        document.documentElement.dataset.appTheme = 'light';
+        storedTheme = 'system';
     }
+
+    document.documentElement.dataset.appTheme =
+        storedTheme === 'dark' || (storedTheme === 'system' && prefersDark) ? 'dark' : 'light';
 })();
 `;
 
