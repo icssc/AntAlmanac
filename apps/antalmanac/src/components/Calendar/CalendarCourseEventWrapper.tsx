@@ -1,14 +1,14 @@
 'use client';
 
+import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
+import { isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
+import { useIsReadonlyView } from '$hooks/useIsReadonlyView';
+import { useQuickSearch } from '$src/hooks/useQuickSearch';
+import { useSelectedEventStore } from '$stores/SelectedEventStore';
 import { Box } from '@mui/material';
 import { cloneElement, isValidElement, useCallback } from 'react';
 import { EventWrapperProps } from 'react-big-calendar';
 import { useShallow } from 'zustand/react/shallow';
-
-import type { CalendarEvent, CourseEvent } from '$components/Calendar/CourseCalendarEvent';
-import { isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
-import { useQuickSearch } from '$src/hooks/useQuickSearch';
-import { useSelectedEventStore } from '$stores/SelectedEventStore';
 
 interface CalendarCourseEventWrapperProps extends EventWrapperProps<CalendarEvent> {
     children?: React.ReactElement<{ onClick: (e: React.MouseEvent) => void }>;
@@ -19,6 +19,7 @@ interface CalendarCourseEventWrapperProps extends EventWrapperProps<CalendarEven
  */
 export const CalendarCourseEventWrapper = ({ children, ...props }: CalendarCourseEventWrapperProps) => {
     const quickSearch = useQuickSearch();
+    const isReadonlyView = useIsReadonlyView();
 
     const setSelectedEvent = useSelectedEventStore(useShallow((state) => state.setSelectedEvent));
 
@@ -31,14 +32,14 @@ export const CalendarCourseEventWrapper = ({ children, ...props }: CalendarCours
             e.preventDefault();
             e.stopPropagation();
 
-            if (!props.event.isCustomEvent && (e.metaKey || e.ctrlKey)) {
+            if (!isReadonlyView && !props.event.isCustomEvent && (e.metaKey || e.ctrlKey)) {
                 const courseInfo = props.event as CourseEvent;
                 quickSearch(courseInfo.deptValue, courseInfo.courseNumber, courseInfo.term);
             } else {
                 setSelectedEvent(e, props.event);
             }
         },
-        [props.event, quickSearch, setSelectedEvent]
+        [props.event, isReadonlyView, quickSearch, setSelectedEvent]
     );
 
     return <Box>{isValidElement(children) ? cloneElement(children, { onClick: handleClick }) : children}</Box>;
