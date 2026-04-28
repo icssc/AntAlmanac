@@ -5,6 +5,20 @@ import './globals.css';
 
 const ANTALMANAC_DESCRIPTION = 'A schedule planning and course exploration tool for UCI students.';
 
+const THEME_INITIALIZER_SCRIPT = `
+(function () {
+    try {
+        var storedTheme = window.localStorage.getItem('theme') || 'system';
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var appTheme = storedTheme === 'dark' || (storedTheme === 'system' && prefersDark) ? 'dark' : 'light';
+
+        document.documentElement.dataset.appTheme = appTheme;
+    } catch (_) {
+        document.documentElement.dataset.appTheme = 'light';
+    }
+})();
+`;
+
 export const metadata: Metadata = {
     title: 'AntAlmanac - UCI Schedule Planner',
     description: ANTALMANAC_DESCRIPTION,
@@ -61,7 +75,10 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
+            <Script id="theme-initializer" strategy="beforeInteractive">
+                {THEME_INITIALIZER_SCRIPT}
+            </Script>
             <body>
                 <Script>
                     {`console.log(

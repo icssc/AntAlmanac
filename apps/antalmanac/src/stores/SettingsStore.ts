@@ -28,6 +28,7 @@ export interface ThemeStore {
     isDark: boolean;
 
     setAppTheme: (themeSetting: ThemeSetting, postHog?: PostHog) => void;
+    refreshSystemTheme: () => void;
 }
 
 function themeShouldBeDark(themeSetting: ThemeSetting) {
@@ -35,9 +36,17 @@ function themeShouldBeDark(themeSetting: ThemeSetting) {
     return themeSetting == 'dark';
 }
 
+function setDocumentTheme(appTheme: 'light' | 'dark') {
+    document.documentElement.dataset.appTheme = appTheme;
+}
+
 export const useThemeStore = create<ThemeStore>((set) => {
     const storedThemeSetting: ThemeSetting = (getLocalStorageTheme() ?? 'system') as ThemeSetting;
     const isDark = themeShouldBeDark(storedThemeSetting);
+
+    if (typeof document !== 'undefined') {
+        setDocumentTheme(isDark ? 'dark' : 'light');
+    }
 
     return {
         themeSetting: storedThemeSetting,
@@ -50,6 +59,7 @@ export const useThemeStore = create<ThemeStore>((set) => {
             const isDark = themeShouldBeDark(themeSetting);
             const appTheme = isDark ? 'dark' : 'light';
 
+            setDocumentTheme(appTheme);
             set({ appTheme, themeSetting, isDark });
 
             logAnalytics(postHog, {
@@ -57,6 +67,17 @@ export const useThemeStore = create<ThemeStore>((set) => {
                 action: analyticsEnum.nav.actions.CHANGE_THEME,
                 label: themeSetting,
             });
+        },
+        refreshSystemTheme: () => {
+            const state = useThemeStore.getState();
+
+            if (state.themeSetting !== 'system') return;
+
+            const isDark = themeShouldBeDark('system');
+            const appTheme = isDark ? 'dark' : 'light';
+
+            setDocumentTheme(appTheme);
+            set({ appTheme, isDark });
         },
     };
 });
