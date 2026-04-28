@@ -20,7 +20,6 @@ import {
 import { useEffect, useRef } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-/** Delay (ms) after mount before the prompt is surfaced. */
 const PROMPT_DELAY_MS = 15_000;
 
 export function ReviewPrompt() {
