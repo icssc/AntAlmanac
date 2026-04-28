@@ -1,10 +1,9 @@
-import { Stack } from '@mui/material';
-import { useState } from 'react';
-
-import HomePageWrapper from '$components/HomePageWrapper';
+import HomeLayout from '$components/HomeLayout';
 import SharedScheduleBanner from '$components/SharedScheduleBanner';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { DesktopHome, MobileHome } from '$routes/Home';
+import { Stack } from '@mui/material';
+import { useState } from 'react';
 
 export function SharedSchedulePage() {
     const isMobileScreen = useIsMobile();
@@ -15,7 +14,7 @@ export function SharedSchedulePage() {
     const isBlocked = !!(error || warning);
 
     return (
-        <HomePageWrapper hideHeader={isBlocked}>
+        <HomeLayout hideHeader={isBlocked}>
             <Stack
                 flex={1}
                 justifyContent={isBlocked ? 'center' : 'flex-start'}
@@ -26,6 +25,6 @@ export function SharedSchedulePage() {
                 <SharedScheduleBanner error={error} setError={setError} warning={warning} setWarning={setWarning} />
                 {!isBlocked && (isMobileScreen ? <MobileHome /> : <DesktopHome />)}
             </Stack>
-        </HomePageWrapper>
+        </HomeLayout>
     );
 }

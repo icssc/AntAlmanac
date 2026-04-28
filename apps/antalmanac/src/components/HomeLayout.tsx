@@ -1,12 +1,11 @@
-import { Stack } from '@mui/material';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
-import { type ReactNode } from 'react';
-
 import { Header } from '$components/Header/Header';
 import InstallPWABanner from '$components/InstallPWABanner';
 import { NotificationSnackbar } from '$components/NotificationSnackbar';
 import PatchNotes from '$components/PatchNotes';
+import { Stack } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV2';
+import { type ReactNode } from 'react';
 
 interface Props {
     children: ReactNode;
@@ -20,7 +19,7 @@ interface Props {
  * @param chilren The body of the page, usually the desktop/home components
  * plus whatever a page might want to add on to that.
  */
-function HomePageWrapper({ children, hideHeader }: Props) {
+function HomeLayout({ children, hideHeader }: Props) {
     return (
         <LocalizationProvider dateAdapter={AdapterDateFns}>
             <PatchNotes />
@@ -36,4 +35,4 @@ function HomePageWrapper({ children, hideHeader }: Props) {
     );
 }
 
-export default HomePageWrapper;
+export default HomeLayout;
