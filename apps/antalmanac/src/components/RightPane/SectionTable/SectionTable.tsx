@@ -11,7 +11,7 @@ import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
 import { Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
-import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Alert, Box, Button, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { useMemo } from 'react';
 
