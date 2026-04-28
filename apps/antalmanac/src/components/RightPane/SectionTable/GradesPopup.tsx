@@ -1,3 +1,4 @@
+import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { Grades, type GradesProps } from '$lib/grades';
 import {
     Box,
@@ -69,6 +70,7 @@ export interface GradesPopupProps {
 
 export function GradesPopup(props: GradesPopupProps) {
     const theme = useTheme();
+    const accentBlue = useSecondaryColor();
 
     const { deptCode, courseNumber, instructor = '', isMobile } = props;
 
@@ -166,8 +168,20 @@ export function GradesPopup(props: GradesPopupProps) {
                                     height={20}
                                 />
                                 <YAxis tick={{ fontSize: 12, fill: theme.palette.text.primary }} unit="%" width={35} />
-                                <RechartsTooltip contentStyle={{ backgroundColor: theme.palette.background.paper }} />
-                                <Bar dataKey="all" fill={theme.palette.primary.main} />
+                                <RechartsTooltip
+                                    contentStyle={{
+                                        backgroundColor: accentBlue,
+                                        border: 'none',
+                                        borderRadius: 4,
+                                    }}
+                                    labelStyle={{
+                                        color: theme.palette.mode === 'dark' ? '#212529' : '#fff',
+                                    }}
+                                    itemStyle={{
+                                        color: theme.palette.mode === 'dark' ? '#212529' : '#fff',
+                                    }}
+                                />
+                                <Bar dataKey="all" fill={accentBlue} />
                             </BarChart>
                         </ResponsiveContainer>
                     </Box>
