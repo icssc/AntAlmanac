@@ -119,6 +119,8 @@ export const Signin = () => {
             }
 
             setOpenLoadingSchedule(false);
+
+            void useNotificationStore.getState().loadNotifications();
         },
         [setOpenLoadingSchedule, loadSession, validateImportedUser]
     );

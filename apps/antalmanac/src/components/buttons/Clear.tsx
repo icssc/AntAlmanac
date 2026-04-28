@@ -1,24 +1,9 @@
-import { DeleteOutline } from '@mui/icons-material';
-import { IconButton, SxProps, Tooltip } from '@mui/material';
-import { PostHog, usePostHog } from 'posthog-js/react';
-
 import { clearSchedules } from '$actions/AppStoreActions';
 import analyticsEnum, { AnalyticsCategory, logAnalytics } from '$lib/analytics/analytics';
-
-function handleClearSchedule(postHog?: PostHog, analyticsCategory?: AnalyticsCategory) {
-    return () => {
-        if (window.confirm('Are you sure you want to clear this schedule?')) {
-            analyticsCategory = analyticsCategory || analyticsEnum.calendar;
-
-            logAnalytics(postHog, {
-                category: analyticsCategory,
-                action: analyticsCategory.actions.CLEAR_SCHEDULE,
-            });
-
-            clearSchedules();
-        }
-    };
-}
+import { DeleteOutline } from '@mui/icons-material';
+import { IconButton, SxProps, Tooltip } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
+import { useCallback } from 'react';
 
 interface ClearScheduleButtonProps {
     skeletonMode?: boolean;
@@ -29,21 +14,31 @@ interface ClearScheduleButtonProps {
     disabled?: boolean;
 }
 
-export function ClearScheduleButton({ skeletonMode, buttonSx, size, fontSize, disabled }: ClearScheduleButtonProps) {
+export function ClearScheduleButton({
+    skeletonMode,
+    buttonSx,
+    size,
+    fontSize,
+    analyticsCategory,
+    disabled,
+}: ClearScheduleButtonProps) {
     const postHog = usePostHog();
+
+    const handleClick = useCallback(() => {
+        if (!window.confirm('Are you sure you want to clear this schedule?')) return;
+        const category = analyticsCategory || analyticsEnum.calendar;
+        logAnalytics(postHog, {
+            category,
+            action: category.actions.CLEAR_SCHEDULE,
+        });
+        clearSchedules();
+    }, [postHog, analyticsCategory]);
 
     return (
         <Tooltip title="Clear schedule">
-            <span>
-                <IconButton
-                    sx={buttonSx}
-                    onClick={handleClearSchedule(postHog)}
-                    size={size}
-                    disabled={skeletonMode || disabled}
-                >
-                    <DeleteOutline fontSize={fontSize} />
-                </IconButton>
-            </span>
+            <IconButton sx={buttonSx} onClick={handleClick} size={size} disabled={skeletonMode || disabled}>
+                <DeleteOutline fontSize={fontSize} />
+            </IconButton>
         </Tooltip>
     );
 }
