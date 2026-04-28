@@ -187,7 +187,7 @@ export function FriendsMenu({
                     textColor="inherit"
                     sx={(theme) => ({
                         mb: 1,
-                        '& .MuiTab-root': { color: 'text.secondary' },
+                        '& .MuiTab-root': { color: theme.palette.mode === 'dark' ? '#C7C7C7' : '#606166' },
                         '& .MuiTab-root.Mui-selected': {
                             color: theme.palette.mode === 'dark' ? '#90B3FA' : theme.palette.primary.main,
                         },
