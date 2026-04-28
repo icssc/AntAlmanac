@@ -316,19 +316,6 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
         postHog,
     ]);
 
-    const handleGoHome = useCallback(async () => {
-        try {
-            beginLoadingSchedule();
-
-            await loadSessionSchedule();
-        } catch (err) {
-            console.error('Error loading user data:', err);
-        }
-
-        setOpenLoadingSchedule(false);
-        navigate('/');
-    }, [navigate, setOpenLoadingSchedule, beginLoadingSchedule, loadSessionSchedule]);
-
     const handleAddFriend = useCallback(async () => {
         if (!scheduleOwnerId) return;
         try {
@@ -347,7 +334,7 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
         return (
             <>
                 <Alert severity="error">{error}</Alert>
-                <Button variant="contained" onClick={handleGoHome}>
+                <Button variant="contained" onClick={handleExitSharedSchedule}>
                     Go Home
                 </Button>
             </>
