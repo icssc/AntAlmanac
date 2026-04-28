@@ -3,17 +3,16 @@ import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
 import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
 import { EnrollmentHistoryPopup } from '$components/RightPane/SectionTable/EnrollmentHistoryPopup';
-import GradesPopup from '$components/RightPane/SectionTable/GradesPopup';
-import type { SectionTableProps } from '$components/RightPane/SectionTable/SectionTable.types';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
 import WarningAlert from '$components/WarningAlert';
 import { useIsMobile } from '$hooks/useIsMobile';
-import analyticsEnum from '$lib/analytics/analytics';
-import { SECTION_TABLE_COLUMNS, useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
+import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
+import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
-import { Assessment, ExpandLess, ExpandMore, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
+import { ExpandLess, ExpandMore, Route, ShowChart as ShowChartIcon } from '@mui/icons-material';
 import { Box, Collapse, IconButton, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { AACourse } from '@packages/antalmanac-types';
 import { useMemo, useState } from 'react';
 import { forceCheck } from 'react-lazyload';
 
@@ -37,6 +36,16 @@ const tableHeaderColumns: Record<Exclude<SectionTableColumn, 'action'>, TableHea
     syllabus: { label: 'Syllabus', weight: 5 },
 };
 const tableHeaderColumnEntries = Object.entries(tableHeaderColumns);
+
+interface SectionTableProps {
+    courseDetails: AACourse;
+    term: string;
+    allowHighlight: boolean;
+    scheduleNames: string[];
+    analyticsCategory: AnalyticsCategory;
+    updatedAt?: string;
+    missingSections?: string[];
+}
 
 function SectionTable(props: SectionTableProps) {
     const [openContent, setOpenContent] = useState(true);
@@ -117,20 +126,6 @@ function SectionTable(props: SectionTableProps) {
                     text="Planner"
                     icon={<Route />}
                     redirectLink={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
-                />
-
-                <CourseInfoButton
-                    analyticsCategory={analyticsCategory}
-                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_ZOTISTICS}
-                    text="Zotistics"
-                    icon={<Assessment />}
-                    popupContent={
-                        <GradesPopup
-                            deptCode={courseDetails.deptCode}
-                            courseNumber={courseDetails.courseNumber}
-                            isMobile={isMobile}
-                        />
-                    }
                 />
 
                 <CourseInfoButton

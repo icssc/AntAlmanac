@@ -1,7 +1,6 @@
 import trpc from '$lib/api/trpc';
 import { setWasLoggedIn } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
-import { useNotificationStore } from '$stores/NotificationStore';
 import type { Roadmap } from '@packages/antalmanac-types';
 import { TRPCClientError } from '@trpc/client';
 import { create } from 'zustand';
@@ -67,7 +66,6 @@ export const useSessionStore = create<SessionState>((set) => {
                 });
 
                 setWasLoggedIn(true);
-                useNotificationStore.getState().loadNotifications();
                 return true;
             } catch (error) {
                 const isUnauthorized = error instanceof TRPCClientError && error.data?.code === 'UNAUTHORIZED';
@@ -85,7 +83,6 @@ export const useSessionStore = create<SessionState>((set) => {
                     avatar: null,
                     googleId: null,
                 });
-                useNotificationStore.getState().loadNotifications();
                 return false;
             }
         },
