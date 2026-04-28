@@ -1,14 +1,16 @@
 import trpc from '$lib/api/trpc';
 import { setWasLoggedIn } from '$lib/localStorage';
 import { clearSsoCookie } from '$lib/ssoCookie';
-import { useNotificationStore } from '$stores/NotificationStore';
 import type { Roadmap } from '@packages/antalmanac-types';
+import { TRPCClientError } from '@trpc/client';
 import { create } from 'zustand';
 
 interface SessionState {
     userId: string | null;
     isGoogleUser: boolean;
     email: string | null;
+    name: string | null;
+    avatar: string | null;
     sessionIsValid: boolean;
     loadSession: () => Promise<boolean>;
     clearSession: () => Promise<string | null>;
@@ -33,6 +35,8 @@ export const useSessionStore = create<SessionState>((set) => {
         userId: null,
         isGoogleUser: false,
         email: null,
+        name: null,
+        avatar: null,
         sessionIsValid: false,
         googleId: null,
         filterTakenCourses: false,
@@ -41,36 +45,41 @@ export const useSessionStore = create<SessionState>((set) => {
 
         loadSession: async () => {
             try {
-                const sessionIsValid = await trpc.auth.validateSession.query();
-                if (!sessionIsValid) {
-                    set({ sessionIsValid: false, userId: null, isGoogleUser: false, email: null, googleId: null });
-                    useNotificationStore.getState().loadNotifications();
-                    return false;
-                }
+                const { users, accounts } = await trpc.userData.getUserAndAccount.query();
 
-                set({ sessionIsValid: true });
-
-                const { users } = await trpc.userData.getUserAndAccountBySessionToken.query();
-
-                let googleId = await trpc.userData.getGoogleIdByUserId.query();
+                let googleId = accounts?.providerAccountId ?? null;
                 if (googleId?.startsWith('google_')) {
                     googleId = googleId.slice('google_'.length);
                 }
-                const isGoogleUser = Boolean(users.email);
+
                 set({
+                    sessionIsValid: true,
                     userId: users.id,
-                    isGoogleUser,
+                    isGoogleUser: Boolean(users.email),
                     email: users.email ?? null,
+                    name: users.name ?? null,
+                    avatar: users.avatar ?? null,
                     googleId,
                 });
 
                 setWasLoggedIn(true);
-                useNotificationStore.getState().loadNotifications();
                 return true;
             } catch (error) {
-                console.error('Failed to load session:', error);
-                set({ sessionIsValid: false, userId: null, isGoogleUser: false, email: null, googleId: null });
-                useNotificationStore.getState().loadNotifications();
+                const isUnauthorized = error instanceof TRPCClientError && error.data?.code === 'UNAUTHORIZED';
+
+                if (!isUnauthorized) {
+                    console.error('Failed to load session:', error);
+                }
+
+                set({
+                    sessionIsValid: false,
+                    userId: null,
+                    isGoogleUser: false,
+                    email: null,
+                    name: null,
+                    avatar: null,
+                    googleId: null,
+                });
                 return false;
             }
         },
@@ -93,6 +102,8 @@ export const useSessionStore = create<SessionState>((set) => {
                 sessionIsValid: false,
                 isGoogleUser: false,
                 email: null,
+                name: null,
+                avatar: null,
                 googleId: null,
                 filterTakenCourses: false,
                 userTakenCourses: new Set(),
