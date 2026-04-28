@@ -2,7 +2,6 @@ import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
-import trpc from '$lib/api/trpc';
 import { getErrorMessage } from '$lib/utils';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -10,7 +9,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from '@mui/material';
 import type { User } from '@packages/antalmanac-types';
 import { usePostHog } from 'posthog-js/react';
-import { type MouseEvent, useCallback, useEffect, useState } from 'react';
+import { type MouseEvent, useMemo, useState } from 'react';
 
 interface SignoutProps {
     onLogoutComplete?: () => void;
@@ -19,9 +18,21 @@ interface SignoutProps {
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [user, setUser] = useState<Pick<User, 'name' | 'avatar' | 'email'> | null>(null);
-    const { sessionIsValid, clearSession } = useSessionStore();
+    const { sessionIsValid, clearSession, name, avatar, email } = useSessionStore();
     const postHog = usePostHog();
     const isDark = useThemeStore((store) => store.isDark);
+
+    const user = useMemo<Pick<User, 'name' | 'avatar' | 'email'> | null>(
+        () =>
+            sessionIsValid
+                ? {
+                      name: name ?? undefined,
+                      avatar: avatar ?? undefined,
+                      email: email ?? undefined,
+                  }
+                : null,
+        [sessionIsValid, name, avatar, email]
+    );
 
     const open = Boolean(anchorEl);
     const handleClick = (event: MouseEvent<HTMLElement>) => {
@@ -55,23 +66,6 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
             postHog?.reset();
         }
     };
-
-    const handleAuthChange = useCallback(async () => {
-        if (sessionIsValid) {
-            const userData = await trpc.userData.getUserAndAccount.query().then((res) => res.users);
-            setUser({
-                name: userData.name ?? undefined,
-                avatar: userData.avatar ?? undefined,
-                email: userData.email ?? undefined,
-            });
-        }
-    }, [sessionIsValid]);
-
-    useEffect(() => {
-        if (sessionIsValid) {
-            handleAuthChange();
-        }
-    }, [handleAuthChange, sessionIsValid]);
 
     return (
         <div id="load-save-container">

@@ -322,12 +322,17 @@ export const loadGuestSchedule = async (username: string, rememberMe: boolean, p
     }
 };
 
-export const loadSchedule = async (postHog?: PostHog) => {
+interface LoadScheduleOptions {
+    prefetched: Awaited<ReturnType<typeof trpc.userData.getUserData.query>> | null;
+    postHog?: PostHog;
+}
+
+export const loadSchedule = async ({ prefetched, postHog }: LoadScheduleOptions) => {
     try {
-        let analyticsErrorMessage = '';
-        const userDataResponse = await trpc.userData.getUserData.query();
+        const userDataResponse = prefetched ?? (await trpc.userData.getUserData.query());
         const scheduleSaveState = userDataResponse?.userData;
         const userId = userDataResponse?.id;
+        let analyticsErrorMessage = '';
 
         if (scheduleSaveState !== undefined && isEmptySchedule(scheduleSaveState.schedules)) {
             analyticsIdentifyUser(postHog, userId);

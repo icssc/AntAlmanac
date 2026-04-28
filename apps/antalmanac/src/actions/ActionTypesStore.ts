@@ -119,9 +119,15 @@ class ActionTypesStore extends EventEmitter {
 
         if (autoSave) {
             this.emit('autoSaveStart');
-            await autoSaveSchedule({ postHog });
-            AppStore.unsavedChanges = false;
-            this.emit('autoSaveEnd');
+
+            try {
+                await autoSaveSchedule({ postHog });
+                AppStore.unsavedChanges = false;
+            } catch (error) {
+                console.error('Auto-save failed:', error);
+            } finally {
+                this.emit('autoSaveEnd');
+            }
         }
     }
 }
