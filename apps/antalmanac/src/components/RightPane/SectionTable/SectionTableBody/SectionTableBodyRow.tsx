@@ -8,6 +8,7 @@ import { RestrictionsCell } from '$components/RightPane/SectionTable/SectionTabl
 import { SectionCodeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SectionCodeCell';
 import { StatusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/StatusCell';
 import { SyllabusCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/SyllabusCell';
+import { useIsMobile } from '$hooks/useIsMobile';
 import { AnalyticsCategory } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
@@ -18,6 +19,15 @@ import { AASection, CourseDetails } from '@packages/antalmanac-types';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
+
+function getSectionScheduleColor(section: AASection, term: string): string {
+    return (
+        AppStore.schedule.getExistingCourseInSchedule(section.sectionCode, term)?.section.color ??
+        section.color ??
+        '#5ec8e0'
+    );
+}
+
 interface SectionTableBodyRowProps {
     section: AASection;
     courseDetails: CourseDetails;
@@ -58,6 +68,7 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
     } = props;
 
     const theme = useTheme();
+    const isMobile = useIsMobile();
     const isDark = useThemeStore((store) => store.isDark);
     const activeColumns = useColumnStore((store) => store.activeColumns);
     const previewMode = usePreviewStore((store) => store.previewMode);
@@ -67,9 +78,19 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
         AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`)
     );
 
+    const [currColor, setCurrColor] = useState(() => getSectionScheduleColor(section, term));
+
     const updateHighlight = useCallback(() => {
         setAddedCourse(AppStore.getAddedSectionCodes().has(`${section.sectionCode} ${term}`));
     }, [section.sectionCode, term]);
+
+    const updateColorFromPicker = useCallback((newColor: string) => {
+        setCurrColor((prev) => (prev !== newColor ? newColor : prev));
+    }, []);
+
+    const updateColorFromSchedule = useCallback(() => {
+        setCurrColor(getSectionScheduleColor(section, term));
+    }, [section.sectionCode, section.color, term]);
 
     const handleMouseEnter = useCallback(() => {
         if (!previewMode || addedCourse) {
@@ -93,6 +114,32 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
             AppStore.removeListener('currentScheduleIndexChange', updateHighlight);
         };
     }, [updateHighlight]);
+
+    useEffect(() => {
+        setCurrColor(getSectionScheduleColor(section, term));
+    }, [section.sectionCode, section.color, term]);
+
+    useEffect(() => {
+        AppStore.on('addedCoursesChange', updateColorFromSchedule);
+        AppStore.on('colorChange', updateColorFromSchedule);
+        AppStore.on('currentScheduleIndexChange', updateColorFromSchedule);
+
+        return () => {
+            AppStore.removeListener('addedCoursesChange', updateColorFromSchedule);
+            AppStore.removeListener('colorChange', updateColorFromSchedule);
+            AppStore.removeListener('currentScheduleIndexChange', updateColorFromSchedule);
+        };
+    }, [updateColorFromSchedule]);
+
+    useEffect(() => {
+        if (!addedCourse) {
+            return;
+        }
+        AppStore.registerColorPicker(section.sectionCode, updateColorFromPicker);
+        return () => {
+            AppStore.unregisterColorPicker(section.sectionCode, updateColorFromPicker);
+        };
+    }, [addedCourse, section.sectionCode, updateColorFromPicker]);
 
     const computedRowStyle = useMemo(() => {
         if (addedCourse) {
@@ -123,6 +170,11 @@ export const SectionTableBodyRow = memo((props: SectionTableBodyRowProps) => {
              * CSS errors occur when combining the `nth-of-type` selector with the computed styling, so it's split into two separate props
              */
             sx={{
+                /* Mobile-only schedule color accent (desktop uses ColorPicker in the action cell). */
+                ...(isMobile &&
+                    addedCourse && {
+                        borderLeft: `4px solid ${currColor}`,
+                    }),
                 '&:nth-of-type(odd)': {
                     backgroundColor: theme.palette.action.hover,
                 },
