@@ -1,13 +1,12 @@
 'use client';
 
+import { BLUE, DARK_PAPER_BG, LIGHT_BLUE } from '$src/globals';
+import { useThemeStore } from '$stores/SettingsStore';
 import { CssBaseline, type PaletteOptions } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Roboto } from 'next/font/google';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect, useMemo } from 'react';
-
-import { BLUE, DARK_PAPER_BG, LIGHT_BLUE } from '$src/globals';
-import { useThemeStore } from '$stores/SettingsStore';
 
 const roboto = Roboto({
     weight: ['300', '400', '500', '700'],
@@ -120,7 +119,8 @@ declare module '@mui/material/styles' {
  * sets and provides the MUI theme for the app
  */
 export default function AppThemeProvider(props: Props) {
-    const [appTheme, setAppTheme] = useThemeStore((store) => [store.appTheme, store.setAppTheme]);
+    const appTheme = useThemeStore((store) => store.appTheme);
+    const setAppTheme = useThemeStore((store) => store.setAppTheme);
     const postHog = usePostHog();
 
     useEffect(() => {

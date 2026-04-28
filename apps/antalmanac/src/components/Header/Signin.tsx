@@ -1,4 +1,4 @@
-import { loadSchedule } from '$actions/AppStoreActions';
+import { loadGuestSchedule } from '$actions/AppStoreActions';
 import SignInButton from '$components/buttons/SignInButton';
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
@@ -64,10 +64,8 @@ export const Signin = () => {
 
     const validateImportedUser = useCallback(async (userID: string) => {
         try {
-            const res = await trpc.userData.getGuestAccountAndUserByName
-                .query({ name: userID })
-                .then((res) => res.users);
-            if (res.imported) {
+            const res = await trpc.userData.getGuestScheduleByUsername.query({ username: userID });
+            if (res.user.imported) {
                 setOpenalert(true);
             }
             return res;
@@ -80,7 +78,7 @@ export const Signin = () => {
     const loadScheduleAndSetLoading = useCallback(
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
-            await loadSchedule(userID, rememberMe, 'GUEST');
+            await loadGuestSchedule(userID, rememberMe);
             await validateImportedUser(userID);
             setOpenLoadingSchedule(false);
         },

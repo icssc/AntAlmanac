@@ -2,93 +2,65 @@ import { oidcOAuthEnvSchema } from '$src/backend/env';
 import { mangleDuplicateScheduleNames } from '$src/backend/lib/formatting';
 import { RDS } from '$src/backend/lib/rds';
 import { procedure, protectedProcedure, router } from '$src/backend/trpc';
-import { type User, type ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
+import { type ScheduleSaveState, ScheduleSaveStateSchema } from '@packages/antalmanac-types';
 import { db } from '@packages/db';
 import { TRPCError } from '@trpc/server';
-import { type } from 'arktype';
 import { z } from 'zod';
 
 const { OIDC_ISSUER_URL, GOOGLE_REDIRECT_URI } = oidcOAuthEnvSchema.parse(process.env);
 
-const userInputSchema = type([{ userId: 'string' }, '|', { googleId: 'string' }]);
-
-const saveInputSchema = z.object({
-    /**
-     * ID of the requester.
-     */
-    id: z.string(),
-
-    /**
-     * Schedule data being saved.
-     *
-     * The ID of the requester and user ID in the schedule data may differ,
-     * i.e. if the user is editing and saving another user's schedule.
-     */
-    data: z.custom<User>(),
-});
-
 const userDataRouter = router({
-    getUserAndAccountBySessionToken: protectedProcedure.query(async ({ ctx }) => {
+    getUserAndAccount: protectedProcedure.query(async ({ ctx }) => {
         return await RDS.getUserAndAccountBySessionToken(db, ctx.sessionToken);
     }),
+
     /**
-     * Retrieves user data by user ID.
-     * @param input - An object containing the user ID.
-     * @returns The user data associated with the user ID.
+     * Retrieves the currently authenticated user's profile.
+     *
+     * @returns The user row for the session user.
      */
-    getUserData: procedure.input(userInputSchema.assert).query(async ({ input }) => {
-        if ('userId' in input) {
-            return await RDS.getUserDataByUid(db, input.userId);
-        } else {
-            throw new TRPCError({
-                code: 'BAD_REQUEST',
-                message: 'Invalid input: userId is required',
-            });
-        }
-    }),
-    getUserDataWithSession: protectedProcedure.query(async ({ ctx }) => {
-        return await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
+    getCurrentUser: protectedProcedure.query(async ({ ctx }) => {
+        return await RDS.getUserById(db, ctx.userId);
     }),
 
-    getGuestAccountAndUserByName: procedure.input(z.object({ name: z.string() })).query(async ({ input }) => {
-        const result = await RDS.getGuestAccountAndUserByName(db, input.name);
+    getGoogleId: protectedProcedure.query(async ({ ctx }) => {
+        return await RDS.getGoogleIdByUserId(db, ctx.userId);
+    }),
+
+    getGuestScheduleByUsername: procedure.input(z.object({ username: z.string() })).query(async ({ input }) => {
+        const result = await RDS.getGuestScheduleByUsername(db, input.username);
         if (!result) {
             throw new TRPCError({
                 code: 'NOT_FOUND',
-                message: 'User not found',
+                message: `Couldn't find schedules for username "${input.username}".`,
             });
         }
         return result;
     }),
 
-    getAccountByProviderAccountId: procedure
-        .input(z.object({ accountType: z.enum(['OIDC', 'GOOGLE', 'GUEST']), providerAccountId: z.string() }))
-        .query(async ({ input }) => {
-            const account = await RDS.getAccountByProviderAccountId(db, input.accountType, input.providerAccountId);
-            if (!account) {
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                    message: `Couldn't find schedules for username "${input.providerAccountId}".`,
-                });
-            }
-            return account;
-        }),
-    /**
-     * Loads schedule data for a user that's logged in.
-     */
-    saveUserData: procedure.input(saveInputSchema).mutation(async ({ input }) => {
-        const data = input.data;
-
-        // Mangle duplicate schedule names
-        data.userData.schedules = mangleDuplicateScheduleNames(data.userData.schedules);
-
-        return await RDS.upsertUserData(db, data).catch((error) =>
-            console.error('RDS Failed to upsert user data:', error)
-        );
+    getUserData: protectedProcedure.query(async ({ ctx }) => {
+        return await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
     }),
 
-    flagImportedSchedule: procedure.input(z.object({ providerAccountId: z.string() })).mutation(async ({ input }) => {
-        return await RDS.flagImportedUser(db, input.providerAccountId);
+    saveUserData: protectedProcedure
+        .input(z.object({ userData: z.custom<ScheduleSaveState>() }))
+        .mutation(async ({ input, ctx }) => {
+            const userData = input.userData;
+            userData.schedules = mangleDuplicateScheduleNames(userData.schedules);
+
+            try {
+                return await RDS.upsertUserData(db, ctx.userId, userData);
+            } catch (error) {
+                console.error('RDS Failed to upsert user data:', error);
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Failed to save user data',
+                });
+            }
+        }),
+
+    flagImportedSchedule: protectedProcedure.input(z.object({ username: z.string() })).mutation(async ({ input }) => {
+        return await RDS.flagImportedUser(db, input.username);
     }),
 
     /**
@@ -111,22 +83,16 @@ const userDataRouter = router({
      * @param input - An object containing the user ID.
      * @returns The schedule data in JSON format.
      */
-    exportScheduleData: procedure.input(userInputSchema.assert).query(async ({ input }) => {
-        if ('userId' in input) {
-            const userData = await RDS.getUserDataByUid(db, input.userId);
-            if (!userData) {
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                    message: 'User not found',
-                });
-            }
-            return userData.userData;
-        } else {
+    exportScheduleData: protectedProcedure.query(async ({ ctx }) => {
+        const userData = await RDS.fetchUserDataWithSession(db, ctx.sessionToken);
+        if (!userData) {
             throw new TRPCError({
-                code: 'BAD_REQUEST',
-                message: 'Invalid input: userId is required',
+                code: 'NOT_FOUND',
+                message: 'User not found',
             });
         }
+
+        return userData.userData;
     }),
 
     /**
@@ -135,14 +101,9 @@ const userDataRouter = router({
      * @param input - An object containing the user ID and the schedule data to import.
      * @returns Success status.
      */
-    importScheduleData: procedure
-        .input(
-            z.object({
-                userId: z.string(),
-                scheduleData: z.unknown(),
-            })
-        )
-        .mutation(async ({ input }) => {
+    importScheduleData: protectedProcedure
+        .input(z.object({ scheduleData: z.unknown() }))
+        .mutation(async ({ input, ctx }) => {
             let validatedScheduleData: ScheduleSaveState;
             try {
                 validatedScheduleData = ScheduleSaveStateSchema.assert(input.scheduleData);
@@ -196,12 +157,7 @@ const userDataRouter = router({
 
             validatedScheduleData.schedules = mangleDuplicateScheduleNames(validatedScheduleData.schedules);
 
-            const userData: User = {
-                id: input.userId,
-                userData: validatedScheduleData,
-            };
-
-            await RDS.upsertUserData(db, userData).catch((error) => {
+            await RDS.upsertUserData(db, ctx.userId, validatedScheduleData).catch((error) => {
                 console.error('RDS Failed to import user data:', error);
                 throw new TRPCError({
                     code: 'INTERNAL_SERVER_ERROR',

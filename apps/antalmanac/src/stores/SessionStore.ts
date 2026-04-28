@@ -10,6 +10,8 @@ interface SessionState {
     userId: string | null;
     isGoogleUser: boolean;
     email: string | null;
+    name: string | null;
+    avatar: string | null;
     sessionIsValid: boolean;
     updateSession: (session: SessionData) => Promise<boolean>;
     clearSession: () => Promise<void>;
@@ -42,6 +44,8 @@ const initState: Pick<
     userId: null,
     isGoogleUser: false,
     email: null,
+    name: null,
+    avatar: null,
     sessionIsValid: false,
     googleId: null,
     isNewUser: false,
@@ -69,6 +73,8 @@ export const useSessionStore = create<SessionState>((set, get) => {
                 isGoogleUser: true,
                 googleId: accountInfo.userId,
                 email: sessionData.user.email,
+                name: sessionData.user.name,
+                avatar: sessionData.user.avatar,
             });
             return true;
         },
@@ -86,6 +92,8 @@ export const useSessionStore = create<SessionState>((set, get) => {
                 sessionIsValid: false,
                 isGoogleUser: false,
                 email: null,
+                name: null,
+                avatar: null,
                 googleId: null,
                 filterTakenCourses: false,
                 userTakenCourses: new Set(),

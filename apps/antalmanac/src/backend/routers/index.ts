@@ -1,5 +1,4 @@
 import { router } from '../trpc';
-
 import courseRouter from './course';
 import enrollHistRouter from './enrollHist';
 import gradesRouter from './grades';

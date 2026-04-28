@@ -1,25 +1,33 @@
-import { Notification, RepeatingCustomEvent, ShortCourse, ShortCourseSchedule, User } from '@packages/antalmanac-types';
-import { db } from '@packages/db';
-import * as schema from '@packages/db/src/schema';
+import type {
+    ShortCourse,
+    ShortCourseSchedule,
+    User,
+    RepeatingCustomEvent,
+    Notification,
+    ScheduleSaveState,
+} from '@packages/antalmanac-types';
+import type { db } from '@packages/db';
+import type * as schema from '@packages/db/src/schema';
 import {
-    Account,
-    accounts,
-    CourseInSchedule,
-    coursesInSchedule,
-    CustomEvent,
-    customEvents,
-    Schedule,
     schedules,
-    sessions,
-    subscriptions,
     users,
+    accounts,
+    coursesInSchedule,
+    customEvents,
+    type Schedule,
+    type CourseInSchedule,
+    type CustomEvent,
+    sessions,
+    type Account,
+    subscriptions,
 } from '@packages/db/src/schema';
-import { and, eq, ExtractTablesWithRelations, gt } from 'drizzle-orm';
-import { PgQueryResultHKT, PgTransaction } from 'drizzle-orm/pg-core';
+import { and, eq, type ExtractTablesWithRelations, gt } from 'drizzle-orm';
+import type { PgTransaction, PgQueryResultHKT } from 'drizzle-orm/pg-core';
 
 type Transaction = PgTransaction<PgQueryResultHKT, typeof schema, ExtractTablesWithRelations<typeof schema>>;
 type DatabaseOrTransaction = Omit<typeof db, '$client'> | Transaction;
 
+// biome-ignore lint/complexity/noStaticOnlyClass: todo
 export class RDS {
     /**
      * Retrieves an account with the specified user ID and account type.
@@ -33,59 +41,80 @@ export class RDS {
         accountType: Account['accountType'],
         providerAccountId: string
     ): Promise<Account | null> {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(accounts)
-                .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerAccountId)))
-                .limit(1)
-                .then((res) => res[0] ?? null)
-        );
-    }
-
-    static async getGuestAccountAndUserByName(db: DatabaseOrTransaction, name: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(accounts)
-                .innerJoin(users, eq(accounts.userId, users.id))
-                .where(and(eq(users.name, name), eq(accounts.accountType, 'GUEST')))
-                .execute()
-                .then((res) => {
-                    return { users: res[0].users, accounts: res[0].accounts };
-                })
-        );
+        return db
+            .select()
+            .from(accounts)
+            .where(and(eq(accounts.accountType, accountType), eq(accounts.providerAccountId, providerAccountId)))
+            .limit(1)
+            .then((res) => res[0] ?? null);
     }
 
     /**
-     * Does the same thing as `insertGuestUserData`, but also updates the user's schedules and courses if they exist.
+     * Retrieves a user by their ID from the database.
+     *
+     * @param db - The database or transaction object to use for the query.
+     * @param userId - The ID of the user to retrieve.
+     * @returns A promise that resolves to the user object if found, otherwise undefined.
+     */
+    static async getUserById(db: DatabaseOrTransaction, userId: string) {
+        return db
+            .select()
+            .from(users)
+            .where(eq(users.id, userId))
+            .then((res) => res[0]);
+    }
+
+    static async getUserByEmail(db: DatabaseOrTransaction, email: string) {
+        return db
+            .select()
+            .from(users)
+            .where(eq(users.email, email))
+            .then((res) => res[0]);
+    }
+
+    /**
+     * Retrieves a google ID by their user ID from the database.
+     *
+     * @param db - The database to use for the query.
+     * @param userId - The ID of the user to retrieve.
+     * @returns The google ID if found, otherwise null.
+     */
+    static async getGoogleIdByUserId(db: DatabaseOrTransaction, userId: string): Promise<string | null> {
+        return db
+            .select({ providerAccountId: accounts.providerAccountId })
+            .from(accounts)
+            .where(eq(accounts.userId, userId))
+            .limit(1)
+            .then((res) => (res.length > 0 ? res[0].providerAccountId : null));
+    }
+
+    /**
+     * Upserts the given user's schedules and selected schedule index.
      *
      * @param db The Drizzle client or transaction object
-     * @param userData The object of data containing the user's schedules and courses
-     * @returns The user's ID
+     * @param userId The internal user ID whose data is being saved
+     * @param saveState The schedules and selected index to persist
      */
     static async upsertUserData(
         db: DatabaseOrTransaction,
-        userData: User
+        userId: string,
+        saveState: ScheduleSaveState
     ): Promise<{ userId: string; scheduleIdMap: Record<string, string> }> {
         return db.transaction(async (tx) => {
-            // Add schedules and courses
-            const scheduleIdMap = await this.upsertSchedulesAndContents(tx, userData.id, userData.userData.schedules);
+            const scheduleIdMap = await this.upsertSchedulesAndContents(tx, userId, saveState.schedules);
 
-            // Update user's current schedule index
-            const scheduleIndex = userData.userData.scheduleIndex;
             const scheduleDbIds = Object.values(scheduleIdMap);
-
+            const scheduleIndex = saveState.scheduleIndex;
             const currentScheduleId =
                 scheduleIndex === undefined || scheduleIndex >= scheduleDbIds.length
                     ? null
                     : scheduleDbIds[scheduleIndex];
 
             if (currentScheduleId !== null) {
-                await tx.update(users).set({ currentScheduleId: currentScheduleId }).where(eq(users.id, userData.id));
+                await tx.update(users).set({ currentScheduleId }).where(eq(users.id, userId));
             }
 
-            return { userId: userData.id, scheduleIdMap };
+            return { userId, scheduleIdMap };
         });
     }
 
@@ -239,50 +268,52 @@ export class RDS {
     }
 
     /**
-     * Retrieves user data by user ID, including schedules and custom events.
-     *
-     * @param db - The database or transaction object to use for the query.
-     * @param userId - The unique identifier of the user.
-     * @returns A promise that resolves to a User object containing user data and schedules, or null if the user is not found.
+     * Retrieves a guest user's publicly-shareable schedule data by their
+     * guest username.
      */
-    static async getUserDataByUid(db: DatabaseOrTransaction, userId: string): Promise<User | null> {
-        return db.transaction(async (tx) => {
-            const user = await tx
-                .select()
-                .from(users)
-                .where(eq(users.id, userId))
-                .then((res) => res[0]);
+    static async getGuestScheduleByUsername(
+        db: DatabaseOrTransaction,
+        username: string
+    ): Promise<{ user: { imported: boolean }; userData: User['userData'] } | null> {
+        const row = await db
+            .select()
+            .from(accounts)
+            .innerJoin(users, eq(accounts.userId, users.id))
+            .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.providerAccountId, username)))
+            .limit(1)
+            .then((res) => res[0] ?? null);
 
-            if (!user) {
-                return null;
-            }
+        if (!row) {
+            return null;
+        }
 
-            const sectionResults = await tx
-                .select()
-                .from(schedules)
-                .where(eq(schedules.userId, userId))
-                .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+        const userId = row.users.id;
 
-            const customEventResults = await tx
-                .select()
-                .from(schedules)
-                .where(eq(schedules.userId, userId))
-                .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+        const sectionResults = await db
+            .select()
+            .from(schedules)
+            .where(eq(schedules.userId, userId))
+            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
 
-            const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+        const customEventResults = await db
+            .select()
+            .from(schedules)
+            .where(eq(schedules.userId, userId))
+            .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
 
-            const scheduleIndex = user.currentScheduleId
-                ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
-                : userSchedules.length;
+        const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
 
-            return {
-                id: userId,
-                userData: {
-                    schedules: userSchedules,
-                    scheduleIndex,
-                },
-            };
-        });
+        const scheduleIndex = row.users.currentScheduleId
+            ? userSchedules.findIndex((s) => s.id === row.users.currentScheduleId)
+            : userSchedules.length;
+
+        return {
+            user: { imported: row.users.imported ?? false },
+            userData: {
+                schedules: userSchedules,
+                scheduleIndex,
+            },
+        };
     }
 
     /**
@@ -348,8 +379,8 @@ export class RDS {
         return Object.values(schedulesMapping).sort((a, b) => a.index - b.index);
     }
 
-    private static async getUserDataWithSession(tx: Transaction, refreshToken: string) {
-        return tx
+    private static async getUserDataWithSession(db: DatabaseOrTransaction, refreshToken: string) {
+        return db
             .select()
             .from(users)
             .leftJoin(sessions, eq(users.id, sessions.userId))
@@ -360,9 +391,9 @@ export class RDS {
     /**
      * Fetches user data associated with a valid session using a refresh token.
      *
-     * This function initiates a database transaction to retrieve user information
-     * based on the provided refresh token. If a user is found, it gathers the user's
-     * schedules and custom events, aggregates them, and determines the current schedule index.
+     * Retrieves user information based on the provided refresh token. If a user is
+     * found, gathers the user's schedules and custom events, aggregates them, and
+     * determines the current schedule index.
      *
      * @param db - The database or transaction object to perform the operation.
      * @param refreshToken - The refresh token used to identify the session.
@@ -370,79 +401,75 @@ export class RDS {
      *          including schedules and the current schedule index, or null if no user is found.
      */
     static async fetchUserDataWithSession(db: DatabaseOrTransaction, refreshToken: string) {
-        return db.transaction(async (tx) => {
-            const user = await this.getUserDataWithSession(tx, refreshToken);
+        const user = await this.getUserDataWithSession(db, refreshToken);
 
-            if (user) {
-                const sectionResults = await tx
-                    .select()
-                    .from(schedules)
-                    .where(eq(schedules.userId, user.id))
-                    .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
-
-                const customEventResults = await tx
-                    .select()
-                    .from(schedules)
-                    .where(eq(schedules.userId, user.id))
-                    .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
-
-                const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
-
-                const scheduleIndex = user.currentScheduleId
-                    ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
-                    : userSchedules.length;
-                return {
-                    id: user.id,
-                    userData: {
-                        schedules: userSchedules,
-                        scheduleIndex,
-                    },
-                };
-            }
+        if (!user) {
             return null;
-        });
+        }
+
+        const sectionResults = await db
+            .select()
+            .from(schedules)
+            .where(eq(schedules.userId, user.id))
+            .leftJoin(coursesInSchedule, eq(schedules.id, coursesInSchedule.scheduleId));
+
+        const customEventResults = await db
+            .select()
+            .from(schedules)
+            .where(eq(schedules.userId, user.id))
+            .leftJoin(customEvents, eq(schedules.id, customEvents.scheduleId));
+
+        const userSchedules = RDS.aggregateUserData(sectionResults, customEventResults);
+
+        const scheduleIndex = user.currentScheduleId
+            ? userSchedules.findIndex((schedule) => schedule.id === user.currentScheduleId)
+            : userSchedules.length;
+        return {
+            id: user.id,
+            userData: {
+                schedules: userSchedules,
+                scheduleIndex,
+            },
+        };
     }
 
     static async getUserAndAccountBySessionToken(db: DatabaseOrTransaction, refreshToken: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(sessions)
-                .innerJoin(users, eq(sessions.userId, users.id))
-                .innerJoin(accounts, eq(users.id, accounts.userId))
-                .where(eq(sessions.refreshToken, refreshToken))
-                .execute()
-                .then((res) => {
-                    return { users: res[0].users, accounts: res[0].accounts };
-                })
-        );
+        return db
+            .select()
+            .from(sessions)
+            .innerJoin(users, eq(sessions.userId, users.id))
+            .innerJoin(accounts, eq(users.id, accounts.userId))
+            .where(eq(sessions.refreshToken, refreshToken))
+            .execute()
+            .then((res) => {
+                return { users: res[0].users, accounts: res[0].accounts };
+            });
     }
 
     /**
-     * Flags a user as imported based on the provided provider ID.
+     * Flags the guest user with the given username as imported, so the
+     * "import by username" flow doesn't re-run for the same legacy schedule.
      *
-     * This function checks if a user associated with the given provider ID has already been flagged as imported.
-     * If not, it updates the user's record to set the imported flag to true.
-     *
-     * @param db The database or transaction object used to perform the operation.
-     * @param providerId The provider ID used to identify the user.
-     * @returns A promise that resolves to true if the user was successfully flagged as imported, or false if the user
-     *          was already flagged or if an error occurred during the operation.
+     * @returns true if the user was successfully flagged as imported,
+     *          false if they were already flagged or no matching guest exists.
      */
-    static async flagImportedUser(db: DatabaseOrTransaction, providerId: string) {
-        try {
-            const { users: user, accounts } = await this.getGuestAccountAndUserByName(db, providerId);
-            if (user.imported) {
+    static async flagImportedUser(db: DatabaseOrTransaction, username: string) {
+        return db.transaction(async (tx) => {
+            const row = await tx
+                .select({ userId: users.id, imported: users.imported })
+                .from(accounts)
+                .innerJoin(users, eq(accounts.userId, users.id))
+                .where(and(eq(accounts.accountType, 'GUEST'), eq(accounts.providerAccountId, username)))
+                .limit(1)
+                .then((res) => res[0] ?? null);
+
+            if (!row || row.imported) {
                 return false;
             }
 
-            await db.transaction((tx) =>
-                tx.update(users).set({ imported: true }).where(eq(users.id, accounts.userId)).execute()
-            );
+            await tx.update(users).set({ imported: true }).where(eq(users.id, row.userId)).execute();
             return true;
-        } catch {
-            return false;
-        }
+        });
     }
 
     /**
@@ -454,12 +481,10 @@ export class RDS {
      * @returns A promise that resolves to the notifications associated with a userId, or an empty array if not found.
      */
     static async retrieveNotifications(db: DatabaseOrTransaction, userId: string, environment: string) {
-        return db.transaction((tx) =>
-            tx
-                .select()
-                .from(subscriptions)
-                .where(and(eq(subscriptions.userId, userId), eq(subscriptions.environment, environment)))
-        );
+        return db
+            .select()
+            .from(subscriptions)
+            .where(and(eq(subscriptions.userId, userId), eq(subscriptions.environment, environment)));
     }
 
     /**
@@ -477,40 +502,38 @@ export class RDS {
         notification: Notification,
         environment: string
     ) {
-        return db.transaction((tx) =>
-            tx
-                .insert(subscriptions)
-                .values({
-                    userId,
-                    sectionCode: notification.sectionCode,
-                    year: notification.term.split(' ')[0],
-                    quarter: notification.term.split(' ')[1],
+        return db
+            .insert(subscriptions)
+            .values({
+                userId,
+                sectionCode: notification.sectionCode,
+                year: notification.term.split(' ')[0],
+                quarter: notification.term.split(' ')[1],
+                notifyOnOpen: notification.notifyOn.notifyOnOpen,
+                notifyOnWaitlist: notification.notifyOn.notifyOnWaitlist,
+                notifyOnFull: notification.notifyOn.notifyOnFull,
+                notifyOnRestriction: notification.notifyOn.notifyOnRestriction,
+                lastUpdatedStatus: notification.lastUpdatedStatus,
+                lastCodes: notification.lastCodes,
+                environment,
+            })
+            .onConflictDoUpdate({
+                target: [
+                    subscriptions.userId,
+                    subscriptions.sectionCode,
+                    subscriptions.year,
+                    subscriptions.quarter,
+                    subscriptions.environment,
+                ],
+                set: {
                     notifyOnOpen: notification.notifyOn.notifyOnOpen,
                     notifyOnWaitlist: notification.notifyOn.notifyOnWaitlist,
                     notifyOnFull: notification.notifyOn.notifyOnFull,
                     notifyOnRestriction: notification.notifyOn.notifyOnRestriction,
                     lastUpdatedStatus: notification.lastUpdatedStatus,
                     lastCodes: notification.lastCodes,
-                    environment,
-                })
-                .onConflictDoUpdate({
-                    target: [
-                        subscriptions.userId,
-                        subscriptions.sectionCode,
-                        subscriptions.year,
-                        subscriptions.quarter,
-                        subscriptions.environment,
-                    ],
-                    set: {
-                        notifyOnOpen: notification.notifyOn.notifyOnOpen,
-                        notifyOnWaitlist: notification.notifyOn.notifyOnWaitlist,
-                        notifyOnFull: notification.notifyOn.notifyOnFull,
-                        notifyOnRestriction: notification.notifyOn.notifyOnRestriction,
-                        lastUpdatedStatus: notification.lastUpdatedStatus,
-                        lastCodes: notification.lastCodes,
-                    },
-                })
-        );
+                },
+            });
     }
 
     /**
@@ -522,22 +545,20 @@ export class RDS {
      * @returns A promise that updates ALL notifications with a shared sectionCode, year, quarter, and environment.
      */
     static async updateAllNotifications(db: DatabaseOrTransaction, notification: Notification, environment: string) {
-        return db.transaction((tx) =>
-            tx
-                .update(subscriptions)
-                .set({
-                    lastUpdatedStatus: notification.lastUpdatedStatus,
-                    lastCodes: notification.lastCodes,
-                })
-                .where(
-                    and(
-                        eq(subscriptions.sectionCode, notification.sectionCode),
-                        eq(subscriptions.year, notification.term.split(' ')[0]),
-                        eq(subscriptions.quarter, notification.term.split(' ')[1]),
-                        eq(subscriptions.environment, environment)
-                    )
+        return db
+            .update(subscriptions)
+            .set({
+                lastUpdatedStatus: notification.lastUpdatedStatus,
+                lastCodes: notification.lastCodes,
+            })
+            .where(
+                and(
+                    eq(subscriptions.sectionCode, notification.sectionCode),
+                    eq(subscriptions.year, notification.term.split(' ')[0]),
+                    eq(subscriptions.quarter, notification.term.split(' ')[1]),
+                    eq(subscriptions.environment, environment)
                 )
-        );
+            );
     }
 
     /**
@@ -555,19 +576,17 @@ export class RDS {
         userId: string,
         environment: string
     ) {
-        return db.transaction((tx) =>
-            tx
-                .delete(subscriptions)
-                .where(
-                    and(
-                        eq(subscriptions.userId, userId),
-                        eq(subscriptions.sectionCode, notification.sectionCode),
-                        eq(subscriptions.year, notification.term.split(' ')[0]),
-                        eq(subscriptions.quarter, notification.term.split(' ')[1]),
-                        eq(subscriptions.environment, environment)
-                    )
+        return db
+            .delete(subscriptions)
+            .where(
+                and(
+                    eq(subscriptions.userId, userId),
+                    eq(subscriptions.sectionCode, notification.sectionCode),
+                    eq(subscriptions.year, notification.term.split(' ')[0]),
+                    eq(subscriptions.quarter, notification.term.split(' ')[1]),
+                    eq(subscriptions.environment, environment)
                 )
-        );
+            );
     }
 
     /**
@@ -579,10 +598,8 @@ export class RDS {
      * @returns A promise that deletes all of a user's notifications.
      */
     static async deleteAllNotifications(db: DatabaseOrTransaction, userId: string, environment: string) {
-        return db.transaction((tx) =>
-            tx
-                .delete(subscriptions)
-                .where(and(eq(subscriptions.userId, userId), eq(subscriptions.environment, environment)))
-        );
+        return db
+            .delete(subscriptions)
+            .where(and(eq(subscriptions.userId, userId), eq(subscriptions.environment, environment)));
     }
 }

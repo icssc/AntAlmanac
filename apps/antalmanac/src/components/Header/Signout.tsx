@@ -5,8 +5,9 @@ import { signOut } from '$lib/auth/authClient';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { ListItemIcon, ListItemText, MenuItem, Popover, Divider } from '@mui/material';
-import { useState, type MouseEvent } from 'react';
+import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from '@mui/material';
+import type { User } from '@packages/antalmanac-types';
+import { type MouseEvent, useMemo, useState } from 'react';
 
 interface SignoutProps {
     onLogoutComplete?: () => void;
@@ -14,8 +15,20 @@ interface SignoutProps {
 
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const user = useSessionStore((state) => state.user);
+    const { sessionIsValid, name, avatar, email } = useSessionStore();
     const isDark = useThemeStore((store) => store.isDark);
+
+    const user = useMemo<Pick<User, 'name' | 'avatar' | 'email'> | null>(
+        () =>
+            sessionIsValid
+                ? {
+                      name: name ?? undefined,
+                      avatar: avatar ?? undefined,
+                      email: email ?? undefined,
+                  }
+                : null,
+        [sessionIsValid, name, avatar, email]
+    );
 
     const open = Boolean(anchorEl);
     const handleClick = (event: MouseEvent<HTMLElement>) => {
