@@ -1,9 +1,5 @@
 'use client';
 
-import { ChatBubbleOutlineOutlined, Close, Keyboard, SearchOutlined, SettingsOutlined } from '@mui/icons-material';
-import { Box, Dialog, IconButton, Stack, Typography, useMediaQuery, useTheme, alpha } from '@mui/material';
-import { useCallback, useEffect } from 'react';
-
 import {
     KEYBOARD_SHORTCUT_SECTIONS,
     formatShortcutKeys,
@@ -11,6 +7,9 @@ import {
     type ShortcutKey,
     type ShortcutSectionIcon,
 } from '$lib/keyboardShortcuts';
+import { ChatBubbleOutlineOutlined, Close, Keyboard, SearchOutlined, SettingsOutlined } from '@mui/icons-material';
+import { Box, Dialog, IconButton, Stack, Typography, useMediaQuery, useTheme, alpha } from '@mui/material';
+import { useCallback, useEffect } from 'react';
 
 /** Accent blue: theme maps light → primary (BLUE), dark → secondary (LIGHT_BLUE) — matches links & app chrome */
 function useShortcutsAccentColor() {
@@ -20,7 +19,7 @@ function useShortcutsAccentColor() {
 
 function SectionHeaderIcon({ icon }: { icon: ShortcutSectionIcon }) {
     const accent = useShortcutsAccentColor();
-    const sx = { fontSize: { xs: 17, md: 18 }, color: accent };
+    const sx = { fontSize: 'small' as const, color: accent };
     switch (icon) {
         case 'general':
             return <SettingsOutlined sx={sx} aria-hidden />;
@@ -39,13 +38,13 @@ function Kbd({ children }: { children: React.ReactNode }) {
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                minHeight: { xs: 24, md: 28 },
-                minWidth: { xs: 24, md: 28 },
-                px: { xs: 0.75, md: 0.9 },
-                py: { xs: 0.25, md: 0.35 },
+                minHeight: 28,
+                minWidth: 28,
+                px: 0.75,
+                py: 0.25,
                 borderRadius: 1.25,
                 fontFamily: 'ui-monospace, Menlo, Consolas, monospace',
-                fontSize: { xs: '0.75rem', md: '0.875rem' },
+                fontSize: 'inherit',
                 fontWeight: 600,
                 lineHeight: 1.2,
                 color: 'text.primary',
@@ -73,8 +72,8 @@ function KeyCombo({ keys }: { keys: ShortcutKey[] }) {
                     {i > 0 && (
                         <Typography
                             component="span"
+                            variant="caption"
                             sx={{
-                                fontSize: { xs: '0.7rem', md: '0.8rem' },
                                 color: 'text.disabled',
                                 fontWeight: 600,
                             }}
@@ -104,8 +103,8 @@ function ShortcutRow({ description, keys, isLast }: { description: string; keys:
             }}
         >
             <Typography
+                variant="body1"
                 sx={{
-                    fontSize: { xs: '0.9375rem', md: '1rem' },
                     lineHeight: 1.45,
                     color: 'text.secondary',
                     flex: 1,
@@ -158,8 +157,8 @@ function SectionBlock({
                 <SectionHeaderIcon icon={icon} />
                 <Typography
                     component="h2"
+                    variant="caption"
                     sx={{
-                        fontSize: { xs: '0.6875rem', md: '0.75rem' },
                         fontWeight: 700,
                         letterSpacing: '0.1em',
                         textTransform: 'uppercase',
@@ -261,7 +260,7 @@ export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModal
                     <Stack direction="row" alignItems="flex-start" gap={1.5} sx={{ minWidth: 0 }}>
                         <Keyboard
                             sx={{
-                                fontSize: { xs: 26, md: 30 },
+                                fontSize: 30,
                                 color: accent,
                                 flexShrink: 0,
                                 mt: 0.25,
@@ -271,10 +270,10 @@ export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModal
                             <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap" useFlexGap>
                                 <Typography
                                     component="h1"
+                                    variant="h5"
                                     id="keyboard-shortcuts-title"
                                     sx={{
                                         fontWeight: 700,
-                                        fontSize: { xs: '1.25rem', md: '1.5rem' },
                                         lineHeight: 1.2,
                                         color: 'text.primary',
                                     }}
@@ -287,7 +286,7 @@ export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModal
                                         px: 1,
                                         py: 0.35,
                                         borderRadius: 1,
-                                        fontSize: { xs: '0.65rem', md: '0.7rem' },
+                                        fontSize: '0.7rem',
                                         fontWeight: 700,
                                         textTransform: 'uppercase',
                                         letterSpacing: '0.06em',
@@ -313,11 +312,11 @@ export function KeyboardShortcutsModal({ open, onClose }: KeyboardShortcutsModal
                                 </Box>
                             </Stack>
                             <Typography
+                                variant="caption"
                                 sx={{
                                     mt: 0.75,
                                     fontFamily:
                                         'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace',
-                                    fontSize: { xs: '0.75rem', md: '0.8125rem' },
                                     color: 'text.secondary',
                                     letterSpacing: '0.02em',
                                 }}
