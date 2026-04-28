@@ -7,7 +7,7 @@ import CustomEventDetailView from '$components/RightPane/AddedCourses/CustomEven
 import { getMissingSections } from '$components/RightPane/AddedCourses/getMissingSections';
 import { NotificationsDialog } from '$components/RightPane/AddedCourses/Notifications/NotificationsDialog';
 import { ColumnToggleDropdown } from '$components/RightPane/CoursePane/CoursePaneButtonRow';
-import SectionTableLazyWrapper from '$components/RightPane/SectionTable/SectionTableLazyWrapper';
+import SectionTable from '$components/RightPane/SectionTable/SectionTable';
 import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import { clickToCopy } from '$lib/helpers';
 import { LIGHT_BLUE } from '$src/globals';
@@ -402,7 +402,7 @@ function AddedSectionsGrid() {
 
                         return (
                             <SortableList.Item id={course.id}>
-                                <SectionTableLazyWrapper
+                                <SectionTable
                                     courseDetails={course}
                                     term={course.term}
                                     allowHighlight={false}

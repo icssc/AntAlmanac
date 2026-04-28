@@ -11,7 +11,7 @@ concurrency:
 env:
     AWS_REGION: ${{ secrets.AWS_REGION }}
 
-    DEV_DB_URL: ${{ secrets.DEV_DB_URL }}
+    DB_URL: ${{ secrets.DEV_DB_URL }}
     MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
     NEXT_PUBLIC_TILES_ENDPOINT: ${{ secrets.NEXT_PUBLIC_TILES_ENDPOINT }}
     ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
@@ -19,6 +19,7 @@ env:
     OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
     GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
     PLANNER_CLIENT_API_KEY: ${{ secrets.PLANNER_CLIENT_API_KEY }}
+    NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY }}
 
 jobs:
     deploy-staging-shared:
@@ -59,6 +60,11 @@ jobs:
               env:
                   DB_URL: ${{ secrets.DEV_DB_URL }}
               run: pnpm db:migrate
+
+            - name: Generate termData
+              uses: ./.github/actions/cache-generated-data
+              with:
+                  api-key: ${{ secrets.ANTEATER_API_KEY }}
 
             - name: Deploy SST (staging)
               id: deploy
