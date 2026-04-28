@@ -500,8 +500,7 @@ export function AddedCoursePane() {
         };
     }, []);
 
-    const shouldShowAddedSectionsGrid =
-        !skeletonMode || (skeletonMode && courseCounts.hasRegular && !courseCounts.hasSkeleton);
+    const shouldShowAddedSectionsGrid = !skeletonMode || (courseCounts.hasRegular && !courseCounts.hasSkeleton);
 
     return <Box>{shouldShowAddedSectionsGrid ? <AddedSectionsGrid /> : <SkeletonSchedule />}</Box>;
 }
