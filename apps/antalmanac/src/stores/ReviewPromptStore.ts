@@ -1,10 +1,9 @@
 import trpc from '$lib/api/trpc';
 import { termData } from '$lib/termData';
 import AppStore from '$stores/AppStore';
+import { openSnackbar } from '$stores/SnackbarStore';
 import { create } from 'zustand';
 import { combine } from 'zustand/middleware';
-
-import { openSnackbar } from './SnackbarStore';
 
 // Tags
 export const REVIEW_TAGS = [
