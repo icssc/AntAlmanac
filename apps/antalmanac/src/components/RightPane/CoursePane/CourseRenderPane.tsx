@@ -441,7 +441,7 @@ export default function CourseRenderPane(props: { id?: number }) {
                                                 },
                                             }}
                                         >
-                                            The courses below include at least ONE GE selected.
+                                            The courses below satisfy at least one of the selected GEs.
                                         </Alert>
                                     )}
                                     {SectionTableWrapped(index, {

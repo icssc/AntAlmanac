@@ -1,9 +1,8 @@
-import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
-import { useEffect, useCallback, useState } from 'react';
-
 import { LabeledSelect } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledSelect';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import { getSelectedGEs, normalizeGeSelection } from '$lib/multiGeSearch';
+import { Checkbox, ListItemText, MenuItem, type SelectChangeEvent } from '@mui/material';
+import { useEffect, useCallback, useState } from 'react';
 
 const GE_LIST = [
     { value: 'ANY', label: "All: Don't filter for GE" },
@@ -74,7 +73,7 @@ export function GeSelector() {
                     const values = selected as string[];
                     if (values.length === 0) return getLabel(ANY_GE);
                     if (values.length === 1) return getLabel(values[0]);
-                    return values.map((value) => getLabel(value).split(':')[0].trim()).join(' + ');
+                    return values.map((value) => getLabel(value).split(':')[0].trim()).join(', ');
                 },
                 sx: {
                     width: '100%',
