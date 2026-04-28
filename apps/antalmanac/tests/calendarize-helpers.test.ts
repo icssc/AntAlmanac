@@ -262,7 +262,7 @@ describe('calendarize-helpers', () => {
     });
 
     test('calendarizeCustomEvents', () => {
-        const result = calendarizeCustomEvents(customEvents);
+        const result = calendarizeCustomEvents(customEvents, 'custom');
         expect(result).toStrictEqual(calendarizedCustomEvents);
     });
 });
