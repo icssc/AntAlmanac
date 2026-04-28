@@ -154,10 +154,11 @@ If you ever need help, feel free to ask around on our [Discord server](https://d
     pnpm --filter antalmanac get-data
     ```
 
-    `pnpm --filter antalmanac build` requires generated files in `apps/antalmanac/src/generated`.
-    Run the full command above with `ANTEATER_API_KEY` set to generate `termData.ts`, `searchData.ts`,
-    and `terms/*.json`. Without an API key, `pnpm --filter antalmanac fetch-term-data` plus a minimal
-    `searchData.ts` stub is enough to satisfy build-time imports, but local course search data will be empty.
+    `pnpm --filter antalmanac build` requires generated files in `apps/antalmanac/src/generated`
+    and local environment variables from `apps/antalmanac/.env`. Run the full command above
+    with `ANTEATER_API_KEY` set to generate `termData.ts`, `searchData.ts`, and `terms/*.json`.
+    Without an API key, `pnpm --filter antalmanac fetch-term-data` plus a minimal `searchData.ts`
+    stub is enough to satisfy build-time imports, but local course search data will be empty.
 
 7. Start the development server.
 
