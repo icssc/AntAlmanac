@@ -1,8 +1,7 @@
+import { FriendIdentity } from '$components/Header/Friends/FriendIdentity';
+import type { Friend } from '$components/Header/Friends/types';
 import { MoreVert } from '@mui/icons-material';
 import { Box, Button, IconButton, Stack } from '@mui/material';
-
-import { FriendIdentity } from './FriendIdentity';
-import type { Friend } from './types';
 
 interface FriendDropdownCardProps {
     friend: Friend;

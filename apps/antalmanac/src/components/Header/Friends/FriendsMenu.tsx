@@ -1,3 +1,7 @@
+import { FriendsListSkeleton } from '$components/Header/Friends/FriendsListSkeleton';
+import { FriendsTab } from '$components/Header/Friends/FriendsTab';
+import { RequestsTab } from '$components/Header/Friends/RequestsTab';
+import type { Friend, FriendRequest } from '$components/Header/Friends/types';
 import trpc from '$lib/api/trpc';
 import { useThemeStore } from '$stores/SettingsStore';
 import { openSnackbar } from '$stores/SnackbarStore';
@@ -18,11 +22,6 @@ import {
 } from '@mui/material';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-import { FriendsListSkeleton } from './FriendsListSkeleton';
-import { FriendsTab } from './FriendsTab';
-import { RequestsTab } from './RequestsTab';
-import type { Friend, FriendRequest } from './types';
 
 export type { Friend, FriendRequest };
 

@@ -1,12 +1,11 @@
+import { BlockedUserCard } from '$components/Header/Friends/BlockedUserCard';
+import { RequestCard } from '$components/Header/Friends/RequestCard';
+import { SentRequestCard } from '$components/Header/Friends/SentRequestCard';
+import { textFieldSx } from '$components/Header/Friends/styles';
+import type { Friend, FriendRequest } from '$components/Header/Friends/types';
 import { PersonAdd } from '@mui/icons-material';
 import { Box, Button, IconButton, Stack, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
-
-import { BlockedUserCard } from './BlockedUserCard';
-import { RequestCard } from './RequestCard';
-import { SentRequestCard } from './SentRequestCard';
-import { textFieldSx } from './styles';
-import type { Friend, FriendRequest } from './types';
 
 interface RequestsTabProps {
     email: string;

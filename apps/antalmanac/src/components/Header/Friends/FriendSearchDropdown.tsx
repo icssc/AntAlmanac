@@ -1,7 +1,6 @@
+import { FriendDropdownCard } from '$components/Header/Friends/FriendDropdownCard';
+import type { Friend } from '$components/Header/Friends/types';
 import { Paper, Popper, Typography } from '@mui/material';
-
-import { FriendDropdownCard } from './FriendDropdownCard';
-import type { Friend } from './types';
 
 interface FriendSearchDropdownProps {
     anchorEl: HTMLDivElement | null;

@@ -1,9 +1,8 @@
+import { FriendCard } from '$components/Header/Friends/FriendCard';
+import { FriendSearchDropdown } from '$components/Header/Friends/FriendSearchDropdown';
+import { textFieldSx } from '$components/Header/Friends/styles';
+import type { Friend } from '$components/Header/Friends/types';
 import { Box, TextField, Typography } from '@mui/material';
-
-import { FriendCard } from './FriendCard';
-import { FriendSearchDropdown } from './FriendSearchDropdown';
-import { textFieldSx } from './styles';
-import type { Friend } from './types';
 
 interface FriendsTabProps {
     friends: Friend[];

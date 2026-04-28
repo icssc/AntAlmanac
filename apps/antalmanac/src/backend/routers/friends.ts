@@ -1,9 +1,8 @@
+import { RDS } from '$src/backend/lib/rds';
+import { protectedProcedure, router } from '$src/backend/trpc';
 import { db } from '@packages/db/src';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
-
-import { RDS } from '../lib/rds';
-import { protectedProcedure, router } from '../trpc';
 
 async function validateAndSendFriendRequest(requesterId: string, addresseeId: string) {
     const rows = await RDS.getFriendshipsBetween(db, requesterId, addresseeId);

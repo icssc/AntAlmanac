@@ -1,8 +1,7 @@
+import { FriendIdentity } from '$components/Header/Friends/FriendIdentity';
+import { friendCardSx } from '$components/Header/Friends/styles';
+import type { Friend } from '$components/Header/Friends/types';
 import { Box, Button } from '@mui/material';
-
-import { FriendIdentity } from './FriendIdentity';
-import { friendCardSx } from './styles';
-import type { Friend } from './types';
 
 interface BlockedUserCardProps {
     user: Friend;

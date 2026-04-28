@@ -1,9 +1,8 @@
+import { FriendIdentity } from '$components/Header/Friends/FriendIdentity';
+import { friendCardSx } from '$components/Header/Friends/styles';
+import type { Friend } from '$components/Header/Friends/types';
 import { MoreVert } from '@mui/icons-material';
 import { Box, Button, IconButton, Stack } from '@mui/material';
-
-import { FriendIdentity } from './FriendIdentity';
-import { friendCardSx } from './styles';
-import type { Friend } from './types';
 
 interface FriendCardProps {
     friend: Friend;
