@@ -5,7 +5,6 @@ import { openSnackbar } from '$stores/SnackbarStore';
 import { create } from 'zustand';
 import { combine } from 'zustand/middleware';
 
-// Tags
 export const REVIEW_TAGS = [
     'Textbook Required',
     'Mandatory Lecture',
@@ -18,7 +17,6 @@ export const REVIEW_TAGS = [
 
 export type ReviewTag = (typeof REVIEW_TAGS)[number];
 
-// Review candidate types
 export type ReviewCandidate = {
     /** e.g. "ICS 31" */
     courseId: string;
@@ -31,10 +29,8 @@ export type ReviewCandidate = {
 
 type Step = 'enrollment-confirm' | 'review' | 'hidden';
 
-// Dismissed combos storage
 const DISMISSED_KEY = 'aa_review_dismissed';
 const MAX_DISMISSED = 100;
-/** How many past terms (in termData order, most recent first) to consider. */
 const PAST_TERMS_WINDOW = 4;
 
 type DismissedEntry = { courseId: string; professorId: string };
@@ -68,7 +64,6 @@ function persistDismissed(candidate: ReviewCandidate) {
     }
 }
 
-// Review prompt store
 const initialState = {
     candidate: null as ReviewCandidate | null,
     step: 'hidden' as Step,
@@ -97,7 +92,6 @@ export const useReviewPromptStore = create(
 
             if (pastTermNames.size === 0) return;
 
-            // Gather unique {courseId, professorId, term} combos from ALL schedules.
             const allCourses = AppStore.schedule.getAllCourses();
             const seen = new Set<string>();
             const candidates: ReviewCandidate[] = [];
@@ -125,11 +119,9 @@ export const useReviewPromptStore = create(
 
             if (candidates.length === 0) return;
 
-            // Filter out already-dismissed combos (localStorage).
             const dismissed = loadDismissed();
             const dismissedSet = new Set(dismissed.map((d) => `${d.courseId}::${d.professorId}`));
 
-            // Filter out already-reviewed combos (DB).
             let reviewedSet = new Set<string>();
             try {
                 const reviewed = await trpc.review.getReviewedCombos.query();
@@ -145,12 +137,10 @@ export const useReviewPromptStore = create(
 
             if (eligible.length === 0) return;
 
-            // Pick a random eligible candidate and surface the prompt.
             const candidate = eligible[Math.floor(Math.random() * eligible.length)];
             set({ step: 'enrollment-confirm', candidate, rating: 0, selectedTags: [] });
         },
 
-        /** User confirmed they took the course — advance to the rating step. */
         confirm: () => set({ step: 'review' }),
 
         /**
@@ -174,7 +164,6 @@ export const useReviewPromptStore = create(
             });
         },
 
-        /** Submit the review and hide the prompt on success. */
         submitReview: async () => {
             const { candidate, rating, selectedTags } = get();
             if (!candidate || rating === 0) return;
