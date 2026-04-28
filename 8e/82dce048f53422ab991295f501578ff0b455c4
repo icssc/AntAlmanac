@@ -1,0 +1,39 @@
+apps/antalmanac/src/components/Header/Friends/FriendsTab.tsx
+  25f602ce5537bf87 1-4
+apps/antalmanac/src/components/Header/Friends/FriendsMenu.tsx
+  25f602ce5537bf87 1-4
+apps/antalmanac/src/components/Header/Friends/SentRequestCard.tsx
+  25f602ce5537bf87 1-3
+apps/antalmanac/src/components/Header/Friends/RequestCard.tsx
+  25f602ce5537bf87 1-3
+apps/antalmanac/src/components/Header/Friends/RequestsTab.tsx
+  25f602ce5537bf87 1-5
+apps/antalmanac/src/components/Header/Friends/FriendCard.tsx
+  25f602ce5537bf87 1-3
+apps/antalmanac/src/components/Header/Friends/FriendSearchDropdown.tsx
+  25f602ce5537bf87 1-2
+apps/antalmanac/src/components/Header/Friends/BlockedUserCard.tsx
+  25f602ce5537bf87 1-3
+apps/antalmanac/src/components/Header/Friends/FriendDropdownCard.tsx
+  25f602ce5537bf87 1-2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "8e82dce048f53422ab991295f501578ff0b455c4",
+  "prompts": {
+    "25f602ce5537bf87": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "da492e1a-2956-4d5a-b8f1-d4e27fc6cfc7",
+        "model": "claude-sonnet-4-6"
+      },
+      "human_author": "Brendan Lieu",
+      "messages": [],
+      "total_additions": 31,
+      "total_deletions": 31,
+      "accepted_lines": 29,
+      "overriden_lines": 0
+    }
+  }
+}
