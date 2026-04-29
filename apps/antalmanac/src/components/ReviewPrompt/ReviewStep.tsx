@@ -1,6 +1,7 @@
 'use client';
 
-import { REVIEW_TAGS, type ReviewTag } from '$stores/ReviewPromptStore';
+import { REVIEW_TAGS } from '$stores/ReviewPromptStore';
+import { useReviewPromptStore } from '$stores/ReviewPromptStore';
 import CloseIcon from '@mui/icons-material/Close';
 import {
     Box,
@@ -15,44 +16,34 @@ import {
     Typography,
 } from '@mui/material';
 
-export interface ReviewStepProps {
-    courseId: string;
-    professorId: string;
-    rating: number;
-    selectedTags: ReviewTag[];
-    onRatingChange: (rating: number) => void;
-    onTagToggle: (tag: ReviewTag) => void;
-    onSubmit: () => void;
-    onDismiss: () => void;
-}
-
 function ratingLabel(rating: number): string {
+    // Aligned with RMP
     switch (rating) {
         case 1:
-            return 'Poor';
+            return 'Awful';
         case 2:
-            return 'Fair';
+            return 'OK';
         case 3:
-            return 'Average';
-        case 4:
             return 'Good';
-        case 5:
+        case 4:
             return 'Great';
+        case 5:
+            return 'Awesome';
         default:
             return '';
     }
 }
 
-export function ReviewStep({
-    courseId,
-    professorId,
-    rating,
-    selectedTags,
-    onRatingChange,
-    onTagToggle,
-    onSubmit,
-    onDismiss,
-}: ReviewStepProps) {
+export function ReviewStep() {
+    const courseId = useReviewPromptStore((s) => s.candidate?.courseId ?? '');
+    const professorId = useReviewPromptStore((s) => s.candidate?.professorId ?? '');
+    const rating = useReviewPromptStore((s) => s.rating);
+    const selectedTags = useReviewPromptStore((s) => s.selectedTags);
+    const setRating = useReviewPromptStore((s) => s.setRating);
+    const toggleTag = useReviewPromptStore((s) => s.toggleTag);
+    const submitReview = useReviewPromptStore((s) => s.submitReview);
+    const dismiss = useReviewPromptStore((s) => s.dismiss);
+
     return (
         <>
             <CardHeader
@@ -63,7 +54,7 @@ export function ReviewStep({
                 }
                 subheader={<Typography color="text.secondary">with {professorId}</Typography>}
                 action={
-                    <IconButton size="small" onClick={onDismiss} aria-label="dismiss">
+                    <IconButton size="small" onClick={dismiss} aria-label="dismiss">
                         <CloseIcon fontSize="small" />
                     </IconButton>
                 }
@@ -72,7 +63,7 @@ export function ReviewStep({
             <CardContent sx={{ paddingTop: 0 }}>
                 <Stack spacing={2}>
                     <Box display="flex" alignItems="center" gap={1}>
-                        <Rating value={rating} onChange={(_e, value) => onRatingChange(value ?? 0)} size="large" />
+                        <Rating value={rating} onChange={(_e, value) => setRating(value ?? 0)} size="large" />
                         {rating > 0 && (
                             <Typography variant="caption" color="text.secondary">
                                 {ratingLabel(rating)}
@@ -86,7 +77,7 @@ export function ReviewStep({
                                 key={tag}
                                 label={tag}
                                 size="small"
-                                onClick={() => onTagToggle(tag)}
+                                onClick={() => toggleTag(tag)}
                                 color={selectedTags.includes(tag) ? 'primary' : 'default'}
                                 variant={selectedTags.includes(tag) ? 'filled' : 'outlined'}
                                 sx={{ cursor: 'pointer' }}
@@ -97,11 +88,11 @@ export function ReviewStep({
             </CardContent>
 
             <CardActions sx={{ justifyContent: 'flex-end' }}>
-                <Button size="small" color="inherit" onClick={onDismiss}>
+                <Button size="small" color="inherit" onClick={dismiss}>
                     Skip
                 </Button>
 
-                <Button size="small" variant="contained" disabled={rating === 0} onClick={onSubmit}>
+                <Button size="small" variant="contained" disabled={rating === 0} onClick={submitReview}>
                     Submit
                 </Button>
             </CardActions>

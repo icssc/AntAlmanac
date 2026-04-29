@@ -1,25 +1,17 @@
 'use client';
 
+import { useReviewPromptStore } from '$stores/ReviewPromptStore';
 import CloseIcon from '@mui/icons-material/Close';
 import { Box, Button, CardActions, CardContent, CardHeader, IconButton, Typography } from '@mui/material';
 
-export interface EnrollmentConfirmStepProps {
-    courseId: string;
-    courseTitle: string;
-    professorId: string;
-    term: string;
-    onConfirm: () => void;
-    onDismiss: () => void;
-}
+export function EnrollmentConfirmStep() {
+    const courseId = useReviewPromptStore((s) => s.candidate?.courseId ?? '');
+    const courseTitle = useReviewPromptStore((s) => s.candidate?.courseTitle ?? '');
+    const professorId = useReviewPromptStore((s) => s.candidate?.professorId ?? '');
+    const term = useReviewPromptStore((s) => s.candidate?.term ?? '');
+    const confirm = useReviewPromptStore((s) => s.confirm);
+    const dismiss = useReviewPromptStore((s) => s.dismiss);
 
-export function EnrollmentConfirmStep({
-    courseId,
-    courseTitle,
-    professorId,
-    term,
-    onConfirm,
-    onDismiss,
-}: EnrollmentConfirmStepProps) {
     return (
         <>
             <CardHeader
@@ -29,7 +21,7 @@ export function EnrollmentConfirmStep({
                     </Typography>
                 }
                 action={
-                    <IconButton size="small" onClick={onDismiss} aria-label="dismiss">
+                    <IconButton size="small" onClick={dismiss} aria-label="dismiss">
                         <CloseIcon fontSize="small" />
                     </IconButton>
                 }
@@ -55,11 +47,11 @@ export function EnrollmentConfirmStep({
             </CardContent>
 
             <CardActions sx={{ justifyContent: 'flex-end' }}>
-                <Button size="small" color="inherit" onClick={onDismiss}>
+                <Button size="small" color="inherit" onClick={dismiss}>
                     I did not
                 </Button>
 
-                <Button size="small" variant="contained" onClick={onConfirm}>
+                <Button size="small" variant="contained" onClick={confirm}>
                     Yes!
                 </Button>
             </CardActions>
