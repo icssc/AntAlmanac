@@ -33,6 +33,7 @@ const analyticsEnum: AnalyticsEnum = {
             UNDO: 'Undo',
             REDO: 'Redo',
             DOWNLOAD: 'Download Schedule',
+            CLICK_PAST_SYLLABI: 'Click Past Syllabi',
         },
     },
     nav: {

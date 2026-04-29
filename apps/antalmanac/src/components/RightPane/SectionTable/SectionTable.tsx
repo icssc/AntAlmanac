@@ -3,6 +3,7 @@ import { CourseInfoButton } from '$components/RightPane/SectionTable/CourseInfo/
 import { CourseInfoSearchButton } from '$components/RightPane/SectionTable/CourseInfo/CourseInfoSearchButton';
 import { EnrollmentColumnHeader } from '$components/RightPane/SectionTable/EnrollmentColumnHeader';
 import { SectionTableBody } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBody';
+import { PastSyllabiPopover } from '$components/RightPane/SectionTable/SectionTablePopover/PastSyllabiPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
 import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
@@ -113,6 +114,14 @@ function SectionTable(props: SectionTableProps) {
                     text="Planner"
                     icon={<Route />}
                     redirectLink={`https://antalmanac.com/planner/course/${encodeURIComponent(courseId)}`}
+                />
+
+                <CourseInfoButton
+                    analyticsCategory={analyticsCategory}
+                    analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_SYLLABI}
+                    text="Past Syllabi"
+                    icon={<Route />}
+                    popupContent={<PastSyllabiPopover courseId={courseId} />}
                 />
             </Box>
 
