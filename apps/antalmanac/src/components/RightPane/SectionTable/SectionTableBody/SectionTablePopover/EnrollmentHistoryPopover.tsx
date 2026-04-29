@@ -63,9 +63,11 @@ export function EnrollmentHistoryPopover({
     const title = `${department} ${courseNumber}`;
     const currEnrollmentHistory = enrollmentHistory?.at(activeGraphIndex);
     const subheader =
-        currEnrollmentHistory != null
-            ? `${currEnrollmentHistory.year} ${currEnrollmentHistory.quarter} | ${sectionType}`
-            : '';
+        currEnrollmentHistory != null ? (
+            `${currEnrollmentHistory.year} ${currEnrollmentHistory.quarter} | ${sectionType}`
+        ) : (
+            <>&nbsp;</>
+        );
 
     const chartColors = theme.palette.enrollmentStatus;
 
