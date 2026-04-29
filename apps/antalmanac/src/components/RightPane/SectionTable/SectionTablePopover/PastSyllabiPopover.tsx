@@ -81,7 +81,7 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
                 }}
             />
 
-            <CardContent sx={{ minWidth: width, height: height, paddingTop: 0 }}>
+            <CardContent sx={{ minWidth: width, paddingTop: 0 }}>
                 {loading ? (
                     <Skeleton variant="rectangular" animation="wave" height="100%" width="100%" />
                 ) : syllabi.length === 0 ? (
@@ -89,7 +89,7 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
                         No syllabi found for this course.
                     </Typography>
                 ) : (
-                    <List disablePadding sx={{ maxHeight: height, overflow: 'auto', paddingBottom: 3 }}>
+                    <List disablePadding sx={{ maxHeight: height, overflow: 'auto' }}>
                         {Object.entries(syllabiByTerm).map(([term, entries]) => (
                             <ListSubheader key={term} disableGutters>
                                 <Typography variant="body1" color="text.primary">
