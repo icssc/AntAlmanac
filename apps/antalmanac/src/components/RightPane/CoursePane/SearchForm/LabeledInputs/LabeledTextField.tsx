@@ -8,6 +8,7 @@ interface LabeledTextFieldProps {
     isAligned?: boolean;
     labelProps?: Omit<ComponentProps<typeof LabeledInput>['labelProps'], 'id' | 'label' | 'isAligned'>;
     loading?: boolean;
+    disabled?: boolean;
 }
 
 export const LabeledTextField = ({
@@ -17,6 +18,7 @@ export const LabeledTextField = ({
     isAligned,
     labelProps,
     loading,
+    disabled,
 }: LabeledTextFieldProps) => {
     const generatedId = useId();
     const textFieldId = id ?? generatedId;
@@ -27,7 +29,7 @@ export const LabeledTextField = ({
                 size="small"
                 variant="outlined"
                 id={textFieldId}
-                disabled={loading}
+                disabled={disabled}
                 {...(loading
                     ? {
                           slotProps: {

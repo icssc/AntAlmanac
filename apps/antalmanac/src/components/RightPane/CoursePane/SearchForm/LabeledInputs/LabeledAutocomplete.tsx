@@ -14,6 +14,7 @@ interface LabeledAutocompleteProps<
     isAligned?: boolean;
     labelProps?: ComponentProps<typeof LabeledTextField>['labelProps'];
     loading?: boolean;
+    disabled?: boolean;
 }
 
 const ResponsivePopper = (props: PopperProps) => {
@@ -59,6 +60,7 @@ export const LabeledAutocomplete = <T,>({
     isAligned,
     labelProps,
     loading,
+    disabled,
 }: LabeledAutocompleteProps<T>) => {
     const id = useId();
 
@@ -71,6 +73,7 @@ export const LabeledAutocomplete = <T,>({
                 flex: 1,
                 width: '100%',
             }}
+            disabled={disabled}
             {...autocompleteProps}
             PopperComponent={ResponsivePopper}
             renderInput={(params) => (
@@ -79,6 +82,7 @@ export const LabeledAutocomplete = <T,>({
                     isAligned={isAligned}
                     id={id}
                     loading={loading}
+                    disabled={disabled}
                     labelProps={labelProps}
                     textFieldProps={{
                         ...textFieldProps,
