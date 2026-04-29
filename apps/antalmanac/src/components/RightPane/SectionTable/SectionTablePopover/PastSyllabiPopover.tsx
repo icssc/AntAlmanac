@@ -83,7 +83,7 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
 
             <CardContent sx={{ minWidth: width, paddingTop: 0 }}>
                 {loading ? (
-                    <Skeleton variant="rectangular" animation="wave" height="100%" width="100%" />
+                    <Skeleton variant="rectangular" animation="wave" height="150px" width="100%" />
                 ) : syllabi.length === 0 ? (
                     <Typography variant="body1" color="text.secondary">
                         No syllabi found for this course.
