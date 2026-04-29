@@ -71,7 +71,7 @@ function PopupHeader({
     );
 }
 
-interface EnrollmentHistoryPopupProps {
+interface EnrollmentHistoryPopoverProps {
     sectionType: WebsocSectionType;
     department: string;
     courseNumber: string;
@@ -83,13 +83,13 @@ function graphKey(enrollment: EnrollmentHistory) {
     return `${enrollment.year}-${enrollment.quarter}-${enrollment.instructors.join('|')}`;
 }
 
-export function EnrollmentHistoryPopup({
+export function EnrollmentHistoryPopover({
     sectionType,
     department,
     courseNumber,
     enrollmentHistory,
     loading = false,
-}: EnrollmentHistoryPopupProps) {
+}: EnrollmentHistoryPopoverProps) {
     const [selectedGraphKey, setSelectedGraphKey] = useState<string>();
 
     const theme = useTheme();
