@@ -1,11 +1,13 @@
 import actionTypesStore from '$actions/ActionTypesStore';
 import { saveSchedule } from '$actions/AppStoreActions';
 import { SignInDialog } from '$components/dialogs/SignInDialog';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { Close, Save as SaveIcon } from '@mui/icons-material';
 import { Stack, Snackbar, Alert, Link, IconButton, Button } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useState, useEffect } from 'react';
 
 export const Save = () => {
@@ -14,8 +16,15 @@ export const Save = () => {
     const [saving, setSaving] = useState(false);
     const [skeletonMode, setSkeletonMode] = useState(AppStore.getSkeletonMode());
     const { openAutoSaveWarning, setOpenAutoSaveWarning } = scheduleComponentsToggleStore();
+    const postHog = usePostHog();
 
     const handleClickSignIn = () => {
+        if (!openSignInDialog) {
+            logAnalytics(postHog, {
+                category: analyticsEnum.nav,
+                action: analyticsEnum.nav.actions.CLICK_SAVE,
+            });
+        }
         setOpenSignInDialog(!openSignInDialog);
     };
 
@@ -26,7 +35,7 @@ export const Save = () => {
     const saveScheduleData = async () => {
         if (sessionIsValid) {
             setSaving(true);
-            await saveSchedule({ rememberMe: true });
+            await saveSchedule({ postHog });
             setSaving(false);
         }
     };

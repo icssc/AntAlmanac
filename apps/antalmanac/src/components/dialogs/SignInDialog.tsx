@@ -2,6 +2,7 @@ import { loginUser } from '$actions/AppStoreActions';
 import { useThemeStore } from '$stores/SettingsStore';
 import GoogleIcon from '@mui/icons-material/Google';
 import { Button, Stack, Dialog, DialogTitle, DialogContent, Alert } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 
 interface SignInDialogProps {
     open: boolean;
@@ -12,6 +13,7 @@ interface SignInDialogProps {
 export function SignInDialog(props: SignInDialogProps) {
     const { onClose, open } = props;
     const isDark = useThemeStore((store) => store.isDark);
+    const postHog = usePostHog();
 
     const handleClose = () => {
         onClose();
@@ -55,7 +57,7 @@ export function SignInDialog(props: SignInDialogProps) {
                         </Alert>
                     )}
                     <Button
-                        onClick={loginUser}
+                        onClick={() => loginUser(postHog)}
                         startIcon={<GoogleIcon />}
                         color="primary"
                         variant="contained"

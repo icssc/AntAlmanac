@@ -1,11 +1,10 @@
+import { NotificationsTable } from '$components/RightPane/AddedCourses/Notifications/NotificationsTable';
+import { useNotificationStore } from '$stores/NotificationStore';
 import { NotificationAddOutlined } from '@mui/icons-material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { Box, Tab, Paper, CircularProgress, Typography, useTheme } from '@mui/material';
 import { useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-
-import { NotificationsTable } from '$components/RightPane/AddedCourses/Notifications/NotificationsTable';
-import { useNotificationStore } from '$stores/NotificationStore';
 
 function groupNotificationsByTerm(notifications: Record<string, unknown>) {
     return Object.keys(notifications).reduce<Record<string, string[]>>((groups, key) => {
@@ -84,7 +83,18 @@ export function NotificationsTabs() {
                     square
                     sx={{ bgcolor: theme.palette.background.elevated, borderColor: 'divider' }}
                 >
-                    <TabList onChange={handleTabChange} indicatorColor="primary" variant="fullWidth" centered>
+                    <TabList
+                        onChange={handleTabChange}
+                        indicatorColor="primary"
+                        variant="fullWidth"
+                        centered
+                        sx={{
+                            '& .MuiTab-root': {
+                                minHeight: { xs: 40, md: 48 },
+                                fontSize: { xs: '0.8125rem', md: '0.9375rem' },
+                            },
+                        }}
+                    >
                         {sortedTerms.map((term) => (
                             <Tab label={term} key={term} value={term} />
                         ))}
