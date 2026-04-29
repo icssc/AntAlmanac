@@ -24,7 +24,7 @@ export function EnrollmentConfirmStep({
         <>
             <CardHeader
                 title={
-                    <Typography variant="subtitle2" fontWeight={600}>
+                    <Typography variant="subtitle1" fontWeight={600}>
                         Quick question
                     </Typography>
                 }
@@ -33,9 +33,9 @@ export function EnrollmentConfirmStep({
                         <CloseIcon fontSize="small" />
                     </IconButton>
                 }
-                sx={{ pb: 0 }}
             />
-            <CardContent sx={{ pt: 1 }}>
+
+            <CardContent sx={{ paddingTop: 0 }}>
                 <Typography variant="body1" color="text.secondary">
                     Did you take{' '}
                     <Box component="span" fontWeight={600} color="text.primary">
@@ -53,11 +53,13 @@ export function EnrollmentConfirmStep({
                     ?
                 </Typography>
             </CardContent>
-            <CardActions sx={{ justifyContent: 'flex-end', pt: 0, px: 2, pb: 1.5 }}>
+
+            <CardActions sx={{ justifyContent: 'flex-end' }}>
                 <Button size="small" color="inherit" onClick={onDismiss}>
-                    Not really
+                    I did not
                 </Button>
-                <Button size="small" variant="contained" onClick={onConfirm} disableElevation>
+
+                <Button size="small" variant="contained" onClick={onConfirm}>
                     Yes!
                 </Button>
             </CardActions>

@@ -9,7 +9,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { EnrollmentConfirmStep } from './EnrollmentConfirmStep';
 import { ReviewStep } from './ReviewStep';
 
-const PROMPT_DELAY_MS = 15_000;
+const PROMPT_DELAY_MS = 1_000;
 
 export function ReviewPrompt() {
     const { userId, sessionIsValid } = useSessionStore(

@@ -57,23 +57,19 @@ export function ReviewStep({
         <>
             <CardHeader
                 title={
-                    <Typography variant="subtitle2" fontWeight={600}>
+                    <Typography variant="subtitle1" fontWeight={600}>
                         How was {courseId}?
                     </Typography>
                 }
-                subheader={
-                    <Typography variant="caption" color="text.secondary">
-                        with {professorId}
-                    </Typography>
-                }
+                subheader={<Typography color="text.secondary">with {professorId}</Typography>}
                 action={
                     <IconButton size="small" onClick={onDismiss} aria-label="dismiss">
                         <CloseIcon fontSize="small" />
                     </IconButton>
                 }
-                sx={{ pb: 0 }}
             />
-            <CardContent sx={{ pt: 1.5 }}>
+
+            <CardContent sx={{ paddingTop: 0 }}>
                 <Stack spacing={2}>
                     <Box display="flex" alignItems="center" gap={1}>
                         <Rating value={rating} onChange={(_e, value) => onRatingChange(value ?? 0)} size="large" />
@@ -99,11 +95,13 @@ export function ReviewStep({
                     </Box>
                 </Stack>
             </CardContent>
-            <CardActions sx={{ justifyContent: 'flex-end', pt: 0, px: 2, pb: 1.5 }}>
+
+            <CardActions sx={{ justifyContent: 'flex-end' }}>
                 <Button size="small" color="inherit" onClick={onDismiss}>
                     Skip
                 </Button>
-                <Button size="small" variant="contained" disabled={rating === 0} onClick={onSubmit} disableElevation>
+
+                <Button size="small" variant="contained" disabled={rating === 0} onClick={onSubmit}>
                     Submit
                 </Button>
             </CardActions>
