@@ -31,7 +31,7 @@ export const roadmapSchema = z.object({
 });
 
 function getPlannerApiDomain(domain: string) {
-    if (domain.startsWith('staging-shared')) {
+    if (domain === 'staging-shared.antalmanac.com') {
         return domain;
     } else {
         return 'antalmanac.com';
