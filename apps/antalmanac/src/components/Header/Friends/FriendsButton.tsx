@@ -22,7 +22,6 @@ export function FriendsButton() {
     const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
     const [sentRequests, setSentRequests] = useState<FriendRequest[]>([]);
     const [friends, setFriends] = useState<Friend[]>([]);
-    const [blockedFriends, setBlockedFriends] = useState<Friend[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [dataLoaded, setDataLoaded] = useState(false);
 
@@ -40,21 +39,15 @@ export function FriendsButton() {
 
         setIsLoading(true);
         try {
-            const [friendsResult, pendingResult, sentResult, blockedResult] = await Promise.all([
+            const [friendsResult, pendingResult, sentResult] = await Promise.all([
                 trpc.friends.getFriends.query(),
                 trpc.friends.getPendingRequests.query(),
                 trpc.friends.getSentRequests.query(),
-                trpc.friends.getBlockedUsers.query(),
             ]);
 
             setFriends(friendsResult.map(mapUser));
             setFriendRequests(pendingResult.map(mapUser));
             setSentRequests(sentResult.map(mapUser));
-            setBlockedFriends(
-                (
-                    blockedResult as { id: string; name: string | null; email: string | null; avatar: string | null }[]
-                ).map(mapUser)
-            );
 
             setDataLoaded(true);
         } catch (error) {
@@ -70,7 +63,6 @@ export function FriendsButton() {
             setFriendRequests([]);
             setSentRequests([]);
             setFriends([]);
-            setBlockedFriends([]);
             setIsLoading(false);
             setDataLoaded(false);
         }
@@ -166,7 +158,6 @@ export function FriendsButton() {
                     friendRequests={friendRequests}
                     sentRequests={sentRequests}
                     friends={friends}
-                    blockedFriends={blockedFriends}
                     isLoading={showLoadingSkeleton}
                     onRefresh={loadFriendsData}
                 />

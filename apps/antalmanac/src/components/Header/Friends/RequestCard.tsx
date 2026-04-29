@@ -1,17 +1,15 @@
 import { FriendIdentity } from '$components/Header/Friends/FriendIdentity';
 import { friendCardSx } from '$components/Header/Friends/styles';
 import type { FriendRequest } from '$components/Header/Friends/types';
-import { MoreVert } from '@mui/icons-material';
-import { Box, Button, IconButton, Stack } from '@mui/material';
+import { Box, Button, Stack } from '@mui/material';
 
 interface RequestCardProps {
     request: FriendRequest;
     onAccept: (id: string) => void;
     onDecline: (id: string) => void;
-    onOpenBlockMenu: (e: React.MouseEvent<HTMLElement>, id: string) => void;
 }
 
-export function RequestCard({ request, onAccept, onDecline, onOpenBlockMenu }: RequestCardProps) {
+export function RequestCard({ request, onAccept, onDecline }: RequestCardProps) {
     return (
         <Box sx={friendCardSx}>
             <FriendIdentity name={request.name} email={request.email} avatar={request.avatar} />
@@ -54,17 +52,6 @@ export function RequestCard({ request, onAccept, onDecline, onOpenBlockMenu }: R
                 >
                     Reject
                 </Button>
-                <IconButton
-                    size="small"
-                    onClick={(e) => onOpenBlockMenu(e, request.id)}
-                    sx={{
-                        color: 'text.secondary',
-                        ml: 0.5,
-                        '&:hover': { bgcolor: 'action.hover', color: 'text.primary' },
-                    }}
-                >
-                    <MoreVert fontSize="small" />
-                </IconButton>
             </Stack>
         </Box>
     );

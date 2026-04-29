@@ -1,8 +1,7 @@
-import { BlockedUserCard } from '$components/Header/Friends/BlockedUserCard';
 import { RequestCard } from '$components/Header/Friends/RequestCard';
 import { SentRequestCard } from '$components/Header/Friends/SentRequestCard';
 import { textFieldSx } from '$components/Header/Friends/styles';
-import type { Friend, FriendRequest } from '$components/Header/Friends/types';
+import type { FriendRequest } from '$components/Header/Friends/types';
 import { PersonAdd } from '@mui/icons-material';
 import { Box, Button, IconButton, Stack, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
@@ -13,12 +12,9 @@ interface RequestsTabProps {
     onAddFriend: () => void;
     friendRequests: FriendRequest[];
     sentRequests: FriendRequest[];
-    blockedFriends: Friend[];
     onAccept: (id: string) => void;
     onDecline: (id: string) => void;
     onCancelRequest: (id: string) => void;
-    onOpenBlockMenu: (e: React.MouseEvent<HTMLElement>, id: string) => void;
-    onUnblock: (id: string) => void;
 }
 
 export function RequestsTab({
@@ -27,14 +23,11 @@ export function RequestsTab({
     onAddFriend,
     friendRequests,
     sentRequests,
-    blockedFriends,
     onAccept,
     onDecline,
     onCancelRequest,
-    onOpenBlockMenu,
-    onUnblock,
 }: RequestsTabProps) {
-    const [subTab, setSubTab] = useState<'received' | 'sent' | 'blocked'>('received');
+    const [subTab, setSubTab] = useState<'received' | 'sent'>('received');
 
     return (
         <>
@@ -79,7 +72,6 @@ export function RequestsTab({
                     [
                         { value: 'received', label: 'Received' },
                         { value: 'sent', label: 'Sent' },
-                        { value: 'blocked', label: 'Blocked' },
                     ] as const
                 ).map(({ value, label }) => (
                     <Button
@@ -126,7 +118,6 @@ export function RequestsTab({
                                     request={request}
                                     onAccept={onAccept}
                                     onDecline={onDecline}
-                                    onOpenBlockMenu={onOpenBlockMenu}
                                 />
                             ))
                         )}
@@ -142,20 +133,6 @@ export function RequestsTab({
                         ) : (
                             sentRequests.map((request) => (
                                 <SentRequestCard key={request.id} request={request} onCancel={onCancelRequest} />
-                            ))
-                        )}
-                    </>
-                )}
-
-                {subTab === 'blocked' && (
-                    <>
-                        {blockedFriends.length === 0 ? (
-                            <Typography variant="body2" color="text.secondary" sx={{ py: 2, pl: 0.5 }}>
-                                No blocked users
-                            </Typography>
-                        ) : (
-                            blockedFriends.map((user) => (
-                                <BlockedUserCard key={user.id} user={user} onUnblock={onUnblock} />
                             ))
                         )}
                     </>

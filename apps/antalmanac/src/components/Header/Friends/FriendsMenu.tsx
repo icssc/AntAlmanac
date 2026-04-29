@@ -4,7 +4,7 @@ import { RequestsTab } from '$components/Header/Friends/RequestsTab';
 import type { Friend, FriendRequest } from '$components/Header/Friends/types';
 import trpc from '$lib/api/trpc';
 import { openSnackbar } from '$stores/SnackbarStore';
-import { PersonRemove, Block } from '@mui/icons-material';
+import { PersonRemove } from '@mui/icons-material';
 import {
     Box,
     Button,
@@ -28,7 +28,6 @@ export interface FriendsMenuProps {
     friendRequests: FriendRequest[];
     sentRequests: FriendRequest[];
     friends: Friend[];
-    blockedFriends: Friend[];
     isLoading: boolean;
     onRefresh: () => Promise<void>;
 }
@@ -37,7 +36,6 @@ export function FriendsMenu({
     friendRequests,
     sentRequests,
     friends,
-    blockedFriends,
     isLoading,
     onRefresh: loadFriendsData,
 }: FriendsMenuProps) {
@@ -46,9 +44,6 @@ export function FriendsMenu({
     const [friendSearch, setFriendSearch] = useState('');
     const [friendDropdownOpen, setFriendDropdownOpen] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
-    const [blockMenuAnchor, setBlockMenuAnchor] = useState<{ element: HTMLElement; requestId: string } | null>(null);
-    const [blockDialogOpen, setBlockDialogOpen] = useState(false);
-    const [userToBlock, setUserToBlock] = useState<string | null>(null);
     const [friendMenuAnchor, setFriendMenuAnchor] = useState<{ element: HTMLElement; friendId: string } | null>(null);
     const [unfriendDialogOpen, setUnfriendDialogOpen] = useState(false);
     const [userToUnfriend, setUserToUnfriend] = useState<string | null>(null);
@@ -99,32 +94,6 @@ export function FriendsMenu({
         }
     };
 
-    const handleOpenBlockMenu = (event: React.MouseEvent<HTMLElement>, requestId: string) => {
-        setBlockMenuAnchor({ element: event.currentTarget, requestId });
-    };
-
-    const handleBlockClick = () => {
-        if (blockMenuAnchor) {
-            setUserToBlock(blockMenuAnchor.requestId);
-            setBlockDialogOpen(true);
-            setBlockMenuAnchor(null);
-        }
-    };
-
-    const handleConfirmBlock = async () => {
-        if (!userToBlock) return;
-        try {
-            await trpc.friends.blockUser.mutate({ blockId: userToBlock });
-            openSnackbar('info', 'User blocked.');
-            setUserToBlock(null);
-            setBlockDialogOpen(false);
-            await loadFriendsData();
-        } catch (error) {
-            console.error('Error blocking user:', error);
-            openSnackbar('error', 'Failed to block user.');
-        }
-    };
-
     const handleViewSchedule = async (friend: Friend) => {
         try {
             const data = await trpc.userData.getFriendUserData.query({ userId: friend.id });
@@ -163,17 +132,6 @@ export function FriendsMenu({
         } catch (error) {
             console.error('Error removing friend:', error);
             openSnackbar('error', 'Failed to remove friend.');
-        }
-    };
-
-    const handleUnblock = async (blockedId: string) => {
-        try {
-            await trpc.friends.unblockUser.mutate({ blockId: blockedId });
-            openSnackbar('info', 'User unblocked.');
-            await loadFriendsData();
-        } catch (error) {
-            console.error('Error unblocking user:', error);
-            openSnackbar('error', 'Failed to unblock user.');
         }
     };
 
@@ -240,28 +198,12 @@ export function FriendsMenu({
                         onAddFriend={handleAddFriend}
                         friendRequests={friendRequests}
                         sentRequests={sentRequests}
-                        blockedFriends={blockedFriends}
                         onAccept={handleAccept}
                         onDecline={handleDecline}
-                        onOpenBlockMenu={handleOpenBlockMenu}
-                        onUnblock={handleUnblock}
                         onCancelRequest={handleDecline}
                     />
                 )}
             </Box>
-
-            <Menu
-                anchorEl={blockMenuAnchor?.element}
-                open={Boolean(blockMenuAnchor)}
-                onClose={() => setBlockMenuAnchor(null)}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            >
-                <MenuItem onClick={handleBlockClick} sx={{ color: 'error.main' }}>
-                    <Block sx={{ mr: 1, fontSize: '1.25rem' }} />
-                    Block User
-                </MenuItem>
-            </Menu>
 
             <Menu
                 anchorEl={friendMenuAnchor?.element}
@@ -278,19 +220,6 @@ export function FriendsMenu({
                 <MenuItem onClick={handleUnfriendClick} sx={{ color: 'error.main' }}>
                     <PersonRemove sx={{ mr: 1, fontSize: '1.25rem' }} />
                     Unfriend
-                </MenuItem>
-                <MenuItem
-                    onClick={() => {
-                        if (friendMenuAnchor) {
-                            setUserToBlock(friendMenuAnchor.friendId);
-                            setBlockDialogOpen(true);
-                            setFriendMenuAnchor(null);
-                        }
-                    }}
-                    sx={{ color: 'error.main' }}
-                >
-                    <Block sx={{ mr: 1, fontSize: '1.25rem' }} />
-                    Block User
                 </MenuItem>
             </Menu>
 
@@ -311,30 +240,6 @@ export function FriendsMenu({
                     </Button>
                     <Button onClick={handleConfirmUnfriend} color="primary" variant="contained">
                         Remove
-                    </Button>
-                </DialogActions>
-            </Dialog>
-
-            <Dialog open={blockDialogOpen} onClose={() => setBlockDialogOpen(false)}>
-                <DialogTitle>Block User?</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        Are you sure you want to block this user? They will no longer be able to send you friend
-                        requests.
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        onClick={() => {
-                            setUserToBlock(null);
-                            setBlockDialogOpen(false);
-                        }}
-                        color="inherit"
-                    >
-                        Cancel
-                    </Button>
-                    <Button onClick={handleConfirmBlock} color="primary" variant="contained">
-                        Block
                     </Button>
                 </DialogActions>
             </Dialog>
