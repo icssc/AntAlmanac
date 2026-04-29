@@ -1,6 +1,7 @@
 import { SignInDialog } from '$components/dialogs/SignInDialog';
 import RightDivider from '$components/RightDivider';
 import { PLANNER_SEARCH_PARAM } from '$components/RightPane/CoursePane/SearchForm/constants';
+import { LabeledAutocomplete } from '$components/RightPane/CoursePane/SearchForm/LabeledInputs/LabeledAutocomplete';
 import RightPaneStore from '$components/RightPane/RightPaneStore';
 import trpc from '$lib/api/trpc';
 import {
@@ -13,13 +14,17 @@ import { PLANNER_LINK } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import { Autocomplete, Box, CircularProgress, MenuItem, TextField, Tooltip, Typography } from '@mui/material';
+import { Box, CircularProgress, MenuItem, Tooltip, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
 import { useSearchParams } from 'next/navigation';
 import { ComponentProps, HTMLAttributes, useCallback, useEffect, useMemo, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-type AutocompleteProps = ComponentProps<typeof Autocomplete>;
+interface Props {
+    labelProps?: ComponentProps<typeof LabeledAutocomplete>['labelProps'];
+}
+
+type AutocompleteProps = ComponentProps<typeof LabeledAutocomplete>['autocompleteProps'];
 
 // Maps relation types to roadmap IDs
 type TermRoadmapGrouping = Record<RoadmapTermRelation, Set<string>>;
@@ -32,7 +37,7 @@ function getDefaultTermRoadmapGrouping(): TermRoadmapGrouping {
     };
 }
 
-const SearchWithPlanner = () => {
+const SearchWithPlanner = ({ labelProps }: Props) => {
     const [termRoadmapGrouping, setTermRoadmapGrouping] = useState<TermRoadmapGrouping>(getDefaultTermRoadmapGrouping);
     const [isLoadingSearch, setIsLoadingSearch] = useState(false);
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
@@ -127,10 +132,6 @@ const SearchWithPlanner = () => {
         );
     };
 
-    const renderInput: AutocompleteProps['renderInput'] = (props) => {
-        return <TextField {...props} variant="outlined" size="small" placeholder={'Search with Planner'} />;
-    };
-
     const renderOption = (props: HTMLAttributes<HTMLLIElement>, roadmap: Roadmap) => {
         const menuItem = (
             <MenuItem
@@ -203,30 +204,34 @@ const SearchWithPlanner = () => {
     }
 
     const searchComponent = (
-        <Autocomplete
-            options={sortedRoadmaps}
-            disabled={!sessionIsValid}
-            getOptionLabel={(roadmap) => roadmap.name.toString()}
-            loading={isPlannerLoading}
-            loadingText="Loading Planner..."
-            noOptionsText="No roadmaps found"
-            groupBy={groupBy}
-            renderGroup={renderGroup}
-            renderInput={renderInput}
-            renderOption={renderOption}
-            {...(plannerRoadmaps.length === 0 && {
-                slotProps: { popper: { sx: { '& .MuiAutocomplete-noOptions': { padding: 0 } } } },
-                noOptionsText: (
-                    <MenuItem
-                        component="a"
-                        href={PLANNER_LINK}
-                        target="_blank"
-                        sx={(theme) => ({ color: theme.palette.text.primary, paddingTop: 1.5, paddingBottom: 1.5 })}
-                    >
-                        Create a roadmap!
-                    </MenuItem>
-                ),
-            })}
+        <LabeledAutocomplete
+            label="Roadmap"
+            autocompleteProps={{
+                options: sortedRoadmaps,
+                disabled: !sessionIsValid,
+                getOptionLabel: (roadmap) => roadmap.name.toString(),
+                loading: isPlannerLoading,
+                loadingText: 'Loading Planner...',
+                noOptionsText: 'No roadmaps found',
+                groupBy: groupBy,
+                renderGroup: renderGroup,
+                renderOption: renderOption,
+                ...(plannerRoadmaps.length === 0 && {
+                    slotProps: { popper: { sx: { '& .MuiAutocomplete-noOptions': { padding: 0 } } } },
+                    noOptionsText: (
+                        <MenuItem
+                            component="a"
+                            href={PLANNER_LINK}
+                            target="_blank"
+                            sx={(theme) => ({ color: theme.palette.text.primary, paddingTop: 1.5, paddingBottom: 1.5 })}
+                        >
+                            Create a roadmap!
+                        </MenuItem>
+                    ),
+                }),
+            }}
+            textFieldProps={{ placeholder: 'Select roadmap from Planner', fullWidth: true }}
+            labelProps={labelProps}
         />
     );
 

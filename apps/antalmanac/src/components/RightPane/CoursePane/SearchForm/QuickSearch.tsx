@@ -16,19 +16,18 @@ const QuickSearch = ({ toggleSearch, labelProps }: Props) => {
     const isMobile = useIsMobile();
 
     const fuzzySearch = <FuzzySearch toggleSearch={toggleSearch} postHog={postHog} labelProps={labelProps} />;
+    const plannerSearch = <SearchWithPlanner labelProps={labelProps} />;
 
     return isMobile ? (
         <>
             {fuzzySearch}
-            <SearchWithPlanner />
+            {plannerSearch}
         </>
     ) : (
         <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
             {fuzzySearch}
             <Typography>or</Typography>
-            <Box sx={{ minWidth: '25%' }}>
-                <SearchWithPlanner />
-            </Box>
+            <Box sx={{ minWidth: '37%' }}>{plannerSearch}</Box>
         </Stack>
     );
 };

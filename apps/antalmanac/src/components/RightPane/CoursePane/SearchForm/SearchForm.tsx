@@ -17,7 +17,7 @@ interface SearchFormProps {
 }
 
 const QUICKSEARCH_LABEL_SX: SxProps<Theme> = {
-    minWidth: '6rem',
+    minWidth: '6.5rem',
 };
 
 export const SearchForm = ({ toggleSearch }: SearchFormProps) => {
