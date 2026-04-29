@@ -52,7 +52,7 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
     const subheader = loading ? (
         <>&nbsp;</>
     ) : (
-        `${syllabi.length} syllabi across ${Object.keys(syllabiByTerm).length} terms`
+        `${syllabi.length} syllabi across ${Object.keys(syllabiByTerm).length} ${Object.keys(syllabiByTerm).length === 1 ? 'term' : 'terms'}`
     );
 
     useEffect(() => {
