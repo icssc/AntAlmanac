@@ -29,7 +29,6 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
     const [loading, setLoading] = useState(true);
     const [syllabi, setSyllabi] = useState<WebsocSyllabiResponse>([]);
 
-    const title = `${deptCode} ${courseNumber}`;
     const width = isMobile ? 250 : 400;
     const height = isMobile ? 150 : 200;
 
@@ -48,6 +47,13 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
             {} as Record<string, WebsocSyllabiResponse[number][]>
         );
     }, [syllabi]);
+
+    const title = `${deptCode} ${courseNumber}`;
+    const subheader = loading ? (
+        <>&nbsp;</>
+    ) : (
+        `${syllabi.length} syllabi across ${Object.keys(syllabiByTerm).length} terms`
+    );
 
     useEffect(() => {
         setLoading(true);
@@ -69,6 +75,7 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
         <Card>
             <CardHeader
                 title={title}
+                subheader={subheader}
                 slotProps={{
                     title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },
                 }}
