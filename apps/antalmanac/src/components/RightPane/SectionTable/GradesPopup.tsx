@@ -1,15 +1,28 @@
-import { Box, Link, Typography, Skeleton } from '@mui/material';
-import { useState, useEffect, useMemo } from 'react';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-
+import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { Grades, type GradesProps } from '$lib/grades';
-import { useThemeStore } from '$stores/SettingsStore';
+import {
+    Box,
+    ToggleButton,
+    ToggleButtonGroup,
+    Typography,
+    Card,
+    CardHeader,
+    CardContent,
+    useTheme,
+    Skeleton,
+} from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis } from 'recharts';
+
+type GradeView = 'instructor' | 'overall';
+
 export interface GradeData {
     grades: {
         name: string;
         all: number;
     }[];
     courseGrades: GradesProps;
+    totalGrades: number;
 }
 
 async function getGradeData(
@@ -45,7 +58,7 @@ async function getGradeData(
             };
         });
 
-    return { grades, courseGrades };
+    return { grades, courseGrades, totalGrades };
 }
 
 export interface GradesPopupProps {
@@ -55,147 +68,132 @@ export interface GradesPopupProps {
     isMobile: boolean;
 }
 
-function GradesPopup(props: GradesPopupProps) {
-    const { isDark } = useThemeStore();
+export function GradesPopup(props: GradesPopupProps) {
+    const theme = useTheme();
+    const secondaryColor = useSecondaryColor();
 
     const { deptCode, courseNumber, instructor = '', isMobile } = props;
 
     const [loading, setLoading] = useState(true);
 
-    const [gradeData, setGradeData] = useState<GradeData>();
+    const [instructorData, setInstructorData] = useState<GradeData>();
+    const [overallData, setOverallData] = useState<GradeData>();
+    const [view, setView] = useState<GradeView>(instructor ? 'instructor' : 'overall');
 
-    const width = useMemo(() => (isMobile ? 250 : 400), [isMobile]);
+    const width = isMobile ? 250 : 400;
+    const height = isMobile ? 150 : 200;
 
-    const height = useMemo(() => (isMobile ? 150 : 200), [isMobile]);
+    const activeData = view === 'instructor' ? instructorData : overallData;
+    const hasData = activeData?.grades.some((g) => g.all > 0);
+    const title = `${deptCode} ${courseNumber}`;
+    const subheader =
+        activeData?.courseGrades.averageGPA != null
+            ? `Average GPA: ${activeData.courseGrades.averageGPA.toFixed(2)} (${activeData.totalGrades} students)`
+            : '';
 
-    const graphTitle = useMemo(() => {
-        return gradeData
-            ? `${deptCode} ${courseNumber}${
-                  instructor ? ` — ${instructor}` : ''
-                  // GPA is `null` if the class is pass/no-pass only.
-                  // This is more correct compared to returning a zero GPA,
-                  // which so far has not happened, but is entirely possible.
-              } | Average GPA: ${gradeData.courseGrades.averageGPA?.toFixed(2) ?? 'n/a'}`
-            : 'Grades are not available for this class.';
-    }, [gradeData, deptCode, courseNumber, instructor]);
-
-    // const gpaString = useMemo(
-    //     () => (gradeData ? `Average GPA: ${gradeData.courseGrades.averageGPA.toFixed(2)}` : ''),
-    //     [gradeData]
-    // );
+    const handleViewChange = (_event: React.MouseEvent<HTMLElement>, newView: GradeView | null) => {
+        if (newView !== null) {
+            setView(newView);
+        }
+    };
 
     useEffect(() => {
         if (loading === false) {
             return;
         }
 
-        getGradeData(deptCode, courseNumber, instructor).then((result) => {
-            if (result) {
-                setGradeData(result);
-            }
-            setLoading(false);
-        });
+        const fetches: Promise<unknown>[] = [
+            getGradeData(deptCode, courseNumber, '').then((result) => {
+                if (result) setOverallData(result);
+            }),
+        ];
+
+        if (instructor) {
+            fetches.push(
+                getGradeData(deptCode, courseNumber, instructor).then((result) => {
+                    if (result) setInstructorData(result);
+                })
+            );
+        }
+
+        Promise.all(fetches).finally(() => setLoading(false));
     }, [loading, deptCode, courseNumber, instructor]);
 
-    if (loading) {
-        return (
-            <Box padding={1}>
-                <Skeleton variant="text" animation="wave" height={height} width={width} />
-            </Box>
-        );
-    }
-
-    if (!gradeData) {
-        return (
-            <Box padding={1}>
-                <Typography variant="body1" align="center">
-                    No data available.
-                </Typography>
-            </Box>
-        );
-    }
-
-    const encodedDept = encodeURIComponent(deptCode);
-    const axisColor = isDark ? '#fff' : '#000';
-
     return (
-        <Box sx={{ padding: '4px' }}>
-            <Typography
-                sx={{
-                    marginTop: '.5rem',
-                    textAlign: 'center',
-                    fontWeight: 500,
-                    marginRight: '2rem',
-                    marginLeft: '2rem',
-                    marginBottom: '.5rem',
+        <Card>
+            <CardHeader
+                title={title}
+                subheader={subheader}
+                action={
+                    <ToggleButtonGroup value={view} exclusive onChange={handleViewChange} size="small">
+                        <ToggleButton
+                            value="instructor"
+                            sx={{
+                                textTransform: 'none',
+                                paddingY: 0.25,
+                            }}
+                        >
+                            {instructor}
+                        </ToggleButton>
+                        <ToggleButton
+                            value="overall"
+                            sx={{
+                                textTransform: 'none',
+                                paddingY: 0.25,
+                            }}
+                        >
+                            Overall
+                        </ToggleButton>
+                    </ToggleButtonGroup>
+                }
+                slotProps={{
+                    title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },
+                    action: { sx: { alignSelf: 'flex-start', margin: 0 } },
                 }}
-            >
-                {graphTitle}
-            </Typography>
-            <Link
-                href={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
-                target="_blank"
-                rel="noopener noreferrer"
-                sx={{ display: 'flex', height, width }}
-            >
-                <ResponsiveContainer width="95%" height="95%">
-                    <BarChart data={gradeData.grades} style={{ cursor: 'pointer' }}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
-                        <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} unit="%" />
-                        <Tooltip
-                            content={({ active, payload, label }) => (
-                                <GradeTooltip
-                                    active={active ?? false}
-                                    payload={(payload as Array<Payload>) ?? null}
-                                    label={label ?? ''}
+            />
+
+            <CardContent sx={{ display: 'flex', minWidth: width, paddingTop: 0 }}>
+                {loading ? (
+                    <Box sx={{ width, height }}>
+                        <Skeleton variant="rectangular" animation="wave" height="100%" width="100%" />
+                    </Box>
+                ) : activeData && hasData ? (
+                    <Box sx={{ width, height }}>
+                        <ResponsiveContainer>
+                            <BarChart data={activeData.grades} style={{ cursor: 'pointer' }}>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                <XAxis
+                                    dataKey="name"
+                                    tick={{ fontSize: 12, fill: theme.palette.text.primary }}
+                                    height={20}
                                 />
-                            )}
-                            position={{ y: 100 }}
-                            offset={-5}
-                        />
-                        <Bar dataKey="all" fill="#5182ed" />
-                    </BarChart>
-                </ResponsiveContainer>
-            </Link>
-        </Box>
+                                <YAxis tick={{ fontSize: 12, fill: theme.palette.text.primary }} unit="%" width={35} />
+                                <RechartsTooltip
+                                    contentStyle={{
+                                        backgroundColor: theme.palette.background.paper,
+                                        border: 0,
+                                    }}
+                                    labelStyle={{ color: secondaryColor }}
+                                    itemStyle={{ color: secondaryColor }}
+                                    labelFormatter={(gradeLabel) => `Grade ${gradeLabel}`}
+                                    formatter={(value) => {
+                                        const n = typeof value === 'number' ? value : Number(value);
+                                        const pct = Number.isFinite(n) ? n.toFixed(1) : String(value);
+                                        return [`${pct}%`];
+                                    }}
+                                />
+                                <Bar dataKey="all" fill={theme.palette.primary.main} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </Box>
+                ) : (
+                    <Typography variant="body1" align="center" color="text.secondary">
+                        {view === 'instructor'
+                            ? "This instructor doesn't have a specific GPA for this course."
+                            : 'No data available.'}
+                    </Typography>
+                )}
+            </CardContent>
+        </Card>
     );
 }
-
-const GradeTooltip = (props: GradeTooltipProps) => {
-    const { active, payload, label } = props;
-    if (active && payload && payload.length) {
-        return (
-            <>
-                <Box
-                    sx={{
-                        backgroundColor: '#5182ed',
-                        padding: '5px',
-                        border: '1px solid #000',
-                        borderRadius: '5px',
-                        boxShadow: '0 0 5px 0 rgba(0, 0, 0, 0.5)',
-                    }}
-                >
-                    <Typography variant="body1" align="center" sx={{ color: '#fff', fontWeight: 500 }}>
-                        {`${label}: ${payload[0].value}%`}
-                    </Typography>
-                </Box>
-            </>
-        );
-    }
-
-    return null;
-};
-
-export interface GradeTooltipProps {
-    active: boolean;
-    payload: Array<Payload> | null;
-    label: string;
-}
-
-export interface Payload {
-    name: string;
-    value: number;
-}
-
-export default GradesPopup;

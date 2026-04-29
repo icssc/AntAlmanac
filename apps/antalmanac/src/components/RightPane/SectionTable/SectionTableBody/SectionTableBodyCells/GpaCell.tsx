@@ -1,14 +1,13 @@
-import { ButtonBase, Popover } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
-
-import GradesPopup from "$components/RightPane/SectionTable/GradesPopup";
-import { TableBodyCellContainer } from "$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer";
-import { useIsMobile } from "$hooks/useIsMobile";
-import { useSecondaryColor } from "$hooks/useSecondaryColor";
-import { Grades } from "$lib/grades";
+import { GradesPopup } from '$components/RightPane/SectionTable/GradesPopup';
+import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { useIsMobile } from '$hooks/useIsMobile';
+import { useSecondaryColor } from '$hooks/useSecondaryColor';
+import { Grades } from '$lib/grades';
+import { ButtonBase, Popover } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
 
 async function getGpaData(deptCode: string, courseNumber: string, instructors: string[]) {
-    const namedInstructors = instructors.filter((instructor) => instructor !== "STAFF");
+    const namedInstructors = instructors.filter((instructor) => instructor !== 'STAFF');
 
     // Get the GPA of the first instructor of this section where data exists
     for (const instructor of namedInstructors) {
@@ -21,7 +20,10 @@ async function getGpaData(deptCode: string, courseNumber: string, instructors: s
         }
     }
 
-    return undefined;
+    return {
+        gpa: '',
+        instructor: namedInstructors[0] || '',
+    };
 }
 
 interface GpaCellProps {
@@ -34,8 +36,9 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
     const isMobile = useIsMobile();
     const secondaryColor = useSecondaryColor();
 
-    const [gpa, setGpa] = useState("");
-    const [instructor, setInstructor] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [gpa, setGpa] = useState('');
+    const [instructor, setInstructor] = useState('');
     const [anchorEl, setAnchorEl] = useState<Element>();
 
     const handleClick = useCallback((event: React.MouseEvent<HTMLElement>) => {
@@ -47,30 +50,31 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
     }, []);
 
     useEffect(() => {
+        setLoading(true);
+
         getGpaData(deptCode, courseNumber, instructors)
             .then((data) => {
-                if (data) {
-                    setGpa(data.gpa);
-                    setInstructor(data.instructor);
-                }
+                setGpa(data?.gpa);
+                setInstructor(data?.instructor);
             })
-            .catch(console.log);
+            .catch(console.log)
+            .finally(() => setLoading(false));
     }, [deptCode, courseNumber, instructors]);
 
     return (
         <TableBodyCellContainer>
             <ButtonBase
-                sx={{ fontFamily: "inherit", fontSize: "unset", color: secondaryColor, fontWeight: 700 }}
+                sx={{ fontFamily: 'inherit', fontSize: 'unset', color: secondaryColor, fontWeight: 700 }}
                 onClick={handleClick}
             >
-                {gpa}
+                {loading ? null : gpa || 'GPA'}
             </ButtonBase>
 
             <Popover
                 open={Boolean(anchorEl)}
                 onClose={hideDistribution}
                 anchorEl={anchorEl}
-                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
                 <GradesPopup
                     deptCode={deptCode}
