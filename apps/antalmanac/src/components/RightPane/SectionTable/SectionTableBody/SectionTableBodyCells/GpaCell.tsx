@@ -1,5 +1,5 @@
-import { GradesPopup } from '$components/RightPane/SectionTable/GradesPopup';
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
+import { GradesPopover } from '$components/RightPane/SectionTable/SectionTableBody/SectionTablePopover/GradesPopup';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { Grades } from '$lib/grades';
@@ -76,7 +76,7 @@ export const GpaCell = ({ deptCode, courseNumber, instructors }: GpaCellProps) =
                 anchorEl={anchorEl}
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
-                <GradesPopup
+                <GradesPopover
                     deptCode={deptCode}
                     courseNumber={courseNumber}
                     instructor={instructor}

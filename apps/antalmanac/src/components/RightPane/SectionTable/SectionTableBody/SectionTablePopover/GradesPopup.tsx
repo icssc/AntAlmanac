@@ -61,14 +61,14 @@ async function getGradeData(
     return { grades, courseGrades, totalGrades };
 }
 
-export interface GradesPopupProps {
+export interface GradesPopoverProps {
     deptCode: string;
     courseNumber: string;
     instructor?: string;
     isMobile: boolean;
 }
 
-export function GradesPopup(props: GradesPopupProps) {
+export function GradesPopover(props: GradesPopoverProps) {
     const theme = useTheme();
     const secondaryColor = useSecondaryColor();
 
