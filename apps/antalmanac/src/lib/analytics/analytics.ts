@@ -33,7 +33,6 @@ const analyticsEnum: AnalyticsEnum = {
             UNDO: 'Undo',
             REDO: 'Redo',
             DOWNLOAD: 'Download Schedule',
-            CLICK_PAST_SYLLABI: 'Click Past Syllabi',
         },
     },
     nav: {
@@ -60,6 +59,7 @@ const analyticsEnum: AnalyticsEnum = {
             CLICK_ZOTISTICS: 'Click "Zotistics"',
             CLICK_REVIEWS: 'Click "Reviews"',
             CLICK_PAST_ENROLLMENT: 'Click "Past Enrollment"',
+            CLICK_PAST_SYLLABI: 'Click Past Syllabi',
             ADD_SPECIFIC: 'Add Course to Specific Schedule',
             COPY_COURSE_CODE: 'Copy Section Code',
             REFRESH: 'Refresh Results',
