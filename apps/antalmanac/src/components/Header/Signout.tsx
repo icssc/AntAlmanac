@@ -1,11 +1,14 @@
 import { getSettingsPopoverPaperSx } from '$components/Header/headerStyles';
 import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
+import analyticsEnum, { logAnalytics } from '$lib/analytics/analytics';
+import { getErrorMessage } from '$lib/utils';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from '@mui/material';
 import type { User } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
 import { type MouseEvent, useMemo, useState } from 'react';
 
 interface SignoutProps {
@@ -15,6 +18,7 @@ interface SignoutProps {
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const { sessionIsValid, clearSession, name, avatar, email } = useSessionStore();
+    const postHog = usePostHog();
     const isDark = useThemeStore((store) => store.isDark);
 
     const user = useMemo<Pick<User, 'name' | 'avatar' | 'email'> | null>(
@@ -41,12 +45,24 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
             const logoutUrl = await clearSession();
             onLogoutComplete?.();
 
+            logAnalytics(postHog, {
+                category: analyticsEnum.auth,
+                action: analyticsEnum.auth.actions.SIGN_OUT,
+            });
+
             if (logoutUrl) {
                 window.location.href = logoutUrl;
             }
         } catch (error) {
             console.error('Error during logout', error);
             onLogoutComplete?.();
+            logAnalytics(postHog, {
+                category: analyticsEnum.auth,
+                action: analyticsEnum.auth.actions.SIGN_OUT_FAIL,
+                error: getErrorMessage(error),
+            });
+        } finally {
+            postHog?.reset();
         }
     };
 
