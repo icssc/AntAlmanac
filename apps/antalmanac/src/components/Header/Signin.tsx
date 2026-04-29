@@ -27,6 +27,7 @@ import {
     Stack,
     TextField,
 } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -46,6 +47,8 @@ export const Signin = () => {
     const [rememberMe] = useState(true);
     const [showLegacyLogin, setShowLegacyLogin] = useState(false);
     const [openAlert, setOpenalert] = useState(false);
+
+    const postHog = usePostHog();
 
     const handleOpen = useCallback(() => {
         setIsOpen(true);
@@ -78,11 +81,11 @@ export const Signin = () => {
     const loadScheduleAndSetLoading = useCallback(
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
-            await loadGuestSchedule(userID, rememberMe);
+            await loadGuestSchedule(userID, rememberMe, postHog);
             await validateImportedUser(userID);
             setOpenLoadingSchedule(false);
         },
-        [setOpenLoadingSchedule, validateImportedUser]
+        [setOpenLoadingSchedule, validateImportedUser, postHog]
     );
 
     const enterEvent = useCallback(

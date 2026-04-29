@@ -1,5 +1,6 @@
 import { isEmptySchedule, loadSchedule, mergeShortCourseSchedules, UserData } from '$actions/AppStoreActions';
 import SignInAlertDialog from '$components/SignInAlertDialog';
+import { analyticsIdentifyUser } from '$lib/analytics/analytics';
 import trpc from '$lib/api/trpc';
 import { authClient, signOut } from '$lib/auth/authClient';
 import {
@@ -18,6 +19,7 @@ import { useNotificationStore } from '$stores/NotificationStore';
 import { useScheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import { usePostHog } from 'posthog-js/react';
 import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -39,6 +41,8 @@ const AuthInitializer = () => {
     const loadNotifications = useNotificationStore((state) => state.loadNotifications);
 
     const { data: sessionData, isPending: isSessionPending } = authClient.useSession();
+
+    const postHog = usePostHog();
 
     const loadUnsavedChanges = useEffectEvent(async (userData: UserData) => {
         if (!sessionData) {
@@ -112,9 +116,11 @@ const AuthInitializer = () => {
                     }
                     setSsoCookie();
 
+                    analyticsIdentifyUser(postHog, sessionData.user.id);
+
                     const userData = await trpc.userData.getUserData.query();
 
-                    await loadSchedule({ prefetched: userData });
+                    await loadSchedule({ prefetched: userData, postHog });
                     await loadUnsavedChanges(userData);
 
                     setAreSchedulesLoaded(true);
@@ -126,7 +132,7 @@ const AuthInitializer = () => {
                     hasInitializedRef.current = true;
                 } catch (error) {
                     console.error('Error during authentication:', error);
-                    signOut();
+                    signOut({ postHog });
                 }
 
                 isInitializingRef.current = false;
@@ -138,7 +144,7 @@ const AuthInitializer = () => {
             }
             loadNotifications();
         }
-    }, [sessionData, isSessionPending, updateSession, setAreSchedulesLoaded]);
+    }, [sessionData, isSessionPending, updateSession, setAreSchedulesLoaded, postHog]);
 
     return (
         <SignInAlertDialog

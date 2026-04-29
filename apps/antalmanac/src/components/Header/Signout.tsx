@@ -7,6 +7,7 @@ import { useThemeStore } from '$stores/SettingsStore';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Divider, ListItemIcon, ListItemText, MenuItem, Popover } from '@mui/material';
 import type { User } from '@packages/antalmanac-types';
+import { usePostHog } from 'posthog-js/react';
 import { type MouseEvent, useMemo, useState } from 'react';
 
 interface SignoutProps {
@@ -16,6 +17,7 @@ interface SignoutProps {
 export function Signout({ onLogoutComplete }: SignoutProps) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const { sessionIsValid, name, avatar, email } = useSessionStore();
+    const postHog = usePostHog();
     const isDark = useThemeStore((store) => store.isDark);
 
     const user = useMemo<Pick<User, 'name' | 'avatar' | 'email'> | null>(
@@ -38,7 +40,7 @@ export function Signout({ onLogoutComplete }: SignoutProps) {
     const handleLogout = async () => {
         setAnchorEl(null);
 
-        signOut(onLogoutComplete);
+        signOut({ onLogoutComplete, postHog });
     };
 
     return (
