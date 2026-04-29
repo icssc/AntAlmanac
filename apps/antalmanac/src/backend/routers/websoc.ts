@@ -188,12 +188,12 @@ const websocRouter = router({
             })
         )
         .query(async ({ input }) => {
-            const { courseId, year, quarter, instructor } = input;
+            const result = await fetchAnteaterAPI<WebsocSyllabiAPIResult>(
+                `https://anteaterapi.com/v2/rest/websoc/syllabi?${new URLSearchParams(input)}`,
+                { errorType: 'trpc' }
+            );
 
-            const url = `https://anteaterapi.com/v2/rest/websoc/syllabi?courseId=${courseId}&year=${year}&quarter=${quarter}&instructor=${instructor}`;
-            const data = await fetchAnteaterAPI<WebsocSyllabiAPIResult>(url, { errorType: 'trpc' });
-
-            return data.data;
+            return result.data;
         }),
 });
 

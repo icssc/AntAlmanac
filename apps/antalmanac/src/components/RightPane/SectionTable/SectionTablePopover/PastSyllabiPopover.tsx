@@ -29,6 +29,7 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
                 return undefined;
             })
             .then((result) => {
+                console.log(result);
                 setSyllabi(result ?? []);
             })
             .finally(() => {
