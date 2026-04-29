@@ -14,7 +14,7 @@ import { PLANNER_LINK } from '$src/globals';
 import { useCoursePaneStore } from '$stores/CoursePaneStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { openSnackbar } from '$stores/SnackbarStore';
-import { Box, CircularProgress, MenuItem, Tooltip, Typography } from '@mui/material';
+import { MenuItem, Tooltip, Typography } from '@mui/material';
 import { Roadmap } from '@packages/antalmanac-types';
 import { useSearchParams } from 'next/navigation';
 import { ComponentProps, HTMLAttributes, useCallback, useEffect, useMemo, useState } from 'react';
@@ -195,14 +195,6 @@ const SearchWithPlanner = ({ labelProps }: Props) => {
         }
     }, [sessionIsValid, hasCheckedAuth]);
 
-    if (isLoadingSearch) {
-        return (
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <CircularProgress size="2rem" />
-            </Box>
-        );
-    }
-
     const searchComponent = (
         <LabeledAutocomplete
             label="Roadmap"
@@ -230,8 +222,12 @@ const SearchWithPlanner = ({ labelProps }: Props) => {
                     ),
                 }),
             }}
-            textFieldProps={{ placeholder: 'Select roadmap from Planner', fullWidth: true }}
+            textFieldProps={{
+                placeholder: isLoadingSearch ? 'Loading...' : 'Select roadmap from Planner',
+                fullWidth: true,
+            }}
             labelProps={labelProps}
+            loading={isLoadingSearch}
         />
     );
 
