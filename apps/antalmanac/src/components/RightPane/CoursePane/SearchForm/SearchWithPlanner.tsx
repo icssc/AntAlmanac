@@ -37,11 +37,12 @@ const SearchWithPlanner = () => {
     const [isLoadingSearch, setIsLoadingSearch] = useState(false);
     const [openSignInDialog, setOpenSignInDialog] = useState(false);
 
-    const { sessionIsValid, isPlannerLoading, plannerRoadmaps } = useSessionStore(
+    const { sessionIsValid, isPlannerLoading, plannerRoadmaps, hasCheckedAuth } = useSessionStore(
         useShallow((state) => ({
             sessionIsValid: state.sessionIsValid,
             isPlannerLoading: state.isPlannerLoading,
             plannerRoadmaps: state.plannerRoadmaps,
+            hasCheckedAuth: state.hasCheckedAuth,
         }))
     );
 
@@ -188,10 +189,10 @@ const SearchWithPlanner = () => {
     }, [searchParams, plannerRoadmaps, hasSearchedWithUrlParams]);
 
     useEffect(() => {
-        if (!sessionIsValid && shouldSearchPlannerFromParams()) {
+        if (hasCheckedAuth && !sessionIsValid && shouldSearchPlannerFromParams()) {
             setOpenSignInDialog(true);
         }
-    }, [sessionIsValid]);
+    }, [sessionIsValid, hasCheckedAuth]);
 
     if (isLoadingSearch) {
         return (
