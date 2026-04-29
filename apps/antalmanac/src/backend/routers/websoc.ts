@@ -6,6 +6,7 @@ import type {
     CourseInfo,
     WebsocCourse,
     WebsocSectionType,
+    WebsocSyllabiAPIResult,
 } from '@packages/antalmanac-types';
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
@@ -177,6 +178,16 @@ const websocRouter = router({
     getDepartments: procedure.query(async () => {
         return await queryWebSocDepartments();
     }),
+    getSyllabi: procedure
+        .input(z.object({ courseId: z.string(), year: z.string(), quarter: z.string(), instructor: z.string() }))
+        .query(async ({ input }) => {
+            const { courseId, year, quarter, instructor } = input;
+
+            const url = `https://anteaterapi.com/v2/rest/websoc/syllabi?courseId=${courseId}&year=${year}&quarter=${quarter}&instructor=${instructor}`;
+            const data = await fetchAnteaterAPI<WebsocSyllabiAPIResult>(url, { errorType: 'trpc' });
+
+            return data.data;
+        }),
 });
 
 export default websocRouter;

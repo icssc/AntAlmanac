@@ -33,3 +33,8 @@ export type WebsocTermsAPIResult =
     paths['/v2/rest/websoc/terms']['get']['responses'][200]['content']['application/json'];
 
 export type WebsocTerm = WebsocTermsAPIResult['data'][number];
+
+export type WebsocSyllabiAPIResult =
+    paths['/v2/rest/websoc/syllabi']['get']['responses'][200]['content']['application/json'];
+
+export type WebsocSyllabiResponse = WebsocSyllabiAPIResult['data'];
