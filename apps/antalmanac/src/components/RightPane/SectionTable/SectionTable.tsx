@@ -9,7 +9,7 @@ import analyticsEnum, { AnalyticsCategory } from '$lib/analytics/analytics';
 import { SECTION_TABLE_COLUMNS, type SectionTableColumn, useColumnStore } from '$stores/ColumnStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { useTabStore } from '$stores/TabStore';
-import { Route } from '@mui/icons-material';
+import { HistoryEdu, Route } from '@mui/icons-material';
 import { Alert, Box, Paper, Table, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { AACourse } from '@packages/antalmanac-types';
 import { useMemo } from 'react';
@@ -120,8 +120,14 @@ function SectionTable(props: SectionTableProps) {
                     analyticsCategory={analyticsCategory}
                     analyticsAction={analyticsEnum.classSearch.actions.CLICK_PAST_SYLLABI}
                     text="Past Syllabi"
-                    icon={<Route />}
-                    popupContent={<PastSyllabiPopover courseId={courseId} />}
+                    icon={<HistoryEdu />}
+                    popupContent={
+                        <PastSyllabiPopover
+                            courseId={courseId}
+                            deptCode={courseDetails.deptCode}
+                            courseNumber={courseDetails.courseNumber}
+                        />
+                    }
                 />
             </Box>
 

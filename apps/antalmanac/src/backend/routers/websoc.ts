@@ -179,7 +179,14 @@ const websocRouter = router({
         return await queryWebSocDepartments();
     }),
     getSyllabi: procedure
-        .input(z.object({ courseId: z.string(), year: z.string(), quarter: z.string(), instructor: z.string() }))
+        .input(
+            z.object({
+                courseId: z.string(),
+                year: z.string().optional(),
+                quarter: z.string().optional(),
+                instructor: z.string().optional(),
+            })
+        )
         .query(async ({ input }) => {
             const { courseId, year, quarter, instructor } = input;
 

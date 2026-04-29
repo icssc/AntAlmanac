@@ -1,197 +1,71 @@
-import { useSecondaryColor } from '$hooks/useSecondaryColor';
-import { Grades, type GradesProps } from '$lib/grades';
-import {
-    Box,
-    ToggleButton,
-    ToggleButtonGroup,
-    Typography,
-    Card,
-    CardHeader,
-    CardContent,
-    useTheme,
-    Skeleton,
-} from '@mui/material';
-import { useState, useEffect } from 'react';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip as RechartsTooltip, XAxis, YAxis } from 'recharts';
+import { useIsMobile } from '$hooks/useIsMobile';
+import { WebSOC } from '$lib/websoc';
+import { Box, Card, CardContent, CardHeader, Link as MuiLink, Skeleton, Stack, Typography } from '@mui/material';
+import type { WebsocSyllabiResponse } from '@packages/antalmanac-types';
+import { useEffect, useState } from 'react';
 
-type GradeView = 'instructor' | 'overall';
-
-export interface GradeData {
-    grades: {
-        name: string;
-        all: number;
-    }[];
-    courseGrades: GradesProps;
-    totalGrades: number;
-}
-
-async function getGradeData(
-    deptCode: string,
-    courseNumber: string,
-    instructor: string
-): Promise<GradeData | undefined> {
-    const courseGrades = await Grades.queryGrades(deptCode, courseNumber, instructor, false).catch((e) => {
-        console.error(e);
-        return undefined;
-    });
-
-    if (!courseGrades) {
-        return undefined;
-    }
-
-    const totalGrades = Object.values(Object.entries(courseGrades).filter(([key]) => key !== 'averageGPA')).reduce(
-        (acc, [_, value]) => acc + value,
-        0
-    );
-
-    /**
-     * Format data for displaying in chart.
-     *
-     * @example { gradeACount: 10, gradeBCount: 20 }
-     */
-    const grades = Object.entries(courseGrades)
-        .filter(([key]) => key !== 'averageGPA')
-        .map(([key, value]) => {
-            return {
-                name: key.replace('grade', '').replace('Count', ''),
-                all: Number(((value / totalGrades) * 100).toFixed(2)),
-            };
-        });
-
-    return { grades, courseGrades, totalGrades };
-}
-
-export interface GradesPopoverProps {
+export interface PastSyllabiPopoverProps {
     deptCode: string;
     courseNumber: string;
-    instructor?: string;
-    isMobile: boolean;
+    courseId: string;
 }
 
-export function PastSyllabiPopover(props: GradesPopoverProps) {
-    const theme = useTheme();
-    const secondaryColor = useSecondaryColor();
-
-    const { deptCode, courseNumber, instructor = '', isMobile } = props;
+export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
+    const isMobile = useIsMobile();
+    const { deptCode, courseNumber, courseId } = props;
 
     const [loading, setLoading] = useState(true);
+    const [syllabi, setSyllabi] = useState<WebsocSyllabiResponse>([]);
 
-    const [instructorData, setInstructorData] = useState<GradeData>();
-    const [overallData, setOverallData] = useState<GradeData>();
-    const [view, setView] = useState<GradeView>(instructor ? 'instructor' : 'overall');
-
-    const width = isMobile ? 250 : 400;
-    const height = isMobile ? 150 : 200;
-
-    const activeData = view === 'instructor' ? instructorData : overallData;
-    const hasData = activeData?.grades.some((g) => g.all > 0);
     const title = `${deptCode} ${courseNumber}`;
-    const subheader =
-        activeData?.courseGrades.averageGPA != null
-            ? `Average GPA: ${activeData.courseGrades.averageGPA.toFixed(2)} (${activeData.totalGrades} students)`
-            : '';
-
-    const handleViewChange = (_event: React.MouseEvent<HTMLElement>, newView: GradeView | null) => {
-        if (newView !== null) {
-            setView(newView);
-        }
-    };
+    const minWidth = isMobile ? 250 : 400;
 
     useEffect(() => {
-        if (loading === false) {
-            return;
-        }
+        setLoading(true);
 
-        const fetches: Promise<unknown>[] = [
-            getGradeData(deptCode, courseNumber, '').then((result) => {
-                if (result) setOverallData(result);
-            }),
-        ];
-
-        if (instructor) {
-            fetches.push(
-                getGradeData(deptCode, courseNumber, instructor).then((result) => {
-                    if (result) setInstructorData(result);
-                })
-            );
-        }
-
-        Promise.all(fetches).finally(() => setLoading(false));
-    }, [loading, deptCode, courseNumber, instructor]);
+        WebSOC.getSyllabi({ courseId })
+            .catch((e) => {
+                console.error(e);
+                return undefined;
+            })
+            .then((result) => {
+                setSyllabi(result ?? []);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, [courseId]);
 
     return (
         <Card>
             <CardHeader
                 title={title}
-                subheader={subheader}
-                action={
-                    <ToggleButtonGroup value={view} exclusive onChange={handleViewChange} size="small">
-                        <ToggleButton
-                            value="instructor"
-                            sx={{
-                                textTransform: 'none',
-                                paddingY: 0.25,
-                            }}
-                        >
-                            {instructor}
-                        </ToggleButton>
-                        <ToggleButton
-                            value="overall"
-                            sx={{
-                                textTransform: 'none',
-                                paddingY: 0.25,
-                            }}
-                        >
-                            Overall
-                        </ToggleButton>
-                    </ToggleButtonGroup>
-                }
                 slotProps={{
                     title: { sx: { fontWeight: 500 }, variant: 'subtitle1' },
-                    action: { sx: { alignSelf: 'flex-start', margin: 0 } },
                 }}
             />
 
-            <CardContent sx={{ display: 'flex', minWidth: width, paddingTop: 0 }}>
+            <CardContent sx={{ minWidth, paddingTop: 0 }}>
                 {loading ? (
-                    <Box sx={{ width, height }}>
-                        <Skeleton variant="rectangular" animation="wave" height="100%" width="100%" />
-                    </Box>
-                ) : activeData && hasData ? (
-                    <Box sx={{ width, height }}>
-                        <ResponsiveContainer>
-                            <BarChart data={activeData.grades} style={{ cursor: 'pointer' }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                <XAxis
-                                    dataKey="name"
-                                    tick={{ fontSize: 12, fill: theme.palette.text.primary }}
-                                    height={20}
-                                />
-                                <YAxis tick={{ fontSize: 12, fill: theme.palette.text.primary }} unit="%" width={35} />
-                                <RechartsTooltip
-                                    contentStyle={{
-                                        backgroundColor: theme.palette.background.paper,
-                                        border: 0,
-                                    }}
-                                    labelStyle={{ color: secondaryColor }}
-                                    itemStyle={{ color: secondaryColor }}
-                                    labelFormatter={(gradeLabel) => `Grade ${gradeLabel}`}
-                                    formatter={(value) => {
-                                        const n = typeof value === 'number' ? value : Number(value);
-                                        const pct = Number.isFinite(n) ? n.toFixed(1) : String(value);
-                                        return [`${pct}%`];
-                                    }}
-                                />
-                                <Bar dataKey="all" fill={theme.palette.primary.main} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </Box>
-                ) : (
-                    <Typography variant="body1" align="center" color="text.secondary">
-                        {view === 'instructor'
-                            ? "This instructor doesn't have a specific GPA for this course."
-                            : 'No data available.'}
+                    <Skeleton variant="rectangular" animation="wave" height={120} width="100%" />
+                ) : syllabi.length === 0 ? (
+                    <Typography variant="body1" color="text.secondary">
+                        No syllabi found for this course.
                     </Typography>
+                ) : (
+                    <Stack spacing={1.5} sx={{ maxHeight: 320, overflow: 'auto' }}>
+                        {syllabi.map((entry, index) => (
+                            <Box key={`${entry.year}-${entry.quarter}-${entry.url}-${index}`}>
+                                <Typography variant="caption" color="text.secondary" display="block">
+                                    {entry.year} {entry.quarter}
+                                    {entry.instructorNames.length > 0 ? ` · ${entry.instructorNames.join(', ')}` : ''}
+                                </Typography>
+                                <MuiLink href={entry.url} target="_blank" rel="noopener noreferrer" variant="body2">
+                                    Open syllabus
+                                </MuiLink>
+                            </Box>
+                        ))}
+                    </Stack>
                 )}
             </CardContent>
         </Card>
