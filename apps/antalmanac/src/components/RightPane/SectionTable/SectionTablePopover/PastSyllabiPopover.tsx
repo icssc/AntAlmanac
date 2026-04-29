@@ -1,8 +1,20 @@
 import { useIsMobile } from '$hooks/useIsMobile';
 import { WebSOC } from '$lib/websoc';
-import { Box, Card, CardContent, CardHeader, Link as MuiLink, Skeleton, Stack, Typography } from '@mui/material';
+import { OpenInNew } from '@mui/icons-material';
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    List,
+    ListItemButton,
+    ListItemText,
+    ListSubheader,
+    Skeleton,
+    Typography,
+} from '@mui/material';
 import type { WebsocSyllabiResponse } from '@packages/antalmanac-types';
-import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
 
 export interface PastSyllabiPopoverProps {
     deptCode: string;
@@ -18,7 +30,24 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
     const [syllabi, setSyllabi] = useState<WebsocSyllabiResponse>([]);
 
     const title = `${deptCode} ${courseNumber}`;
-    const minWidth = isMobile ? 250 : 400;
+    const width = isMobile ? 250 : 400;
+    const height = isMobile ? 150 : 200;
+
+    const syllabiByTerm = useMemo(() => {
+        return syllabi.reduce(
+            (acc, entry) => {
+                const term = `${entry.year} ${entry.quarter}`;
+
+                if (!acc[term]) {
+                    acc[term] = [];
+                }
+
+                acc[term].push(entry);
+                return acc;
+            },
+            {} as Record<string, WebsocSyllabiResponse[number][]>
+        );
+    }, [syllabi]);
 
     useEffect(() => {
         setLoading(true);
@@ -29,7 +58,6 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
                 return undefined;
             })
             .then((result) => {
-                console.log(result);
                 setSyllabi(result ?? []);
             })
             .finally(() => {
@@ -46,27 +74,35 @@ export function PastSyllabiPopover(props: PastSyllabiPopoverProps) {
                 }}
             />
 
-            <CardContent sx={{ minWidth, paddingTop: 0 }}>
+            <CardContent sx={{ minWidth: width, height: height, paddingTop: 0 }}>
                 {loading ? (
-                    <Skeleton variant="rectangular" animation="wave" height={120} width="100%" />
+                    <Skeleton variant="rectangular" animation="wave" height="100%" width="100%" />
                 ) : syllabi.length === 0 ? (
                     <Typography variant="body1" color="text.secondary">
                         No syllabi found for this course.
                     </Typography>
                 ) : (
-                    <Stack spacing={1.5} sx={{ maxHeight: 320, overflow: 'auto' }}>
-                        {syllabi.map((entry, index) => (
-                            <Box key={`${entry.year}-${entry.quarter}-${entry.url}-${index}`}>
-                                <Typography variant="caption" color="text.secondary" display="block">
-                                    {entry.year} {entry.quarter}
-                                    {entry.instructorNames.length > 0 ? ` · ${entry.instructorNames.join(', ')}` : ''}
+                    <List disablePadding sx={{ maxHeight: height, overflow: 'auto', paddingBottom: 3 }}>
+                        {Object.entries(syllabiByTerm).map(([term, entries]) => (
+                            <ListSubheader key={term} disableGutters>
+                                <Typography variant="body1" color="text.primary">
+                                    {term}
                                 </Typography>
-                                <MuiLink href={entry.url} target="_blank" rel="noopener noreferrer" variant="body2">
-                                    Open syllabus
-                                </MuiLink>
-                            </Box>
+                                {entries.map((entry) => (
+                                    <ListItemButton
+                                        LinkComponent={Link}
+                                        href={entry.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        key={entry.url}
+                                    >
+                                        <ListItemText primary={entry.instructorNames.at(0)} />
+                                        <OpenInNew />
+                                    </ListItemButton>
+                                ))}
+                            </ListSubheader>
                         ))}
-                    </Stack>
+                    </List>
                 )}
             </CardContent>
         </Card>
