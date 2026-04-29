@@ -30,10 +30,13 @@ export const LabeledTextField = ({
                 variant="outlined"
                 id={textFieldId}
                 disabled={disabled}
+                {...textFieldProps}
                 {...(loading
                     ? {
                           slotProps: {
+                              ...textFieldProps?.slotProps,
                               input: {
+                                  ...textFieldProps?.slotProps?.input,
                                   endAdornment: loading ? (
                                       <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                                           <CircularProgress size="1.5em" />
@@ -43,7 +46,6 @@ export const LabeledTextField = ({
                           },
                       }
                     : {})}
-                {...textFieldProps}
             />
         </LabeledInput>
     );
