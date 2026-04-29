@@ -1,7 +1,7 @@
 'use client';
 
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';
-import CloseIcon from '@mui/icons-material/Close';
+import { Close } from '@mui/icons-material';
 import { Box, Button, CardActions, CardContent, CardHeader, IconButton, Typography } from '@mui/material';
 
 export function EnrollmentConfirmStep() {
@@ -22,7 +22,7 @@ export function EnrollmentConfirmStep() {
                 }
                 action={
                     <IconButton size="small" onClick={dismiss} aria-label="dismiss">
-                        <CloseIcon fontSize="small" />
+                        <Close fontSize="small" />
                     </IconButton>
                 }
             />

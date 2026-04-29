@@ -2,7 +2,7 @@
 
 import { REVIEW_TAGS } from '$stores/ReviewPromptStore';
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';
-import CloseIcon from '@mui/icons-material/Close';
+import { Close } from '@mui/icons-material';
 import {
     Box,
     Button,
@@ -55,7 +55,7 @@ export function ReviewStep() {
                 subheader={<Typography color="text.secondary">with {professorId}</Typography>}
                 action={
                     <IconButton size="small" onClick={dismiss} aria-label="dismiss">
-                        <CloseIcon fontSize="small" />
+                        <Close fontSize="small" />
                     </IconButton>
                 }
             />

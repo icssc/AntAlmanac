@@ -1,12 +1,11 @@
 'use client';
 
+import { EnrollmentConfirmStep } from '$components/ReviewPrompt/EnrollmentConfirmStep';
+import { ReviewStep } from '$components/ReviewPrompt/ReviewStep';
 import { useReviewPromptStore } from '$stores/ReviewPromptStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { Paper, Snackbar } from '@mui/material';
 import { useEffect, useRef } from 'react';
-
-import { EnrollmentConfirmStep } from './EnrollmentConfirmStep';
-import { ReviewStep } from './ReviewStep';
 
 const PROMPT_DELAY_MS = 15_000;
 
