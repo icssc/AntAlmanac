@@ -121,7 +121,7 @@ export const EnrollmentCell = ({
                 open={Boolean(anchorEl)}
                 onClose={hideEnrollmentHistory}
                 anchorEl={anchorEl}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
                 <EnrollmentHistoryPopover
                     sectionType={sectionType}

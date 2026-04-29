@@ -1,5 +1,5 @@
 import { TableBodyCellContainer } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/TableBodyCellContainer';
-import { GradesPopover } from '$components/RightPane/SectionTable/SectionTableBody/SectionTablePopover/GradesPopup';
+import { GradesPopover } from '$components/RightPane/SectionTable/SectionTableBody/SectionTablePopover/GradesPopover';
 import { useIsMobile } from '$hooks/useIsMobile';
 import { useSecondaryColor } from '$hooks/useSecondaryColor';
 import { Grades } from '$lib/grades';
