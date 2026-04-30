@@ -45,7 +45,6 @@ export interface EnrollmentHistoryDay {
 }
 
 export class DepartmentEnrollmentHistory {
-    // Each key in the cache will be the department and courseNumber concatenated
     static enrollmentHistoryCache: Record<string, EnrollmentHistory[]> = {};
     static termShortNames: string[] = termData.map((term) => term.shortName);
 
@@ -56,7 +55,7 @@ export class DepartmentEnrollmentHistory {
     }
 
     async find(courseNumber: string, sectionType: WebsocSectionType): Promise<EnrollmentHistory[]> {
-        const cacheKey = this.department + courseNumber;
+        const cacheKey = `${this.department}-${courseNumber}-${sectionType}`;
         const cacheResult = DepartmentEnrollmentHistory.enrollmentHistoryCache[cacheKey];
 
         if (cacheResult) {
