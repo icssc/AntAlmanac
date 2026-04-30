@@ -86,11 +86,9 @@ export function ReviewStep() {
                             <Typography color="text.secondary">Overall Quality</Typography>
                             <Box display="flex" flexDirection="column" gap={1}>
                                 <Rating value={rating} onChange={(_e, value) => setRating(value ?? 0)} size="large" />
-                                {rating > 0 && (
-                                    <Typography variant="caption" color="text.secondary">
-                                        {ratingLabel(rating) ?? <>&nbsp;</>}
-                                    </Typography>
-                                )}
+                                <Typography variant="caption" color="text.secondary">
+                                    {ratingLabel(rating)}
+                                </Typography>
                             </Box>
                         </Box>
 
@@ -102,11 +100,9 @@ export function ReviewStep() {
                                     onChange={(_e, value) => setDifficulty(value ?? 0)}
                                     size="large"
                                 />
-                                {difficulty > 0 && (
-                                    <Typography variant="caption" color="text.secondary">
-                                        {difficultyLabel(difficulty) ?? <>&nbsp;</>}
-                                    </Typography>
-                                )}
+                                <Typography variant="caption" color="text.secondary">
+                                    {difficultyLabel(difficulty)}
+                                </Typography>
                             </Box>
                         </Box>
                     </Box>
@@ -135,7 +131,12 @@ export function ReviewStep() {
                     Skip
                 </Button>
 
-                <Button size="small" variant="contained" disabled={rating === 0} onClick={submitReview}>
+                <Button
+                    size="small"
+                    variant="contained"
+                    disabled={rating === 0 || difficulty === 0}
+                    onClick={submitReview}
+                >
                     Submit
                 </Button>
             </CardActions>

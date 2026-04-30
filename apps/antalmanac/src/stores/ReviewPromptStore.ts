@@ -131,7 +131,7 @@ export const useReviewPromptStore = create(
             set({ step: 'enrollment-confirm', candidate, rating: 0, difficulty: 0, selectedTags: [] });
         },
 
-        confirm: () => set({ step: 'review', difficulty: 3 }),
+        confirm: () => set({ step: 'review' }),
 
         /**
          * User closed the prompt without submitting (X, Skip, "I did not", snackbar click-away, Escape).
@@ -164,7 +164,7 @@ export const useReviewPromptStore = create(
 
         submitReview: async () => {
             const { candidate, rating, difficulty, selectedTags } = get();
-            if (!candidate || rating === 0 || difficulty < 1) return;
+            if (!candidate || rating === 0 || difficulty === 0) return;
 
             try {
                 await trpc.review.submitReview.mutate({
