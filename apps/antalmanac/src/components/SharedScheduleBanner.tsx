@@ -181,8 +181,10 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
                 logAnalytics(postHog, {
                     category: analyticsEnum.sharedSchedule,
                     action: analyticsEnum.sharedSchedule.actions.OPEN,
-                    label: sharedSchedule.scheduleName,
-                    value: sharedSchedule.courses.length,
+                    customProps: {
+                        label: sharedSchedule.scheduleName,
+                        courseLength: sharedSchedule.courses.length,
+                    },
                 });
 
                 setScheduleName(sharedSchedule.scheduleName);
@@ -293,8 +295,10 @@ const SharedScheduleBanner = ({ error, setError }: Props) => {
             logAnalytics(postHog, {
                 category: analyticsEnum.sharedSchedule,
                 action: analyticsEnum.sharedSchedule.actions.IMPORT_SCHEDULE,
-                label: sharedSchedule.scheduleName,
-                value: sessionIsValid ? 1 : 0,
+                customProps: {
+                    label: sharedSchedule.scheduleName,
+                    validSession: sessionIsValid,
+                },
             });
         } catch (err) {
             console.error('Error adding schedule to account:', err);

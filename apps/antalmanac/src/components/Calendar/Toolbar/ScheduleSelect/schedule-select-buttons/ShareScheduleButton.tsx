@@ -34,7 +34,9 @@ export function ShareScheduleButton({ index, disabled }: ShareScheduleButtonProp
             logAnalytics(postHog, {
                 category: analyticsEnum.sharedSchedule,
                 action: analyticsEnum.sharedSchedule.actions.COPY_SCHEDULE,
-                label: scheduleName,
+                customProps: {
+                    label: scheduleName,
+                },
             });
 
             if (copiedTimeoutRef.current) {
