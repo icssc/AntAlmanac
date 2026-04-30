@@ -1,9 +1,11 @@
-import { Box, Link, Typography, Skeleton } from '@mui/material';
+import { Grades, type GradesProps } from '$lib/grades';
+import { useThemeStore } from '$stores/SettingsStore';
+import { Box, Link, ToggleButton, ToggleButtonGroup, Typography, Skeleton } from '@mui/material';
 import { useState, useEffect, useMemo } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
-import { Grades, type GradesProps } from '$lib/grades';
-import { useThemeStore } from '$stores/SettingsStore';
+type GradeView = 'instructor' | 'overall';
+
 export interface GradeData {
     grades: {
         name: string;
@@ -62,40 +64,59 @@ function GradesPopup(props: GradesPopupProps) {
 
     const [loading, setLoading] = useState(true);
 
-    const [gradeData, setGradeData] = useState<GradeData>();
+    const [instructorData, setInstructorData] = useState<GradeData>();
+    const [overallData, setOverallData] = useState<GradeData>();
+    const [view, setView] = useState<GradeView>(instructor ? 'instructor' : 'overall');
 
     const width = useMemo(() => (isMobile ? 250 : 400), [isMobile]);
 
     const height = useMemo(() => (isMobile ? 150 : 200), [isMobile]);
 
-    const graphTitle = useMemo(() => {
-        return gradeData
-            ? `${deptCode} ${courseNumber}${
-                  instructor ? ` — ${instructor}` : ''
-                  // GPA is `null` if the class is pass/no-pass only.
-                  // This is more correct compared to returning a zero GPA,
-                  // which so far has not happened, but is entirely possible.
-              } | Average GPA: ${gradeData.courseGrades.averageGPA?.toFixed(2) ?? 'n/a'}`
-            : 'Grades are not available for this class.';
-    }, [gradeData, deptCode, courseNumber, instructor]);
+    const activeData = view === 'instructor' ? instructorData : overallData;
 
-    // const gpaString = useMemo(
-    //     () => (gradeData ? `Average GPA: ${gradeData.courseGrades.averageGPA.toFixed(2)}` : ''),
-    //     [gradeData]
-    // );
+    const hasData = useMemo(() => {
+        return activeData?.grades.some((g) => g.all > 0);
+    }, [activeData]);
+
+    const graphTitle = useMemo(() => {
+        const instructorLabel = view === 'instructor' && instructor ? ` — ${instructor}` : '';
+        if (!activeData) {
+            return `${deptCode} ${courseNumber}${instructorLabel}`;
+        }
+        // GPA is `null` if the class is pass/no-pass only.
+        const courseLabel = `${deptCode} ${courseNumber}${instructorLabel}`;
+        const instructorGPA = activeData.courseGrades.averageGPA?.toFixed(2) ?? 'n/a';
+
+        return `${courseLabel} | Average GPA: ${instructorGPA}`;
+    }, [activeData, view, deptCode, courseNumber, instructor]);
 
     useEffect(() => {
         if (loading === false) {
             return;
         }
 
-        getGradeData(deptCode, courseNumber, instructor).then((result) => {
-            if (result) {
-                setGradeData(result);
-            }
-            setLoading(false);
-        });
+        const fetches: Promise<unknown>[] = [
+            getGradeData(deptCode, courseNumber, '').then((result) => {
+                if (result) setOverallData(result);
+            }),
+        ];
+
+        if (instructor) {
+            fetches.push(
+                getGradeData(deptCode, courseNumber, instructor).then((result) => {
+                    if (result) setInstructorData(result);
+                })
+            );
+        }
+
+        Promise.all(fetches).finally(() => setLoading(false));
     }, [loading, deptCode, courseNumber, instructor]);
+
+    const handleViewChange = (_event: React.MouseEvent<HTMLElement>, newView: GradeView | null) => {
+        if (newView !== null) {
+            setView(newView);
+        }
+    };
 
     if (loading) {
         return (
@@ -105,7 +126,7 @@ function GradesPopup(props: GradesPopupProps) {
         );
     }
 
-    if (!gradeData) {
+    if (!instructorData && !overallData) {
         return (
             <Box padding={1}>
                 <Typography variant="body1" align="center">
@@ -132,32 +153,80 @@ function GradesPopup(props: GradesPopupProps) {
             >
                 {graphTitle}
             </Typography>
-            <Link
-                href={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
-                target="_blank"
-                rel="noopener noreferrer"
-                sx={{ display: 'flex', height, width }}
-            >
-                <ResponsiveContainer width="95%" height="95%">
-                    <BarChart data={gradeData.grades} style={{ cursor: 'pointer' }}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
-                        <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} unit="%" />
-                        <Tooltip
-                            content={({ active, payload, label }) => (
-                                <GradeTooltip
-                                    active={active ?? false}
-                                    payload={(payload as Array<Payload>) ?? null}
-                                    label={label ?? ''}
-                                />
-                            )}
-                            position={{ y: 100 }}
-                            offset={-5}
-                        />
-                        <Bar dataKey="all" fill="#5182ed" />
-                    </BarChart>
-                </ResponsiveContainer>
-            </Link>
+            {instructor && (
+                <Box sx={{ display: 'flex', justifyContent: 'center', marginBottom: '.5rem' }}>
+                    <ToggleButtonGroup value={view} exclusive onChange={handleViewChange} size="small">
+                        <ToggleButton
+                            value="instructor"
+                            sx={{
+                                textTransform: 'none',
+                                paddingX: 1,
+                                paddingY: 0.25,
+                                fontSize: '0.75rem',
+                            }}
+                        >
+                            {instructor}
+                        </ToggleButton>
+                        <ToggleButton
+                            value="overall"
+                            sx={{
+                                textTransform: 'none',
+                                paddingX: 1,
+                                paddingY: 0.25,
+                                fontSize: '0.75rem',
+                            }}
+                        >
+                            Overall
+                        </ToggleButton>
+                    </ToggleButtonGroup>
+                </Box>
+            )}
+            {activeData && hasData ? (
+                <Link
+                    href={`https://zotistics.com/?&selectQuarter=&selectYear=&selectDep=${encodedDept}&classNum=${courseNumber}&code=&submit=Submit`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    sx={{ display: 'flex', height, width }}
+                >
+                    <ResponsiveContainer width="95%" height="95%">
+                        <BarChart data={activeData.grades} style={{ cursor: 'pointer' }}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="name" tick={{ fontSize: 12, fill: axisColor }} />
+                            <YAxis tick={{ fontSize: 12, fill: axisColor }} width={40} unit="%" />
+                            <Tooltip
+                                content={({ active, payload, label }) => (
+                                    <GradeTooltip
+                                        active={active ?? false}
+                                        payload={(payload as Array<Payload>) ?? null}
+                                        label={label ?? ''}
+                                    />
+                                )}
+                                position={{ y: 100 }}
+                                offset={-5}
+                            />
+                            <Bar dataKey="all" fill="#5182ed" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </Link>
+            ) : (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height,
+                        width,
+                        padding: 2,
+                        boxSizing: 'border-box',
+                    }}
+                >
+                    <Typography variant="body2" align="center" color="text.secondary">
+                        {view === 'instructor'
+                            ? "This instructor doesn't have a specific GPA for this course."
+                            : 'No data available.'}
+                    </Typography>
+                </Box>
+            )}
         </Box>
     );
 }

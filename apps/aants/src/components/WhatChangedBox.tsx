@@ -1,7 +1,6 @@
 import { Section, Text } from '@react-email/components';
 
 import { BLUE } from '../theme';
-
 import { StatusPill } from './StatusPill';
 
 export interface StatusChange {

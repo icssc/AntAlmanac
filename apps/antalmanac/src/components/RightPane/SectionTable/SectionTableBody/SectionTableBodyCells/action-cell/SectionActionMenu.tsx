@@ -1,12 +1,11 @@
-import { MoreHoriz } from '@mui/icons-material';
-import { IconButton, Menu, MenuItem } from '@mui/material';
-import { AASection, CourseDetails } from '@packages/antalmanac-types';
-import { memo, useCallback, useState } from 'react';
-
 import { addCourse } from '$actions/AppStoreActions';
 import { Term } from '$lib/termData';
 import AppStore from '$stores/AppStore';
 import { openSnackbar } from '$stores/SnackbarStore';
+import { MoreHoriz } from '@mui/icons-material';
+import { IconButton, Menu, MenuItem } from '@mui/material';
+import { AASection, CourseDetails } from '@packages/antalmanac-types';
+import { memo, useCallback, useState } from 'react';
 
 interface SectionActionMenuProps {
     section: AASection;

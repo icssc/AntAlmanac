@@ -1,7 +1,6 @@
-import { create } from 'zustand';
-
-import { tourShouldRun } from '$lib/TutorialHelpers';
 import { getLocalStoragePatchNotesKey } from '$lib/localStorage';
+import { tourShouldRun } from '$lib/TutorialHelpers';
+import { create } from 'zustand';
 
 /**
  * Show modal only if the current patch notes haven't been shown.

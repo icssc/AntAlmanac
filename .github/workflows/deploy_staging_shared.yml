@@ -1,12 +1,8 @@
 name: Deploy - Staging Shared
 
 on:
-    push:
-        branches: [scheduler, staging-shared]
-        paths-ignore:
-            - 'apps/pwa/**'
     repository_dispatch:
-        types: [deploy-command]
+        types: [deploy-shared-command]
 
 concurrency:
     group: sst-staging-shared
@@ -15,7 +11,7 @@ concurrency:
 env:
     AWS_REGION: ${{ secrets.AWS_REGION }}
 
-    DEV_DB_URL: ${{ secrets.DEV_DB_URL }}
+    DB_URL: ${{ secrets.DEV_DB_URL }}
     MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
     NEXT_PUBLIC_TILES_ENDPOINT: ${{ secrets.NEXT_PUBLIC_TILES_ENDPOINT }}
     ANTEATER_API_KEY: ${{ secrets.ANTEATER_API_KEY }}
@@ -23,13 +19,11 @@ env:
     OIDC_ISSUER_URL: ${{ secrets.OIDC_ISSUER_URL }}
     GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI }}
     PLANNER_CLIENT_API_KEY: ${{ secrets.PLANNER_CLIENT_API_KEY }}
+    NEXT_PUBLIC_PUBLIC_POSTHOG_KEY: ${{ secrets.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY }}
 
 jobs:
     deploy-staging-shared:
-        if: >-
-            github.event_name == 'push' ||
-            github.event.client_payload.pull_request.head.ref == 'staging-shared' ||
-            github.event.client_payload.pull_request.head.ref == 'scheduler'
+        if: github.event.client_payload.pull_request.head.repo.full_name == github.repository
         runs-on: ubuntu-latest
         env:
             SST_STAGE: staging-shared
@@ -38,7 +32,7 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
               with:
-                  ref: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
+                  ref: ${{ github.event.client_payload.pull_request.head.sha }}
 
             - name: Create deployment
               id: create-deployment
@@ -46,8 +40,8 @@ jobs:
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
                   environment: staging-shared
-                  ref: ${{ github.event.pull_request.head.sha || github.event.client_payload.pull_request.head.sha }}
-                  description: Staging deployment for PR #${{ github.event.pull_request.number || github.event.client_payload.pull_request.number }}
+                  ref: ${{ github.event.client_payload.pull_request.head.sha }}
+                  description: Staging deployment for PR #${{ github.event.client_payload.pull_request.number }}
 
             - name: Configure AWS credentials
               uses: aws-actions/configure-aws-credentials@v4
@@ -66,6 +60,11 @@ jobs:
               env:
                   DB_URL: ${{ secrets.DEV_DB_URL }}
               run: pnpm db:migrate
+
+            - name: Generate termData
+              uses: ./.github/actions/cache-generated-data
+              with:
+                  api-key: ${{ secrets.ANTEATER_API_KEY }}
 
             - name: Deploy SST (staging)
               id: deploy

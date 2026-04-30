@@ -1,9 +1,8 @@
-import { Box } from '@mui/material';
-import { memo } from 'react';
-
 import type { CalendarEvent, CourseEvent, Location } from '$components/Calendar/CourseCalendarEvent';
 import { isSkeletonEvent } from '$components/Calendar/CourseCalendarEvent';
 import locationIds from '$lib/locations/locations';
+import { Box } from '@mui/material';
+import { memo } from 'react';
 
 export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) => {
     if (isSkeletonEvent(event)) {
@@ -54,8 +53,8 @@ export const CalendarCourseEvent = memo(({ event }: { event: CalendarEvent }) =>
                               .map((location: Location) => `${location.building} ${location.room}`)
                               .join(', ')
                         : courseEvent.locations.length > 1
-                        ? `${courseEvent.locations.length} Locations`
-                        : `${courseEvent.locations[0].building} ${courseEvent.locations[0].room}`}
+                          ? `${courseEvent.locations.length} Locations`
+                          : `${courseEvent.locations[0].building} ${courseEvent.locations[0].room}`}
                 </Box>
                 <Box>{courseEvent.sectionCode}</Box>
             </Box>

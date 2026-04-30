@@ -5,6 +5,7 @@ import { ProfileMenuButtons } from '$components/Header/ProfileMenuButtons';
 import { SettingsMenu } from '$components/Header/Settings/SettingsMenu';
 import trpc from '$lib/api/trpc';
 import { getLocalStorageUserId, getWasLoggedIn, setLocalStorageFromLoading } from '$lib/localStorage';
+import { useNotificationStore } from '$stores/NotificationStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
 import { useThemeStore } from '$stores/SettingsStore';
@@ -28,6 +29,7 @@ import {
     Stack,
     TextField,
 } from '@mui/material';
+import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useState } from 'react';
 
 const ALERT_MESSAGES: Record<string, { title: string; severity: AlertColor }> = {
@@ -52,6 +54,7 @@ export const Signin = () => {
         ALERT_MESSAGES.SCHEDULE_IMPORTED
     );
 
+    const postHog = usePostHog();
     const [isOpen, setIsOpen] = useState(false);
     const [userID, setUserID] = useState('');
     const [rememberMe] = useState(true);
@@ -89,35 +92,41 @@ export const Signin = () => {
     const loadScheduleAndSetLoading = useCallback(
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
-            await loadGuestSchedule(userID, rememberMe);
+            await loadGuestSchedule(userID, rememberMe, postHog);
             await validateImportedUser(userID);
             setOpenLoadingSchedule(false);
         },
-        [setOpenLoadingSchedule, validateImportedUser]
+        [setOpenLoadingSchedule, validateImportedUser, postHog]
     );
 
     const loadScheduleAndSetLoadingAuth = useCallback(
         async (userID: string, rememberMe: boolean) => {
             setOpenLoadingSchedule(true);
 
-            const validSession = await loadSession();
+            const [validSession, prefetchedUserData] = await Promise.all([
+                loadSession(),
+                trpc.userData.getUserData.query().catch(() => null),
+            ]);
+
             if (validSession) {
-                await loadSchedule();
+                await loadSchedule({ prefetched: prefetchedUserData, postHog });
             } else if (getWasLoggedIn()) {
                 setAlertMessage(ALERT_MESSAGES.SESSION_EXPIRED);
                 setOpenalert(true);
             } else if (userID && userID !== '') {
                 await validateImportedUser(userID);
-                await loadGuestSchedule(userID, rememberMe);
+                await loadGuestSchedule(userID, rememberMe, postHog);
             }
 
             setOpenLoadingSchedule(false);
+
+            void useNotificationStore.getState().loadNotifications();
         },
-        [setOpenLoadingSchedule, loadSession, validateImportedUser]
+        [setOpenLoadingSchedule, loadSession, validateImportedUser, postHog]
     );
 
     const handleLogin = () => {
-        loginUser();
+        loginUser(postHog);
         setLocalStorageFromLoading('true');
     };
 

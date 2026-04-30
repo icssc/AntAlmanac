@@ -1,9 +1,3 @@
-import { TableRow, useTheme } from '@mui/material';
-import { AASection, CourseDetails } from '@packages/antalmanac-types';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-
-import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
-
 import { DayAndTimeCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DayAndTimeCell';
 import { DetailsCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/DetailsCell';
 import { EnrollmentCell } from '$components/RightPane/SectionTable/SectionTableBody/SectionTableBodyCells/EnrollmentCell';
@@ -19,6 +13,11 @@ import AppStore from '$stores/AppStore';
 import { useColumnStore, type SectionTableColumn } from '$stores/ColumnStore';
 import { useHoveredStore } from '$stores/HoveredStore';
 import { usePreviewStore, useThemeStore } from '$stores/SettingsStore';
+import { TableRow, useTheme } from '@mui/material';
+import { AASection, CourseDetails } from '@packages/antalmanac-types';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+
+import { ActionCell } from './SectionTableBodyCells/action-cell/ActionCell';
 
 interface SectionTableBodyRowProps {
     section: AASection;

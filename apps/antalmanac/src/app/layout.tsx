@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
+
 import './globals.css';
 
 const ANTALMANAC_DESCRIPTION = 'A schedule planning and course exploration tool for UCI students.';

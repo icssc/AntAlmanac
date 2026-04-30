@@ -1,7 +1,6 @@
-import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
-
 import type { CourseEvent, CustomEvent } from '$components/Calendar/CourseCalendarEvent';
 import { terms } from '$generated/termData';
+import { addWeeks, differenceInWeeks, setDay } from 'date-fns';
 
 /**
  * Quarterly Academic Calendar {@link https://www.reg.uci.edu/calendars/quarterly/2023-2024/quarterly23-24.html}

@@ -2,6 +2,7 @@ import { EventEmitter } from 'events';
 
 import { autoSaveSchedule } from '$actions/AppStoreActions';
 import { getLocalStorageAutoSave } from '$lib/localStorage';
+import { postHog } from '$providers/PostHog';
 import AppStore from '$stores/AppStore';
 import { scheduleComponentsToggleStore } from '$stores/ScheduleComponentsToggleStore';
 import { useSessionStore } from '$stores/SessionStore';
@@ -118,9 +119,15 @@ class ActionTypesStore extends EventEmitter {
 
         if (autoSave) {
             this.emit('autoSaveStart');
-            await autoSaveSchedule({});
-            AppStore.unsavedChanges = false;
-            this.emit('autoSaveEnd');
+
+            try {
+                await autoSaveSchedule({ postHog });
+                AppStore.unsavedChanges = false;
+            } catch (error) {
+                console.error('Auto-save failed:', error);
+            } finally {
+                this.emit('autoSaveEnd');
+            }
         }
     }
 }
