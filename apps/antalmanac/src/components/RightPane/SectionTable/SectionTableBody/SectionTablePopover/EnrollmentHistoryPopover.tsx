@@ -36,7 +36,7 @@ export function EnrollmentHistoryPopover({
     const theme = useTheme();
     const isMobile = useIsMobile();
 
-    const width = isMobile ? 250 : 450;
+    const width = isMobile ? 300 : 450;
     const height = isMobile ? 175 : 250;
     const enrollmentHistoryCount = enrollmentHistory?.length ?? 0;
 
@@ -56,7 +56,7 @@ export function EnrollmentHistoryPopover({
     const currEnrollmentHistory = enrollmentHistory?.at(activeGraphIndex);
     const subheader =
         currEnrollmentHistory != null ? (
-            `${currEnrollmentHistory.year} ${currEnrollmentHistory.quarter} | ${sectionType}`
+            `${currEnrollmentHistory.year} ${currEnrollmentHistory.quarter} | ${sectionType} | ${currEnrollmentHistory.sectionCode ?? ''}`
         ) : (
             <>&nbsp;</>
         );

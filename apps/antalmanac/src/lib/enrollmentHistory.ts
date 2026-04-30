@@ -9,6 +9,7 @@ export interface EnrollmentHistoryGraphQL {
     quarter: string;
     department: string;
     courseNumber: string;
+    sectionCode: string;
     dates: string[];
     totalEnrolledHistory: string[];
     maxCapacityHistory: string[];
@@ -33,6 +34,7 @@ export interface EnrollmentHistory {
     quarter: string;
     department: string;
     courseNumber: string;
+    sectionCode: string;
     days: EnrollmentHistoryDay[];
     instructors: string[];
 }
@@ -121,6 +123,7 @@ export class DepartmentEnrollmentHistory {
                 quarter: enrollmentHistory.quarter,
                 department: enrollmentHistory.department,
                 courseNumber: enrollmentHistory.courseNumber,
+                sectionCode: enrollmentHistory.sectionCode,
                 days: enrollmentDays,
                 instructors: enrollmentHistory.instructors,
             });
