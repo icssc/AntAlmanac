@@ -257,7 +257,15 @@ const userDataRouter = router({
     saveUserData: protectedProcedure
         .input(z.object({ userData: z.custom<ScheduleSaveState>() }))
         .mutation(async ({ input, ctx }) => {
-            const userData = input.userData;
+            const result = ScheduleSaveStateSchema.safeParse(input.userData);
+            if (!result.success) {
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: `Invalid schedule data: ${result.error.message}`,
+                });
+            }
+
+            const userData = result.data;
             userData.schedules = mangleDuplicateScheduleNames(userData.schedules);
 
             try {
