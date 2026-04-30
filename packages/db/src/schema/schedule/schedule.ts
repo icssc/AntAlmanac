@@ -1,5 +1,6 @@
 import { createId } from '@paralleldrive/cuid2';
 import { pgTable, text, timestamp, integer, boolean } from 'drizzle-orm/pg-core';
+
 import { users } from '../auth/user';
 
 // NOTE: unique constraints on (userId, name) and (userId, index) are intentionally
@@ -30,7 +31,18 @@ export const schedules = pgTable('schedules', {
      */
     index: integer('index').notNull(),
 
-    lastUpdated: timestamp('last_updated', { withTimezone: true }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+
+    /**
+     * Updates to content in schedule will not bump this column.
+     * Only direct updates to the schedule table will bump this column (e.g. name, notes, index).
+     *
+     * {@see} backend/lib/rds.ts, `upsertSchedulesAndContents`
+     */
+    lastUpdated: timestamp('last_updated', { withTimezone: true })
+        .defaultNow()
+        .notNull()
+        .$onUpdate(() => new Date()),
 
     /**
      * Whether this schedule is visible to friends.

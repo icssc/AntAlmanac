@@ -8,7 +8,7 @@ import buildingCatalogue from '$lib/locations/buildingCatalogue';
 import AppStore from '$stores/AppStore';
 import { useTimeFormatStore } from '$stores/SettingsStore';
 import { Delete } from '@mui/icons-material';
-import { Box, Card, CardActions, CardHeader, IconButton, Tooltip } from '@mui/material';
+import { Card, CardActions, CardContent, CardHeader, IconButton, Tooltip } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
 import { format, set } from 'date-fns';
 import { useEffect, useState } from 'react';
@@ -18,7 +18,7 @@ interface CustomEventDetailViewProps {
     customEvent: RepeatingCustomEvent;
 }
 
-const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
+export function CustomEventDetailView(props: CustomEventDetailViewProps) {
     const { customEvent } = props;
     const { isMilitaryTime } = useTimeFormatStore();
     const isReadonlyView = useIsReadonlyView();
@@ -60,24 +60,27 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
     return (
         <Card>
             <CardHeader
-                titleTypographyProps={{ variant: 'subtitle1' }}
                 title={customEvent.title}
-                subheader={readableDateAndTimeFormat(customEvent.start, customEvent.end, customEvent.days)}
-                style={{
-                    padding: !skeletonMode ? '8px 8px 0 8px' : 8,
+                slotProps={{
+                    title: {
+                        variant: 'subtitle1',
+                    },
                 }}
+                subheader={readableDateAndTimeFormat(customEvent.start, customEvent.end, customEvent.days)}
+                sx={{ padding: 1 }}
             />
-            <Box sx={{ margin: '0.75rem', color: '#bbbbbb', fontSize: '1rem' }}>
+
+            <CardContent sx={{ paddingX: 1, paddingY: 0 }}>
                 <MapLink
                     buildingId={Number(customEvent.building) || 0}
                     room={(customEvent.building && buildingCatalogue[+customEvent.building]?.name) || ''}
                 />
-            </Box>
+            </CardContent>
 
             {!skeletonMode && (
-                <CardActions disableSpacing={true} style={{ padding: 0 }}>
+                <CardActions disableSpacing={true}>
                     <ColorPicker
-                        color={customEvent.color as string}
+                        color={customEvent.color}
                         isCustomEvent={true}
                         customEventID={customEvent.customEventID}
                         analyticsCategory={analyticsEnum.addedClasses}
@@ -86,22 +89,18 @@ const CustomEventDetailView = (props: CustomEventDetailViewProps) => {
                     <CustomEventDialog customEvent={customEvent} scheduleNames={props.scheduleNames} />
 
                     <Tooltip title="Delete">
-                        <span>
-                            <IconButton
-                                onClick={() => {
-                                    deleteCustomEvent(customEvent.customEventID, [AppStore.getCurrentScheduleIndex()]);
-                                }}
-                                size="large"
-                                disabled={isReadonlyView}
-                            >
-                                <Delete fontSize="small" />
-                            </IconButton>
-                        </span>
+                        <IconButton
+                            sx={{ padding: 0.5 }}
+                            onClick={() => {
+                                deleteCustomEvent(customEvent.customEventID, [AppStore.getCurrentScheduleIndex()]);
+                            }}
+                            disabled={isReadonlyView}
+                        >
+                            <Delete fontSize="small" />
+                        </IconButton>
                     </Tooltip>
                 </CardActions>
             )}
         </Card>
     );
-};
-
-export default CustomEventDetailView;
+}

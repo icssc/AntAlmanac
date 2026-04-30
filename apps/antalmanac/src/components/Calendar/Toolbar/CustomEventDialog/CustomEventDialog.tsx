@@ -18,6 +18,7 @@ import {
     Tooltip,
 } from '@mui/material';
 import type { RepeatingCustomEvent } from '@packages/antalmanac-types';
+import { createId } from '@paralleldrive/cuid2';
 import { usePostHog } from 'posthog-js/react';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -27,12 +28,12 @@ interface CustomEventDialogProps {
     scheduleNames: string[];
 }
 
-const defaultCustomEventValues: RepeatingCustomEvent = {
+const defaultCustomEventValues: Omit<RepeatingCustomEvent, 'customEventID'> = {
     start: '10:30',
     end: '15:30',
     title: '',
+    color: '#551a8b',
     days: [false, false, false, false, false, false, false],
-    customEventID: 0,
     building: undefined,
 };
 
@@ -53,15 +54,6 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
 
     const isReadonlyView = useIsReadonlyView();
 
-    const resetForm = () => {
-        setStart(defaultCustomEventValues.start);
-        setEnd(defaultCustomEventValues.end);
-        setTitle(defaultCustomEventValues.title);
-        setDays(defaultCustomEventValues.days);
-        setBuilding(undefined);
-        setScheduleIndices([]);
-    };
-
     const disableSubmit = !(scheduleIndices.length && days.includes(true));
 
     const handleSubmit = () => {
@@ -75,13 +67,22 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
     };
 
     const handleOpen = useCallback(() => {
-        setOpen(true);
         if (props.customEvent) {
-            const customEventId = Number(props.customEvent.customEventID);
-            setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(customEventId));
+            setStart(props.customEvent.start);
+            setEnd(props.customEvent.end);
+            setTitle(props.customEvent.title);
+            setDays(props.customEvent.days);
+            setBuilding(props.customEvent.building);
+            setScheduleIndices(AppStore.schedule.getIndexesOfCustomEvent(props.customEvent.customEventID));
         } else {
+            setStart(defaultCustomEventValues.start);
+            setEnd(defaultCustomEventValues.end);
+            setTitle(defaultCustomEventValues.title);
+            setDays(defaultCustomEventValues.days);
+            setBuilding(defaultCustomEventValues.building);
             setScheduleIndices([AppStore.getCurrentScheduleIndex()]);
         }
+        setOpen(true);
 
         logAnalytics(postHog, {
             category: analyticsEnum.calendar,
@@ -126,11 +127,9 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
             days: days,
             start: start,
             end: end,
-            customEventID: props.customEvent?.customEventID ?? Date.now(),
+            customEventID: props.customEvent?.customEventID ?? createId(),
             building: building,
         };
-
-        resetForm();
 
         if (props.customEvent) {
             editCustomEvent(newCustomEvent, scheduleIndices);
@@ -157,11 +156,9 @@ export function CustomEventDialog(props: CustomEventDialogProps) {
         <>
             {props.customEvent ? (
                 <Tooltip title="Edit">
-                    <span>
-                        <IconButton onClick={handleOpen} disabled={disableButton}>
-                            <Edit fontSize="small" />
-                        </IconButton>
-                    </span>
+                    <IconButton sx={{ padding: 0.5 }} onClick={handleOpen} disabled={disableButton}>
+                        <Edit fontSize="small" />
+                    </IconButton>
                 </Tooltip>
             ) : (
                 <Tooltip title="Add custom events">

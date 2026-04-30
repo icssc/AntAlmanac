@@ -265,21 +265,20 @@ export const CourseCalendarEvent = ({ selectedEvent, scheduleNames, closePopover
                     />
 
                     <Tooltip title="Delete">
-                        <span>
-                            <IconButton
-                                onClick={() => {
-                                    closePopover();
-                                    deleteCustomEvent(customEventID, [AppStore.getCurrentScheduleIndex()]);
-                                    logAnalytics(postHog, {
-                                        category: analyticsEnum.calendar,
-                                        action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
-                                    });
-                                }}
-                                disabled={isReadonlyView}
-                            >
-                                <Delete fontSize="small" />
-                            </IconButton>
-                        </span>
+                        <IconButton
+                            sx={{ padding: 0.5 }}
+                            onClick={() => {
+                                closePopover();
+                                deleteCustomEvent(customEventID, [AppStore.getCurrentScheduleIndex()]);
+                                logAnalytics(postHog, {
+                                    category: analyticsEnum.calendar,
+                                    action: analyticsEnum.calendar.actions.DELETE_CUSTOM_EVENT,
+                                });
+                            }}
+                            disabled={isReadonlyView}
+                        >
+                            <Delete fontSize="small" />
+                        </IconButton>
                     </Tooltip>
                 </Box>
             </Paper>
