@@ -257,7 +257,17 @@ const userDataRouter = router({
     saveUserData: protectedProcedure
         .input(z.object({ userData: z.custom<ScheduleSaveState>() }))
         .mutation(async ({ input, ctx }) => {
-            const userData = input.userData;
+            let userData: ScheduleSaveState;
+            try {
+                userData = ScheduleSaveStateSchema.assert(input.userData);
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'Unknown validation error';
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: `Invalid schedule data: ${errorMessage}`,
+                });
+            }
+
             userData.schedules = mangleDuplicateScheduleNames(userData.schedules);
 
             try {

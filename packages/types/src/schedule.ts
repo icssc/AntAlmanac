@@ -4,6 +4,9 @@ import { type, arrayOf } from 'arktype';
 import { RepeatingCustomEvent, RepeatingCustomEventSchema } from './customEvent';
 import { AASection } from './websoc';
 
+/** Max length for schedule notes (UI and server validation). */
+export const SCHEDULE_NOTE_MAX_LENGTH = 5000;
+
 export type ScheduleCourse = {
     courseComment: string;
     courseNumber: string;
@@ -35,7 +38,7 @@ export const ShortCourseScheduleSchema = type([
         scheduleName: 'string',
         courses: arrayOf(ShortCourseSchema),
         customEvents: arrayOf(RepeatingCustomEventSchema),
-        'scheduleNote?': 'string',
+        'scheduleNote?': `string<=${SCHEDULE_NOTE_MAX_LENGTH}`,
         'id?': 'string',
     },
     '|>',
