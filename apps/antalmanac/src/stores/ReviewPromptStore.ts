@@ -67,23 +67,29 @@ export const useReviewPromptStore = create(
             const candidates: ReviewCandidate[] = [];
 
             for (const course of allCourses) {
-                // Schedule stores terms as "2025-Fall"; termData.shortName uses "2025 Fall".
-                const normalizedTerm = course.term.replace('-', ' ');
-                if (!pastTermNames.has(normalizedTerm)) continue;
+                const term = course.term;
+
+                if (!pastTermNames.has(term)) {
+                    continue;
+                }
 
                 const instructor = course.section.instructors?.[0];
-                if (!instructor) continue;
+                if (!instructor) {
+                    continue;
+                }
 
                 const courseId = `${course.deptCode} ${course.courseNumber}`;
-                const dedupKey = `${courseId}::${instructor}::${normalizedTerm}`;
-                if (seen.has(dedupKey)) continue;
+                const dedupKey = `${courseId}::${instructor}::${term}`;
+                if (seen.has(dedupKey)) {
+                    continue;
+                }
                 seen.add(dedupKey);
 
                 candidates.push({
                     courseId,
                     courseTitle: course.courseTitle,
                     professorId: instructor,
-                    term: normalizedTerm,
+                    term,
                 });
             }
 
@@ -107,7 +113,8 @@ export const useReviewPromptStore = create(
                     }
                 }
             } catch {
-                // Non-fatal — proceed without DB filter and cooldown.
+                // Without dismissed/reviewed/cooldown we could re-prompt incorrectly; skip this run.
+                return;
             }
 
             const eligible = candidates.filter((c) => {
@@ -115,7 +122,9 @@ export const useReviewPromptStore = create(
                 return !dismissedSet.has(key) && !reviewedSet.has(key);
             });
 
-            if (eligible.length === 0) return;
+            if (eligible.length === 0) {
+                return;
+            }
 
             const candidate = eligible[Math.floor(Math.random() * eligible.length)];
             set({ step: 'enrollment-confirm', candidate, rating: 0, selectedTags: [] });
